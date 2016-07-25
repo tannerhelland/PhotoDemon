@@ -570,6 +570,8 @@ Private Sub Class_Initialize()
         .Height = 100
     End With
     
+    m_DebugMode = Drawing2D.GetLibraryDebugMode()
+    
 End Sub
 
 Private Sub Class_Terminate()
@@ -583,3 +585,4 @@ End Sub
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DBrush"
 End Sub
+

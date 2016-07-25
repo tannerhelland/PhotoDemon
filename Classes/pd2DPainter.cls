@@ -93,6 +93,18 @@ Public Function CopySurfaceF(ByRef dstSurface As pd2DSurface, ByVal dstX As Sing
     GDI_Plus.GDIPlus_GraphicsSetCompositingMode dstSurface.GetHandle, GP_CM_SourceOver
 End Function
 
+'These crop functions are identical to the ones above, except they allow the user to control source width/height instead of
+' inferring it automatically.
+Public Function CopySurfaceCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal cropWidth As Long, ByVal cropHeight As Long, ByRef srcSurface As pd2DSurface) As Boolean
+    CopySurfaceCroppedI = GDI.BitBltWrapper(dstSurface.GetSurfaceDC, dstX, dstY, cropWidth, cropHeight, srcSurface.GetSurfaceDC, 0, 0, vbSrcCopy)
+End Function
+
+Public Function CopySurfaceCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal cropWidth As Long, ByVal cropHeight As Long, ByRef srcSurface As pd2DSurface) As Boolean
+    GDI_Plus.GDIPlus_GraphicsSetCompositingMode dstSurface.GetHandle, GP_CM_SourceCopy
+    CopySurfaceCroppedF = GDI_Plus.GDIPlus_DrawImageRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, cropWidth, cropHeight)
+    GDI_Plus.GDIPlus_GraphicsSetCompositingMode dstSurface.GetHandle, GP_CM_SourceOver
+End Function
+
 'You might think we could just wrap StretchBlt here, but StretchBlt is inconsistent in its handling of alpha channels.
 ' GDI+ is actually pretty comparable speed-wise in nearest-neighbor mode, so this isn't a huge penalty.
 Public Function CopySurfaceResizedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface) As Boolean
@@ -110,6 +122,12 @@ End Function
 Public Function CopySurfaceResizedCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single) As Boolean
     GDI_Plus.GDIPlus_GraphicsSetCompositingMode dstSurface.GetHandle, GP_CM_SourceCopy
     CopySurfaceResizedCroppedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight)
+    GDI_Plus.GDIPlus_GraphicsSetCompositingMode dstSurface.GetHandle, GP_CM_SourceOver
+End Function
+
+Public Function CopySurfaceResizedCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long) As Boolean
+    GDI_Plus.GDIPlus_GraphicsSetCompositingMode dstSurface.GetHandle, GP_CM_SourceCopy
+    CopySurfaceResizedCroppedI = GDI_Plus.GDIPlus_DrawImageRectRectI(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight)
     GDI_Plus.GDIPlus_GraphicsSetCompositingMode dstSurface.GetHandle, GP_CM_SourceOver
 End Function
 
@@ -237,6 +255,23 @@ Public Function DrawSurfaceF(ByRef dstSurface As pd2DSurface, ByVal dstX As Sing
         DrawSurfaceF = GDI_Plus.GDIPlus_DrawImageF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY)
     End If
     
+End Function
+
+Public Function DrawSurfaceCroppedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal cropWidth As Long, ByVal cropHeight As Long, ByRef srcSurface As pd2DSurface, ByVal srcX As Long, ByVal srcY As Long, Optional ByVal customOpacity As Single = 100#) As Boolean
+    
+    'Because this function doesn't require stretching, we can drop back to AlphaBlend for improved performance.
+    ' (This is only possible because pd2D operates in the premultiplied alpha space; if it didn't, we'd be forced
+    ' to use slower GDI+ calls everywhere.)
+    If (srcSurface.GetSurfaceAlphaSupport Or (customOpacity <> 100)) Then
+        DrawSurfaceCroppedI = AlphaBlendWrapper(dstSurface.GetSurfaceDC, dstX, dstY, cropWidth, cropHeight, srcSurface.GetSurfaceDC, srcX, srcY, cropWidth, cropHeight, srcSurface.GetSurfaceAlphaSupport, customOpacity * 2.55)
+    Else
+        DrawSurfaceCroppedI = GDI.BitBltWrapper(dstSurface.GetSurfaceDC, dstX, dstY, cropWidth, cropHeight, srcSurface.GetSurfaceDC, srcX, srcY, vbSrcCopy)
+    End If
+    
+End Function
+
+Public Function DrawSurfaceCroppedF(ByRef dstSurface As pd2DSurface, ByVal dstX As Single, ByVal dstY As Single, ByVal cropWidth As Single, ByVal cropHeight As Single, ByRef srcSurface As pd2DSurface, ByVal srcX As Single, ByVal srcY As Single, Optional ByVal customOpacity As Single = 100#) As Boolean
+    DrawSurfaceCroppedF = GDI_Plus.GDIPlus_DrawImageRectRectF(dstSurface.GetHandle, srcSurface.GetGdipImageHandle, dstX, dstY, cropWidth, cropHeight, srcX, srcY, cropWidth, cropHeight, customOpacity * 0.01)
 End Function
 
 Public Function DrawSurfaceResizedI(ByRef dstSurface As pd2DSurface, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByRef srcSurface As pd2DSurface, Optional ByVal customOpacity As Single = 100#) As Boolean
@@ -587,3 +622,8 @@ End Function
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DPainter"
 End Sub
+
+Private Sub Class_Initialize()
+    m_DebugMode = Drawing2D.GetLibraryDebugMode()
+End Sub
+

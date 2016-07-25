@@ -71,6 +71,7 @@ Public Function CloneExistingTransform(ByVal srcTransform As pd2DTransform) As B
         End Select
         
         CloneExistingTransform = CBool(m_TransformHandle <> 0)
+        If (CloneExistingTransform And m_DebugMode) Then Drawing2D.DEBUG_NotifyTransformCountChange m_TransformBackend, True
         
     Else
         CloneExistingTransform = False
@@ -321,6 +322,7 @@ End Sub
 
 Private Sub Class_Initialize()
     Me.Reset
+    m_DebugMode = Drawing2D.GetLibraryDebugMode()
 End Sub
 
 Private Sub Class_Terminate()
@@ -334,3 +336,4 @@ End Sub
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DTransform"
 End Sub
+

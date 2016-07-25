@@ -3,8 +3,8 @@ Attribute VB_Name = "GDI_Plus"
 'GDI+ Interface
 'Copyright 2012-2016 by Tanner Helland
 'Created: 1/September/12
-'Last updated: 18/June/16
-'Last update: ongoing work to clean-up and modernize this (currently disastrous) module
+'Last updated: 26/June/16
+'Last update: add more integer-specific rendering functions
 '
 'This interface provides a means for interacting with various GDI+ features.  GDI+ was originally used as a fallback for image loading
 ' and saving if the FreeImage DLL was not found, but over time it has become more and more integrated into PD.  As of version 6.0, GDI+
@@ -198,6 +198,57 @@ End Enum
 
 #If False Then
     Private Const GP_DS_Solid = 0&, GP_DS_Dash = 1&, GP_DS_Dot = 2&, GP_DS_DashDot = 3&, GP_DS_DashDotDot = 4&, GP_DS_Custom = 5&
+#End If
+
+Public Enum GP_EncoderValueType
+    GP_EVT_Byte = 1
+    GP_EVT_ASCII = 2
+    GP_EVT_Short = 3
+    GP_EVT_Long = 4
+    GP_EVT_Rational = 5
+    GP_EVT_LongRange = 6
+    GP_EVT_Undefined = 7
+    GP_EVT_RationalRange = 8
+    GP_EVT_Pointer = 9
+End Enum
+
+#If False Then
+    Private Const GP_EVT_Byte = 1, GP_EVT_ASCII = 2, GP_EVT_Short = 3, GP_EVT_Long = 4, GP_EVT_Rational = 5, GP_EVT_LongRange = 6, GP_EVT_Undefined = 7, GP_EVT_RationalRange = 8, GP_EVT_Pointer = 9
+#End If
+
+Public Enum GP_EncoderValue
+    GP_EV_ColorTypeCMYK = 0
+    GP_EV_ColorTypeYCCK = 1
+    GP_EV_CompressionLZW = 2
+    GP_EV_CompressionCCITT3 = 3
+    GP_EV_CompressionCCITT4 = 4
+    GP_EV_CompressionRle = 5
+    GP_EV_CompressionNone = 6
+    GP_EV_ScanMethodInterlaced = 7
+    GP_EV_ScanMethodNonInterlaced = 8
+    GP_EV_VersionGif87 = 9
+    GP_EV_VersionGif89 = 10
+    GP_EV_RenderProgressive = 11
+    GP_EV_RenderNonProgressive = 12
+    GP_EV_TransformRotate90 = 13
+    GP_EV_TransformRotate180 = 14
+    GP_EV_TransformRotate270 = 15
+    GP_EV_TransformFlipHorizontal = 16
+    GP_EV_TransformFlipVertical = 17
+    GP_EV_MultiFrame = 18
+    GP_EV_LastFrame = 19
+    GP_EV_Flush = 20
+    GP_EV_FrameDimensionTime = 21
+    GP_EV_FrameDimensionResolution = 22
+    GP_EV_FrameDimensionPage = 23
+    GP_EV_ColorTypeGray = 24
+    GP_EV_ColorTypeRGB = 25
+End Enum
+
+#If False Then
+    Private Const GP_EV_ColorTypeCMYK = 0, GP_EV_ColorTypeYCCK = 1, GP_EV_CompressionLZW = 2, GP_EV_CompressionCCITT3 = 3, GP_EV_CompressionCCITT4 = 4, GP_EV_CompressionRle = 5, GP_EV_CompressionNone = 6, GP_EV_ScanMethodInterlaced = 7, GP_EV_ScanMethodNonInterlaced = 8, GP_EV_VersionGif87 = 9, GP_EV_VersionGif89 = 10
+    Private Const GP_EV_RenderProgressive = 11, GP_EV_RenderNonProgressive = 12, GP_EV_TransformRotate90 = 13, GP_EV_TransformRotate180 = 14, GP_EV_TransformRotate270 = 15, GP_EV_TransformFlipHorizontal = 16, GP_EV_TransformFlipVertical = 17, GP_EV_MultiFrame = 18, GP_EV_LastFrame = 19, GP_EV_Flush = 20
+    Private Const GP_EV_FrameDimensionTime = 21, GP_EV_FrameDimensionResolution = 22, GP_EV_FrameDimensionPage = 23, GP_EV_ColorTypeGray = 24, GP_EV_ColorTypeRGB = 25
 #End If
 
 Public Enum GP_FillMode
@@ -681,11 +732,11 @@ Public Enum GP_SmoothingMode
     GP_SM_HighSpeed = GP_QM_Low
     GP_SM_HighQuality = GP_QM_High
     GP_SM_None = 3&
-    GP_SM_Antialias = 4&
+    GP_SM_AntiAlias = 4&
 End Enum
 
 #If False Then
-    Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3, GP_SM_Antialias = 4
+    Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3, GP_SM_AntiAlias = 4
 #End If
 
 Public Enum GP_Unit
@@ -749,6 +800,36 @@ Private Type tmpLong
     lngResult As Long
 End Type
 
+'Exporting images via GDI+ is a big headache.  A number of convoluted structs are required if the user
+' wants to custom-set any image properties.
+Private Type GP_EncoderParameter
+    EP_GUID(0 To 15) As Byte
+    EP_NumOfValues As Long
+    EP_ValueType As GP_EncoderValueType
+    EP_ValuePtr As Long
+End Type
+
+Private Type GP_EncoderParameters
+    EP_Count As Long
+    EP_Parameter As GP_EncoderParameter
+End Type
+
+Private Type GP_ImageCodecInfo
+    IC_ClassID(0 To 15) As Byte
+    IC_FormatID(0 To 15) As Byte
+    IC_CodecName As Long
+    IC_DllName As Long
+    IC_FormatDescription As Long
+    IC_FilenameExtension As Long
+    IC_MimeType As Long
+    IC_Flags As Long
+    IC_Version As Long
+    IC_SigCount As Long
+    IC_SigSize As Long
+    IC_SigPattern As Long
+    IC_SigMask As Long
+End Type
+
 'GDI+ uses GUIDs to define image formats.  VB6 doesn't let us predeclare byte arrays (at least not easily),
 ' so we save ourselves the trouble and just use string versions.
 Private Const GP_FF_GUID_Undefined = "{B96B3CA9-0728-11D3-9D7B-0000F81EF32E}"
@@ -762,6 +843,23 @@ Private Const GP_FF_GUID_GIF = "{B96B3CB0-0728-11D3-9D7B-0000F81EF32E}"
 Private Const GP_FF_GUID_TIFF = "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"
 Private Const GP_FF_GUID_EXIF = "{B96B3CB2-0728-11D3-9D7B-0000F81EF32E}"
 Private Const GP_FF_GUID_Icon = "{B96B3CB5-0728-11D3-9D7B-0000F81EF32E}"
+
+'Like image formats, export encoder properties are also defined by GUID.  These values come from the Win 8.1
+' version of gdiplusimaging.h.  Note that some are restricted to GDI+ v1.1.
+Private Const GP_EP_Compression As String = "{E09D739D-CCD4-44EE-8EBA-3FBF8BE4FC58}"
+Private Const GP_EP_ColorDepth As String = "{66087055-AD66-4C7C-9A18-38A2310B8337}"
+Private Const GP_EP_ScanMethod As String = "{3A4E2661-3109-4E56-8536-42C156E7DCFA}"
+Private Const GP_EP_Version As String = "{24D18C76-814A-41A4-BF53-1C219CCCF797}"
+Private Const GP_EP_RenderMethod As String = "{6D42C53A-229A-4825-8BB7-5C99E2B9A8B8}"
+Private Const GP_EP_Quality As String = "{1D5BE4B5-FA4A-452D-9CDD-5DB35105E7EB}"
+Private Const GP_EP_Transformation As String = "{8D0EB2D1-A58E-4EA8-AA14-108074B7B6F9}"
+Private Const GP_EP_LuminanceTable As String = "{EDB33BCE-0266-4A77-B904-27216099E717}"
+Private Const GP_EP_ChrominanceTable As String = "{F2E455DC-09B3-4316-8260-676ADA32481C}"
+Private Const GP_EP_SaveFlag As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
+
+'REQUIRES GDI+ v1.1 OR LATER!
+Private Const GP_EP_ColorSpace As String = "{AE7A62A0-EE2C-49D8-9D07-1BA8A927596E}"
+Private Const GP_EP_SaveAsCMYK As String = "{A219BBC9-0A9D-4005-A3EE-3A421B8BB06C}"
 
 'Core GDI+ functions:
 Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef gdipToken As Long, ByRef startupStruct As GDIPlusStartupInput, Optional ByVal OutputBuffer As Long = 0&) As GP_Result
@@ -862,6 +960,8 @@ Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Lo
 
 Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
+Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
+Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef dstHeight As Long) As GP_Result
 Private Declare Function GdipGetImageHorizontalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef dstHResolution As Single) As GP_Result
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal hImage As Long, ByRef dstPixelFormat As GP_PixelFormat) As GP_Result
@@ -905,11 +1005,14 @@ Private Declare Function GdipIsVisiblePathPoint Lib "gdiplus" (ByVal hPath As Lo
 Private Declare Function GdipIsVisiblePathPointI Lib "gdiplus" (ByVal hPath As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
 
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal ptrSrcFilename As Long, ByRef dstGdipImage As Long) As GP_Result
+Private Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal srcIStream As Long, ByRef dstGdipImage As Long) As GP_Result
 
 Private Declare Function GdipResetClip Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
 Private Declare Function GdipResetPath Lib "gdiplus" (ByVal hPath As Long) As GP_Result
-
 Private Declare Function GdipRotateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal rotateAngle As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
+
+Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal ptrToFilename As Long, ByVal ptrToEncoderGUID As Long, ByVal ptrToEncoderParams As Long) As GP_Result
+Private Declare Function GdipSaveImageToStream Lib "gdiplus" (ByVal hImage As Long, ByVal dstIStream As Long, ByVal ptrToEncoderGUID As Long, ByVal ptrToEncoderParams As Long) As GP_Result
 Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
 
 Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal useCombineMode As GP_CombineMode) As GP_Result
@@ -953,10 +1056,16 @@ Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal
 Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal allowableError As Single) As GP_Result
 
 'Non-GDI+ helper functions:
-Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpszProgID As Long, ByRef pclsid As clsid) As Long
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal ptrToGuidString As Long, ByVal ptrToByteArray As Long) As Long
 Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
+Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByVal ptrToDstStream As Long) As Long
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
+Private Declare Function GetHGlobalFromStream Lib "ole32" (ByVal srcIStream As Long, ByRef dstHGlobal As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
+Private Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
 Private Declare Function lstrlenA Lib "kernel32" (ByVal ptrToString As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal ptrToString As Long) As Long
@@ -1206,9 +1315,6 @@ End Type
 Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
 Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpBitmap As Long, ByRef gpFlags As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gpBitmap As Long, hBmpReturn As Long, ByVal RGBABackground As Long) As GP_Result
-Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GP_Result
-Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, Encoders As Any) As GP_Result
-Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long, ByVal sFilename As String, clsidEncoder As clsid, encoderParams As Any) As GP_Result
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Single, ByRef imgHeight As Single) As Long
 Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef hDC As Long) As Long
 Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hDC As Long) As Long
@@ -1566,7 +1672,7 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
@@ -1591,7 +1697,7 @@ Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoint
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a solid fill brush
     Dim hBrush As Long
@@ -1620,7 +1726,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
@@ -1660,7 +1766,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
@@ -1694,7 +1800,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the circle
     Dim iPen As Long
@@ -1715,7 +1821,7 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a brush, which will be used to stroke the circle
     Dim hBrush As Long
@@ -1738,7 +1844,7 @@ Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1765,7 +1871,7 @@ Public Function GDIPlusFillRectLToDC(ByVal dstDC As Long, ByRef srcRect As RECTL
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1791,7 +1897,7 @@ Public Function GDIPlusFillRectFToDC(ByVal dstDC As Long, ByRef srcRect As RECTF
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1815,7 +1921,7 @@ Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
-    GdipSetSmoothingMode hGraphics, GP_SM_Antialias
+    GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias
     GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
         
@@ -1854,7 +1960,7 @@ Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request matching AA and offset behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a solid fill brush
@@ -1878,7 +1984,7 @@ Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
         
     'Create a pen with matching attributes
     Dim hPen As Long
@@ -1901,7 +2007,7 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
     Dim rrPath As Long
@@ -1958,7 +2064,7 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
     GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
+        GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias
     Else
         GdipSetSmoothingMode iGraphics, GP_SM_None
     End If
@@ -2000,7 +2106,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
         GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     End If
     
-    GdipSetSmoothingMode iGraphics, GP_SM_Antialias
+    GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias
     GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
         
@@ -2041,7 +2147,7 @@ Public Function GDIPlusFillDC_Brush(ByRef dstDC As Long, ByVal srcBrushHandle As
     GdipCreateFromHDC dstDC, iGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
+        GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias
     Else
         GdipSetSmoothingMode iGraphics, GP_SM_None
     End If
@@ -2270,7 +2376,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = GP_OK Then
                 
                 'Set high-quality antialiasing and interpolation
-                GdipSetSmoothingMode tmpGraphics, GP_SM_Antialias
+                GdipSetSmoothingMode tmpGraphics, GP_SM_AntiAlias
                 GdipSetInterpolationMode tmpGraphics, GP_IM_HighQualityBicubic
                 
                 'Attempt to convert the EMF to EMF+ format
@@ -2491,7 +2597,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Prepping image for GDI+ export..."
     #End If
-
+    
     'If the output format is 24bpp (e.g. JPEG) but the input image is 32bpp, composite it against white
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -2696,7 +2802,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Message "Saving the file..."
     
     'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
+    GDIPlusReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(uEncCLSID), aEncParams(1))
     
     If (GDIPlusReturn <> 0) Then
         GdipDisposeImage hImage
@@ -2757,7 +2863,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
     
     'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))
+    GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncCLSID), aEncParams(1))
     
     If (GDIPlusReturn <> 0) Then
         GdipDisposeImage hGdipBitmap
@@ -3331,7 +3437,7 @@ Private Function pvDEFINE_GUID(ByVal sGuid As String) As clsid
 '-- Courtesy of: Dana Seaman
 '   Helper routine to convert a CLSID(aka GUID) string to a structure
 '   Example ImageFormatBMP = {B96B3CAB-0728-11D3-9D7B-0000F81EF32E}
-    Call CLSIDFromString(StrPtr(sGuid), pvDEFINE_GUID)
+    Call CLSIDFromString(StrPtr(sGuid), VarPtr(pvDEFINE_GUID))
 End Function
 
 '"Convert" (technically, dereference) an ANSI or Unicode string to the BSTR used by VB
@@ -3553,13 +3659,14 @@ Private Function InternalGDIPlusError(Optional ByVal errName As String = vbNullS
     End If
     
     Dim tmpString As String
-    tmpString = "WARNING!  Internal GDI+ error #" & errNumber & ", """ & errName & """"
+    If (errNumber <> 0) Then
+        tmpString = "WARNING!  Internal GDI+ error #" & errNumber & ", """ & errName & """"
+    Else
+        tmpString = "WARNING!  GDI+ module error, """ & errName & """"
+    End If
+    
     If (Len(errDescription) <> 0) Then tmpString = tmpString & ": " & errDescription
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction tmpString
-    #Else
-        Debug.Print tmpString
-    #End If
+    Debug.Print tmpString
     
 End Function
 
@@ -3574,7 +3681,7 @@ Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     dstQuad.Red = Drawing2D.ExtractRed(vbRGB)
     dstQuad.Green = Drawing2D.ExtractGreen(vbRGB)
     dstQuad.Blue = Drawing2D.ExtractBlue(vbRGB)
-    dstQuad.alpha = alphaValue
+    dstQuad.Alpha = alphaValue
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -3587,7 +3694,7 @@ End Function
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQUAD
     CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
-    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
+    GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
 End Function
 
 'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
@@ -3596,12 +3703,12 @@ Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
     Dim srcQuad As RGBQUAD
     CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
     
-    If (srcQuad.alpha = 255) Then
+    If (srcQuad.Alpha = 255) Then
         GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
     Else
     
         Dim tmpSingle As Single
-        tmpSingle = CSng(srcQuad.alpha) / 255
+        tmpSingle = CSng(srcQuad.Alpha) / 255
         
         If (tmpSingle <> 0) Then
             Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long
@@ -4455,6 +4562,46 @@ Public Function GDIPlus_GraphicsSetCompositingMode(ByVal dstGraphics As Long, Op
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
 End Function
 
+'Note that this function creates an image from an array containing a valid image file (e.g. not an array with
+' bare RGB values).  This is helpful for interop with other software, or if you prefer to roll your own filesystem code.
+Public Function GDIPlus_ImageCreateFromArray(ByRef srcArray() As Byte, Optional ByRef isImageMetafile As Boolean = False) As Long
+    
+    'GDI+ requires a stream object for import, so we're going to wrap a temporary stream around the source array.
+    Dim tmpStream As Long
+    
+    Dim tmpHMem As Long
+    Const GMEM_MOVEABLE As Long = &H2&
+    tmpHMem = GlobalAlloc(GMEM_MOVEABLE, UBound(srcArray) - LBound(srcArray) + 1)
+    If (tmpHMem <> 0) Then
+        
+        Dim tmpLockMem As Long
+        tmpLockMem = GlobalLock(tmpHMem)
+        If (tmpLockMem <> 0) Then
+            CopyMemory_Strict tmpLockMem, VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1
+            GlobalUnlock tmpHMem
+            CreateStreamOnHGlobal tmpHMem, 1&, VarPtr(tmpStream)
+        End If
+        
+    End If
+    
+    If (tmpStream <> 0) Then
+    
+        Dim tmpReturn As GP_Result
+        tmpReturn = GdipLoadImageFromStream(tmpStream, GDIPlus_ImageCreateFromArray)
+        If (tmpReturn = GP_OK) Then
+            Dim imgType As GP_ImageType
+            GdipGetImageType GDIPlus_ImageCreateFromArray, imgType
+            isImageMetafile = CBool(imgType = GP_IT_Metafile)
+        Else
+            InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+        End If
+        
+    Else
+        InternalGDIPlusError "IStream failure", "GDIPlus_ImageCreateFromArray() failed to wrap an IStream around the source array; load aborted."
+    End If
+    
+End Function
+
 Public Function GDIPlus_ImageCreateFromFile(ByVal srcFilename As String, Optional ByRef isImageMetafile As Boolean = False) As Long
     Dim tmpReturn As GP_Result
     tmpReturn = GdipLoadImageFromFile(StrPtr(srcFilename), GDIPlus_ImageCreateFromFile)
@@ -4490,7 +4637,7 @@ Public Function GDIPlus_ImageGetDimensions(ByVal hImage As Long, ByRef dstWidth 
     End If
 End Function
 
-Public Function GDIPlus_ImageGetFileFormat(ByVal hImage As Long) As PD_2D_FileFormat
+Public Function GDIPlus_ImageGetFileFormat(ByVal hImage As Long) As PD_2D_FileFormatImport
     GDIPlus_ImageGetFileFormat = GetPd2dFileFormatFromGUID(GDIPlus_ImageGetFileFormatGUID(hImage))
 End Function
 
@@ -4526,26 +4673,51 @@ Public Function GDIPlus_ImageGetFileFormatGUID(ByVal hImage As Long) As String
 End Function
 
 'Given a GDI+ GUID format identifier, return a Long-type pd2D file format identifier
-Private Function GetPd2dFileFormatFromGUID(ByRef srcGUID As String) As PD_2D_FileFormat
+Private Function GetPd2dFileFormatFromGUID(ByRef srcGUID As String) As PD_2D_FileFormatImport
     Select Case srcGUID
         Case GP_FF_GUID_BMP, GP_FF_GUID_MemoryBMP
-            GetPd2dFileFormatFromGUID = P2_FF_BMP
+            GetPd2dFileFormatFromGUID = P2_FFI_BMP
         Case GP_FF_GUID_EMF
-            GetPd2dFileFormatFromGUID = P2_FF_EMF
+            GetPd2dFileFormatFromGUID = P2_FFI_EMF
         Case GP_FF_GUID_WMF
-            GetPd2dFileFormatFromGUID = P2_FF_WMF
+            GetPd2dFileFormatFromGUID = P2_FFI_WMF
         Case GP_FF_GUID_JPEG
-            GetPd2dFileFormatFromGUID = P2_FF_JPEG
+            GetPd2dFileFormatFromGUID = P2_FFI_JPEG
         Case GP_FF_GUID_PNG
-            GetPd2dFileFormatFromGUID = P2_FF_PNG
+            GetPd2dFileFormatFromGUID = P2_FFI_PNG
         Case GP_FF_GUID_GIF
-            GetPd2dFileFormatFromGUID = P2_FF_GIF
+            GetPd2dFileFormatFromGUID = P2_FFI_GIF
         Case GP_FF_GUID_TIFF
-            GetPd2dFileFormatFromGUID = P2_FF_TIFF
+            GetPd2dFileFormatFromGUID = P2_FFI_TIFF
         Case GP_FF_GUID_Icon
-            GetPd2dFileFormatFromGUID = P2_FF_ICO
+            GetPd2dFileFormatFromGUID = P2_FFI_ICO
         Case Else
-            GetPd2dFileFormatFromGUID = P2_FF_Undefined
+            GetPd2dFileFormatFromGUID = P2_FFI_Undefined
+    End Select
+End Function
+
+'Given a pd2D file format, return a matching GDI+ GUID format identifier (as a string; you'll need to manually
+' convert this to a byte array, FYI!)
+Private Function GetGUIDFromPd2dFileFormat(ByVal srcFileFormat As PD_2D_FileFormatImport) As String
+    Select Case srcFileFormat
+        Case P2_FFI_BMP
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_BMP
+        Case P2_FFI_EMF
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_EMF
+        Case P2_FFI_WMF
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_WMF
+        Case P2_FFI_JPEG
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_JPEG
+        Case P2_FFI_PNG
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_PNG
+        Case P2_FFI_GIF
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_GIF
+        Case P2_FFI_TIFF
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_TIFF
+        Case P2_FFI_ICO
+            GetGUIDFromPd2dFileFormat = GP_FF_GUID_Icon
+        Case Else
+            GetGUIDFromPd2dFileFormat = vbNullString
     End Select
 End Function
 
@@ -4610,6 +4782,232 @@ Public Function GDIPlus_ImageRotateFlip(ByVal hImage As Long, ByVal typeOfRotate
     tmpReturn = GdipImageRotateFlip(hImage, typeOfRotateFlip)
     GDIPlus_ImageRotateFlip = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+'Save a surface to a VB byte array.  The destination array *must* be dynamic, and does not need to be dimensionsed.
+' (It will be auto-dimensioned correctly by thsi function.)
+' As with saving to file, note that the only export property currently supported is JPEG quality; other properties
+' are set automatically by GDI+.
+Public Function GDIPlus_ImageSaveToArray(ByVal hImage As Long, ByRef dstArray() As Byte, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 85) As Boolean
+        
+    On Error GoTo GDIPlusSaveError
+    
+    'GDI+ uses GUIDs to define image export encoders; retrieve the relevant encoder GUID now
+    Dim exporterGUID(0 To 15) As Byte
+    If GetEncoderGUIDForPd2dFormat(dstFileFormat, VarPtr(exporterGUID(0))) Then
+    
+        'Like export format, GDI+ also uses GUIDs to define export properties.  If multiple encoder parameters
+        ' are in use, these need to be merged into sequential order (because GDI+ only takes a pointer).
+        ' pd2D does not currently cover this use-case; it always assumes there are only 0 or 1 parameters in use.
+        ' To use multiple parameters, you would need copy the first GP_EncoderParameters entry into the
+        ' fullEncoderParams() array, like normal, but with the Count value set to the number of parameters.
+        ' Then, you would need to copy subsequent parameters into place *after* it.  (But *only* the parameters,
+        ' not additional "Count" values.)
+        '
+        'Look at PhotoDemon's source code for an example of how to do this.
+        Dim paramsInUse As Boolean: paramsInUse = False
+        Dim tmpEncoderParams As GP_EncoderParameters, tmpConstString As String
+        Dim fullEncoderParams() As Byte
+        
+        If (dstFileFormat = P2_FFE_JPEG) Then
+            
+            paramsInUse = True
+            
+            tmpEncoderParams.EP_Count = 1
+            With tmpEncoderParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                tmpConstString = GP_EP_Quality
+                CLSIDFromString StrPtr(tmpConstString), VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(jpegQuality)
+            End With
+            
+        End If
+        
+        'Prep an IStream to receive the export.  Note that we deliberately mark the stream as "free on release",
+        ' which spares us from manually releasing the stream's contents.  (They will be auto-freed when the tmpStream
+        ' object goes out of scope.)
+        Dim tmpStream As Long
+        CreateStreamOnHGlobal 0&, 1&, VarPtr(tmpStream)
+        
+        'Perform the export
+        Dim tmpReturn As GP_Result
+        If paramsInUse Then
+            tmpReturn = GdipSaveImageToStream(hImage, tmpStream, VarPtr(exporterGUID(0)), VarPtr(tmpEncoderParams))
+        Else
+            tmpReturn = GdipSaveImageToStream(hImage, tmpStream, VarPtr(exporterGUID(0)), 0&)
+        End If
+        
+        If (tmpReturn = GP_OK) Then
+        
+            'We now need to copy the contents of the stream into a VB array
+            Dim tmpHMem As Long, hMemSize As Long
+            If (GetHGlobalFromStream(tmpStream, tmpHMem) = 0) Then
+                hMemSize = GlobalSize(tmpHMem)
+                If (hMemSize <> 0) Then
+                
+                    Dim lockedMem As Long
+                    lockedMem = GlobalLock(tmpHMem)
+                    If (lockedMem <> 0) Then
+                        ReDim dstArray(0 To hMemSize - 1) As Byte
+                        CopyMemory_Strict VarPtr(dstArray(0)), lockedMem, hMemSize
+                        GlobalUnlock lockedMem
+                        GDIPlus_ImageSaveToArray = True
+                    End If
+                    
+                End If
+            End If
+            
+        Else
+            GDIPlus_ImageSaveToArray = False
+            InternalGDIPlusError "Image was not saved", "GDIPlus_ImageSaveToArray() failed; additional details follow"
+            InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+        End If
+    
+    Else
+        InternalGDIPlusError "Image was not saved", "GDIPlus_ImageSaveToArray() failed; no encoder found for that image format"
+    End If
+    
+    Exit Function
+    
+GDIPlusSaveError:
+    InternalGDIPlusError "Image was not saved", "A VB error occurred inside GDIPlus_ImageSaveToFile: " & Err.Description
+    GDIPlus_ImageSaveToArray = False
+End Function
+
+'Save a surface to file.  The only property currently supported is JPEG quality; other properties are set automatically by GDI+.
+Public Function GDIPlus_ImageSaveToFile(ByVal hImage As Long, ByVal dstFilename As String, Optional ByVal dstFileFormat As PD_2D_FileFormatExport = P2_FFE_PNG, Optional ByVal jpegQuality As Long = 85) As Boolean
+        
+    On Error GoTo GDIPlusSaveError
+    
+    'GDI+ uses GUIDs to define image export encoders; retrieve the relevant encoder GUID now
+    Dim exporterGUID(0 To 15) As Byte
+    If GetEncoderGUIDForPd2dFormat(dstFileFormat, VarPtr(exporterGUID(0))) Then
+    
+        'Like export format, GDI+ also uses GUIDs to define export properties.  If multiple encoder parameters
+        ' are in use, these need to be merged into sequential order (because GDI+ only takes a pointer).
+        ' pd2D does not currently cover this use-case; it always assumes there are only 0 or 1 parameters in use.
+        ' To use multiple parameters, you would need copy the first GP_EncoderParameters entry into the
+        ' fullEncoderParams() array, like normal, but with the Count value set to the number of parameters.
+        ' Then, you would need to copy subsequent parameters into place *after* it.  (But *only* the parameters,
+        ' not additional "Count" values.)
+        '
+        'Look at PhotoDemon's source code for an example of how to do this.
+        Dim paramsInUse As Boolean: paramsInUse = False
+        Dim tmpEncoderParams As GP_EncoderParameters, tmpConstString As String
+        Dim fullEncoderParams() As Byte
+        
+        If (dstFileFormat = P2_FFE_JPEG) Then
+            
+            paramsInUse = True
+            
+            tmpEncoderParams.EP_Count = 1
+            With tmpEncoderParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                tmpConstString = GP_EP_Quality
+                CLSIDFromString StrPtr(tmpConstString), VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(jpegQuality)
+            End With
+            
+        End If
+        
+        'Perform the export and return
+        Dim tmpReturn As GP_Result
+        If paramsInUse Then
+            tmpReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(exporterGUID(0)), VarPtr(tmpEncoderParams))
+        Else
+            tmpReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(exporterGUID(0)), 0&)
+        End If
+        
+        If (tmpReturn = GP_OK) Then
+            GDIPlus_ImageSaveToFile = True
+        Else
+            GDIPlus_ImageSaveToFile = False
+            InternalGDIPlusError "Image was not saved", "GDIPlus_ImageSaveToFile() failed to save " & dstFilename & "; additional details follow"
+            InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+        End If
+    
+    Else
+        InternalGDIPlusError "Image was not saved", "GDIPlus_ImageSaveToFile() failed to save " & dstFilename & "; no encoder found for that image format"
+    End If
+    
+    Exit Function
+    
+GDIPlusSaveError:
+    InternalGDIPlusError "Image was not saved", "A VB error occurred inside GDIPlus_ImageSaveToFile: " & Err.Description
+    GDIPlus_ImageSaveToFile = False
+End Function
+
+'When exporting images, we need to find the unique GUID for a given exporter.  Matching via mimetype is a
+' straightforward way to do this, and is the recommended solution from MSDN (see https://msdn.microsoft.com/en-us/library/ms533843(v=vs.85).aspx)
+Private Function GetEncoderGUIDForPd2dFormat(ByVal srcFormat As PD_2D_FileFormatExport, ByVal ptrToDstGuid As Long) As Boolean
+    
+    GetEncoderGUIDForPd2dFormat = False
+    
+    'Generate a matching mimetype for the given format
+    Dim srcMimetype As String
+    Select Case srcFormat
+        Case P2_FFE_BMP
+            srcMimetype = "image/bmp"
+        Case P2_FFE_GIF
+            srcMimetype = "image/gif"
+        Case P2_FFE_JPEG
+            srcMimetype = "image/jpeg"
+        Case P2_FFE_PNG
+            srcMimetype = "image/png"
+        Case P2_FFE_TIFF
+            srcMimetype = "image/tiff"
+        Case Else
+            srcMimetype = vbNullString
+    End Select
+    
+    If (Len(srcMimetype) <> 0) Then
+        
+        'Start by retrieving the number of encoders, and the size of the full encoder list
+        Dim numOfEncoders As Long, sizeOfEncoders As Long
+        If (GdipGetImageEncodersSize(numOfEncoders, sizeOfEncoders) = GP_OK) Then
+            If (numOfEncoders > 0) And (sizeOfEncoders > 0) Then
+            
+                Dim encoderBuffer() As Byte
+                Dim tmpCodec As GP_ImageCodecInfo
+                
+                'Hypothetically, we could probably pull the encoder list directly into a GP_ImageCodecInfo() array,
+                ' but I haven't tested to see if the byte values of the encoder sizes are exact.  To avoid any problems,
+                ' let's just dump the return into a byte array, then parse out what we need as we go.
+                ReDim encoderBuffer(0 To sizeOfEncoders - 1) As Byte
+                If (GdipGetImageEncoders(numOfEncoders, sizeOfEncoders, VarPtr(encoderBuffer(0))) = GP_OK) Then
+                
+                    'Iterate through the encoder list, searching for a match
+                    Dim i As Long, strLength As Long, tmpMimeType As String
+                    For i = 0 To numOfEncoders - 1
+                    
+                        'Extract this codec
+                        CopyMemory_Strict VarPtr(tmpCodec), VarPtr(encoderBuffer(0)) + LenB(tmpCodec) * i, LenB(tmpCodec)
+                        
+                        'Extract the codec's mimetype
+                        strLength = lstrlenW(tmpCodec.IC_MimeType)
+                        If (strLength <> 0) Then
+                            tmpMimeType = String$(strLength, 0&)
+                            CopyMemory_Strict StrPtr(tmpMimeType), tmpCodec.IC_MimeType, strLength * 2
+                            
+                            'If we find a match, copy the encoder GUID and exit
+                            If (StrComp(srcMimetype, tmpMimeType, vbBinaryCompare) = 0) Then
+                                GetEncoderGUIDForPd2dFormat = True
+                                CopyMemory_Strict ptrToDstGuid, VarPtr(tmpCodec.IC_ClassID(0)), 16&
+                                Exit For
+                            End If
+                        End If
+                        
+                    Next i
+                
+                End If
+                
+            End If
+        End If
+        
+    End If
+
 End Function
 
 Public Function GDIPlus_ImageUnlockBits(ByVal hImage As Long, ByRef srcCopyData As GP_BitmapData) As Boolean

@@ -60,6 +60,7 @@ Private Declare Function Rectangle Lib "gdi32" (ByVal hDC As Long, ByVal x1 As L
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 
 'Helper functions from user32
+Private Declare Function FillRect Lib "user32" (ByVal hDstDC As Long, ByVal ptrToRect As Long, ByVal hSrcBrush As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByVal ptrToRectL As Long) As Long
 
 Public Function BitBltWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, Optional ByVal rastOp As Long = vbSrcCopy) As Boolean
@@ -70,8 +71,8 @@ Public Function StretchBltWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByVa
     StretchBltWrapper = CBool(StretchBlt(hDstDC, dstX, dstY, dstWidth, dstHeight, hSrcDC, srcX, srcY, srcWidth, srcHeight, rastOp) <> 0)
 End Function
 
-Public Function GetClientRectWrapper(ByVal srcHwnd As Long, ByVal ptrToDestRect As Long) As Boolean
-    GetClientRectWrapper = CBool(GetClientRect(srcHwnd, ptrToDestRect) <> 0)
+Public Function GetClientRectWrapper(ByVal srcHWnd As Long, ByVal ptrToDestRect As Long) As Boolean
+    GetClientRectWrapper = CBool(GetClientRect(srcHWnd, ptrToDestRect) <> 0)
 End Function
 
 Public Function GetBitmapHeaderFromDC(ByVal srcDC As Long) As GDI_Bitmap
@@ -90,42 +91,11 @@ End Function
 
 'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
 Public Function GetMemoryDC() As Long
-
     GetMemoryDC = CreateCompatibleDC(0&)
-    
-    'In debug mode, track how many DCs the program requests
-    #If DEBUGMODE = 1 Then
-        If GetMemoryDC <> 0 Then
-            g_DCsCreated = g_DCsCreated + 1
-        Else
-            pdDebug.LogAction "WARNING!  GDI.GetMemoryDC() failed to create a new memory DC!"
-        End If
-    #End If
-    
 End Function
 
 Public Sub FreeMemoryDC(ByVal srcDC As Long)
-        
-    If (srcDC <> 0) Then
-        
-        Dim delConfirm As Long
-        delConfirm = DeleteDC(srcDC)
-    
-        'In debug mode, track how many DCs the program frees
-        #If DEBUGMODE = 1 Then
-            If delConfirm <> 0 Then
-                g_DCsDestroyed = g_DCsDestroyed + 1
-            Else
-                pdDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release DC #" & srcDC & "."
-            End If
-        #End If
-        
-    Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  GDI.FreeMemoryDC() was passed a null DC.  Fix this!"
-        #End If
-    End If
-    
+    If (srcDC <> 0) Then DeleteDC srcDC
 End Sub
 
 Public Sub ForceGDIFlush()
@@ -136,12 +106,12 @@ End Sub
 Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     
     'Create a pen with the specified color
-    Dim NewPen As Long
-    NewPen = CreatePen(PS_SOLID, 1, crColor)
+    Dim newPen As Long
+    newPen = CreatePen(PS_SOLID, 1, crColor)
     
     'Select the pen into the target DC
     Dim oldObject As Long
-    oldObject = SelectObject(targetDC, NewPen)
+    oldObject = SelectObject(targetDC, newPen)
     
     'Render the line
     MoveToEx targetDC, x1, y1, 0&
@@ -149,12 +119,12 @@ Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
     
     'Remove the pen and delete it
     SelectObject targetDC, oldObject
-    DeleteObject NewPen
+    DeleteObject newPen
 
 End Sub
 
 'Basic wrappers for rect-filling and rect-tracing via GDI
-Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal rectWidth As Long, ByVal rectHeight As Long, ByVal crColor As Long)
 
     'Create a brush with the specified color
     Dim tmpBrush As Long
@@ -165,7 +135,15 @@ Public Sub FillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
     oldObject = SelectObject(targetDC, tmpBrush)
     
     'Fill the rect
-    Rectangle targetDC, x1, y1, x2, y2
+    Dim tmpRect As RECTL
+    With tmpRect
+        .Left = x1
+        .Top = y1
+        .Right = x1 + rectWidth + 1
+        .Bottom = y1 + rectHeight + 1
+    End With
+    
+    FillRect targetDC, VarPtr(tmpRect), tmpBrush
     
     'Remove the brush and delete it
     SelectObject targetDC, oldObject

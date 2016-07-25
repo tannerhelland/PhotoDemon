@@ -455,7 +455,7 @@ Public Function MaxArbitraryListF(ParamArray listOfValues() As Variant) As Doubl
     Else
         Debug.Print "No points provided - maxArbitraryListF() function failed!"
     End If
-        
+    
 End Function
 
 'Return the minimum value from an arbitrary list of floating point values
