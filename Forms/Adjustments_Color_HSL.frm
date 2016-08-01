@@ -32,7 +32,6 @@ Begin VB.Form FormHSL
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltHue 
       Height          =   705
@@ -120,7 +119,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -181,7 +180,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -192,12 +191,12 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Hue and saturation", , buildParams(sltHue.Value, sltSaturation.Value, sltLuminance.Value), UNDO_LAYER
+    Process "Hue and saturation", , BuildParams(sltHue.Value, sltSaturation.Value, sltLuminance.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -205,14 +204,11 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Display the previewed effect in the neighboring window
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -233,7 +229,7 @@ Private Sub sltSaturation_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

@@ -169,23 +169,20 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Draw a preview of the effect
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
+    
+    cmdBar.MarkPreviewStatus False
     
     'Populate the quality selector
     btsQuality.AddItem "good", 0
     btsQuality.AddItem "better", 1
     btsQuality.AddItem "best", 2
     btsQuality.ListIndex = 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

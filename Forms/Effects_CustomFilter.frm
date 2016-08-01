@@ -475,22 +475,11 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Allow previews now
-    cmdBar.MarkPreviewStatus True
-    
-    'Render a preview
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
-    'Disable previews while we initialize everything
     cmdBar.MarkPreviewStatus False
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

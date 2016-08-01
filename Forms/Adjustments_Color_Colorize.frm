@@ -188,11 +188,11 @@ Private Sub cmdBar_ResetClick()
     sltHue.Value = 180
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

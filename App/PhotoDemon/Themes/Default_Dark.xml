@@ -357,7 +357,7 @@
 			<PDPreview>
 				<Background>BackgroundDefault</Background>
 				<PreviewBackground>GrayNeutral</PreviewBackground>
-				<PreviewBorder>White</PreviewBorder>
+				<PreviewBorder>GrayDefault</PreviewBorder>
 				<PreviewBorder-hover>AccentDefault</PreviewBorder-hover>
 			</PDPreview>
 			

@@ -124,22 +124,11 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Fade", , buildParams(sltOpacity.Value, cboBlendMode.ListIndex), UNDO_LAYER
+    Process "Fade", , BuildParams(sltOpacity.Value, cboBlendMode.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_ResetClick()
     sltOpacity.Value = 50
-End Sub
-
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Render a preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
 End Sub
 
 Private Sub Form_Deactivate()
@@ -171,6 +160,11 @@ Private Sub Form_Load()
     ' every time we need to redraw the preview box.
     Set m_curLayerDIB = New pdDIB
     m_curLayerDIB.CreateFromExistingDIB pdImages(g_CurrentImage).GetLayerByID(m_relevantLayerID).layerDIB
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

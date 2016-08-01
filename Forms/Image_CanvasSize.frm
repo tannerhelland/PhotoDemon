@@ -30,8 +30,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   4
       Top             =   3720
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -40,9 +40,9 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   0
       Top             =   5790
       Width           =   9705
-      _extentx        =   17119
-      _extenty        =   1323
-      autoloadlastpreset=   -1  'True
+      _ExtentX        =   17119
+      _ExtentY        =   1323
+      AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.pdResize ucResize 
       Height          =   2850
@@ -50,8 +50,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   3
       Top             =   360
       Width           =   8775
-      _extentx        =   15478
-      _extenty        =   5027
+      _ExtentX        =   15478
+      _ExtentY        =   5027
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -60,8 +60,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   5
       Top             =   3720
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -70,8 +70,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   6
       Top             =   3720
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -80,8 +80,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   7
       Top             =   4320
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -90,8 +90,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   8
       Top             =   4320
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -100,8 +100,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   9
       Top             =   4320
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -110,8 +110,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   10
       Top             =   4920
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -120,8 +120,8 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   1
       Top             =   4920
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdButton cmdAnchor 
       Height          =   570
@@ -130,19 +130,19 @@ Begin VB.Form FormCanvasSize
       TabIndex        =   2
       Top             =   4920
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   1005
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin PhotoDemon.pdLabel lblAnchor 
       Height          =   285
       Left            =   360
       Top             =   3360
       Width           =   8595
-      _extentx        =   15161
-      _extenty        =   503
-      caption         =   "anchor position"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   15161
+      _ExtentY        =   503
+      Caption         =   "anchor position"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormCanvasSize"

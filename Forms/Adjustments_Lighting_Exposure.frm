@@ -32,7 +32,6 @@ Begin VB.Form FormExposure
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin VB.PictureBox picChart 
       Appearance      =   0  'Flat
@@ -163,7 +162,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -211,7 +210,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -222,7 +221,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -255,7 +254,7 @@ Private Function GetCorrectedValue(ByVal inputVal As Single, ByVal inputMax As S
 End Function
 
 Private Sub cmdBar_OKClick()
-    Process "Exposure", , buildParams(sltExposure, sltOffset, sltGamma), UNDO_LAYER
+    Process "Exposure", , BuildParams(sltExposure, sltOffset, sltGamma), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -266,14 +265,11 @@ Private Sub cmdBar_ResetClick()
     sltGamma.Value = 1#
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -283,7 +279,7 @@ End Sub
 'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
 Private Sub UpdatePreview()
     
-    If cmdBar.previewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid Then
+    If cmdBar.PreviewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid Then
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double

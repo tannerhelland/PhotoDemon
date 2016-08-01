@@ -266,8 +266,11 @@ Private Sub cmdBar_ResetClick()
     sltRadius.Value = 1
 End Sub
 
-Private Sub Form_Activate()
-        
+Private Sub Form_Load()
+    
+    'Disable previews until the dialog is fully loaded
+    cmdBar.MarkPreviewStatus False
+    
     btsQuality.AddItem "good", 0
     btsQuality.AddItem "better", 1
     btsQuality.AddItem "best", 2
@@ -279,13 +282,6 @@ Private Sub Form_Activate()
     'Draw a preview of the effect
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
-End Sub
-
-Private Sub Form_Load()
-    
-    'Disable previews until the dialog is fully loaded
-    cmdBar.MarkPreviewStatus False
     
 End Sub
 

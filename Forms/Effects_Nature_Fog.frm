@@ -43,7 +43,6 @@ Begin VB.Form FormFog
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltScale 
       Height          =   705
@@ -163,7 +162,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -252,7 +251,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -261,9 +260,9 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     'Next, create a temporary DIB that will hold a grayscale representation of our fog data
     Dim tmpFogDIB As pdDIB
     Set tmpFogDIB = New pdDIB
-    tmpFogDIB.createFromExistingDIB workingDIB
+    tmpFogDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray dstSA, tmpFogDIB
+    PrepSafeArray dstSA, tmpFogDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Loop through each pixel in the image, converting stored fog values to RGB triplets
@@ -278,7 +277,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
             End If
         End If
     Next x
@@ -306,25 +305,25 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     tmpLayerTop.InitializeNewLayer PDL_IMAGE, , tmpFogDIB
     tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
     
-    tmpLayerTop.setLayerBlendMode BL_NORMAL
-    tmpLayerTop.setLayerOpacity fxDensity
+    tmpLayerTop.SetLayerBlendMode BL_NORMAL
+    tmpLayerTop.SetLayerOpacity fxDensity
     
-    cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
+    cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
     
     'Copy the finished DIB from the bottom layer back into workingDIB
-    workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
+    workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
     
     Set tmpFogDIB = Nothing
     Set tmpLayerTop = Nothing
     Set tmpLayerBottom = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic, True
+    FinalizeImageData toPreview, dstPic, True
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Fog", , buildParams(sltScale, sltContrast, sltDensity, sltQuality), UNDO_LAYER
+    Process "Fog", , BuildParams(sltScale, sltContrast, sltDensity, sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -356,26 +355,20 @@ Private Sub cmdRandomize_Click()
 
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply visual themes and translations
-    ApplyThemeAndTranslations Me
-    
-    'Create the preview
-    cmdBar.markPreviewStatus True
-    UpdatePreview
-        
-End Sub
-
 Private Sub Form_Load()
 
     'Disable previews
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Calculate a random z offset for the noise function
     Rnd -1
     Randomize (Timer * Now)
     m_zOffset = Rnd * &HEFFFFFFF
+    
+    'Apply visual themes and translations
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
@@ -401,7 +394,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then fxFog sltScale, sltContrast, sltDensity, sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxFog sltScale, sltContrast, sltDensity, sltQuality, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

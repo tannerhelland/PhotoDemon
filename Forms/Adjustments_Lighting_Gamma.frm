@@ -32,7 +32,6 @@ Begin VB.Form FormGamma
       Width           =   12060
       _ExtentX        =   21273
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdCheckBox chkUnison 
       Height          =   330
@@ -156,7 +155,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Dim userChange As Boolean
+Private m_UserChange As Boolean
 
 Private Sub chkUnison_Click()
     
@@ -164,11 +163,11 @@ Private Sub chkUnison_Click()
         Dim newGamma As Double
         newGamma = CDblCustom(sltGamma(0) + sltGamma(1) + sltGamma(2)) / 3
     
-        userChange = False
+        m_UserChange = False
         sltGamma(0) = newGamma
         sltGamma(1) = newGamma
         sltGamma(2) = newGamma
-        userChange = True
+        m_UserChange = True
     End If
     
     UpdatePreview
@@ -177,7 +176,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Gamma", , buildParams(sltGamma(0), sltGamma(1), sltGamma(2)), UNDO_LAYER
+    Process "Gamma", , BuildParams(sltGamma(0), sltGamma(1), sltGamma(2)), UNDO_LAYER
 End Sub
 
 'When randomizing, do not check the "unison" box
@@ -195,18 +194,6 @@ Private Sub cmdBar_ResetClick()
     sltGamma(2).Value = 1
 End Sub
 
-Private Sub Form_Activate()
-    
-    userChange = True
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Finally, render a preview
-    UpdatePreview
-    
-End Sub
-
 'Basic gamma correction.  It's a simple function - use an exponent to adjust R/G/B values.
 ' Inputs: new gamma level, which channels to adjust (r/g/b/all), and optional preview information
 Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bGamma As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
@@ -217,7 +204,7 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -287,7 +274,7 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     Next y
         If toPreview = False Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -298,8 +285,16 @@ Public Sub GammaCorrect(ByVal rGamma As Double, ByVal gGamma As Double, ByVal bG
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
    
+End Sub
+
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    m_UserChange = True
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -309,7 +304,7 @@ End Sub
 'Redraw the preview effect and the gamma chart
 Private Sub UpdatePreview()
 
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double
@@ -377,8 +372,8 @@ End Sub
 
 Private Sub sltGamma_Change(Index As Integer)
 
-    If userChange And cmdBar.previewsAllowed Then
-        userChange = False
+    If m_UserChange And cmdBar.PreviewsAllowed Then
+        m_UserChange = False
         
         If CBool(chkUnison) Then
             Select Case Index
@@ -394,7 +389,7 @@ Private Sub sltGamma_Change(Index As Integer)
             End Select
         End If
         
-        userChange = True
+        m_UserChange = True
         
         UpdatePreview
     End If

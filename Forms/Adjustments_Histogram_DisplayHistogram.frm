@@ -439,34 +439,6 @@ Private Sub CmdOK_Click()
     Unload Me
 End Sub
 
-'Just to be safe, regenerate the histogram whenever the form receives focus
-Private Sub Form_Activate()
-    
-    'Apply visual themes and translations
-    ApplyThemeAndTranslations Me
-    
-    'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
-    strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
-    strMaxCount = g_Language.TranslateMessage("max count") & ": "
-    strRed = g_Language.TranslateMessage("red")
-    strGreen = g_Language.TranslateMessage("green")
-    strBlue = g_Language.TranslateMessage("blue")
-    strLuminance = g_Language.TranslateMessage("luminance")
-    strLevel = g_Language.TranslateMessage("level")
-    
-    'Blank out the specific level labels populated by moving the mouse across the form
-    ' Also, align the value labels with their (potentially translated) corresponding title labels
-    Dim i As Long
-    For i = 0 To lblValue.Count - 1
-        lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + FixDPI(8)
-        lblValue(i).Caption = ""
-    Next i
-    
-    If Not histogramGenerated Then TallyHistogramValues
-    DrawHistogram
-    
-End Sub
-
 'Subroutine to draw a histogram.  Note that a variable called "hType" is used frequently in the sub; it tells us which histogram to draw:
 '0 - Red
 '1 - Green
@@ -538,7 +510,7 @@ Public Sub DrawHistogram()
             If CBool(chkSmooth) Then
             
                 'Drawing a cubic spline line is complex enough to warrant its own subroutine.  Check there for details.
-                drawCubicSplineHistogram hType, tHeight, CBool(chkFillCurve)
+                DrawCubicSplineHistogram hType, tHeight, CBool(chkFillCurve)
                 
             Else
                     
@@ -627,10 +599,34 @@ Private Sub Form_Deactivate()
 End Sub
 
 Private Sub Form_Load()
+
     histogramGenerated = False
     
     'On XP, GDI+'s line function is hideously slow.  Disable filled curves by default.
-    If Not g_IsVistaOrLater Then chkFillCurve.Value = vbUnchecked Else chkFillCurve.Value = vbChecked
+    If (Not g_IsVistaOrLater) Then chkFillCurve.Value = vbUnchecked Else chkFillCurve.Value = vbChecked
+    
+    'Apply visual themes and translations
+    ApplyThemeAndTranslations Me
+    
+    'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
+    strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
+    strMaxCount = g_Language.TranslateMessage("max count") & ": "
+    strRed = g_Language.TranslateMessage("red")
+    strGreen = g_Language.TranslateMessage("green")
+    strBlue = g_Language.TranslateMessage("blue")
+    strLuminance = g_Language.TranslateMessage("luminance")
+    strLevel = g_Language.TranslateMessage("level")
+    
+    'Blank out the specific level labels populated by moving the mouse across the form
+    ' Also, align the value labels with their (potentially translated) corresponding title labels
+    Dim i As Long
+    For i = 0 To lblValue.Count - 1
+        lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + FixDPI(8)
+        lblValue(i).Caption = ""
+    Next i
+    
+    If Not histogramGenerated Then TallyHistogramValues
+    DrawHistogram
     
 End Sub
 
@@ -716,7 +712,7 @@ Private Sub DrawHistogramGradient(ByRef dstObject As PictureBox, ByVal Color1 As
 End Sub
 
 'This routine draws the histogram using cubic splines to smooth the output
-Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeight As Long, ByVal fillCurve As Boolean)
+Private Sub DrawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeight As Long, ByVal fillCurve As Boolean)
     
     'Initialize a few variables that are simply copies of image properties; this is faster than repeatedly accessing the properties themselves.
     Dim histWidth As Long, histHeight As Long
@@ -757,7 +753,7 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     Dim xPos As Long, yPos As Double
     For i = 1 To nPoints - 1
         For xPos = iX(i) To iX(i + 1)
-            yPos = getCurvePoint(i, xPos)
+            yPos = GetCurvePoint(i, xPos)
             
             'Add two to the final point, to shift the histogram slightly downward
             results(xPos) = yPos + 2
@@ -771,7 +767,7 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     'For performance reasons, cache the handle to the GDI+ image container and GDI+ pens we will be using.  This is faster than recreating
     ' them for every line, especially if the histogram window has been resized to something large.
     Dim gdiHistogram As Long
-    gdiHistogram = getGDIPlusGraphicsFromDC(picH.hDC)
+    gdiHistogram = GetGDIPlusGraphicsFromDC(picH.hDC, GP_SM_Antialias, GP_POM_Default)
     
     Dim gdiPenSolid As Long, gdiPenTranslucent As Long
     gdiPenSolid = GetGDIPlusPenHandle(curHistColor)
@@ -788,7 +784,7 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     Next i
     
     'Free the GDI+ handles
-    releaseGDIPlusGraphics gdiHistogram
+    ReleaseGDIPlusGraphics gdiHistogram
     ReleaseGDIPlusPen gdiPenSolid
     ReleaseGDIPlusPen gdiPenTranslucent
     
@@ -798,12 +794,12 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
 End Sub
 
 'Original required spline function:
-Private Function getCurvePoint(ByRef i As Long, ByVal v As Double) As Double
+Private Function GetCurvePoint(ByRef i As Long, ByVal v As Double) As Double
 
     Dim t As Double
     'derived curve equation (which uses p's and u's for coefficients)
     t = (v - iX(i)) / u(i)
-    getCurvePoint = t * iy(i + 1) + (1 - t) * iy(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
+    GetCurvePoint = t * iy(i + 1) + (1 - t) * iy(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
     
 End Function
 
@@ -862,7 +858,7 @@ Public Sub TallyHistogramValues()
     
     'If a histogram has already been drawn, render the "please wait" text over the top of it.  Otherwise, render it to a blank white image.
     If (picH.Picture.Width = 0) Then
-        tmpDIB.createBlank picH.ScaleWidth, picH.ScaleHeight
+        tmpDIB.CreateBlank picH.ScaleWidth, picH.ScaleHeight
     Else
         tmpDIB.CreateFromPicture picH.Picture
     End If
@@ -875,7 +871,7 @@ Public Sub TallyHistogramValues()
     notifyFont.SetFontBold True
     notifyFont.SetTextAlignment vbCenter
     notifyFont.CreateFontObject
-    notifyFont.AttachToDC tmpDIB.getDIBDC
+    notifyFont.AttachToDC tmpDIB.GetDIBDC
     
     notifyFont.FastRenderText picH.ScaleWidth / 2, picH.ScaleHeight / 2, g_Language.TranslateMessage("Please wait while the histogram is updated...")
     tmpDIB.RenderToPictureBox picH
@@ -892,7 +888,7 @@ Public Sub TallyHistogramValues()
     Next i
     
     'Use our new external function to fill the important histogram arrays
-    fillHistogramArrays hData, hDataLog, channelMax, channelMaxLog, channelMaxPosition
+    FillHistogramArrays hData, hDataLog, channelMax, channelMaxLog, channelMaxPosition
     
     'If the histogram has already been used, we need to clear out two additional maximum values
     hMax = 0
@@ -913,7 +909,7 @@ Public Sub StretchHistogram()
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA
+    PrepImageData tmpSA
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -1023,7 +1019,7 @@ Public Sub StretchHistogram()
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
+    FinalizeImageData
         
 End Sub
 

@@ -1001,68 +1001,6 @@ Private Sub csShadow_ColorChanged()
 
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Note that the user is not currently interacting with a slider node
-    m_ActiveArrow = -1
-    
-    'Fill the histogram arrays and prepare the overlay DIBs.  To conserve resources, this is only done once,
-    ' when the dialog is first loaded.
-    PrepHistogramOverlays
-        
-    'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
-    m_curChannel = 3
-    btsChannel.ListIndex = m_curChannel
-    
-    m_DisableMaxMinLimits = False
-    
-    'Draw the default histogram onto the histogram box
-    picHistogram.Picture = LoadPicture("")
-    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
-    picHistogram.Picture = picHistogram.Image
-        
-    'Load the arrow slider images from the resource file
-    Dim i As Long
-    For i = 0 To 2
-        Set m_Arrows(i) = New pdDIB
-    Next i
-    
-    LoadResourceToDIB "LVL_ARROW_BLK", m_Arrows(0)
-    LoadResourceToDIB "LVL_ARROW_GRY", m_Arrows(1)
-    LoadResourceToDIB "LVL_ARROW_WHT", m_Arrows(2)
-    
-    'Store the arrow dimensions
-    m_ArrowWidth = m_Arrows(0).GetDIBWidth
-    m_ArrowHalfWidth = m_ArrowWidth / 2
-        
-    'Calculate persistent width and offset values for the arrow interaction zones.  These must extend past the left and
-    ' right borders of the desired area, so that the edges of the slider images are not cropped.
-    m_DstArrowBoxWidth = picHistogram.ScaleWidth
-    m_DstArrowBoxOffset = picHistogram.Left - picInputArrows.Left + 1
-    
-    'Render sample gradients for input/output levels
-    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPainter As pd2DPainter
-    Dim boundsRectF As RECTF
-    With boundsRectF
-        .Left = 0
-        .Top = 0
-        .Height = picOutputGradient.ScaleHeight
-        .Width = picOutputGradient.ScaleWidth
-    End With
-    
-    Drawing2D.QuickCreatePainter cPainter
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputGradient.hDC, False
-    Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, vbBlack, vbWhite
-    cPainter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
-    Set cSurface = Nothing
-    picOutputGradient.Picture = picOutputGradient.Image
-    
-    'Draw a preview image
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-
-End Sub
-
 Private Sub PrepHistogramOverlays()
     
     'Even though we don't need log-based versions of the histogram data, the master function requires arrays for both.
@@ -1110,8 +1048,64 @@ Private Sub Form_Load()
     cmdColorSelect(1).AssignTooltip "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
     cmdColorSelect(0).Value = True
     
+    'Note that the user is not currently interacting with a slider node
+    m_ActiveArrow = -1
+    
+    'Fill the histogram arrays and prepare the overlay DIBs.  To conserve resources, this is only done once,
+    ' when the dialog is first loaded.
+    PrepHistogramOverlays
+        
+    'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
+    m_curChannel = 3
+    btsChannel.ListIndex = m_curChannel
+    
+    m_DisableMaxMinLimits = False
+    
+    'Draw the default histogram onto the histogram box
+    picHistogram.Picture = LoadPicture("")
+    If (Not hDIB(m_curChannel) Is Nothing) Then hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
+    picHistogram.Picture = picHistogram.Image
+        
+    'Load the arrow slider images from the resource file
+    Dim i As Long
+    For i = 0 To 2
+        Set m_Arrows(i) = New pdDIB
+    Next i
+    
+    LoadResourceToDIB "LVL_ARROW_BLK", m_Arrows(0)
+    LoadResourceToDIB "LVL_ARROW_GRY", m_Arrows(1)
+    LoadResourceToDIB "LVL_ARROW_WHT", m_Arrows(2)
+    
+    'Store the arrow dimensions
+    m_ArrowWidth = m_Arrows(0).GetDIBWidth
+    m_ArrowHalfWidth = m_ArrowWidth / 2
+        
+    'Calculate persistent width and offset values for the arrow interaction zones.  These must extend past the left and
+    ' right borders of the desired area, so that the edges of the slider images are not cropped.
+    m_DstArrowBoxWidth = picHistogram.ScaleWidth
+    m_DstArrowBoxOffset = picHistogram.Left - picInputArrows.Left + 1
+    
+    'Render sample gradients for input/output levels
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPainter As pd2DPainter
+    Dim boundsRectF As RECTF
+    With boundsRectF
+        .Left = 0
+        .Top = 0
+        .Height = picOutputGradient.ScaleHeight
+        .Width = picOutputGradient.ScaleWidth
+    End With
+    
+    Drawing2D.QuickCreatePainter cPainter
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputGradient.hDC, False
+    Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, vbBlack, vbWhite
+    cPainter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
+    Set cSurface = Nothing
+    picOutputGradient.Picture = picOutputGradient.Image
+    
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 
 End Sub
 
@@ -1122,7 +1116,7 @@ End Sub
 'Draw an image based on user-adjusted input and output levels
 Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Mapping new image levels..."
+    If (Not toPreview) Then Message "Mapping new image levels..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

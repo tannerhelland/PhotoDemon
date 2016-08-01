@@ -621,7 +621,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
             g2 = srcImageData(QuickVal + 1, y)
             b2 = srcImageData(QuickVal, y)
             
-            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+            tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
             
             newR = (scaleFactor * r) + (invScaleFactor * r2)
             If newR > 255 Then newR = 255
@@ -694,21 +694,15 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
 
     'Disable previews while we initialize everything
     cmdBar.MarkPreviewStatus False
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

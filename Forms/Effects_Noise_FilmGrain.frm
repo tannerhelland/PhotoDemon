@@ -299,18 +299,10 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Render a preview
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
-        
+    
+    cmdBar.MarkPreviewStatus False
+    
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
         iWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
@@ -319,6 +311,12 @@ Private Sub Form_Load()
         iWidth = pdImages(g_CurrentImage).Width
         iHeight = pdImages(g_CurrentImage).Height
     End If
+    
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

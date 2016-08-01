@@ -61,6 +61,8 @@ Begin VB.Form FormLensFlare
       TabIndex        =   2
       Top             =   0
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltXCenter 
          Height          =   405
          Left            =   120
@@ -169,6 +171,8 @@ Begin VB.Form FormLensFlare
       Top             =   0
       Visible         =   0   'False
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltIntensity 
          Height          =   705
          Index           =   1
@@ -739,18 +743,10 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Display the previewed effect in the neighboring window
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
-
+    
+    cmdBar.MarkPreviewStatus False
+    
     'Set up the intensity sync option
     btsSyncIntensity.AddItem "yes", 0
     btsSyncIntensity.AddItem "no", 1
@@ -761,6 +757,10 @@ Private Sub Form_Load()
     btsOptions.AddItem "basic", 0
     btsOptions.AddItem "advanced", 1
     btsOptions.ListIndex = 0
+    
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

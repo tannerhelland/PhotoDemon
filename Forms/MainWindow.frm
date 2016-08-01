@@ -2500,7 +2500,7 @@ End Sub
 ' loaded but its metadata parsing is still in-progress, PD's load function will activate this timer.  The timer will wait (asynchronously) for
 ' metadata parsing to finish, and when it does, it will copy the metadata into the active pdImage object, then disable itself.
 Private Sub tmrMetadata_Timer()
-
+    
     'I don't like resorting to this hackneyed solution, but ExifTool can sometimes be unpredictable, especially if the user loads a bajillion
     ' images simultaneously.  Rather than bring down the whole program, I'd prefer to simply ignore metadata for the problematic image.
     On Error Resume Next
@@ -3119,7 +3119,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Autosave_Handler.NotifyCleanShutdown
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to MainModule.finalShutdown()..."
+        pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to MainModule.FinalShutdown()..."
     #End If
     
     MainModule.FinalShutdown

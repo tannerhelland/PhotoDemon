@@ -118,6 +118,8 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   6
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButton cmdSelectMacro 
          Height          =   615
          Left            =   8640
@@ -272,6 +274,8 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   5
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButton cmdSaveList 
          Height          =   615
          Left            =   9960
@@ -506,6 +510,8 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   60
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin VB.PictureBox picBatchProgress 
          Appearance      =   0  'Flat
          BackColor       =   &H8000000D&
@@ -540,6 +546,8 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   19
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButton cmdSelectOutputPath 
          Height          =   615
          Left            =   8280
@@ -734,6 +742,8 @@ Begin VB.Form FormBatchWizard
       TabIndex        =   7
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin VB.ComboBox cmbOutputFormat 
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -2283,7 +2293,7 @@ End Sub
 
 'Dragged image files must be placed on the batch listbox - not anywhere else.
 Private Sub Form_DragOver(Source As Control, x As Single, y As Single, State As Integer)
-    If Source = lstSource Then lstSource.DragIcon = picDragDisallow.Picture
+    If (Source = lstSource) Then lstSource.DragIcon = picDragDisallow.Picture
 End Sub
 
 Private Sub Form_Load()

@@ -244,7 +244,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     mouseX = x
     mouseY = y
     
-    If Not tmrText.Enabled Then renderFullCreditList
+    If Not tmrText.Enabled Then RenderFullCreditList
     
 End Sub
 
@@ -479,11 +479,11 @@ Private Sub tmrText_Timer()
     scrollOffset = scrollOffset + FixDPIFloat(m_pxScroll)
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
     
-    renderFullCreditList
+    RenderFullCreditList
     
 End Sub
 
-Private Sub renderFullCreditList()
+Private Sub RenderFullCreditList()
 
     'Erase the back DIB by copying over the logo (onto which we will render the text)
     BitBlt backDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -491,7 +491,7 @@ Private Sub renderFullCreditList()
     'Render all text
     Dim i As Long
     For i = 0 To numOfCredits - 1
-        renderCredit i, FixDPI(8), FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPIFloat(2)
+        RenderCredit i, FixDPI(8), FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPIFloat(2)
     Next i
     
     'The back DIB now contains the credit text drawn over the program logo.
@@ -517,7 +517,7 @@ Private Sub renderFullCreditList()
 End Sub
 
 'Render the given metadata index onto the background picture box at the specified offset.  Custom font objects are used for better performance.
-Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
+Private Sub RenderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
     If ((offsetY + FixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight - 40) Then

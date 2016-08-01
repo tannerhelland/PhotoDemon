@@ -192,7 +192,7 @@ Public Sub ApplyTemperatureToImage(ByVal newTemperature As Long, Optional ByVal 
         b = ImageData(QuickVal, y)
         
         'If luminance is being preserved, we need to determine the initial luminance value
-        originalLuminance = (getLuminance(r, g, b) / 255)
+        originalLuminance = (GetLuminance(r, g, b) / 255)
         
         'Blend the original and new RGB values using the specified strength
         r = BlendColors(r, tmpR, tempStrength)
@@ -243,16 +243,10 @@ Private Sub cmdBar_ResetClick()
     sltStrength.Value = 50
 End Sub
 
-'When the form is activated (e.g. made visible and receives focus),
-Private Sub Form_Activate()
-            
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-End Sub
-
 Private Sub Form_Load()
-
+    
+    cmdBar.MarkPreviewStatus False
+    
     'Calculate gradient colors for the temperature slider, using the built-in Kelvin to RGB converter
     Dim r As Long, g As Long, b As Long
     
@@ -266,6 +260,10 @@ Private Sub Form_Load()
     sltTemperature.GradientMiddleValue = 6500
     getRGBfromTemperature r, g, b, sltTemperature.GradientMiddleValue
     sltTemperature.GradientColorMiddle = RGB(r, g, b)
+    
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 
 End Sub
 

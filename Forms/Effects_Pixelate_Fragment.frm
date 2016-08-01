@@ -345,17 +345,6 @@ Private Sub cmdBar_ResetClick()
     OptInterpolate(1).Value = True
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
 
     'Disable previews until the dialog has been fully initialized
@@ -364,6 +353,11 @@ Private Sub Form_Load()
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_CLAMP
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 
 End Sub
 

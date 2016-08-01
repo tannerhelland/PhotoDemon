@@ -359,6 +359,8 @@ End Sub
 
 Private Sub Form_Load()
     
+    cmdBar.MarkPreviewStatus False
+    
     m_previewHasSampled = 0
     m_previewSampledContrast = 0
     
@@ -369,6 +371,8 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

@@ -129,7 +129,7 @@ Public Sub ContinueLoadingProgram()
     ' (At present, only GDI+ is used)
     Interface.InitializeInterfaceBackend
     
-    If Drawing2D.StartRenderingBackend(P2_DefaultBackend) Then
+    If Drawing2D.StartRenderingEngine(P2_DefaultBackend) Then
         
         #If DEBUGMODE = 1 Then
             Drawing2D.SetLibraryDebugMode True
@@ -705,6 +705,9 @@ Public Sub FinalShutdown()
     End If
     
     'Release any active drawing backends
+    Drawing.ReleaseUIPensAndBrushes
+    Set g_CheckerboardPattern = Nothing
+    Set g_CheckerboardBrush = Nothing
     If Drawing2D.StopRenderingEngine(P2_DefaultBackend) Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "GDI+ released"

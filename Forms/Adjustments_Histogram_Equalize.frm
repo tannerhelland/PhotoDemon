@@ -238,7 +238,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             
             'Luminance
             Else
-                a = Colors.getHQLuminance(r, g, b)
+                a = Colors.GetHQLuminance(r, g, b)
                 lValues(a) = lValues(a) + 1
             End If
             
@@ -515,17 +515,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Request a preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     cmdBar.MarkPreviewStatus False
@@ -542,6 +531,11 @@ Private Sub Form_Load()
     Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Rectangle
     
     UpdateRadiusVisibility
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
