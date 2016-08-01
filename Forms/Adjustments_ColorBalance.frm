@@ -32,7 +32,6 @@ Begin VB.Form FormColorBalance
       Width           =   12360
       _ExtentX        =   21802
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -246,7 +245,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -357,7 +356,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         b = ImageData(QuickVal, y)
         
         'Get the original luminance
-        origLuminance = getLuminance(r, g, b) / 255
+        origLuminance = GetLuminance(r, g, b) / 255
         
         r = rLookup(r)
         g = gLookUp(g)
@@ -384,7 +383,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -395,7 +394,7 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
@@ -417,7 +416,7 @@ Private Sub chkLuminance_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color balance", , buildParams(sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance.Value)), UNDO_LAYER
+    Process "Color balance", , BuildParams(sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -432,23 +431,20 @@ Private Sub cmdBar_ResetClick()
     chkLuminance.Value = vbChecked
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Display the previewed effect in the neighboring window
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
+    
+    cmdBar.MarkPreviewStatus False
     
     'Populate the button strip
     btsTone.AddItem "shadows", 0
     btsTone.AddItem "midtones", 1
     btsTone.AddItem "highlights", 2
     btsTone.ListIndex = 1
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
@@ -469,7 +465,7 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

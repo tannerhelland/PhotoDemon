@@ -351,7 +351,7 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
         Else
         
             'If luminance is being preserved, we need to determine the initial luminance value
-            If preserveLuminance Then originalLuminance = (getLuminance(r, g, b) / 255)
+            If preserveLuminance Then originalLuminance = (GetLuminance(r, g, b) / 255)
         
             newR = r * channelModifiers(0, 0) + g * channelModifiers(0, 1) + b * channelModifiers(0, 2) + channelModifiers(0, 3)
             newG = r * channelModifiers(1, 0) + g * channelModifiers(1, 1) + b * channelModifiers(1, 2) + channelModifiers(1, 3)
@@ -522,21 +522,9 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'If the last-used settings involve the monochrome check box, the luminance check box may not be deactivated properly
-    ' (due to no Click event being fired).  Forcibly check this state in advance.
-    chkLuminance.Enabled = Not CBool(chkMonochrome)
-    
-    'Display the previewed effect in the neighboring window
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
+    
+    cmdBar.MarkPreviewStatus False
     
     'Per convention, monochrome mode is handled via a separate checkbox.  This is also an easier solution for us, as
     ' it's difficult to apply changes to an imaginary "gray channel" (we'd have to divvy up any "gray channel"
@@ -553,6 +541,17 @@ Private Sub Form_Load()
     btsChannel.AssignImageToItem 2, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
     
     btsChannel.ListIndex = 0
+            
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    
+    'If the last-used settings involve the monochrome check box, the luminance check box may not be deactivated properly
+    ' (due to no Click event being fired).  Forcibly check this state in advance.
+    chkLuminance.Enabled = Not CBool(chkMonochrome)
+    
+    'Display the previewed effect in the neighboring window
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

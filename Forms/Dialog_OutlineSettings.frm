@@ -363,11 +363,9 @@ Private Sub Form_Load()
     cboCorner.ListIndex = 0
     
     If g_IsProgramRunning Then
-    
         If m_PenPreview Is Nothing Then Set m_PenPreview = New pd2DPen
         If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pd2DPath
         Set m_PreviewDIB = New pdDIB
-                
     End If
     
     m_SuspendRedraws = False

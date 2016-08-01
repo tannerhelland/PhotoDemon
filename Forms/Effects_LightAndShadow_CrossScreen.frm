@@ -449,22 +449,11 @@ Private Sub cmdBar_ResetClick()
     sltStrength = 50
 End Sub
 
-Private Sub Form_Activate()
-
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-        
-    'Draw a preview of the effect
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
-End Sub
-
-Private Sub Form_Load()
-    
-    'Disable previews until the form is fully initialized
-    cmdBar.MarkPreviewStatus False
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

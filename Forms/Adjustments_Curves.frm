@@ -33,7 +33,6 @@ Begin VB.Form FormCurves
       Width           =   13095
       _ExtentX        =   23098
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -72,6 +71,8 @@ Begin VB.Form FormCurves
       TabIndex        =   4
       Top             =   60
       Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin VB.PictureBox picDraw 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -105,6 +106,8 @@ Begin VB.Form FormCurves
       TabIndex        =   5
       Top             =   60
       Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStrip btsHistogram 
          Height          =   1080
          Left            =   120
@@ -261,7 +264,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -294,7 +297,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.setParamString listOfPoints
+    cParams.SetParamString listOfPoints
     
     Dim i As Long
     
@@ -340,7 +343,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -351,7 +354,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
@@ -387,7 +390,7 @@ Private Sub cmdBar_AddCustomPresetData()
     For i = 0 To 3
     
         'Write the number of nodes for this array to file
-        cmdBar.addPresetData "NodeCount_" & i, Trim$(Str(numOfNodes(i)))
+        cmdBar.AddPresetData "NodeCount_" & i, Trim$(Str(numOfNodes(i)))
         
         nodeString = ""
         
@@ -397,7 +400,7 @@ Private Sub cmdBar_AddCustomPresetData()
             If j < numOfNodes(i) Then nodeString = nodeString & "|"
         Next j
     
-        cmdBar.addPresetData "NodeData_" & i, nodeString
+        cmdBar.AddPresetData "NodeData_" & i, nodeString
     
     Next i
     
@@ -469,12 +472,12 @@ Private Sub cmdBar_ReadCustomPresetData()
     For i = 0 To 3
     
         'Retrieve the number of nodes for this channel
-        tmpString = cmdBar.retrievePresetData("NodeCount_" & i)
+        tmpString = cmdBar.RetrievePresetData("NodeCount_" & i)
         
         'If no node data is found for this entry, reset all node data and exit immediately
         If Len(tmpString) = 0 Then
             
-            resetCurvePoints
+            ResetCurvePoints
             Exit Sub
             
         End If
@@ -482,7 +485,7 @@ Private Sub cmdBar_ReadCustomPresetData()
         numOfNodes(i) = CLng(tmpString)
     
         'Retrieve the string that contains the actual node coordinates
-        tmpString = cmdBar.retrievePresetData("NodeData_" & i)
+        tmpString = cmdBar.RetrievePresetData("NodeData_" & i)
     
         'With the help of a paramString class, parse out individual coordinates into the cNodes array
         Set cParams = New pdParamString
@@ -493,19 +496,19 @@ Private Sub cmdBar_ReadCustomPresetData()
         If InStr(1, tmpString, ",") > 0 Then
             
             If InStr(1, tmpString, ".") > 0 Then
-                cParams.setParamString Replace(tmpString, ",", "|")
+                cParams.SetParamString Replace(tmpString, ",", "|")
             Else
-                cParams.setParamString Replace(tmpString, ";", "|")
+                cParams.SetParamString Replace(tmpString, ";", "|")
             End If
             
         Else
-            cParams.setParamString Replace(tmpString, ";", "|")
+            cParams.SetParamString Replace(tmpString, ";", "|")
         End If
         
-        tmpString = cParams.getParamString
+        tmpString = cParams.GetParamString
         
         If InStr(1, tmpString, ":") > 0 Then
-            cParams.setParamString Replace(tmpString, ":", "|")
+            cParams.SetParamString Replace(tmpString, ":", "|")
         End If
         
         'Iterate through all nodes in the list, copying them into our cNodes array as we go
@@ -544,13 +547,13 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Curves", , getCurvesParamString(), UNDO_LAYER
+    Process "Curves", , GetCurvesParamString(), UNDO_LAYER
 End Sub
 
 'Reset the curve to three points in a straight line
 Private Sub cmdBar_ResetClick()
 
-    resetCurvePoints
+    ResetCurvePoints
     
     'Also, reset will automatically select the first entry in a button strip, which isn't ideal for this control.
     btsChannel.ListIndex = 3
@@ -558,41 +561,10 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Populate the explanation label
-    Dim addInstructions As String
-    addInstructions = ""
-    addInstructions = g_Language.TranslateMessage("instructions:")
-    addInstructions = addInstructions & vbCrLf
-    addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("left-click to add new nodes or drag existing nodes")
-    addInstructions = addInstructions & vbCrLf
-    addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("right-click to remove nodes")
-    
-    lblExplanation.Caption = addInstructions
-    
-    'Mark the mouse as not being down
-    isMouseDown = False
-    
-    'Fill the histogram arrays
-    Histogram_Analysis.fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
-    
-    'Generate matching overlay images
-    Histogram_Analysis.generateHistogramImages hData, hMax, hDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
-    Histogram_Analysis.generateHistogramImages hDataLog, hMaxLog, hLogDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    cmdBar.markPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the form has finished initializing
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'Populate the channel selector
     btsChannel.AddItem "red", 0
@@ -644,6 +616,33 @@ Private Sub Form_Load()
     m_curChannel = 3
     btsChannel.ListIndex = 3
     
+    'Populate the explanation label
+    Dim addInstructions As String
+    addInstructions = ""
+    addInstructions = g_Language.TranslateMessage("instructions:")
+    addInstructions = addInstructions & vbCrLf
+    addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("left-click to add new nodes or drag existing nodes")
+    addInstructions = addInstructions & vbCrLf
+    addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("right-click to remove nodes")
+    
+    lblExplanation.Caption = addInstructions
+    
+    'Mark the mouse as not being down
+    isMouseDown = False
+    
+    'Fill the histogram arrays
+    Histogram_Analysis.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
+    
+    'Generate matching overlay images
+    Histogram_Analysis.GenerateHistogramImages hData, hMax, hDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+    Histogram_Analysis.GenerateHistogramImages hDataLog, hMaxLog, hLogDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+        
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -653,16 +652,16 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
     
-    If cmdBar.previewsAllowed Then
+    If cmdBar.PreviewsAllowed Then
     
         'Start by generating a list of points that correspond to the cubic spline used for the curve
-        fillResultsArray
+        FillResultsArray
         
         'Redraw the preview box
-        redrawPreviewBox
+        RedrawPreviewBox
         
         'Redraw the image effect preview
-        ApplyCurveToImage getCurvesParamString(), True, pdFxPreview
+        ApplyCurveToImage GetCurvesParamString(), True, pdFxPreview
         
     End If
     
@@ -670,7 +669,7 @@ End Sub
 
 'Assuming that cResults has been filled by calling fillResultsArray, this function will convert the curve into
 ' a list of histogram points, in PD string parameter format.
-Private Function getCurvesParamString() As String
+Private Function GetCurvesParamString() As String
     
     'Make sure the fillResultsArray is up to date
     'fillResultsArray
@@ -705,13 +704,13 @@ Private Function getCurvesParamString() As String
     'Add a trailing null parameter to the string, then return it
     paramString = paramString & "0"
     
-    getCurvesParamString = paramString
+    GetCurvesParamString = paramString
     
 End Function
 
-Private Sub redrawPreviewBox()
+Private Sub RedrawPreviewBox()
 
-    If Not cmdBar.previewsAllowed Then Exit Sub
+    If Not cmdBar.PreviewsAllowed Then Exit Sub
 
     picDraw.Picture = LoadPicture("")
     
@@ -725,11 +724,11 @@ Private Sub redrawPreviewBox()
         
         'Normal histogram
         Case 1
-            hDIB(m_curChannel).alphaBlendToDC picDraw.hDC, , previewBorder + 1, previewBorder + 1
+            hDIB(m_curChannel).AlphaBlendToDC picDraw.hDC, , previewBorder + 1, previewBorder + 1
             
         'Logarithmic histogram
         Case 2
-            hLogDIB(m_curChannel).alphaBlendToDC picDraw.hDC, , previewBorder + 1, previewBorder + 1
+            hLogDIB(m_curChannel).AlphaBlendToDC picDraw.hDC, , previewBorder + 1, previewBorder + 1
         
     End Select
     
@@ -835,22 +834,22 @@ skipHistogramRender:
         coordBoxHeight = coordStringHeight + FixDPI(5)
         
         If mouseCoordDIB Is Nothing Then
-            mouseCoordDIB.createBlank coordBoxWidth, coordBoxHeight, 24, RGB(255, 255, 255)
+            mouseCoordDIB.CreateBlank coordBoxWidth, coordBoxHeight, 24, RGB(255, 255, 255)
         Else
-            If (mouseCoordDIB.getDIBWidth <> coordBoxWidth) Or (mouseCoordDIB.getDIBHeight <> coordBoxHeight) Then
-                mouseCoordDIB.createBlank coordBoxWidth, coordBoxHeight, 24, RGB(255, 255, 255)
+            If (mouseCoordDIB.GetDIBWidth <> coordBoxWidth) Or (mouseCoordDIB.GetDIBHeight <> coordBoxHeight) Then
+                mouseCoordDIB.CreateBlank coordBoxWidth, coordBoxHeight, 24, RGB(255, 255, 255)
             Else
-                mouseCoordDIB.resetDIB 255
+                mouseCoordDIB.ResetDIB 255
             End If
         End If
                 
         'Render the coordinate string onto the temporary DIB
-        mouseCoordFont.AttachToDC mouseCoordDIB.getDIBDC
+        mouseCoordFont.AttachToDC mouseCoordDIB.GetDIBDC
         mouseCoordFont.FastRenderMultilineText FixDPI(4), FixDPI(2), coordString
         mouseCoordFont.ReleaseFromDC
         
         'Render a 1px border around the coordinate overlay
-        GDIPlusDrawRectOutlineToDC mouseCoordDIB.getDIBDC, 0, 0, mouseCoordDIB.getDIBWidth - 1, mouseCoordDIB.getDIBHeight - 1, RGB(25, 25, 25)
+        GDIPlusDrawRectOutlineToDC mouseCoordDIB.GetDIBDC, 0, 0, mouseCoordDIB.GetDIBWidth - 1, mouseCoordDIB.GetDIBHeight - 1, RGB(25, 25, 25)
         
         'Calculate render coordinates for the coordinate box.  Normally these will be placed below and to the right of a
         ' given node, but if that location lies off-image, move the overlay in-bounds.
@@ -858,14 +857,14 @@ skipHistogramRender:
         
         coordX = coordActualX + FixDPI(3)
         If coordX < 0 Then coordX = 0
-        If coordX + mouseCoordDIB.getDIBWidth > picDraw.ScaleWidth Then coordX = picDraw.ScaleWidth - mouseCoordDIB.getDIBWidth
+        If coordX + mouseCoordDIB.GetDIBWidth > picDraw.ScaleWidth Then coordX = picDraw.ScaleWidth - mouseCoordDIB.GetDIBWidth
         
         coordY = coordActualY + FixDPI(3)
         If coordY < 0 Then coordY = 0
-        If coordY + mouseCoordDIB.getDIBHeight > picDraw.ScaleHeight Then coordY = picDraw.ScaleHeight - mouseCoordDIB.getDIBHeight
+        If coordY + mouseCoordDIB.GetDIBHeight > picDraw.ScaleHeight Then coordY = picDraw.ScaleHeight - mouseCoordDIB.GetDIBHeight
         
         'Render the completed coordinate overlay DIB onto the main curve box
-        mouseCoordDIB.alphaBlendToDC picDraw.hDC, 192, coordX, coordY
+        mouseCoordDIB.AlphaBlendToDC picDraw.hDC, 192, coordX, coordY
         
     End If
     
@@ -878,7 +877,7 @@ End Sub
 Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
     
     'If the mouse is over a point, mark it as the active point
-    selectedNode = checkClick(x, y)
+    selectedNode = CheckClick(x, y)
     
     'Different actions are initiated for left vs right clicks (left to add/move points, right to remove)
     If Button = vbLeftButton Then
@@ -930,7 +929,7 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
                 'And finally, perform an additional fail-safe to remove any x-values that now occur outside acceptable boundaries
                 ' (e.g. points pushed off the left of the curve)
                 For i = numOfNodes(m_curChannel) To 1 Step -1
-                    If cNodes(m_curChannel, i).pX < previewBorder Then deleteCurveNode i
+                    If cNodes(m_curChannel, i).pX < previewBorder Then DeleteCurveNode i
                 Next i
                 
                 'Mark this node as the currently selected one
@@ -953,7 +952,7 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
     
         'Only erase a point if one was actually clicked; then request a redraw
         If selectedNode > -1 Then
-            deleteCurveNode selectedNode
+            DeleteCurveNode selectedNode
             UpdatePreview
         End If
         
@@ -962,7 +961,7 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
 End Sub
 
 'Delete the specified node from the curve.  This function assumes that the passed nodeIndex is a valid entry.
-Private Sub deleteCurveNode(ByVal nodeIndex As Long)
+Private Sub DeleteCurveNode(ByVal nodeIndex As Long)
 
     'Only erase a node if more than two nodes will be left after the operation
     If numOfNodes(m_curChannel) > 2 Then
@@ -994,17 +993,17 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
     If Not isMouseDown Then
         
         'If the user is close to a knot, change the mousepointer to 'move'
-        If checkClick(x, y) > -1 Then
+        If CheckClick(x, y) > -1 Then
             If picDraw.MousePointer <> 5 Then picDraw.MousePointer = 5
-            selectedNode = checkClick(x, y)
+            selectedNode = CheckClick(x, y)
         Else
             If picDraw.MousePointer <> 0 Then picDraw.MousePointer = 0
             selectedNode = -1
         End If
         
         'Redraw just the preview box, with the selected node highlighted
-        fillResultsArray
-        redrawPreviewBox
+        FillResultsArray
+        RedrawPreviewBox
             
     'If the mouse *is* down, move the current point and redraw the preview
     Else
@@ -1034,8 +1033,8 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             UpdatePreview
             
         Else
-            fillResultsArray
-            redrawPreviewBox
+            FillResultsArray
+            RedrawPreviewBox
         End If
     
     End If
@@ -1048,7 +1047,7 @@ Private Sub picDraw_MouseUp(Button As Integer, Shift As Integer, x As Single, y 
 End Sub
 
 'Simple distance routine to see if a location on the picture box is near an existing point
-Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
+Private Function CheckClick(ByVal x As Long, ByVal y As Long) As Long
     
     Dim pDist As Double
     Dim i As Long
@@ -1058,14 +1057,14 @@ Private Function checkClick(ByVal x As Long, ByVal y As Long) As Long
         
         'If we're close to an existing point, return the index of that point
         If pDist < g_MouseAccuracy Then
-            checkClick = i
+            CheckClick = i
             Exit Function
         End If
         
     Next i
     
     'Returning -1 says we're not close to an existing point
-    checkClick = -1
+    CheckClick = -1
     
 End Function
 
@@ -1075,11 +1074,10 @@ Private Function pDistance(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long,
 End Function
 
 'Original required spline function:
-Private Function getCurvePoint(ByVal curChannel As Long, ByVal i As Long, ByVal v As Double) As Double
+Private Function GetCurvePoint(ByVal curChannel As Long, ByVal i As Long, ByVal v As Double) As Double
     Dim t As Double
-    'derived curve equation (which uses p's and u's for coefficients)
     t = (v - cNodes(curChannel, i).pX) / u(i)
-    getCurvePoint = t * cNodes(curChannel, i + 1).pY + (1 - t) * cNodes(curChannel, i).pY + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
+    GetCurvePoint = t * cNodes(curChannel, i + 1).pY + (1 - t) * cNodes(curChannel, i).pY + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
 End Function
 
 'Original required spline function:
@@ -1128,7 +1126,7 @@ Private Sub SetPandU(ByVal channelID As Long)
 End Sub
 
 'By default, three points are provided: one at each corner, and one in the middle of the diagonal
-Private Sub resetCurvePoints()
+Private Sub ResetCurvePoints()
 
     Dim i As Long, j As Long
     ReDim numOfNodes(0 To 3) As Long
@@ -1149,7 +1147,7 @@ Private Sub resetCurvePoints()
 End Sub
 
 'Generates a spline from the current set of control points, and fills the results array with the relevant values
-Private Sub fillResultsArray()
+Private Sub FillResultsArray()
     
     'Clear the results array and reset the max/min variables
     ReDim cResults(0 To 3, -1 To picDraw.ScaleWidth) As Double
@@ -1180,7 +1178,7 @@ Private Sub fillResultsArray()
         
         For j = 1 To numOfNodes(i) - 1
             For xPos = cNodes(i, j).pX To cNodes(i, j + 1).pX
-                yPos = getCurvePoint(i, j, xPos)
+                yPos = GetCurvePoint(i, j, xPos)
                 If xPos < minX(i) Then minX(i) = xPos
                 If xPos > maxX(i) Then maxX(i) = xPos
                 If yPos > picDraw.ScaleHeight - previewBorder Then yPos = picDraw.ScaleHeight - previewBorder

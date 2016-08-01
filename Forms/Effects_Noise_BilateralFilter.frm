@@ -415,18 +415,15 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
+Private Sub Form_Load()
     
-    'Display the previewed effect in the neighboring window
+    cmdBar.MarkPreviewStatus False
+    chkSeparable.AssignTooltip "Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality."
+    
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
-End Sub
-
-Private Sub Form_Load()
-    chkSeparable.ToolTipText = "Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality."
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

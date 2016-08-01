@@ -30,9 +30,9 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   5
       Top             =   120
       Width           =   5775
-      _extentx        =   10186
-      _extenty        =   4895
-      caption         =   "edge detection technique"
+      _ExtentX        =   10186
+      _ExtentY        =   4895
+      Caption         =   "edge detection technique"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -41,8 +41,8 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   0
       Top             =   5775
       Width           =   12195
-      _extentx        =   21511
-      _extenty        =   1323
+      _ExtentX        =   21511
+      _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -50,8 +50,8 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
@@ -60,9 +60,9 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   4
       Top             =   3360
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   582
-      caption         =   "horizontal"
+      _ExtentX        =   9922
+      _ExtentY        =   582
+      Caption         =   "horizontal"
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
@@ -71,9 +71,9 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   1
       Top             =   3840
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   582
-      caption         =   "vertical"
+      _ExtentX        =   9922
+      _ExtentY        =   582
+      Caption         =   "vertical"
    End
    Begin PhotoDemon.pdSlider sltStrength 
       Height          =   705
@@ -81,13 +81,13 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   3
       Top             =   4560
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   1270
-      caption         =   "strength"
-      max             =   100
-      value           =   50
-      notchposition   =   2
-      notchvaluecustom=   50
+      _ExtentX        =   10610
+      _ExtentY        =   1270
+      Caption         =   "strength"
+      Max             =   100
+      Value           =   50
+      NotchPosition   =   2
+      NotchValueCustom=   50
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -95,11 +95,11 @@ Begin VB.Form FormEdgeEnhance
       Left            =   6000
       Top             =   3000
       Width           =   5835
-      _extentx        =   10292
-      _extenty        =   503
-      caption         =   "detection direction(s)"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   10292
+      _ExtentY        =   503
+      Caption         =   "detection direction(s)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormEdgeEnhance"
@@ -156,11 +156,6 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    UpdatePreview
-End Sub
-
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
     UpdatePreview
 End Sub
 
@@ -570,6 +565,8 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

@@ -173,11 +173,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-End Sub
-
 'Apply any supported edge detection filter to an image.  Directionality can be specified, but note that only some
 ' algorithms support the parameter.
 Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL, Optional ByVal blackBackground As Boolean = False, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
@@ -550,6 +545,8 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

@@ -395,7 +395,7 @@ Public Type RGBQUAD
    Blue As Byte
    Green As Byte
    Red As Byte
-   Alpha As Byte
+   alpha As Byte
 End Type
 
 Public Type POINTFLOAT
@@ -525,11 +525,11 @@ Public Function QuickCreateBlankSurface(ByRef dstSurface As pd2DSurface, ByVal s
 End Function
 
 'Shortcut function for creating a new surface with the default rendering backend and default rendering settings
-Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal srcHWnd As Long = 0) As Boolean
+Public Function QuickCreateSurfaceFromDC(ByRef dstSurface As pd2DSurface, ByVal srcDC As Long, Optional ByVal enableAntialiasing As Boolean = False, Optional ByVal srcHwnd As Long = 0) As Boolean
     If (dstSurface Is Nothing) Then Set dstSurface = New pd2DSurface Else dstSurface.ResetAllProperties
     With dstSurface
         If enableAntialiasing Then .SetSurfaceAntialiasing P2_AA_HighQuality Else .SetSurfaceAntialiasing P2_AA_None
-        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC, srcHWnd)
+        QuickCreateSurfaceFromDC = .WrapSurfaceAroundDC(srcDC, srcHwnd)
     End With
 End Function
 
@@ -686,13 +686,13 @@ Public Sub SetLibraryDebugMode(ByVal newMode As Boolean)
 End Sub
 
 'Start a new rendering backend
-Public Function StartRenderingBackend(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
+Public Function StartRenderingEngine(Optional ByVal targetBackend As PD_2D_RENDERING_BACKEND = P2_DefaultBackend) As Boolean
 
     Select Case targetBackend
             
         Case P2_DefaultBackend, P2_GDIPlusBackend
-            StartRenderingBackend = GDI_Plus.GDIP_StartEngine(False)
-            m_GDIPlusAvailable = StartRenderingBackend
+            StartRenderingEngine = GDI_Plus.GDIP_StartEngine(False)
+            m_GDIPlusAvailable = StartRenderingEngine
             
         Case Else
             InternalError "Bad Parameter", "Couldn't start requested backend: backend ID unknown"

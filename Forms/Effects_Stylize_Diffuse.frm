@@ -115,17 +115,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Re-enable previews and request an initial render
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
 
     'Disable previews until everything is loaded
@@ -145,6 +134,11 @@ Private Sub Form_Load()
     sltY.Max = iHeight - 1
     sltX.Value = Int(sltX.Max \ 2)
     sltY.Value = Int(sltY.Max \ 2)
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

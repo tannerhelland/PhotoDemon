@@ -33,7 +33,6 @@ Begin VB.Form FormDonut
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -63,6 +62,8 @@ Begin VB.Form FormDonut
       TabIndex        =   2
       Top             =   120
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltAngle 
          Height          =   705
          Left            =   120
@@ -127,6 +128,8 @@ Begin VB.Form FormDonut
       TabIndex        =   7
       Top             =   120
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboEdges 
          Height          =   375
          Left            =   240
@@ -260,7 +263,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -270,9 +273,9 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -464,7 +467,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -478,12 +481,12 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Donut", , buildParams(sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Donut", , BuildParams(sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -500,21 +503,10 @@ Private Sub cmdBar_ResetClick()
     sltHeight.Value = 50
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Create the preview
-    cmdBar.markPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the dialog has been fully initialized
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
@@ -525,6 +517,11 @@ Private Sub Form_Load()
     btsOptions.AddItem "advanced", 1
     btsOptions.ListIndex = 0
     btsOptions_Click 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
@@ -550,7 +547,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyDonutDistortion sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyDonutDistortion sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -561,10 +558,10 @@ End Sub
 'The user can right-click the preview area to select a new center point
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
 
 End Sub

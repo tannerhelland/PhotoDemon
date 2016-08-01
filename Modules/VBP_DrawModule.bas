@@ -618,9 +618,16 @@ End Sub
 'During startup, we cache a few different UI pens and brushes; this accelerates the process of viewport rendering.
 ' When the UI theme changes, this cache should be regenerated against any new colors.
 '
-'(Also, note that there is no corresponding "free" or "release" statement - all pd2D pens and brushes are self-freeing.)
+'(Also, note the corresponding "release" function below.)
 Public Sub CacheUIPensAndBrushes()
     Drawing2D.QuickCreatePainter m_Painter
     Drawing2D.QuickCreatePairOfUIPens m_PenUIBase, m_PenUITop
     Drawing2D.QuickCreatePairOfUIPens m_PenUIBaseHighlight, m_PenUITopHighlight, True
+End Sub
+
+Public Sub ReleaseUIPensAndBrushes()
+    Set m_PenUIBase = Nothing
+    Set m_PenUITop = Nothing
+    Set m_PenUIBaseHighlight = Nothing
+    Set m_PenUITopHighlight = Nothing
 End Sub

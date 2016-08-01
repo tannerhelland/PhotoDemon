@@ -505,17 +505,6 @@ Private Sub cmdBar_ResetClick()
     btsDirection.ListIndex = 0
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
@@ -529,6 +518,13 @@ Private Sub Form_Load()
     btsEmphasis.AddItem "sharpen", 0
     btsEmphasis.AddItem "smooth", 1
     btsEmphasis.ListIndex = 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    
+    'Draw a preview of the effect
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

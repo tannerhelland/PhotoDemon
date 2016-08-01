@@ -279,7 +279,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDFXPREVIEW_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDFXPreview", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If (Not g_IsProgramRunning) Then UpdateColorList
     
     'Prep the various buttonstrips
     btsState.AddItem "before", 0

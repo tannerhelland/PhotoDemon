@@ -63,6 +63,8 @@ Begin VB.Form FormKaleidoscope
       Top             =   360
       Visible         =   0   'False
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltAngle2 
          Height          =   705
          Left            =   120
@@ -108,6 +110,8 @@ Begin VB.Form FormKaleidoscope
       TabIndex        =   4
       Top             =   360
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltMirrors 
          Height          =   705
          Left            =   120
@@ -366,17 +370,9 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
+    
+    cmdBar.MarkPreviewStatus False
     
     'Populate the options selector
     btsOptions.AddItem "basic", 0
@@ -387,6 +383,10 @@ Private Sub Form_Load()
     btsQuality.AddItem "quality", 0
     btsQuality.AddItem "speed", 1
     btsQuality.ListIndex = 0
+    
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

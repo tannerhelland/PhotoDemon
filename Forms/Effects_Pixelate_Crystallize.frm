@@ -386,17 +386,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Request a preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
@@ -419,6 +408,13 @@ Private Sub Form_Load()
     Rnd -1
     Randomize (-Timer * Now)
     m_RndSeed = Rnd * &HEFFFFFFF
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    
+    'Request a preview
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

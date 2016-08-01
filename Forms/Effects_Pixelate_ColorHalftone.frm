@@ -183,22 +183,18 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
+Private Sub Form_Load()
 
+    'Suspend previews while we initialize controls
+    cmdBar.MarkPreviewStatus False
+        
     'Apply translations and themes
     ApplyThemeAndTranslations Me
     
     'Request a preview
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-        
-End Sub
-
-Private Sub Form_Load()
-
-    'Suspend previews while we initialize controls
-    cmdBar.MarkPreviewStatus False
-        
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

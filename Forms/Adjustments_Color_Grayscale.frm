@@ -300,19 +300,6 @@ Private Sub cmdBar_ResetClick()
     sltShades.Value = 256
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    SetArrowCursor picChannel
-    SetArrowCursor picDecompose
-    
-    'Draw the initial preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 'All different grayscale (black and white) routines are handled by this single function.  As of 16 Feb '14, grayscale operations
 ' are divided into four params: type of transform, optional params for transform (if any), number of shades to use, and
 ' dithering options (if any).  This should allow the user to mix and match the various options at their leisure.
@@ -1054,7 +1041,7 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
         b = ImageData(QuickVal, y)
         
         'Calculate a grayscale value by using a short-hand RGB <-> HSL conversion
-        grayVal = CByte(getLuminance(r, g, b))
+        grayVal = CByte(GetLuminance(r, g, b))
         
         'Assign that gray value to each color channel
         ImageData(QuickVal, y) = grayVal
@@ -1257,8 +1244,17 @@ Private Sub Form_Load()
     cboDithering.AddItem " Atkinson / Classic Macintosh", 9
     cboDithering.ListIndex = 0
     
-    'Draw an initial preview
+    'Make sure the correct options subpanel is set
     UpdateVisibleControls
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    SetArrowCursor picChannel
+    SetArrowCursor picDecompose
+    
+    'Draw the initial preview
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

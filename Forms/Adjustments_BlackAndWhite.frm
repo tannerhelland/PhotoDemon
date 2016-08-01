@@ -201,10 +201,6 @@ Private Sub colorPicker_ColorChanged(Index As Integer)
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
     
     cmdBar.MarkPreviewStatus False
@@ -235,6 +231,7 @@ Private Sub Form_Load()
     ApplyThemeAndTranslations Me
     
     cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 
