@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.200</langversion>
+<langversion>6.7.201</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -6818,21 +6818,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>instructions</original>
-<translation>instrucciones</translation>
-</phrase>
-
-<phrase>
-<original>left-click to add new nodes or drag existing nodes</original>
-<translation>clic izquierdo para añadir nuevos nodos o arrastre los nodos existentes</translation>
-</phrase>
-
-<phrase>
-<original>right-click to remove nodes</original>
-<translation>botón derecho para eliminar nodos</translation>
-</phrase>
-
-<phrase>
 <original>standard</original>
 <translation>estándar</translation>
 </phrase>
@@ -6860,6 +6845,21 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <phrase>
 <original>options</original>
 <translation>opciones</translation>
+</phrase>
+
+<phrase>
+<original>instructions</original>
+<translation>instrucciones</translation>
+</phrase>
+
+<phrase>
+<original>left-click to add new nodes or drag existing nodes</original>
+<translation>clic izquierdo para añadir nuevos nodos o arrastre los nodos existentes</translation>
+</phrase>
+
+<phrase>
+<original>right-click to remove nodes</original>
+<translation>botón derecho para eliminar nodos</translation>
 </phrase>
 
 <phrase>
@@ -9840,7 +9840,12 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Aplicar suavizado bilateral</translation>
 </phrase>
 
-<!-- Effects_Noise_BilateralFilter.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_BilateralFilter.frm-->
 
@@ -15110,10 +15115,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2576</phrasecount>
+<phrasecount>2577</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4517 phrases. -->
-<!-- 1941 are duplicates, so only 2576 unique phrases have been written to file. -->
-<!-- These 2576 phrases contain approximately 13214 total words. -->
+<!-- As of this build, PhotoDemon contains 4518 phrases. -->
+<!-- 1941 are duplicates, so only 2577 unique phrases have been written to file. -->
+<!-- These 2577 phrases contain approximately 13251 total words. -->
 
 </pdData>
