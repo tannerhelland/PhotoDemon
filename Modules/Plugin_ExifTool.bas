@@ -31,7 +31,7 @@ Attribute VB_Name = "ExifTool"
 'Those code modules have long since been replaced with a custom PD implementation, but I thought it worthwhile to
 ' mention them in case others want a (much simpler!) look at how they might interact with ExifTool.
 '
-'This project was last tested against v10.13 of ExifTool (March '16).  While I do informally test newer versions,
+'This project was last tested against v10.24 of ExifTool (July '16).  While I do informally test newer versions,
 ' it's just not possible to test all metadata variations, so problems may arise if used with other versions.
 ' Additional documentation regarding the use of ExifTool can be found in the official ExifTool package,
 ' downloadable from http://www.sno.phy.queensu.ca/~phil/exiftool/

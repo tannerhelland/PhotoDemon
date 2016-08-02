@@ -325,17 +325,6 @@ Private Sub cmdBar_ResetClick()
     sltHeight.Value = 2
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Request a preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
@@ -349,6 +338,11 @@ Private Sub Form_Load()
         sltWidth.Max = pdImages(g_CurrentImage).Width
         sltHeight.Max = pdImages(g_CurrentImage).Height
     End If
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

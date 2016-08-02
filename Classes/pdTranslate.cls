@@ -955,7 +955,7 @@ End Sub
 Public Sub ApplyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
     
     'For en-US locales, we can entirely skip this step
-    If Not TranslationActive Then Exit Sub
+    If (Not TranslationActive) Then Exit Sub
     
     'Start by translating the form's caption
     TranslateFormCaption srcForm
@@ -984,8 +984,7 @@ Public Sub ApplyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
             
             'If this menu caption has a custom accelerator appended, strip it off
-            If strPos > 0 Then tmpString = Left$(tmpString, strPos - 1)
-                
+            If (strPos > 0) Then tmpString = Left$(tmpString, strPos - 1)
             eControl.Caption = TranslateMessage(tmpString)
             
             'Note that we do not re-append the accelerator here.  This is handled by a subsequent function

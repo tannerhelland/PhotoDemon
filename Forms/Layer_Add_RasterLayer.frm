@@ -53,7 +53,6 @@ Begin VB.Form FormNewLayer
       Width           =   9630
       _ExtentX        =   16986
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdRadioButton optLayer 
       CausesValidation=   0   'False
@@ -196,7 +195,7 @@ Private Sub cmdBar_OKClick()
         End If
     Next i
     
-    Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, PDL_IMAGE, newLayerType, colorPicker.Color, cboPosition.ListIndex, CBool(chkAutoSelectLayer), txtLayerName), UNDO_IMAGE_VECTORSAFE
+    Process "Add new layer", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_IMAGE, newLayerType, colorPicker.Color, cboPosition.ListIndex, CBool(chkAutoSelectLayer), txtLayerName), UNDO_IMAGE_VECTORSAFE
     
 End Sub
 
@@ -210,10 +209,6 @@ Private Sub cmdBar_ResetClick()
     colorPicker.Color = RGB(60, 160, 255)
 End Sub
 
-Private Sub Form_Activate()
-    ApplyThemeAndTranslations Me
-End Sub
-
 Private Sub Form_Load()
 
     'Populate the position drop-down box
@@ -224,10 +219,7 @@ Private Sub Form_Load()
     cboPosition.AddItem "bottom of layer stack"
     cboPosition.ListIndex = 0
 
+    ApplyThemeAndTranslations Me
+
 End Sub
-
-
-
-
-
 

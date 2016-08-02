@@ -1,5 +1,6 @@
 VERSION 5.00
 Begin VB.Form FormPanAndZoom 
+   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Pan and zoom"
@@ -33,7 +34,6 @@ Begin VB.Form FormPanAndZoom
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -43,6 +43,7 @@ Begin VB.Form FormPanAndZoom
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.pdSlider sltHorizontal 
       Height          =   705
@@ -98,25 +99,14 @@ Begin VB.Form FormPanAndZoom
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6240
-      TabIndex        =   5
-      Top             =   5040
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   5
+      Height          =   735
       Left            =   6000
+      TabIndex        =   5
       Top             =   4680
-      Width           =   5835
-      _ExtentX        =   10292
-      _ExtentY        =   503
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
       Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPanAndZoom"
@@ -156,7 +146,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -166,9 +156,9 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'If this is a preview, adjust incoming parameters so they are representative of the final image
@@ -348,7 +338,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -362,13 +352,13 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Pan and zoom", , BuildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -380,21 +370,10 @@ Private Sub cmdBar_ResetClick()
     sltQuality.Value = 2
 End Sub
 
-Private Sub Form_Activate()
-
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Request a preview
-    cmdBar.markPreviewStatus True
-    UpdatePreview
-        
-End Sub
-
 Private Sub Form_Load()
 
     'Suspend previews while we initialize all the controls
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
@@ -414,6 +393,11 @@ Private Sub Form_Load()
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_WRAP
     
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -422,7 +406,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality, True, pdFxPreview
 End Sub
 
 Private Sub sltQuality_Change()
