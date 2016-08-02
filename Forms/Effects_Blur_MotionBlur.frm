@@ -202,17 +202,6 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-
-    'Apply visual themes and translations
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the form is fully initialized
@@ -221,6 +210,11 @@ Private Sub Form_Load()
     btsStyle.AddItem "constant", 0
     btsStyle.AddItem "gaussian", 1
     btsStyle.ListIndex = 0
+    
+    'Apply visual themes and translations
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

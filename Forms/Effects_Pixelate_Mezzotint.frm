@@ -257,17 +257,6 @@ Private Sub cmdBar_ResetClick()
     btsStippling.ListIndex = 2
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews while we initialize the dialog
@@ -284,6 +273,11 @@ Private Sub Form_Load()
     btsStippling.AddItem "coarse", 1
     btsStippling.AddItem "fine", 2
     btsStippling.ListIndex = 2
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

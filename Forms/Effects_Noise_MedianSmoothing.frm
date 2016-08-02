@@ -216,11 +216,6 @@ Private Sub cmdBar_ResetClick()
     
 End Sub
 
-Private Sub Form_Activate()
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews while we get everything initialized
@@ -231,6 +226,8 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

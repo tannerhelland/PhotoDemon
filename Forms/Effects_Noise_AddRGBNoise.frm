@@ -207,21 +207,18 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Render a preview
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
+    
+    cmdBar.MarkPreviewStatus False
     
     'Populate coloring options
     btsColor.AddItem "color", 0
     btsColor.AddItem "monochrome", 1
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

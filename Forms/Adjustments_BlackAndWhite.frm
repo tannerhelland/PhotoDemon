@@ -229,7 +229,6 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    
     cmdBar.MarkPreviewStatus True
     UpdatePreview
     

@@ -1314,21 +1314,21 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is PictureBox) Then
             SetArrowCursor eControl
         Else
-            If ((TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) Then
-                SetHandCursor eControl
-            End If
+            'If ((TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) Then
+            '    SetHandCursor eControl
+            'End If
         End If
         
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
         ' redraw all control fonts using Segoe UI.
-        If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
-            eControl.fontName = g_InterfaceFont
-        End If
+        'If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
+            'eControl.fontName = g_InterfaceFont
+        'End If
         
         'STEP 3: make common control drop-down boxes display their full drop-down contents, without a scroll bar.
         '         (Note: this behavior requires a manifest, so it's entirely useless inside the IDE.)
         '         (Also, once all combo boxes are replaced with PD's dedicated replacement, this line can be removed.)
-        If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
+        'If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
         
         ' TODO 6.8: remove these steps once and for all
         '*******************************************
@@ -1409,12 +1409,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         g_Language.ApplyTranslations dstForm, useDoEvents
     End If
     
-    'FORM STEP 4: force a refresh to ensure our changes are immediately visible
-    If dstForm.Name <> "FormMain" Then
-        dstForm.Refresh
-    Else
-        'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned, because they are
-        ' inadvertently dropped when the menu captions change.
+    'If this is the main form, we need to reassign menu icon, because they are inadvertently dropped whenever menu captions change.
+    If (StrComp(dstForm.Name, "FormMain", vbBinaryCompare) = 0) Then
         If FormMain.Visible Then ApplyAllMenuIcons
     End If
     

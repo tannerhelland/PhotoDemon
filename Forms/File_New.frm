@@ -158,20 +158,13 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
-    calculateDefaultSize
+    CalculateDefaultSize
     optBackground(3).Value = True
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    calculateDefaultSize
+    CalculateDefaultSize
     colorPicker.Color = RGB(60, 160, 255)
-End Sub
-
-Private Sub Form_Activate()
-    calculateDefaultSize
-    
-    ApplyThemeAndTranslations Me
-    
 End Sub
 
 Private Sub Form_Load()
@@ -183,11 +176,12 @@ Private Sub Form_Load()
     'Obviously, the user can use the save/load preset functionality to save favorite image sizes.
     
     'Fill in the boxes with the default size
-    calculateDefaultSize
+    CalculateDefaultSize
+    ApplyThemeAndTranslations Me
     
 End Sub
 
-Private Sub calculateDefaultSize()
+Private Sub CalculateDefaultSize()
 
     'Default to pixels
     ucResize.UnitOfMeasurement = MU_PIXELS
