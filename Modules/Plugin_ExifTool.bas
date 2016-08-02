@@ -98,6 +98,7 @@ Private Declare Function CreateProcess Lib "kernel32" Alias "CreateProcessA" (By
 Private Declare Function DuplicateHandle Lib "kernel32" (ByVal hSourceProcessHandle As Long, ByVal hSourceHandle As Long, ByVal hTargetProcessHandle As Long, lpTargetHandle As Long, ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwOptions As Long) As Long
 Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, lpOverlapped As Any) As Long
+Private Declare Function SetEnvironmentVariableW Lib "kernel32" (ByVal ptrToEnvName As Long, ByVal ptrToEnvValue As Long) As Long
 
 'A great deal of extra code is required for finding ExifTool instances left by previous unsafe shutdowns, and silently terminating them.
 Private Declare Function AdjustTokenPrivileges Lib "advapi32" (ByVal TokenHandle As Long, ByVal DisableAllPrivileges As Long, newState As TOKEN_PRIVILEGES, ByVal BufferLength As Long, PreviousState As Any, ReturnLength As Any) As Long
@@ -254,11 +255,11 @@ Private Const MD_integerstring = 0, MD_floatstring = 0, MD_rationalstring = 0, M
 
 'Once ExifTool has been run at least once, this will be set to TRUE.  If TRUE, this means that the shellPipeMain user control
 ' on FormMain is active and connected to ExifTool, and can be used to send/receive input and output.
-Private isExifToolRunning As Boolean
+Private m_IsExifToolRunning As Boolean
 
 'Because ExifTool parses metadata asynchronously, we will gather its output as it comes.  This string will hold whatever
 ' XML data ExifTool has returned so far.
-Private curMetadataString As String
+Private m_currentMetadataText As String
 
 'While capture mode is active (e.g. while retrieving metadata information we care about) this will be set to TRUE.
 Private m_captureModeActive As Boolean
@@ -276,8 +277,8 @@ Private m_DatabaseString As String
 
 'As of 6.6 alpha, technical metadata reports can now be generated for a given file.  While this mode is active, we do not
 ' want to immediately delete the report; use this boolean to check for that particular state.
-Private technicalReportModeActive As Boolean
-Private technicalReportSrcImage As String
+Private m_technicalReportModeActive As Boolean
+Private m_technicalReportSrcImage As String
 
 'Prior to writing out a file's metadata, we must cache the information we want written in a temp file.  (ExifTool requires
 ' a source file when writing metadata out to file; the alternative is to manually request the writing of each tag in turn,
@@ -285,12 +286,17 @@ Private technicalReportSrcImage As String
 ' tags to preferred categories.)  Because writing out metadata is asynchronous, we have to wait for ExifTool to finish
 ' before deleting the temp file, so we keep a copy of the file's path here.  The stopVerificationMode (which is
 ' automatically triggered by the newMetadataReceived function as necessary) will remove the file at this location.
-Private tmpMetadataFilePath As String
+Private m_tmpMetadataFilePath As String
 
 'If multiple images are loaded simultaneously, we have to do some tricky handling to parse out their individual bits.  As such, we store
 ' the ID of the last image metadata request we received; only when this ID is returned successfully do we consider metadata processing
 ' "complete", and return TRUE for isMetadataFinished.
 Private m_LastRequestID As Long
+
+'ExifTool is built with Perl, and Perl requires a temp folder where it can dump a bunch of Perl-related resources.  By default,
+' this is the current user's temp folder, but we prefer to cache this folder locally, inside PD's /Data subfolder.
+' (This path is set when ExifTool is started.)  Note that ExifTool's database is also stored here.
+Private m_ExifToolDataFolder As String
 
 'Parsing the ExifTool database is a complicated and unpleasant process; limited local caching helps alleviate some of the pain
 Private Type ET_GROUP
@@ -313,7 +319,7 @@ End Function
 Public Sub NewMetadataReceived(ByVal newMetadata As String)
     
     If m_captureModeActive Then
-        curMetadataString = curMetadataString & newMetadata
+        m_currentMetadataText = m_currentMetadataText & newMetadata
     
     'During verification mode, we must also check to see if verification has finished
     ElseIf m_VerificationModeActive Then
@@ -334,7 +340,7 @@ End Sub
 Private Sub WriteMetadataDatabaseToFile()
 
     Dim mdDatabasePath As String
-    mdDatabasePath = g_PluginPath & "ExifToolDatabase.xml"
+    mdDatabasePath = m_ExifToolDataFolder & "ExifToolDatabase.xml"
         
     'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
     If Len(m_DatabaseString) <> 0 Then m_DatabaseString = Replace$(m_DatabaseString, "{ready}", "")
@@ -367,12 +373,12 @@ Private Sub StopVerificationMode()
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If (Not technicalReportModeActive) Then
+    If (Not m_technicalReportModeActive) Then
         
         m_VerificationString = ""
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
-        If cFile.FileExist(tmpMetadataFilePath) Then cFile.KillFile tmpMetadataFilePath
+        If cFile.FileExist(m_tmpMetadataFilePath) Then cFile.KillFile m_tmpMetadataFilePath
         
     Else
     
@@ -381,7 +387,7 @@ Private Sub StopVerificationMode()
         
         'Write the completed technical report out to a temp file
         Dim tmpFilename As String
-        tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(technicalReportSrcImage) & ".html"
+        tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(m_technicalReportSrcImage) & ".html"
         
         cFile.SaveStringToTextFile m_VerificationString, tmpFilename  ', True, False
         
@@ -389,8 +395,8 @@ Private Sub StopVerificationMode()
         m_VerificationString = ""
         OpenURL tmpFilename
         
-        technicalReportSrcImage = ""
-        technicalReportModeActive = False
+        m_technicalReportSrcImage = ""
+        m_technicalReportModeActive = False
         
     End If
     
@@ -407,7 +413,7 @@ Public Function IsMetadataFinished() As Boolean
     
     'If ExifTool is not available, or if it failed to start, simple return TRUE which will allow any waiting code
     ' to continue.
-    If Not isExifToolRunning Then
+    If Not m_IsExifToolRunning Then
         IsMetadataFinished = True
         Exit Function
     End If
@@ -417,7 +423,7 @@ Public Function IsMetadataFinished() As Boolean
     Dim tmpMetadata As String
     
     If m_captureModeActive Then
-        tmpMetadata = curMetadataString
+        tmpMetadata = m_currentMetadataText
     ElseIf m_VerificationModeActive Then
         tmpMetadata = m_VerificationString
     ElseIf m_DatabaseModeActive Then
@@ -464,26 +470,26 @@ End Function
 'When metadata is ready (as determined by a call to isMetadataFinished), it can be retrieved via this function
 Public Function RetrieveMetadataString() As String
     
-    If Len(curMetadataString) <> 0 Then
+    If Len(m_currentMetadataText) <> 0 Then
     
         'Because we request metadata in XML format, ExifTool escapes disallowed XML characters.  Convert those back
         ' to standard characters before returning the retrieved metadata.
-        If InStr(1, curMetadataString, "&amp;") > 0 Then curMetadataString = Replace(curMetadataString, "&amp;", "&")
-        If InStr(1, curMetadataString, "&#39;") > 0 Then curMetadataString = Replace(curMetadataString, "&#39;", "'")
-        If InStr(1, curMetadataString, "&quot;") > 0 Then curMetadataString = Replace(curMetadataString, "&quot;", """")
-        If InStr(1, curMetadataString, "&gt;") > 0 Then curMetadataString = Replace(curMetadataString, "&gt;", ">")
-        If InStr(1, curMetadataString, "&lt;") > 0 Then curMetadataString = Replace(curMetadataString, "&lt;", "<")
+        If InStr(1, m_currentMetadataText, "&amp;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&amp;", "&")
+        If InStr(1, m_currentMetadataText, "&#39;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&#39;", "'")
+        If InStr(1, m_currentMetadataText, "&quot;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&quot;", """")
+        If InStr(1, m_currentMetadataText, "&gt;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&gt;", ">")
+        If InStr(1, m_currentMetadataText, "&lt;") > 0 Then m_currentMetadataText = Replace(m_currentMetadataText, "&lt;", "<")
         
     End If
         
     'Return the processed string, then erase our copy of it
-    RetrieveMetadataString = curMetadataString
-    curMetadataString = ""
+    RetrieveMetadataString = m_currentMetadataText
+    m_currentMetadataText = ""
     
 End Function
 
 Public Function RetrieveUntouchedMetadataString() As String
-    RetrieveUntouchedMetadataString = curMetadataString
+    RetrieveUntouchedMetadataString = m_currentMetadataText
 End Function
 
 'Retrieve the currently installed ExifTool version.  (If ExifTool cannot be found, this will return FALSE.)
@@ -516,7 +522,7 @@ End Function
 Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage As pdImage) As Boolean
 
     'If ExifTool is not running, start it.  If it cannot be started, exit.
-    If (Not isExifToolRunning) Then
+    If (Not m_IsExifToolRunning) Then
         If (Not StartExifTool()) Then
             Message "ExifTool could not be started.  Metadata unavailable for this session."
             StartMetadataProcessing = False
@@ -531,7 +537,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     ' NOTE! Upon implementing PD's new asynchronous metadata retrieval mechanism, we don't want to erase the master metadata string,
     '        as its construction may lag behind the rest of the image load process.  When a full metadata string is retrieved,
     '        the retrieveMetadataString() function will handle clearing for us.
-    'curMetadataString = ""
+    'm_currentMetadataText = ""
     
     'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
     ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
@@ -652,7 +658,7 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
         cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
                 
         'Add the source image to the list
-        technicalReportSrcImage = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")
+        m_technicalReportSrcImage = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")
         cmdParams = cmdParams & srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk") & vbCrLf
         
         'Finally, add the special command "-execute" which tells ExifTool to start operations
@@ -660,7 +666,7 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
         
         'Activate verification mode.  This will asynchronously wait for the metadata to be written out to file, and when it
         ' has finished, it will erase our temp file.
-        technicalReportModeActive = True
+        m_technicalReportModeActive = True
         StartVerificationMode
         
         'Ask the user control to start processing this image's metadata.  It will handle things from here.
@@ -677,7 +683,7 @@ End Function
 Public Function DoesTagDatabaseExist() As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    DoesTagDatabaseExist = cFile.FileExist(g_PluginPath & "exifToolDatabase.xml")
+    DoesTagDatabaseExist = cFile.FileExist(m_ExifToolDataFolder & "exifToolDatabase.xml")
 End Function
 
 Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef parentForm As Form = Nothing) As Boolean
@@ -722,7 +728,7 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
             'With the database successfully constructed, we now need to load it into memory
             Dim cFile As pdFSO
             Set cFile = New pdFSO
-            If Len(m_DatabaseString) = 0 Then cFile.LoadTextFileAsString g_PluginPath & "exifToolDatabase.xml", m_DatabaseString
+            If Len(m_DatabaseString) = 0 Then cFile.LoadTextFileAsString m_ExifToolDataFolder & "exifToolDatabase.xml", m_DatabaseString
             
             'Metadata caching is performed on a per-image basis, so we need to reset the cache on each invocation
             ExifTool.StartNewDatabaseCache
@@ -750,7 +756,7 @@ Public Function WriteTagDatabase() As Boolean
     
     'If the database already exists, there's no need to recreate it
     ' (TODO: check the database version number, as new tags may be added between releases...)
-    If cFile.FileExist(g_PluginPath & "exifToolDatabase.xml") Then
+    If cFile.FileExist(m_ExifToolDataFolder & "exifToolDatabase.xml") Then
         WriteTagDatabase = True
     Else
     
@@ -783,7 +789,7 @@ End Function
 Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal forciblyAnonymize As Boolean = False, Optional ByVal originalMetadataParams As String = vbNullString) As Boolean
     
     'If ExifTool is not running, start it.  If it cannot be started, exit.
-    If Not isExifToolRunning Then
+    If Not m_IsExifToolRunning Then
         If Not StartExifTool() Then
             Message "ExifTool could not be started.  Metadata unavailable for this session."
             WriteMetadata = False
@@ -1052,7 +1058,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Activate verification mode.  This will asynchronously wait for the metadata to be written out to file, and when it
     ' has finished, it will erase our temp file.
-    tmpMetadataFilePath = srcMetadataFile
+    m_tmpMetadataFilePath = srcMetadataFile
     StartVerificationMode
     
     'Ask the user control to start processing this image's metadata.  It will handle things from here.
@@ -1093,6 +1099,19 @@ End Function
 ' ExifTool early in the load process, rather than waiting for an image to be loaded.
 Public Function StartExifTool() As Boolean
     
+    'Start by creating a temp folder for ExifTool-specific data, as necessary
+    m_ExifToolDataFolder = g_UserPreferences.GetDataPath() & "PluginData\"
+    Dim cFSO As pdFSO
+    Set cFSO = New pdFSO
+    cFSO.CreateFolder m_ExifToolDataFolder
+    
+    'Next, set a local environment variable for Perl's temp folder, matching our temp folder above.  (If we do this prior
+    ' to shelling ExifTool as a child process, ExifTool will automatically pick up the environment variable.)
+    Dim envName As String, envValue As String
+    envName = "PAR_GLOBAL_TEMP"
+    envValue = m_ExifToolDataFolder
+    SetEnvironmentVariableW StrPtr(envName), StrPtr(envValue)
+    
     'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
     ' a variable to hold the ASCII equivalent of a quotation mark.  This makes things slightly more readable.
     Dim Quotes As String
@@ -1119,17 +1138,17 @@ Public Function StartExifTool() As Boolean
     
         Case SP_SUCCESS
             Message "ExifTool initiated successfully.  Ready to process metadata."
-            isExifToolRunning = True
+            m_IsExifToolRunning = True
             StartExifTool = True
             
         Case SP_CREATEPIPEFAILED
             Message "WARNING! ExifTool Input/Output pipes could not be created."
-            isExifToolRunning = False
+            m_IsExifToolRunning = False
             StartExifTool = False
             
         Case SP_CREATEPROCFAILED
             Message "WARNING! ExifTool.exe could not be started."
-            isExifToolRunning = False
+            m_IsExifToolRunning = False
             StartExifTool = False
     
     End Select
@@ -1139,7 +1158,7 @@ End Function
 'Make sure to terminate ExifTool politely when the program closes.
 Public Sub TerminateExifTool()
 
-    If isExifToolRunning Then
+    If m_IsExifToolRunning Then
 
         'Prepare a termination order for ExifTool
         Dim cmdParams As String
