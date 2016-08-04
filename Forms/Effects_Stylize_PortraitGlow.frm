@@ -236,17 +236,6 @@ Private Sub cmdBar_ResetClick()
     sltStrength.Value = 100
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Draw a preview of the effect
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
@@ -255,6 +244,11 @@ Private Sub Form_Load()
     btsStyle.AddItem "classic", 0
     btsStyle.AddItem "modern", 1
     btsStyle.AddItem "subtle", 2
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

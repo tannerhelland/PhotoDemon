@@ -316,14 +316,8 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Apply visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Draw a preview of the effect
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
@@ -340,6 +334,9 @@ Private Sub Form_Load()
     btsQuality.AddItem "better", 1
     btsQuality.AddItem "best", 2
     btsQuality.ListIndex = 0
+    
+    'Apply visual themes
+    ApplyThemeAndTranslations Me
     
 End Sub
 

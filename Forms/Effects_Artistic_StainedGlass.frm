@@ -25,22 +25,24 @@ Begin VB.Form FormStainedGlass
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdDropDown cboDistance 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   4
-      Top             =   5190
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   661
+      Top             =   4920
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "distance method"
    End
    Begin PhotoDemon.pdDropDown cboColorSampling 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   5
-      Top             =   4260
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   661
+      Top             =   3960
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "color sampling"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -115,30 +117,6 @@ Begin VB.Form FormStainedGlass
       Value           =   5
       NotchPosition   =   2
       NotchValueCustom=   5
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      Top             =   4845
-      Width           =   5940
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "distance method"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   3900
-      Width           =   5880
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "color sampling"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormStainedGlass"

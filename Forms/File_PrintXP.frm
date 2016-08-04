@@ -24,10 +24,58 @@ Begin VB.Form FormPrint
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTextBox txtCopies 
+      Height          =   375
+      Left            =   7080
+      TabIndex        =   3
+      Top             =   1560
+      Width           =   1455
+      _ExtentX        =   2566
+      _ExtentY        =   661
+   End
+   Begin PhotoDemon.pdDropDown cmbDPI 
+      Height          =   375
+      Left            =   4080
+      TabIndex        =   4
+      Top             =   5040
+      Width           =   1335
+      _ExtentX        =   2355
+      _ExtentY        =   661
+   End
+   Begin PhotoDemon.pdDropDown cbOrientation 
+      Height          =   735
+      Left            =   3960
+      TabIndex        =   8
+      Top             =   2280
+      Width           =   4575
+      _ExtentX        =   8070
+      _ExtentY        =   1296
+      Caption         =   "orientation"
+   End
+   Begin PhotoDemon.pdDropDown cbQuality 
+      Height          =   735
+      Left            =   3960
+      TabIndex        =   9
+      Top             =   1320
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   1296
+      Caption         =   "quality"
+   End
+   Begin PhotoDemon.pdDropDown cbPrinters 
+      Height          =   735
+      Left            =   3960
+      TabIndex        =   10
+      Top             =   360
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   1296
+      Caption         =   "printer"
+   End
    Begin PhotoDemon.pdCheckBox chkCenter 
       Height          =   330
       Left            =   4080
-      TabIndex        =   22
+      TabIndex        =   11
       Top             =   3480
       Width           =   4440
       _ExtentX        =   7832
@@ -63,26 +111,10 @@ Begin VB.Form FormPrint
       ScaleHeight     =   41
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   57
-      TabIndex        =   19
+      TabIndex        =   12
       Top             =   2760
       Visible         =   0   'False
       Width           =   855
-   End
-   Begin VB.ComboBox cmbDPI 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   360
-      Left            =   4080
-      TabIndex        =   6
-      Top             =   5040
-      Width           =   1335
    End
    Begin VB.PictureBox picThumbFinal 
       Appearance      =   0  'Flat
@@ -94,7 +126,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   14
+      TabIndex        =   7
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -109,7 +141,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   13
+      TabIndex        =   6
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -124,84 +156,10 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   12
+      TabIndex        =   5
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
-   End
-   Begin VB.ComboBox cbOrientation 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   4080
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   2550
-      Width           =   2610
-   End
-   Begin VB.ComboBox cbQuality 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   4080
-      Style           =   2  'Dropdown List
-      TabIndex        =   3
-      Top             =   1575
-      Width           =   2610
-   End
-   Begin VB.ComboBox cbPrinters 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   4080
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   600
-      Width           =   4335
-   End
-   Begin VB.TextBox txtCopies 
-      Alignment       =   2  'Center
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   7080
-      TabIndex        =   4
-      TabStop         =   0   'False
-      Text            =   "1"
-      Top             =   1575
-      Width           =   1335
    End
    Begin VB.PictureBox iSrc 
       Appearance      =   0  'Flat
@@ -214,196 +172,94 @@ Begin VB.Form FormPrint
       ScaleHeight     =   258
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   218
-      TabIndex        =   7
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   360
       Width           =   3300
-      Begin VB.Label lblWarning 
-         BackStyle       =   0  'Transparent
-         ForeColor       =   &H00C00000&
+      Begin PhotoDemon.pdLabel lblWarning 
          Height          =   3015
          Left            =   120
-         TabIndex        =   15
          Top             =   480
          Visible         =   0   'False
          Width           =   3015
+         _ExtentX        =   0
+         _ExtentY        =   0
+         ForeColor       =   12582912
       End
    End
    Begin PhotoDemon.pdCheckBox chkFit 
       Height          =   330
       Left            =   4080
-      TabIndex        =   23
+      TabIndex        =   13
       Top             =   3960
       Width           =   4440
       _ExtentX        =   7832
       _ExtentY        =   582
       Caption         =   "fit on page"
    End
-   Begin VB.Label lblQuality 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3960
-      TabIndex        =   21
-      Top             =   1200
-      Width           =   705
-   End
-   Begin VB.Label lblBackground 
+   Begin PhotoDemon.pdLabel lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   20
       Top             =   5880
       Width           =   8895
+      _ExtentX        =   0
+      _ExtentY        =   0
    End
-   Begin VB.Label lblDPIWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "note: DPI is read-only when ""fit to page"" is selected."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
+   Begin PhotoDemon.pdLabel lblDPIWarning 
       Height          =   855
       Left            =   5640
-      TabIndex        =   18
       Top             =   4980
       Width           =   3015
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "note: DPI is read-only when ""fit to page"" is selected."
+      FontSize        =   9
+      ForeColor       =   8388608
+      Layout          =   1
    End
-   Begin VB.Label lblDPI 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "dpi (print resolution)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblDPI 
       Height          =   285
       Left            =   3960
-      TabIndex        =   17
       Top             =   4560
-      Width           =   2205
+      Width           =   4485
+      _ExtentX        =   7911
+      _ExtentY        =   503
+      Caption         =   "dpi (print resolution)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblPaperSize 
-      Alignment       =   2  'Center
-      BackStyle       =   0  'Transparent
-      Caption         =   "paper size"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblPaperSize 
       Height          =   375
       Left            =   240
-      TabIndex        =   16
       Top             =   4560
       Width           =   3300
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "paper size"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblLayoutOptions 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "layout options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblLayoutOptions 
       Height          =   285
       Left            =   3960
-      TabIndex        =   11
       Top             =   3120
-      Width           =   1500
+      Width           =   4500
+      _ExtentX        =   7938
+      _ExtentY        =   503
+      Caption         =   "layout options"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblOrientation 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "orientation"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3945
-      TabIndex        =   10
-      Top             =   2205
-      Width           =   1140
-   End
-   Begin VB.Label lblPrinter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "printer"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   3960
-      TabIndex        =   9
-      Top             =   240
-      Width           =   705
-   End
-   Begin VB.Label lblCopies 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "# of copies"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblCopies 
       Height          =   285
       Left            =   6840
-      TabIndex        =   8
       Top             =   1200
-      Width           =   1200
+      Width           =   1680
+      _ExtentX        =   2963
+      _ExtentY        =   503
+      Caption         =   "# of copies"
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPrint"
@@ -1028,3 +884,4 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     End If
     
 End Sub
+

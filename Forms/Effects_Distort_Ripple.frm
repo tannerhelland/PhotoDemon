@@ -63,6 +63,8 @@ Begin VB.Form FormRipple
       Top             =   120
       Visible         =   0   'False
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltRadius 
          Height          =   705
          Left            =   120
@@ -118,6 +120,8 @@ Begin VB.Form FormRipple
       TabIndex        =   4
       Top             =   120
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltAmplitude 
          Height          =   705
          Left            =   120
@@ -507,17 +511,6 @@ Private Sub cmdBar_ResetClick()
     cboEdges.ListIndex = EDGE_REFLECT
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previewing until the form has been fully initialized
@@ -532,6 +525,11 @@ Private Sub Form_Load()
     btsOptions.AddItem "advanced", 1
     btsOptions.ListIndex = 0
     btsOptions_Click 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

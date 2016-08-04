@@ -32,7 +32,6 @@ Begin VB.Form FormVibrance
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltVibrance 
       Height          =   705
@@ -93,7 +92,7 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -165,7 +164,7 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -176,26 +175,23 @@ Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Vibrance", , buildParams(sltVibrance), UNDO_LAYER
+    Process "Vibrance", , BuildParams(sltVibrance), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -208,14 +204,10 @@ Private Sub sltVibrance_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Vibrance sltVibrance, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Vibrance sltVibrance, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-

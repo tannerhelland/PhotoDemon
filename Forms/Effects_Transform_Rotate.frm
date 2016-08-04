@@ -29,8 +29,8 @@ Begin VB.Form FormRotateDistort
       Left            =   6000
       TabIndex        =   6
       Top             =   3600
-      Width           =   5775
-      _ExtentX        =   10186
+      Width           =   5895
+      _ExtentX        =   10398
       _ExtentY        =   1720
       Caption         =   "render emphasis"
    End
@@ -43,7 +43,6 @@ Begin VB.Form FormRotateDistort
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -98,13 +97,14 @@ Begin VB.Form FormRotateDistort
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   5
-      Top             =   3000
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   2640
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -145,18 +145,6 @@ Begin VB.Form FormRotateDistort
       ForeColor       =   4210752
       Layout          =   1
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      Top             =   2640
-      Width           =   5835
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
 End
 Attribute VB_Name = "FormRotateDistort"
 Attribute VB_GlobalNameSpace = False
@@ -196,28 +184,28 @@ Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long,
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent converted pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
+    srcDIB.CreateFromExistingDIB workingDIB
     
     'Use the external function to create a rotated DIB
     CreateRotatedDIB rotateAngle, edgeHandling, useBilinear, srcDIB, workingDIB, centerX, centerY, toPreview
     
-    srcDIB.eraseDIB
+    srcDIB.EraseDIB
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
         
     
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rotate", , buildParams(sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Rotate", , BuildParams(sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -231,23 +219,13 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Provide an explanation on why this tool doesn't enlarge the canvas to match
-    lblExplanation(1).Caption = g_Language.TranslateMessage("If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.")
-    
-    'Request a preview
-    cmdBar.markPreviewStatus True
     UpdatePreview
-        
 End Sub
 
 Private Sub Form_Load()
 
     'Suspend previews while we initialize all the controls
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     
     btsRender.AddItem "speed", 0
     btsRender.AddItem "quality", 1
@@ -257,6 +235,13 @@ Private Sub Form_Load()
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_WRAP
     
+    'Provide an explanation on why this tool doesn't enlarge the canvas to match
+    lblExplanation(1).Caption = g_Language.TranslateMessage("If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.")
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -265,16 +250,16 @@ End Sub
 
 'Redraw the effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RotateFilter sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then RotateFilter sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
     
-    cmdBar.markPreviewStatus False
+    cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
-    cmdBar.markPreviewStatus True
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
 
 End Sub

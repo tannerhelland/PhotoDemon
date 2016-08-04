@@ -105,13 +105,14 @@ Begin VB.Form FormPoke
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6240
+      Height          =   735
+      Left            =   6000
       TabIndex        =   6
-      Top             =   4320
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   3960
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   330
@@ -138,18 +139,6 @@ Begin VB.Form FormPoke
       FontSize        =   9
       ForeColor       =   4210752
       Layout          =   1
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   330
-      Index           =   1
-      Left            =   6000
-      Top             =   3960
-      Width           =   5955
-      _ExtentX        =   10504
-      _ExtentY        =   582
-      Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPoke"
@@ -442,17 +431,6 @@ Private Sub cmdBar_ResetClick()
     sltQuality.Value = 2
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-            
-End Sub
-
 Private Sub Form_Load()
     
     'Suspend previews until the dialog is fully initialized
@@ -461,6 +439,11 @@ Private Sub Form_Load()
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_CLAMP
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

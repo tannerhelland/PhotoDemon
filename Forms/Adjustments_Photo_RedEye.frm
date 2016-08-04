@@ -86,7 +86,6 @@ Begin VB.Form FormRedEye
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdSlider sltObject 
       Height          =   705
@@ -174,7 +173,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim colorSensitivity As Double, objectSensitivity As Double
     colorSensitivity = cParams.GetDouble("color-sensitivity", 100#)
@@ -219,7 +218,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -325,7 +324,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Next x
         If Not toPreview Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
             End If
         End If
     Next y
@@ -404,7 +403,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Next x
         If Not toPreview Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
             End If
         End If
     Next y
@@ -462,7 +461,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Next x
         If Not toPreview Then
             If (y And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
             End If
         End If
     Next y
@@ -473,7 +472,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     End If
     
     'All potential highlight regions have now been detected.  Retrieve a copy of the region stack from the red-eye class.
-    Dim regionStack() As PD_DYNAMIC_REGION, numOfRegions As Long
+    Dim regionStack() As PD_Dynamic_Region, numOfRegions As Long
     If cRedEye.GetCopyOfRegionStack(regionStack, numOfRegions) Then
     
         'At least one candidate red-eye highlight region exists in the target image.
@@ -722,7 +721,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             r = ImageData(quickX + 2, y)
                             
                             'Calculate running luminance for the ENTIRE region (including the eye highlight)
-                            aveL = aveL + Colors.getHQLuminance(r, g, b)
+                            aveL = aveL + Colors.GetHQLuminance(r, g, b)
                             numRegionTotal = numRegionTotal + 1
                             
                             'Perform a modified red-eye check.  This steps is where we assess the actual "redness" of the
@@ -884,7 +883,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         regionRectF.Top = regionStack(i).RegionTop - 1
                         regionRectF.Width = regionStack(i).RegionWidth + 2
                         regionRectF.Height = regionStack(i).RegionHeight + 2
-                        GDI_Plus.GDIPlusDrawCanvasRectF workingDIB.getDIBDC, regionRectF
+                        GDI_Plus.GDIPlusDrawCanvasRectF workingDIB.GetDIBDC, regionRectF
                     End If
                 
                 'End final validity check
@@ -933,7 +932,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
 
 End Sub
 
@@ -964,14 +963,11 @@ Private Sub cmdBar_ResetClick()
     sltSizeStrictness.Value = 50#
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -984,11 +980,11 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplyRedEyeCorrection GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplyRedEyeCorrection GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("color-sensitivity", sltColor.Value, "object-sensitivity", sltObject.Value, "confirm-shape", CBool(chkShape.Value), "shape-strictness", sltShapeStrictness.Value, "confirm-size", CBool(chkSize.Value), "size-strictness", sltSizeStrictness.Value, "preview-highlight", CBool(chkHighlight.Value))
+    GetLocalParamString = BuildParamList("color-sensitivity", sltColor.Value, "object-sensitivity", sltObject.Value, "confirm-shape", CBool(chkShape.Value), "shape-strictness", sltShapeStrictness.Value, "confirm-size", CBool(chkSize.Value), "size-strictness", sltSizeStrictness.Value, "preview-highlight", CBool(chkHighlight.Value))
 End Function
 
 Private Sub sltColor_Change()

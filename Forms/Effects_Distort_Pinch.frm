@@ -130,13 +130,14 @@ Begin VB.Form FormPinch
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   8
-      Top             =   5280
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   4920
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
+      Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   435
@@ -161,18 +162,6 @@ Begin VB.Form FormPinch
       _ExtentX        =   10451
       _ExtentY        =   582
       Caption         =   "center position (x, y)"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   330
-      Index           =   1
-      Left            =   6000
-      Top             =   4920
-      Width           =   5955
-      _ExtentX        =   10504
-      _ExtentY        =   582
-      Caption         =   "if pixels lie outside the image..."
       FontSize        =   12
       ForeColor       =   4210752
    End
@@ -471,17 +460,6 @@ Private Sub cmdBar_ResetClick()
     sltQuality.Value = 2
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the dialog has been fully initialized
@@ -490,6 +468,11 @@ Private Sub Form_Load()
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_CLAMP
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

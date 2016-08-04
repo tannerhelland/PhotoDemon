@@ -391,14 +391,11 @@ Private Sub colorPicker_ColorChanged()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -412,13 +409,11 @@ End Sub
 
 'The user can right-click the preview area to select a new center point
 Private Sub pdFxPreview_PointSelected(xRatio As Double, yRatio As Double)
-    
     cmdBar.MarkPreviewStatus False
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub optShape_Click(Index As Integer)

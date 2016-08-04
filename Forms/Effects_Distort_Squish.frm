@@ -86,24 +86,14 @@ Begin VB.Form FormSquish
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6240
-      TabIndex        =   2
-      Top             =   4200
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
+      Height          =   735
       Left            =   6000
+      TabIndex        =   2
       Top             =   3840
-      Width           =   5835
-      _ExtentX        =   0
-      _ExtentY        =   0
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
       Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormSquish"
@@ -375,17 +365,6 @@ Private Sub cmdBar_ResetClick()
     sltQuality = 2
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
 
     'Suspend previews until the dialog is initialized
@@ -394,6 +373,11 @@ Private Sub Form_Load()
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_WRAP
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

@@ -155,14 +155,11 @@ Private Sub cmdBar_ResetClick()
     chkSmartColors.Value = vbUnchecked
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Create a preview
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

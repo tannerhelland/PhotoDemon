@@ -328,7 +328,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Zoom blur", , getFilterParamString(), UNDO_LAYER
+    Process "Zoom blur", , GetFilterParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -350,10 +350,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then Me.ApplyZoomBlur getFilterParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then Me.ApplyZoomBlur GetFilterParamString(), True, pdFxPreview
 End Sub
 
-Private Function getFilterParamString() As String
+Private Function GetFilterParamString() As String
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -363,7 +363,7 @@ Private Function getFilterParamString() As String
         .AddParam "ZoomBlurCenterY", sltYCenter.Value
     End With
     
-    getFilterParamString = cParams.GetParamString
+    GetFilterParamString = cParams.GetParamString
     
 End Function
 

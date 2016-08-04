@@ -80,13 +80,14 @@ Begin VB.Form FormPolar
       NotchValueCustom=   100
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   2
-      Top             =   3600
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   3240
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdDropDown cboConvert 
       Height          =   375
@@ -96,18 +97,6 @@ Begin VB.Form FormPolar
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   1
-      Left            =   6000
-      Top             =   3210
-      Width           =   5835
-      _ExtentX        =   10292
-      _ExtentY        =   556
-      Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
@@ -214,17 +203,6 @@ Private Sub cmdBar_ResetClick()
     cboEdges.ListIndex = EDGE_ERASE
 End Sub
 
-Private Sub Form_Activate()
-
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
-    cmdBar.MarkPreviewStatus True
-    UpdatePreview
-    
-End Sub
-
 Private Sub Form_Load()
     
     'Disable previews until the dialog is fully initialized
@@ -243,6 +221,11 @@ Private Sub Form_Load()
     cboConvert.AddItem "Polar to rectangular", 1
     cboConvert.AddItem "Polar inversion", 2
     cboConvert.ListIndex = 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

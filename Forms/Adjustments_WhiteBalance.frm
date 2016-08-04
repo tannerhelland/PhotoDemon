@@ -101,13 +101,6 @@ Private Sub cmdBar_ResetClick()
     sltStrength.Value = 0.05
 End Sub
 
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-End Sub
-
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
 Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
@@ -122,6 +115,13 @@ Public Sub AutoWhiteBalance(Optional ByVal percentIgnore As Double = 0.05, Optio
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     FinalizeImageData toPreview, dstPic
     
+End Sub
+
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

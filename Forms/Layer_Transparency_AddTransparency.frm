@@ -88,7 +88,8 @@ Begin VB.Form FormTransparency_Basic
       Min             =   1
       Max             =   254
       Value           =   127
-      DefaultValue    =   127
+      NotchPosition   =   2
+      NotchValueCustom=   127
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -128,25 +129,18 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Add alpha channel", , BuildParams(getRelevantAlpha()), UNDO_LAYER
+    Process "Add alpha channel", , BuildParams(GetRelevantAlpha()), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub cmdBar_ResetClick()
-    sltConstant.Value = 127
-End Sub
-
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Render a preview of the alpha effect
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -158,7 +152,7 @@ Private Sub optAlpha_Click(Index As Integer)
 End Sub
 
 'Convert a DIB from 24bpp to 32bpp, using a constant alpha channel (specified by the user)
-Public Sub simpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub SimpleConvert32bpp(Optional ByVal convertConstant As Long = 255, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
     If Not toPreview Then Message "Adding new alpha channel to image..."
     
@@ -181,7 +175,7 @@ Private Sub sltConstant_Change()
 End Sub
 
 'Translate the current option button selection into a relevant alpha value
-Private Function getRelevantAlpha() As Long
+Private Function GetRelevantAlpha() As Long
 
     Dim convertConstant As Long
     If optAlpha(0) Then
@@ -192,22 +186,17 @@ Private Function getRelevantAlpha() As Long
         convertConstant = sltConstant.Value
     End If
     
-    getRelevantAlpha = convertConstant
+    GetRelevantAlpha = convertConstant
 
 End Function
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then simpleConvert32bpp getRelevantAlpha(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then SimpleConvert32bpp GetRelevantAlpha(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
 

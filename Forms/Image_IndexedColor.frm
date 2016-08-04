@@ -173,10 +173,6 @@ Private Sub cmdBar_ResetClick()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    UpdatePreview
-End Sub
-
 Private Sub Form_Load()
 
     'Suspend previews until the dialog has been fully initialized
@@ -223,6 +219,7 @@ Private Sub Form_Load()
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True
+    UpdatePreview
     
 End Sub
 

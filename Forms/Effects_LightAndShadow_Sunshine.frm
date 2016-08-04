@@ -412,20 +412,17 @@ Private Sub cpShine_ColorChanged()
 End Sub
 
 Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Display the previewed effect in the neighboring window
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
 
     'Disable previewing until the form has been fully initialized
     cmdBar.MarkPreviewStatus False
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
     
 End Sub
 
