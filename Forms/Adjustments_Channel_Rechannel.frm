@@ -43,7 +43,6 @@ Begin VB.Form FormRechannel
       Width           =   11895
       _ExtentX        =   20981
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -144,7 +143,9 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
+Private Sub Form_Load()
+    
+    cmdBar.MarkPreviewStatus False
     
     'Align all channel button strips
     Dim i As Long
@@ -178,8 +179,13 @@ Private Sub Form_Activate()
     
     'Apply translations and visual themes, and supply an initial effect preview
     ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
     
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 'Rechannel an image
@@ -191,7 +197,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     'Parse out the parameter list
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.setParamString parameterList
+    cParams.SetParamString parameterList
     
     Dim dstColorSpace As Long, dstChannel As Long
     dstColorSpace = cParams.GetLong("ColorSpace", 0&)
@@ -206,7 +212,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA, toPreview, dstPic
+    PrepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -323,7 +329,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     Next y
         If Not toPreview Then
             If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
+                If UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
@@ -334,16 +340,12 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     Erase ImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
-End Sub
-
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then RechannelImage GetLocalParamString(), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then RechannelImage GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()

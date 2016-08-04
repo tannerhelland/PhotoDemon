@@ -32,7 +32,6 @@ Begin VB.Form FormShadowHighlight
       Width           =   12120
       _ExtentX        =   21378
       _ExtentY        =   1323
-      BackColor       =   14802140
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -60,6 +59,8 @@ Begin VB.Form FormShadowHighlight
       TabIndex        =   4
       Top             =   120
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltShadowAmount 
          Height          =   705
          Left            =   120
@@ -104,6 +105,8 @@ Begin VB.Form FormShadowHighlight
       TabIndex        =   5
       Top             =   120
       Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltShadowWidth 
          Height          =   705
          Left            =   240
@@ -219,7 +222,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shadow and highlight", , buildParams(sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius), UNDO_LAYER
+    Process "Shadow and highlight", , BuildParams(sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -234,13 +237,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-    
-    'Render an initial preview
     UpdatePreview
-    
 End Sub
 
 'Correct white balance by stretching the histogram and ignoring pixels above or below the 0.05% threshold
@@ -250,22 +247,28 @@ Public Sub ApplyShadowHighlight(ByVal shadowAmount As Double, ByVal midtoneContr
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    PrepImageData dstSA, toPreview, dstPic
     
     AdjustDIBShadowHighlight shadowAmount, midtoneContrast, highlightAmount, shadowWidth, shadowRadius * curDIBValues.previewModifier, highlightWidth, highlightRadius * curDIBValues.previewModifier, workingDIB, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic
     
 End Sub
 
 Private Sub Form_Load()
+    
+    cmdBar.MarkPreviewStatus False
     
     'Set up the basic/advanced panels
     btsOptions.AddItem "basic", 0
     btsOptions.AddItem "advanced", 1
     btsOptions.ListIndex = 0
     btsOptions_Click 0
+    
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
+    cmdBar.MarkPreviewStatus True
     
 End Sub
 
@@ -274,7 +277,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ApplyShadowHighlight sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyShadowHighlight sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius, True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

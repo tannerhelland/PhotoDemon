@@ -117,13 +117,14 @@ Begin VB.Form FormSwirl
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6240
+      Height          =   735
+      Left            =   6000
       TabIndex        =   2
-      Top             =   4920
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   4440
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -150,18 +151,6 @@ Begin VB.Form FormSwirl
       FontSize        =   9
       ForeColor       =   4210752
       Layout          =   1
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      Top             =   4530
-      Width           =   5955
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormSwirl"
@@ -438,14 +427,8 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
-    ApplyThemeAndTranslations Me
-        
-    'Create the preview
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
@@ -457,6 +440,8 @@ Private Sub Form_Load()
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_CLAMP
     
+    'Apply translations and visual themes
+    ApplyThemeAndTranslations Me
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

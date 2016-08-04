@@ -192,14 +192,14 @@ Private Sub SwitchResampleOption()
 End Sub
 
 'Used by refillResampleBoxes, below, to keep track of what resample algorithms we have available
-Private Sub addResample(ByVal rName As String, ByVal rID As Long, ByVal rCategory As ResampleNameType)
+Private Sub AddResample(ByVal rName As String, ByVal rID As Long, ByVal rCategory As ResampleNameType)
     resampleTypes(rCategory, numResamples(rCategory)).Name = rName
     resampleTypes(rCategory, numResamples(rCategory)).ProgramID = rID
     numResamples(rCategory) = numResamples(rCategory) + 1
 End Sub
 
 'Display all available resample algorithms in the combo box (contingent on the "show technical names" check box as well)
-Private Sub refillResampleBoxes()
+Private Sub RefillResampleBoxes()
 
     'Resample Types stores resample data for two combo boxes: one that displays "friendly" names (0),
     ' and one that displays "technical" ones (1).  The numResamples() array stores the number of
@@ -210,30 +210,30 @@ Private Sub refillResampleBoxes()
     'Start with the "friendly" names options.  If FreeImage is available, we will map the friendly
     ' names to more advanced resample algorithms.  Without it, we are stuck with standard algorithms.
     If g_ImageFormats.FreeImageEnabled Then
-        addResample g_Language.TranslateMessage("best for photographs"), RESIZE_LANCZOS, rsFriendly
-        addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BICUBIC_MITCHELL, rsFriendly
-        addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
+        AddResample g_Language.TranslateMessage("best for photographs"), RESIZE_LANCZOS, rsFriendly
+        AddResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BICUBIC_MITCHELL, rsFriendly
+        AddResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
     Else
-        addResample g_Language.TranslateMessage("best for photographs"), RESIZE_BSPLINE, rsFriendly
-        addResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BILINEAR, rsFriendly
-        addResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
+        AddResample g_Language.TranslateMessage("best for photographs"), RESIZE_BSPLINE, rsFriendly
+        AddResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BILINEAR, rsFriendly
+        AddResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
     End If
     
     'Next, populate the "technical" names options.  This list should expose every algorithm we have
     ' access to.  Again, if FreeImage is available, far more options exist.
-    addResample g_Language.TranslateMessage("Nearest Neighbor"), RESIZE_NORMAL, rsTechnical
-    addResample g_Language.TranslateMessage("Halftone"), RESIZE_HALFTONE, rsTechnical
-    addResample g_Language.TranslateMessage("Bilinear"), RESIZE_BILINEAR, rsTechnical
+    AddResample g_Language.TranslateMessage("Nearest Neighbor"), RESIZE_NORMAL, rsTechnical
+    AddResample g_Language.TranslateMessage("Halftone"), RESIZE_HALFTONE, rsTechnical
+    AddResample g_Language.TranslateMessage("Bilinear"), RESIZE_BILINEAR, rsTechnical
     
     'If FreeImage is not enabled, only a single bicubic option will be listed; but if FreeImage IS enabled,
     ' we can list multiple bicubic variants.
     If Not g_ImageFormats.FreeImageEnabled Then
-        addResample g_Language.TranslateMessage("Bicubic"), RESIZE_BSPLINE, rsTechnical
+        AddResample g_Language.TranslateMessage("Bicubic"), RESIZE_BSPLINE, rsTechnical
     Else
-        addResample g_Language.TranslateMessage("B-Spline"), RESIZE_BSPLINE, rsTechnical
-        addResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), RESIZE_BICUBIC_MITCHELL, rsTechnical
-        addResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), RESIZE_BICUBIC_CATMULL, rsTechnical
-        addResample g_Language.TranslateMessage("Sinc (Lanczos 3-lobe)"), RESIZE_LANCZOS, rsTechnical
+        AddResample g_Language.TranslateMessage("B-Spline"), RESIZE_BSPLINE, rsTechnical
+        AddResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), RESIZE_BICUBIC_MITCHELL, rsTechnical
+        AddResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), RESIZE_BICUBIC_CATMULL, rsTechnical
+        AddResample g_Language.TranslateMessage("Sinc (Lanczos 3-lobe)"), RESIZE_LANCZOS, rsTechnical
     End If
     
     'Populate the Friendly combo box with friendly names, and the Technical box with technical ones.
@@ -372,7 +372,7 @@ End Sub
 Private Sub Form_Load()
     
     'Populate the dropdowns with all available resampling algorithms.  (Availability depends on FreeImage.)
-    refillResampleBoxes
+    RefillResampleBoxes
     
     'Populate the "fit" options
     cmbFit.Clear

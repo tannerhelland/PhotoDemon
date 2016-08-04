@@ -276,7 +276,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updateBalanceSlider
+    UpdateBalanceSlider
     UpdatePreview
 End Sub
 
@@ -289,23 +289,20 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub cpHighlight_ColorChanged()
-    updateBalanceSlider
+    UpdateBalanceSlider
     UpdatePreview
 End Sub
 
 Private Sub cpShadow_ColorChanged()
-    updateBalanceSlider
+    UpdateBalanceSlider
     UpdatePreview
 End Sub
 
-Private Sub Form_Activate()
-    
-    'Apply translations and visual themes
+Private Sub Form_Load()
+    cmdBar.MarkPreviewStatus False
     ApplyThemeAndTranslations Me
-    
-    'Display the previewed effect in the neighboring window
+    cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -330,13 +327,7 @@ Private Sub sltBalance_Change()
 End Sub
 
 'Redraw the balance slider gradient to match the currently selected split-toning values
-Private Sub updateBalanceSlider()
-
+Private Sub UpdateBalanceSlider()
     sltBalance.GradientColorLeft = cpShadow.Color
     sltBalance.GradientColorRight = cpHighlight.Color
-
 End Sub
-
-
-
-

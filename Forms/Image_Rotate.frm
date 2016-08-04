@@ -462,8 +462,6 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-        
-    'Allow previews
     cmdBar.MarkPreviewStatus True
     
 End Sub

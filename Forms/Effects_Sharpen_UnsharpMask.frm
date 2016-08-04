@@ -241,7 +241,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
             g2 = srcImageData(QuickVal + 1, y)
             b2 = srcImageData(QuickVal, y)
             
-            tLumDelta = Abs(getLuminance(r, g, b) - getLuminance(r2, g2, b2))
+            tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
                             
             'If the delta is below the specified threshold, sharpen it
             If tLumDelta > umThreshold Then
@@ -316,19 +316,9 @@ Private Sub cmdBar_RequestPreviewUpdate()
     UpdatePreview
 End Sub
 
-Private Sub cmdBar_ResetClick()
-    sltAmount.Value = 1
-End Sub
-
 Private Sub Form_Activate()
-    
-    'Apply visual themes to the form
-    ApplyThemeAndTranslations Me
-    
-    'Draw a preview of the effect
     cmdBar.MarkPreviewStatus True
     UpdatePreview
-    
 End Sub
 
 Private Sub Form_Load()
@@ -341,6 +331,9 @@ Private Sub Form_Load()
     btsQuality.AddItem "better", 1
     btsQuality.AddItem "best", 2
     btsQuality.ListIndex = 0
+    
+    'Apply visual themes to the form
+    ApplyThemeAndTranslations Me
     
 End Sub
 
