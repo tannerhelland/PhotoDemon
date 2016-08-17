@@ -285,7 +285,7 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     Dim curTime As String, prefixString As String
     
     'If this message was logged at startup, skip all the usual formalities and proceed directly to writing the file.
-    If debugMsgType <> PDM_STARTUP_MESSAGE Then
+    If (debugMsgType <> PDM_STARTUP_MESSAGE) Then
         
         'Increase the event count
         m_NumLoggedEvents = m_NumLoggedEvents + 1
@@ -317,7 +317,7 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         End Select
         
         'For special message types, populate their contents now
-        If debugMsgType = PDM_MEM_REPORT Then
+        If (debugMsgType = PDM_MEM_REPORT) Then
         
             m_lastMemCheckEventNum = m_NumLoggedEvents
         
@@ -333,13 +333,13 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             curUserObjects = cSysInfo.GetPhotoDemonResourceUsage(UserObjects)
             
             'Format the strings into something more readable
-            If curMemUsage <> 0 Then
+            If (curMemUsage <> 0) Then
             
                 Dim curMemUsageString As String, maxMemUsageString As String, deltaMemString As String
                 curMemUsageString = Format$(curMemUsage, "###,###,###,##0") & " K"
                 maxMemUsageString = Format$(maxMemUsage, "###,###,###,##0") & " K"
                 deltaMemString = Format$(deltaMem, "###,###,###,##0") & " K"
-                If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
+                If (deltaMem > 0) Then deltaMemString = "+" & deltaMemString
                 
                 Dim gdiUsageString As String, userUsageString As String
                 gdiUsageString = Format$(curGDIObjects, "###,##0")
@@ -372,7 +372,7 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             'Update the module-level last mem check value
             m_lastMemCheck = curMemUsage
         
-        ElseIf debugMsgType = PDM_HDD_REPORT Then
+        ElseIf (debugMsgType = PDM_HDD_REPORT) Then
         
         End If
         
@@ -399,16 +399,16 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         backupMessages(numBackupMessages) = "(" & CStr(numBackupMessages + 1) & ") " & actionString
         numBackupMessages = numBackupMessages + 1
         
-        If numBackupMessages > UBound(backupMessages) Then ReDim Preserve backupMessages(0 To numBackupMessages * 2 - 1) As String
+        If (numBackupMessages > UBound(backupMessages)) Then ReDim Preserve backupMessages(0 To numBackupMessages * 2 - 1) As String
         
     End If
     
     'For messages that are sent en masse (e.g. when loading a new image), the caller can choose to postpone automatic memory updates,
     ' as it will likely raise its own when relevant.
-    If suspendMemoryAutoUpdate Or (debugMsgType = PDM_MEM_REPORT) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
+    If (suspendMemoryAutoUpdate Or (debugMsgType = PDM_MEM_REPORT)) Then m_lastMemCheckEventNum = m_lastMemCheckEventNum + 1
     
     'If we've gone 25 events without a RAM check, provide one now
-    If m_NumLoggedEvents > (m_lastMemCheckEventNum + 25) Then Me.LogAction "", PDM_MEM_REPORT
+    If (m_NumLoggedEvents > (m_lastMemCheckEventNum + 25)) Then Me.LogAction "", PDM_MEM_REPORT
 
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.198</langversion>
+<langversion>6.7.199</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -4443,8 +4443,18 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>&Batch process</original>
-<translation>Satsprocess</translation>
+<original>&Batch operations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Process</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Repair</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5831,6 +5841,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>Batch wizard</original>
+<translation>Batch guiden</translation>
+</phrase>
+
+<phrase>
 <original>Merge layer up</original>
 <translation>Merge skikt upp</translation>
 </phrase>
@@ -6066,11 +6081,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>Batch wizard</original>
-<translation>Batch guiden</translation>
-</phrase>
-
-<phrase>
 <original>Print</original>
 <translation>Tryckt</translation>
 </phrase>
@@ -6279,7 +6289,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 186 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 186 were duplicates of existing phrases, so only 381 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7171,13 +7181,13 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <!-- BEGIN text for Adjustments_Photo_PhotoFilters.frm (FormPhotoFilters) -->
 
 <phrase>
-<original>density</original>
-<translation>densitet</translation>
+<original>available filters</original>
+<translation>tillgängliga filter</translation>
 </phrase>
 
 <phrase>
-<original>available filters</original>
-<translation>tillgängliga filter</translation>
+<original>density</original>
+<translation>densitet</translation>
 </phrase>
 
 <phrase>
@@ -8855,6 +8865,16 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_Artistic_StainedGlass.frm (FormStainedGlass) -->
 
 <phrase>
+<original>distance method</original>
+<translation>avstånd metod</translation>
+</phrase>
+
+<phrase>
+<original>color sampling</original>
+<translation>färg provtagning</translation>
+</phrase>
+
+<phrase>
 <original>cell size</original>
 <translation>cellstorlek</translation>
 </phrase>
@@ -8867,16 +8887,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>shading quality</original>
 <translation>skuggning kvalitet</translation>
-</phrase>
-
-<phrase>
-<original>distance method</original>
-<translation>avstånd metod</translation>
-</phrase>
-
-<phrase>
-<original>color sampling</original>
-<translation>färg provtagning</translation>
 </phrase>
 
 <phrase>
@@ -15113,12 +15123,105 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>after a successful repair</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ensure file extensions match repaired image types</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>repair operations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 image(s) repaired.
+
+Repaired images have been saved to the destination folder.  Unrepaired images remain in their original locations.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Repair complete</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep original (unrepaired) file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>erase original file</original>
+<translation></translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2596</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4518 phrases. -->
-<!-- 1941 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 13251 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1945 are duplicates, so only 2596 unique phrases have been written to file. -->
+<!-- These 2596 phrases contain approximately 13339 total words. -->
 
 </pdData>

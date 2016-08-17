@@ -732,11 +732,11 @@ Public Enum GP_SmoothingMode
     GP_SM_HighSpeed = GP_QM_Low
     GP_SM_HighQuality = GP_QM_High
     GP_SM_None = 3&
-    GP_SM_AntiAlias = 4&
+    GP_SM_Antialias = 4&
 End Enum
 
 #If False Then
-    Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3, GP_SM_AntiAlias = 4
+    Private Const GP_SM_Invalid = GP_QM_Invalid, GP_SM_Default = GP_QM_Default, GP_SM_HighSpeed = GP_QM_Low, GP_SM_HighQuality = GP_QM_High, GP_SM_None = 3, GP_SM_Antialias = 4
 #End If
 
 Public Enum GP_Unit
@@ -1672,7 +1672,7 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
@@ -1697,7 +1697,7 @@ Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoint
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a solid fill brush
     Dim hBrush As Long
@@ -1726,7 +1726,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the line
     Dim iPen As Long
@@ -1766,7 +1766,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a pen, which will be used to stroke the line
@@ -1800,7 +1800,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a pen, which will be used to stroke the circle
     Dim iPen As Long
@@ -1821,7 +1821,7 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'Create a brush, which will be used to stroke the circle
     Dim hBrush As Long
@@ -1844,7 +1844,7 @@ Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1871,7 +1871,7 @@ Public Function GDIPlusFillRectLToDC(ByVal dstDC As Long, ByRef srcRect As RECTL
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1897,7 +1897,7 @@ Public Function GDIPlusFillRectFToDC(ByVal dstDC As Long, ByRef srcRect As RECTF
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
     
-    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode hGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode hGraphics, GP_SM_Antialias Else GdipSetSmoothingMode hGraphics, GP_SM_None
     GdipSetCompositingMode hGraphics, dstFillMode
     
     'Create a solid fill brush using the specified color
@@ -1921,7 +1921,7 @@ Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
     GdipCreateFromHDC dstDC, hGraphics
-    GdipSetSmoothingMode hGraphics, GP_SM_AntiAlias
+    GdipSetSmoothingMode hGraphics, GP_SM_Antialias
     GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
         
@@ -1960,7 +1960,7 @@ Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request matching AA and offset behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     If hqOffsets Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
     
     'Create a solid fill brush
@@ -1984,7 +1984,7 @@ Public Function GDIPlusStrokeEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
         
     'Create a pen with matching attributes
     Dim hPen As Long
@@ -2007,7 +2007,7 @@ Public Function GDIPlusDrawRoundRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias Else GdipSetSmoothingMode iGraphics, GP_SM_None
+    If useAA Then GdipSetSmoothingMode iGraphics, GP_SM_Antialias Else GdipSetSmoothingMode iGraphics, GP_SM_None
     
     'GDI+ doesn't have a direct rounded rectangles call, so we have to do it ourselves with a custom path
     Dim rrPath As Long
@@ -2064,7 +2064,7 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
     GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias
+        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
     Else
         GdipSetSmoothingMode iGraphics, GP_SM_None
     End If
@@ -2106,7 +2106,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
         GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
     End If
     
-    GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias
+    GdipSetSmoothingMode iGraphics, GP_SM_Antialias
     GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
         
@@ -2147,7 +2147,7 @@ Public Function GDIPlusFillDC_Brush(ByRef dstDC As Long, ByVal srcBrushHandle As
     GdipCreateFromHDC dstDC, iGraphics
     
     If useAA Then
-        GdipSetSmoothingMode iGraphics, GP_SM_AntiAlias
+        GdipSetSmoothingMode iGraphics, GP_SM_Antialias
     Else
         GdipSetSmoothingMode iGraphics, GP_SM_None
     End If
@@ -2217,17 +2217,20 @@ End Sub
 Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB) As Boolean
 
     'Used to hold the return values of various GDI+ calls
-    Dim GDIPlusReturn As Long
+    Dim GDIPlusReturn As GP_Result
       
     'Use GDI+ to load the image
     Dim hImage As Long
     GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFilename), hImage)
     
-    If (GDIPlusReturn <> 0) Then
-        GdipDisposeImage hImage
+    If (GDIPlusReturn <> GP_OK) Then
+        If (hImage <> 0) Then GdipDisposeImage hImage
         GDIPlusLoadPicture = False
         Exit Function
     End If
+    
+    'If we're still here, the image (probably) loaded successfully.  Create a destination DIB as necessary.
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
     'Retrieve the image's format as a GUID
     Dim imgCLSID As clsid
@@ -2376,7 +2379,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = GP_OK Then
                 
                 'Set high-quality antialiasing and interpolation
-                GdipSetSmoothingMode tmpGraphics, GP_SM_AntiAlias
+                GdipSetSmoothingMode tmpGraphics, GP_SM_Antialias
                 GdipSetInterpolationMode tmpGraphics, GP_IM_HighQualityBicubic
                 
                 'Attempt to convert the EMF to EMF+ format
@@ -3681,7 +3684,7 @@ Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     dstQuad.Red = Drawing2D.ExtractRed(vbRGB)
     dstQuad.Green = Drawing2D.ExtractGreen(vbRGB)
     dstQuad.Blue = Drawing2D.ExtractBlue(vbRGB)
-    dstQuad.Alpha = alphaValue
+    dstQuad.alpha = alphaValue
     
     Dim placeHolder As tmpLong
     LSet placeHolder = dstQuad
@@ -3694,7 +3697,7 @@ End Function
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQUAD
     CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
-    GetOpacityFromPARGB = CSng(srcQuad.Alpha) * CSng(100# / 255#)
+    GetOpacityFromPARGB = CSng(srcQuad.alpha) * CSng(100# / 255#)
 End Function
 
 'Given a long-type pARGB value returned from GDI+, retrieve just the RGB component in combined vbRGB format
@@ -3703,12 +3706,12 @@ Public Function GetColorFromPARGB(ByVal pARGB As Long) As Long
     Dim srcQuad As RGBQUAD
     CopyMemory_Strict VarPtr(srcQuad), VarPtr(pARGB), 4&
     
-    If (srcQuad.Alpha = 255) Then
+    If (srcQuad.alpha = 255) Then
         GetColorFromPARGB = RGB(srcQuad.Red, srcQuad.Green, srcQuad.Blue)
     Else
     
         Dim tmpSingle As Single
-        tmpSingle = CSng(srcQuad.Alpha) / 255
+        tmpSingle = CSng(srcQuad.alpha) / 255
         
         If (tmpSingle <> 0) Then
             Dim tmpRed As Long, tmpGreen As Long, tmpBlue As Long

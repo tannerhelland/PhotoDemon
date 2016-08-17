@@ -146,7 +146,7 @@ Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As 
     lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, StrPtr(srcString), Len(srcString), 0, 0, 0, 0)
     
     'If the returned length is 0, WideCharToMultiByte failed.  This typically only happens if totally invalid character combinations are found.
-    If lenUTF8 = 0 Then
+    If (lenUTF8 = 0) Then
         
         Debug.Print "StringToUTF8Bytes() failed because WideCharToMultiByte did not return a valid buffer length.)"
         Err.Raise Err.LastDllError, "StringToUTF8Bytes", "WideCharToMultiByte"
@@ -163,7 +163,7 @@ Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As 
         
         'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
         ' fail here, but better safe than sorry.)
-        If lenUTF8 <> 0 Then
+        If (lenUTF8 <> 0) Then
             StringToUTF8Bytes = True
         Else
             Debug.Print "StringToUTF8Bytes() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length.)"

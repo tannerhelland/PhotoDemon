@@ -440,7 +440,7 @@ Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     '
     'To that end, this function uses DirW to assemble a list of files relative to some base folder.  Subfolders are not explicitly
     ' returned; the hope is that you can implicitly determine them from the relative filenames provided.  If you want a list of
-    ' subfolders, make a separate call to retrieveAllFolders, below.
+    ' subfolders, make a separate call to RetrieveAllFolders, below.
     '
     'Finally, two optional pattern parameters are available.  Use one or the other (or neither), but not both.
     '
@@ -548,13 +548,8 @@ Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     ' If at least one file was found, return TRUE. (Note that this value might be incorrect if the user sent us an already-populated
     ' string stack, but that's okay - the assumption is that they'll be processing the stack as one continuous list, so this return
     ' value won't be relevant anyway.)
-    If dstFiles.GetNumOfStrings > 0 Then
-        RetrieveAllFiles = True
-    Else
-        RetrieveAllFiles = False
-    End If
+    RetrieveAllFiles = CBool(dstFiles.GetNumOfStrings > 0)
     
-
 End Function
 
 'Given a base folder, return all subfolders.  Recursion is assumed, but can be waived by setting recurseSubfolders to FALSE.
@@ -1168,9 +1163,9 @@ Public Function GetFilename(ByRef sString As String, Optional ByVal stripExtensi
         Dim dotPos As Long
         dotPos = InStrRev(GetFilename, ".")
         
-        If dotPos > 1 Then
+        If (dotPos > 1) Then
             GetFilename = Left$(GetFilename, dotPos - 1)
-        ElseIf dotPos = 1 Then
+        ElseIf (dotPos = 1) Then
             GetFilename = ""
         End If
         
@@ -1600,7 +1595,7 @@ End Function
 ' Returns: TRUE if successful.
 Friend Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
     
-    If srcHandle <> 0 Then
+    If (srcHandle <> 0) Then
         CloseFileHandle = CBool(CloseHandle(srcHandle) <> 0)
     Else
         #If DEBUGMODE = 1 Then

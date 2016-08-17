@@ -66,7 +66,7 @@ End Function
 ' implications are severe.)
 Public Function PopString(ByRef dstString As String) As Boolean
     
-    If m_NumOfStrings > 0 Then
+    If (m_NumOfStrings > 0) Then
         m_NumOfStrings = m_NumOfStrings - 1
         dstString = m_Strings(m_NumOfStrings)
         PopString = True

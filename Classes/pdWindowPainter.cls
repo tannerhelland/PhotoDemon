@@ -114,12 +114,6 @@ End Sub
 'If a control experiences an event that requires a repaint, e.g. a Click that changes the control's appearance, it can
 ' manually request a repaint from this function.  Note that - by design - this event will invalidate the entire window,
 ' as it's assumed that a manually requested paint affects the entire client area of the window.
-'
-'The optional noDedicatedDC parameter is important if the destination window only uses the temporary system DC provided by
-' the WM_PAINT message.  If a window has a dedicated DC, it can paint to it whenever it wants, and the DWM on modern versions of
-' Windows will acquire those updates with relatively little delay.  If, however, a window has no persistent DC, we need to forcibly
-' generate an immediate UpdateWindow event.  Since we don't magically know the DC state of the caller, it's up to them to notify
-' us of what they want.
 Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     If (m_hWnd <> 0) Then

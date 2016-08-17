@@ -468,7 +468,7 @@ Private Sub chkNormalize_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Custom filter", , getFilterParamString, UNDO_LAYER
+    Process "Custom filter", , GetFilterParamString, UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -524,7 +524,7 @@ Private Sub UpdatePreview()
         End If
             
         'Apply the preview
-        ApplyConvolutionFilter getFilterParamString, True, pdFxPreview
+        ApplyConvolutionFilter GetFilterParamString, True, pdFxPreview
     
         'Reenable previews
         cmdBar.MarkPreviewStatus True
@@ -546,7 +546,7 @@ Private Sub tudOffset_Change()
 End Sub
 
 'Stick all the current filter values into a parameter string, which can then be passed to the ApplyConvolutionFilter function
-Private Function getFilterParamString() As String
+Private Function GetFilterParamString() As String
     
     Dim tmpString As String
     
@@ -572,7 +572,7 @@ Private Function getFilterParamString() As String
     Next i
     
     'Return our completed string!
-    getFilterParamString = tmpString
+    GetFilterParamString = tmpString
     
 End Function
 

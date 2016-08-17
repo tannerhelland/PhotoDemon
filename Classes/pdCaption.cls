@@ -287,7 +287,7 @@ Public Function GetCaptionWidth() As Single
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
-    If Not m_FontSizeVerified Then VerifyFontSize
+    If (Not m_FontSizeVerified) Then VerifyFontSize
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont

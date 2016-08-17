@@ -502,7 +502,7 @@ Public Function GetWidthOfString(ByVal srcString As String) As Long
     
     'If we're not currently selected into a DC, silently plug in a temporary DC
     Dim targetDC As Long, tmpDCActive As Boolean
-    If curDC = 0 Then
+    If (curDC = 0) Then
         tmpDCActive = True
         targetDC = GDI.GetMemoryDC()
         AttachToDC targetDC

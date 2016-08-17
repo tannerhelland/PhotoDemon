@@ -514,7 +514,7 @@ End Function
 'That said, FreeImage/GDI+ are still used intelligently, so this function should reflect PD's full capacity for image format support.
 '
 'The function will return TRUE if successful; detailed load information is not available past that.
-Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True) As Boolean
+Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True, Optional ByVal displayMessagesToUser As Boolean = True, Optional ByVal processColorProfiles As Boolean = True) As Boolean
     
     Dim loadSuccessful As Boolean: loadSuccessful = False
     
@@ -527,8 +527,8 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If Not cFile.FileExist(imagePath) Then
-        PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
+    If (Not cFile.FileExist(imagePath)) Then
+        If displayMessagesToUser Then PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
         QuickLoadImageToDIB = False
         If applyUIChanges Then Processor.MarkProgramBusyState False, True
         Exit Function
@@ -598,21 +598,29 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
                     
     End Select
     
-    
     'Sometimes, our image load functions will think the image loaded correctly, but they will return a blank image.  Check for
     ' non-zero width and height before continuing.
-    If (Not loadSuccessful) Or (targetDIB.GetDIBWidth = 0) Or (targetDIB.GetDIBHeight = 0) Then
+    If (targetDIB Is Nothing) Then
+        loadSuccessful = False
+    Else
+        If (targetDIB.GetDIBWidth = 0) Or (targetDIB.GetDIBHeight = 0) Then loadSuccessful = False
+    End If
+    
+    If (Not loadSuccessful) Then
         
         'Only display an error dialog if the import wasn't canceled by the user
-        If freeImageReturn <> PD_FAILURE_USER_CANCELED Then
-            Message "Failed to load %1", imagePath
-            PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", imagePath
-        Else
-            Message "Layer import canceled."
+        If displayMessagesToUser Then
+            If (freeImageReturn <> PD_FAILURE_USER_CANCELED) Then
+                Message "Failed to load %1", imagePath
+                PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", imagePath
+            Else
+                Message "Layer import canceled."
+            End If
         End If
         
         'Deactivate the (now useless) DIB
-        targetDIB.EraseDIB
+        If (Not tmpPDImage Is Nothing) Then Set tmpPDImage = Nothing
+        If (Not targetDIB Is Nothing) Then Set targetDIB = Nothing
         
         'Re-enable the main interface
         If applyUIChanges Then Processor.MarkProgramBusyState False, True
@@ -625,7 +633,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     End If
     
     'If the image contained an embedded ICC profile, apply it now.
-    ImageImporter.ApplyPostLoadICCHandling targetDIB
+    If processColorProfiles Then ImageImporter.ApplyPostLoadICCHandling targetDIB
     
     'Restore the main interface
     If applyUIChanges Then Processor.MarkProgramBusyState False, True
@@ -829,7 +837,7 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyS, vbCtrlMask Or vbAltMask Or vbShiftMask, "Save copy", FormMain.MnuFile(9), True, False, True, UNDO_NOTHING
         .AddAccelerator vbKeyS, vbCtrlMask Or vbShiftMask, "Save as", FormMain.MnuFile(10), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyF12, 0, "Revert", FormMain.MnuFile(11), True, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuFile(13), True, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyB, vbCtrlMask, "Batch wizard", FormMain.MnuBatch(0), True, False, True, UNDO_NOTHING
         .AddAccelerator vbKeyP, vbCtrlMask, "Print", FormMain.MnuFile(15), True, True, True, UNDO_NOTHING
         .AddAccelerator vbKeyQ, vbCtrlMask, "Exit program", FormMain.MnuFile(17), True, False, True, UNDO_NOTHING
         
