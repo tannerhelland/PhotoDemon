@@ -289,7 +289,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
                 .Blue = tmpData(quickX, y)
                 .Green = tmpData(quickX + 1, y)
                 .Red = tmpData(quickX + 2, y)
-                If m_dibColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
+                If m_dibColorDepth = 32 Then .alpha = tmpData(quickX + 3, y)
             End With
             
         End If
@@ -942,7 +942,7 @@ Public Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     
     End If
     
-    If alsoReleaseDC And (m_dibDC <> 0) Then
+    If (alsoReleaseDC And (m_dibDC <> 0)) Then
         GDI.FreeMemoryDC m_dibDC
         m_dibDC = 0
     End If

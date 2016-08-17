@@ -158,6 +158,8 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Determine image format
     '****************************************************************************
     
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    
     FI_DebugMsg "Running filetype heuristics..."
     
     Dim fileFIF As FREE_IMAGE_FORMAT
@@ -563,7 +565,9 @@ Private Function FI_DetermineFiletype(ByVal srcFilename As String, ByRef dstDIB 
     If (fileFIF = FIF_UNKNOWN) Then fileFIF = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
     
     'By this point, if the file still doesn't show up in FreeImage's database, abandon the import attempt.
-    If (Not FreeImage_FIFSupportsReading(fileFIF)) Then fileFIF = FIF_UNKNOWN
+    If (fileFIF <> FIF_UNKNOWN) Then
+        If (Not FreeImage_FIFSupportsReading(fileFIF)) Then fileFIF = FIF_UNKNOWN
+    End If
     
     'Store this file format inside the DIB
     Dim internalFIF As PHOTODEMON_IMAGE_FORMAT
@@ -575,7 +579,7 @@ Private Function FI_DetermineFiletype(ByVal srcFilename As String, ByRef dstDIB 
             internalFIF = PDIF_PNM
     End Select
     
-    dstDIB.SetOriginalFormat internalFIF
+    If (Not dstDIB Is Nothing) Then dstDIB.SetOriginalFormat internalFIF
     
     FI_DetermineFiletype = fileFIF
     

@@ -48,6 +48,9 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     
     On Error GoTo LoadPDIFail
     
+    'PDI files require a parent pdImage container
+    If (dstImage Is Nothing) Then Set dstImage = New pdImage
+    
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
     Dim pdiReader As pdPackager
@@ -247,7 +250,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
         dstDIB.CreateBlank 16, 16, 32, 0
         
         'That's all there is to it!  Mark the load as successful and carry on.
@@ -682,7 +685,15 @@ End Function
 Public Function LoadGDIPlusImage(ByVal imagePath As String, ByRef dstDIB As pdDIB) As Boolean
     Dim verifyGDISuccess As Boolean
     verifyGDISuccess = GDIPlusLoadPicture(imagePath, dstDIB)
-    LoadGDIPlusImage = CBool(verifyGDISuccess And (dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
+    If verifyGDISuccess Then
+        If (Not dstDIB Is Nothing) Then
+            LoadGDIPlusImage = CBool((dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0))
+        Else
+            LoadGDIPlusImage = False
+        End If
+    Else
+        LoadGDIPlusImage = False
+    End If
 End Function
 
 'BITMAP loading
@@ -695,12 +706,13 @@ Public Function LoadVBImage(ByVal imagePath As String, ByRef dstDIB As pdDIB) As
     Set tmpPicture = New StdPicture
     Set tmpPicture = LoadPicture(imagePath)
     
-    If tmpPicture.Width = 0 Or tmpPicture.Height = 0 Then
+    If ((tmpPicture.Width = 0) Or (tmpPicture.Height = 0)) Then
         LoadVBImage = False
         Exit Function
     End If
     
     'Copy the image into the current pdImage object
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     dstDIB.CreateFromPicture tmpPicture
     
     LoadVBImage = True
@@ -938,6 +950,7 @@ Public Function LoadRawImageBuffer(ByVal imagePath As String, ByRef dstDIB As pd
     On Error GoTo LoadRawImageBufferFail
     
     'Ask the destination DIB to create itself using the raw image buffer data
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     LoadRawImageBuffer = dstDIB.CreateFromFile(imagePath)
     If Not (dstImage Is Nothing) Then
         dstImage.Width = dstDIB.GetDIBWidth

@@ -880,60 +880,89 @@ Public Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Option
 End Function
 
 'INITIALIZE class
+'TODO 7.0: solve the nasty circular reference problem created here.  Circular references are not freed automatically
+' by VB (see http://www.vbaccelerator.com/home/VB/Code/Techniques/Dealing_with_Circular_References/article.html),
+' as neither object's Terminate event is ever called.  This leads to memory issues when many pdImage objects are
+' created, as they are in Batch Processing and other operations.
 Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
     IsActive = False
     hasBeenSavedPDI = False
     hasBeenSavedFlat = False
-    
+
     'Initialize the public storage dictionary
     Set imgStorage = New pdDictionary
-    
+
     'Add initial key/value pairs to the dictionary.  Doing this here saves us from having to check key existence in subsequent functions.
-    
+
         'Lossless filetypes always present an export dialog at least once.  Beyond that point, any use of the Save command will
         ' re-save the file using previous settings.  Save As will still trigger a new dialog, however.
         imgStorage.AddEntry "hasSeenJPEGPrompt", False
         imgStorage.AddEntry "hasSeenJP2Prompt", False
         imgStorage.AddEntry "hasSeenWebPPrompt", False
         imgStorage.AddEntry "hasSeenJXRPrompt", False
-        
+
     'Initialize the composite and canvas buffers
     Set compositeBuffer = New pdDIB
     Set canvasBuffer = New pdDIB
-    
+
     'Initialize the main selection
     Set mainSelection = New pdSelection
     selectionActive = False
-    mainSelection.setSelectionShape sRectangle
+    mainSelection.SetSelectionShape sRectangle
     Set mainSelection.containingPDImage = Me
-    
+
     'Initialize the metadata object (which may not get used, but this prevents errors if other functions try to access metadata)
     Set imgMetadata = New pdMetadata
-    
+
     'Initialize the Undo/Redo handler
     Set undoManager = New pdUndo
     Set undoManager.parentPDImage = Me
-    
+
     'Initialize the viewport manager
     Set imgViewport = New pdViewport
-    
+
     'Create at least one blank layer, so that functions referencing a layer object don't break
     ReDim imgLayers(0) As pdLayer
     Set imgLayers(0) = New pdLayer
-    
+
     'The current layer marker always starts at zero (which is considered the background layer).  To check for the case of
     ' no active layers, do not use m_curLayer, use m_numOfLayers.
     m_curLayer = 0
-    
+
     'By default, list this image as having zero layers
     m_numOfLayers = 0
     m_numOfLayersEverCreated = 0
-    
+
     'Initialize this image's compositor
     Set imgCompositor = New pdCompositor
-        
+
+End Sub
+
+Private Sub Class_Terminate()
+    
+    'Manually release any remaining classes
+    Set imgCompositor = Nothing
+    Set imgViewport = Nothing
+    If (Not undoManager Is Nothing) Then Set undoManager.parentPDImage = Nothing
+    Set undoManager = Nothing
+    Set imgMetadata = Nothing
+    If (Not mainSelection Is Nothing) Then Set mainSelection.containingPDImage = Nothing
+    Set mainSelection = Nothing
+    Set canvasBuffer = Nothing
+    Set compositeBuffer = Nothing
+    Set imgStorage = Nothing
+    
+    'Forcibly release all image layers
+    Dim i As Long
+    If VB_Hacks.IsArrayInitialized(imgLayers) Then
+        For i = 0 To UBound(imgLayers)
+            Set imgLayers(i) = Nothing
+        Next i
+        Erase imgLayers
+    End If
+    
 End Sub
 
 'Pass a given layer's DIB into a new DIB, but pad it against null pixels so that it is the same size as the image.
@@ -1189,19 +1218,6 @@ Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     EraseProcessedSelection = True
 
 End Function
-
-Private Sub Class_Terminate()
-
-    'Release our image compositor
-    Set imgCompositor = Nothing
-
-    'Forcibly release all image layers
-    Dim i As Long
-    For i = 0 To UBound(imgLayers)
-        Set imgLayers(i) = Nothing
-    Next i
-
-End Sub
 
 'Get number of visible/hidden layers
 Public Function GetNumOfVisibleLayers() As Long

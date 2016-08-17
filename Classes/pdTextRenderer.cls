@@ -2150,11 +2150,11 @@ End Sub
 Private Sub Class_Terminate()
     
     'Release any GDI+ objects we created
-    If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
-    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
-    If m_GDIPlusStringFormat <> 0 Then GdipDeleteStringFormat m_GDIPlusStringFormat
+    If (m_GDIPlusFont <> 0) Then GdipDeleteFont m_GDIPlusFont
+    If (m_GDIPlusFontFamily <> 0) Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    If (m_GDIPlusStringFormat <> 0) Then GdipDeleteStringFormat m_GDIPlusStringFormat
     
     'Release any GDI objects we created
-    If m_GDIFont <> 0 Then DeleteObject m_GDIFont
+    If (m_GDIFont <> 0) Then DeleteObject m_GDIFont
     
 End Sub

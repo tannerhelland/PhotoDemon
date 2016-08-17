@@ -92,7 +92,7 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
     entryKey = LCase(entryKey)
     
     'Look for the requested key in the array
-    If m_NumOfEntries > 0 Then
+    If (m_NumOfEntries > 0) Then
     
         Dim keyFound As Long
         keyFound = -1
@@ -125,7 +125,7 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
         'If the key does not exist in our collection, add it anew, resizing the dictionary as necessary
         Else
         
-            If m_NumOfEntries > UBound(m_DictEntries) Then ReDim Preserve m_DictEntries(0 To m_NumOfEntries * 2 - 1) As dictEntry
+            If (m_NumOfEntries > UBound(m_DictEntries)) Then ReDim Preserve m_DictEntries(0 To m_NumOfEntries * 2 - 1) As dictEntry
             
             With m_DictEntries(m_NumOfEntries)
                 .dKey = entryKey
@@ -322,4 +322,8 @@ Private Sub Class_Initialize()
     ReDim m_DictEntries(0 To INIT_DICT_SIZE - 1) As dictEntry
     m_NumOfEntries = 0
         
+End Sub
+
+Private Sub Class_Terminate()
+    Erase m_DictEntries
 End Sub

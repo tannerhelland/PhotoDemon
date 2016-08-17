@@ -1411,6 +1411,17 @@ Private Sub Class_Initialize()
     
 End Sub
 
+Private Sub Class_Terminate()
+    Set layerDIB = Nothing
+    Set layerThumbnail = Nothing
+    Set myTextRenderer = Nothing
+    
+    Dim i As Long
+    For i = 0 To NUM_OF_LOD_CACHES - 1
+        Set lodDIB(i) = Nothing
+    Next i
+End Sub
+
 'Write a copy of the layer header to an XML-format string.  All data necessary to recreate a layer from scratch will be
 ' included in this string, EXCEPT FOR DIB DATA.  For obvious performance reasons, the DIB contents of this layer must be
 ' handled separately, in binary format.
@@ -2398,14 +2409,3 @@ End Function
 Friend Function TmpLODDIB(Optional ByVal cacheID As COMPOSITOR_LOD_CLUE = CLC_Generic) As pdDIB
     Set TmpLODDIB = lodDIB(cacheID)
 End Function
-
-Private Sub Class_Terminate()
-    Set layerDIB = Nothing
-    Set layerThumbnail = Nothing
-    Set myTextRenderer = Nothing
-    
-    Dim i As Long
-    For i = 0 To NUM_OF_LOD_CACHES - 1
-        Set lodDIB(i) = Nothing
-    Next i
-End Sub

@@ -7,6 +7,7 @@ Begin VB.Form FormZoomBlur
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12030
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

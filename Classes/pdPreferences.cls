@@ -166,7 +166,7 @@ Public Sub SetTempPath(ByVal newTempPath As String)
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-        
+    
     'If the folder exists and is writable as-is, great: save it and exit
     If cFile.FolderExist(newTempPath, True) Or cFile.FolderExist(cFile.EnforcePathSlash(newTempPath), True) Then
         TempPath = cFile.EnforcePathSlash(newTempPath)

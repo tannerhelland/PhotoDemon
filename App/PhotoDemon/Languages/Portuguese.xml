@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.198</langversion>
+<langversion>6.7.199</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -4452,8 +4452,18 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>&Batch process</original>
-<translation>processo Batch</translation>
+<original>&Batch operations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Process</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Repair</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5840,6 +5850,11 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 </phrase>
 
 <phrase>
+<original>Batch wizard</original>
+<translation>assistente Batch</translation>
+</phrase>
+
+<phrase>
 <original>Merge layer up</original>
 <translation>Mesclar camada up</translation>
 </phrase>
@@ -6075,11 +6090,6 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 </phrase>
 
 <phrase>
-<original>Batch wizard</original>
-<translation>assistente Batch</translation>
-</phrase>
-
-<phrase>
 <original>Print</original>
 <translation>impressão</translation>
 </phrase>
@@ -6288,7 +6298,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>Remover canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 186 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 186 were duplicates of existing phrases, so only 381 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7180,13 +7190,13 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <!-- BEGIN text for Adjustments_Photo_PhotoFilters.frm (FormPhotoFilters) -->
 
 <phrase>
-<original>density</original>
-<translation>densidade</translation>
+<original>available filters</original>
+<translation>filtros disponíveis</translation>
 </phrase>
 
 <phrase>
-<original>available filters</original>
-<translation>filtros disponíveis</translation>
+<original>density</original>
+<translation>densidade</translation>
 </phrase>
 
 <phrase>
@@ -8864,6 +8874,16 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <!-- BEGIN text for Effects_Artistic_StainedGlass.frm (FormStainedGlass) -->
 
 <phrase>
+<original>distance method</original>
+<translation>método de distância</translation>
+</phrase>
+
+<phrase>
+<original>color sampling</original>
+<translation>amostragem de cor</translation>
+</phrase>
+
+<phrase>
 <original>cell size</original>
 <translation>tamanho de célula</translation>
 </phrase>
@@ -8876,16 +8896,6 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 <phrase>
 <original>shading quality</original>
 <translation>qualidade de sombreamento</translation>
-</phrase>
-
-<phrase>
-<original>distance method</original>
-<translation>método de distância</translation>
-</phrase>
-
-<phrase>
-<original>color sampling</original>
-<translation>amostragem de cor</translation>
 </phrase>
 
 <phrase>
@@ -15122,12 +15132,105 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>after a successful repair</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ensure file extensions match repaired image types</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>repair operations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 image(s) repaired.
+
+Repaired images have been saved to the destination folder.  Unrepaired images remain in their original locations.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Repair complete</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep original (unrepaired) file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>erase original file</original>
+<translation></translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2577</phrasecount>
+<phrasecount>2596</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4518 phrases. -->
-<!-- 1941 are duplicates, so only 2577 unique phrases have been written to file. -->
-<!-- These 2577 phrases contain approximately 13251 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1945 are duplicates, so only 2596 unique phrases have been written to file. -->
+<!-- These 2596 phrases contain approximately 13339 total words. -->
 
 </pdData>
