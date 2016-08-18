@@ -618,8 +618,12 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             End If
         End If
         
-        'Deactivate the (now useless) DIB
-        If (Not tmpPDImage Is Nothing) Then Set tmpPDImage = Nothing
+        'Deactivate the (now useless) DIB and parent object
+        If (Not tmpPDImage Is Nothing) Then
+            tmpPDImage.DeactivateImage
+            Set tmpPDImage = Nothing
+        End If
+        
         If (Not targetDIB Is Nothing) Then Set targetDIB = Nothing
         
         'Re-enable the main interface

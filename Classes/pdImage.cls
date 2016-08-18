@@ -780,16 +780,17 @@ End Function
 'When this DIB is no longer being used, we can deactivate it to save on resources.
 Public Sub DeactivateImage()
     
-    'Erase the composite buffer
+    'Erase any internal image buffers
     If Not (compositeBuffer Is Nothing) Then Set compositeBuffer = Nothing
-    
-    'Erase the canvas buffer
     If Not (canvasBuffer Is Nothing) Then Set canvasBuffer = Nothing
     
-    'If a selection exists, wipe it
-    If Not (mainSelection Is Nothing) Then Set mainSelection = Nothing
+    'Erase the selection manager (*very* important because of circular references)
+    If Not (mainSelection Is Nothing) Then
+        Set mainSelection.containingPDImage = Nothing
+        Set mainSelection = Nothing
+    End If
         
-    'Deactivate the Undo/Redo handler
+    'Deactivate the Undo/Redo handler (*very* important because of circular references)
     If Not (undoManager Is Nothing) Then
         undoManager.ClearUndos
         Set undoManager.parentPDImage = Nothing
@@ -804,7 +805,7 @@ Public Sub DeactivateImage()
     
     'Release all layers
     Dim i As Long
-    If m_numOfLayers > 0 Then
+    If (m_numOfLayers > 0) Then
         For i = 0 To UBound(imgLayers)
             Set imgLayers(i) = Nothing
         Next i
@@ -812,9 +813,7 @@ Public Sub DeactivateImage()
     End If
     
     'It doesn't make a big difference, but we can also empty out this image's String-type variables to save a bit of space.
-    imgStorage.DeleteEntry "OriginalFileName"
-    imgStorage.DeleteEntry "OriginalFileExtension"
-    imgStorage.DeleteEntry "CurrentLocationOnDisk"
+    Set imgStorage = Nothing
     
     'Mark this image as inactive
     IsActive = False
