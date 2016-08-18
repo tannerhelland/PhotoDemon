@@ -668,7 +668,10 @@ Public Sub FinalShutdown()
     
     Dim i As Long
     For i = LBound(pdImages) To UBound(pdImages)
-        Set pdImages(i) = Nothing
+        If (Not pdImages(i) Is Nothing) Then
+            pdImages(i).DeactivateImage
+            Set pdImages(i) = Nothing
+        End If
     Next i
     
     'Delete any remaining temp files in the cache

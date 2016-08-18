@@ -529,7 +529,7 @@ Private Sub SetUIMode_NoImages()
         
     'If no images are currently open, but images were previously opened during this session, release any memory associated
     ' with those images.  This helps minimize PD's memory usage at idle.
-    If g_NumOfImagesLoaded >= 1 Then
+    If (g_NumOfImagesLoaded >= 1) Then
     
         'Loop through all pdImage objects and make sure they've been deactivated
         Dim i As Long
@@ -1839,15 +1839,15 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
 End Function
 
 'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
-Public Function APIWidth(ByVal srcHWnd As Long) As Long
+Public Function APIWidth(ByVal srcHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHWnd, tmpRect
+    GetWindowRect srcHwnd, tmpRect
     APIWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Public Function APIHeight(ByVal srcHWnd As Long) As Long
+Public Function APIHeight(ByVal srcHwnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHWnd, tmpRect
+    GetWindowRect srcHwnd, tmpRect
     APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
