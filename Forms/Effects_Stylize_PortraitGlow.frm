@@ -130,7 +130,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     'Change the exposure boost to a 1-based measurement, where 1 = no change
     glowBoost = 1# + (glowBoost / 100)
     
-    If Not toPreview Then Message "Applying petroleum jelly to camera lens..."
+    If (Not toPreview) Then Message "Applying petroleum jelly to camera lens..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -166,7 +166,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     End If
     
     'Failsafe verification for the glow radius
-    If glowRadius < 1 Then glowRadius = 1
+    If (glowRadius < 1) Then glowRadius = 1
     
     'Start by creating the blurred DIB
     If CreateApproximateGaussianBlurDIB(glowRadius, workingDIB, blurDIB, 3, toPreview, progBarMax) Then
@@ -174,7 +174,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
         progBarOffset = finalY * 3 + finalX * 3
         
         'Now that we have a gaussian DIB created in blurDIB, we can apply any subsequent exposure adjustments.
-        If glowBoost > 0 Then
+        If (glowBoost > 0) Then
             
             Dim cLut As pdFilterLUT
             Set cLut = New pdFilterLUT
@@ -280,7 +280,4 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("style", btsStyle.ListIndex, "radius", sltRadius.Value, "exposure", sltBoost.Value, "strength", sltStrength.Value)
 End Function
-
-
-
 

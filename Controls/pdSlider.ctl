@@ -598,6 +598,3 @@ Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTi
     pdssPrimary.AssignTooltip newTooltip, newTooltipTitle, newTooltipIcon
     tudPrimary.AssignTooltip newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-
-
-

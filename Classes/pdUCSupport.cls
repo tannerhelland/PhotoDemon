@@ -206,8 +206,10 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         If Not g_IsProgramRunning Then UpdateColorList
         
         'Flicker-free double-buffered window painting.  For IDE support of windowless controls, we have no choice but to subclass.
+        ' (Note that in older versions, we only requested erase events if noBackBufferRequired = TRUE.  That has since changed,
+        '  and we now request erase events for all types of user controls.)
         Set m_WindowPainter = New pdWindowPainter
-        If g_IsProgramRunning Then m_WindowPainter.StartPainter m_hWnd, , noBackBufferRequired
+        If g_IsProgramRunning Then m_WindowPainter.StartPainter m_hWnd, , True
         
         'Reliable, API-based Got/LostFocus detection
         Set m_FocusDetector = New pdFocusDetector
@@ -792,14 +794,16 @@ Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As L
     
 End Sub
 
-'Erase events will *only* be raised if the underlying control is using "no backbuffer" mode
+'Erase events must be responded to, regardless of paint mode.  (Previously, they were only handled if m_NoBackBufferMode = TRUE,
+' but because the events may be raised post-dialog-shown, we must handle them regardless to avoid flicker.)
 Private Sub m_WindowPainter_EraseBkgnd()
     
+    Dim targetDC As Long
+    If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
+    
+    'If we are currently using "no backbuffer" mode, just paint our backcolor to the DC
     If m_NoBackBufferMode Then
     
-        Dim targetDC As Long
-        If (m_hDC <> 0) Then targetDC = m_hDC Else targetDC = m_WindowPainter.GetPaintStructDC
-        
         Dim finalBackColor As Long
         If m_BackColor = -1 Then
             finalBackColor = m_Colors.RetrieveColor(UCS_Background)
@@ -807,12 +811,14 @@ Private Sub m_WindowPainter_EraseBkgnd()
             finalBackColor = m_BackColor
         End If
         
-        'debug.Print "ERASING NOW: " &
-        
-        GDI.FillRectToDC targetDC, -1, -1, Me.GetControlWidth + 2, Me.GetControlHeight + 2, finalBackColor
-        
+        GDI.FillRectToDC targetDC, 0, 0, Me.GetControlWidth + 1, Me.GetControlHeight + 1, finalBackColor
+    
+    'If backbuffering is active (as it is with most PD controls), copy the relevant portion of the buffer into place.
+    Else
+        BitBlt targetDC, 0, 0, Me.GetControlWidth + 1, Me.GetControlHeight + 1, m_BackBuffer.GetDIBDC, 0, 0, vbSrcCopy
+        m_BackBuffer.FreeFromDC
     End If
-        
+    
 End Sub
 
 'Rather than bother the caller with paint requests, we handle them internally, by flipping the back buffer to the underlying

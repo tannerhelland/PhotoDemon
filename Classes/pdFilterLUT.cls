@@ -257,7 +257,7 @@ Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
     
     For i = 0 To numOfPoints - 1
         For xPos = curvePoints(i).x To curvePoints(i + 1).x
-            yPos = getCurvePoint(i, xPos, curvePoints, p, u)
+            yPos = GetCurvePoint(i, xPos, curvePoints, p, u)
             If xPos < minX Then minX = xPos
             If xPos > maxX Then maxX = xPos
             If yPos > 255 Then yPos = 255
@@ -426,10 +426,10 @@ Private Sub SetPandU(ByVal numOfPoints As Long, ByRef srcPoints() As POINTFLOAT,
 End Sub
 
 'Spline retrieval functions
-Private Function getCurvePoint(ByVal i As Long, ByVal v As Double, ByRef srcPoints() As POINTFLOAT, ByRef p() As Double, ByRef u() As Double) As Double
+Private Function GetCurvePoint(ByVal i As Long, ByVal v As Double, ByRef srcPoints() As POINTFLOAT, ByRef p() As Double, ByRef u() As Double) As Double
     Dim t As Double
     t = (v - srcPoints(i).x) / u(i)
-    getCurvePoint = t * srcPoints(i + 1).y + (1 - t) * srcPoints(i).y + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
+    GetCurvePoint = t * srcPoints(i + 1).y + (1 - t) * srcPoints(i).y + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
 End Function
 
 'Original required spline function:
@@ -718,14 +718,14 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     For y = initY To finalY
         
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
+        g = ImageData(QuickVal + 1, y)
+        r = ImageData(QuickVal + 2, y)
         
         'Assign the look-up table values
-        ImageData(QuickVal + 2, y) = cLut(r)
-        ImageData(QuickVal + 1, y) = cLut(g)
         ImageData(QuickVal, y) = cLut(b)
+        ImageData(QuickVal + 1, y) = cLut(g)
+        ImageData(QuickVal + 2, y) = cLut(r)
         
     Next y
         If Not suppressMessages Then
