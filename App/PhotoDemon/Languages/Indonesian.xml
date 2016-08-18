@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.141</langversion>
+<langversion>6.6.142</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -15136,11 +15136,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>after a successful repair</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>include subfolders</original>
 <translation></translation>
 </phrase>
@@ -15151,7 +15146,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>ensure file extensions match repaired image types</original>
+<original>attempt to repair image files</original>
 <translation></translation>
 </phrase>
 
@@ -15166,12 +15161,27 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>repair operations</original>
+<original>repair options</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>progress</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
 <translation></translation>
 </phrase>
 
@@ -15186,14 +15196,19 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>%1 image(s) repaired.
-
-Repaired images have been saved to the destination folder.  Unrepaired images remain in their original locations.</original>
+<original>Repairs complete.  %1 files repaired.</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Repair complete</original>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
 <translation></translation>
 </phrase>
 
@@ -15207,26 +15222,16 @@ Repaired images have been saved to the destination folder.  Unrepaired images re
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>keep original (unrepaired) file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>erase original file</original>
-<translation></translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_BatchRepair.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2596</phrasecount>
+<phrasecount>2597</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1945 are duplicates, so only 2596 unique phrases have been written to file. -->
-<!-- These 2596 phrases contain approximately 13339 total words. -->
+<!-- As of this build, PhotoDemon contains 4543 phrases. -->
+<!-- 1946 are duplicates, so only 2597 unique phrases have been written to file. -->
+<!-- These 2597 phrases contain approximately 13354 total words. -->
 
 </pdData>
