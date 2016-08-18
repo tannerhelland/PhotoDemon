@@ -93,6 +93,8 @@ End Sub
 ' load this class.
 Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False, Optional ByVal wantEraseMessages As Boolean = False)
     
+    If (Not g_IsProgramRunning) Then Exit Sub
+    
     'Release the existing subclasser, if any
     If Not (cSubclass Is Nothing) Then
         If (m_hWnd <> 0) Then cSubclass.ssc_UnSubclass m_hWnd

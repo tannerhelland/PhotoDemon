@@ -81,7 +81,7 @@ Private m_WindowRect As winRect
 ' bypass VB's faulty handling.
 Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
     
-    If srcHwnd = 0 Then
+    If (srcHwnd = 0) Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  pdWindowSize.AttachToHWnd received a null hWnd - was this intentional??"
         #End If
@@ -92,7 +92,7 @@ Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEv
         'Activate the subclasser conditionally; some UCs don't need to receive API size/move events
         m_SubclassActive = subclassMoveSizeEvents
         
-        If m_SubclassActive Then
+        If m_SubclassActive And g_IsProgramRunning Then
             Set cSubclass = New cSelfSubHookCallback
             cSubclass.ssc_Subclass m_hWnd, , , Me
             cSubclass.ssc_AddMsg m_hWnd, MSG_AFTER, WM_SIZE, WM_MOVE
@@ -166,6 +166,8 @@ End Sub
 
 'Update the module-level copy of the attached hWnd's rect, automatically translated into our parent's coordinate space.
 Private Sub UpdateWinRect()
+    
+    If (m_hWnd = 0) Then Exit Sub
     
     'Retrieve a copy of the window rect *in screen coordinates*
     GetWindowRect m_hWnd, m_WindowRect

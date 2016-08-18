@@ -252,7 +252,7 @@ Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         
         If customKeyEvents Then
             Set m_KeyEvents = New pdInputKeyboard
-            m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
+            If g_IsProgramRunning Then m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
         End If
         
     Else
@@ -1131,8 +1131,10 @@ Private Sub Class_Terminate()
     If Not (m_ToolTipManager Is Nothing) Then Set m_ToolTipManager = Nothing
     
     'As a final step, release this class's internal subclasser
-    m_Subclass.ssc_Terminate
-    Set m_Subclass = Nothing
+    If Not (m_Subclass Is Nothing) Then
+        m_Subclass.ssc_Terminate
+        Set m_Subclass = Nothing
+    End If
     
     'If the user control was registered for internal PD messages, de-register it with PD's central marshaler.
     If m_CustomInternalMessagesActive Then UserControl_Support.RemoveMessageRecipient m_hWnd
