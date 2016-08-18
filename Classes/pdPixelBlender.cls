@@ -118,7 +118,7 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         End Select
         
         'Composited results will have been placed inside the temporary top DIB copy.  Apply the final blend now!
-        If applyFinalBlend Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom, yOffsetBottom, finalX - initX, finalY - initY, 0, 0, finalX - initX, finalY - initY, alphaModifier * 255
+        If applyFinalBlend Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom, yOffsetBottom, finalX - initX + 1, finalY - initY + 1, 0, 0, finalX - initX + 1, finalY - initY + 1, alphaModifier * 255
         
         'That's all there is to it!
 
@@ -558,7 +558,12 @@ Private Sub ApplyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                         newR = topR * bottomR
                         newG = topG * bottomG
                         newB = topB * bottomB
-                        
+                    
+                    Case BL_SCREEN
+                        newR = 1 - (1 - bottomR) * (1 - topR)
+                        newG = 1 - (1 - bottomG) * (1 - topG)
+                        newB = 1 - (1 - bottomB) * (1 - topB)
+                    
                     Case Else
                         newR = topR
                         newG = topG
