@@ -61,6 +61,22 @@ End Enum
 
 Private m_ThemeAccent As PD_THEME_ACCENT
 
+'Extra API functions for painting form backgrounds
+Private Const WM_PAINT As Long = &HF
+Private Const WM_ERASEBKGND As Long = &H14
+Private Declare Function ValidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT) As Long
+Private Declare Function EndPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function BeginPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As Long
+
+'As part of the painting process, we're gonna be generating a looot of paint messages.  To avoid churn, we'll declare
+' a single paint struct and update rect up front.
+Private m_PaintStruct As PAINTSTRUCT
+Private m_UpdateRect As RECT
+
 'XML object for parsing theme files.
 Private m_XML As pdXML
 
@@ -111,6 +127,10 @@ End Enum
 
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
 Private m_UniversalColors As pdThemeColors
+
+'As a convenience, we manually paint form backgrounds (as VB won't paint them before first display, if the background
+' color changes in Form_Load - as it does for us)
+Private m_Subclass As cSelfSubHookCallback
 
 'Pull the current default PD theme from the user preferences file, and attempt to load it.  If the theme can't be loaded,
 ' we'll fall back to PD's default light-on-dark theme.
@@ -525,6 +545,16 @@ Friend Function GetGenericUIColor(ByVal colorID As PD_UI_COLOR_LIST, Optional By
     GetGenericUIColor = m_UniversalColors.RetrieveColor(colorID, enabledState, activeState, hoverState)
 End Function
 
+Public Sub AddWindowPainter(ByVal srcHWnd As Long)
+    If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
+    m_Subclass.ssc_Subclass srcHWnd, 0, 1, Me
+    m_Subclass.ssc_AddMsg srcHWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+End Sub
+
+Public Sub RemoveWindowPainter(ByVal srcHWnd As Long)
+    m_Subclass.ssc_UnSubclass srcHWnd
+End Sub
+
 Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
     #If DEBUGMODE = 1 Then
         If msgIsNonErrorFeedback Then
@@ -539,3 +569,79 @@ Private Sub Class_Initialize()
     Set m_XML = New pdXML
     Set m_UniversalColors = New pdThemeColors
 End Sub
+
+Private Sub Class_Terminate()
+    If (Not m_Subclass Is Nothing) Then Set m_Subclass = Nothing
+End Sub
+
+'All messages subclassed by m_Subclass are handled here.
+Private Sub myWndProc(ByVal bBefore As Boolean, _
+                      ByRef bHandled As Boolean, _
+                      ByRef lReturn As Long, _
+                      ByVal hWnd As Long, _
+                      ByVal uMsg As Long, _
+                      ByVal wParam As Long, _
+                      ByVal lParam As Long, _
+                      ByRef lParamUser As Long)
+'*************************************************************************************************
+'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
+'*              you will know unless the callback for the uMsg value is specified as
+'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
+'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
+'*              message being passed to the original WndProc and (if set to do so) the after
+'*              original WndProc callback.
+'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
+'*              and/or, in an after the original WndProc callback, act on the return value as set
+'*              by the original WndProc.
+'* lng_hWnd   - Window handle.
+'* uMsg       - Message value.
+'* wParam     - Message related data.
+'* lParam     - Message related data.
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+    
+    Dim tmpDC As Long
+    
+    If (uMsg = WM_PAINT) Then
+        
+        'Ignore paint requests for empty regions
+        If GetUpdateRect(hWnd, m_UpdateRect, 0) <> 0 Then
+        
+            tmpDC = BeginPaint(hWnd, m_PaintStruct)
+            
+            With m_UpdateRect
+                GDI.FillRectToDC tmpDC, .Left, .Top, .Right - .Left, .Bottom - .Top, g_Themer.GetGenericUIColor(UI_Background)
+            End With
+            
+            'End painting (note: BeginPaint automatically validated the window's contents, so we don't need to do any
+            ' additional validation here)
+            EndPaint hWnd, m_PaintStruct
+            
+        End If
+        
+        'Mark the message as handled and exit
+        bHandled = True
+        lReturn = 0
+                
+    ElseIf (uMsg = WM_ERASEBKGND) Then
+        
+        tmpDC = wParam
+        GetClientRect hWnd, m_UpdateRect
+        With m_UpdateRect
+            GDI.FillRectToDC tmpDC, .Left, .Top, .Right - .Left, .Bottom - .Top, g_Themer.GetGenericUIColor(UI_Background)
+        End With
+        
+        bHandled = True
+        lReturn = 1
+        
+    End If
+
+' *************************************************************
+' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
+' -------------------------------------------------------------
+' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
+'   add this warning banner to the last routine in your class
+' *************************************************************
+End Sub
+
+

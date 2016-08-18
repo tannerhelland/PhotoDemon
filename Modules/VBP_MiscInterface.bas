@@ -1295,6 +1295,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
     dstForm.BackColor = g_Themer.GetGenericUIColor(UI_Background)
+    g_Themer.AddWindowPainter dstForm.hWnd
     dstForm.MouseIcon = LoadPicture("")
     dstForm.MousePointer = 0
     
@@ -1478,6 +1479,7 @@ End Sub
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Object)
+    g_Themer.RemoveWindowPainter tForm.hWnd
     Set tForm = Nothing
 End Sub
 
@@ -1837,15 +1839,15 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
 End Function
 
 'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
-Public Function APIWidth(ByVal srcHwnd As Long) As Long
+Public Function APIWidth(ByVal srcHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHwnd, tmpRect
+    GetWindowRect srcHWnd, tmpRect
     APIWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Public Function APIHeight(ByVal srcHwnd As Long) As Long
+Public Function APIHeight(ByVal srcHWnd As Long) As Long
     Dim tmpRect As winRect
-    GetWindowRect srcHwnd, tmpRect
+    GetWindowRect srcHWnd, tmpRect
     APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
