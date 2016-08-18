@@ -545,14 +545,16 @@ Friend Function GetGenericUIColor(ByVal colorID As PD_UI_COLOR_LIST, Optional By
     GetGenericUIColor = m_UniversalColors.RetrieveColor(colorID, enabledState, activeState, hoverState)
 End Function
 
-Public Sub AddWindowPainter(ByVal srcHWnd As Long)
+Public Sub AddWindowPainter(ByVal srcHwnd As Long)
+    If (Not g_IsProgramRunning) Then Exit Sub
     If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
-    m_Subclass.ssc_Subclass srcHWnd, 0, 1, Me
-    m_Subclass.ssc_AddMsg srcHWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+    m_Subclass.ssc_Subclass srcHwnd, 0, 1, Me
+    m_Subclass.ssc_AddMsg srcHwnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
 End Sub
 
-Public Sub RemoveWindowPainter(ByVal srcHWnd As Long)
-    m_Subclass.ssc_UnSubclass srcHWnd
+Public Sub RemoveWindowPainter(ByVal srcHwnd As Long)
+    If (Not g_IsProgramRunning) Then Exit Sub
+    m_Subclass.ssc_UnSubclass srcHwnd
 End Sub
 
 Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)

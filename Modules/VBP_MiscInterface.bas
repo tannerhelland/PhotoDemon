@@ -1479,8 +1479,12 @@ End Sub
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Object)
+    
+    'This function may be triggered during compilation; avoid this
+    If (Not g_IsProgramRunning) Then Exit Sub
     g_Themer.RemoveWindowPainter tForm.hWnd
     Set tForm = Nothing
+    
 End Sub
 
 'Given a pdImage object, generate an appropriate caption for the main PhotoDemon window.

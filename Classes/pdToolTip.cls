@@ -226,6 +226,8 @@ Private m_ToolCollection() As pdTooltipItem
 ' tooltip can easily be recreated by calling this function again with Len(textString) > 0)
 Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd As Long, ByVal textString As String, Optional ByVal titleString As String = "", Optional ByVal toolTipIcon As TT_ICON_TYPE = TTI_NONE) As Boolean
     
+    If (Not g_IsProgramRunning) Then Exit Function
+    
     'Check for invalid requests
     If (childWindowHwnd = 0) Or (parentWindowHwnd = 0) Then
         Debug.Print "WARNING! setTooltip received a 0 hWnd for either a child or parent.  Don't do that!"
@@ -251,7 +253,7 @@ Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     'See if a translation is currently active.  If it is, we will auto-translate both the tooltip text and title automatically.
     Dim isTranslationActive As Boolean
     If Not (g_Language Is Nothing) Then
-        isTranslationActive = g_Language.translationActive
+        isTranslationActive = g_Language.TranslationActive
     Else
         isTranslationActive = False
     End If
