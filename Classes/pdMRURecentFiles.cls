@@ -56,11 +56,11 @@ Private m_NumOfEntries As Long
 Private cFile As pdFSO
 
 'If a hash currently exists for a given file, return it so we can avoid hashing it again
-Private Function doesMRUHashExist(ByVal filePath As String) As String
+Private Function DoesMRUHashExist(ByVal filePath As String) As String
 
     'Check to see if this file has been requested before.  If it has, return our previous
     ' hash instead of recalculating one from scratch.  If it does not exist, return "".
-    If m_NumOfEntries > 0 Then
+    If (m_NumOfEntries > 0) Then
     
         'Loop through all previous hashes from this session
         Dim i As Long
@@ -68,7 +68,7 @@ Private Function doesMRUHashExist(ByVal filePath As String) As String
         
             'If this file path matches one we've already calculated, return that instead of calculating it again
             If StrComp(m_Entries(i).actualFilePath, filePath, vbTextCompare) = 0 Then
-                doesMRUHashExist = m_Entries(i).hashedFilename
+                DoesMRUHashExist = m_Entries(i).hashedFilename
                 Exit Function
             End If
         
@@ -77,57 +77,49 @@ Private Function doesMRUHashExist(ByVal filePath As String) As String
     End If
     
     'If we made it all the way here, this file does not exist in the current list.  A new hash must be generated.
-    doesMRUHashExist = ""
+    DoesMRUHashExist = ""
 
 End Function
 
 'Return a 16-character hash of a specific MRU entry.  (This is used to generate unique menu icon filenames.)
-Private Function getMRUHash(ByVal filePath As String) As String
+Private Function GetMRUHash(ByVal filePath As String) As String
     
     'Check to see if this hash already exists
     Dim prevHash As String
-    prevHash = doesMRUHashExist(filePath)
+    prevHash = DoesMRUHashExist(filePath)
     
     'If it does, return it.
-    If Len(prevHash) <> 0 Then
-        getMRUHash = prevHash
+    If (Len(prevHash) <> 0) Then
+        GetMRUHash = prevHash
         Exit Function
     
     'If no correlating hash was found, calculate one from scratch.
     Else
     
-        'Prepare an SHA-256 hash calculator
-        Dim cSHA2 As CSHA256
-        Set cSHA2 = New CSHA256
-            
-        'Retrieve a hash of this filename
-        Dim hString As String
-        hString = cSHA2.SHA256(filePath)
-                
-        'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
-        ' This is too long for a filename, so take only the first sixteen characters of the hash.
-        hString = Left$(hString, 16)
+        'Use a crypto object to hash the original filename into a short, anonymized version; this is used
+        ' for the (publicly viewable) thumbnail images.
+        Dim cHash As pdCrypto: Set cHash = New pdCrypto
         
         'Save this hash so we don't have to calculate it again in the future
         m_Entries(m_NumOfEntries).actualFilePath = filePath
-        m_Entries(m_NumOfEntries).hashedFilename = hString
+        m_Entries(m_NumOfEntries).hashedFilename = cHash.QuickHashString(filePath)
+        GetMRUHash = m_Entries(m_NumOfEntries).hashedFilename
+        
+        'Before exiting, make room for new entries
         m_NumOfEntries = m_NumOfEntries + 1
         ReDim Preserve m_Entries(0 To m_NumOfEntries) As MRUEntry
         
-        'Return the calculated hash
-        getMRUHash = hString
-    
     End If
     
 End Function
 
 'Given a file path, return the matching thumbnail path.  (PD stores all thumbnails to the same subfolder, currently /Data/Icons.)
-Private Function getMRUThumbnailPath(ByVal imagePath As String) As String
-    getMRUThumbnailPath = g_UserPreferences.getIconPath & getMRUHash(imagePath) & ".png"
+Private Function GetMRUThumbnailPath(ByVal imagePath As String) As String
+    GetMRUThumbnailPath = g_UserPreferences.GetIconPath & GetMRUHash(imagePath) & ".png"
 End Function
 
 'Saves a thumbnail PNG of a pdImage object.  The thumbnail is saved to the /Data/Icons directory
-Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
+Private Sub SaveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
 
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Saving recent file menu thumbnail..."
@@ -135,7 +127,7 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     
     'First, generate a path at which to save the file in question
     Dim sFilename As String
-    sFilename = getMRUThumbnailPath(imagePath)
+    sFilename = GetMRUThumbnailPath(imagePath)
     
     'Request a thumbnail from the current image, and store it in a temporary DIB.  Note that we can use large (64x64)
     ' thumbnails on Vista, but we are limited to 16x16 on XP.
@@ -151,7 +143,7 @@ Private Sub saveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     Saving.QuickSaveDIBAsPNG sFilename, mruThumb
     
     'Regardless of how our thumbnail was saved, we can now delete the temporary thumbnail DIB
-    mruThumb.eraseDIB
+    mruThumb.EraseDIB
     Set mruThumb = Nothing
 
 End Sub
@@ -168,11 +160,11 @@ Private Property Get IMRUList_SupportsThumbnails() As Boolean
 End Property
 
 Private Function IMRUList_GetThumbnailPath(ByRef mruManager As pdMRUManager, ByVal Index As Long) As String
-    IMRUList_GetThumbnailPath = getMRUThumbnailPath(mruManager.getSpecificMRU(Index))
+    IMRUList_GetThumbnailPath = GetMRUThumbnailPath(mruManager.getSpecificMRU(Index))
 End Function
 
 Private Sub IMRUList_SaveThumbnailImage(ByRef filePath As String, ByRef srcImage As pdImage)
-    saveMRUThumbnail filePath, srcImage
+    SaveMRUThumbnail filePath, srcImage
 End Sub
 
 'When a list clear is requested, this class needs to perform potential maintenance on the File > Open Recent submenu
@@ -197,7 +189,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
     'Use a pdFSO instance to enumerate PNG files for us.
     Dim pngList As pdStringStack
     
-    If cFile.RetrieveAllFiles(g_UserPreferences.getIconPath, pngList, False, False, "png") Then
+    If cFile.RetrieveAllFiles(g_UserPreferences.GetIconPath, pngList, False, False, "png") Then
     
         Dim chkFile As String, fileOK As Boolean
         Dim i As Long
@@ -208,12 +200,14 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
         'Enumerate all PNGs in the folder
         Do While pngList.PopString(chkFile)
             
-            'Compare this file to the hash for all current MRU entries
-            If numEntries > 0 Then
+            fileOK = False
+            
+            'Compare this file to the hashes for all current MRU entries
+            If (numEntries > 0) Then
                 For i = 0 To numEntries - 1
                     
                     'If this hash matches one on file, mark it as OK.
-                    If StrComp(chkFile, mruManager.getMRUThumbnailPath(i), vbTextCompare) = 0 Then
+                    If StrComp(chkFile, mruManager.GetMRUThumbnailPath(i), vbTextCompare) = 0 Then
                         fileOK = True
                         Exit For
                     End If
@@ -224,7 +218,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
             End If
         
             'If an MRU hash does not exist for this file, delete the file
-            If Not fileOK Then cFile.KillFile chkFile
+            If (Not fileOK) Then cFile.KillFile chkFile
             
         Loop
     
@@ -335,7 +329,7 @@ Private Sub IMRUList_EraseEntryAtPosition(ByRef mruManager As pdMRUManager, ByVa
     If (Index >= 0) And (Index < m_NumOfEntries) Then
     
         'Kill the thumbnail at this position
-        cFile.KillFile getMRUThumbnailPath(mruManager.getSpecificMRU(Index))
+        cFile.KillFile GetMRUThumbnailPath(mruManager.getSpecificMRU(Index))
     
     End If
     
@@ -343,7 +337,7 @@ End Sub
 
 'PD's main file list (File > Open Recent menu) is saved to the preset path with a hard-coded name
 Private Property Get IMRUList_XMLFileName() As String
-    IMRUList_XMLFileName = g_UserPreferences.getPresetPath & "Program_RecentFiles.xml"
+    IMRUList_XMLFileName = g_UserPreferences.GetPresetPath & "Program_RecentFiles.xml"
 End Property
 
 'Unneeded interface methods are collected here

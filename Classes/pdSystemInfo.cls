@@ -285,22 +285,8 @@ Private m_PhotoDemonProcID As Long, m_TriedToRetrieveID As Boolean
 ' hashing it, then returning the first 16 characters from the hash.  So many random steps are not necessary, but
 ' they help ensure that the IDs are actually unique.
 Public Function GetUniqueSessionID() As String
-
-    'Start by retrieving a random GUID
-    Dim randomGUID As String
-    randomGUID = GetArbitraryGUID(True)
-    
-    'Hash the returned GUID
-    Dim cSHA2 As CSHA256
-    Set cSHA2 = New CSHA256
-        
-    Dim hString As String
-    hString = cSHA2.SHA256(randomGUID)
-            
-    'The SHA-256 function returns a 64 character string (256 / 8 = 32 bytes, but 64 characters due to hex representation).
-    ' This is too long for a filename, so take only the first sixteen characters of the hash.
-    GetUniqueSessionID = Left$(hString, 16)
-
+    Dim cCrypto As pdCrypto: Set cCrypto = New pdCrypto
+    GetUniqueSessionID = cCrypto.QuickHashString(GetArbitraryGUID(True))
 End Function
 
 'Sometimes, a unique string is needed.  Use this function to retrieve an arbitrary GUID from WAPI.

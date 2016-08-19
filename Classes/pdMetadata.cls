@@ -1341,9 +1341,6 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
     Dim newXMLString As String, tmpXMLPath As String
     Dim fileNum As Integer
     
-    Dim cSHA2 As CSHA256
-    Set cSHA2 = New CSHA256
-    
     'Retrieve the XML setting, if any, from the target image object, and write metadata accordingly.
     Dim metadataParams As String
     metadataParams = srcImage.imgStorage.GetEntry_String("MetadataSettings", vbNullString)
@@ -1389,11 +1386,12 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
             tmpXMLPath = GetDirectory(outputPath)
                     
             'We'll also append a partial hash to the temporary XML filename to avoid overwriting any existing XML files in the folder
-            tmpXMLPath = tmpXMLPath & "metadata_" & Left$(cSHA2.SHA256(CStr(Timer) & outputPath), 16) & ".xml"
+            Dim cHash As pdCrypto: Set cHash = New pdCrypto
+            tmpXMLPath = tmpXMLPath & "metadata_" & cHash.QuickHashString(CStr(Timer) & outputPath) & ".xml"
             
             'Write the XML file
-            xmlEngine.loadXMLFromString newXMLString
-            xmlEngine.writeXMLToFile tmpXMLPath, True
+            xmlEngine.LoadXMLFromString newXMLString
+            xmlEngine.WriteXMLToFile tmpXMLPath, True
         
         Else
             tmpXMLPath = vbNullString

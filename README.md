@@ -130,7 +130,6 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Yusuke Kamiyamane for the Fugue icon set (CC-BY-3.0) (http://p.yusukekamiyamane.com/)
 * Everaldo and The Crystal Project for certain menu and button icons (LGPL) (http://www.everaldo.com/crystal/)
 * The Tango Icon Library for certain menu and button icons (public-domain) (http://tango.freedesktop.org/Tango_Icon_Library)
-* Phil Fresle for a native-VB implementation of SHA-2 hashing (http://www.frez.co.uk/vb6.aspx)
 * Pornel Lesinski, Greg Roelofs, and Jef Poskanzer for the pngquant tool (http://pngquant.org/)
 * Jerry Huxtable and JHLabs for an excellent reference on Distort-style filters (Apache 2.0) (http://www.jhlabs.com/ip/filters/index.html)
 * Phil Harvey for the comprehensive ExifTool metadata handler (choice of GPL or Artistic License) (http://www.sno.phy.queensu.ca/~phil/exiftool/)
