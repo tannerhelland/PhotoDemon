@@ -59,11 +59,11 @@ Private cFile As pdFSO
 Private cUnicode As pdUnicode
 
 'When creating a new MRU file, or overwriting a corrupt one, use this to initialize the XML header.
-Private Sub resetXMLData()
-    m_XMLEngine.prepareNewXML "Recent files"
-    m_XMLEngine.writeBlankLine
-    m_XMLEngine.writeComment "Everything past this point is recent file data.  Entries are sorted in reverse chronological order."
-    m_XMLEngine.writeBlankLine
+Private Sub ResetXMLData()
+    m_XMLEngine.PrepareNewXML "Recent files"
+    m_XMLEngine.WriteBlankLine
+    m_XMLEngine.WriteComment "Everything past this point is recent file data.  Entries are sorted in reverse chronological order."
+    m_XMLEngine.WriteBlankLine
 End Sub
 
 'Truncates a path to a specified number of characters by replacing path components with ellipses.
@@ -107,26 +107,26 @@ Public Function getSpecificMRUCaption(ByVal Index As Long) As String
 End Function
 
 'Return the path to an MRU thumbnail file.  (PD uses PNGs only, but any valid image format should technically work.)
-Public Function getMRUThumbnailPath(ByVal Index As Long) As String
+Public Function GetMRUThumbnailPath(ByVal Index As Long) As String
     
     'Query the child to see if it supports thumbnail images
     If m_MRUList.SupportsThumbnails Then
         
         'Ignore thumbnail requests if the current list is empty
-        If m_NumEntries > 0 Then
+        If (m_NumEntries > 0) Then
         
             If (Index >= 0) And (Index <= m_NumEntries) Then
-                getMRUThumbnailPath = m_MRUList.GetThumbnailPath(Me, Index)
+                GetMRUThumbnailPath = m_MRUList.GetThumbnailPath(Me, Index)
             Else
-                getMRUThumbnailPath = ""
+                GetMRUThumbnailPath = ""
             End If
             
         Else
-            getMRUThumbnailPath = ""
+            GetMRUThumbnailPath = ""
         End If
     
     Else
-        getMRUThumbnailPath = ""
+        GetMRUThumbnailPath = ""
     End If
     
 End Function
@@ -138,18 +138,18 @@ Public Sub MRU_LoadFromFile()
     If cFile.FileExist(m_XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
-        If Not m_XMLEngine.loadXMLFile(m_XMLFilename) Then
+        If Not m_XMLEngine.LoadXMLFile(m_XMLFilename) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "The Recent Files XML data at " & m_XMLFilename & " didn't validate.  Creating a new list now..."
             #End If
             
-            resetXMLData
+            ResetXMLData
             
         End If
         
     Else
-        resetXMLData
+        ResetXMLData
     End If
     
     'Allow the child to run any required initialization steps
@@ -166,7 +166,7 @@ Public Sub MRU_LoadFromFile()
     ' all values corresponding to the given tag name and attribute.  (We must do this dynamically, because we don't
     ' know how many recent filenames are actually saved - it could be anywhere from 0 to RECENT_FILE_COUNT.)
     Dim allRecentFiles() As String
-    If m_XMLEngine.findAllAttributeValues(allRecentFiles, "mruEntry", "id") Then
+    If m_XMLEngine.FindAllAttributeValues(allRecentFiles, "mruEntry", "id") Then
         
         m_NumEntries = UBound(allRecentFiles) + 1
         
@@ -194,7 +194,7 @@ Public Sub MRU_LoadFromFile()
         Dim i As Long
         For i = 0 To m_NumEntries - 1
         
-            m_FileList(i) = m_XMLEngine.getUniqueTag_String("filePath", , , "mruEntry", "id", allRecentFiles(i))
+            m_FileList(i) = m_XMLEngine.GetUniqueTag_String("filePath", , , "mruEntry", "id", allRecentFiles(i))
             
             'Let the child do any UI preparation required on a per-item basis
             m_MRUList.OnItemLoad Me, i, getMRUCaption(m_FileList(i))
@@ -222,23 +222,23 @@ Public Sub MRU_SaveToFile()
     On Error GoTo MRUSaveFailure
 
     'Reset whatever XML data we may have stored at present - we will be rewriting the full MRU file from scratch.
-    resetXMLData
+    ResetXMLData
     
     'Only write new entries if MRU data exists for them
     If m_NumEntries > 0 Then
     
         Dim i As Long
         For i = 0 To m_NumEntries - 1
-            m_XMLEngine.writeTagWithAttribute "mruEntry", "id", CStr(i), "", True
-            m_XMLEngine.writeTag "filePath", m_FileList(i)
-            m_XMLEngine.closeTag "mruEntry"
-            m_XMLEngine.writeBlankLine
+            m_XMLEngine.WriteTagWithAttribute "mruEntry", "id", CStr(i), "", True
+            m_XMLEngine.WriteTag "filePath", m_FileList(i)
+            m_XMLEngine.CloseTag "mruEntry"
+            m_XMLEngine.WriteBlankLine
         Next i
         
     End If
     
     'With the XML file now complete, write it out to file
-    m_XMLEngine.writeXMLToFile m_XMLFilename
+    m_XMLEngine.WriteXMLToFile m_XMLFilename
     
     'Unload all corresponding menu entries.  (This doesn't matter when the program is closing, but we also use this
     ' routine to refresh the MRU list after changing the caption preference - and for that an unload is required.)
@@ -373,7 +373,7 @@ Public Sub MRU_ClearList()
     
     'Erase any existing XML file, and reset the in-memory version
     cFile.KillFile m_XMLFilename
-    resetXMLData
+    ResetXMLData
     
     'Allow the child to perform any related UI clean-up
     m_MRUList.AfterListCleared

@@ -661,9 +661,9 @@ Public Sub ResetMenuIcons()
         For i = 0 To numOfMRUFiles
         
             'Start by seeing if an image exists for this MRU entry
-            tmpFilename = g_RecentFiles.getMRUThumbnailPath(i)
+            tmpFilename = g_RecentFiles.GetMRUThumbnailPath(i)
             
-            If Len(tmpFilename) <> 0 Then
+            If (Len(tmpFilename) <> 0) Then
             
                 'If the file exists, add it to the MRU icon handler
                 If cFile.FileExist(tmpFilename) Then
