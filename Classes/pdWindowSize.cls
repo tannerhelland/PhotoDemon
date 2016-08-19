@@ -197,9 +197,11 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If Not (cSubclass Is Nothing) Then
-        cSubclass.ssc_UnSubclass m_hWnd
-        m_hWnd = 0
+    If ((Not (cSubclass Is Nothing)) And g_IsProgramRunning) Then
+        If (m_hWnd <> 0) Then
+            cSubclass.ssc_UnSubclass m_hWnd
+            m_hWnd = 0
+        End If
         cSubclass.ssc_Terminate
     End If
 End Sub

@@ -681,7 +681,7 @@ Private Sub ToggleCaptureMode(ByVal toActivate As Boolean)
     Static prevCursorHandle As Long
     
     'Activation is requested!
-    If toActivate And (Not screenCaptureActive) Then
+    If toActivate And (Not screenCaptureActive) And g_IsProgramRunning Then
         
         'Disable any current capture or cursor handlers
         'cmdCapture.OverrideMouseCapture True
@@ -706,7 +706,7 @@ Private Sub ToggleCaptureMode(ByVal toActivate As Boolean)
     End If
     
     'Deactivation is requested!
-    If (Not toActivate) And screenCaptureActive Then
+    If (Not toActivate) And screenCaptureActive And g_IsProgramRunning Then
     
         screenCaptureActive = False
         

@@ -58,7 +58,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If m_hWnd <> 0 Then
+    If ((m_hWnd <> 0) And (Not cSubclass Is Nothing) And g_IsProgramRunning) Then
         cSubclass.ssc_UnSubclass m_hWnd
         cSubclass.ssc_Terminate
     End If
@@ -66,10 +66,10 @@ End Sub
 
 'This function should be called in a UserControl's Initialize event.  For best results, check for the IDE and do not
 ' load this class.
-Public Sub startFocusTracking(ByVal srcHwnd As Long)
+Public Sub StartFocusTracking(ByVal srcHwnd As Long)
     
     'Release any existing subclassers
-    If Not (cSubclass Is Nothing) And (m_hWnd <> 0) Then
+    If ((Not (cSubclass Is Nothing)) And (m_hWnd <> 0)) And g_IsProgramRunning Then
         cSubclass.ssc_UnSubclass m_hWnd
         cSubclass.ssc_Terminate
     End If
@@ -77,7 +77,7 @@ Public Sub startFocusTracking(ByVal srcHwnd As Long)
     m_hWnd = srcHwnd
     
     'Subclass all necessary messages for proper focus detection
-    If (m_hWnd <> 0) Then
+    If ((m_hWnd <> 0) And g_IsProgramRunning) Then
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass m_hWnd, , , Me
         cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_NCACTIVATE, WM_KILLFOCUS, WM_SETFOCUS

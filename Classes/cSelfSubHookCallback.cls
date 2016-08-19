@@ -640,8 +640,14 @@ Private Function zMap_VFunction(vFuncTarget As Long, _
         Exit Function
     End If
     
-    If thunkCol Is Nothing Then
-        zError "zMap_VFunction", "Thunk hasn't been initialized"
+    If (thunkCol Is Nothing) Then
+        If (vType = HookThunk) Then
+            zError "zMap_VFunction", "Hooking thunk hasn't been initialized"
+        ElseIf (vType = SubclassThunk) Then
+            zError "zMap_VFunction", "Subclass thunk hasn't been initialized"
+        Else
+            zError "zMap_VFunction", "Callback thunk hasn't been initialized"
+        End If
     Else
         If thunkCol.Count Then
             On Error GoTo Catch

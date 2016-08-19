@@ -163,6 +163,8 @@ End Sub
 'Hooks cannot be released while actually inside the hookproc.  Call this function to safely release a hook, even from within a hookproc.
 Private Sub SafelyReleaseHook()
     
+    If (Not g_IsProgramRunning) Then Exit Sub
+    
     'If we're still inside the hook, activate the failsafe timer release mechanism
     If m_InHookNow Then
         If (Not (m_ReleaseTimer Is Nothing)) Then
@@ -267,7 +269,7 @@ End Function
 
 Public Sub DeactivateHook(Optional ByVal forciblyReleaseInstantly As Boolean = True)
     
-    If (Not (m_Subclass Is Nothing)) And m_HookingActive Then
+    If (Not (m_Subclass Is Nothing)) And m_HookingActive And g_IsProgramRunning Then
         
         If forciblyReleaseInstantly Then
             m_HookingActive = False

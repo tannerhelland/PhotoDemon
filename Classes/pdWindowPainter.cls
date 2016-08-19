@@ -83,8 +83,8 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If Not (cSubclass Is Nothing) Then
-        If m_hWnd <> 0 Then cSubclass.ssc_UnSubclass m_hWnd
+    If ((Not (cSubclass Is Nothing)) And g_IsProgramRunning) Then
+        If (m_hWnd <> 0) Then cSubclass.ssc_UnSubclass m_hWnd
         cSubclass.ssc_Terminate
     End If
 End Sub
@@ -93,22 +93,24 @@ End Sub
 ' load this class.
 Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boolean = False, Optional ByVal wantEraseMessages As Boolean = False)
     
-    If (Not g_IsProgramRunning) Then Exit Sub
+    If g_IsProgramRunning Then
     
-    'Release the existing subclasser, if any
-    If Not (cSubclass Is Nothing) Then
-        If (m_hWnd <> 0) Then cSubclass.ssc_UnSubclass m_hWnd
-        cSubclass.ssc_Terminate
-    End If
+        'Release the existing subclasser, if any
+        If Not (cSubclass Is Nothing) Then
+            If (m_hWnd <> 0) Then cSubclass.ssc_UnSubclass m_hWnd
+            cSubclass.ssc_Terminate
+        End If
+        
+        m_hWnd = srcHwnd
     
-    m_hWnd = srcHwnd
+        'Subclass all necessary messages for proper window painting
+        If (m_hWnd <> 0) Then
+            If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
+            cSubclass.ssc_Subclass m_hWnd, , 1, Me, , , isAPIWindow
+            cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+            m_WantEraseMessages = wantEraseMessages
+        End If
     
-    'Subclass all necessary messages for proper window painting
-    If (m_hWnd <> 0) Then
-        If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
-        cSubclass.ssc_Subclass m_hWnd, , 1, Me, , , isAPIWindow
-        cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
-        m_WantEraseMessages = wantEraseMessages
     End If
     
 End Sub

@@ -213,7 +213,7 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         
         'Reliable, API-based Got/LostFocus detection
         Set m_FocusDetector = New pdFocusDetector
-        If g_IsProgramRunning Then m_FocusDetector.startFocusTracking m_hWnd
+        If g_IsProgramRunning Then m_FocusDetector.StartFocusTracking m_hWnd
         
         'Reliable, API-based, DPI-aware move/size functionality
         Set m_MoveSize = New pdWindowSize
@@ -498,12 +498,16 @@ End Sub
 ' handle message marshaling.
 Public Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInternalToPD As Boolean = False)
     
-    m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, wMsg
+    If g_IsProgramRunning Then
+        
+        m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, wMsg
     
-    'If the message is internal to PD, register the hWnd+message pair with PD's central marshaler
-    If msgIsInternalToPD Then
-        UserControl_Support.AddMessageRecipient m_hWnd, wMsg
-        m_CustomInternalMessagesActive = True
+        'If the message is internal to PD, register the hWnd+message pair with PD's central marshaler
+        If msgIsInternalToPD Then
+            UserControl_Support.AddMessageRecipient m_hWnd, wMsg
+            m_CustomInternalMessagesActive = True
+        End If
+        
     End If
     
 End Sub
@@ -1098,7 +1102,7 @@ End Sub
 
 Private Sub Class_Initialize()
 
-    Set m_Subclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set m_Subclass = New cSelfSubHookCallback
     m_BackColor = -1
     m_RedrawRequestCount = 0
     m_Visibility = False
@@ -1132,7 +1136,7 @@ Private Sub Class_Terminate()
     
     'As a final step, release this class's internal subclasser
     If Not (m_Subclass Is Nothing) Then
-        m_Subclass.ssc_Terminate
+        If g_IsProgramRunning Then m_Subclass.ssc_Terminate
         Set m_Subclass = Nothing
     End If
     
