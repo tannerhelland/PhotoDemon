@@ -650,14 +650,14 @@ Public Function RestoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
         With pdWindows(windowIndex)
         
             'Window rect values
-            .LastPosition.x1 = CLng(xmlEngine.getUniqueTag_String("windowLeft", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.y1 = CLng(xmlEngine.getUniqueTag_String("windowTop", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.x2 = CLng(xmlEngine.getUniqueTag_String("windowRight", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.y2 = CLng(xmlEngine.getUniqueTag_String("windowBottom", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.x1 = CLng(xmlEngine.GetUniqueTag_String("windowLeft", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.y1 = CLng(xmlEngine.GetUniqueTag_String("windowTop", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.x2 = CLng(xmlEngine.GetUniqueTag_String("windowRight", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.y2 = CLng(xmlEngine.GetUniqueTag_String("windowBottom", 0, , "windowEntry", "id", .windowName))
             
             'Window and border state
-            .lastWindowState = CLng(xmlEngine.getUniqueTag_String("windowState", 0, , "windowEntry", "id", .windowName))
-            .lastWindowBorder = CLng(xmlEngine.getUniqueTag_String("windowStyle", 0, , "windowEntry", "id", .windowName))
+            .lastWindowState = CLng(xmlEngine.GetUniqueTag_String("windowState", 0, , "windowEntry", "id", .windowName))
+            .lastWindowBorder = CLng(xmlEngine.GetUniqueTag_String("windowStyle", 0, , "windowEntry", "id", .windowName))
             
             'Apply those values to the window, starting with border style, then state, then coordinates
             .FormReference.BorderStyle = .lastWindowBorder
@@ -709,7 +709,7 @@ End Function
 Public Function LoadAllWindowLocations() As Boolean
     
     'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
-    If (Not xmlEngine.LoadXMLFile(windowDataPath)) Or Not (xmlEngine.isPDDataType("Window locations")) Then
+    If (Not xmlEngine.LoadXMLFile(windowDataPath)) Or Not (xmlEngine.IsPDDataType("Window locations")) Then
         Debug.Print "No window location data found.  A new window location file has been created."
         ResetXMLData
     End If
@@ -728,9 +728,9 @@ Public Function SaveAllWindowLocations() As Boolean
         'Check for this window preset in the file.  If it does not exist, add it now.
         If Not xmlEngine.DoesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
         
-            xmlEngine.writeTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
-            xmlEngine.closeTag "windowEntry"
-            xmlEngine.writeBlankLine
+            xmlEngine.WriteTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
+            xmlEngine.CloseTag "windowEntry"
+            xmlEngine.WriteBlankLine
         
         End If
         
@@ -738,30 +738,30 @@ Public Function SaveAllWindowLocations() As Boolean
         With pdWindows(i)
         
             'Window rect values
-            xmlEngine.updateTag "windowLeft", .LastPosition.x1, "windowEntry", "id", .windowName
-            xmlEngine.updateTag "windowTop", .LastPosition.y1, "windowEntry", "id", .windowName
-            xmlEngine.updateTag "windowRight", .LastPosition.x2, "windowEntry", "id", .windowName
-            xmlEngine.updateTag "windowBottom", .LastPosition.y2, "windowEntry", "id", .windowName
+            xmlEngine.UpdateTag "windowLeft", .LastPosition.x1, "windowEntry", "id", .windowName
+            xmlEngine.UpdateTag "windowTop", .LastPosition.y1, "windowEntry", "id", .windowName
+            xmlEngine.UpdateTag "windowRight", .LastPosition.x2, "windowEntry", "id", .windowName
+            xmlEngine.UpdateTag "windowBottom", .LastPosition.y2, "windowEntry", "id", .windowName
             
             'Window and border state
-            xmlEngine.updateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
-            xmlEngine.updateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
+            xmlEngine.UpdateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
+            xmlEngine.UpdateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
             
         End With
         
     Next i
     
     'Write the data out to file
-    xmlEngine.writeXMLToFile windowDataPath
+    xmlEngine.WriteXMLToFile windowDataPath
 
 End Function
 
 'Reset the XML engine.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
 Private Function ResetXMLData()
-    xmlEngine.prepareNewXML "Window locations"
-    xmlEngine.writeBlankLine
-    xmlEngine.writeComment "Everything past this point is window location data for various PhotoDemon dialogs."
-    xmlEngine.writeBlankLine
+    xmlEngine.PrepareNewXML "Window locations"
+    xmlEngine.WriteBlankLine
+    xmlEngine.WriteComment "Everything past this point is window location data for various PhotoDemon dialogs."
+    xmlEngine.WriteBlankLine
 End Function
 
 'The window manager keeps a persistent list of last-known locations for every window it accesses.  Window locations are updated when:
@@ -805,22 +805,26 @@ Public Sub RegisterMainForm(ByRef parentForm As Form)
     mainWindowIndex = numOfPDWindows
     pdWindows(numOfPDWindows).windowName = parentForm.Name
     
-    'Apply any unique styles to the parent window
-    Dim newWinStyle As Long
-    newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED
+    If g_IsProgramRunning Then
     
-    'On Vista+, layered windows consume a bit more resources but they play very nicely with DWM
-    If g_IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
-    SetWindowLong parentForm.hWnd, GWL_EXSTYLE, newWinStyle
-    
-    'Subclass the main window
-    cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SIZE
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING, WM_NCLBUTTONDBLCLK
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_SYSCOMMAND
-    
-    'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
-    RestoreWindowLocation numOfPDWindows, 0
+        'Apply any unique styles to the parent window
+        Dim newWinStyle As Long
+        newWinStyle = GetWindowLong(parentForm.hWnd, GWL_EXSTYLE) Or WS_EX_COMPOSITED
+        
+        'On Vista+, layered windows consume a bit more resources but they play very nicely with DWM
+        If g_IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
+        SetWindowLong parentForm.hWnd, GWL_EXSTYLE, newWinStyle
+        
+        'Subclass the main window
+        cSubclass.ssc_Subclass mainWindowHwnd, , , Me
+        cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SIZE
+        cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING, WM_NCLBUTTONDBLCLK
+        cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_SYSCOMMAND
+        
+        'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
+        RestoreWindowLocation numOfPDWindows, 0
+        
+    End If
     
     'Resize the window array for future additions
     numOfPDWindows = numOfPDWindows + 1
@@ -845,7 +849,7 @@ Public Sub UnregisterForm(ByRef srcForm As Form)
             
             'Release this window's subclassing
             pdWindows(i).subclassingReleased = True
-            cSubclass.ssc_UnSubclass pdWindows(i).hWnd
+            If g_IsProgramRunning Then cSubclass.ssc_UnSubclass pdWindows(i).hWnd
             pdWindows(i).hWnd = 0
             
             'Remove our reference to this form (if we don't, it will remain in memory)
@@ -868,7 +872,7 @@ Private Sub Class_Initialize()
     m_AutoRefreshMode = True
     
     'Prepare the subclasser
-    Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
     'Prepare the XML handler, and retrieve window location data from file (if it exists)
     Set xmlEngine = New pdXML
@@ -884,7 +888,7 @@ End Sub
 Private Sub Class_Terminate()
 
     'Release all subclassing
-    cSubclass.ssc_Terminate
+    If g_IsProgramRunning Then cSubclass.ssc_Terminate
         
     'Manually clear all form references
     Dim i As Long

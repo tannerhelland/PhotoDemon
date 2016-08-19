@@ -354,7 +354,7 @@ Private Sub Class_Initialize()
     m_MouseTrackingActive(0) = False
     
     'Initialize the subclasser
-    Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
     'Reset the cursor handle for this instance
     m_CursorHandle = 0
@@ -565,11 +565,10 @@ Private Function RequestMouseTrackingForHwnd(ByVal targetHwnd As Long)
 End Function
 
 Private Sub Class_Terminate()
-
-    'Release all subclassing and hooking
-    cSubclass.shk_TerminateHooks
-    cSubclass.ssc_Terminate
-    
+    If g_IsProgramRunning Then
+        cSubclass.shk_TerminateHooks
+        cSubclass.ssc_Terminate
+    End If
 End Sub
 
 'Note that the vKey constant below is a virtual key mapping, not (necessarily) a standard VB key constant - plan accordingly!

@@ -76,7 +76,8 @@ End Sub
 
 Private Sub Class_Terminate()
     If Not (m_Subclass Is Nothing) Then
-        m_Subclass.ssc_Terminate
+        If g_IsProgramRunning Then m_Subclass.ssc_Terminate
+        Set m_Subclass = Nothing
     End If
 End Sub
 

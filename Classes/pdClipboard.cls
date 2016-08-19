@@ -877,7 +877,7 @@ Public Function SetClipboardData_DelayedRendering(ByVal clipFormatID As Predefin
         m_DelayedRenderingActive = True
         
         'If we haven't already, subclass the main window and start listening for three clipboard-related messages
-        If (m_Subclass Is Nothing) Then
+        If (m_Subclass Is Nothing) And g_IsProgramRunning Then
             Set m_Subclass = New cSelfSubHookCallback
             If (m_OwnerHWnd <> 0) Then
                 m_Subclass.ssc_Subclass m_OwnerHWnd, 0, 1, Me

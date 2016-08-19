@@ -121,7 +121,7 @@ Private Const SIF_TRACKPOS As Long = &H10
 Private m_ScrollHwnd As Long
 
 'Handle to the owner (a picture box or user control, typically)
-Private m_OwnerHwnd As Long
+Private m_OwnerHWnd As Long
 
 'Most API calls handle window position and movement in terms of a rect-type variable; we use it here to
 ' automatically size the scroll bar to match its owner.
@@ -176,46 +176,50 @@ Private m_OrientationHorizontal As Boolean
 ' set all properties individually.
 '
 'IMPORTANT NOTE! You must initialize the scroll bar before attempting to assign it any values, including min/max ones!
-Public Sub initializeScrollBarWindow(ByVal ownerHwnd As Long, ByVal OrientationHorizontal As Boolean, ByVal scrMin As Long, ByVal scrMax As Long, ByVal scrValue As Long, ByVal scrSmallChange As Long, ByVal scrLargeChange As Long, Optional ByVal PageSize As Long = -1)
+Public Sub InitializeScrollBarWindow(ByVal ownerHwnd As Long, ByVal OrientationHorizontal As Boolean, ByVal scrMin As Long, ByVal scrMax As Long, ByVal scrValue As Long, ByVal scrSmallChange As Long, ByVal scrLargeChange As Long, Optional ByVal PageSize As Long = -1)
 
     'Store a local copy of the owner's hWnd
-    m_OwnerHwnd = ownerHwnd
+    m_OwnerHWnd = ownerHwnd
     
     'Always default to Enabled
     m_Enabled = True
-
-    'Start by subclassing the parent
-    cSubclass.ssc_Subclass ownerHwnd, , , Me
-    cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_SIZING, WM_SIZE, WM_LBUTTONUP
     
-    'To keep subclassing to a minimum, only request scroll events that we actually need for this type of bar
-    m_OrientationHorizontal = OrientationHorizontal
+    If g_IsProgramRunning Then
     
-    If OrientationHorizontal Then
-        cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_HSCROLL
-    Else
-        cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_VSCROLL
+        'Start by subclassing the parent
+        cSubclass.ssc_Subclass ownerHwnd, , , Me
+        cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_SIZING, WM_SIZE, WM_LBUTTONUP
+        
+        'To keep subclassing to a minimum, only request scroll events that we actually need for this type of bar
+        m_OrientationHorizontal = OrientationHorizontal
+        
+        If OrientationHorizontal Then
+            cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_HSCROLL
+        Else
+            cSubclass.ssc_AddMsg ownerHwnd, MSG_AFTER, WM_VSCROLL
+        End If
+        
+        'Next, retrieve the client size of the owner.  We need this to know how to size the scroll bar.
+        Dim ownerRect As winRect
+        GetClientRect ownerHwnd, ownerRect
+        
+        'Create a new scrollbar window
+        If OrientationHorizontal Then
+            m_ScrollHwnd = CreateWindowEx(ByVal 0&, "SCROLLBAR", "", WS_CHILD, ownerRect.x1, ownerRect.y1, ownerRect.x2, ownerRect.y2, ownerHwnd, 0&, App.hInstance, 0&)
+        Else
+            m_ScrollHwnd = CreateWindowEx(ByVal 0&, "SCROLLBAR", "", WS_CHILD Or 1, ownerRect.x1, ownerRect.y1, ownerRect.x2, ownerRect.y2, ownerHwnd, 0&, App.hInstance, 0&)
+        End If
+        
+        'As a failsafe against runaway scroll bars (caused by intense processing going on in the background of a
+        ' scroll event), subclass mouse button release messages for the scroll bar window.  We will use these to
+        ' forcibly prevent endless scrolling when necessary.
+        cSubclass.ssc_Subclass m_ScrollHwnd, , , Me
+        cSubclass.ssc_AddMsg m_ScrollHwnd, MSG_BEFORE, WM_LBUTTONUP
+        
+        'Note that we do not need to subclass scroll message for the new scroll bar hWnd!  Scroll events are sent to
+        ' the PARENT of the scroll bar, not the bar itself.
+    
     End If
-    
-    'Next, retrieve the client size of the owner.  We need this to know how to size the scroll bar.
-    Dim ownerRect As winRect
-    GetClientRect ownerHwnd, ownerRect
-    
-    'Create a new scrollbar window
-    If OrientationHorizontal Then
-        m_ScrollHwnd = CreateWindowEx(ByVal 0&, "SCROLLBAR", "", WS_CHILD, ownerRect.x1, ownerRect.y1, ownerRect.x2, ownerRect.y2, ownerHwnd, 0&, App.hInstance, 0&)
-    Else
-        m_ScrollHwnd = CreateWindowEx(ByVal 0&, "SCROLLBAR", "", WS_CHILD Or 1, ownerRect.x1, ownerRect.y1, ownerRect.x2, ownerRect.y2, ownerHwnd, 0&, App.hInstance, 0&)
-    End If
-    
-    'As a failsafe against runaway scroll bars (caused by intense processing going on in the background of a
-    ' scroll event), subclass mouse button release messages for the scroll bar window.  We will use these to
-    ' forcibly prevent endless scrolling when necessary.
-    cSubclass.ssc_Subclass m_ScrollHwnd, , , Me
-    cSubclass.ssc_AddMsg m_ScrollHwnd, MSG_BEFORE, WM_LBUTTONUP
-    
-    'Note that we do not need to subclass scroll message for the new scroll bar hWnd!  Scroll events are sent to
-    ' the PARENT of the scroll bar, not the bar itself.
     
     'Make local copies of all the scroll bar attributes
     m_Value = scrValue
@@ -236,14 +240,18 @@ Public Sub initializeScrollBarWindow(ByVal ownerHwnd As Long, ByVal OrientationH
         .nPage = IIf(PageSize > -1, PageSize, 1)
     End With
     
-    'Apply the range information to the newly created bar (which will also trigger a redraw)
-    SetScrollInfo m_ScrollHwnd, SB_CTL, scrollData, True
+    If g_IsProgramRunning Then
     
-    'Show the scroll bar
-    ShowScrollBar m_ScrollHwnd, SB_CTL, True
-    
-    'Apply a hand cursor to the scroll bar
-    m_PreviousCursor = SetClassLong(m_ScrollHwnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND))
+        'Apply the range information to the newly created bar (which will also trigger a redraw)
+        SetScrollInfo m_ScrollHwnd, SB_CTL, scrollData, True
+        
+        'Show the scroll bar
+        ShowScrollBar m_ScrollHwnd, SB_CTL, True
+        
+        'Apply a hand cursor to the scroll bar
+        m_PreviousCursor = SetClassLong(m_ScrollHwnd, GCL_HCURSOR, LoadCursor(0, IDC_HAND))
+        
+    End If
 
 End Sub
 
@@ -272,8 +280,8 @@ End Property
 Public Property Let Value(newValue As Long)
 
     'Check range
-    If newValue < m_Min Then newValue = m_Min
-    If newValue > m_Max Then newValue = m_Max
+    If (newValue < m_Min) Then newValue = m_Min
+    If (newValue > m_Max) Then newValue = m_Max
 
     m_Value = newValue
     
@@ -301,7 +309,7 @@ End Property
 Public Property Let Min(newValue As Long)
 
     'Check range
-    If newValue > m_Max Then
+    If (newValue > m_Max) Then
         Debug.Print "WARNING! Invalid scroll bar minimum value requested!"
         newValue = m_Max - 1
     End If
@@ -312,7 +320,7 @@ Public Property Let Min(newValue As Long)
     Dim forcedToChangeValue As Boolean
     forcedToChangeValue = False
     
-    If m_Value < m_Min Then
+    If (m_Value < m_Min) Then
         m_Value = m_Min
         forcedToChangeValue = True
     End If
@@ -343,7 +351,7 @@ End Property
 Public Property Let Max(newValue As Long)
 
     'Check range
-    If newValue < m_Min Then
+    If (newValue < m_Min) Then
         Debug.Print "WARNING! Invalid scroll bar maximum value requested!"
         newValue = m_Min + 1
     End If
@@ -354,7 +362,7 @@ Public Property Let Max(newValue As Long)
     Dim forcedToChangeValue As Boolean
     forcedToChangeValue = False
     
-    If m_Value > m_Max Then
+    If (m_Value > m_Max) Then
         m_Value = m_Max
         forcedToChangeValue = True
     End If
@@ -388,19 +396,19 @@ End Property
 
 'INITIALIZE class
 Private Sub Class_Initialize()
-    Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
 End Sub
 
 'TERMINATE class
 Private Sub Class_Terminate()
 
-    If m_ScrollHwnd <> 0 Then
+    If (m_ScrollHwnd <> 0) And g_IsProgramRunning Then
     
         'Restore the original scroll bar class cursor
         SetClassLong m_ScrollHwnd, GCL_HCURSOR, m_PreviousCursor
     
         'Stop subclassing the parent
-        cSubclass.ssc_UnSubclass m_OwnerHwnd
+        cSubclass.ssc_UnSubclass m_OwnerHWnd
         
         'Release the subclasser entirely
         cSubclass.ssc_Terminate
@@ -481,7 +489,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
             'Retrieve the parent's client rect now
             Dim curWinRect As winRect
-            GetClientRect m_OwnerHwnd, curWinRect
+            GetClientRect m_OwnerHWnd, curWinRect
             
             'Resize the scroll bar accordingly
             If m_OrientationHorizontal Then

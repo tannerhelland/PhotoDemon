@@ -137,7 +137,7 @@ Private Sub Class_Initialize()
     m_HasFocus = False
     
     'Initialize the subclasser
-    Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
 End Sub
 
@@ -250,8 +250,10 @@ Public Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
 End Sub
 
 Private Sub Class_Terminate()
-    cSubclass.shk_TerminateHooks
-    cSubclass.ssc_Terminate
+    If g_IsProgramRunning Then
+        cSubclass.shk_TerminateHooks
+        cSubclass.ssc_Terminate
+    End If
 End Sub
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
@@ -294,7 +296,7 @@ End Sub
 Private Sub InstallKeyboardHook()
     
     'Check for an existing hook
-    If (Not m_HasFocus) And (Not m_HookActive) And (m_targetHwnd <> 0) Then
+    If (Not m_HasFocus) And (Not m_HookActive) And (m_targetHwnd <> 0) And g_IsProgramRunning Then
         
         'If a hook is already active, and we're trying to unhook it safely, we don't want to reinstall our hook
         Dim tryingToUnhook As Boolean: tryingToUnhook = False
@@ -322,7 +324,7 @@ End Sub
 
 'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
 Private Sub RemoveKeyboardHook()
-    If (Not (cSubclass Is Nothing)) And m_HookActive Then
+    If (Not (cSubclass Is Nothing)) And m_HookActive And g_IsProgramRunning Then
         'Debug.Print "Uninstalling keyboard hook for " & m_HookedControlName & ":" & m_targetHwnd
         cSubclass.shk_UnHook WH_KEYBOARD
         m_HookActive = False

@@ -538,7 +538,7 @@ Private Sub RaiseListBox()
     
     On Error GoTo UnexpectedListBoxTrouble
     
-    If (Not ucSupport.AmIVisible) Or (Not ucSupport.AmIEnabled) Then Exit Sub
+    If (Not ucSupport.AmIVisible) Or (Not ucSupport.AmIEnabled) Or (Not g_IsProgramRunning) Then Exit Sub
     
     'We first want to retrieve this control instance's window coordinates *in the screen's coordinate space*.
     ' (We need this to know how to position the listbox element.)
@@ -786,7 +786,7 @@ End Sub
 
 'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
 Private Sub RemoveSubclass()
-    If (Not (m_Subclass Is Nothing)) And (m_ParentHWnd <> 0) And m_SubclassActive Then
+    If (Not (m_Subclass Is Nothing)) And (m_ParentHWnd <> 0) And m_SubclassActive And g_IsProgramRunning Then
         On Error GoTo UnsubclassUnnecessary
         m_Subclass.ssc_UnSubclass m_ParentHWnd
         m_ParentHWnd = 0

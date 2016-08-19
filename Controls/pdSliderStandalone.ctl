@@ -688,7 +688,7 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     
     Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
-    If Me.Enabled Then
+    If Me.Enabled And g_IsProgramRunning Then
     
         'This control supports a variety of specialty track styles.  Some of these styles require a DIB supplied by the owner -
         ' note that they *will not* render properly until that DIB is provided!

@@ -878,20 +878,20 @@ End Function
 
 
 Private Function SetSubclassing(ByVal hWnd As Long) As Boolean
-
-    If cSubclass.ssc_Subclass(hWnd, , , Me) Then
-        cSubclass.ssc_AddMsg hWnd, MSG_AFTER, WM_MENUSELECT, WM_ENTERIDLE, WM_MEASUREITEM, WM_DRAWITEM, WM_DESTROY
-        SetSubclassing = True
-    Else
-        SetSubclassing = False
+    If g_IsProgramRunning Then
+        If cSubclass.ssc_Subclass(hWnd, , , Me) Then
+            cSubclass.ssc_AddMsg hWnd, MSG_AFTER, WM_MENUSELECT, WM_ENTERIDLE, WM_MEASUREITEM, WM_DRAWITEM, WM_DESTROY
+            SetSubclassing = True
+        Else
+            SetSubclassing = False
+        End If
     End If
-
 End Function
 
 Private Function StopSubclassing() As Boolean
 
-    If m_hWnd <> 0 Then
-        cSubclass.ssc_UnSubclass m_hWnd <> 0
+    If (m_hWnd <> 0) And g_IsProgramRunning Then
+        cSubclass.ssc_UnSubclass m_hWnd
         StopSubclassing = True
     Else
         StopSubclassing = False
@@ -925,12 +925,12 @@ Private Sub Class_Initialize()
     ReDim mDIB(0)
     
     'Tanner's fix: initialize an IDE-safe subclasser
-    Set cSubclass = New cSelfSubHookCallback
+    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
 End Sub
 
 Private Sub Class_Terminate()
-    cSubclass.ssc_Terminate
+    If g_IsProgramRunning Then cSubclass.ssc_Terminate
     Clear
 End Sub
 

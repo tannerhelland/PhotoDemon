@@ -502,11 +502,11 @@ End Property
 Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Long = 0, Optional ByVal y1 As Long = 0, Optional ByVal xWidth As Long = 0, Optional ByVal yHeight As Long = 0, Optional ByVal determineHeightForMe As Boolean = True) As Boolean
     
     'Ignore all creation requests until we receive one with a valid parent hWnd
-    If parentHwnd <> 0 Then
+    If (parentHwnd <> 0) Then
     
         'If the edit box already exists, copy its text prior to killing it
         Dim curText As String
-        If m_EditBoxHwnd <> 0 Then curText = Text Else curText = m_TextBackup
+        If (m_EditBoxHwnd <> 0) Then curText = Text Else curText = m_TextBackup
         DestroyEditBox
         
         'The edit box requires some GDI handles so it can auto-paint its own backgruond and text.  Create those objects now.
@@ -530,8 +530,10 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         If determineHeightForMe Then yHeight = Me.SuggestedHeight
         
         'Create the window!
-        m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
-            x1, y1, xWidth, yHeight, parentHwnd, 0, App.hInstance, ByVal 0&)
+        If g_IsProgramRunning Then
+            m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
+                x1, y1, xWidth, yHeight, parentHwnd, 0, App.hInstance, ByVal 0&)
+        End If
         
         'Now that the window exists, we need to pass it any relevant local settings
         Me.Enabled = m_Enabled
@@ -539,7 +541,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         
         'We need to subclass a number of different messages, both for the edit box window and for the parent control.
         If g_IsProgramRunning Then
-            If cSubclass Is Nothing Then Set cSubclass = New cSelfSubHookCallback
+            If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
             If Not (cSubclass Is Nothing) Then
                 
                 'Subclass the edit box
@@ -584,7 +586,7 @@ Public Function DestroyEditBox() As Boolean
         
     ReleaseEditBoxGDIObjects
         
-    If m_EditBoxHwnd <> 0 Then
+    If (m_EditBoxHwnd <> 0) And g_IsProgramRunning Then
         If Not (cSubclass Is Nothing) Then cSubclass.ssc_UnSubclass m_EditBoxHwnd
         If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
         DestroyEditBox = CBool(DestroyWindow(m_EditBoxHwnd) <> 0)
@@ -735,7 +737,7 @@ Private Sub Class_Terminate()
     If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
     
     If Not (cSubclass Is Nothing) Then
-        cSubclass.ssc_Terminate
+        If g_IsProgramRunning Then cSubclass.ssc_Terminate
         Set cSubclass = Nothing
     End If
     
@@ -801,7 +803,7 @@ End Function
 Private Sub InstallKeyboardHook()
 
     'Check for an existing hook
-    If (Not m_HasFocus) Then
+    If (Not m_HasFocus) And g_IsProgramRunning Then
     
         'Note that this window is now active
         m_HasFocus = True
@@ -830,7 +832,7 @@ End Sub
 
 'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
 Private Sub RemoveKeyboardHook()
-    If Not (cSubclass Is Nothing) Then cSubclass.shk_UnHook WH_KEYBOARD
+    If ((Not (cSubclass Is Nothing)) And g_IsProgramRunning) Then cSubclass.shk_UnHook WH_KEYBOARD
 End Sub
 
 'Release the edit box's keyboard hook.  In some circumstances, we can't do this immediately, so we set a timer that will
