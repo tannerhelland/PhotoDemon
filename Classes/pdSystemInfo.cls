@@ -339,8 +339,8 @@ Public Function GetUniqueTempFilename(Optional ByRef customPrefix As String = "P
     
         nRet = GetTempFileName(sTmpPath, customPrefix, 0, sTmpName)
         
-        If nRet <> 0 Then
-            GetUniqueTempFilename = Left$(sTmpName, InStr(sTmpName, vbNullChar) - 1)
+        If (nRet <> 0) Then
+            GetUniqueTempFilename = Left$(sTmpName, InStr(1, sTmpName, vbNullChar) - 1)
         Else
             GetUniqueTempFilename = ""
         End If

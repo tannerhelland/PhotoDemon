@@ -234,6 +234,10 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     lbView.RemoveItem itemIndex
 End Sub
 
+Public Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String) As Boolean
+    UpdateItem = lbView.UpdateItem(itemIndex, newItemText)
+End Function
+
 'The caller can suspend automatic redraws caused by things like adding an item to the list box.  Just make sure to enable redraws
 ' once you're ready, or you'll never get rendering requests!
 Public Sub SetAutomaticRedraws(ByVal newState As Boolean, Optional ByVal raiseRedrawImmediately As Boolean = False)

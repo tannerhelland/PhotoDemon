@@ -131,18 +131,18 @@ End Sub
 Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional ByVal itemIndex As Long = -1, Optional ByVal hasTrailingSeparator As Boolean = False, Optional ByVal itemHeight As Long = -1)
     
     'Make sure there's room in the array for this item.
-    If m_NumOfItems > UBound(m_Items) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM
+    If (m_NumOfItems > UBound(m_Items)) Then ReDim Preserve m_Items(0 To m_NumOfItems * 2 - 1) As PD_LISTITEM
     
     'Change the rendering mode, as necessary
-    If CBool(itemHeight <> -1) And CBool(m_SizeMode <> PDLH_CUSTOM) Then
+    If (CBool(itemHeight <> -1) And CBool(m_SizeMode <> PDLH_CUSTOM)) Then
         m_SizeMode = PDLH_CUSTOM
-    ElseIf hasTrailingSeparator And CBool(m_SizeMode <> PDLH_SEPARATORS) Then
+    ElseIf (hasTrailingSeparator And CBool(m_SizeMode <> PDLH_SEPARATORS)) Then
         m_SizeMode = PDLH_SEPARATORS
     End If
     
     'If this item is being inserted anywhere but the end of the list, move other items around to make room.
     Dim i As Long
-    If CBool(itemIndex <> -1) And CBool(itemIndex < m_NumOfItems) Then
+    If (CBool(itemIndex <> -1) And CBool(itemIndex < m_NumOfItems)) Then
         
         'Migrate all objects downward in the list.
         For i = m_NumOfItems To (itemIndex + 1) Step -1
@@ -191,10 +191,10 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         'Positioning values are really only used if separators are active, or if user-specified heights are involved,
         ' but right now we set those positions correctly for any insertion action.  (We can revisit in the future
         ' if performance becomes an issue.)
-        If itemIndex < m_NumOfItems Then
+        If (itemIndex < m_NumOfItems) Then
             
             'Set the current item's position.
-            If itemIndex = 0 Then
+            If (itemIndex = 0) Then
                 .itemTop = 0
             Else
                 .itemTop = m_Items(itemIndex - 1).itemTop + m_Items(itemIndex - 1).itemHeight
@@ -207,7 +207,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         
         'If this item is being inserted at the end of the list, simply plug it into place.
         Else
-            If itemIndex > 0 Then
+            If (itemIndex > 0) Then
                 .itemTop = m_Items(itemIndex - 1).itemTop + m_Items(itemIndex - 1).itemHeight
             Else
                 .itemTop = 0
@@ -217,13 +217,13 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
     End With
     
     'If this is the first item, note the current translation language.  (If this changes, we need to re-translate the list.)
-    If m_NumOfItems = 0 Then m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
+    If (m_NumOfItems = 0) Then m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
     
     'Increment the number of list entries
     m_NumOfItems = m_NumOfItems + 1
     
     'If this item is beneath the list index, bump up the list index by one
-    If itemIndex < m_ListIndex Then
+    If (itemIndex < m_ListIndex) Then
         m_ListIndex = m_ListIndex + 1
         RaiseEvent Click
     End If
@@ -516,6 +516,37 @@ End Property
 Public Property Let ListSupportMode(ByVal newMode As PD_LISTSUPPORT_MODE)
     m_ListMode = newMode
 End Property
+
+Public Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String) As Boolean
+
+    If (itemIndex >= 0) And (itemIndex < m_NumOfItems) Then
+        
+        If (StrComp(newItemText, m_Items(itemIndex).textEn, vbBinaryCompare) <> 0) Then
+        
+            m_Items(itemIndex).textEn = newItemText
+            
+            'Add a translated copy of the string as well; this will be the string actually rendered onto the screen.
+            If Not (g_Language Is Nothing) Then
+                If g_Language.TranslationActive Then
+                    m_Items(itemIndex).textTranslated = g_Language.TranslateMessage(newItemText)
+                Else
+                    m_Items(itemIndex).textTranslated = newItemText
+                End If
+            Else
+                m_Items(itemIndex).textTranslated = newItemText
+            End If
+            
+        Else
+            UpdateItem = False
+        End If
+        
+    Else
+        UpdateItem = False
+    End If
+    
+    If (m_RedrawAutomatically And UpdateItem) Then CalculateRenderMetrics Else m_RenderDataCorrect = False
+    
+End Function
 
 'While this class doesn't actually render anything (that's left to the parent), it has enough information to manage a lot
 ' of the backend rendering details automatically.  This makes it much easier to construct custom list boxes, as things like
