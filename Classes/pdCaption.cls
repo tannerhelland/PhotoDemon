@@ -115,7 +115,7 @@ End Function
 ' the caller needs to check the return of this function, and handle redraws accordingly.
 Public Function SetCaption(ByVal newCaption As String) As Boolean
 
-    If StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0 Then
+    If (StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0) Then
         
         'Whenever the caption changes, we need to double-check that the caption + fontsize combination fits inside the control.
         m_FontSizeVerified = False

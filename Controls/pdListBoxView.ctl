@@ -328,6 +328,10 @@ Public Property Let ScrollValue(ByRef newValue As Long)
     listSupport.ScrollValue = newValue
 End Property
 
+Public Function UpdateItem(ByVal itemIndex As Long, ByVal newItemText As String) As Boolean
+    UpdateItem = listSupport.UpdateItem(itemIndex, newItemText)
+End Function
+
 Public Sub RequestListRedraw()
     RedrawBackBuffer
 End Sub
