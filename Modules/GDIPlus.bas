@@ -2343,6 +2343,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     GdipGetImageVerticalResolution hImage, imgVResolution
     dstDIB.SetDPI imgHResolution, imgVResolution
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "GDI+ image resolution reported as: " & imgHResolution & "x" & imgVResolution
+    #End If
+    
     'Metafile containers (EMF, WMF) require special handling.
     Dim emfPlusConversionSuccessful As Boolean
     emfPlusConversionSuccessful = False
@@ -2462,9 +2466,6 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         'Make sure the image is in 32bpp premultiplied ARGB format
         If (iPixelFormat <> PixelFormat32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
         
-        'Mark the target DIB premultiplication state accordingly
-        dstDIB.SetInitialAlphaPremultiplicationState True
-        
         'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
         
         'Start by preparing a BitmapData variable with instructions on where GDI+ should paste the bitmap data
@@ -2559,6 +2560,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     'Note some original file settings inside the DIB
     dstDIB.SetOriginalFormat imgFormatFIF
     dstDIB.SetOriginalColorDepth imgColorDepth
+    dstDIB.SetInitialAlphaPremultiplicationState True
     
     'Release any remaining GDI+ handles and exit
     GdipDisposeImage hImage
