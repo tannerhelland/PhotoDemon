@@ -834,7 +834,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         'UNDO_EVERYTHING: a full copy of both the pdImage stack and all selection data is wanted
         Case UNDO_EVERYTHING
             ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
-            pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
+            pdImages(g_CurrentImage).mainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
         'UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE: a full copy of the pdImage stack is wanted
@@ -910,7 +910,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
         '                 any special processing.
         Case UNDO_SELECTION
-            pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
+            pdImages(g_CurrentImage).mainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
             
@@ -926,7 +926,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If selectionDataLoaded Then
     
         'Activate the selection as necessary
-        pdImages(g_CurrentImage).selectionActive = pdImages(g_CurrentImage).mainSelection.isLockedIn
+        pdImages(g_CurrentImage).selectionActive = pdImages(g_CurrentImage).mainSelection.IsLockedIn
         
         'Synchronize the text boxes as necessary
         syncTextToCurrentSelection g_CurrentImage
@@ -936,7 +936,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
-    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestNewMask
+    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.RequestNewMask
         
     'Render the image to the screen, if requested
     If Not suspendRedraw Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)

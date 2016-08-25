@@ -603,7 +603,7 @@ End Function
 
 'Convert this DIB to 32bpp mode
 Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
-
+    
     'Make sure this DIB isn't empty
     If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
 
@@ -683,7 +683,6 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
         End If
         
     End If
-    
     
     'If we made it to this line, something went horribly wrong
     ConvertTo32bpp = False
