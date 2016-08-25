@@ -55,18 +55,10 @@ Begin VB.Form dialog_ExportPNG
       _ExtentY        =   11668
       ColorSelection  =   -1  'True
    End
-   Begin VB.PictureBox picCategory 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picCategory 
       Height          =   5775
       Index           =   0
       Left            =   5880
-      ScaleHeight     =   385
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
       TabIndex        =   3
       Top             =   960
       Width           =   7095
@@ -285,18 +277,10 @@ Begin VB.Form dialog_ExportPNG
          End
       End
    End
-   Begin VB.PictureBox picCategory 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picCategory 
       Height          =   5895
       Index           =   1
       Left            =   5880
-      ScaleHeight     =   393
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   473
       TabIndex        =   19
       Top             =   960
       Width           =   7095
