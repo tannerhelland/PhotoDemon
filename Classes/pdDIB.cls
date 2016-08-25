@@ -673,9 +673,8 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 
                 'If the alpha value is not 255, apply premultiplication now
-                If (newTransparency <> 255) Then Me.SetAlphaPremultiplication True
+                If (newTransparency <> 255) Then Me.SetAlphaPremultiplication True Else Me.SetInitialAlphaPremultiplicationState True
                 
-                'Exit
                 ConvertTo32bpp = True
                 Exit Function
                 
