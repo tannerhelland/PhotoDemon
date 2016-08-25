@@ -244,6 +244,8 @@ End Sub
 ' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-(sort-array-sorting-arrays)&p=2933102&viewfull=1#post2933102
 Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False)
     
+    If (m_NumOfStrings <= 1) Then Exit Sub
+    
     Dim lngHold As Long
     Dim lngGap As Long
     Dim i As Long
