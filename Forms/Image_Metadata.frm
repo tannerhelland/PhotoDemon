@@ -106,6 +106,8 @@ Begin VB.Form FormMetadata
       Top             =   1200
       Visible         =   0   'False
       Width           =   6090
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStrip btsTechnical 
          Height          =   975
          Index           =   0
@@ -192,6 +194,8 @@ Begin VB.Form FormMetadata
       TabIndex        =   4
       Top             =   1200
       Width           =   6090
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonToolbox btnTagOptions 
          Height          =   630
          Index           =   0
