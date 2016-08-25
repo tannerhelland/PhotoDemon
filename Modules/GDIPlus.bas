@@ -2361,8 +2361,8 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
             'I assume 96 is used because it's the default DPI value in Windows.  I have not tested if different system DPI values affect
             ' the way GDI+ reports metafile size.
-            If (imgHResolution <> 0) Then imgWidth = imgWidth * CDbl(96 / imgHResolution)
-            If (imgVResolution <> 0) Then imgHeight = imgHeight * CDbl(96 / imgVResolution)
+            If (imgHResolution <> 0) Then imgWidth = imgWidth * CDbl(96 / imgHResolution) Else imgHResolution = 96
+            If (imgVResolution <> 0) Then imgHeight = imgHeight * CDbl(96 / imgVResolution) Else imgVResolution = 96
             
         End If
         
@@ -2393,12 +2393,12 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 'If GdipConvertToEmfPlusToFile(tmpGraphics, hImage, convSuccess, StrPtr(newEmfPlusFilename), EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
                 
                 If GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
-                
+
                     'Conversion successful!  Replace our current image handle with the EMF+ copy
                     emfPlusConversionSuccessful = True
                     GdipDisposeImage hImage
                     hImage = mfHandleDst
-                    
+
                 End If
                 
                 'Release our temporary graphics container
@@ -2438,7 +2438,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         'Metafiles require special handling on Vista and earlier
         If isMetafile Then
             
-            If emfPlusConversionSuccessful Or hasAlpha Or g_IsWin7OrLater Then
+            If emfPlusConversionSuccessful Or hasAlpha Then
                 dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32
             Else
                 dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
@@ -2460,7 +2460,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     If hasAlpha Then
         
         'Make sure the image is in 32bpp premultiplied ARGB format
-        If iPixelFormat <> PixelFormat32bppPARGB Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
+        If (iPixelFormat <> PixelFormat32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
         
         'Mark the target DIB premultiplication state accordingly
         dstDIB.SetInitialAlphaPremultiplicationState True
@@ -2519,7 +2519,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             'Use LockBits to perform the copy for us.
             GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppCMYK, copyBitmapData
             GdipBitmapUnlockBits hImage, copyBitmapData
-                        
+            
             'Apply the transformation using the dedicated CMYK transform handler
             If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
             
