@@ -120,151 +120,129 @@ Begin VB.Form FormBatchWizard
       Width           =   11775
       _ExtentX        =   0
       _ExtentY        =   0
-      Begin PhotoDemon.pdButton cmdSelectMacro 
-         Height          =   615
-         Left            =   8640
-         TabIndex        =   15
-         Top             =   6570
-         Width           =   3015
-         _ExtentX        =   5318
-         _ExtentY        =   1085
-         Caption         =   "Select macro..."
-         FontSize        =   9
-      End
-      Begin PhotoDemon.pdTextBox txtMacro 
-         Height          =   315
-         Left            =   1080
-         TabIndex        =   16
-         Top             =   6720
-         Width           =   7335
-         _ExtentX        =   12938
-         _ExtentY        =   556
-         Text            =   "no macro selected"
-      End
-      Begin VB.PictureBox picResizeDemo 
-         Appearance      =   0  'Flat
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   750
-         Left            =   7680
-         ScaleHeight     =   50
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   191
-         TabIndex        =   17
-         Top             =   5385
-         Width           =   2865
-      End
-      Begin VB.ComboBox cmbResizeFit 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   3390
-         Style           =   2  'Dropdown List
-         TabIndex        =   18
-         Top             =   5460
-         Width           =   4095
-      End
-      Begin PhotoDemon.pdCheckBox chkActions 
-         Height          =   300
-         Index           =   2
-         Left            =   600
-         TabIndex        =   22
-         Top             =   6150
-         Width           =   10020
-         _ExtentX        =   17674
-         _ExtentY        =   582
-         Caption         =   "custom actions from a saved macro file"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdCheckBox chkActions 
-         Height          =   300
-         Index           =   1
-         Left            =   600
-         TabIndex        =   24
-         Top             =   2040
-         Width           =   10020
-         _ExtentX        =   17674
-         _ExtentY        =   582
-         Caption         =   "resize images"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdRadioButton optActions 
-         Height          =   360
-         Index           =   0
+      Begin PhotoDemon.pdButtonStrip btsPhotoOps 
+         Height          =   975
          Left            =   120
-         TabIndex        =   25
+         TabIndex        =   69
          Top             =   120
-         Width           =   10500
-         _ExtentX        =   18521
-         _ExtentY        =   582
-         Caption         =   "do not apply photo editing actions"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.pdRadioButton optActions 
-         Height          =   360
-         Index           =   1
-         Left            =   120
-         TabIndex        =   26
-         Top             =   1080
-         Width           =   10500
-         _ExtentX        =   18521
-         _ExtentY        =   582
-         Caption         =   "apply one or more photo editing actions"
-      End
-      Begin PhotoDemon.pdCheckBox chkActions 
-         Height          =   300
-         Index           =   0
-         Left            =   600
-         TabIndex        =   39
-         Top             =   1560
-         Width           =   10020
-         _ExtentX        =   17674
-         _ExtentY        =   582
-         Caption         =   "fix exposure and lighting problems"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdResize ucResize 
-         Height          =   2850
-         Left            =   1080
-         TabIndex        =   40
-         Top             =   2520
-         Width           =   8775
-         _ExtentX        =   15478
-         _ExtentY        =   5027
-         UnknownSizeMode =   -1  'True
+         Width           =   5775
+         _ExtentX        =   10186
+         _ExtentY        =   1720
+         Caption         =   "apply photo editing actions"
       End
       Begin PhotoDemon.pdLabel lblExplanation 
-         Height          =   480
+         Height          =   720
          Index           =   1
-         Left            =   600
-         Top             =   540
-         Width           =   9975
-         _ExtentX        =   0
-         _ExtentY        =   0
+         Left            =   360
+         Top             =   1320
+         Width           =   10815
+         _ExtentX        =   19076
+         _ExtentY        =   1270
          Caption         =   "if you only want to rename images or change image formats, use this option "
          ForeColor       =   4210752
          Layout          =   1
       End
-      Begin PhotoDemon.pdLabel lblFit 
-         Height          =   240
-         Left            =   195
-         Top             =   5520
-         Width           =   3105
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Alignment       =   1
-         Caption         =   "resize image by:"
-         ForeColor       =   4210752
+      Begin PhotoDemon.pdContainer picPhotoEdits 
+         Height          =   6135
+         Left            =   120
+         TabIndex        =   70
+         Top             =   1200
+         Width           =   11175
+         _ExtentX        =   19711
+         _ExtentY        =   10821
+         Begin VB.PictureBox picResizeDemo 
+            Appearance      =   0  'Flat
+            AutoRedraw      =   -1  'True
+            BackColor       =   &H80000005&
+            BorderStyle     =   0  'None
+            ForeColor       =   &H80000008&
+            Height          =   750
+            Left            =   7200
+            ScaleHeight     =   50
+            ScaleMode       =   3  'Pixel
+            ScaleWidth      =   191
+            TabIndex        =   74
+            Top             =   3945
+            Width           =   2865
+         End
+         Begin PhotoDemon.pdDropDown cmbResizeFit 
+            Height          =   615
+            Left            =   720
+            TabIndex        =   71
+            Top             =   3960
+            Width           =   6255
+            _ExtentX        =   11033
+            _ExtentY        =   1085
+            Caption         =   "resize image by"
+            FontSizeCaption =   11
+         End
+         Begin PhotoDemon.pdButton cmdSelectMacro 
+            Height          =   615
+            Left            =   8160
+            TabIndex        =   72
+            Top             =   5370
+            Width           =   3015
+            _ExtentX        =   5318
+            _ExtentY        =   1085
+            Caption         =   "Select macro..."
+            FontSize        =   9
+         End
+         Begin PhotoDemon.pdTextBox txtMacro 
+            Height          =   315
+            Left            =   600
+            TabIndex        =   73
+            Top             =   5520
+            Width           =   7335
+            _ExtentX        =   12938
+            _ExtentY        =   556
+            Text            =   "no macro selected"
+         End
+         Begin PhotoDemon.pdCheckBox chkActions 
+            Height          =   300
+            Index           =   2
+            Left            =   120
+            TabIndex        =   75
+            Top             =   4950
+            Width           =   10020
+            _ExtentX        =   17674
+            _ExtentY        =   582
+            Caption         =   "apply other actions from a saved macro file"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdCheckBox chkActions 
+            Height          =   300
+            Index           =   1
+            Left            =   120
+            TabIndex        =   76
+            Top             =   600
+            Width           =   10020
+            _ExtentX        =   17674
+            _ExtentY        =   582
+            Caption         =   "resize images"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdCheckBox chkActions 
+            Height          =   300
+            Index           =   0
+            Left            =   120
+            TabIndex        =   77
+            Top             =   120
+            Width           =   10020
+            _ExtentX        =   17674
+            _ExtentY        =   582
+            Caption         =   "fix exposure and lighting problems"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdResize ucResize 
+            Height          =   2850
+            Left            =   600
+            TabIndex        =   78
+            Top             =   1080
+            Width           =   8775
+            _ExtentX        =   15478
+            _ExtentY        =   5027
+            UnknownSizeMode =   -1  'True
+         End
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -279,7 +257,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSaveList 
          Height          =   615
          Left            =   9960
-         TabIndex        =   43
+         TabIndex        =   33
          Top             =   6600
          Width           =   1695
          _ExtentX        =   2990
@@ -290,7 +268,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdLoadList 
          Height          =   615
          Left            =   8160
-         TabIndex        =   44
+         TabIndex        =   34
          Top             =   6600
          Width           =   1695
          _ExtentX        =   2990
@@ -301,7 +279,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdRemoveAll 
          Height          =   615
          Left            =   9960
-         TabIndex        =   49
+         TabIndex        =   39
          Top             =   5400
          Width           =   1695
          _ExtentX        =   2990
@@ -312,7 +290,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdRemove 
          Height          =   615
          Left            =   8160
-         TabIndex        =   50
+         TabIndex        =   40
          Top             =   5400
          Width           =   1695
          _ExtentX        =   2990
@@ -323,7 +301,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdUseCD 
          Height          =   615
          Left            =   8160
-         TabIndex        =   51
+         TabIndex        =   41
          Top             =   360
          Width           =   3495
          _ExtentX        =   6165
@@ -334,7 +312,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdAddFiles 
          Height          =   615
          Left            =   4200
-         TabIndex        =   52
+         TabIndex        =   42
          Top             =   4140
          Width           =   3615
          _ExtentX        =   6376
@@ -345,7 +323,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSelectNone 
          Height          =   615
          Left            =   6120
-         TabIndex        =   55
+         TabIndex        =   45
          Top             =   360
          Width           =   1695
          _ExtentX        =   2990
@@ -356,7 +334,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSelectAll 
          Height          =   615
          Left            =   4200
-         TabIndex        =   58
+         TabIndex        =   48
          Top             =   360
          Width           =   1695
          _ExtentX        =   2990
@@ -507,7 +485,7 @@ Begin VB.Form FormBatchWizard
       Height          =   7455
       Index           =   4
       Left            =   3480
-      TabIndex        =   60
+      TabIndex        =   50
       Top             =   720
       Width           =   11775
       _ExtentX        =   0
@@ -522,7 +500,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   25
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   753
-         TabIndex        =   66
+         TabIndex        =   56
          Top             =   3360
          Width           =   11295
       End
@@ -543,7 +521,7 @@ Begin VB.Form FormBatchWizard
       Height          =   7455
       Index           =   3
       Left            =   3480
-      TabIndex        =   19
+      TabIndex        =   15
       Top             =   720
       Width           =   11775
       _ExtentX        =   0
@@ -551,7 +529,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSelectOutputPath 
          Height          =   615
          Left            =   8280
-         TabIndex        =   67
+         TabIndex        =   57
          Top             =   435
          Width           =   3135
          _ExtentX        =   5530
@@ -562,7 +540,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtRenameRemove 
          Height          =   315
          Left            =   840
-         TabIndex        =   70
+         TabIndex        =   60
          Top             =   4560
          Width           =   6495
          _ExtentX        =   11456
@@ -571,7 +549,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtAppendBack 
          Height          =   315
          Left            =   6120
-         TabIndex        =   71
+         TabIndex        =   61
          Top             =   3480
          Width           =   4575
          _ExtentX        =   8070
@@ -580,7 +558,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtAppendFront 
          Height          =   315
          Left            =   840
-         TabIndex        =   72
+         TabIndex        =   62
          Top             =   3480
          Width           =   4335
          _ExtentX        =   7646
@@ -590,7 +568,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtOutputPath 
          Height          =   315
          Left            =   480
-         TabIndex        =   73
+         TabIndex        =   63
          Top             =   600
          Width           =   7455
          _ExtentX        =   13150
@@ -601,7 +579,7 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Index           =   0
          Left            =   840
-         TabIndex        =   32
+         TabIndex        =   24
          Top             =   5640
          Width           =   2250
          _ExtentX        =   3969
@@ -612,7 +590,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdCheckBox chkRenamePrefix 
          Height          =   330
          Left            =   480
-         TabIndex        =   28
+         TabIndex        =   20
          Top             =   3000
          Width           =   4650
          _ExtentX        =   8202
@@ -634,14 +612,14 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Left            =   480
          Style           =   2  'Dropdown List
-         TabIndex        =   27
+         TabIndex        =   19
          Top             =   1800
          Width           =   7455
       End
       Begin PhotoDemon.pdCheckBox chkRenameSuffix 
          Height          =   330
          Left            =   5760
-         TabIndex        =   29
+         TabIndex        =   21
          Top             =   3000
          Width           =   4650
          _ExtentX        =   8202
@@ -652,7 +630,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdCheckBox chkRenameRemove 
          Height          =   330
          Left            =   480
-         TabIndex        =   30
+         TabIndex        =   22
          Top             =   4080
          Width           =   6780
          _ExtentX        =   11959
@@ -663,7 +641,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdCheckBox chkRenameCase 
          Height          =   330
          Left            =   480
-         TabIndex        =   31
+         TabIndex        =   23
          Top             =   5160
          Width           =   11205
          _ExtentX        =   19764
@@ -675,7 +653,7 @@ Begin VB.Form FormBatchWizard
          Height          =   330
          Index           =   1
          Left            =   3240
-         TabIndex        =   33
+         TabIndex        =   25
          Top             =   5640
          Width           =   2625
          _ExtentX        =   4630
@@ -685,7 +663,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdCheckBox chkRenameSpaces 
          Height          =   330
          Left            =   480
-         TabIndex        =   34
+         TabIndex        =   26
          Top             =   6240
          Width           =   11205
          _ExtentX        =   19764
@@ -696,7 +674,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdCheckBox chkRenameCaseSensitive 
          Height          =   330
          Left            =   7560
-         TabIndex        =   35
+         TabIndex        =   27
          Top             =   4560
          Width           =   4125
          _ExtentX        =   7276
@@ -758,7 +736,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Left            =   720
          Style           =   2  'Dropdown List
-         TabIndex        =   23
+         TabIndex        =   18
          Top             =   1920
          Width           =   7335
       End
@@ -766,7 +744,7 @@ Begin VB.Form FormBatchWizard
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   16
          Top             =   120
          Width           =   10515
          _ExtentX        =   18547
@@ -778,7 +756,7 @@ Begin VB.Form FormBatchWizard
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   17
          Top             =   1320
          Width           =   10515
          _ExtentX        =   18547
@@ -807,14 +785,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   737
-         TabIndex        =   69
+         TabIndex        =   59
          Tag             =   "GIF - Graphics Interchange Format"
          Top             =   2520
          Width           =   11055
          Begin PhotoDemon.pdSlider sltThreshold 
             Height          =   405
             Left            =   360
-            TabIndex        =   74
+            TabIndex        =   64
             Top             =   1080
             Width           =   8055
             _ExtentX        =   14208
@@ -896,7 +874,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   737
-         TabIndex        =   41
+         TabIndex        =   31
          Tag             =   "PPM - Portable Pixel Map"
          Top             =   2520
          Width           =   11055
@@ -914,7 +892,7 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   42
+            TabIndex        =   32
             Top             =   960
             Width           =   6975
          End
@@ -952,7 +930,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   721
-         TabIndex        =   36
+         TabIndex        =   28
          Tag             =   "TIFF - Tagged Image File Format"
          Top             =   2520
          Width           =   10815
@@ -970,14 +948,14 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   360
             Style           =   2  'Dropdown List
-            TabIndex        =   38
+            TabIndex        =   30
             Top             =   960
             Width           =   7095
          End
          Begin PhotoDemon.pdCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
-            TabIndex        =   37
+            TabIndex        =   29
             Top             =   1560
             Width           =   7125
             _ExtentX        =   12568
@@ -1019,14 +997,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   705
-         TabIndex        =   75
+         TabIndex        =   65
          Tag             =   "JP2 - JPEG 2000"
          Top             =   2520
          Width           =   10575
          Begin PhotoDemon.pdSlider sltJP2Quality 
             Height          =   405
             Left            =   480
-            TabIndex        =   76
+            TabIndex        =   66
             Top             =   1650
             Width           =   7935
             _ExtentX        =   13996
@@ -1050,7 +1028,7 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   600
             Style           =   2  'Dropdown List
-            TabIndex        =   77
+            TabIndex        =   67
             Top             =   1110
             Width           =   6855
          End
@@ -1115,14 +1093,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   705
-         TabIndex        =   56
+         TabIndex        =   46
          Tag             =   "BMP - Windows Bitmap"
          Top             =   2520
          Width           =   10575
          Begin PhotoDemon.pdCheckBox chkBMPRLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   57
+            TabIndex        =   47
             Top             =   600
             Width           =   7095
             _ExtentX        =   12515
@@ -1154,14 +1132,14 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   313
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   713
-         TabIndex        =   53
+         TabIndex        =   43
          Tag             =   "TGA - Truevision (TARGA)"
          Top             =   2520
          Width           =   10695
          Begin PhotoDemon.pdCheckBox chkTGARLE 
             Height          =   330
             Left            =   360
-            TabIndex        =   54
+            TabIndex        =   44
             Top             =   600
             Width           =   7125
             _ExtentX        =   12568
@@ -1192,7 +1170,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   729
-         TabIndex        =   59
+         TabIndex        =   49
          TabStop         =   0   'False
          Tag             =   "JPG - Joint Photographic Experts Group"
          Top             =   2520
@@ -1200,7 +1178,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.pdSlider sltQuality 
             Height          =   405
             Left            =   2640
-            TabIndex        =   78
+            TabIndex        =   68
             Top             =   945
             Width           =   5895
             _ExtentX        =   10398
@@ -1224,7 +1202,7 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   840
             Style           =   2  'Dropdown List
-            TabIndex        =   68
+            TabIndex        =   58
             ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
             Top             =   3840
             Width           =   6735
@@ -1243,14 +1221,14 @@ Begin VB.Form FormBatchWizard
             Height          =   360
             Left            =   480
             Style           =   2  'Dropdown List
-            TabIndex        =   62
+            TabIndex        =   52
             Top             =   990
             Width           =   2055
          End
          Begin PhotoDemon.pdCheckBox chkOptimize 
             Height          =   330
             Left            =   480
-            TabIndex        =   61
+            TabIndex        =   51
             Top             =   1920
             Width           =   7050
             _ExtentX        =   12435
@@ -1260,7 +1238,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.pdCheckBox chkThumbnail 
             Height          =   330
             Left            =   480
-            TabIndex        =   63
+            TabIndex        =   53
             Top             =   2400
             Width           =   7050
             _ExtentX        =   12435
@@ -1271,7 +1249,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.pdCheckBox chkProgressive 
             Height          =   330
             Left            =   480
-            TabIndex        =   64
+            TabIndex        =   54
             Top             =   2880
             Width           =   7050
             _ExtentX        =   12435
@@ -1282,7 +1260,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.pdCheckBox chkSubsample 
             Height          =   330
             Left            =   480
-            TabIndex        =   65
+            TabIndex        =   55
             Top             =   3360
             Width           =   7050
             _ExtentX        =   12435
@@ -1335,7 +1313,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   305
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   729
-         TabIndex        =   45
+         TabIndex        =   35
          TabStop         =   0   'False
          Tag             =   "PNG - Portable Network Graphic"
          Top             =   2520
@@ -1344,7 +1322,7 @@ Begin VB.Form FormBatchWizard
             Height          =   330
             Left            =   360
             Max             =   9
-            TabIndex        =   48
+            TabIndex        =   38
             Top             =   1080
             Value           =   9
             Width           =   7095
@@ -1352,7 +1330,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.pdCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   46
+            TabIndex        =   36
             Top             =   2520
             Width           =   7125
             _ExtentX        =   12568
@@ -1362,7 +1340,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.pdCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   47
+            TabIndex        =   37
             Top             =   2040
             Width           =   7125
             _ExtentX        =   12568
@@ -1421,14 +1399,6 @@ Begin VB.Form FormBatchWizard
             ForeColor       =   4210752
          End
       End
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H8000000D&
-      Index           =   0
-      X1              =   224
-      X2              =   224
-      Y1              =   48
-      Y2              =   544
    End
 End
 Attribute VB_Name = "FormBatchWizard"
@@ -1499,15 +1469,8 @@ Dim m_wordForBatchList As String, m_wordForItem As String, m_wordForItems As Str
 'System progress bar control
 Private sysProgBar As cProgressBarOfficial
 
-Private Sub chkActions_Click(Index As Integer)
-    
-    'If a new action has been selected, activate the "apply photo editing actions" option button
-    Dim i As Long
-    
-    For i = 0 To chkActions.Count - 1
-        If CBool(chkActions(i)) Then optActions(1).Value = True
-    Next i
-    
+Private Sub btsPhotoOps_Click(ByVal buttonIndex As Long)
+    UpdatePhotoOpVisibility
 End Sub
 
 Private Sub chkEnablePreview_Click()
@@ -1575,7 +1538,7 @@ End Sub
 
 'cmbPattern controls the file pattern of the "add images to batch list" box
 Private Sub cmbPattern_Click()
-    If Me.Visible Then updateSourceImageList
+    If Me.Visible Then UpdateSourceImageList
 End Sub
 
 Private Sub cmbJPEGSaveQuality_Click()
@@ -1637,9 +1600,9 @@ Private Sub cmdAddFiles_Click()
     Screen.MousePointer = vbHourglass
     Dim x As Long
     For x = 0 To lstSource.ListCount - 1
-        If lstSource.Selected(x) Then addFileToBatchList Dir1.Path & "\" & lstSource.List(x)
+        If lstSource.Selected(x) Then AddFileToBatchList Dir1.Path & "\" & lstSource.List(x)
     Next x
-    fixHorizontalListBoxScrolling lstFiles, 16
+    FixHorizontalListBoxScrolling lstFiles, 16
     Screen.MousePointer = vbDefault
     
 End Sub
@@ -1668,7 +1631,7 @@ Private Sub CmdCancel_Click()
     
 End Sub
 
-Private Function allowedToExit() As Boolean
+Private Function AllowedToExit() As Boolean
 
     'If the user has created a list of images to process and they attempt to exit without saving the list,
     ' give them a chance to save it.
@@ -1683,25 +1646,25 @@ Private Function allowedToExit() As Boolean
                 Select Case msgReturn
                     
                     Case vbYes
-                        If saveCurrentBatchList() Then allowedToExit = True Else allowedToExit = False
+                        If SaveCurrentBatchList() Then AllowedToExit = True Else AllowedToExit = False
                     
                     Case vbNo
-                        allowedToExit = True
+                        AllowedToExit = True
                     
                     Case vbCancel
-                        allowedToExit = False
+                        AllowedToExit = False
                             
                 End Select
             Else
-                allowedToExit = True
+                AllowedToExit = True
             End If
             
         Else
-            allowedToExit = True
+            AllowedToExit = True
         End If
         
     Else
-        allowedToExit = True
+        AllowedToExit = True
     End If
     
 End Function
@@ -1771,10 +1734,10 @@ Private Sub cmdLoadList_Click()
                 
                 Dim i As Long
                 For i = 2 To numOfEntries + 1
-                    addFileToBatchList fileLines(i), suppressDuplicatesCheck
+                    AddFileToBatchList fileLines(i), suppressDuplicatesCheck
                 Next i
                 
-                fixHorizontalListBoxScrolling lstFiles, 16
+                FixHorizontalListBoxScrolling lstFiles, 16
                 lstFiles.Refresh
                 
                 Screen.MousePointer = vbDefault
@@ -1803,21 +1766,21 @@ Private Sub cmdLoadList_Click()
 End Sub
 
 Private Sub cmdNext_Click()
-    changeBatchPage True
+    ChangeBatchPage True
 End Sub
 
 Private Sub cmdPrevious_Click()
-    changeBatchPage False
+    ChangeBatchPage False
 End Sub
 
 'This function is used to advance (TRUE) or retreat (FALSE) the active wizard panel
-Private Sub changeBatchPage(ByVal moveForward As Boolean)
+Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
     
     'Before doing anything else, see if the user is on the final step.  If they are, initiate the batch conversion.
     If moveForward And m_currentPage = picContainer.Count - 2 Then
         m_currentPage = picContainer.Count - 1
-        updateWizardText
-        prepareForBatchConversion
+        UpdateWizardText
+        PrepareForBatchConversion
         Exit Sub
     End If
     
@@ -1829,7 +1792,7 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
         
             'If the user is not applying any photo editing actions, skip to the next step.  If the user IS applying photo editing
             ' actions, additional validations must be applied.
-            If optActions(1) Then
+            If (btsPhotoOps.ListIndex = 1) Then
             
                 'If the user wants to resize the image, make sure the width and height values are valid
                 If CBool(chkActions(1)) Then
@@ -1992,12 +1955,12 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
     End If
     
     'Finally, update all the label captions that change according to the active panel
-    updateWizardText
+    UpdateWizardText
     
 End Sub
 
 'Used to display unique text for each page of the wizard.  The value of m_currentPage is used to determine what text to display.
-Private Sub updateWizardText()
+Private Sub UpdateWizardText()
 
     Dim sideText As String
     sideText = "(description forthcoming)"
@@ -2081,7 +2044,7 @@ Private Sub cmdRemove_Click()
     m_ImageListSaved = False
     
     'Update the label that displays the number of items in the list
-    updateBatchListCount
+    UpdateBatchListCount
     
     'If the lower box was the source of the current image preview, erase the preview now
     If m_LastPreviewSource = 1 Then UpdatePreview ""
@@ -2092,7 +2055,7 @@ End Sub
 Private Sub cmdRemoveAll_Click()
     
     lstFiles.Clear
-    fixHorizontalListBoxScrolling lstFiles
+    FixHorizontalListBoxScrolling lstFiles
     
     'If the lower box was the source of the current image preview, erase the preview now
     If m_LastPreviewSource = 1 Then UpdatePreview ""
@@ -2107,11 +2070,11 @@ Private Sub cmdRemoveAll_Click()
     m_ImageListSaved = False
     
     'Update the label that displays the number of items in the list
-    updateBatchListCount
+    UpdateBatchListCount
     
 End Sub
 
-Private Function saveCurrentBatchList() As Boolean
+Private Function SaveCurrentBatchList() As Boolean
 
     'Get the last "open/save image list" path from the preferences file
     Dim tempPathString As String
@@ -2152,10 +2115,10 @@ Private Function saveCurrentBatchList() As Boolean
         Dim cFile As pdFSO
         Set cFile = New pdFSO
         
-        saveCurrentBatchList = cFile.SaveStringToTextFile(outputText, sFile)
+        SaveCurrentBatchList = cFile.SaveStringToTextFile(outputText, sFile)
                 
     Else
-        saveCurrentBatchList = False
+        SaveCurrentBatchList = False
     End If
 
 End Function
@@ -2168,7 +2131,7 @@ Private Sub cmdSaveList_Click()
         Exit Sub
     End If
         
-    saveCurrentBatchList
+    SaveCurrentBatchList
     
     'Note that the current list has been saved
     m_ImageListSaved = True
@@ -2274,17 +2237,17 @@ Private Sub cmdUseCD_Click()
         
         Dim tmpFilename As String
         Do While listOfFiles.PopString(tmpFilename)
-            addFileToBatchList tmpFilename
+            AddFileToBatchList tmpFilename
         Loop
         
-        fixHorizontalListBoxScrolling lstFiles, 16
+        FixHorizontalListBoxScrolling lstFiles, 16
         
     End If
     
 End Sub
 
 Private Sub Dir1_Change()
-    If Me.Visible Then updateSourceImageList
+    If Me.Visible Then UpdateSourceImageList
 End Sub
 
 Private Sub Drive1_Change()
@@ -2302,6 +2265,12 @@ Private Sub Form_Load()
     
     'Populate all photo-editing-action-related combo boxes, tooltip, and options
         
+        'Yes/No for photo edits
+            btsPhotoOps.AddItem "no", 0
+            btsPhotoOps.AddItem "yes", 1
+            btsPhotoOps.ListIndex = 0
+            UpdatePhotoOpVisibility
+            
         'Resize fit types
             cmbResizeFit.Clear
             cmbResizeFit.AddItem "stretching to fit", 0
@@ -2316,7 +2285,6 @@ Private Sub Form_Load()
             For i = 0 To chkActions.Count - 1
                 chkActions(i).Value = vbUnchecked
             Next i
-            optActions(0).Value = True
                 
     'Populate all file-format-related combo boxes, tooltips, and options
     
@@ -2455,7 +2423,7 @@ Private Sub Form_Load()
     m_ImageListSaved = False
     
     'Display appropriate help text and wizard title
-    updateWizardText
+    UpdateWizardText
     
     'Display some text manually to make sure translations are handled correctly
     txtMacro.Text = g_Language.TranslateMessage("no macro selected")
@@ -2477,12 +2445,12 @@ Private Sub Form_Load()
     
     'Finally, update the available list of images.  We must do this after translation - otherwise, the translation engine
     ' attempts to translate all the filenames and it takes forever!
-    updateSourceImageList
+    UpdateSourceImageList
     
 End Sub
 
 'When the source drive, directory, or file pattern is changed, the image listbox needs to be rebuilt.
-Private Sub updateSourceImageList()
+Private Sub UpdateSourceImageList()
 
     lstSource.Clear
 
@@ -2528,13 +2496,13 @@ Private Sub updateSourceImageList()
     cmdAddFiles.Enabled = False
     
     'Quickly loop through the contents of the list box.  If any are longer than the listbox itself, display a horizontal scrollbar
-    fixHorizontalListBoxScrolling lstSource
+    FixHorizontalListBoxScrolling lstSource
             
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
-    Cancel = Not allowedToExit()
+    Cancel = Not AllowedToExit()
     
 End Sub
 
@@ -2543,11 +2511,11 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltJP2Quality_Change()
-    updateJP2ComboBox
+    UpdateJP2ComboBox
 End Sub
 
 Private Sub sltQuality_Change()
-    updateJPEGComboBox
+    UpdateJPEGComboBox
 End Sub
 
 Private Sub lstFiles_Click()
@@ -2579,9 +2547,9 @@ Private Sub lstFiles_DragDrop(Source As Control, x As Single, y As Single)
     If Source Is lstSource Then
         Dim i As Long
         For i = 0 To lstSource.ListCount - 1
-            If lstSource.Selected(i) Then addFileToBatchList Dir1 & "\" & lstSource.List(i)
+            If lstSource.Selected(i) Then AddFileToBatchList Dir1 & "\" & lstSource.List(i)
         Next i
-        fixHorizontalListBoxScrolling lstFiles, 16
+        FixHorizontalListBoxScrolling lstFiles, 16
     End If
     
 End Sub
@@ -2608,12 +2576,12 @@ Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As I
             tmpString = CStr(oleFilename)
             
             If Len(tmpString) <> 0 Then
-                If cFile.FileExist(tmpString) Then addFileToBatchList tmpString
+                If cFile.FileExist(tmpString) Then AddFileToBatchList tmpString
             End If
             
         Next oleFilename
         
-        fixHorizontalListBoxScrolling lstFiles, 16
+        FixHorizontalListBoxScrolling lstFiles, 16
         
     End If
     
@@ -2649,7 +2617,7 @@ Private Sub lstSource_Click()
     
 End Sub
 
-Private Sub fixHorizontalListBoxScrolling(ByRef srcListBox As ListBox, Optional ByVal lenModifier As Long = 0)
+Private Sub FixHorizontalListBoxScrolling(ByRef srcListBox As ListBox, Optional ByVal lenModifier As Long = 0)
     
     Dim i As Long, lenText As Long, maxWidth As Long
     maxWidth = Me.textWidth(srcListBox.List(0) & "     ")
@@ -2700,7 +2668,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
 End Sub
 
 'Add a file to a batch list.  This separate routine is used so that duplicates and invalid files can be removed prior to addition.
-Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressDuplicatesCheck As Boolean = False)
+Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressDuplicatesCheck As Boolean = False)
     
     LockWindowUpdate lstFiles.hWnd
     
@@ -2726,7 +2694,7 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     
         If cFile.FileExist(srcFile) Then
             lstFiles.AddItem srcFile
-            updateBatchListCount
+            UpdateBatchListCount
         End If
         
     End If
@@ -2743,7 +2711,7 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     
 End Sub
 
-Private Sub updateBatchListCount()
+Private Sub UpdateBatchListCount()
     lblTargetFiles.Caption = m_wordForBatchList
     Select Case lstFiles.ListCount
     
@@ -2778,7 +2746,7 @@ End Sub
 
 
 'Used to keep the "image quality" text box, scroll bar, and combo box in sync
-Private Sub updateJPEGComboBox()
+Private Sub UpdateJPEGComboBox()
     
     Select Case sltQuality.Value
         
@@ -2805,7 +2773,7 @@ Private Sub updateJPEGComboBox()
 End Sub
 
 'Used to keep the JPEG-2000 "compression ratio" text box, scroll bar, and combo box in sync
-Private Sub updateJP2ComboBox()
+Private Sub UpdateJP2ComboBox()
     
     Select Case sltJP2Quality.Value
         
@@ -2832,9 +2800,9 @@ Private Sub updateJP2ComboBox()
 End Sub
 
 'When the user presses "Start Conversion", this routine is triggered.
-Private Sub prepareForBatchConversion()
+Private Sub PrepareForBatchConversion()
 
-    batchConvertMessage g_Language.TranslateMessage("Preparing batch processing engine...")
+    BatchConvertMessage g_Language.TranslateMessage("Preparing batch processing engine...")
     
     'Display the progress panel
     Dim i As Long
@@ -2903,7 +2871,7 @@ Private Sub prepareForBatchConversion()
         
         'Give the user a progress update
         MacroMessage = g_Language.TranslateMessage("Processing image # %1 of %2. %3", (curBatchFile + 1), totalNumOfFiles, timeMsg)
-        batchConvertMessage MacroMessage
+        BatchConvertMessage MacroMessage
         sysProgBar.Value = curBatchFile
         sysProgBar.Refresh
         
@@ -2921,7 +2889,7 @@ Private Sub prepareForBatchConversion()
             If LoadFileAsNewImage(tmpFilename, , False) Then
             
                 'With the image loaded, it is time to apply any requested photo editing actions.
-                If optActions(1) Then
+                If (btsPhotoOps.ListIndex = 1) Then
                 
                     'If the user has requested automatic lighting fixes, apply it now
                     If CBool(chkActions(0)) Then
@@ -3099,7 +3067,7 @@ Private Sub prepareForBatchConversion()
     'Max out the progess bar and display a success message
     sysProgBar.Value = sysProgBar.Max
     sysProgBar.Refresh
-    batchConvertMessage g_Language.TranslateMessage("%1 files were successfully processed!", totalNumOfFiles)
+    BatchConvertMessage g_Language.TranslateMessage("%1 files were successfully processed!", totalNumOfFiles)
     
     'Finally, there is no longer any need for the user to save their batch list, as the batch process is complete.
     m_ImageListSaved = True
@@ -3129,7 +3097,7 @@ MacroCanceled:
     cancelMsg = cancelMsg & " "
     cancelMsg = cancelMsg & g_Language.TranslateMessage("processed before cancelation. Last processed image was ""%1"".", lstFiles.List(curBatchFile))
     
-    batchConvertMessage cancelMsg
+    BatchConvertMessage cancelMsg
     
     'Change the "Cancel" button to "Exit"
     cmdCancel.Caption = g_Language.TranslateMessage("Exit")
@@ -3139,7 +3107,17 @@ MacroCanceled:
 End Sub
 
 'Display a progress update to the user
-Private Sub batchConvertMessage(ByVal newMessage As String)
+Private Sub BatchConvertMessage(ByVal newMessage As String)
     lblBatchProgress.Caption = newMessage
     lblBatchProgress.RequestRefresh
+End Sub
+
+Private Sub UpdatePhotoOpVisibility()
+    If (btsPhotoOps.ListIndex = 0) Then
+        lblExplanation(1).Visible = True
+        picPhotoEdits.Visible = False
+    Else
+        lblExplanation(1).Visible = False
+        picPhotoEdits.Visible = True
+    End If
 End Sub

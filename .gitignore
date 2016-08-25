@@ -130,6 +130,8 @@ LICENSE.txt
 # one from something like Visual Studio Express.
 /Resources/Assets/RC.EXE
 /Resources/Assets/RCDLL.DLL
+/Resources/Assets_Final/
+/Resources/Assets_Final_Optimized/
 
 ##############
 ## Added for PhotoDemon compatibility testing
