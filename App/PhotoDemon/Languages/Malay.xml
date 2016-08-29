@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.200</langversion>
+<langversion>6.7.202</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2480,12 +2480,6 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for cProgressBarOfficial.cls-->
 
-<!-- BEGIN text for cSHA256.cls -->
-
-<!-- cSHA256.cls contains 0 phrases. -->
-
-<!-- END text for cSHA256.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -3277,12 +3271,6 @@ Please masukkan nilai berangka.</translation>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
-
-<!-- BEGIN text for pdScrollBar.cls -->
-
-<!-- pdScrollBar.cls contains 0 phrases. -->
-
-<!-- END text for pdScrollBar.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -10422,78 +10410,38 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>Select macro</original>
-<translation>Pilih makro</translation>
+<original>include subfolders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>custom actions from a saved macro file</original>
-<translation>tindakan adat dari fail makro disimpan</translation>
+<original>current batch list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>resize images</original>
-<translation>mengubah saiz imej</translation>
+<original>save list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>do not apply photo editing actions</original>
-<translation>tidak dikenakan tindakan pengeditan foto</translation>
+<original>load list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>apply one or more photo editing actions</original>
-<translation>memohon satu atau lebih tindakan pengeditan foto</translation>
+<original>erase entire list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>fix exposure and lighting problems</original>
-<translation>menetapkan pendedahan dan pencahayaan masalah</translation>
+<original>remove selected image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>jika anda hanya mahu menamakan semula imej atau menukar format imej, gunakan pilihan ini</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>mengubah saiz imej dengan</translation>
-</phrase>
-
-<phrase>
-<original>Save current list</original>
-<translation>Menyimpan senarai semasa</translation>
-</phrase>
-
-<phrase>
-<original>Load list</original>
-<translation>senarai beban</translation>
-</phrase>
-
-<phrase>
-<original>Remove all images</original>
-<translation>Buang semua imej</translation>
-</phrase>
-
-<phrase>
-<original>Remove selected image(s)</original>
-<translation>Mengeluarkan imej yang dipilih (s)</translation>
-</phrase>
-
-<phrase>
-<original>Add images using "Open Image" dialog</original>
-<translation>Tambah imej dengan menggunakan "Open Image" dialog</translation>
-</phrase>
-
-<phrase>
-<original>Add selected image(s) to batch list</original>
-<translation>Tambah imej terpilih (s) ke senarai kumpulan</translation>
-</phrase>
-
-<phrase>
-<original>Select none</original>
-<translation>Pilih tiada</translation>
+<original>add individual images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10502,23 +10450,28 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>potential source images</original>
-<translation>imej sumber yang berpotensi</translation>
+<original>add images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>batch list</original>
-<translation>senarai kumpulan</translation>
+<original>modify list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>modify batch list</original>
-<translation>mengubah suai senarai kumpulan</translation>
+<original>load / save list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>load / save batch list</original>
-<translation>beban/menyimpan senarai kumpulan</translation>
+<original>add entire folder(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10597,153 +10550,38 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>GIF options</original>
-<translation>pilihan GIF</translation>
+<original>apply photo editing actions</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>transparency threshold for images with complex (32bpp) alpha channels</original>
-<translation>ambang ketelusan bagi imej dengan kompleks (32bpp) saluran alpha</translation>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>jika anda hanya mahu menamakan semula imej atau menukar format imej, gunakan pilihan ini</translation>
 </phrase>
 
 <phrase>
-<original>no transparency</original>
-<translation>ada ketelusan</translation>
+<original>resize image by</original>
+<translation>mengubah saiz imej dengan</translation>
 </phrase>
 
 <phrase>
-<original>maximum transparency</original>
-<translation>ketelusan maksimum</translation>
+<original>Select macro</original>
+<translation>Pilih makro</translation>
 </phrase>
 
 <phrase>
-<original>export PPM files using</original>
-<translation>mengeksport fail PPM menggunakan</translation>
+<original>apply other actions from a saved macro file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PPM options</original>
-<translation>pilihan PPM</translation>
+<original>resize images</original>
+<translation>mengubah saiz imej</translation>
 </phrase>
 
 <phrase>
-<original>save TIFFs as separated CMYK (for printing)</original>
-<translation>menyelamatkan TIFFs sebagai CMYK dipisahkan (untuk percetakan)</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress TIFFs using</original>
-<translation>apabila menyimpan, memampatkan TIFFs menggunakan</translation>
-</phrase>
-
-<phrase>
-<original>TIFF options</original>
-<translation>pilihan TIFF</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>nisbah mampatan imej</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>berkualiti rendah, fail kecil</translation>
-</phrase>
-
-<phrase>
-<original>high quality, large file</original>
-<translation>berkualiti tinggi, fail besar</translation>
-</phrase>
-
-<phrase>
-<original>JPEG-2000 options</original>
-<translation>Pilihan JPEG-2000</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression when saving 8bpp BMP images</original>
-<translation>menggunakan mampatan RLE apabila menyimpan imej BMP 8bpp</translation>
-</phrase>
-
-<phrase>
-<original>BMP options</original>
-<translation>pilihan BMP</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression when saving TGA images</original>
-<translation>menggunakan mampatan RLE apabila menyimpan imej TGA</translation>
-</phrase>
-
-<phrase>
-<original>TGA options</original>
-<translation>pilihan TGA</translation>
-</phrase>
-
-<phrase>
-<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
-<translation>Subsampling mempengaruhi cara pengekod JPEG memampatkan luminance imej. 4: 2: 0 (sederhana) adalah nilai lalai.</translation>
-</phrase>
-
-<phrase>
-<original>optimize compression tables</original>
-<translation>mengoptimumkan jadual mampatan</translation>
-</phrase>
-
-<phrase>
-<original>use progressive encoding</original>
-<translation>menggunakan pengekodan progresif</translation>
-</phrase>
-
-<phrase>
-<original>use specific subsampling</original>
-<translation>menggunakan subsampling tertentu</translation>
-</phrase>
-
-<phrase>
-<original>image quality</original>
-<translation>kualiti imej</translation>
-</phrase>
-
-<phrase>
-<original>advanced JPEG settings</original>
-<translation>tetapan lanjutan JPEG</translation>
-</phrase>
-
-<phrase>
-<original>JPEG options</original>
-<translation>pilihan JPEG</translation>
-</phrase>
-
-<phrase>
-<original>preserve file's original background color, if available</original>
-<translation>mengekalkan warna latar belakang asal fail ini, jika ada</translation>
-</phrase>
-
-<phrase>
-<original>use interlacing (Adam7)</original>
-<translation>menggunakan anyaman daripada (Adam7)</translation>
-</phrase>
-
-<phrase>
-<original>PNG options</original>
-<translation>pilihan PNG</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress PNG files at the following level</original>
-<translation>apabila menyimpan, memampatkan fail PNG di peringkat berikut</translation>
-</phrase>
-
-<phrase>
-<original>no compression</original>
-<translation>tiada pemampatan</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression</original>
-<translation>mampatan maksimum</translation>
+<original>fix exposure and lighting problems</original>
+<translation>menetapkan pendedahan dan pencahayaan masalah</translation>
 </phrase>
 
 <phrase>
@@ -10871,28 +10709,18 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>You can add files to the batch list in several ways</original>
-<translation>Anda boleh menambah fail ke senarai kumpulan dalam beberapa cara</translation>
+<original>You can add files to the batch list in two ways</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>1) The folder and file lists at the top of this page.  Use the "Add selected image(s) to batch list" button to move images to the batch list, or use the right mouse button to drag-and-drop images.</original>
-<translation>1) Folder dan senarai fail di bahagian atas halaman ini. Gunakan "imej Tambah dipilih (s) ke senarai batch" untuk memindahkan imej ke senarai kumpulan, gunakan butang kanan tetikus untuk drag-dan-drop imej.</translation>
+<original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>2) The "Add images using Open Image dialog..." button.</original>
-<translation>2) "Tambah imej dengan menggunakan dialog Imej Terbuka..." butang.</translation>
-</phrase>
-
-<phrase>
-<original>3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.</original>
-<translation>3) Fail Drag-and-drop terus ke senarai kumpulan dari Windows Explorer atau desktop anda.</translation>
-</phrase>
-
-<phrase>
-<original>Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.</original>
-<translation>Setiap satu daripada kaedah ini menyokong penggunaan Ctrl dan kekunci Shift untuk memilih beberapa fail sekaligus.</translation>
+<original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11001,205 +10829,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
-
-By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
-<translation>Imej GIF hanya menyokong ketelusan mudah, bermakna setiap piksel dalam imej GIF mestilah telus atau legap sepenuhnya. Jika senarai kumpulan anda termasuk imej 32bpp dengan saluran alfa kompleks, PhotoDemon mesti memudahkan mereka sebelum menyimpan ke GIF format.
-
-By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan nilai potong adat.</translation>
-</phrase>
-
-<phrase>
-<original>Lossless (1:1)</original>
-<translation>Lossless (1: 1)</translation>
-</phrase>
-
-<phrase>
-<original>Low compression, good image quality (16:1)</original>
-<translation>Mampatan yang rendah, kualiti imej yang baik (16: 1)</translation>
-</phrase>
-
-<phrase>
-<original>Moderate compression, medium image quality (32:1)</original>
-<translation>Mampatan sederhana, kualiti imej yang sederhana (32: 1)</translation>
-</phrase>
-
-<phrase>
-<original>High compression, poor image quality (64:1)</original>
-<translation>Mampatan yang tinggi, kualiti imej miskin (64: 1)</translation>
-</phrase>
-
-<phrase>
-<original>Super compression, very poor image quality (256:1)</original>
-<translation>Super mampatan, kualiti imej yang sangat miskin (256: 1)</translation>
-</phrase>
-
-<phrase>
-<original>Custom ratio (X:1)</original>
-<translation>Nisbah Custom (X: 1)</translation>
-</phrase>
-
-<phrase>
-<original>Perfect (99)</original>
-<translation>Perfect (99)</translation>
-</phrase>
-
-<phrase>
-<original>Excellent (92)</original>
-<translation>Cemerlang (92)</translation>
-</phrase>
-
-<phrase>
-<original>Good (80)</original>
-<translation>Baik (80)</translation>
-</phrase>
-
-<phrase>
-<original>Average (65)</original>
-<translation>Purata (65)</translation>
-</phrase>
-
-<phrase>
-<original>Low (40)</original>
-<translation>Rendah (40)</translation>
-</phrase>
-
-<phrase>
-<original>Custom value</original>
-<translation>nilai adat</translation>
-</phrase>
-
-<phrase>
-<original>4:4:4 (best quality)</original>
-<translation>4: 4: 4 (kualiti terbaik)</translation>
-</phrase>
-
-<phrase>
-<original>4:2:2 (good quality)</original>
-<translation>4: 2: 2 (berkualiti)</translation>
-</phrase>
-
-<phrase>
-<original>4:2:0 (moderate quality)</original>
-<translation>4: 2: 0 (kualiti sederhana)</translation>
-</phrase>
-
-<phrase>
-<original>4:1:1 (low quality)</original>
-<translation>4: 1: 1 (berkualiti rendah)</translation>
-</phrase>
-
-<phrase>
-<original>n/a</original>
-<translation>n/a</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings require the FreeImage plugin</original>
-<translation>tetapan lanjutan memerlukan plugin FreeImage yang</translation>
-</phrase>
-
-<phrase>
-<original>Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.</original>
-<translation>Optimization amat disyorkan. Pilihan ini membolehkan pengekod JPEG itu mengira jadual pengekodan Huffman yang optimum bagi fail. Ia tidak menjejaskan kualiti imej - hanya memfailkan saiz.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).</original>
-<translation>Imej kecil tertanam menambah saiz fail, tetapi mereka membantu pratonton imej kelihatan lebih cepat dalam perisian lain (contohnya Windows Explorer).</translation>
-</phrase>
-
-<phrase>
-<original>Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.</original>
-<translation>Pengekodan progresif kadang-kadang digunakan untuk fail JPEG yang akan digunakan di Internet. Ia menjimatkan imej dalam tiga langkah yang boleh digunakan untuk secara beransur-ansur pudar-dalam imej pada sambungan Internet yang perlahan.</translation>
-</phrase>
-
-<phrase>
-<original>binary encoding (faster, smaller file size)</original>
-<translation>pengekodan binari (lebih cepat, saiz fail yang lebih kecil)</translation>
-</phrase>
-
-<phrase>
-<original>ASCII encoding (human-readable, multi-platform)</original>
-<translation>Pengekodan ASCII (yang boleh dibaca manusia, pelbagai platform)</translation>
-</phrase>
-
-<phrase>
-<original>default settings - CCITT Group 4 for 1bpp, LZW for all others</original>
-<translation>tetapan lalai - CCITT Kumpulan 4 untuk 1bpp, LZW untuk semua orang lain</translation>
-</phrase>
-
-<phrase>
-<original>Macintosh PackBits (RLE)</original>
-<translation>Macintosh PackBits (RLE)</translation>
-</phrase>
-
-<phrase>
-<original>Official DEFLATE ('Adobe-style')</original>
-<translation>Rasmi mengempiskan ('gaya Adobe-')</translation>
-</phrase>
-
-<phrase>
-<original>PKZIP DEFLATE (also known as zLib DEFLATE)</original>
-<translation>PKZIP mengempiskan (juga dikenali sebagai zlib mengempiskan)</translation>
-</phrase>
-
-<phrase>
-<original>LZW</original>
-<translation>LZW</translation>
-</phrase>
-
-<phrase>
-<original>JPEG - 8bpp grayscale or 24bpp color only</original>
-<translation>JPEG - 8bpp skala kelabu atau warna 24bpp hanya</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Group 3 fax encoding - 1bpp only</original>
-<translation>CCITT Kumpulan pengekodan 3 fax - 1bpp hanya</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Group 4 fax encoding - 1bpp only</original>
-<translation>CCITT Kumpulan pengekodan 4 faks - 1bpp hanya</translation>
-</phrase>
-
-<phrase>
-<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
-<translation>Fail bitmap hanya menyokong satu jenis mampatan, dan mereka hanya menyokong untuk kedalaman warna tertentu. PhotoDemon boleh memohon mampatan RLE mudah apabila menyimpan 8bpp imej.</translation>
-</phrase>
-
-<phrase>
-<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
-<translation>Fail TGA hanya menyokong satu jenis mampatan. PhotoDemon boleh memohon mampatan RLE mudah apabila menyimpan imej TGA.</translation>
-</phrase>
-
-<phrase>
-<original>TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.</original>
-<translation>TIFFs menyokong kedua-dua RGB dan CMYK ruang warna. RGB digunakan secara lalai, tetapi jika fail TIFF akan digunakan dalam dokumen dicetak, CMYK kadang-kadang diperlukan.</translation>
-</phrase>
-
-<phrase>
-<original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
-<translation>TIFFs menyokong pelbagai teknik mampatan. Antara teknik-teknik ini adalah terhad kepada kedalaman warna tertentu, jadi pastikan anda memilih satu yang sepadan dengan imej yang anda merancang untuk menyimpan.</translation>
-</phrase>
-
-<phrase>
-<original>PNG interlacing is similar to "progressive scan" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can "fade-in" while it downloads.</original>
-<translation>PNG interlacing adalah sama dengan "imbas progresif" pada JPEG. Jalinan yang sedikit meningkatkan saiz fail, tetapi imej berjalin boleh "pudar-in" semasa ia muat turun.</translation>
-</phrase>
-
-<phrase>
-<original>PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.</original>
-<translation>PNG fail boleh mengandungi parameter warna latar belakang. Ini mengambil ruang tambahan dalam fail, jadi berasa bebas untuk melumpuhkan jika anda tidak perlu warna latar belakang.</translation>
-</phrase>
-
-<phrase>
-<original>Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)</original>
-<translation>Pengekodan binari fail PPM amat disyorkan. (Dalam erti kata lain, tidak menukar tetapan ini kecuali anda pasti bahawa pengekodan ASCII adalah apa yang anda mahu.:)</translation>
-</phrase>
-
-<phrase>
 <original>Original filenames</original>
 <translation>nama fail asal</translation>
 </phrase>
@@ -11222,6 +10851,11 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
 <translation>(Khususnya, JPEG pada 92 %untuk kualiti gambar, dan PNG Lossless bukan gambar)</translation>
+</phrase>
+
+<phrase>
+<original>batch list</original>
+<translation>senarai kumpulan</translation>
 </phrase>
 
 <phrase>
@@ -11299,7 +10933,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 267 phrases. 89 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 189 phrases. 81 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11830,7 +11464,52 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>JPEG 2000 Pilihan Eksport</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 12 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>high quality, large file</original>
+<translation>berkualiti tinggi, fail besar</translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>berkualiti rendah, fail kecil</translation>
+</phrase>
+
+<phrase>
+<original>image compression ratio</original>
+<translation>nisbah mampatan imej</translation>
+</phrase>
+
+<phrase>
+<original>Lossless (1:1)</original>
+<translation>Lossless (1: 1)</translation>
+</phrase>
+
+<phrase>
+<original>Low compression, good image quality (16:1)</original>
+<translation>Mampatan yang rendah, kualiti imej yang baik (16: 1)</translation>
+</phrase>
+
+<phrase>
+<original>Moderate compression, medium image quality (32:1)</original>
+<translation>Mampatan sederhana, kualiti imej yang sederhana (32: 1)</translation>
+</phrase>
+
+<phrase>
+<original>High compression, poor image quality (64:1)</original>
+<translation>Mampatan yang tinggi, kualiti imej miskin (64: 1)</translation>
+</phrase>
+
+<phrase>
+<original>Super compression, very poor image quality (256:1)</original>
+<translation>Super mampatan, kualiti imej yang sangat miskin (256: 1)</translation>
+</phrase>
+
+<phrase>
+<original>Custom ratio (X:1)</original>
+<translation>Nisbah Custom (X: 1)</translation>
+</phrase>
+
+<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -11923,6 +11602,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>use progressive encoding</original>
+<translation>menggunakan pengekodan progresif</translation>
+</phrase>
+
+<phrase>
 <original>Lossless (100)</original>
 <translation>Lossless (100)</translation>
 </phrase>
@@ -11947,7 +11631,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Super mampatan, kualiti imej yang sangat miskin (20)</translation>
 </phrase>
 
-<!-- File_Save_JXRSettings.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_JXRSettings.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
@@ -12114,7 +11798,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12151,6 +11835,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>LZW</original>
+<translation>LZW</translation>
+</phrase>
+
+<phrase>
 <original>ZIP</original>
 <translation></translation>
 </phrase>
@@ -12165,7 +11854,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 43 phrases. 34 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 43 phrases. 33 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
@@ -15140,11 +14829,6 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
-<original>include subfolders</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>click OK to begin the repair operation</original>
 <translation></translation>
 </phrase>
@@ -15226,16 +14910,22 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <translation></translation>
 </phrase>
 
-<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for File_BatchRepair.frm-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4543 phrases. -->
-<!-- 1946 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 13354 total words. -->
+<!-- As of this build, PhotoDemon contains 4466 phrases. -->
+<!-- 1929 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12797 total words. -->
 
 </pdData>

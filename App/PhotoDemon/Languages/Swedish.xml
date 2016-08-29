@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.200</langversion>
+<langversion>6.7.202</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2471,12 +2471,6 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- END text for cProgressBarOfficial.cls-->
 
-<!-- BEGIN text for cSHA256.cls -->
-
-<!-- cSHA256.cls contains 0 phrases. -->
-
-<!-- END text for cSHA256.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -3268,12 +3262,6 @@ Please ange ett numeriskt värde.</translation>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
-
-<!-- BEGIN text for pdScrollBar.cls -->
-
-<!-- pdScrollBar.cls contains 0 phrases. -->
-
-<!-- END text for pdScrollBar.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -10413,78 +10401,38 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>Select macro</original>
-<translation>Välj makro</translation>
+<original>include subfolders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>custom actions from a saved macro file</original>
-<translation>anpassade åtgärder från en sparad makrofil</translation>
+<original>current batch list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>resize images</original>
-<translation>ändra storlek på bilder</translation>
+<original>save list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>do not apply photo editing actions</original>
-<translation>gäller inte fotoredigeringsåtgärder</translation>
+<original>load list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>apply one or more photo editing actions</original>
-<translation>tillämpa en eller flera fotoredigeringsåtgärder</translation>
+<original>erase entire list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>fix exposure and lighting problems</original>
-<translation>fixa exponering och ljusproblem</translation>
+<original>remove selected image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>om du bara vill ändra namn på bilder eller ändra bildformat, använda det här alternativet</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>ändra storlek på bilden genom</translation>
-</phrase>
-
-<phrase>
-<original>Save current list</original>
-<translation>Spara aktuella listan</translation>
-</phrase>
-
-<phrase>
-<original>Load list</original>
-<translation>Ladda lista</translation>
-</phrase>
-
-<phrase>
-<original>Remove all images</original>
-<translation>Ta bort alla bilder</translation>
-</phrase>
-
-<phrase>
-<original>Remove selected image(s)</original>
-<translation>Ta bort vald bild (er)</translation>
-</phrase>
-
-<phrase>
-<original>Add images using "Open Image" dialog</original>
-<translation>Lägg till bilder med hjälp av "Öppna bild" dialogrutan</translation>
-</phrase>
-
-<phrase>
-<original>Add selected image(s) to batch list</original>
-<translation>Lägg vald bild (er) till satslistan</translation>
-</phrase>
-
-<phrase>
-<original>Select none</original>
-<translation>Välj ingen</translation>
+<original>add individual images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10493,23 +10441,28 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>potential source images</original>
-<translation>potentiella källbilder</translation>
+<original>add images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>batch list</original>
-<translation>batch lista</translation>
+<original>modify list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>modify batch list</original>
-<translation>modifiera batch lista</translation>
+<original>load / save list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>load / save batch list</original>
-<translation>belastning/spara satslistan</translation>
+<original>add entire folder(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10588,153 +10541,38 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>GIF options</original>
-<translation>GIF alternativ</translation>
+<original>apply photo editing actions</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>transparency threshold for images with complex (32bpp) alpha channels</original>
-<translation>tröskel transparens för bilder med komplexa (32bpp) alfakanaler</translation>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>om du bara vill ändra namn på bilder eller ändra bildformat, använda det här alternativet</translation>
 </phrase>
 
 <phrase>
-<original>no transparency</original>
-<translation>ingen insyn</translation>
+<original>resize image by</original>
+<translation>ändra storlek på bilden genom</translation>
 </phrase>
 
 <phrase>
-<original>maximum transparency</original>
-<translation>maximal öppenhet</translation>
+<original>Select macro</original>
+<translation>Välj makro</translation>
 </phrase>
 
 <phrase>
-<original>export PPM files using</original>
-<translation>export PPM filer med</translation>
+<original>apply other actions from a saved macro file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PPM options</original>
-<translation>PPM alternativ</translation>
+<original>resize images</original>
+<translation>ändra storlek på bilder</translation>
 </phrase>
 
 <phrase>
-<original>save TIFFs as separated CMYK (for printing)</original>
-<translation>spara TIFF som separerade CMYK (för utskrift)</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress TIFFs using</original>
-<translation>när du sparar, komprimera TIFF använder</translation>
-</phrase>
-
-<phrase>
-<original>TIFF options</original>
-<translation>TIFF-alternativ</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>bildkompessionsnivån</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>låg kvalitet, liten fil</translation>
-</phrase>
-
-<phrase>
-<original>high quality, large file</original>
-<translation>hög kvalitet, stor fil</translation>
-</phrase>
-
-<phrase>
-<original>JPEG-2000 options</original>
-<translation>JPEG-2000 optioner</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression when saving 8bpp BMP images</original>
-<translation>använda RLE-komprimering när du sparar 8bpp BMP-bilder</translation>
-</phrase>
-
-<phrase>
-<original>BMP options</original>
-<translation>BMP alternativ</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression when saving TGA images</original>
-<translation>använda RLE-komprimering när du sparar TGA bilder</translation>
-</phrase>
-
-<phrase>
-<original>TGA options</original>
-<translation>TGA alternativ</translation>
-</phrase>
-
-<phrase>
-<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
-<translation>Delsampling påverkar hur JPEG-kodare komprimerar bild luminans. 04:02:00 (moderat) är standardvärdet.</translation>
-</phrase>
-
-<phrase>
-<original>optimize compression tables</original>
-<translation>optimera kompressions tabeller</translation>
-</phrase>
-
-<phrase>
-<original>use progressive encoding</original>
-<translation>använda progressiv kodning</translation>
-</phrase>
-
-<phrase>
-<original>use specific subsampling</original>
-<translation>använda specifika subsampling</translation>
-</phrase>
-
-<phrase>
-<original>image quality</original>
-<translation>bildkvalitet</translation>
-</phrase>
-
-<phrase>
-<original>advanced JPEG settings</original>
-<translation>advanced JPEG-inställningar</translation>
-</phrase>
-
-<phrase>
-<original>JPEG options</original>
-<translation>JPEG-alternativ</translation>
-</phrase>
-
-<phrase>
-<original>preserve file's original background color, if available</original>
-<translation>bevara filens ursprungliga bakgrundsfärg, om tillgängligt</translation>
-</phrase>
-
-<phrase>
-<original>use interlacing (Adam7)</original>
-<translation>använda sammanflätning (Adam7)</translation>
-</phrase>
-
-<phrase>
-<original>PNG options</original>
-<translation>PNG alternativ</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress PNG files at the following level</original>
-<translation>när du sparar, komprimera PNG-filer på följande nivå</translation>
-</phrase>
-
-<phrase>
-<original>no compression</original>
-<translation>ingen kompression</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression</original>
-<translation>maximal kompression</translation>
+<original>fix exposure and lighting problems</original>
+<translation>fixa exponering och ljusproblem</translation>
 </phrase>
 
 <phrase>
@@ -10862,28 +10700,18 @@ Would du spara din satslistan innan du avslutar?</translation>
 </phrase>
 
 <phrase>
-<original>You can add files to the batch list in several ways</original>
-<translation>Du kan lägga till filer i satslistan på flera sätt</translation>
+<original>You can add files to the batch list in two ways</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>1) The folder and file lists at the top of this page.  Use the "Add selected image(s) to batch list" button to move images to the batch list, or use the right mouse button to drag-and-drop images.</original>
-<translation>1) I mapp och fil listor högst upp på denna sida. Använd "Lägg till valda bilden (s) till satslistan" för att flytta bilder till satslistan, eller använd höger musknapp för att dra och släppa bilder.</translation>
+<original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>2) The "Add images using Open Image dialog..." button.</original>
-<translation>2) "Lägg till bilder med Image dialogrutan Öppna..."-knappen.</translation>
-</phrase>
-
-<phrase>
-<original>3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.</original>
-<translation>3) Dra och släpp filer direkt på satslistan från Utforskaren eller på skrivbordet.</translation>
-</phrase>
-
-<phrase>
-<original>Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.</original>
-<translation>Var och en av dessa metoder har stöd för användning av Ctrl-och Skift-tangenterna för att välja flera filer på en gång.</translation>
+<original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10992,205 +10820,6 @@ Would du spara din satslistan innan du avslutar?</translation>
 </phrase>
 
 <phrase>
-<original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
-
-By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
-<translation>GIF-bilder bara stödja enkel öppenhet, vilket innebär att varje pixel i en GIF-bild måste vara helt öppet eller helt ogenomskinlig. Om ditt parti lista omfattar 32bpp bilder med komplexa alfakanaler, måste PhotoDemon förenkla dem innan du sparar till GIF format.
-
-By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpassad cut-off värde.</translation>
-</phrase>
-
-<phrase>
-<original>Lossless (1:1)</original>
-<translation>Lossless (1:01)</translation>
-</phrase>
-
-<phrase>
-<original>Low compression, good image quality (16:1)</original>
-<translation>Låg kompression, bra bildkvalitet (16:01)</translation>
-</phrase>
-
-<phrase>
-<original>Moderate compression, medium image quality (32:1)</original>
-<translation>Måttlig kompression, medelhög kvalitet bild (32:1)</translation>
-</phrase>
-
-<phrase>
-<original>High compression, poor image quality (64:1)</original>
-<translation>Hög kompression, dålig bildkvalitet (64:1)</translation>
-</phrase>
-
-<phrase>
-<original>Super compression, very poor image quality (256:1)</original>
-<translation>Super kompression, mycket dålig bildkvalitet (256:1)</translation>
-</phrase>
-
-<phrase>
-<original>Custom ratio (X:1)</original>
-<translation>Anpassningsgrad (X: en)</translation>
-</phrase>
-
-<phrase>
-<original>Perfect (99)</original>
-<translation>Perfekt (99)</translation>
-</phrase>
-
-<phrase>
-<original>Excellent (92)</original>
-<translation>Utmärkt (92)</translation>
-</phrase>
-
-<phrase>
-<original>Good (80)</original>
-<translation>Bra (80)</translation>
-</phrase>
-
-<phrase>
-<original>Average (65)</original>
-<translation>Genomsnitt (65)</translation>
-</phrase>
-
-<phrase>
-<original>Low (40)</original>
-<translation>Låg (40)</translation>
-</phrase>
-
-<phrase>
-<original>Custom value</original>
-<translation>Anpassad värde</translation>
-</phrase>
-
-<phrase>
-<original>4:4:4 (best quality)</original>
-<translation>04:04:04 (bästa kvalitet)</translation>
-</phrase>
-
-<phrase>
-<original>4:2:2 (good quality)</original>
-<translation>04:02:02 (bra kvalitet)</translation>
-</phrase>
-
-<phrase>
-<original>4:2:0 (moderate quality)</original>
-<translation>04:02:00 (måttlig kvalitet)</translation>
-</phrase>
-
-<phrase>
-<original>4:1:1 (low quality)</original>
-<translation>04:01:01 (låg kvalitet)</translation>
-</phrase>
-
-<phrase>
-<original>n/a</original>
-<translation>n/a</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings require the FreeImage plugin</original>
-<translation>avancerade inställningar kräver Freeimage plugin</translation>
-</phrase>
-
-<phrase>
-<original>Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.</original>
-<translation>Optimering rekommenderas starkt. Detta alternativ gör att JPEG-kodare för att beräkna en optimal Huffman kodningstabell för filen. Det påverkar inte bildkvaliteten - bara filstorleken.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).</original>
-<translation>Inbäddade miniatyrer ökar filstorleken, men de hjälper förhandsvisningar av bilden visas snabbare i andra program (t.ex. Windows Explorer).</translation>
-</phrase>
-
-<phrase>
-<original>Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.</original>
-<translation>Progressiv kodning används ibland för JPEG-filer som kommer att användas på Internet. Det sparar bilden i tre steg, som kan användas för att gradvis tona-i bilden på en långsam Internet-anslutning.</translation>
-</phrase>
-
-<phrase>
-<original>binary encoding (faster, smaller file size)</original>
-<translation>binär kodning (snabbare, mindre filstorlek)</translation>
-</phrase>
-
-<phrase>
-<original>ASCII encoding (human-readable, multi-platform)</original>
-<translation>ASCII-kodning (läsbar, multi-plattform)</translation>
-</phrase>
-
-<phrase>
-<original>default settings - CCITT Group 4 for 1bpp, LZW for all others</original>
-<translation>standardinställningarna - CCITT Grupp 4 för 1bpp, LZW för alla andra</translation>
-</phrase>
-
-<phrase>
-<original>Macintosh PackBits (RLE)</original>
-<translation>Macintosh Packbits (RLE)</translation>
-</phrase>
-
-<phrase>
-<original>Official DEFLATE ('Adobe-style')</original>
-<translation>Officiell DEFLATE ("Adobe-stil")</translation>
-</phrase>
-
-<phrase>
-<original>PKZIP DEFLATE (also known as zLib DEFLATE)</original>
-<translation>PKZIP DEFLATE (även känd som ZLIB DEFLATE)</translation>
-</phrase>
-
-<phrase>
-<original>LZW</original>
-<translation>LZW</translation>
-</phrase>
-
-<phrase>
-<original>JPEG - 8bpp grayscale or 24bpp color only</original>
-<translation>Endast 8bpp gråskala eller 24bpp färg - JPEG</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Group 3 fax encoding - 1bpp only</original>
-<translation>Endast 1bpp - CCITT Grupp 3 fax kodning</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Group 4 fax encoding - 1bpp only</original>
-<translation>Endast 1bpp - CCITT Group 4 fax kodning</translation>
-</phrase>
-
-<phrase>
-<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
-<translation>Bitmap filer stöder endast en typ av komprimering, och de bara stödja det för vissa färgdjup. PhotoDemon kan tillämpa enkel RLE-komprimering när du sparar 8bpp bilder.</translation>
-</phrase>
-
-<phrase>
-<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
-<translation>TGA-filer stöder endast en typ av komprimering. PhotoDemon kan tillämpa enkel RLE-komprimering när du sparar TGA bilder.</translation>
-</phrase>
-
-<phrase>
-<original>TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.</original>
-<translation>TIFF stödjer både RGB-och CMYK-färgrymder. RGB används som standard, men om en TIFF-fil kommer att användas i tryckta dokument, CMYK ibland krävs.</translation>
-</phrase>
-
-<phrase>
-<original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
-<translation>TIFF stödja en mängd olika komprimeringstekniker. Några av dessa tekniker är begränsade till specifika färgdjup, så se till att du väljer en som matchar de bilder du tänker på att spara.</translation>
-</phrase>
-
-<phrase>
-<original>PNG interlacing is similar to "progressive scan" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can "fade-in" while it downloads.</original>
-<translation>PNG interlacing liknar "progressive scan" på JPEG-bilder. Interlacing något ökar filstorleken, men en sammanflätad bild kan "tona in" medan det hämtar.</translation>
-</phrase>
-
-<phrase>
-<original>PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.</original>
-<translation>PNG-filer kan innehålla en bakgrundsfärg parameter. Detta tar upp extra utrymme i filen, så tveka inte att stänga av den om du inte behöver bakgrundsfärger.</translation>
-</phrase>
-
-<phrase>
-<original>Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)</original>
-<translation>Binär kodning av PPM-filer är starkt föreslås. (Med andra ord, inte ändra den här inställningen om du inte är säker på att ASCII-kodning är vad du vill.:)</translation>
-</phrase>
-
-<phrase>
 <original>Original filenames</original>
 <translation>Original filnamn</translation>
 </phrase>
@@ -11213,6 +10842,11 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
 <translation>(Specifikt, JPEG på 92 %kvalitet för fotografier, och förlustfri PNG för icke-fotografier)</translation>
+</phrase>
+
+<phrase>
+<original>batch list</original>
+<translation>batch lista</translation>
 </phrase>
 
 <phrase>
@@ -11290,7 +10924,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 <translation>bearbetats före inställandet. Senast bearbetade bilden var " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 267 phrases. 89 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 189 phrases. 81 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11821,7 +11455,52 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>JPEG 2000 Exportalternativ</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 12 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>high quality, large file</original>
+<translation>hög kvalitet, stor fil</translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>låg kvalitet, liten fil</translation>
+</phrase>
+
+<phrase>
+<original>image compression ratio</original>
+<translation>bildkompessionsnivån</translation>
+</phrase>
+
+<phrase>
+<original>Lossless (1:1)</original>
+<translation>Lossless (1:01)</translation>
+</phrase>
+
+<phrase>
+<original>Low compression, good image quality (16:1)</original>
+<translation>Låg kompression, bra bildkvalitet (16:01)</translation>
+</phrase>
+
+<phrase>
+<original>Moderate compression, medium image quality (32:1)</original>
+<translation>Måttlig kompression, medelhög kvalitet bild (32:1)</translation>
+</phrase>
+
+<phrase>
+<original>High compression, poor image quality (64:1)</original>
+<translation>Hög kompression, dålig bildkvalitet (64:1)</translation>
+</phrase>
+
+<phrase>
+<original>Super compression, very poor image quality (256:1)</original>
+<translation>Super kompression, mycket dålig bildkvalitet (256:1)</translation>
+</phrase>
+
+<phrase>
+<original>Custom ratio (X:1)</original>
+<translation>Anpassningsgrad (X: en)</translation>
+</phrase>
+
+<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -11914,6 +11593,11 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>use progressive encoding</original>
+<translation>använda progressiv kodning</translation>
+</phrase>
+
+<phrase>
 <original>Lossless (100)</original>
 <translation>Förlustfri (100)</translation>
 </phrase>
@@ -11938,7 +11622,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Super kompression, mycket dålig bildkvalitet (20)</translation>
 </phrase>
 
-<!-- File_Save_JXRSettings.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_JXRSettings.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
@@ -12105,7 +11789,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12142,6 +11826,11 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>LZW</original>
+<translation>LZW</translation>
+</phrase>
+
+<phrase>
 <original>ZIP</original>
 <translation></translation>
 </phrase>
@@ -12156,7 +11845,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation></translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 43 phrases. 34 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 43 phrases. 33 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
@@ -15131,11 +14820,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>include subfolders</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>click OK to begin the repair operation</original>
 <translation></translation>
 </phrase>
@@ -15217,16 +14901,22 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <translation></translation>
 </phrase>
 
-<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for File_BatchRepair.frm-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4543 phrases. -->
-<!-- 1946 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 13354 total words. -->
+<!-- As of this build, PhotoDemon contains 4466 phrases. -->
+<!-- 1929 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12797 total words. -->
 
 </pdData>

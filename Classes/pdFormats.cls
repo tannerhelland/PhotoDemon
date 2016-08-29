@@ -65,15 +65,16 @@ Private outputDescriptions() As String
 Private inputPDIFs() As PHOTODEMON_IMAGE_FORMAT
 Private outputPDIFs() As PHOTODEMON_IMAGE_FORMAT
 
-'Array of common-dialog-formatted input/output filetypes
-Private commonDialogInputs As String, commonDialogOutputs As String
+'Array of common-dialog-formatted input/output filetypes.  (Common dialogs require different pipe-based formatting
+' than normal lists, as you must add human-readable text descriptions to the list.)
+Private m_CommonDialogInputs As String, m_CommonDialogOutputs As String
 
 'Common dialog also require a specialized "default extension" string for output files
-Private cdOutputDefaultExtensions As String
+Private m_cdOutputDefaultExtensions As String
 
 'When analyzing our current plugin options, we have to make a lot of on-the-fly decisions about format availability.
 ' This value is shared among multiple functions while making such decisions.  Do not treat it as a meaningful value.
-Private curFormatIndex As Long
+Private m_curFormatIndex As Long
 
 'Return the index of given input PDIF
 Public Function GetIndexOfInputPDIF(ByVal srcFIF As PHOTODEMON_IMAGE_FORMAT) As Long
@@ -118,6 +119,19 @@ Public Function GetInputFormatExtensions(ByVal dIndex As Long) As String
     End If
 End Function
 
+'Return a list of all input formats supported by the current session.  By default, the list is delimited with commas,
+' and each extension is listed as "*.abc".
+Public Function GetListOfInputFormats(Optional ByVal listDelimiter As String = ";", Optional ByVal includeStarDot As Boolean = True) As String
+    
+    'The first entry in the extensions collection is used for the "All supported formats" common dialog option;
+    ' as such, it already contains a full list of valid extensions.
+    GetListOfInputFormats = inputExtensions(0)
+    
+    If (StrComp(listDelimiter, ";", vbBinaryCompare) <> 0) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, ";", listDelimiter)
+    If (Not includeStarDot) Then GetListOfInputFormats = Replace$(GetListOfInputFormats, "*.", "")
+    
+End Function
+
 'Return the number of available input format types
 Public Function GetNumOfInputFormats() As Long
     GetNumOfInputFormats = numOfInputFormats
@@ -125,7 +139,7 @@ End Function
 
 'Return a list of input filetypes formatted for use with a common dialog box
 Public Function GetCommonDialogInputFormats() As String
-    GetCommonDialogInputFormats = commonDialogInputs
+    GetCommonDialogInputFormats = m_CommonDialogInputs
 End Function
 
 'Return the index of given output FIF
@@ -178,12 +192,12 @@ End Function
 
 'Return a list of output filetypes formatted for use with a common dialog box
 Public Function GetCommonDialogOutputFormats() As String
-    GetCommonDialogOutputFormats = commonDialogOutputs
+    GetCommonDialogOutputFormats = m_CommonDialogOutputs
 End Function
 
 'Return a list of output default extensions formatted for use with a common dialog box
 Public Function GetCommonDialogDefaultExtensions() As String
-    GetCommonDialogDefaultExtensions = cdOutputDefaultExtensions
+    GetCommonDialogDefaultExtensions = m_cdOutputDefaultExtensions
 End Function
 
 'Generate a list of available import formats
@@ -203,7 +217,7 @@ Public Sub GenerateInputFormats()
     ' it will be automatically generated as we go.
     
     'Set the location tracker to "0".  Beyond this point, it will be automatically updated.
-    curFormatIndex = 0
+    m_curFormatIndex = 0
     
     'Bitmap files require no plugins; they are always supported.
     AddInputFormat "BMP - Windows or OS/2 Bitmap", "*.bmp", PDIF_BMP
@@ -280,7 +294,7 @@ Public Sub GenerateInputFormats()
     AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
     
     'Resize our description and extension arrays to match their final size
-    numOfInputFormats = curFormatIndex
+    numOfInputFormats = m_curFormatIndex
     ReDim Preserve inputDescriptions(0 To numOfInputFormats) As String
     ReDim Preserve inputExtensions(0 To numOfInputFormats) As String
     ReDim Preserve inputPDIFs(0 To numOfInputFormats) As PHOTODEMON_IMAGE_FORMAT
@@ -293,9 +307,9 @@ Public Sub GenerateInputFormats()
     
         'Index 0 is a special case; everything else is handled in the same manner.
         If (x <> 0) Then
-            commonDialogInputs = commonDialogInputs & "|" & inputDescriptions(x) & "|" & inputExtensions(x)
+            m_CommonDialogInputs = m_CommonDialogInputs & "|" & inputDescriptions(x) & "|" & inputExtensions(x)
         Else
-            commonDialogInputs = inputDescriptions(x) & "|" & inputExtensions(x)
+            m_CommonDialogInputs = inputDescriptions(x) & "|" & inputExtensions(x)
         End If
     
     Next x
@@ -308,20 +322,20 @@ End Sub
 Private Sub AddInputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PHOTODEMON_IMAGE_FORMAT)
     
     'Increment the counter
-    curFormatIndex = curFormatIndex + 1
+    m_curFormatIndex = m_curFormatIndex + 1
     
     'Add the descriptive text to our collection
-    inputDescriptions(curFormatIndex) = formatDescription
+    inputDescriptions(m_curFormatIndex) = formatDescription
     
     'Add any relevant extension(s) to our collection
-    inputExtensions(curFormatIndex) = extensionList
+    inputExtensions(m_curFormatIndex) = extensionList
     
     'Add the FIF constant
-    inputPDIFs(curFormatIndex) = correspondingPDIF
+    inputPDIFs(m_curFormatIndex) = correspondingPDIF
     
     'If applicable, add these extensions to the "All Compatible Images" list
-    If extensionList <> "*.*" Then
-        If curFormatIndex <> 1 Then
+    If (extensionList <> "*.*") Then
+        If (m_curFormatIndex <> 1) Then
             inputExtensions(0) = inputExtensions(0) & ";" & extensionList
         Else
             inputExtensions(0) = inputExtensions(0) & extensionList
@@ -340,7 +354,7 @@ Public Sub GenerateOutputFormats()
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
     
     'Start by effectively setting the location tracker to "0".  Beyond this point, it will be automatically updated.
-    curFormatIndex = -1
+    m_curFormatIndex = -1
 
     AddOutputFormat "BMP - Windows Bitmap", "bmp", PDIF_BMP
     
@@ -370,7 +384,7 @@ Public Sub GenerateOutputFormats()
     If FreeImageEnabled Then AddOutputFormat "WEBP - Google WebP", "webp", PDIF_WEBP
     
     'Resize our description and extension arrays to match their final size
-    numOfOutputFormats = curFormatIndex
+    numOfOutputFormats = m_curFormatIndex
     ReDim Preserve outputDescriptions(0 To numOfOutputFormats) As String
     ReDim Preserve outputExtensions(0 To numOfOutputFormats) As String
     ReDim Preserve outputPDIFs(0 To numOfOutputFormats) As PHOTODEMON_IMAGE_FORMAT
@@ -383,11 +397,11 @@ Public Sub GenerateOutputFormats()
     
         'Index 0 is a special case; everything else is handled in the same manner.
         If x <> 0 Then
-            commonDialogOutputs = commonDialogOutputs & "|" & outputDescriptions(x) & "|*." & outputExtensions(x)
-            cdOutputDefaultExtensions = cdOutputDefaultExtensions & "|." & outputExtensions(x)
+            m_CommonDialogOutputs = m_CommonDialogOutputs & "|" & outputDescriptions(x) & "|*." & outputExtensions(x)
+            m_cdOutputDefaultExtensions = m_cdOutputDefaultExtensions & "|." & outputExtensions(x)
         Else
-            commonDialogOutputs = outputDescriptions(x) & "|*." & outputExtensions(x)
-            cdOutputDefaultExtensions = "." & outputExtensions(x)
+            m_CommonDialogOutputs = outputDescriptions(x) & "|*." & outputExtensions(x)
+            m_cdOutputDefaultExtensions = "." & outputExtensions(x)
         End If
     
     Next x
@@ -400,16 +414,16 @@ End Sub
 Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PHOTODEMON_IMAGE_FORMAT)
     
     'Increment the counter
-    curFormatIndex = curFormatIndex + 1
+    m_curFormatIndex = m_curFormatIndex + 1
     
     'Add the descriptive text to our collection
-    outputDescriptions(curFormatIndex) = formatDescription
+    outputDescriptions(m_curFormatIndex) = formatDescription
     
     'Add the primary extension for this format type
-    outputExtensions(curFormatIndex) = extensionList
+    outputExtensions(m_curFormatIndex) = extensionList
     
     'Add the corresponding FIF
-    outputPDIFs(curFormatIndex) = correspondingPDIF
+    outputPDIFs(m_curFormatIndex) = correspondingPDIF
             
 End Sub
 
