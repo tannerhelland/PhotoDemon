@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.200</langversion>
+<langversion>6.7.202</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -2469,12 +2469,6 @@ Per favore inserisci un valore numerico.</translation>
 
 <!-- END text for cProgressBarOfficial.cls-->
 
-<!-- BEGIN text for cSHA256.cls -->
-
-<!-- cSHA256.cls contains 0 phrases. -->
-
-<!-- END text for cSHA256.cls-->
-
 <!-- BEGIN text for cUnicodeBrowseFolders.cls -->
 
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
@@ -3266,12 +3260,6 @@ Per favore inserisci un valore numerico.</translation>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
-
-<!-- BEGIN text for pdScrollBar.cls -->
-
-<!-- pdScrollBar.cls contains 0 phrases. -->
-
-<!-- END text for pdScrollBar.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -10411,78 +10399,38 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>Select macro</original>
-<translation>Scegli la macro</translation>
+<original>include subfolders</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>custom actions from a saved macro file</original>
-<translation>azioni personalizzate da un file macro salvato</translation>
+<original>current batch list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>resize images</original>
-<translation>ridimensiona le immagini</translation>
+<original>save list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>do not apply photo editing actions</original>
-<translation>non applicare le azioni di fotoritocco</translation>
+<original>load list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>apply one or more photo editing actions</original>
-<translation>applica una o più azioni di fotoritocco</translation>
+<original>erase entire list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>fix exposure and lighting problems</original>
-<translation>risolve i problemi di esposizione e di illuminazione</translation>
+<original>remove selected image</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>se vuoi solamente rinominare le immagini o cambiarne il formato, usa questa opzione</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>ridimensiona le immagini da</translation>
-</phrase>
-
-<phrase>
-<original>Save current list</original>
-<translation>Salva la lista corrente</translation>
-</phrase>
-
-<phrase>
-<original>Load list</original>
-<translation>Carica la lista</translation>
-</phrase>
-
-<phrase>
-<original>Remove all images</original>
-<translation>Rimuovi tutte le immagini</translation>
-</phrase>
-
-<phrase>
-<original>Remove selected image(s)</original>
-<translation>Rimuovi l'immagine selezionata</translation>
-</phrase>
-
-<phrase>
-<original>Add images using "Open Image" dialog</original>
-<translation>Aggiungi le immagini utilizzando "Apri una immagine"</translation>
-</phrase>
-
-<phrase>
-<original>Add selected image(s) to batch list</original>
-<translation>Aggiungi le immagini selezionate alla lista da processare</translation>
-</phrase>
-
-<phrase>
-<original>Select none</original>
-<translation>Deseleziona</translation>
+<original>add individual images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10491,23 +10439,28 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>potential source images</original>
-<translation>lista potenziale delle immagini</translation>
+<original>add images</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>batch list</original>
-<translation>lista da processare</translation>
+<original>modify list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>modify batch list</original>
-<translation>modifica la lista da processare</translation>
+<original>load / save list</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>load / save batch list</original>
-<translation>carica / salva la lista da processare</translation>
+<original>add entire folder(s)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>remove all images in this folder</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10586,153 +10539,38 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>GIF options</original>
-<translation>opzioni GIF</translation>
+<original>apply photo editing actions</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>transparency threshold for images with complex (32bpp) alpha channels</original>
-<translation>soglia per la trasparenza delle immagini con canale alfa complesso (32bpp)</translation>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>se vuoi solamente rinominare le immagini o cambiarne il formato, usa questa opzione</translation>
 </phrase>
 
 <phrase>
-<original>no transparency</original>
-<translation>nessuna trasparenza</translation>
+<original>resize image by</original>
+<translation>ridimensiona le immagini da</translation>
 </phrase>
 
 <phrase>
-<original>maximum transparency</original>
-<translation>trasparenza massima</translation>
+<original>Select macro</original>
+<translation>Scegli la macro</translation>
 </phrase>
 
 <phrase>
-<original>export PPM files using</original>
-<translation>esporta i file PPM usando</translation>
+<original>apply other actions from a saved macro file</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PPM options</original>
-<translation>opzioni PPM</translation>
+<original>resize images</original>
+<translation>ridimensiona le immagini</translation>
 </phrase>
 
 <phrase>
-<original>save TIFFs as separated CMYK (for printing)</original>
-<translation>salva le TIFF come CMYK separati (per la stampa)</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress TIFFs using</original>
-<translation>quando salvi, comprimi le TIFF usando</translation>
-</phrase>
-
-<phrase>
-<original>TIFF options</original>
-<translation>opzioni TIFF</translation>
-</phrase>
-
-<phrase>
-<original>image compression ratio</original>
-<translation>rapporto di compressione dell'immagine</translation>
-</phrase>
-
-<phrase>
-<original>low quality, small file</original>
-<translation>bassa qualità, file piccolo</translation>
-</phrase>
-
-<phrase>
-<original>high quality, large file</original>
-<translation>alta qualità, file grande</translation>
-</phrase>
-
-<phrase>
-<original>JPEG-2000 options</original>
-<translation>opzioni JPEG-2000</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression when saving 8bpp BMP images</original>
-<translation>utilizza la compressione RLE quando salvi l'immagine BMP a 8bpp</translation>
-</phrase>
-
-<phrase>
-<original>BMP options</original>
-<translation>opzioni BMP</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression when saving TGA images</original>
-<translation>usa la compressione RLE quando salvi le immagini TGA</translation>
-</phrase>
-
-<phrase>
-<original>TGA options</original>
-<translation>opzioni TGA</translation>
-</phrase>
-
-<phrase>
-<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
-<translation>Il sottocampionamento si riflette nel modo in cui JPEG comprime la luminanza dell'immagine.  4:2:0 (moderata) è il valore predefinito.</translation>
-</phrase>
-
-<phrase>
-<original>optimize compression tables</original>
-<translation>ottimizza la tavola di compressione</translation>
-</phrase>
-
-<phrase>
-<original>use progressive encoding</original>
-<translation>usa la codifica progressiva</translation>
-</phrase>
-
-<phrase>
-<original>use specific subsampling</original>
-<translation>usa il sottocampionamento specifico</translation>
-</phrase>
-
-<phrase>
-<original>image quality</original>
-<translation>qualità dell'immagine</translation>
-</phrase>
-
-<phrase>
-<original>advanced JPEG settings</original>
-<translation>impostazione avanzate JPEG</translation>
-</phrase>
-
-<phrase>
-<original>JPEG options</original>
-<translation>opzioni JPEG</translation>
-</phrase>
-
-<phrase>
-<original>preserve file's original background color, if available</original>
-<translation>preserva il colore dello sfondo originale, se disponibile</translation>
-</phrase>
-
-<phrase>
-<original>use interlacing (Adam7)</original>
-<translation>usa l'interlacciamento (Adam7)</translation>
-</phrase>
-
-<phrase>
-<original>PNG options</original>
-<translation>opzioni PNG</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress PNG files at the following level</original>
-<translation>quando salvi, comprimi le PNG al seguente livello</translation>
-</phrase>
-
-<phrase>
-<original>no compression</original>
-<translation>nessuna compressione</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression</original>
-<translation>compressione massima</translation>
+<original>fix exposure and lighting problems</original>
+<translation>risolve i problemi di esposizione e di illuminazione</translation>
 </phrase>
 
 <phrase>
@@ -10860,28 +10698,18 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>You can add files to the batch list in several ways</original>
-<translation>Puoi aggiungere dei file alla lista da processare in diversi modi</translation>
+<original>You can add files to the batch list in two ways</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>1) The folder and file lists at the top of this page.  Use the "Add selected image(s) to batch list" button to move images to the batch list, or use the right mouse button to drag-and-drop images.</original>
-<translation>1) La cartella e le liste dei file nella parte superiore di questa pagina.  Utilizzare il bottone "Aggiungi immagine(i) selezionata(e) alla lista da processare" per spostare le immagini nella lista da processare, oppure utilizza il pulsante destro del mouse per trascinare e rilasciare le immagini.</translation>
+<original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>2) The "Add images using Open Image dialog..." button.</original>
-<translation>2) Il bottone "Aggiungi immagini utilizzando la finestra di dialogo Apri immagine...".</translation>
-</phrase>
-
-<phrase>
-<original>3) Drag-and-drop files directly onto the batch list from Windows Explorer or your desktop.</original>
-<translation>3) Trascina e rilascia direttamente i file dentro alla lista da processare da Windows Explorer o dalla tua scrivania.</translation>
-</phrase>
-
-<phrase>
-<original>Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.</original>
-<translation>Ognuno di questi metodi supporta l'uso dei tasti CTRL e SHIFT per selezionare file mutipli in una sola volta.</translation>
+<original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10990,205 +10818,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
-
-By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
-<translation>Le immagini GIF supportano solo la trasparenza semplice, significa che ogni pixel in un'immagine GIF deve essere o completamente trasparente o completamente opaco.  Se la tua lista da processare include immagini a 32bpp con canale alfa complesso, PhotoDemon può semplificarlo prima di salvarlo in formato GIF.
-
-Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare un valore della riduzione personalizzato.</translation>
-</phrase>
-
-<phrase>
-<original>Lossless (1:1)</original>
-<translation>Senza perdite (1:1)</translation>
-</phrase>
-
-<phrase>
-<original>Low compression, good image quality (16:1)</original>
-<translation>Compressione bassa, qualità dell'immagine buona (16:1)</translation>
-</phrase>
-
-<phrase>
-<original>Moderate compression, medium image quality (32:1)</original>
-<translation>Compression moderata, qualità dell'immagine media (32:1)</translation>
-</phrase>
-
-<phrase>
-<original>High compression, poor image quality (64:1)</original>
-<translation>Compressione alta, qualità dell'immagine bassa (64:1)</translation>
-</phrase>
-
-<phrase>
-<original>Super compression, very poor image quality (256:1)</original>
-<translation>Compressione altissima, qualità dell'immagine scarsa (256:1)</translation>
-</phrase>
-
-<phrase>
-<original>Custom ratio (X:1)</original>
-<translation>Rapporto personalizzato (X:1)</translation>
-</phrase>
-
-<phrase>
-<original>Perfect (99)</original>
-<translation>Perfetta (99)</translation>
-</phrase>
-
-<phrase>
-<original>Excellent (92)</original>
-<translation>Eccellente (92)</translation>
-</phrase>
-
-<phrase>
-<original>Good (80)</original>
-<translation>Buona (80)</translation>
-</phrase>
-
-<phrase>
-<original>Average (65)</original>
-<translation>Media (65)</translation>
-</phrase>
-
-<phrase>
-<original>Low (40)</original>
-<translation>Bassa (40)</translation>
-</phrase>
-
-<phrase>
-<original>Custom value</original>
-<translation>Valore personalizzato</translation>
-</phrase>
-
-<phrase>
-<original>4:4:4 (best quality)</original>
-<translation>4:4:4 (migliore qualità)</translation>
-</phrase>
-
-<phrase>
-<original>4:2:2 (good quality)</original>
-<translation>4:2:2 (buona qualità)</translation>
-</phrase>
-
-<phrase>
-<original>4:2:0 (moderate quality)</original>
-<translation>4:2:0 (media qualità)</translation>
-</phrase>
-
-<phrase>
-<original>4:1:1 (low quality)</original>
-<translation>4:1:1 (bassa qualità)</translation>
-</phrase>
-
-<phrase>
-<original>n/a</original>
-<translation>N/A</translation>
-</phrase>
-
-<phrase>
-<original>advanced settings require the FreeImage plugin</original>
-<translation>i parametri avanzati richiedono il plugin FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.</original>
-<translation>L'ottimizzazione è fortemente raccomandata.  Questa opzione consente al codificatore JPEG di calcolare una tabella di codifica Huffman ottimizzata per il file.  Non ha effetto sulla qualità dell'immagine - solo sulla dimensione del file.</translation>
-</phrase>
-
-<phrase>
-<original>Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).</original>
-<translation>Le miniature integrate aumentano la dimensione del file, ma aiutano l'anteprima dell'immagine ad apparire più velocemente che in qualunque altro software (per esempio, Windows Explorer).</translation>
-</phrase>
-
-<phrase>
-<original>Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.</original>
-<translation>La codifica progressiva è usata qualche volta nei file JPEG per essere utilizzata in Internet.  Salva l'immagine in tre passi, che possono essere usati come dissolvenza in entrata sulle connessioni Internet lente.</translation>
-</phrase>
-
-<phrase>
-<original>binary encoding (faster, smaller file size)</original>
-<translation>codifica binaria (rapidissima, file di dimensioni molto ridotte)</translation>
-</phrase>
-
-<phrase>
-<original>ASCII encoding (human-readable, multi-platform)</original>
-<translation>Codifica ASCII (umanamente leggibile, multipiattaforma)</translation>
-</phrase>
-
-<phrase>
-<original>default settings - CCITT Group 4 for 1bpp, LZW for all others</original>
-<translation>parametri predefiniti - CCITT Gruppo 4 per 1bpp, LZW per tutti gli altri</translation>
-</phrase>
-
-<phrase>
-<original>Macintosh PackBits (RLE)</original>
-<translation>Macintosh PackBits (RLE)</translation>
-</phrase>
-
-<phrase>
-<original>Official DEFLATE ('Adobe-style')</original>
-<translation>DEFLATE ufficiale ('Adobe-style')</translation>
-</phrase>
-
-<phrase>
-<original>PKZIP DEFLATE (also known as zLib DEFLATE)</original>
-<translation>DEFLATE PKZIP (anche conosciuto come DEFLATE zLib)</translation>
-</phrase>
-
-<phrase>
-<original>LZW</original>
-<translation>LZW</translation>
-</phrase>
-
-<phrase>
-<original>JPEG - 8bpp grayscale or 24bpp color only</original>
-<translation>JPEG - 8bpp scala di grigi o 24bpp di colore solamente</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Group 3 fax encoding - 1bpp only</original>
-<translation>CCITT Gruppo 3 codifica fax - 1bpp solamente</translation>
-</phrase>
-
-<phrase>
-<original>CCITT Group 4 fax encoding - 1bpp only</original>
-<translation>CCITT Gruppo 4 codifica fax - 1bpp solamente</translation>
-</phrase>
-
-<phrase>
-<original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
-<translation>I file Bitmap supportano solo un tipo di compressione, e solamente con certe profondità di colore.  PhotoDemon può applicare una semplice compressione RLE quando salvi l'immagine a 8bpp.</translation>
-</phrase>
-
-<phrase>
-<original>TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images.</original>
-<translation>TGA supporta solo un tipo di compressione.  PhotoDemon può applicare una semplice compressione RLE, quando salvi l'immagine in TGA.</translation>
-</phrase>
-
-<phrase>
-<original>TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required.</original>
-<translation>TIFF supporta entrambi gli spazi di colore RGB e CMYK.  RGB è usato come predefinito, ma se un file TIFF viene usato in un documento stampato, CMYK è qualche volta richiesto.</translation>
-</phrase>
-
-<phrase>
-<original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
-<translation>TIFF supporta una varietà di tecniche di compressione.  Alcune di queste tecniche sono limitate dalla specifica profondità di colore, quindi assicurati di sceglierne una che corrisponda all'immagine che stai salvando.</translation>
-</phrase>
-
-<phrase>
-<original>PNG interlacing is similar to "progressive scan" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can "fade-in" while it downloads.</original>
-<translation>L'interlacciamento PNG è simile alla "scansione progressiva" del JPEG.  L'interlacciamento aumenta leggermente la dimensione del file, ma un'immagine inerlacciata può apparire con "dissolvenza in entrata" quando è scaricata.</translation>
-</phrase>
-
-<phrase>
-<original>PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors.</original>
-<translation>I file PNG possono contenere un parametro per il colore dello sfondo.  Questo può prendere ulteriore spazio nel file, così sei libero di disabilitarlo se non necessiti di un colore di sfondo.</translation>
-</phrase>
-
-<phrase>
-<original>Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)</original>
-<translation>La codifica binaria dei file PPM è vivamente raccomandata.  (In altre parole, non cambiare questa impostazione senza essere sicuro che la codifica ASCII è quello che vuoi. :)</translation>
-</phrase>
-
-<phrase>
 <original>Original filenames</original>
 <translation>Nomi dei file originali</translation>
 </phrase>
@@ -11211,6 +10840,11 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
 <translation>(specificatamente, JPEG al 92% di qualità per le fotografie, e PNG senza perdite per quelle non fotografiche)</translation>
+</phrase>
+
+<phrase>
+<original>batch list</original>
+<translation>lista da processare</translation>
 </phrase>
 
 <phrase>
@@ -11288,7 +10922,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 <translation>processata(e) prima della cancellazione. L'ultima immagine processata è stata "%1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 267 phrases. 89 were duplicates of existing phrases, so only 178 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 189 phrases. 81 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11819,7 +11453,52 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Opzioni di esportazione JPEG 2000</translation>
 </phrase>
 
-<!-- File_Save_JP2Settings.frm contains 13 phrases. 12 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>high quality, large file</original>
+<translation>alta qualità, file grande</translation>
+</phrase>
+
+<phrase>
+<original>low quality, small file</original>
+<translation>bassa qualità, file piccolo</translation>
+</phrase>
+
+<phrase>
+<original>image compression ratio</original>
+<translation>rapporto di compressione dell'immagine</translation>
+</phrase>
+
+<phrase>
+<original>Lossless (1:1)</original>
+<translation>Senza perdite (1:1)</translation>
+</phrase>
+
+<phrase>
+<original>Low compression, good image quality (16:1)</original>
+<translation>Compressione bassa, qualità dell'immagine buona (16:1)</translation>
+</phrase>
+
+<phrase>
+<original>Moderate compression, medium image quality (32:1)</original>
+<translation>Compression moderata, qualità dell'immagine media (32:1)</translation>
+</phrase>
+
+<phrase>
+<original>High compression, poor image quality (64:1)</original>
+<translation>Compressione alta, qualità dell'immagine bassa (64:1)</translation>
+</phrase>
+
+<phrase>
+<original>Super compression, very poor image quality (256:1)</original>
+<translation>Compressione altissima, qualità dell'immagine scarsa (256:1)</translation>
+</phrase>
+
+<phrase>
+<original>Custom ratio (X:1)</original>
+<translation>Rapporto personalizzato (X:1)</translation>
+</phrase>
+
+<!-- File_Save_JP2Settings.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_JP2Settings.frm-->
 
@@ -11912,6 +11591,11 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
+<original>use progressive encoding</original>
+<translation>usa la codifica progressiva</translation>
+</phrase>
+
+<phrase>
 <original>Lossless (100)</original>
 <translation>Senza perdita (100)</translation>
 </phrase>
@@ -11936,7 +11620,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Compressione Super, qualità dell'immagine molto scarsa (20)</translation>
 </phrase>
 
-<!-- File_Save_JXRSettings.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_JXRSettings.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for File_Save_JXRSettings.frm-->
 
@@ -12103,7 +11787,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 61 phrases. 36 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12140,6 +11824,11 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 </phrase>
 
 <phrase>
+<original>LZW</original>
+<translation>LZW</translation>
+</phrase>
+
+<phrase>
 <original>ZIP</original>
 <translation></translation>
 </phrase>
@@ -12154,7 +11843,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation></translation>
 </phrase>
 
-<!-- File_Save_TIFF.frm contains 43 phrases. 34 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- File_Save_TIFF.frm contains 43 phrases. 33 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for File_Save_TIFF.frm-->
 
@@ -15129,11 +14818,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 </phrase>
 
 <phrase>
-<original>include subfolders</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>click OK to begin the repair operation</original>
 <translation></translation>
 </phrase>
@@ -15215,16 +14899,22 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <translation></translation>
 </phrase>
 
-<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for File_BatchRepair.frm-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2597</phrasecount>
+<phrasecount>2537</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4543 phrases. -->
-<!-- 1946 are duplicates, so only 2597 unique phrases have been written to file. -->
-<!-- These 2597 phrases contain approximately 13354 total words. -->
+<!-- As of this build, PhotoDemon contains 4466 phrases. -->
+<!-- 1929 are duplicates, so only 2537 unique phrases have been written to file. -->
+<!-- These 2537 phrases contain approximately 12797 total words. -->
 
 </pdData>
