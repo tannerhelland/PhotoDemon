@@ -131,7 +131,7 @@ Begin VB.Form FormBatchWizard
          Height          =   615
          Left            =   4200
          TabIndex        =   23
-         Top             =   6480
+         Top             =   6840
          Width           =   3495
          _ExtentX        =   6165
          _ExtentY        =   1085
@@ -242,6 +242,17 @@ Begin VB.Form FormBatchWizard
          _ExtentX        =   6165
          _ExtentY        =   1085
          Caption         =   "remove all images in this folder"
+      End
+      Begin PhotoDemon.pdCheckBox chkRemoveSubfolders 
+         Height          =   375
+         Left            =   4200
+         TabIndex        =   47
+         Top             =   6435
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   661
+         Caption         =   "include subfolders"
+         Value           =   0
       End
    End
    Begin PhotoDemon.pdContainer picContainer 
@@ -736,6 +747,9 @@ Private m_CurImagePreview As String
 ' TODO: fix this, because word order (obviously) is not consistent from language to language
 Private m_wordForBatchList As String, m_wordForItem As String, m_wordForItems As String
 
+'While we're processing the list (for example, when removing items automatically), we want to ignore any events raised by the list
+Private m_ListBusy As Boolean
+
 'System progress bar control
 Private sysProgBar As cProgressBarOfficial
 
@@ -980,7 +994,7 @@ Private Sub cmdLoadList_Click()
                     
                     'If the user has already created a list of files to process, ask if they want to replace or append
                     ' the loaded entries to their current list.
-                    If lstFiles.ListCount > 0 Then
+                    If (lstFiles.ListCount > 0) Then
                 
                     Dim msgReturn As VbMsgBoxResult
                     msgReturn = PDMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel + vbApplicationModal + vbInformation, "Batch process notification")
@@ -1080,7 +1094,7 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
         
             'If no images have been added to the batch list, make the user add some!
             If (moveForward And (lstFiles.ListCount = 0)) Then
-                PDMsgBox "You have not selected any images to process!  Please place one or more images in the batch list (at the bottom of the screen) before moving to the next step.", vbExclamation + vbOKOnly + vbApplicationModal, "No images selected"
+                PDMsgBox "You have not selected any images to process!  Please add one or more images to the batch list.", vbExclamation + vbOKOnly + vbApplicationModal, "No images selected"
                 Exit Sub
             End If
         
@@ -1225,10 +1239,10 @@ End Sub
 Private Sub cmdRemove_Click()
     
     If (lstFiles.ListIndex >= 0) Then
-        Dim lastListIndex As Long
-        lastListIndex = lstFiles.ListIndex
-        lstFiles.RemoveItem lastListIndex
-        If (lastListIndex < lstFiles.ListCount) Then lstFiles.ListIndex = lastListIndex Else lstFiles.ListIndex = lstFiles.ListCount - 1
+        Dim LastListIndex As Long
+        LastListIndex = lstFiles.ListIndex
+        lstFiles.RemoveItem LastListIndex
+        If (LastListIndex < lstFiles.ListCount) Then lstFiles.ListIndex = LastListIndex Else lstFiles.ListIndex = lstFiles.ListCount - 1
     
         'And if all files were removed, disable actions that require at least one image
         If (lstFiles.ListCount = 0) Then
@@ -1317,6 +1331,57 @@ Private Function SaveCurrentBatchList() As Boolean
     End If
 
 End Function
+
+Private Sub cmdRemoveFolder_Click()
+
+    If (lstFiles.ListIndex >= 0) Then
+        
+        m_ListBusy = True
+        
+        'Retrieve the target path from the currently selected list item
+        Dim cFSO As pdFSO: Set cFSO = New pdFSO
+        
+        Dim srcPath As String
+        srcPath = cFSO.GetPathOnly(lstFiles.List(lstFiles.ListIndex))
+        
+        'We now want to iterate through the list, removing items as we go.  Note that the removal criteria varies depending on whether
+        ' the user wants subfolders removed as well.
+        Dim removeSubfolders As Boolean
+        removeSubfolders = CBool(chkRemoveSubfolders.Value)
+        
+        Dim testPath As String, removeFile As Boolean
+        
+        lstFiles.SetAutomaticRedraws False, False
+        
+        Dim i As Long: i = 0
+        Do While (i < lstFiles.ListCount)
+            
+            removeFile = False
+            
+            If removeSubfolders Then
+                testPath = lstFiles.List(i)
+                removeFile = CBool(InStr(1, testPath, srcPath, vbBinaryCompare) <> 0)
+            Else
+                testPath = cFSO.GetPathOnly(lstFiles.List(i))
+                removeFile = CBool(StrComp(testPath, srcPath, vbBinaryCompare) = 0)
+            End If
+            
+            If removeFile Then
+                lstFiles.RemoveItem i
+            Else
+                i = i + 1
+            End If
+            
+        Loop
+        
+        lstFiles.SetAutomaticRedraws True, True
+        
+        m_ListBusy = False
+        If (lstFiles.ListIndex >= 0) Then UpdatePreview lstFiles.List(lstFiles.ListIndex) Else UpdatePreview vbNullString
+        
+    End If
+
+End Sub
 
 Private Sub cmdSaveList_Click()
     
@@ -1491,8 +1556,10 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub lstFiles_Click()
-    UpdatePreview lstFiles.List(lstFiles.ListIndex)
-    cmdRemove.Enabled = True
+    If (Not m_ListBusy) Then
+        UpdatePreview lstFiles.List(lstFiles.ListIndex)
+        cmdRemove.Enabled = True
+    End If
 End Sub
 
 'Update the active image preview in the top-right
@@ -1508,8 +1575,8 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         
-        Dim loadSuccessful As Boolean
-        loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB)
+        Dim loadSuccessful As Boolean: loadSuccessful = False
+        If (Len(srcImagePath) <> 0) Then loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB)
         
         'If the image load failed, display a placeholder message; otherwise, render the image to the picture box
         If loadSuccessful Then
@@ -1538,13 +1605,13 @@ Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     novelAddition = True
     
     If (Not suppressDuplicatesCheck) Then
-        Dim x As Long
-        For x = 0 To lstFiles.ListCount - 1
-            If (StrComp(lstFiles.List(x), srcFile, vbTextCompare) = 0) Then
+        Dim X As Long
+        For X = 0 To lstFiles.ListCount - 1
+            If (StrComp(lstFiles.List(X), srcFile, vbTextCompare) = 0) Then
                 novelAddition = False
                 Exit For
             End If
-        Next x
+        Next X
     End If
     
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
