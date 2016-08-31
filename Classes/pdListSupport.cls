@@ -821,9 +821,9 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
         m_NumOfItems = m_NumOfItems - 1
         
         'If the removal affected the current ListIndex, update it to match
-        If itemIndex <= m_ListIndex Then
+        If (itemIndex <= m_ListIndex) Then
             m_ListIndex = m_ListIndex - 1
-            If m_ListIndex < 0 Then m_ListIndex = 0
+            If (m_ListIndex < 0) Then m_ListIndex = 0
             RaiseEvent Click
         End If
         
