@@ -374,13 +374,13 @@ End Sub
 
 Private Sub cmdBar_CancelClick()
     m_UserDialogAnswer = vbCancel
-    Me.Hide
+    Me.Visible = False
 End Sub
 
 Private Sub cmdBar_OKClick()
     m_FormatParamString = GetExportParamString
     m_UserDialogAnswer = vbOK
-    Me.Hide
+    Me.Visible = False
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
@@ -494,7 +494,8 @@ End Sub
 ' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
-    If Not (m_CompositedImage Is Nothing) Then
+
+    If (Not (m_CompositedImage Is Nothing)) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
@@ -553,11 +554,12 @@ Private Sub UpdatePreviewSource()
         End If
         
     End If
+    
 End Sub
 
 Private Sub UpdatePreview()
 
-    If cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid Then
+    If (cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource

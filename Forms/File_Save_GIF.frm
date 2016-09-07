@@ -62,6 +62,8 @@ Begin VB.Form dialog_ExportGIF
       TabIndex        =   2
       Top             =   840
       Width           =   7095
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sldAlphaCutoff 
          Height          =   855
          Left            =   0
@@ -162,6 +164,8 @@ Begin VB.Form dialog_ExportGIF
       TabIndex        =   11
       Top             =   840
       Width           =   7095
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdMetadataExport mtdManager 
          Height          =   4935
          Left            =   120
@@ -377,14 +381,14 @@ End Sub
 
 Private Sub cmdBar_CancelClick()
     m_UserDialogAnswer = vbCancel
-    Me.Hide
+    Me.Visible = False
 End Sub
 
 Private Sub cmdBar_OKClick()
     m_FormatParamString = GetExportParamString
     m_MetadataParamString = mtdManager.GetMetadataSettings
     m_UserDialogAnswer = vbOK
-    Me.Hide
+    Me.Visible = False
 End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
@@ -476,7 +480,8 @@ End Sub
 ' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
-    If Not (m_CompositedImage Is Nothing) Then
+
+    If (Not (m_CompositedImage Is Nothing)) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
@@ -519,7 +524,7 @@ End Sub
 
 Private Sub UpdatePreview()
 
-    If cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid Then
+    If (cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource

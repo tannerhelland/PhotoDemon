@@ -60,6 +60,8 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   3
       Top             =   1080
       Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStrip btsCompression 
          Height          =   1095
          Left            =   120
@@ -122,6 +124,8 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   9
       Top             =   1080
       Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStrip btsSubsampling 
          Height          =   1095
          Left            =   120
@@ -150,6 +154,8 @@ Begin VB.Form dialog_ExportJPEG
       TabIndex        =   5
       Top             =   1080
       Width           =   7215
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdMetadataExport mtdManager 
          Height          =   4215
          Left            =   240
@@ -305,7 +311,8 @@ Private Sub cmdBar_OKClick()
     
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
     m_UserDialogAnswer = vbOK
-    Me.Hide
+    'Me.Hide
+    Me.Visible = False
     
 End Sub
 
@@ -449,7 +456,8 @@ End Sub
 ' call this function to generate a new preview DIB.  Note that you *do not* need to call this function for format-specific
 ' changes (like quality, subsampling, etc).
 Private Sub UpdatePreviewSource()
-    If Not (m_CompositedImage Is Nothing) Then
+
+    If (Not (m_CompositedImage Is Nothing)) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
@@ -468,11 +476,12 @@ Private Sub UpdatePreviewSource()
         End If
         
     End If
+    
 End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If (cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled Then
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource

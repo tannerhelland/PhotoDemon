@@ -124,7 +124,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     'It is now time to retrieve said parameter string, either from a dialog, or from the pdImage settings dictionary.
     Dim saveParameters As String, metadataParameters As String
     If needToDisplayDialog Then
-                
+        
         'After a successful dialog invocation, immediately save the metadata parameters to the parent pdImage object.
         ' ExifTool will handle those settings separately, independent of the format-specific export engine.
         If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters) Then
@@ -644,7 +644,7 @@ Public Function FindMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcA
         labB2 = srcArray2(quickX + 2, y)
         
         'Calculate an RMSD
-        totalRMSD = totalRMSD + distanceThreeDimensions(LabL1, LabA1, LabB1, labL2, labA2, labB2)
+        totalRMSD = totalRMSD + DistanceThreeDimensions(LabL1, LabA1, LabB1, labL2, labA2, labB2)
     
     Next y
     Next x
@@ -702,7 +702,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , , True
-            srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
+            srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
@@ -722,7 +722,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
             
         'Selection data only
         Case UNDO_SELECTION
-            srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
+            srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
             
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else

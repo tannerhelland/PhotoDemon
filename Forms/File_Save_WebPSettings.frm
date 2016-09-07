@@ -187,7 +187,7 @@ End Sub
 
 Private Sub cmdBar_CancelClick()
     m_UserDialogAnswer = vbCancel
-    Me.Hide
+    Me.Visible = False
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -210,7 +210,7 @@ Private Sub cmdBar_OKClick()
     
     'Hide but *DO NOT UNLOAD* the form.  The dialog manager needs to retrieve the setting strings before unloading us
     m_UserDialogAnswer = vbOK
-    Me.Hide
+    Me.Visible = False
     
 End Sub
 
@@ -287,7 +287,9 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     'Make a copy of the composited image; it takes time to composite layers, so we don't want to redo this except
     ' when absolutely necessary.
     Set m_SrcImage = srcImage
-    If Not (m_SrcImage Is Nothing) Then
+    If ((m_SrcImage Is Nothing) Or (Not g_ImageFormats.FreeImageEnabled)) Then
+        Interface.ShowDisabledPreviewImage pdFxPreview
+    Else
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
@@ -326,7 +328,7 @@ End Sub
 
 Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
 
-    If (cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled Then
+    If ((cmdBar.PreviewsAllowed Or forceUpdate) And g_ImageFormats.FreeImageEnabled And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource
