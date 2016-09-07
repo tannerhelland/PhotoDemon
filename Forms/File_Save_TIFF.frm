@@ -32,6 +32,8 @@ Begin VB.Form dialog_ExportTIFF
       TabIndex        =   5
       Top             =   840
       Width           =   7095
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStrip btsCompressionColor 
          Height          =   1095
          Left            =   0
@@ -80,6 +82,8 @@ Begin VB.Form dialog_ExportTIFF
       TabIndex        =   3
       Top             =   840
       Width           =   7095
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdMetadataExport mtdManager 
          Height          =   3255
          Left            =   0
@@ -126,6 +130,8 @@ Begin VB.Form dialog_ExportTIFF
       TabIndex        =   7
       Top             =   840
       Width           =   7095
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sldAlphaCutoff 
          Height          =   855
          Left            =   0
@@ -434,14 +440,14 @@ End Sub
 
 Private Sub cmdBar_CancelClick()
     m_UserDialogAnswer = vbCancel
-    Me.Hide
+    Me.Visible = False
 End Sub
 
 Private Sub cmdBar_OKClick()
     m_FormatParamString = GetExportParamString
     m_MetadataParamString = mtdManager.GetMetadataSettings
     m_UserDialogAnswer = vbOK
-    Me.Hide
+    Me.Visible = False
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -711,7 +717,8 @@ End Sub
 ' changing the output color depth), you must call this function to generate a new preview DIB.  Note that you *do not*
 ' need to call this function for format-specific changes (e.g. compression settings).
 Private Sub UpdatePreviewSource()
-    If Not (m_CompositedImage Is Nothing) Then
+    
+    If (Not (m_CompositedImage Is Nothing)) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
@@ -786,7 +793,7 @@ End Function
 
 Private Sub UpdatePreview()
 
-    If cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid Then
+    If (cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource
