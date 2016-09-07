@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.202</langversion>
+<langversion>6.7.203</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -10400,6 +10400,56 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
+<original>click to set export settings for this format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>afbeeldingen in hun origineel formaat houden</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>converteer alle afbeeldingen naar een nieuw formaat</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>wanneer je enkel een afbeelding wilt hernoemen of afbeeldingsformaten wilt wijzigen, gebruik dan deze optie</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>herschalen afbeelding door</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>Selecteer macro</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>herschalen afbeeldingen</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>repareer belichting en belichtingsproblemen</translation>
+</phrase>
+
+<phrase>
 <original>include subfolders</original>
 <translation></translation>
 </phrase>
@@ -10530,51 +10580,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>keep images in their original format</original>
-<translation>afbeeldingen in hun origineel formaat houden</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>converteer alle afbeeldingen naar een nieuw formaat</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>wanneer je enkel een afbeelding wilt hernoemen of afbeeldingsformaten wilt wijzigen, gebruik dan deze optie</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>herschalen afbeelding door</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Selecteer macro</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>herschalen afbeeldingen</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>repareer belichting en belichtingsproblemen</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>Voorbeelden uitgeschakeld</translation>
 </phrase>
@@ -10644,8 +10649,8 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>You have not selected any images to process!  Please place one or more images in the batch list (at the bottom of the screen) before moving to the next step.</original>
-<translation>Je hebt geen afbeelding geselecteerd om te verwerken! Plaats 1 of meerdere afbeeldingen in de batchlijst (anderaan het scherm) alvorens naar de volgende stap te gaan.</translation>
+<original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10923,7 +10928,7 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <translation>verwerkt voor annulering. Laatst bewerkte afbeelding was "%1"</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 189 phrases. 81 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 191 phrases. 82 were duplicates of existing phrases, so only 109 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13349,7 +13354,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14912,10 +14917,10 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1929 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12797 total words. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1931 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- These 2538 phrases contain approximately 12793 total words. -->
 
 </pdData>
