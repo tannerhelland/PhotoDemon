@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon FFT Class
 'Copyright 2014-2016 by Tanner Helland
 'Created: 27/February/15
-'Last updated: 27/February/15
-'Last update: initial build
+'Last updated: 07/September/16
+'Last update: code cleanup and optimizations
 '
 'Per its name, this class provides a simple FFT interface.  After researching a great many FFT implementations,
 ' I decided that it would probably be easiest to just write my own pure-VB implementation, rather than deal with
@@ -58,43 +58,48 @@ Private m_N As Long
 Private m_M As Long
 Private m_Direction As Boolean
 
-Public Function prepFFT(ByVal n As Long, Optional ByVal forwardTransform As Boolean = True) As Boolean
+Public Function PrepFFT(ByVal n As Long, Optional ByVal forwardTransform As Boolean = True) As Boolean
 
     'If n = our previous n, we don't need to rebuild our lookup tables
-    If (n = m_N) And (n <> 0) And (forwardTransform = m_Direction) Then
-        prepFFT = True
-        
+    If ((n = m_N) And (n <> 0) And (forwardTransform = m_Direction)) Then
+        PrepFFT = True
     Else
-    
-        'Start by making sure that n is a valid power of 2
-        m_M = Log(n) / Log(2#)
         
-        If (m_M <> Int(m_M)) Then
+        If (n > 0) Then
         
-            Debug.Print "WARNING! n must be a power of 2!  If using it on an array, make sure to submit n as (uBound() + 1)."
-            prepFFT = False
-        
+            'Start by making sure that n is a valid power of 2
+            m_M = Log(n) / Log(2#)
+            
+            If (m_M <> Int(m_M)) Then
+            
+                Debug.Print "WARNING! n must be a power of 2!  If using it on an array, make sure to submit n as (uBound() + 1)."
+                PrepFFT = False
+            
+            Else
+            
+                m_N = n
+                m_Direction = forwardTransform
+                
+                'Some methods allow you to precalculate certain FFT values.  I have not found a clean, working example of this,
+                ' but will leave this note here for potential future use.
+                
+                'Note that initialization was successful
+                PrepFFT = True
+                
+            End If
+            
         Else
-        
-            m_N = n
-            m_Direction = forwardTransform
-            
-            'Some methods allow you to precalculate certain FFT values.  I have not found a clean, working example of this,
-            ' but will leave this note here for potential future use.
-            
-            'Note that initialization was successful
-            prepFFT = True
-            
+            Debug.Print "WARNING!  FFTs require data with size [n] > 0."
         End If
         
     End If
     
 End Function
 
-'Apply a forward FFT on a source data set.  n should be the same as the n supplied to prepFFT, above.
+'Apply a forward FFT on a source data set.  n should be the same as the n supplied to PrepFFT, above.
 ' An in-place transform is used, so srcReal() and srcImag() WILL BE OVERWRITTEN.  Plan accordingly.
 '
-'This function uses a simple radix-2 approach, which is not as fast as a radix-2, but is significantly simpler code.
+'This function uses a simple radix-2 approach, which is not as fast as a radix-4+, but is significantly simpler code.
 Public Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef srcImag() As Single, Optional ByVal forwardTransform As Boolean = True) As Boolean
 
     'Make sure all inputs align with n
@@ -117,7 +122,7 @@ Public Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef 
             
             Do While (j >= n1)
                 j = j - n1
-                n1 = n1 / 2
+                n1 = n1 * 0.5
             Loop
             
             j = j + n1
@@ -146,7 +151,7 @@ Public Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef 
             
             'Non-optimized approach...
             e = (-1 * PI_DOUBLE) / n2
-            If Not forwardTransform Then e = -e
+            If (Not forwardTransform) Then e = -e
             
             a = 0
             
@@ -172,14 +177,11 @@ Public Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef 
         
         'If this is the forward transform, values must be normalized against n
         If forwardTransform Then
+            Dim invN As Single
             For i = 0 To n - 1
-
-                Dim invN As Single
                 invN = 1 / n
-
                 srcReal(i) = srcReal(i) * invN
                 srcImag(i) = srcImag(i) * invN
-
             Next i
         End If
         
@@ -188,7 +190,7 @@ Public Function FFT_1D_Radix2(ByVal n As Long, ByRef srcReal() As Single, ByRef 
         
     'Inputs do not align with n; we cannot proceed.
     Else
-        Debug.Print "Array dimensions and n are mismatched.  Make sure you called prepFFT first, and declared your arrays appropriately."
+        Debug.Print "Array dimensions and n are mismatched.  Make sure you called PrepFFT() first, and declared your arrays appropriately."
         FFT_1D_Radix2 = False
     End If
 
@@ -199,7 +201,8 @@ End Function
 '
 'This function uses a simple radix-2 approach, which is not as fast as a radix-4, but is significantly simpler code.
 ' As an attempt to profile VB's specific weaknesses, this function uses estimation techniques based around Sqr()
-' instead of pure Cos/Sin functions.  By my testing, this is 10-15% faster (compiled) than the trigonmetric approach.
+' instead of pure Cos/Sin functions.  By my testing, this is 10-15% faster (compiled) than the trigonometric approach,
+' at some minor hit to accuracy.  (For image processing functions, this is a preferred trade-off.)
 Public Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single, ByRef srcImag() As Single, Optional ByVal forwardTransform As Boolean = True) As Boolean
 
     'Make sure all inputs align with n
@@ -222,7 +225,7 @@ Public Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single,
             
             Do While (j >= n1)
                 j = j - n1
-                n1 = n1 / 2
+                n1 = n1 * 0.5
             Loop
             
             j = j + n1
@@ -280,14 +283,11 @@ Public Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single,
         
         'If this is the forward transform, values must be normalized against n
         If forwardTransform Then
+            Dim invN As Single
             For i = 0 To n - 1
-
-                Dim invN As Single
                 invN = 1 / n
-
                 srcReal(i) = srcReal(i) * invN
                 srcImag(i) = srcImag(i) * invN
-
             Next i
         End If
         
@@ -305,12 +305,12 @@ End Function
 'Dump a brief FFT test to the debug window.
 ' If you want some predictable FFT output, try the following link for test data:
 ' http://www.sccon.ca/sccon/fft/fft3.htm
-Public Sub testFFT()
+Public Sub TestFFT()
 
     Dim testReal() As Single, testImag() As Single
     
     Dim testSize As Long
-    testSize = 4095
+    testSize = 15
     
     ReDim testReal(0 To testSize) As Single
     ReDim testImag(0 To testSize) As Single
@@ -327,7 +327,7 @@ Public Sub testFFT()
     Dim startTime As Single
     startTime = Timer
     
-    Me.prepFFT testSize + 1, True
+    Me.PrepFFT testSize + 1, True
     
     For j = 0 To 2047
         Me.FFT_1D_Radix2_NoTrig testSize + 1, testReal, testImag, True
@@ -339,22 +339,22 @@ Public Sub testFFT()
     'The code lines below are very helpful for testing before/after FFT results, to make sure the forward/inverse transform
     ' returns identical data.
     
-'    dumpDebugDataToScreen testReal
+'    DumpDebugDataToScreen testReal
 '
-'    Me.prepFFT testSize + 1, True
+'    Me.PrepFFT testSize + 1, True
 '    Me.FFT_1D_Radix2_NoTrig testSize + 1, testReal, testImag, True
 '
-'    dumpDebugDataToScreen testReal
+'    DumpDebugDataToScreen testReal
 '
-'    Me.prepFFT testSize + 1, False
+'    Me.PrepFFT testSize + 1, False
 '    Me.FFT_1D_Radix2_NoTrig testSize + 1, testReal, testImag, False
 '
-'    dumpDebugDataToScreen testReal
+'    DumpDebugDataToScreen testReal
 
 End Sub
 
 'Internal function to dump an array to the debug window.  Don't use with large arrays (UBound > ~30).
-Private Sub dumpDebugDataToScreen(ByRef srcArray() As Single)
+Private Sub DumpDebugDataToScreen(ByRef srcArray() As Single)
     
     Dim tmpString As String
     tmpString = ""
