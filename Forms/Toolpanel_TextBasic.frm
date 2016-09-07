@@ -27,18 +27,9 @@ Begin VB.Form toolpanel_Text
    ScaleWidth      =   1231
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.PictureBox picConvertLayer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      DrawStyle       =   5  'Transparent
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picConvertLayer 
       Height          =   1335
       Left            =   17280
-      ScaleHeight     =   89
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   97
       TabIndex        =   11
       Top             =   0
       Visible         =   0   'False
