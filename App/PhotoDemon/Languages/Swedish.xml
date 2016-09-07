@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.202</langversion>
+<langversion>6.7.203</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -10401,6 +10401,56 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>click to set export settings for this format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>hålla bilder i originalformat</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>konvertera alla bilder till ett nytt format</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>om du bara vill ändra namn på bilder eller ändra bildformat, använda det här alternativet</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>ändra storlek på bilden genom</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>Välj makro</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>ändra storlek på bilder</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>fixa exponering och ljusproblem</translation>
+</phrase>
+
+<phrase>
 <original>include subfolders</original>
 <translation></translation>
 </phrase>
@@ -10531,51 +10581,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>keep images in their original format</original>
-<translation>hålla bilder i originalformat</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>konvertera alla bilder till ett nytt format</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>om du bara vill ändra namn på bilder eller ändra bildformat, använda det här alternativet</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>ändra storlek på bilden genom</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Välj makro</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>ändra storlek på bilder</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>fixa exponering och ljusproblem</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>Smakprov stängts</translation>
 </phrase>
@@ -10645,8 +10650,8 @@ Would du spara din satslistan innan du avslutar?</translation>
 </phrase>
 
 <phrase>
-<original>You have not selected any images to process!  Please place one or more images in the batch list (at the bottom of the screen) before moving to the next step.</original>
-<translation>Du har inte valt några bilder att bearbeta! Vänligen placera en eller flera bilder i satslistan (längst ner på skärmen) innan du går vidare till nästa steg.</translation>
+<original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10924,7 +10929,7 @@ Would du spara din satslistan innan du avslutar?</translation>
 <translation>bearbetats före inställandet. Senast bearbetade bilden var " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 189 phrases. 81 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 191 phrases. 82 were duplicates of existing phrases, so only 109 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13350,7 +13355,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14913,10 +14918,10 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1929 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12797 total words. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1931 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- These 2538 phrases contain approximately 12793 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1562</langversion>
+<langversion>6.8.1563</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -10399,6 +10399,56 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>click to set export settings for this format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>keep images in their original format</original>
+<translation>保持图像的原始格式</translation>
+</phrase>
+
+<phrase>
+<original>convert all images to a new format</original>
+<translation>所有的图像转换为新的格式</translation>
+</phrase>
+
+<phrase>
+<original>apply photo editing actions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>如果你只想重命名图片或改变图像格式，使用此选项</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>通过调整图像</translation>
+</phrase>
+
+<phrase>
+<original>Select macro</original>
+<translation>选择宏</translation>
+</phrase>
+
+<phrase>
+<original>apply other actions from a saved macro file</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>resize images</original>
+<translation>调整图像</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>修正曝光和照明的问题</translation>
+</phrase>
+
+<phrase>
 <original>include subfolders</original>
 <translation></translation>
 </phrase>
@@ -10529,51 +10579,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>keep images in their original format</original>
-<translation>保持图像的原始格式</translation>
-</phrase>
-
-<phrase>
-<original>convert all images to a new format</original>
-<translation>所有的图像转换为新的格式</translation>
-</phrase>
-
-<phrase>
-<original>apply photo editing actions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>如果你只想重命名图片或改变图像格式，使用此选项</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>通过调整图像</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>选择宏</translation>
-</phrase>
-
-<phrase>
-<original>apply other actions from a saved macro file</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>调整图像</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>修正曝光和照明的问题</translation>
-</phrase>
-
-<phrase>
 <original>Previews disabled</original>
 <translation>关闭预览</translation>
 </phrase>
@@ -10642,8 +10647,8 @@ Would you like to save your batch list before exiting?</original>
 </phrase>
 
 <phrase>
-<original>You have not selected any images to process!  Please place one or more images in the batch list (at the bottom of the screen) before moving to the next step.</original>
-<translation>您没有选择任何图像处理！请先选择一个或多个图像（在屏幕的底部）才能进入下一步。</translation>
+<original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10921,7 +10926,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>取消之前处理。最后处理的图像是 %1</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 189 phrases. 81 were duplicates of existing phrases, so only 108 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 191 phrases. 82 were duplicates of existing phrases, so only 109 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -13348,7 +13353,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>点击此处这层转换为基本的文本层。</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14908,10 +14913,10 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2537</phrasecount>
+<phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1929 are duplicates, so only 2537 unique phrases have been written to file. -->
-<!-- These 2537 phrases contain approximately 12797 total words. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1931 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- These 2538 phrases contain approximately 12793 total words. -->
 
 </pdData>
