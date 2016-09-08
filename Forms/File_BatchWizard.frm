@@ -749,6 +749,10 @@ Private m_ExportSettingsSet As Boolean, m_ExportSettingsFormat As String, m_Expo
 'System progress bar control
 Private sysProgBar As cProgressBarOfficial
 
+'This dialog interacts with a lot of file-system bits.  This module-level pdFSO object is initialized at Form_Load(),
+' and can be used wherever convenient.
+Private m_FSO As pdFSO
+
 Private Sub btsPhotoOps_Click(ByVal buttonIndex As Long)
     UpdatePhotoOpVisibility
 End Sub
@@ -857,10 +861,9 @@ Private Sub cmdAddFolders_Click()
     
     If (Len(folderPath) <> 0) Then
         
-        Dim cFile As pdFSO: Set cFile = New pdFSO
         Dim listOfFiles As pdStringStack
         
-        If cFile.RetrieveAllFiles(folderPath, listOfFiles, CBool(chkAddSubfoldersToo.Value), False, g_ImageFormats.GetListOfInputFormats("|", False)) Then
+        If m_FSO.RetrieveAllFiles(folderPath, listOfFiles, CBool(chkAddSubfoldersToo.Value), False, g_ImageFormats.GetListOfInputFormats("|", False)) Then
                 
             lstFiles.SetAutomaticRedraws False
             
@@ -1005,11 +1008,8 @@ Private Sub cmdLoadList_Click()
         g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
         
         'Load the file using pdFSO, which is Unicode-compatible
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
         Dim fileContents As String
-        If cFile.LoadTextFileAsString(sFile, fileContents) And (InStr(1, fileContents, vbCrLf) > 0) Then
+        If m_FSO.LoadTextFileAsString(sFile, fileContents) And (InStr(1, fileContents, vbCrLf) > 0) Then
             
             'The file was originally delimited by vbCrLf.  Parse it now.
             Dim fileLines() As String
@@ -1158,13 +1158,10 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
         'Select output directory and file name
         Case 3
             
-            Dim cFile As pdFSO
-            Set cFile = New pdFSO
-            
             'Make sure we have write access to the output folder.  If we don't, cancel and warn the user.
-            If Not cFile.FolderExist(txtOutputPath) Then
+            If (Not m_FSO.FolderExist(txtOutputPath)) Then
                 
-                If Not cFile.CreateFolder(txtOutputPath) Then
+                If (Not m_FSO.CreateFolder(txtOutputPath)) Then
                     PDMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
                     txtOutputPath.SelectAll
                     Exit Sub
@@ -1349,10 +1346,7 @@ Private Function SaveCurrentBatchList() As Boolean
         outputText = outputText & "<END OF LIST>" & vbCrLf
         
         'Write the text out to file using a pdFSO instance
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
-        SaveCurrentBatchList = cFile.SaveStringToTextFile(outputText, sFile)
+        SaveCurrentBatchList = m_FSO.SaveStringToTextFile(outputText, sFile)
                 
     Else
         SaveCurrentBatchList = False
@@ -1367,10 +1361,8 @@ Private Sub cmdRemoveFolder_Click()
         m_ListBusy = True
         
         'Retrieve the target path from the currently selected list item
-        Dim cFSO As pdFSO: Set cFSO = New pdFSO
-        
         Dim srcPath As String
-        srcPath = cFSO.GetPathOnly(lstFiles.List(lstFiles.ListIndex))
+        srcPath = m_FSO.GetPathOnly(lstFiles.List(lstFiles.ListIndex))
         
         'We now want to iterate through the list, removing items as we go.  Note that the removal criteria varies depending on whether
         ' the user wants subfolders removed as well.
@@ -1390,7 +1382,7 @@ Private Sub cmdRemoveFolder_Click()
                 testPath = lstFiles.List(i)
                 removeFile = CBool(InStr(1, testPath, srcPath, vbBinaryCompare) <> 0)
             Else
-                testPath = cFSO.GetPathOnly(lstFiles.List(i))
+                testPath = m_FSO.GetPathOnly(lstFiles.List(i))
                 removeFile = CBool(StrComp(testPath, srcPath, vbBinaryCompare) = 0)
             End If
             
@@ -1474,7 +1466,9 @@ Private Sub cmdSelectOutputPath_Click()
 End Sub
 
 Private Sub Form_Load()
-    
+        
+    Set m_FSO = New pdFSO
+        
     Dim i As Long
     
     'Populate all photo-editing-action-related combo boxes, tooltip, and options
@@ -1515,8 +1509,6 @@ Private Sub Form_Load()
         Next i
     
     'Build default paths from preference file values
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
     
 '    Dim tempPathString As String
 '    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Drive Box", "")
@@ -1571,7 +1563,7 @@ Private Sub Form_Load()
     txtMacro.Text = g_Language.TranslateMessage("no macro selected")
     lblExplanationFormat.Caption = g_Language.TranslateMessage("if PhotoDemon does not support an image's original format, a standard format will be used")
     lblExplanationFormat.Caption = lblExplanationFormat.Caption & vbCrLf & " " & g_Language.TranslateMessage("( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )")
-        
+    
     'Hide all inactive wizard panes
     For i = 1 To picContainer.Count - 1
         picContainer(i).Visible = False
@@ -1597,8 +1589,19 @@ End Sub
 
 Private Sub lstFiles_Click()
     If (Not m_ListBusy) Then
-        UpdatePreview lstFiles.List(lstFiles.ListIndex)
-        cmdRemove.Enabled = True
+        
+        'Perform a quick check to make sure the selected image hasn't been removed
+        Dim targetFile As String
+        targetFile = lstFiles.List(lstFiles.ListIndex)
+        
+        If m_FSO.FileExist(targetFile) Then
+            cmdRemove.Enabled = True
+            UpdatePreview targetFile
+        Else
+            cmdRemove.Enabled = False
+            lstFiles.RemoveItem lstFiles.ListIndex
+        End If
+        
     End If
 End Sub
 
@@ -1651,12 +1654,9 @@ Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
     ' a previously saved batch list from file)
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     If novelAddition Then
     
-        If cFile.FileExist(srcFile) Then
+        If m_FSO.FileExist(srcFile) Then
             lstFiles.AddItem srcFile
             UpdateBatchListCount
         End If
@@ -1665,8 +1665,8 @@ Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     
     'Enable the "remove all images" button if at least one image exists in the processing list
     If (lstFiles.ListCount > 0) Then
-        If Not cmdRemoveAll.Enabled Then cmdRemoveAll.Enabled = True
-        If Not cmdSaveList.Enabled Then cmdSaveList.Enabled = True
+        If (Not cmdRemoveAll.Enabled) Then cmdRemoveAll.Enabled = True
+        If (Not cmdSaveList.Enabled) Then cmdSaveList.Enabled = True
         'If Not cmdNext.Enabled Then cmdNext.Enabled = True
     End If
     
@@ -1726,12 +1726,9 @@ Private Sub PrepareForBatchConversion()
     totalNumOfFiles = lstFiles.ListCount
     
     'Prepare the folder that will receive the processed images
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     Dim outputPath As String
-    outputPath = cFile.EnforcePathSlash(txtOutputPath)
-    If Not cFile.FolderExist(outputPath) Then cFile.CreateFolder outputPath, True
+    outputPath = m_FSO.EnforcePathSlash(txtOutputPath)
+    If (Not m_FSO.FolderExist(outputPath)) Then m_FSO.CreateFolder outputPath, True
     
     'Prepare the progress bar, which will keep the user updated on our progress.
     Set sysProgBar = New cProgressBarOfficial
@@ -1771,7 +1768,7 @@ Private Sub PrepareForBatchConversion()
         sysProgBar.Refresh
         
         'As a failsafe, check to make sure the current input file exists before attempting to load it
-        If cFile.FileExist(tmpFilename) Then
+        If m_FSO.FileExist(tmpFilename) Then
             
             'Check to see if the image file is a multipage file
             Dim howManyPages As Long
