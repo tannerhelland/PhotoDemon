@@ -281,13 +281,12 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
         'We have two mechanisms for downsampling a high bit-depth image:
         ' 1) Using an embedded ICC profile (the preferred mechanism)
         ' 2) Using a generic tone-mapping algorithm to estimate conversion parameters
+        Dim hdrICCSuccess As Boolean: hdrICCSuccess = False
         
         'If the image does not contain an embedded ICC profile, we have no choice but to use option (2)
         If (FreeImage_HasICCProfile(fi_hDIB) And dstDIB.ICCProfile.HasICCData) Then
             
             FI_DebugMsg "HDR image identified.  ICC profile found; attempting to convert automatically..."
-            
-            Dim hdrICCSuccess As Boolean
             hdrICCSuccess = GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB)
             
             'Some esoteric color-depths may require us to use a temporary FreeImage handle instead of copying
@@ -311,7 +310,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             'Use the central tone-map handler to apply further tone-mapping
             Dim toneMappingOutcome As PD_OPERATION_OUTCOME
-            toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB)
+            toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB, Not showMessages)
             
             'A non-zero return signifies a successful tone-map operation.  Unload our old handle, and proceed with the new handle
             If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then
@@ -1236,6 +1235,7 @@ End Sub
 
 'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
 ' function will silently retrieve the proper settings from the preference file, and proceed with tone-mapping automatically.
+' (This silent behavior can also be enforced by setting the noUIMode parameter to TRUE.)
 '
 'Returns: fills dst_fiHandle with a non-zero FreeImage 24 or 32bpp image handle if successful.  0 if unsuccessful.
 '         The function itself will return a PD_OPERATION_OUTCOME value; this is important for determining if the user canceled the dialog.
@@ -1243,37 +1243,39 @@ End Sub
 'IMPORTANT NOTE!  If this function fails, further loading of the image must be halted.  PD cannot yet operate on anything larger than 32bpp,
 ' so if tone-mapping fails, we must abandon loading completely.  (A failure state can also be triggered by the user canceling the
 ' tone-mapping dialog.)
-Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle As Long) As PD_OPERATION_OUTCOME
+Private Function RaiseToneMapDialog(ByRef fi_Handle As Long, ByRef dst_fiHandle As Long, Optional ByVal noUIMode As Boolean = False) As PD_OPERATION_OUTCOME
 
     'Ask the user how they want to proceed.  Note that the dialog wrapper automatically handles the case of "do not prompt;
     ' use previous settings."  If that happens, it will retrieve the proper conversion settings for us, and return a dummy
     ' value of OK (as if the dialog were actually raised).
     Dim howToProceed As VbMsgBoxResult, toneMapSettings As String
-    howToProceed = DialogManager.PromptToneMapSettings(fi_Handle, toneMapSettings)
+    If noUIMode Then
+        howToProceed = vbOK
+        toneMapSettings = vbNullString
+    Else
+        howToProceed = DialogManager.PromptToneMapSettings(fi_Handle, toneMapSettings)
+    End If
     
     'Check for a cancellation state; if encountered, abandon ship now.
-    If (howToProceed <> vbOK) Then
+    If (howToProceed = vbOK) Then
         
-        FI_DebugMsg "Tone-map dialog appears to have been cancelled; result = " & howToProceed
-        dst_fiHandle = 0
-        RaiseToneMapDialog = PD_FAILURE_USER_CANCELED
-        Exit Function
-    
-    'The ToneMapSettings string will now contain all the information we need to proceed with the tone-map.  Forward it to the
-    ' central tone-mapping handler and use its success/fail state for this function as well.
-    Else
-        
+        'The ToneMapSettings string will now contain all the information we need to proceed with the tone-map.  Forward it to the
+        ' central tone-mapping handler and use its success/fail state for this function as well.
         FI_DebugMsg "Tone-map dialog appears to have been successful; result = " & howToProceed
-        Message "Applying tone-mapping..."
+        If (Not noUIMode) Then Message "Applying tone-mapping..."
         dst_fiHandle = ApplyToneMapping(fi_Handle, toneMapSettings)
         
-        If dst_fiHandle = 0 Then
+        If (dst_fiHandle = 0) Then
             FI_DebugMsg "WARNING!  ApplyToneMapping() failed for reasons unknown."
             RaiseToneMapDialog = PD_FAILURE_GENERIC
         Else
             RaiseToneMapDialog = PD_SUCCESS
         End If
         
+    Else
+        FI_DebugMsg "Tone-map dialog appears to have been cancelled; result = " & howToProceed
+        dst_fiHandle = 0
+        RaiseToneMapDialog = PD_FAILURE_USER_CANCELED
     End If
 
 End Function
@@ -1287,7 +1289,7 @@ End Function
 ' to ensure proper load behavior (e.g. loading can't continue after a failed conversion, because we've forcibly killed the image handle),
 ' and to reduce resource usage (as the source handle is likely enormous, and we don't want it sitting around any longer than is
 ' absolutely necessary).
-Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings As String) As Long
+Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByVal toneMapSettings As String) As Long
     
     'Retrieve the source image's bit-depth and data type.  These are crucial to successful tone-mapping operations.
     Dim fi_BPP As Long
@@ -1310,7 +1312,7 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
     cParams.SetParamString toneMapSettings
     
     'The first parameter contains the requested tone-mapping operation.
-    Select Case cParams.GetLong(1)
+    Select Case cParams.GetLong(1, PDTM_DRAGO)
     
         'Linear map
         Case PDTM_LINEAR
@@ -1319,7 +1321,7 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             
             'For performance reasons, I've only written a single RGBF/RGBAF-based linear transform.  If the image is not in one
             ' of these formats, convert it now.
-            If (fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF) Then
+            If ((fi_DataType <> FIT_RGBF) And (fi_DataType <> FIT_RGBAF)) Then
                 
                 'In the future, a transparency-friendly conversion may become available.  For now, however, transparency
                 ' is sacrificed as part of the conversion function (as FreeImage does not provide an RGBAF cast).
@@ -1342,10 +1344,10 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             End If
             
             'At this point, fi_Handle now represents a 32-bpc RGBF (or RGBAF) type FreeImage DIB.  Apply manual tone-mapping now.
-            newHandle = ConvertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3), cParams.GetBool(4), cParams.GetDouble(2))
+            newHandle = ConvertFreeImageRGBFTo24bppDIB(newHandle, cParams.GetLong(3, PD_BOOL_TRUE), cParams.GetBool(4, PD_BOOL_TRUE), cParams.GetDouble(2, 2.2))
             
             'Unload the intermediate RGBF handle as necessary
-            If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
+            If (rgbfHandle <> 0) Then FreeImage_Unload rgbfHandle
             
             ApplyToneMapping = newHandle
             
@@ -1382,21 +1384,20 @@ Public Function ApplyToneMapping(ByVal fi_Handle As Long, ByVal toneMapSettings 
             newHandle = ToneMapFilmic_RGBFTo24bppDIB(newHandle, cParams.GetDouble(2), cParams.GetDouble(3), , , , , , , cParams.GetDouble(4))
             
             'Unload the intermediate RGBF handle as necessary
-            If rgbfHandle <> 0 Then FreeImage_Unload rgbfHandle
+            If (rgbfHandle <> 0) Then FreeImage_Unload rgbfHandle
             
             ApplyToneMapping = newHandle
         
         'Adaptive logarithmic map
         Case PDTM_DRAGO
-            ApplyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2), cParams.GetDouble(3))
+            ApplyToneMapping = FreeImage_TmoDrago03(fi_Handle, cParams.GetDouble(2, 2.2), cParams.GetDouble(3, 0#))
             
         'Photoreceptor map
         Case PDTM_REINHARD
-            ApplyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2), ByVal 0#, cParams.GetDouble(3), cParams.GetDouble(4))
+            ApplyToneMapping = FreeImage_TmoReinhard05Ex(fi_Handle, cParams.GetDouble(2, 0#), ByVal 0#, cParams.GetDouble(3, 1#), cParams.GetDouble(4, 0#))
         
-    
     End Select
-
+    
 End Function
 
 'Perform linear scaling of a 96bpp RGBF image to standard 24bpp.  Note that an intermediate pdDIB object is used for convenience, but the returned

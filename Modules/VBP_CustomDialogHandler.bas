@@ -253,7 +253,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         'This function will return the actual dialog result (OK vs Cancel)...
         PromptToneMapSettings = dialog_ToneMapping.DialogResult
         
-        If PromptToneMapSettings = vbOK Then
+        If (PromptToneMapSettings = vbOK) Then
         
             '...but we also need to return a copy of the parameter string, which FreeImage will use to actually render
             ' any requested tone-mapping operations.

@@ -58,41 +58,47 @@ Public Sub SetParamString(ByVal pString As String)
 
     m_ParamString = pString
     
-    'If multiple parameters are present, parse them out now; this improves performance when a function comes
-    ' asking for specific params
-    If InStr(1, m_ParamString, "|", vbBinaryCompare) > 0 Then
-        m_Params() = Split(m_ParamString, "|")
-        m_numOfParams = UBound(m_Params) + 1
+    If (Len(pString) <> 0) Then
     
-    'If only one param is present, handle it specially
-    Else
-        If Len(pString) <> 0 Then
-            ReDim m_Params(0) As String
-            m_Params(0) = m_ParamString
-            m_numOfParams = 1
+        'If multiple parameters are present, parse them out now; this improves performance when a function comes
+        ' asking for specific params
+        If (InStr(1, m_ParamString, "|", vbBinaryCompare) > 0) Then
+            m_Params() = Split(m_ParamString, "|")
+            m_numOfParams = UBound(m_Params) + 1
+        
+        'If only one param is present, handle it specially
         Else
-            m_numOfParams = 0
+            If Len(pString) <> 0 Then
+                ReDim m_Params(0) As String
+                m_Params(0) = m_ParamString
+                m_numOfParams = 1
+            Else
+                m_numOfParams = 0
+            End If
         End If
-    End If
-    
-    'If any characters have been escaped, fix them now
-    If m_numOfParams > 0 Then
         
-        Dim i As Long
-        For i = 0 To UBound(m_Params)
-            m_Params(i) = unEscapeParamCharacters(m_Params(i))
-        Next i
+        'If any characters have been escaped, fix them now
+        If (m_numOfParams > 0) Then
+            
+            Dim i As Long
+            For i = 0 To UBound(m_Params)
+                m_Params(i) = UnEscapeParamCharacters(m_Params(i))
+            Next i
+            
+        End If
         
+    Else
+        m_numOfParams = 0
     End If
     
 End Sub
 
 'Does the parameter at location X exist?
 Public Function DoesParamExist(ByVal pIndex As Long) As Boolean
-    If m_numOfParams = 0 Then
+    If (m_numOfParams = 0) Then
         DoesParamExist = False
     Else
-        If pIndex <= m_numOfParams And pIndex > 0 Then
+        If ((pIndex <= m_numOfParams) And (pIndex > 0)) Then
             DoesParamExist = True
         Else
             DoesParamExist = False
@@ -119,7 +125,7 @@ Public Sub ReassembleModifiedParamString()
     
     Dim i As Long
     For i = 0 To m_numOfParams - 1
-        tmpString = tmpString & escapeParamCharacters(m_Params(i))
+        tmpString = tmpString & EscapeParamCharacters(m_Params(i))
         If i < (m_numOfParams - 1) Then tmpString = tmpString & "|"
     Next i
     
