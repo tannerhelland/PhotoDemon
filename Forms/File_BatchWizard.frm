@@ -1606,17 +1606,12 @@ End Sub
 Private Sub UpdatePreview(ByVal srcImagePath As String)
     
     'Only redraw the preview if it doesn't match the last image we previewed
-    If CBool(chkEnablePreview) And (StrComp(m_CurImagePreview, srcImagePath, vbTextCompare) <> 0) Then
+    If (CBool(chkEnablePreview) And (StrComp(m_CurImagePreview, srcImagePath, vbTextCompare) <> 0)) Then
     
         'Use PD's central load function to load a copy of the requested image
-        Dim tmpImage As pdImage
-        Set tmpImage = New pdImage
-        
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        
+        Dim tmpDIB As pdDIB: Set tmpDIB = New pdDIB
         Dim loadSuccessful As Boolean: loadSuccessful = False
-        If (Len(srcImagePath) <> 0) Then loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB)
+        If (Len(srcImagePath) <> 0) Then loadSuccessful = Loading.QuickLoadImageToDIB(srcImagePath, tmpDIB, False, False, True)
         
         'If the image load failed, display a placeholder message; otherwise, render the image to the picture box
         If loadSuccessful Then
