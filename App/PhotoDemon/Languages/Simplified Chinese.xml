@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1563</langversion>
+<langversion>6.8.1882</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1261,14 +1261,14 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <phrase>
 <original>File not found: %1</original>
-<translation></translation>
+<translation>未找到文件：%1</translation>
 </phrase>
 
 <phrase>
 <original>Unfortunately, the image '%1' could not be found.
 
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>图像 '%1' 没有找到，如果这个形象最初位于可移动媒体（dvd，USB驱动器，等），请重新插入或重新连接媒体并再试一次。
+<translation>图像 '%1' 没有找到，如果源图像位于可移动媒体（DVD、USB驱动器等），请重新插入或重新连接媒体并再试一次。
 </translation>
 </phrase>
 
@@ -2805,7 +2805,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Empty</original>
-<translation>清空</translation>
+<translation>空</translation>
 </phrase>
 
 <!-- pdMRURecentFiles.cls contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -4431,17 +4431,17 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>&Batch operations</original>
-<translation></translation>
+<translation>&B 批处理操作</translation>
 </phrase>
 
 <phrase>
 <original>Process</original>
-<translation></translation>
+<translation>批处理</translation>
 </phrase>
 
 <phrase>
 <original>Repair</original>
-<translation></translation>
+<translation>修复</translation>
 </phrase>
 
 <phrase>
@@ -4551,7 +4551,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Content-aware resize</original>
-<translation>内容感知大小调整</translation>
+<translation>内容识别调整</translation>
 </phrase>
 
 <phrase>
@@ -4591,12 +4591,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>90 clockwise</original>
-<translation></translation>
+<translation>顺时针旋转90度</translation>
 </phrase>
 
 <phrase>
 <original>90 counter-clockwise</original>
-<translation></translation>
+<translation>逆时针旋转90度</translation>
 </phrase>
 
 <phrase>
@@ -4716,17 +4716,17 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Rotate 90 clockwise</original>
-<translation></translation>
+<translation>顺时针旋转90度</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 90 counter-clockwise</original>
-<translation></translation>
+<translation>逆时针旋转90度</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 180</original>
-<translation></translation>
+<translation>旋转180度</translation>
 </phrase>
 
 <phrase>
@@ -5531,7 +5531,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Language</original>
-<translation>语言</translation>
+<translation>选择语言</translation>
 </phrase>
 
 <phrase>
@@ -5596,27 +5596,27 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Light theme</original>
-<translation></translation>
+<translation>高亮主题</translation>
 </phrase>
 
 <phrase>
 <original>Dark theme</original>
-<translation></translation>
+<translation>暗色主题</translation>
 </phrase>
 
 <phrase>
 <original>Blue</original>
-<translation>蓝色</translation>
+<translation>蓝色主题</translation>
 </phrase>
 
 <phrase>
 <original>Green</original>
-<translation>绿色</translation>
+<translation>绿色主题</translation>
 </phrase>
 
 <phrase>
 <original>Purple</original>
-<translation></translation>
+<translation>紫色主题</translation>
 </phrase>
 
 <phrase>
@@ -5928,7 +5928,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Content-aware layer resize</original>
-<translation>内容感知层调整大小</translation>
+<translation>内容识别层调整</translation>
 </phrase>
 
 <phrase>
@@ -6106,7 +6106,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Content-aware image resize</original>
-<translation>内容感知的图像调整大小</translation>
+<translation>内容识别图像调整</translation>
 </phrase>
 
 <phrase>
@@ -6367,12 +6367,12 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>do not modify</original>
-<translation></translation>
+<translation>不要修改</translation>
 </phrase>
 
 <phrase>
 <original>remove from image</original>
-<translation></translation>
+<translation>从图像删除</translation>
 </phrase>
 
 <phrase>
@@ -6408,7 +6408,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Adjusting brightness and contrast</original>
-<translation></translation>
+<translation>调整亮度和对比度</translation>
 </phrase>
 
 <phrase>
@@ -6418,7 +6418,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>legacy</original>
-<translation></translation>
+<translation>遗产</translation>
 </phrase>
 
 <!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -7976,7 +7976,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>colors</original>
-<translation></translation>
+<translation>颜色</translation>
 </phrase>
 
 <phrase>
@@ -7991,7 +7991,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>pattern color</original>
-<translation></translation>
+<translation>图案颜色</translation>
 </phrase>
 
 <phrase>
@@ -8337,17 +8337,17 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Filmic</original>
-<translation>电影</translation>
+<translation>电影化</translation>
 </phrase>
 
 <phrase>
 <original>Drago</original>
-<translation>龙</translation>
+<translation>反色</translation>
 </phrase>
 
 <phrase>
 <original>Reinhard</original>
-<translation>莱因哈德</translation>
+<translation>混合曝光</translation>
 </phrase>
 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -8516,7 +8516,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>* current image state</original>
-<translation></translation>
+<translation>* 当前图像状态</translation>
 </phrase>
 
 <phrase>
@@ -8526,7 +8526,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>layer: %1</original>
-<translation></translation>
+<translation>层：%1</translation>
 </phrase>
 
 <phrase>
@@ -9424,7 +9424,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Artistic contour edge detection</original>
-<translation></translation>
+<translation>艺术轮廓边缘检测</translation>
 </phrase>
 
 <phrase>
@@ -9838,7 +9838,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation></translation>
+<translation>双边滤波是一项复杂的任务，并在大型图像可能需要很长的时间来处理。 PhotoDemon可以估算某些参数，以质量稍差的成本提供了大量的速度提升。</translation>
 </phrase>
 
 <!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -10204,7 +10204,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>zoom</original>
-<translation>变焦</translation>
+<translation>缩放</translation>
 </phrase>
 
 <phrase>
@@ -10400,7 +10400,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>click to set export settings for this format</original>
-<translation></translation>
+<translation>单击设置此格式的导出设置</translation>
 </phrase>
 
 <phrase>
@@ -10415,12 +10415,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>apply photo editing actions</original>
-<translation></translation>
+<translation>应用照片编辑操作</translation>
 </phrase>
 
 <phrase>
 <original>if you only want to rename images or change image formats, use this option</original>
-<translation>如果你只想重命名图片或改变图像格式，使用此选项</translation>
+<translation>如果你只是想重命名或改变图像格式，请使用此选项。</translation>
 </phrase>
 
 <phrase>
@@ -10435,7 +10435,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>apply other actions from a saved macro file</original>
-<translation></translation>
+<translation>从保存的宏文件中应用其他操作</translation>
 </phrase>
 
 <phrase>
@@ -10450,37 +10450,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>include subfolders</original>
-<translation></translation>
+<translation>包含子文件夹</translation>
 </phrase>
 
 <phrase>
 <original>current batch list</original>
-<translation></translation>
+<translation>当前批处理列表</translation>
 </phrase>
 
 <phrase>
 <original>save list</original>
-<translation></translation>
+<translation>保存列表</translation>
 </phrase>
 
 <phrase>
 <original>load list</original>
-<translation></translation>
+<translation>加载列表</translation>
 </phrase>
 
 <phrase>
 <original>erase entire list</original>
-<translation></translation>
+<translation>清除整个列表</translation>
 </phrase>
 
 <phrase>
 <original>remove selected image</original>
-<translation></translation>
+<translation>删除选定的图像</translation>
 </phrase>
 
 <phrase>
 <original>add individual images</original>
-<translation></translation>
+<translation>添加单个图像</translation>
 </phrase>
 
 <phrase>
@@ -10490,27 +10490,27 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>add images</original>
-<translation></translation>
+<translation>添加图像</translation>
 </phrase>
 
 <phrase>
 <original>modify list</original>
-<translation></translation>
+<translation>修改列表</translation>
 </phrase>
 
 <phrase>
 <original>load / save list</original>
-<translation></translation>
+<translation>加载/保存列表</translation>
 </phrase>
 
 <phrase>
 <original>add entire folder(s)</original>
-<translation></translation>
+<translation>添加整个文件夹</translation>
 </phrase>
 
 <phrase>
 <original>remove all images in this folder</original>
-<translation></translation>
+<translation>删除此文件夹中的所有图像</translation>
 </phrase>
 
 <phrase>
@@ -10648,7 +10648,7 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
-<translation></translation>
+<translation>您没有选择任何图像处理！请将一个或多个图像添加到批处理列表中。</translation>
 </phrase>
 
 <phrase>
@@ -10703,17 +10703,17 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>You can add files to the batch list in two ways</original>
-<translation></translation>
+<translation>您可以通过两种方式将文件添加到列表</translation>
 </phrase>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation></translation>
+<translation>1）通过图像对话框手动添加一个或多个图像文件。</translation>
 </phrase>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation></translation>
+<translation>2）通过添加整个文件夹。</translation>
 </phrase>
 
 <phrase>
@@ -11162,7 +11162,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
-<translation></translation>
+<translation>目前可用的程序（按窗口标题列出）</translation>
 </phrase>
 
 <phrase>
@@ -11172,7 +11172,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>minimize PhotoDemon prior to capture</original>
-<translation>尽量减少PhotoDemon之前捕获</translation>
+<translation>捕获前把PhotoDemon最小化</translation>
 </phrase>
 
 <phrase>
@@ -11197,7 +11197,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>specific program</original>
-<translation></translation>
+<translation>具体程序</translation>
 </phrase>
 
 <phrase>
@@ -11207,7 +11207,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation>一些程序（包括 Windows 应用商店程序）不允许直接屏幕捕获。如果一个应用程序预览显示为一个黑色方块，您需要采取一个完整的桌面截图，然后手动裁剪所需的窗口区域。</translation>
+<translation>有些程序（包括 Windows 应用商店程序）不允许直接屏幕捕获，如果一个应用程序预览显示为黑色，请您需要截取一个完整的桌面截图，然后手动裁剪所需的窗口区域。</translation>
 </phrase>
 
 <phrase>
@@ -11233,7 +11233,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>transparent</original>
-<translation>透明度：</translation>
+<translation>透明</translation>
 </phrase>
 
 <phrase>
@@ -11253,7 +11253,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>background</original>
-<translation>背景</translation>
+<translation>背景：</translation>
 </phrase>
 
 <!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
@@ -11696,7 +11696,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>lossless file size optimization (OptiPNG)</original>
-<translation></translation>
+<translation>无损文件大小优化（使用OptiPNG）</translation>
 </phrase>
 
 <phrase>
@@ -11961,12 +11961,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Initializing content-aware resize engine</original>
-<translation>初始化内容感知大小调整引擎</translation>
+<translation>初始化内容识别调整引擎</translation>
 </phrase>
 
 <phrase>
 <original>Applying content-aware resize</original>
-<translation>应用内容感知大小调整</translation>
+<translation>应用内容识别调整</translation>
 </phrase>
 
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12417,7 +12417,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>border regions</original>
-<translation></translation>
+<translation>边界区域</translation>
 </phrase>
 
 <phrase>
@@ -12432,32 +12432,32 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>keep current</original>
-<translation></translation>
+<translation>保存当前</translation>
 </phrase>
 
 <phrase>
 <original>enlarge to fit</original>
-<translation></translation>
+<translation>扩大适应</translation>
 </phrase>
 
 <phrase>
 <original>nearest-neighbor</original>
-<translation></translation>
+<translation>近邻取样</translation>
 </phrase>
 
 <phrase>
 <original>bilinear</original>
-<translation></translation>
+<translation>双线性</translation>
 </phrase>
 
 <phrase>
 <original>bicubic</original>
-<translation></translation>
+<translation>双三次插值</translation>
 </phrase>
 
 <phrase>
 <original>fill with color</original>
-<translation></translation>
+<translation>填充颜色</translation>
 </phrase>
 
 <phrase>
@@ -12535,17 +12535,17 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>flatten behavior</original>
-<translation></translation>
+<translation>扁平化操作</translation>
 </phrase>
 
 <phrase>
 <original>keep transparency</original>
-<translation></translation>
+<translation>保持透明度</translation>
 </phrase>
 
 <phrase>
 <original>remove transparency</original>
-<translation></translation>
+<translation>移除透明度</translation>
 </phrase>
 
 <!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13098,7 +13098,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>all effects</original>
-<translation></translation>
+<translation>所有效果</translation>
 </phrase>
 
 <phrase>
@@ -13139,7 +13139,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>size (w, h)</original>
-<translation>大小（w,h)</translation>
+<translation>大小(w,h)</translation>
 </phrase>
 
 <phrase>
@@ -13962,17 +13962,17 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>memory diagnostics</original>
-<translation>存储器诊断</translation>
+<translation>内存使用情况：</translation>
 </phrase>
 
 <phrase>
 <original>temporary file location</original>
-<translation>临时文件位置</translation>
+<translation>临时文件位置：</translation>
 </phrase>
 
 <phrase>
 <original>start over</original>
-<translation>重新开始</translation>
+<translation>重置为默认值：</translation>
 </phrase>
 
 <phrase>
@@ -13992,12 +13992,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>update plugins independently</original>
-<translation>独立更新插件</translation>
+<translation>插件单独更新</translation>
 </phrase>
 
 <phrase>
 <original>allow updates from these tracks</original>
-<translation>允许从这些目录更新</translation>
+<translation>选择更新版本</translation>
 </phrase>
 
 <phrase>
@@ -14067,7 +14067,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when rendering images to the screen</original>
-<translation>当渲染图像到屏幕</translation>
+<translation>当渲染图像显示到屏幕时</translation>
 </phrase>
 
 <phrase>
@@ -14077,7 +14077,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>transparency checkerboard size</original>
-<translation>透明度棋盘大小</translation>
+<translation>透明棋盘大小</translation>
 </phrase>
 
 <phrase>
@@ -14097,7 +14097,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>when closing images, warn me me about unsaved changes</original>
-<translation>关闭图像时，提醒我关于我未保存的更改</translation>
+<translation>关闭图像时，提醒我保存修改后的图像</translation>
 </phrase>
 
 <phrase>
@@ -14107,7 +14107,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>save behavior: overwrite vs make a copy</original>
-<translation>保存行为：重写与复制</translation>
+<translation>保存操作：覆盖/建立副本</translation>
 </phrase>
 
 <phrase>
@@ -14142,12 +14142,12 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
-<translation>显示的色调映射选项当导入HDR和原图像</translation>
+<translation>当导入HDR和原图像时显示色调映射选项</translation>
 </phrase>
 
 <phrase>
 <original>obey auto-rotate instructions inside image files</original>
-<translation>遵守内部的图像文件自动旋转的指令</translation>
+<translation>遵循图像文件内的自动旋转指令</translation>
 </phrase>
 
 <phrase>
@@ -14167,7 +14167,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>estimate original JPEG quality settings</original>
-<translation>估计原始JPEG质量设置</translation>
+<translation>评估原始JPEG质量设置</translation>
 </phrase>
 
 <phrase>
@@ -14192,7 +14192,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>interface</original>
-<translation>界面选项</translation>
+<translation>界面</translation>
 </phrase>
 
 <phrase>
@@ -14356,7 +14356,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>overwrite the current file (standard behavior)</original>
-<translation>改写当前文件（标准行为）</translation>
+<translation>改写当前文件（默认操作）</translation>
 </phrase>
 
 <phrase>
@@ -14496,7 +14496,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>each session</original>
-<translation>每个会话</translation>
+<translation>每次启动时</translation>
 </phrase>
 
 <phrase>
@@ -14511,7 +14511,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>never (not recommended)</original>
-<translation>从未（不推荐）</translation>
+<translation>从不（不推荐）</translation>
 </phrase>
 
 <phrase>
@@ -14558,8 +14558,8 @@ Are you sure you want to continue?</original>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>开发商PhotoDemon很重视隐私，所以没有信息统计或其他上传更新过程。更新只涉及从PhotoDemon.org下载几个小的XML文件。这些文件包含最新的软件，插件，和语言的版本号。如果发现有更新的版本，和用户偏好允许更新的文件，然后下载并自动修补。
-如果你仍然选择禁用更新，别忘了随时检查是否有新版本的访问PhotoDemon.org。</translation>
+<translation>开发商PhotoDemon很重视隐私，所以更新过程不会上传个人信息或其他类似内容。更新只涉及从PhotoDemon.org下载几个小的XML文件。这些文件包含最新的软件，插件和语言的版本号。如果发现有更新的版本，并且发现有用户选项设置中允许更新的文件，软件会下载并自动更新。
+如果你选择禁用更新，别忘了随时访问PhotoDemon.org检查是否有新版本。</translation>
 </phrase>
 
 <phrase>
@@ -14584,12 +14584,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Interface</original>
-<translation>界面选项</translation>
+<translation>界面</translation>
 </phrase>
 
 <phrase>
 <original>Loading</original>
-<translation>正在加载</translation>
+<translation>读取</translation>
 </phrase>
 
 <phrase>
@@ -14689,12 +14689,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation></translation>
+<translation>警告：这个文件夹无效（禁止访问）。请提供一个有效的文件夹。如果没有提供一个新的有效文件夹，PhotoDemon将使用系统临时文件夹。</translation>
 </phrase>
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation></translation>
+<translation>新的临时文件夹的位置将在重新启动程序后生效。</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
@@ -14816,89 +14816,90 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Batch repair</original>
-<translation></translation>
+<translation>批量修复</translation>
 </phrase>
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation></translation>
+<translation>点击确定开始修复操作</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair image files</original>
-<translation></translation>
+<translation>试图修复图像文件</translation>
 </phrase>
 
 <phrase>
 <original>source folder</original>
-<translation></translation>
+<translation>源文件夹</translation>
 </phrase>
 
 <phrase>
 <original>destination folder (for repaired files only)</original>
-<translation></translation>
+<translation>目标文件夹（只用于修复文件）</translation>
 </phrase>
 
 <phrase>
 <original>repair options</original>
-<translation></translation>
+<translation>修复选项</translation>
 </phrase>
 
 <phrase>
 <original>progress</original>
-<translation></translation>
+<translation>进度</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair video and audio files</original>
-<translation></translation>
+<translation>试图修复视频和音频文件</translation>
 </phrase>
 
 <phrase>
 <original>overwrite matching filenames in the destination folder</original>
-<translation></translation>
+<translation>覆盖目标文件夹重名文件</translation>
 </phrase>
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation></translation>
+<translation>恢复成功后，删除原来的文件（未修复）</translation>
 </phrase>
 
 <phrase>
 <original>generating list of files to repair</original>
-<translation></translation>
+<translation>生成文件修复列表</translation>
 </phrase>
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation></translation>
+<translation>正在修复文件 %1 / %2 (%3 执行修复)</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation></translation>
+<translation>维修完成，修复 %1 个文件。</translation>
 </phrase>
 
 <phrase>
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation></translation>
+<translation>%1 个文件修复成功，
+已修复的文件已保存到目标文件夹中，未修复的文件保留在其原始位置。</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete</original>
-<translation></translation>
+<translation>修复完成</translation>
 </phrase>
 
 <phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
-<translation></translation>
+<translation>源文件夹不包含任何文件，请换另一个文件夹试试。</translation>
 </phrase>
 
 <phrase>
 <original>No files found</original>
-<translation></translation>
+<translation>文件没有找到</translation>
 </phrase>
 
 <!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
