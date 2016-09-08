@@ -575,7 +575,7 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
             #End If
             
             cmsDoTransform hTransform, srcDIB.GetDIBPointer, srcDIB.GetDIBPointer, srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
-        
+                    
         '24-bpp DIBs may have scanline padding issues.  We must process them one line at a time.
         Else
             
