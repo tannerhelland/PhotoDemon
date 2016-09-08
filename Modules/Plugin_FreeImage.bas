@@ -788,9 +788,6 @@ End Function
 ' FreeImage object.
 '
 'IMPORTANT NOTE: the source handle *will not be freed*, even if the transformation is successful.  The caller must do this manually.
-'
-'TODO 7.0: the next LittleCMS release will provide a COPY_ALPHA flag, which is needed here.  At present, alpha is lost during conversions.
-'          I don't want to write custom code for this, so I'm content waiting until LittleCMS implements this directly.
 Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstDIB As pdDIB, ByRef pdDIBIsDestination As Boolean, ByRef fallbackFIHandle As Long) As Boolean
     
     GenerateICCCorrectedFIDIB = False
@@ -828,6 +825,13 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
     If (Not hasTransparency) Then
         transparentEntries = FreeImage_GetTransparencyCount(srcFIHandle)
         If (transparentEntries > 0) Then hasTransparency = True
+        
+        '32-bpp images with a fully opaque alpha channel may return FALSE; this is a stupid FreeImage issue.
+        ' Check for such a mismatch, and forcibly set the correct transparency behavior.
+        If (fi_BPP = 32) Then
+            If ((FreeImage_GetColorType(srcFIHandle) = FIC_RGB) Or (FreeImage_GetColorType(srcFIHandle) = FIC_RGBALPHA)) Then hasTransparency = True
+        End If
+        
     End If
     
     'Allocate a destination FI DIB object in default BGRA order
@@ -908,7 +912,7 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
                 End If
                 
             Else
-            
+                
                 If isGrayscale Then
                     dstPixelFormat = TYPE_GRAY_8
                     
