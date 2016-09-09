@@ -1896,13 +1896,6 @@ Private Sub MnuBatch_Click(Index As Integer)
     Select Case Index
     
         Case 0
-            'TODO 7.0: batch processing is a disaster right now, and it will remain that way for some time.
-            '  If you need to batch process something, use the stable build.
-            Dim warningString As String, warningTitle As String
-            warningString = "WARNING!  The batch processor is not integrated with a number of crucial nightly build changes.  It is likely to experience bugs and/or hard crashes." & vbCrLf & vbCrLf & "For batch processing tasks, please use the latest stable build from photodemon.org."
-            warningTitle = "Batch processing not recommended"
-            PDMsgBox warningString, vbCritical Or vbOKOnly Or vbApplicationModal, warningTitle
-            
             Process "Batch wizard", True
         
         Case 1
@@ -2534,7 +2527,7 @@ Private Sub tmrMetadata_Timer()
     ' images simultaneously.  Rather than bring down the whole program, I'd prefer to simply ignore metadata for the problematic image.
     On Error Resume Next
 
-    If IsMetadataFinished Then
+    If ExifTool.IsMetadataFinished Then
     
         'Start by disabling this timer, lest it fire again while we're in the middle of parsing stuff
         tmrMetadata.Enabled = False
@@ -2561,7 +2554,7 @@ Private Sub tmrMetadata_Timer()
         startPosition = 1
         terminalPosition = InStr(1, mdString, "{ready", vbBinaryCompare)
         
-        Do While terminalPosition <> 0
+        Do While (terminalPosition <> 0)
         
             'terminalPosition now contains the position of ExifTool's "{ready123}" tag, where 123 is the ID of the image whose metadata
             ' is contained prior to that point.  Start by figuring out what that ID number actually is.
