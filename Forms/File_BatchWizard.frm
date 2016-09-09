@@ -94,7 +94,7 @@ Begin VB.Form FormBatchWizard
          Width           =   7335
          _ExtentX        =   12938
          _ExtentY        =   1296
-         Caption         =   "click to set export settings for this format..."
+         Caption         =   "set export settings for this format..."
       End
       Begin PhotoDemon.pdDropDown cmbOutputFormat 
          Height          =   375
@@ -685,8 +685,8 @@ Attribute VB_Exposed = False
 'Batch Conversion Form
 'Copyright 2007-2016 by Tanner Helland
 'Created: 3/Nov/07
-'Last updated: 03/September/15
-'Last update: convert all buttons to pdButton and overhaul related UI code
+'Last updated: 09/September/16
+'Last update: complete overhaul of UI and underlying logic
 '
 'PhotoDemon's batch process wizard is one of its most unique - and in my opinion, most impressive - features.  It integrates
 ' tightly with the macro recording feature to allow any combination of actions to be applied to any set of images.
@@ -738,6 +738,9 @@ Private m_CurImagePreview As String
 ' process considerably.  So cache them in advance.
 ' TODO: fix this, because word order (obviously) is not consistent from language to language
 Private m_wordForBatchList As String, m_wordForItem As String, m_wordForItems As String
+
+'We maintain folder paths locally, in case the user wants to add multiple folders in succession
+Private m_LastBatchFolder As String
 
 'While we're processing the list (for example, when removing items automatically), we want to ignore any events raised by the list
 Private m_ListBusy As Boolean
@@ -832,7 +835,7 @@ End Sub
 Private Sub cmdAddFiles_Click()
     
     Dim listOfFiles As pdStringStack
-    If PhotoDemon_OpenImageDialog(listOfFiles, Me.hWnd) Then
+    If File_Menu.PhotoDemon_OpenImageDialog(listOfFiles, Me.hWnd) Then
         
         lstFiles.SetAutomaticRedraws False
         
@@ -855,14 +858,17 @@ Private Sub cmdAddFiles_Click()
 End Sub
 
 Private Sub cmdAddFolders_Click()
-
+    
+    If (Len(m_LastBatchFolder) = 0) Then m_LastBatchFolder = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
+    
     Dim folderPath As String
-    folderPath = FileSystem.BrowseForFolder(Me.hWnd, g_UserPreferences.GetProgramPath)
+    folderPath = FileSystem.BrowseForFolder(Me.hWnd, m_LastBatchFolder)
     
     If (Len(folderPath) <> 0) Then
         
-        Dim listOfFiles As pdStringStack
+        m_LastBatchFolder = folderPath
         
+        Dim listOfFiles As pdStringStack
         If m_FSO.RetrieveAllFiles(folderPath, listOfFiles, CBool(chkAddSubfoldersToo.Value), False, g_ImageFormats.GetListOfInputFormats("|", False)) Then
                 
             lstFiles.SetAutomaticRedraws False
@@ -1128,31 +1134,18 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
         
         'Select output format
         Case 2
-        
-            'If the user has asked us to convert all images to a new format, we need to build a parameter string that
+            
+            'If the user has asked us to convert all images to a new format, make sure they clicked the
+            ' "set export options" button (to define what export settings we'll use).
+            
             ' contains all of the user's selected image format options (JPEG quality, etc)
-            If optFormat(1) Then
+            If (optFormat(1) And moveForward) Then
             
-                Select Case g_ImageFormats.GetOutputPDIF(cmbOutputFormat.ListIndex)
+                If (Not m_ExportSettingsSet) Then
+                    PDMsgBox "Before proceeding, you need to click the ""set export settings for this format"" button to specify what export settings you want to use.", vbExclamation + vbOKOnly + vbApplicationModal, "Export settings required"
+                    Exit Sub
+                End If
                 
-                    Case PDIF_BMP
-                        
-                    Case PDIF_GIF
-                        
-                    Case PDIF_JP2
-                        
-                    Case PDIF_JPEG
-                                        
-                    Case PDIF_PNG
-                        
-                    Case PDIF_PPM
-                        
-                    Case PDIF_TARGA
-                        
-                    Case PDIF_TIFF
-                        
-                End Select
-            
             End If
         
         'Select output directory and file name
@@ -1185,13 +1178,13 @@ Private Sub ChangeBatchPage(ByVal moveForward As Boolean)
     Next i
     
     'If we are at the beginning, disable the previous button
-    If m_CurrentPage = 0 Then cmdPrevious.Enabled = False Else cmdPrevious.Enabled = True
+    If (m_CurrentPage = 0) Then cmdPrevious.Enabled = False Else cmdPrevious.Enabled = True
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
     If m_CurrentPage = picContainer.Count - 2 Then
         cmdNext.Caption = g_Language.TranslateMessage("Start processing!")
     Else
-        If cmdNext.Caption <> g_Language.TranslateMessage("Next") Then cmdNext.Caption = g_Language.TranslateMessage("Next")
+        If (cmdNext.Caption <> g_Language.TranslateMessage("Next")) Then cmdNext.Caption = g_Language.TranslateMessage("Next")
     End If
     
     'Finally, update all the label captions that change according to the active panel
@@ -1509,34 +1502,14 @@ Private Sub Form_Load()
         Next i
     
     'Build default paths from preference file values
+    Dim tempPathString As String
+    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", "")
+    If (tempPathString <> "") And (m_FSO.FolderExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
     
-'    Dim tempPathString As String
 '    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Drive Box", "")
 '    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then Drive1 = tempPathString
 '    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Input Folder", "")
 '    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
-'    tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", "")
-'    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
-'
-'    'Populate a combo box that will display user-friendly summaries of all possible input image types
-'    Dim x As Long
-'    For x = 0 To g_ImageFormats.GetNumOfInputFormats
-'        cmbPattern.AddItem g_ImageFormats.GetInputFormatDescription(x), x
-'    Next x
-'    cmbPattern.ListIndex = 0
-'
-'    'Populate a combo box that displays user-friendly summaries of all possible output filetypes
-'    For x = 0 To g_ImageFormats.GetNumOfOutputFormats
-'        cmbOutputFormat.AddItem g_ImageFormats.GetOutputFormatDescription(x), x
-'    Next x
-'
-'    'Save JPEGs by default
-'    For x = 0 To cmbOutputFormat.ListCount
-'        If g_ImageFormats.GetOutputFormatExtension(x) = "jpg" Then
-'            cmbOutputFormat.ListIndex = x
-'            Exit For
-'        End If
-'    Next x
     
     'By default, offer to save processed images in their original format
     optFormat(0).Value = True
@@ -1588,6 +1561,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub lstFiles_Click()
+
     If (Not m_ListBusy) Then
         
         'Perform a quick check to make sure the selected image hasn't been removed
@@ -1603,6 +1577,7 @@ Private Sub lstFiles_Click()
         End If
         
     End If
+    
 End Sub
 
 'Update the active image preview in the top-right
@@ -1655,12 +1630,10 @@ Private Sub AddFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
     ' a previously saved batch list from file)
     If novelAddition Then
-    
         If m_FSO.FileExist(srcFile) Then
             lstFiles.AddItem srcFile
             UpdateBatchListCount
         End If
-        
     End If
     
     'Enable the "remove all images" button if at least one image exists in the processing list
@@ -1757,7 +1730,7 @@ Private Sub PrepareForBatchConversion()
     
         'Pause for keypresses - this allows the user to press "Escape" to cancel the operation
         DoEvents
-        If MacroStatus = MacroCANCEL Then GoTo MacroCanceled
+        If (MacroStatus = MacroCANCEL) Then GoTo MacroCanceled
     
         tmpFilename = lstFiles.List(curBatchFile)
         
@@ -1778,7 +1751,7 @@ Private Sub PrepareForBatchConversion()
             ' PD will only load the first page/frame of a multipage file during conversion.
             
             'Load the current image
-            If LoadFileAsNewImage(tmpFilename, , False) Then
+            If LoadFileAsNewImage(tmpFilename, , False, True, False) Then
             
                 'With the image loaded, it is time to apply any requested photo editing actions.
                 If (btsPhotoOps.ListIndex = 1) Then
@@ -1880,20 +1853,13 @@ Private Sub PrepareForBatchConversion()
                 ' drive and directory structure.
                 tmpFilename = outputPath & IncrementFilename(outputPath, tmpFilename, tmpFileExtension) & "." & tmpFileExtension
                                 
-                'Request a save from the PhotoDemon_SaveImage method, and pass it a specialized string containing
-                ' any extra information for the requested format (JPEG quality, etc).
+                'Request a save from the PhotoDemon_SaveImage method, and pass it the parameter string created by the user
+                ' on the matching wizard panel.
+                ' TODO: track success/fail results and collate any failures into a list that we can report to the user
+                Saving.PhotoDemon_BatchSaveImage pdImages(g_CurrentImage), tmpFilename, pdImages(g_CurrentImage).currentFileFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata
                 
-                'TODO AS OF 7.0: the save function no longer supports bare parameter strings.  Instead, place the desired
-                ' parameter string *inside the parent pdImage object*, and mark the pdImage object as having seen a
-                ' matching format dialog already.  (If you don't do this, a dialog may be forcibly raised!)
-                If Len(m_FormatParams) <> 0 Then
-                    PhotoDemon_SaveImage pdImages(g_CurrentImage), tmpFilename, False   ', m_FormatParams 'NOTE: this no longer works!  See TODO, above!
-                Else
-                    PhotoDemon_SaveImage pdImages(g_CurrentImage), tmpFilename, False
-                End If
-            
                 'Unload the finished image
-                FullPDImageUnload g_CurrentImage
+                FullPDImageUnload g_CurrentImage, (Not (curBatchFile < totalNumOfFiles - 1))
             
             End If
             

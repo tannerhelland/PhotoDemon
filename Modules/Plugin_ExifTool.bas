@@ -314,6 +314,10 @@ Public Function IsDatabaseModeActive() As Boolean
     IsDatabaseModeActive = m_DatabaseModeActive
 End Function
 
+Public Function IsVerificationModeActive() As Boolean
+    IsVerificationModeActive = m_VerificationModeActive
+End Function
+
 'The FormMain.ShellPipeMain user control will asynchronously trigger this function whenever it receives new metadata
 ' from ExifTool.
 Public Sub NewMetadataReceived(ByVal newMetadata As String)
@@ -383,13 +387,13 @@ Private Sub StopVerificationMode()
     Else
     
         'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata report
-        If Len(m_VerificationString) <> 0 Then m_VerificationString = Replace$(m_VerificationString, "{ready}", "")
+        If (Len(m_VerificationString) <> 0) Then m_VerificationString = Replace$(m_VerificationString, "{ready}", "")
         
         'Write the completed technical report out to a temp file
         Dim tmpFilename As String
         tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(m_technicalReportSrcImage) & ".html"
         
-        cFile.SaveStringToTextFile m_VerificationString, tmpFilename  ', True, False
+        cFile.SaveStringToTextFile m_VerificationString, tmpFilename
         
         'Shell the default HTML viewer for the user
         m_VerificationString = ""
@@ -411,9 +415,9 @@ End Function
 ' the metadata string to see if ExifTool is done.
 Public Function IsMetadataFinished() As Boolean
     
-    'If ExifTool is not available, or if it failed to start, simple return TRUE which will allow any waiting code
+    'If ExifTool is not available, or if it failed to start, simply return TRUE which will allow any waiting code
     ' to continue.
-    If Not m_IsExifToolRunning Then
+    If (Not m_IsExifToolRunning) Then
         IsMetadataFinished = True
         Exit Function
     End If
@@ -434,7 +438,7 @@ Public Function IsMetadataFinished() As Boolean
     End If
     
     'If there is no temporary metadata string, exit now
-    If Len(tmpMetadata) = 0 Then Exit Function
+    If (Len(tmpMetadata) = 0) Then Exit Function
     
     'Different verification modes require different checks for completion.
     If m_captureModeActive Then
@@ -789,8 +793,8 @@ End Function
 Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFile As String, ByRef srcPDImage As pdImage, Optional ByVal forciblyAnonymize As Boolean = False, Optional ByVal originalMetadataParams As String = vbNullString) As Boolean
     
     'If ExifTool is not running, start it.  If it cannot be started, exit.
-    If Not m_IsExifToolRunning Then
-        If Not StartExifTool() Then
+    If (Not m_IsExifToolRunning) Then
+        If (Not StartExifTool()) Then
             Message "ExifTool could not be started.  Metadata unavailable for this session."
             WriteMetadata = False
             Exit Function

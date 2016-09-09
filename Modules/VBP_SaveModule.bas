@@ -43,8 +43,8 @@ End Function
 'INPUTS:
 '   1) pdImage to be saved
 '   2) Destination file path
-'   3) Optional: whether to force display of an "additional save options" dialog (JPEG quality, etc)
-'   4) Optional: a string of relevant save parameters.  This is only used during batch conversion
+'   3) Optional: whether to force display of an "additional save options" dialog (JPEG quality, etc).  Save As commands
+'      forcibly set this to TRUE, so that the user can input new export settings.
 Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, Optional ByVal forceOptionsDialog As Boolean = False) As Boolean
     
     'There are a few different ways the save process can "fail":
@@ -224,6 +224,74 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     End If
     
     PhotoDemon_SaveImage = saveSuccessful
+    
+End Function
+
+'This _BatchSave() function is a shortened, accelerated version of the full _SaveImage() function above.
+' It should *only* be used during Batch Process operations, where there is no possibility of user interaction.
+' Note that the input parameters are different, as the batch processor requires the user to set most export
+' settings in advance (since we can't raise export dialogs mid-batch).
+Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, ByVal saveFormat As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
+    
+    'The important thing to note about this function is that it *requires* the image to be immediately unloaded
+    ' after the save operation finishes.  To improve performance, the source pdImage object is not updated against
+    ' any changes incurred by the save operation, so that object *will* be "corrupted" after a save operation occurs.
+    ' (Note also that things like failed saves cannot raise any modal dialogs, so the only notification of failure
+    ' is the return value of this function.)
+    Dim saveSuccessful As Boolean: saveSuccessful = False
+    
+    'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
+    ' the "EndSaveProcess" function to release the UI lock.
+    'BeginSaveProcess
+    'Message "Saving %1 file...", saveExtension
+    
+    'If the image is being saved to a layered format (like multipage TIFF), various parts of the export engine may
+    ' want to inject useful information into the finished file (e.g. ExifTool can append things like page names).
+    ' Mark the outgoing file now.
+    srcImage.imgStorage.AddEntry "MetadataSettings", metadataParameters
+    MarkMultipageExportStatus srcImage, saveFormat, saveParameters, metadataParameters
+    
+    'With all save parameters collected, we can offload the rest of the save process to per-format save functions.
+    saveSuccessful = Saving.ExportToSpecificFormat(srcImage, dstPath, saveFormat, saveParameters, metadataParameters)
+    
+    If saveSuccessful Then
+        
+        'If the file was successfully written, we can now embed any additional metadata.
+        ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
+        ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
+        ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
+        If g_ExifToolEnabled And (Not (srcImage.imgMetadata Is Nothing)) And (Not (saveFormat = PDIF_PDI)) Then
+            
+            'Sometimes, PD may process images faster than ExifTool can parse the source file's metadata.
+            ' Check for this, and pause until metadata processing catches up.
+            If ExifTool.IsMetadataPipeActive Then
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Pausing batch process so that metadata processing can catch up..."
+                #End If
+                
+                Do While ExifTool.IsMetadataPipeActive
+                    Sleep 50
+                    DoEvents
+                Loop
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Metadata processing caught up; proceeding with batch operation..."
+                #End If
+                
+            End If
+            
+            srcImage.imgMetadata.WriteAllMetadata dstPath, srcImage
+            
+            Do While ExifTool.IsVerificationModeActive
+                Sleep 50
+                DoEvents
+            Loop
+            
+        End If
+        
+    End If
+    
+    PhotoDemon_BatchSaveImage = saveSuccessful
     
 End Function
 

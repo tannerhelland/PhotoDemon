@@ -443,7 +443,7 @@ Public Sub MenuCloseAll()
         ' (e.g. stop unloading images)
         If (Not g_ClosingAllImages) Then
             'If not all images were unloaded, notify the user
-            If g_OpenImageCount <> 0 Then Message ""
+            If (g_OpenImageCount <> 0) Then Message ""
             Exit For
         End If
         
