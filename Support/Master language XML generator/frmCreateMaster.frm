@@ -431,7 +431,7 @@ Private Sub cmdConvertLabels_Click()
         srcFilename = lstProjectFiles.List(lstProjectFiles.ListIndex)
         
         Dim fileContents As String
-        fileContents = getFileAsString(srcFilename)
+        fileContents = GetFileAsString(srcFilename)
         
         Dim fileLines() As String
         fileLines = Split(fileContents, vbCrLf)
@@ -476,7 +476,7 @@ Private Sub cmdConvertLabels_Click()
                 For i = startLine + 1 To endLine - 1
                     
                     'See if this line contains a valid pdLabel property
-                    ignoreThisLine = isValidPDLabelProperty(fileLines(i))
+                    ignoreThisLine = IsValidPDLabelProperty(fileLines(i))
                     
                     'If this line does not contain a valid pdLabel property, perform some special checks for compatible properties
                     ' with different names.
@@ -536,25 +536,25 @@ nextLine:
 End Sub
 
 'See if a given line from a VB Form contains a valid pdLabel property
-Private Function isValidPDLabelProperty(ByVal srcString As String) As Boolean
+Private Function IsValidPDLabelProperty(ByVal srcString As String) As Boolean
     
-    isValidPDLabelProperty = False
+    IsValidPDLabelProperty = False
     
     'Trim the source string to make comparisons easier
     srcString = Trim$(LCase$(srcString))
     
     'The list of valid properties is hardcoded.
-    If InStr(1, srcString, "Alignment", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "BackColor", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Caption", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Enabled", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "ForeColor", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Height", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Index", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Layout", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Left", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Top", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
-    If InStr(1, srcString, "Width", vbBinaryCompare) > 0 Then isValidPDLabelProperty = True
+    If InStr(1, srcString, "Alignment", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "BackColor", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Caption", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Enabled", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "ForeColor", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Height", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Index", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Layout", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Left", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Top", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
+    If InStr(1, srcString, "Width", vbBinaryCompare) > 0 Then IsValidPDLabelProperty = True
     
 End Function
 
@@ -613,7 +613,7 @@ Private Sub cmdLangVersions_Click()
         'Attempt to add this file to the version list
         chkFileNoExtension = chkFile
         StripOffExtension chkFileNoExtension
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
+        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
         
         'This program is also responsible for compressing each language file and copying it to a temp folder,
         ' so the nightly build batch script can find it.
@@ -634,7 +634,7 @@ Private Sub cmdLangVersions_Click()
         'Attempt to add this file to the version list
         chkFile = "Master\MASTER.xml"
         chkFileNoExtension = "MASTER"
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
+        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, False
         
         'This program is also responsible for compressing each language file and copying it to a temp folder,
         ' so the nightly build batch script can find it.
@@ -656,7 +656,7 @@ Private Sub cmdLangVersions_Click()
         'Attempt to add this file to the version list
         chkFileNoExtension = chkFile
         StripOffExtension chkFileNoExtension
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
+        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
         
         'This program is also responsible for compressing each language file and copying it to a temp folder,
         ' so the nightly build batch script can find it.
@@ -677,7 +677,7 @@ Private Sub cmdLangVersions_Click()
         'Attempt to add this file to the version list
         chkFile = "Master\MASTER.xml"
         chkFileNoExtension = "MASTER"
-        addFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
+        AddFileToMasterVersionList xmlInput, xmlOutput, srcFolder & chkFile, chkFileNoExtension, True
         
         'This program is also responsible for compressing each language file and copying it to a temp folder,
         ' so the nightly build batch script can find it.
@@ -703,7 +703,7 @@ Private Sub cmdLangVersions_Click()
 End Sub
 
 'Given a full path to a language file, add the language file's information to an output XML object.
-Private Sub addFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String, ByRef sourceFilename As String, ByVal isSourceStableVersion As Boolean)
+Private Sub AddFileToMasterVersionList(ByRef xmlInput As pdXML, ByRef xmlOutput As pdXML, ByRef pathToFile As String, ByRef sourceFilename As String, ByVal isSourceStableVersion As Boolean)
 
     Dim langID As String, langVersion As String, langName As String
     
@@ -797,30 +797,30 @@ Private Sub cmdMaster_Click()
     If cDlg.VBGetOpenFileName(fPath, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , , "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
         'Load the file into a string
-        m_MasterText = getFileAsString(fPath)
+        m_MasterText = GetFileAsString(fPath)
                 
     End If
     
 End Sub
 
-Private Sub replaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMaster As String, ByRef sourceTextTranslation As String, ByRef destinationText As String, Optional ByVal alsoIncrementVersion As Boolean = True)
+Private Sub ReplaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMaster As String, ByRef sourceTextTranslation As String, ByRef destinationText As String, Optional ByVal alsoIncrementVersion As Boolean = True)
 
     Dim openTagName As String, closeTagName As String
     openTagName = "<" & origTagName & ">"
     closeTagName = "</" & origTagName & ">"
     
     Dim findText As String, replaceText As String
-    findText = openTagName & getTextBetweenTags(sourceTextMaster, origTagName) & closeTagName
+    findText = openTagName & GetTextBetweenTags(sourceTextMaster, origTagName) & closeTagName
     
     'A special check is applied to the "langversion" tag.  Whenever this function is used, a merge is taking place; as such, we want to
     ' auto-increment the language's version number to trigger an update on client machines.
     If (StrComp(origTagName, "langversion", vbBinaryCompare) = 0) And alsoIncrementVersion Then
         
-        findText = openTagName & getTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+        findText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
         
         'Retrieve the current language version
         Dim curVersion As String
-        curVersion = getTextBetweenTags(sourceTextTranslation, origTagName)
+        curVersion = GetTextBetweenTags(sourceTextTranslation, origTagName)
         
         'Parse the current version into two discrete chunks: the major/minor value, and the revision value
         Dim curMajorMinor As String, curRevision As Long
@@ -832,7 +832,7 @@ Private Sub replaceTopLevelTag(ByVal origTagName As String, ByRef sourceTextMast
         replaceText = openTagName & curMajorMinor & "." & Trim$(Str$(curRevision)) & closeTagName
             
     Else
-        replaceText = openTagName & getTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
+        replaceText = openTagName & GetTextBetweenTags(sourceTextTranslation, origTagName) & closeTagName
     End If
     
     destinationText = Replace$(destinationText, findText, replaceText)
@@ -858,11 +858,11 @@ Private Sub cmdMerge_Click()
     Dim findText As String, replaceText As String
     
     'Copy over all top-level language and author information
-    replaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
-    replaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
-    replaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
-    replaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
-    replaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
+    ReplaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
+    ReplaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
+    ReplaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
+    ReplaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
+    ReplaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
         
     Dim phrasesProcessed As Long, phrasesFound As Long, phrasesMissed As Long
     phrasesProcessed = 0
@@ -875,15 +875,15 @@ Private Sub cmdMerge_Click()
         phrasesProcessed = phrasesProcessed + 1
     
         'Retrieve the original text associated with this phrase tag
-        origText = getTextBetweenTags(m_MasterText, "original", sPos)
+        origText = GetTextBetweenTags(m_MasterText, "original", sPos)
         
         'Attempt to retrieve a translation for this phrase using the old language file
-        translatedText = getTranslationTagFromCaption(origText)
+        translatedText = GetTranslationTagFromCaption(origText)
                 
         'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If Len(translatedText) = 0 Then
             If (InStr(1, origText, vbCrLf) > 0) Then
-                translatedText = getTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
+                translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
             End If
         End If
                 
@@ -937,7 +937,7 @@ Private Sub cmdMerge_Click()
 End Sub
 
 'Given a string, return the location of the <phrase> tag enclosing said string
-Private Function getPhraseTagLocation(ByRef srcString As String) As Long
+Private Function GetPhraseTagLocation(ByRef srcString As String) As Long
     
     Dim sLocation As Long
     sLocation = InStr(1, m_OldLanguageText, srcString, vbBinaryCompare)
@@ -946,36 +946,36 @@ Private Function getPhraseTagLocation(ByRef srcString As String) As Long
     If sLocation > 0 Then
         sLocation = InStrRev(m_OldLanguageText, "<phrase>", sLocation, vbBinaryCompare)
         If sLocation > 0 Then
-            getPhraseTagLocation = sLocation
+            GetPhraseTagLocation = sLocation
         Else
-            getPhraseTagLocation = 0
+            GetPhraseTagLocation = 0
         End If
     Else
-        getPhraseTagLocation = 0
+        GetPhraseTagLocation = 0
     End If
 
 End Function
 
 'Given the original caption of a message or control, return the matching translation from the active translation file
-Private Function getTranslationTagFromCaption(ByVal origCaption As String) As String
+Private Function GetTranslationTagFromCaption(ByVal origCaption As String) As String
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-    preProcessText origCaption
+    PreprocessText origCaption
     origCaption = "<original>" & origCaption & "</original>"
     
     Dim phraseLocation As Long
-    phraseLocation = getPhraseTagLocation(origCaption)
+    phraseLocation = GetPhraseTagLocation(origCaption)
     
     'Make sure a phrase tag was found
     If phraseLocation > 0 Then
         
         'Retrieve the <translation> tag inside this phrase tag
-        origCaption = getTextBetweenTags(m_OldLanguageText, "translation", phraseLocation)
+        origCaption = GetTextBetweenTags(m_OldLanguageText, "translation", phraseLocation)
         'postProcessText origCaption
-        getTranslationTagFromCaption = origCaption
+        GetTranslationTagFromCaption = origCaption
         
     Else
-        getTranslationTagFromCaption = ""
+        GetTranslationTagFromCaption = ""
     End If
 
 End Function
@@ -983,7 +983,7 @@ End Function
 'Given a file (as a String) and a tag (without brackets), return the text between that tag.
 ' NOTE: this function will always return the first occurence of the specified tag, starting at the specified search position.
 ' If the tag is not found, a blank string will be returned.
-Private Function getTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
+Private Function GetTextBetweenTags(ByRef fileText As String, ByRef fTag As String, Optional ByVal searchLocation As Long = 1, Optional ByRef whereTagFound As Long = -1) As String
 
     Dim tagStart As Long, tagEnd As Long
     tagStart = InStr(searchLocation, fileText, "<" & fTag & ">", vbBinaryCompare)
@@ -1002,19 +1002,19 @@ Private Function getTextBetweenTags(ByRef fileText As String, ByRef fTag As Stri
             'If the user passed a long, they want to know where this tag was found - return the location just after the
             ' location where the closing tag was located.
             If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(fTag) + 2
-            getTextBetweenTags = Mid$(fileText, tagStart, tagEnd - tagStart)
+            GetTextBetweenTags = Mid$(fileText, tagStart, tagEnd - tagStart)
             
         Else
-            getTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
+            GetTextBetweenTags = "ERROR: specified tag wasn't properly closed!"
         End If
         
     Else
-        getTextBetweenTags = ""
+        GetTextBetweenTags = ""
     End If
 
 End Function
 
-Private Sub preProcessText(ByRef srcString As String)
+Private Sub PreprocessText(ByRef srcString As String)
 
     '1) Trim the string
     srcString = Trim$(srcString)
@@ -1034,7 +1034,7 @@ Private Sub cmdMergeAll_Click()
     srcFolder = "C:\PhotoDemon v4\PhotoDemon\App\PhotoDemon\Languages\"
     
     'Auto-load the latest master language file
-    m_MasterText = getFileAsString(srcFolder & "Master\MASTER.xml")
+    m_MasterText = GetFileAsString(srcFolder & "Master\MASTER.xml")
     
     'Rather than backup the old files to the dev language folder (which is confusing), I now place them inside a dedicated backup folder.
     Dim backupFolder As String
@@ -1048,7 +1048,7 @@ Private Sub cmdMergeAll_Click()
     Do While (chkFile <> "")
         
         'Load the file into a string
-        m_OldLanguageText = getFileAsString(srcFolder & chkFile)
+        m_OldLanguageText = GetFileAsString(srcFolder & chkFile)
         m_OldLanguagePath = srcFolder & chkFile
         
         'MsgBox m_OldLanguageText
@@ -1072,11 +1072,11 @@ Private Sub cmdMergeAll_Click()
             Dim findText As String, replaceText As String
             
             'Copy over all top-level language and author information
-            replaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            replaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            replaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            replaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
-            replaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText, False
+            ReplaceTopLevelTag "langid", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            ReplaceTopLevelTag "langname", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            ReplaceTopLevelTag "langstatus", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            ReplaceTopLevelTag "author", m_MasterText, m_OldLanguageText, m_NewLanguageText
+            ReplaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText, False
                 
             Dim phrasesProcessed As Long, phrasesFound As Long, phrasesMissed As Long
             phrasesProcessed = 0
@@ -1089,15 +1089,15 @@ Private Sub cmdMergeAll_Click()
                 phrasesProcessed = phrasesProcessed + 1
             
                 'Retrieve the original text associated with this phrase tag
-                origText = getTextBetweenTags(m_MasterText, "original", sPos)
+                origText = GetTextBetweenTags(m_MasterText, "original", sPos)
                 
                 'Attempt to retrieve a translation for this phrase using the old language file
-                translatedText = getTranslationTagFromCaption(origText)
+                translatedText = GetTranslationTagFromCaption(origText)
                 
                 'If no translation was found, and this string contains vbCrLf characters, replace them with plain vbLF characters and try again
                 If Len(translatedText) = 0 Then
                     If (InStr(1, origText, vbCrLf) > 0) Then
-                        translatedText = getTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
+                        translatedText = GetTranslationTagFromCaption(Replace$(origText, vbCrLf, vbLf))
                     End If
                 End If
                 
@@ -1143,7 +1143,7 @@ Private Sub cmdMergeAll_Click()
             Else
                 
                 'Update the version number by 1
-                replaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
+                ReplaceTopLevelTag "langversion", m_MasterText, m_OldLanguageText, m_NewLanguageText
                 
                 'Unlike the normal merge option, we will automatically save the results to a new XML file
                 
@@ -1187,7 +1187,7 @@ Private Sub cmdOldLanguage_Click()
     If cDlg.VBGetOpenFileName(tmpLangFile, , True, False, False, True, "XML - PhotoDemon Language File|*.xml", , fPath, "Please select a PhotoDemon language file (XML)", "xml", Me.hWnd) Then
     
         'Load the file into a string
-        m_OldLanguageText = getFileAsString(tmpLangFile)
+        m_OldLanguageText = GetFileAsString(tmpLangFile)
         m_OldLanguagePath = tmpLangFile
                 
     End If
@@ -1230,7 +1230,7 @@ Private Sub cmdProcess_Click()
     Dim i As Long
     For i = 0 To numOfFiles
         cmdProcess.Caption = "Processing project file " & i + 1 & " of " & numOfFiles + 1
-        processFile vbpFiles(i)
+        ProcessFile vbpFiles(i)
     Next i
     
     'With processing complete, write out our final stats (just for fun)
@@ -1268,7 +1268,7 @@ Private Sub cmdProcess_Click()
     
     'We are now going to compare the length of the old file and new file.  If the lengths match, there's no reason to write out this new file.
     Dim oldFileString As String
-    oldFileString = getFileAsString(outputFile)
+    oldFileString = GetFileAsString(outputFile)
     
     Dim newFileLen As Long, oldFileLen As Long
     
@@ -1290,7 +1290,7 @@ Private Sub cmdProcess_Click()
 End Sub
 
 'Given a VB file (form, module, class, user control), extract any relevant text from it
-Private Sub processFile(ByVal srcFile As String)
+Private Sub ProcessFile(ByVal srcFile As String)
 
     If Len(srcFile) = 0 Then Exit Sub
 
@@ -1324,7 +1324,7 @@ Private Sub processFile(ByVal srcFile As String)
     
     'Start by copying all text from the file into a line-by-line array
     Dim fileContents As String
-    fileContents = getFileAsString(srcFile)
+    fileContents = GetFileAsString(srcFile)
     Dim fileLines() As String
     fileLines = Split(fileContents, vbCrLf)
     
@@ -1399,15 +1399,15 @@ Private Sub processFile(ByVal srcFile As String)
         
         '1) Check for a form caption
         If InStr(1, ucCurLineText, "BEGIN VB.FORM", vbBinaryCompare) Then
-            processedText = findFormCaption(fileLines, curLineNumber)
+            processedText = FindFormCaption(fileLines, curLineNumber)
                 
         '2) Check for a control caption.  (This has to be handled slightly differently than form caption.)
         ElseIf ((InStr(1, ucCurLineText, "BEGIN VB.", vbBinaryCompare) > 0) Or (InStr(1, ucCurLineText, "BEGIN PHOTODEMON.", vbBinaryCompare) > 0)) And (InStr(1, ucCurLineText, "PICTUREBOX", vbBinaryCompare) = 0) And (InStr(1, curLineText, "ComboBox") = 0) And (InStr(1, curLineText, ".Shape") = 0) And (InStr(1, curLineText, "TextBox") = 0) And (InStr(1, curLineText, "HScrollBar") = 0) And (InStr(1, curLineText, "VScrollBar") = 0) Then
-            processedText = findControlCaption(fileLines, curLineNumber)
+            processedText = FindControlCaption(fileLines, curLineNumber)
         
         '3) Check for tooltip text (several varations of this exist due to custom controls having unique tooltip property names)
         ElseIf InStr(1, ucCurLineText, "TOOLTIPTEXT", vbBinaryCompare) And (InStr(1, ucCurLineText, ".TOOLTIPTEXT", vbBinaryCompare) = 0) Then
-            processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
+            processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber, True)
                         
         ElseIf (InStr(1, ucCurLineText, "TOOLTIP", vbBinaryCompare) > 0) And (InStr(1, ucCurLineText, ".TOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPTITLE", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPTEXT", vbBinaryCompare) = 0) Then
             
@@ -1423,7 +1423,7 @@ Private Sub processFile(ByVal srcFile As String)
             If (InStr(1, ucCurLineText, "TOOLTIPBACKUP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "NEWTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "SETTHUMBNAILTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPMANAGER", vbBinaryCompare) = 0) Then
             If (InStr(1, ucCurLineText, "M_PREVIOUSTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "ASSIGNTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "SETTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "PDTOOLTIP", vbBinaryCompare) = 0) Then
             If (InStr(1, ucCurLineText, "BTTOOLTIP", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "TOOLTIPINDEX", vbBinaryCompare) = 0) And (InStr(1, ucCurLineText, "SYNCHRONIZETOOLTIP", vbBinaryCompare) = 0) Then
-                processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
+                processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber, True)
                 If InStr(1, processedText, "MANUAL FIX REQUIRED") Then Debug.Print "Tooltip error occurred on line " & curLineNumber & " of " & m_FileName
             End If
             End If
@@ -1440,10 +1440,10 @@ Private Sub processFile(ByVal srcFile As String)
             If (InStr(1, ucCurLineText, ".ASSIGNTOOLTIP ") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
                 
                 'Process the tooltip text itself
-                processedText = findTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
+                processedText = FindTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
                 
                 'Process the title, if any
-                If toolTipSecondCheckNeeded Then processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
+                If toolTipSecondCheckNeeded Then processedTextSecondary = FindMsgBoxTitle(fileLines, curLineNumber)
             
             End If
             
@@ -1452,42 +1452,42 @@ Private Sub processFile(ByVal srcFile As String)
             If (InStr(1, ucCurLineText, ".SETTOOLTIP") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
                 
                 'Process the tooltip text itself
-                processedText = findTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
+                processedText = FindTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
                 
                 'Process the title, if any
-                If toolTipSecondCheckNeeded Then processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
+                If toolTipSecondCheckNeeded Then processedTextSecondary = FindMsgBoxTitle(fileLines, curLineNumber)
             
             End If
             
             
         
         ElseIf InStr(1, ucCurLineText, "TOOLTIPTITLE", vbBinaryCompare) And (InStr(1, curLineText, ".TooltipTitle") = 0) And (InStr(1, ucCurLineText, "NEWTOOLTIPTITLE") = 0) And (Not m_FileName = "jcButton.ctl") Then
-            processedText = findCaptionInComplexQuotes(fileLines, curLineNumber, True)
+            processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber, True)
         
         '4) Check for text added to a combo box or list box control at run-time
         ElseIf InStr(1, curLineText, ".AddItem """) <> 0 Then
-            processedText = findCaptionInComplexQuotes(fileLines, curLineNumber)
+            processedText = FindCaptionInComplexQuotes(fileLines, curLineNumber)
             
         '5) Check for message calls
         ElseIf InStr(1, curLineText, "Message """) <> 0 Then
-            processedText = findCaptionInQuotes(fileLines, curLineNumber)
+            processedText = FindCaptionInQuotes(fileLines, curLineNumber)
         
         '6) Check for message box text, including 7) message box titles (which must also be translated)
         ElseIf (InStr(1, ucCurLineText, "PDMSGBOX", vbTextCompare) <> 0) Then
         
             'First, retrieve the message box text itself
-            processedText = findMsgBoxText(fileLines, curLineNumber)
+            processedText = FindMsgBoxText(fileLines, curLineNumber)
             
             'Next, retrieve the message box title
-            processedTextSecondary = findMsgBoxTitle(fileLines, curLineNumber)
+            processedTextSecondary = FindMsgBoxTitle(fileLines, curLineNumber)
         
         '7) Specific to PhotoDemon - check for action names that may not be present elsewhere
         ElseIf InStr(1, curLineText, "Process """) <> 0 Then
-            processedText = findCaptionInQuotes(fileLines, curLineNumber, InStr(1, curLineText, "Process """))
+            processedText = FindCaptionInQuotes(fileLines, curLineNumber, InStr(1, curLineText, "Process """))
         
         '7.5) Now that pdLabel objects manage their own translations, we should also check for caption assignments
         ElseIf InStr(1, curLineText, "Caption = """, vbBinaryCompare) <> 0 Then
-            processedText = findCaptionInQuotes(fileLines, curLineNumber, 1)
+            processedText = FindCaptionInQuotes(fileLines, curLineNumber, 1)
         
         End If
         
@@ -1496,8 +1496,8 @@ Private Sub processFile(ByVal srcFile As String)
         '
         'Note that this check is performed regardless of previous checks, to make sure no translations are missed.
         If InStr(1, curLineText, "g_Language.TranslateMessage(""") Then
-            processedText = findMessage(fileLines, curLineNumber)
-            processedTextSecondary = findMessage(fileLines, curLineNumber, True)
+            processedText = FindMessage(fileLines, curLineNumber)
+            processedTextSecondary = FindMessage(fileLines, curLineNumber, True)
         End If
         
         'DEBUG! Check for certain text entries here
@@ -1508,10 +1508,10 @@ Private Sub processFile(ByVal srcFile As String)
         
         'Only pass the text along if it isn't blank, or a number, or a symbol, or a manually blacklisted phrase
         If Len(chkText) <> 0 Then
-            If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not isBlacklisted(chkText)) Then
+            If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not IsBlacklisted(chkText)) Then
                 If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
                     numOfPhrasesFound = numOfPhrasesFound + 1
-                    If addPhrase(processedText) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
+                    If AddPhrase(processedText) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
                 End If
             End If
         End If
@@ -1520,10 +1520,10 @@ Private Sub processFile(ByVal srcFile As String)
         
         'Do the same for the secondary text
         If Len(chkText) <> 0 Then
-            If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not isBlacklisted(chkText)) Then
+            If (Not IsNumeric(chkText)) And (Not IsNumericPercentage(chkText)) And (Not IsBlacklisted(chkText)) Then
                 If (chkText <> ".") And (chkText <> "-") And (Not IsURL(chkText)) Then
                     numOfPhrasesFound = numOfPhrasesFound + 1
-                    If addPhrase(processedTextSecondary) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
+                    If AddPhrase(processedTextSecondary) Then numOfPhrasesWritten = numOfPhrasesWritten + 1
                 End If
             End If
         End If
@@ -1592,7 +1592,7 @@ nextLine:
 End Sub
 
 'Add a discovered phrase to the XML file.  If this phrase already exists in the file, ignore it.
-Private Function addPhrase(ByRef phraseText As String) As Boolean
+Private Function AddPhrase(ByRef phraseText As String) As Boolean
                         
     'Replace double double-quotes (which are required in code) with just one set of double-quotes
     If InStr(1, phraseText, """""") Then phraseText = Replace(phraseText, """""", """")
@@ -1614,27 +1614,27 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
     If m_RemoveDuplicates Then
                 
         If InStr(1, outputText, "<original>" & phraseText & "</original>", vbBinaryCompare) > 0 Then
-            addPhrase = False
+            AddPhrase = False
         Else
             If Len(phraseText) <> 0 Then
-                addPhrase = True
+                AddPhrase = True
             Else
-                addPhrase = False
+                AddPhrase = False
             End If
         End If
         
     Else
         
         If Len(phraseText) <> 0 Then
-            addPhrase = True
+            AddPhrase = True
         Else
-            addPhrase = False
+            AddPhrase = False
         End If
         
     End If
     
     'If the phrase does not exist, add it now
-    If addPhrase Then
+    If AddPhrase Then
         outputText = outputText & vbCrLf & vbCrLf
         outputText = outputText & vbTab & vbTab & "<phrase>"
         outputText = outputText & vbCrLf & vbTab & vbTab & vbTab & "<original>"
@@ -1642,13 +1642,13 @@ Private Function addPhrase(ByRef phraseText As String) As Boolean
         outputText = outputText & "</original>"
         outputText = outputText & vbCrLf & vbTab & vbTab & vbTab & "<translation></translation>"
         outputText = outputText & vbCrLf & vbTab & vbTab & "</phrase>"
-        m_numOfWords = m_numOfWords + countWordsInString(phraseText)
+        m_numOfWords = m_numOfWords + CountWordsInString(phraseText)
     End If
     
 End Function
 
 'Given a line number and the original file contents, search for a custom PhotoDemon translation request
-Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False) As String
+Private Function FindMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False) As String
     
     'Finding the text of the message is tricky, because it may be spliced between multiple quotations.  As an example, I frequently
     ' add manual line breaks to messages via " & vbCrLf & " - these need to be checked for and replaced.
@@ -1687,23 +1687,23 @@ Private Function findMessage(ByRef srcLines() As String, ByRef lineNumber As Lon
     
     'If endQuote = -1, something went horribly wrong
     If endQuote = -1 Then
-        findMessage = "MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
+        FindMessage = "MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
     Else
-        findMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        FindMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     End If
     
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
     Dim lineBreak As String
     lineBreak = """ & vbCrLf & """
-    If InStr(1, findMessage, lineBreak) Then findMessage = Replace(findMessage, lineBreak, vbCrLf)
+    If InStr(1, FindMessage, lineBreak) Then FindMessage = Replace(FindMessage, lineBreak, vbCrLf)
     lineBreak = """ & vbCrLf & vbCrLf & """
-    If InStr(1, findMessage, lineBreak) Then findMessage = Replace(findMessage, lineBreak, vbCrLf & vbCrLf)
+    If InStr(1, FindMessage, lineBreak) Then FindMessage = Replace(FindMessage, lineBreak, vbCrLf & vbCrLf)
 
     
 End Function
 
 'Given a line number and the original file contents, search for a custom PhotoDemon tooltip assignment
-Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False, Optional ByRef isSecondarySearchNecessary As Boolean) As String
+Private Function FindTooltipMessage(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal inReverse As Boolean = False, Optional ByRef isSecondarySearchNecessary As Boolean) As String
     
     'Finding the text of the message is tricky, because it may be spliced between multiple quotations.  As an example, I frequently
     ' add manual line breaks to messages via " & vbCrLf & " - these need to be checked for and replaced.
@@ -1782,26 +1782,26 @@ Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
         'If endQuote = -1, something went horribly wrong
         If endQuote = -1 Then
             Debug.Print "POTENTIAL MANUAL FIX REQUIRED FOR MESSAGE PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
-            findTooltipMessage = ""
+            FindTooltipMessage = ""
         Else
-            findTooltipMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+            FindTooltipMessage = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
         End If
         
         'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
         Dim lineBreak As String
         lineBreak = """ & vbCrLf & """
-        If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf)
+        If InStr(1, FindTooltipMessage, lineBreak) Then FindTooltipMessage = Replace(FindTooltipMessage, lineBreak, vbCrLf)
         lineBreak = """ & vbCrLf & vbCrLf & """
-        If InStr(1, findTooltipMessage, lineBreak) Then findTooltipMessage = Replace(findTooltipMessage, lineBreak, vbCrLf & vbCrLf)
+        If InStr(1, FindTooltipMessage, lineBreak) Then FindTooltipMessage = Replace(FindTooltipMessage, lineBreak, vbCrLf & vbCrLf)
     
     Else
-        findTooltipMessage = ""
+        FindTooltipMessage = ""
     End If
     
 End Function
 
 'Given a line number and the original file contents, search for a message box title
-Private Function findMsgBoxTitle(ByRef srcLines() As String, ByRef lineNumber As Long) As String
+Private Function FindMsgBoxTitle(ByRef srcLines() As String, ByRef lineNumber As Long) As String
 
     Dim endQuote As Long
     endQuote = InStrRev(srcLines(lineNumber), """", Len(srcLines(lineNumber)))
@@ -1810,20 +1810,20 @@ Private Function findMsgBoxTitle(ByRef srcLines() As String, ByRef lineNumber As
     startQuote = InStrRev(srcLines(lineNumber), """", endQuote - 1)
     
     If endQuote > 0 Then
-        findMsgBoxTitle = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        FindMsgBoxTitle = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     Else
-        findMsgBoxTitle = ""
+        FindMsgBoxTitle = ""
     End If
 
 End Function
 
 'Given a line number and the original file contents, search for message box text
-Private Function findMsgBoxText(ByRef srcLines() As String, ByRef lineNumber As Long) As String
+Private Function FindMsgBoxText(ByRef srcLines() As String, ByRef lineNumber As Long) As String
 
     'Before processing this message box, make sure that the text contains actual text and not just a reference to a string.
     ' If all it contains is a reference to a string variable, don't process it.
     If InStr(1, srcLines(lineNumber), "pdMsgBox(""", vbTextCompare) = 0 And InStr(1, srcLines(lineNumber), "pdMsgBox """, vbTextCompare) = 0 Then
-        findMsgBoxText = ""
+        FindMsgBoxText = ""
         Exit Function
     End If
 
@@ -1856,23 +1856,23 @@ Private Function findMsgBoxText(ByRef srcLines() As String, ByRef lineNumber As 
     
     'If endQuote = -1, something went horribly wrong
     If endQuote = -1 Then
-        findMsgBoxText = "MANUAL FIX REQUIRED FOR MSGBOX PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
+        FindMsgBoxText = "MANUAL FIX REQUIRED FOR MSGBOX PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
     Else
-        findMsgBoxText = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        FindMsgBoxText = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     End If
     
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
     Dim lineBreak As String
     lineBreak = """ & vbCrLf & """
-    If InStr(1, findMsgBoxText, lineBreak) Then findMsgBoxText = Replace(findMsgBoxText, lineBreak, vbCrLf)
+    If InStr(1, FindMsgBoxText, lineBreak) Then FindMsgBoxText = Replace(FindMsgBoxText, lineBreak, vbCrLf)
     lineBreak = """ & vbCrLf & vbCrLf & """
-    If InStr(1, findMsgBoxText, lineBreak) Then findMsgBoxText = Replace(findMsgBoxText, lineBreak, vbCrLf & vbCrLf)
+    If InStr(1, FindMsgBoxText, lineBreak) Then FindMsgBoxText = Replace(FindMsgBoxText, lineBreak, vbCrLf & vbCrLf)
 
 End Function
 
 'Given a line number and the original file contents, search for arbitrary text between two quotation marks -
 ' but taking into account the complexities of extra mid-line quotes
-Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal isTooltip As Boolean = False) As String
+Private Function FindCaptionInComplexQuotes(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal isTooltip As Boolean = False) As String
 
     '(This code is based off findMsgBoxText above - look there for more detailed comments)
     
@@ -1914,7 +1914,7 @@ Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef li
     
     If isTooltip Then
         If InStr(1, srcLines(lineNumber), ".frx") > 0 Then
-            findCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TOOLTIP (FRX REFERENCE) OF " & m_ObjectName & " IN " & m_FormName
+            FindCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TOOLTIP (FRX REFERENCE) OF " & m_ObjectName & " IN " & m_FormName
             'MsgBox srcLines(lineNumber)
             Exit Function
         End If
@@ -1923,28 +1923,28 @@ Private Function findCaptionInComplexQuotes(ByRef srcLines() As String, ByRef li
     'If endQuote = -1, something went horribly wrong
     If endQuote = -1 Then
         If isTooltip Then
-            findCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TOOLTIP ERROR FOR " & m_ObjectName & " IN " & m_FormName
-            Debug.Print findCaptionInComplexQuotes
+            FindCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TOOLTIP ERROR FOR " & m_ObjectName & " IN " & m_FormName
+            Debug.Print FindCaptionInComplexQuotes
             'MsgBox srcLines(lineNumber)
         Else
-            findCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TEXT PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
-            Debug.Print findCaptionInComplexQuotes
+            FindCaptionInComplexQuotes = "MANUAL FIX REQUIRED FOR TEXT PARSE ERROR AT LINE # " & lineNumber & " IN " & m_FileName
+            Debug.Print FindCaptionInComplexQuotes
         End If
     Else
-        findCaptionInComplexQuotes = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        FindCaptionInComplexQuotes = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     End If
     
     'We now need to replace line breaks in the text.  These can appear in a variety of ways.  Replace them all.
     Dim lineBreak As String
     lineBreak = """ & vbCrLf & """
-    If InStr(1, findCaptionInComplexQuotes, lineBreak) Then findCaptionInComplexQuotes = Replace(findCaptionInComplexQuotes, lineBreak, vbCrLf)
+    If InStr(1, FindCaptionInComplexQuotes, lineBreak) Then FindCaptionInComplexQuotes = Replace(FindCaptionInComplexQuotes, lineBreak, vbCrLf)
     lineBreak = """ & vbCrLf & vbCrLf & """
-    If InStr(1, findCaptionInComplexQuotes, lineBreak) Then findCaptionInComplexQuotes = Replace(findCaptionInComplexQuotes, lineBreak, vbCrLf & vbCrLf)
+    If InStr(1, FindCaptionInComplexQuotes, lineBreak) Then FindCaptionInComplexQuotes = Replace(FindCaptionInComplexQuotes, lineBreak, vbCrLf & vbCrLf)
 
 End Function
 
 'Given a line number and the original file contents, search for arbitrary text between two quotation marks
-Private Function findCaptionInQuotes(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal startPosition As Long = 1) As String
+Private Function FindCaptionInQuotes(ByRef srcLines() As String, ByRef lineNumber As Long, Optional ByVal startPosition As Long = 1) As String
 
     Dim startQuote As Long
     startQuote = InStr(startPosition, srcLines(lineNumber), """")
@@ -1953,15 +1953,15 @@ Private Function findCaptionInQuotes(ByRef srcLines() As String, ByRef lineNumbe
     endQuote = InStr(startQuote + 1, srcLines(lineNumber), """")
     
     If endQuote > 0 Then
-        findCaptionInQuotes = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        FindCaptionInQuotes = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
     Else
-        findCaptionInQuotes = ""
+        FindCaptionInQuotes = ""
     End If
 
 End Function
 
 'Given a line number and the original file contents, search for a "Caption" property.  Terminate if "End" is found.
-Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber As Long) As String
+Private Function FindControlCaption(ByRef srcLines() As String, ByRef lineNumber As Long) As String
 
     Dim foundCaption As Boolean
     foundCaption = True
@@ -2004,7 +2004,7 @@ Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber
         ' I don't current have a way to retrieve this data, so do the next best thing - place a warning in the translation
         ' file.  I will later search for these and replace them with the relevant text.
         If InStr(1, srcLines(lineNumber), ".frx") Then
-            findControlCaption = "MANUAL FIX REQUIRED FOR " & m_ObjectName & " IN " & m_FormName
+            FindControlCaption = "MANUAL FIX REQUIRED FOR " & m_ObjectName & " IN " & m_FormName
         Else
         
             Dim startQuote As Long
@@ -2014,22 +2014,22 @@ Private Function findControlCaption(ByRef srcLines() As String, ByRef lineNumber
             endQuote = InStrRev(srcLines(lineNumber), """")
         
             If endQuote > 0 Then
-                findControlCaption = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+                FindControlCaption = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
             Else
-                findControlCaption = ""
+                FindControlCaption = ""
             End If
             
         End If
         lineNumber = originalLineNumber + 1
                 
     Else
-        findControlCaption = ""
+        FindControlCaption = ""
     End If
 
 End Function
 
 'Given a line number and the original file contents, search for a "Caption" property.  Terminate if "End" is found.
-Private Function findFormCaption(ByRef srcLines() As String, ByRef lineNumber As Long) As String
+Private Function FindFormCaption(ByRef srcLines() As String, ByRef lineNumber As Long) As String
 
     Dim foundCaption As Boolean
     foundCaption = True
@@ -2068,10 +2068,10 @@ Private Function findFormCaption(ByRef srcLines() As String, ByRef lineNumber As
         Dim endQuote As Long
         endQuote = InStrRev(srcLines(lineNumber), """")
         
-        findFormCaption = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
+        FindFormCaption = Mid$(srcLines(lineNumber), startQuote + 1, endQuote - startQuote - 1)
         
     Else
-        findFormCaption = ""
+        FindFormCaption = ""
     End If
 
 End Function
@@ -2085,7 +2085,7 @@ Private Sub cmdSelectVBP_Click()
     
     m_VBPFile = "C:\PhotoDemon v4\PhotoDemon\PhotoDemon.vbp"
     lblVBP = "Active VBP: " & m_VBPFile
-    m_VBPPath = getDirectory(m_VBPFile)
+    m_VBPPath = GetDirectory(m_VBPFile)
     
     'PD uses a hard-coded VBP location, but if you want to specify your own location, you can do so here
     'If cDlg.VBGetOpenFileName(m_VBPFile, , True, False, False, True, "VBP - Visual Basic Project|*.vbp", , , "Please select a Visual Basic project file (VBP)", "vbp", Me.hWnd) Then
@@ -2097,7 +2097,7 @@ Private Sub cmdSelectVBP_Click()
     
     'Load the file into a string array, split up line-by-line
     Dim vbpContents As String
-    vbpContents = getFileAsString(m_VBPFile)
+    vbpContents = GetFileAsString(m_VBPFile)
     vbpText = Split(vbpContents, vbCrLf)
     ReDim vbpFiles(0 To UBound(vbpText)) As String
     Dim numOfFiles As Long
@@ -2163,13 +2163,13 @@ Private Sub cmdSelectVBP_Click()
 End Sub
 
 'Given a full file name, remove everything but the directory structure
-Private Function getDirectory(ByVal sString As String) As String
+Private Function GetDirectory(ByVal sString As String) As String
     
     Dim x As Long
     
     For x = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, x, 1) = "/") Or (Mid$(sString, x, 1) = "\") Then
-            getDirectory = Left(sString, x)
+            GetDirectory = Left(sString, x)
             Exit Function
         End If
     Next x
@@ -2177,11 +2177,11 @@ Private Function getDirectory(ByVal sString As String) As String
 End Function
 
 'Retrieve an entire file and return it as a string.  pdXML is used to support UTF-8 encodings (which PD's language files default to).
-Private Function getFileAsString(ByVal fName As String) As String
+Private Function GetFileAsString(ByVal fName As String) As String
            
     'Attempt to load the file as an XML object; if this fails, we'll assume it's not XML, and just load it as plain ol' ANSI text
     If m_XML.loadXMLFile(fName) Then
-        getFileAsString = m_XML.returnCurrentXMLString(True)
+        GetFileAsString = m_XML.returnCurrentXMLString(True)
         
     Else
         
@@ -2192,16 +2192,16 @@ Private Function getFileAsString(ByVal fName As String) As String
             fileNum = FreeFile
             
             Open fName For Binary As #fileNum
-                getFileAsString = Space$(LOF(fileNum))
-                Get #fileNum, , getFileAsString
+                GetFileAsString = Space$(LOF(fileNum))
+                Get #fileNum, , GetFileAsString
             Close #fileNum
             
             'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to the translation process)
-            If InStr(1, getFileAsString, vbTab) <> 0 Then getFileAsString = Replace(getFileAsString, vbTab, "")
+            If InStr(1, GetFileAsString, vbTab) <> 0 Then GetFileAsString = Replace(GetFileAsString, vbTab, "")
             
         Else
             Debug.Print "File does not exist; exiting."
-            getFileAsString = ""
+            GetFileAsString = ""
         End If
             
     End If
@@ -2209,7 +2209,7 @@ Private Function getFileAsString(ByVal fName As String) As String
 End Function
 
 'Count the number of words in a string (will not be 100% accurate, but that's okay)
-Private Function countWordsInString(ByVal srcString As String) As Long
+Private Function CountWordsInString(ByVal srcString As String) As Long
 
     If Len(Trim$(srcString)) <> 0 Then
 
@@ -2224,10 +2224,10 @@ Private Function countWordsInString(ByVal srcString As String) As Long
             If IsAlpha(tmpArray(i)) Then tmpWordCount = tmpWordCount + 1
         Next i
         
-        countWordsInString = tmpWordCount
+        CountWordsInString = tmpWordCount
         
     Else
-        countWordsInString = 0
+        CountWordsInString = 0
     End If
 
 End Function
@@ -2274,38 +2274,38 @@ Private Sub Form_Load()
     ReDim m_Blacklist(0) As String
     m_numOfBlacklistEntries = 0
     
-    addBlacklist "PhotoDemon by Tanner Helland - www.tannerhelland.com"
-    addBlacklist "(X, Y)"
-    addBlacklist "16:1 (1600%)"
-    addBlacklist "8:1 (800%)"
-    addBlacklist "4:1 (400%)"
-    addBlacklist "2:1 (200%)"
-    addBlacklist "1:2 (50%)"
-    addBlacklist "1:4 (25%)"
-    addBlacklist "1:8 (12.5%)"
-    addBlacklist "1:16 (6.25%)"
-    addBlacklist "PNGQuant 2.1.1"
-    addBlacklist "zLib 1.2.8"
-    addBlacklist "EZTwain 1.18"
-    addBlacklist "FreeImage 3.16.0"
-    addBlacklist "ExifTool 9.62"
-    addBlacklist "X.X"
-    addBlacklist "XX.XX.XX"
-    addBlacklist "PNGQuant"
-    addBlacklist "zLib"
-    addBlacklist "EZTwain"
-    addBlacklist "FreeImage"
-    addBlacklist "ExifTool"
-    addBlacklist "tannerhelland.com/contact"
-    addBlacklist "photodemon.org/about/contact"
-    addBlacklist "photodemon.org/about/contact/"
-    addBlacklist "HTML / CSS"
-    addBlacklist "jcbutton"
-    addBlacklist "while it downloads."
-    addBlacklist "*"
-    addBlacklist "("
-    addBlacklist ")"
-    addBlacklist ","
+    AddBlacklist "PhotoDemon by Tanner Helland - www.tannerhelland.com"
+    AddBlacklist "(X, Y)"
+    AddBlacklist "16:1 (1600%)"
+    AddBlacklist "8:1 (800%)"
+    AddBlacklist "4:1 (400%)"
+    AddBlacklist "2:1 (200%)"
+    AddBlacklist "1:2 (50%)"
+    AddBlacklist "1:4 (25%)"
+    AddBlacklist "1:8 (12.5%)"
+    AddBlacklist "1:16 (6.25%)"
+    AddBlacklist "PNGQuant 2.1.1"
+    AddBlacklist "zLib 1.2.8"
+    AddBlacklist "EZTwain 1.18"
+    AddBlacklist "FreeImage 3.16.0"
+    AddBlacklist "ExifTool 9.62"
+    AddBlacklist "X.X"
+    AddBlacklist "XX.XX.XX"
+    AddBlacklist "PNGQuant"
+    AddBlacklist "zLib"
+    AddBlacklist "EZTwain"
+    AddBlacklist "FreeImage"
+    AddBlacklist "ExifTool"
+    AddBlacklist "tannerhelland.com/contact"
+    AddBlacklist "photodemon.org/about/contact"
+    AddBlacklist "photodemon.org/about/contact/"
+    AddBlacklist "HTML / CSS"
+    AddBlacklist "jcbutton"
+    AddBlacklist "while it downloads."
+    AddBlacklist "*"
+    AddBlacklist "("
+    AddBlacklist ")"
+    AddBlacklist ","
     
     'Check the command line.  This project can be run in silent mode as part of my nightly build batch script.
     Dim chkCommandLine As String
@@ -2334,7 +2334,7 @@ Private Sub Form_Load()
     
 End Sub
 
-Private Sub addBlacklist(ByVal blString As String)
+Private Sub AddBlacklist(ByVal blString As String)
 
     m_Blacklist(m_numOfBlacklistEntries) = blString
     m_numOfBlacklistEntries = m_numOfBlacklistEntries + 1
@@ -2342,15 +2342,15 @@ Private Sub addBlacklist(ByVal blString As String)
 
 End Sub
 
-Private Function isBlacklisted(ByVal blString As String) As Boolean
+Private Function IsBlacklisted(ByVal blString As String) As Boolean
 
-    isBlacklisted = False
+    IsBlacklisted = False
     
     'Search the blacklist for this string.  If it is found, immediately return TRUE.
     Dim i As Long
     For i = 0 To m_numOfBlacklistEntries - 1
         If StrComp(blString, m_Blacklist(i), vbTextCompare) = 0 Then
-            isBlacklisted = True
+            IsBlacklisted = True
             Exit Function
         End If
     Next i
