@@ -126,9 +126,11 @@ Public Enum CommonDialogErrorsEnum
     CDERR_CANCELED = vbObjectError
 End Enum
 
-'Arbitrary-length return strings are possible, but unlike some of Windows's better APIs, we have to blindly try with an
-' arbitrary buffer size, then repeat until an acceptable size is found.
-Private Const MAX_PATH_LOAD As Long = 16384
+'Arbitrary-length return strings are possible, but because we have to re-raise the dialog upon failure (ugh), it's not
+' really practical to implement a "try again with larger buffer" feature.  Fortunately, post-XP operatings systems have
+' no upper limit, so we can start with an arbitrarily large string.
+Private Const MAX_PATH_LOAD_XP As Long = 16384
+Private Const MAX_PATH_LOAD As Long = 262144
 Private Const MAX_PATH_SAVE As Long = 1024
 Private Const MAX_FILE As Long = 260
 
@@ -182,9 +184,13 @@ Public Function GetOpenFileName(ByRef FileName As String, _
         .lpstrFilter = s
         .nFilterIndex = FilterIndex
         
-        'We have to start with a prepared buffer of some arbitrary size.  If the size proves too small, we can call the function
-        ' again with a larger buffer.  (NOT CURRENTLY IMPLEMENTED!)
-        lInitPathSize = MAX_PATH_LOAD
+        'We have to start with a prepared buffer of some arbitrary size.  If the size proves too small,
+        ' the call to GetOpenFilename will fail, and we can't retry without re-raising the dialog from scratch.
+        If g_IsVistaOrLater Then
+            lInitPathSize = MAX_PATH_LOAD
+        Else
+            lInitPathSize = MAX_PATH_LOAD_XP
+        End If
         s = FileName & String$(lInitPathSize - Len(FileName), 0)
         .lpstrFile = s
         .nMaxFile = lInitPathSize
