@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.1882</langversion>
+<langversion>6.8.1883</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -10399,8 +10399,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>click to set export settings for this format</original>
-<translation>单击设置此格式的导出设置</translation>
+<original>set export settings for this format</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10654,6 +10654,16 @@ Would you like to save your batch list before exiting?</original>
 <phrase>
 <original>No images selected</original>
 <translation>没有选择图像</translation>
+</phrase>
+
+<phrase>
+<original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export settings required</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10926,7 +10936,7 @@ Would you like to save your batch list before exiting?</original>
 <translation>取消之前处理。最后处理的图像是 %1</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 191 phrases. 82 were duplicates of existing phrases, so only 109 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14914,10 +14924,10 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2538</phrasecount>
+<phrasecount>2540</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1931 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12793 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
+<!-- These 2540 phrases contain approximately 12817 total words. -->
 
 </pdData>

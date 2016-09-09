@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE) - (rk)</langname>
-<langversion>6.8.1881</langversion>
+<langversion>6.8.1882</langversion>
 <langstatus>Abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -22,7 +22,7 @@
 
 <phrase>
 <original>Initializing all program directories</original>
-<translation>Alle Programmverzeichnisse werden initialisert</translation>
+<translation>Alle Programmverzeichnisse werden initialisiert</translation>
 </phrase>
 
 <phrase>
@@ -360,7 +360,7 @@ Um PDI-Speichern zu aktivieren, erlauben Sie bitte %1 den Download von Plugin-Up
 If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact</original>
 <translation>Beim Versuch dieses Bild zu speichern, ist ein nicht spezifizierter Fehler aufgetreten. Versuchen Sie bitte, das Bild in ein alternatives Format zu speichern.
 
-Wenn das Problem bestehen bleibt, können sie es den Entwicklern von PhotoDemon bereichten via 'photodemon.org/contact'</translation>
+Wenn das Problem bestehen bleibt, melden Sie es den Entwicklern von PhotoDemon bitte via photodemon.org/contact</translation>
 </phrase>
 
 <phrase>
@@ -615,7 +615,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Exploding imaginary volcano</original>
-<translation>Ein imaginärer Vulkan explodiert</translation>
+<translation>Imaginärer Vulkan explodiert</translation>
 </phrase>
 
 <!-- VBP_Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -1049,7 +1049,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Vivid light</original>
-<translation>Strahlendes Licht</translation>
+<translation>Plastisches Licht</translation>
 </phrase>
 
 <phrase>
@@ -1059,7 +1059,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Pin light</original>
-<translation>Lichtpunkte</translation>
+<translation>Lichtpunkt</translation>
 </phrase>
 
 <phrase>
@@ -1215,7 +1215,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>In the future, automatically rasterize without prompting me</original>
-<translation>Zukünftig automatisch rastern ohne mich aufzufordern</translation>
+<translation>In Zukunft automatisch rastern ohne mich aufzufordern</translation>
 </phrase>
 
 <phrase>
@@ -1271,7 +1271,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
 <translation>Leider konnte das Bild '%1' nicht gefunden werden.
 
-Wenn dieses Bild ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk etc.) gespeichert war, müssen Sie das Medium wieder einlegen bzw. anschließen und es erneut versuchen.</translation>
+Wenn dieses Bild sich ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk etc.) befindet, müssen Sie das Medium wieder einlegen bzw. anschließen und es erneut versuchen.</translation>
 </phrase>
 
 <phrase>
@@ -1743,7 +1743,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 Please report this bug via the Help -> Submit Bug Report menu.</original>
 <translation>Unbekannte Prozessoranfrage eingereicht: %1
 
-Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht eireichen".</translation>
+Melden Sie dies bitte via Menü "Hilfe > Fehlerbericht eireichen".</translation>
 </phrase>
 
 <phrase>
@@ -1803,7 +1803,7 @@ Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht eireichen".</translation>
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie auf einem Wechseldatenträger gespeichert ist, verwenden Sie bitte wieder die richtige Diskette, CD, USB-Stick oder tragbares Laufwerk. Wenn die Datei sich nicht auf einem Wechseldatenträger befindet, stellen Sie sicher, dass:
+<translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD, USB- oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
 1) die Datei nicht inzwischen gelöscht wurde und ...
 2) der Speicherort der Datei korrekt angegeben wurde.</translation>
 </phrase>
@@ -3965,7 +3965,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>CurrentLocationOnDisk</original>
-<translation>AktuellerSpeicherortAufFestplatte</translation>
+<translation>AktuellerSpeicherortAufLaufwerk</translation>
 </phrase>
 
 <phrase>
@@ -3975,7 +3975,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Sobald dieses Bild auf Festplatte gespeichert worden ist, wird sein Dateiname hier erscheinen.</translation>
+<translation>Sobald dieses Bild auf dem Laufwerk gespeichert worden ist, wird sein Dateiname hier erscheinen.</translation>
 </phrase>
 
 <phrase>
@@ -7209,7 +7209,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>absorb UV radiation (slightly less than 2A)</original>
-<translation>UV-Strahlung absorbieren (gerimgfügig weniger als 2A)</translation>
+<translation>UV-Strahlung absorbieren (geringfügig weniger als 2A)</translation>
 </phrase>
 
 <phrase>
@@ -8289,7 +8289,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>in the future, automatically apply these settings</original>
-<translation>In Zukunft diese Einstellungen automatisch anwenden</translation>
+<translation>In Zukunft automatisch diese Einstellungen anwenden</translation>
 </phrase>
 
 <phrase>
@@ -9574,7 +9574,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Illuminating image with imaginary blacklight</original>
-<translation>Bild wird mit virtuellem Schwarzlicht beleuchtet</translation>
+<translation>Bild wird mit imaginärem Schwarzlicht beleuchtet</translation>
 </phrase>
 
 <!-- Effects_LightAndShadow_BlackLight.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10410,8 +10410,8 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>click to set export settings for this format</original>
-<translation>Hier klicken, um die Exporteinstellungen für dieses Format festzulegen</translation>
+<original>set export settings for this format</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10666,6 +10666,16 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <phrase>
 <original>No images selected</original>
 <translation>Keine Bilder ausgewählt</translation>
+</phrase>
+
+<phrase>
+<original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export settings required</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10938,7 +10948,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <translation>Verarbeitet vor Abbruch. Letzte verarbeitete Bild war "%1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 191 phrases. 82 were duplicates of existing phrases, so only 109 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -12832,12 +12842,12 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>n-d</original>
-<translation>n-d</translation>
+<translation>Nicht-destruktiv (N-D)</translation>
 </phrase>
 
 <phrase>
 <original>select</original>
-<translation>Auswählen</translation>
+<translation>Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -13190,7 +13200,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>Lightbox</original>
-<translation>Aufgehellt</translation>
+<translation>Lightbox</translation>
 </phrase>
 
 <phrase>
@@ -13648,7 +13658,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>phrases to display</original>
-<translation>Textpassagen zum Anzeigen</translation>
+<translation>Angezeigte Textpassagen</translation>
 </phrase>
 
 <phrase>
@@ -13668,7 +13678,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>Automatic translation warning</original>
-<translation>Automatische Übersetzungswarnung</translation>
+<translation>Warnung zur automatischen Übersetzung</translation>
 </phrase>
 
 <phrase>
@@ -14927,10 +14937,10 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2538</phrasecount>
+<phrasecount>2540</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1931 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12793 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
+<!-- These 2540 phrases contain approximately 12817 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.203</langversion>
+<langversion>6.7.204</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -10410,7 +10410,7 @@ If você deseja salvá-lo com um nome diferente, por favor, selecione "Cancelar"
 </phrase>
 
 <phrase>
-<original>click to set export settings for this format</original>
+<original>set export settings for this format</original>
 <translation></translation>
 </phrase>
 
@@ -10666,6 +10666,16 @@ Would mais tarde você quiser salvar a sua lista de lote antes de sair?</transla
 <phrase>
 <original>No images selected</original>
 <translation>Não há imagens selecionadas</translation>
+</phrase>
+
+<phrase>
+<original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export settings required</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10938,7 +10948,7 @@ Would mais tarde você quiser salvar a sua lista de lote antes de sair?</transla
 <translation>processada antes de cancelamento. Última imagem processada foi " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 191 phrases. 82 were duplicates of existing phrases, so only 109 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -14927,10 +14937,10 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2538</phrasecount>
+<phrasecount>2540</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1931 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12793 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
+<!-- These 2540 phrases contain approximately 12817 total words. -->
 
 </pdData>
