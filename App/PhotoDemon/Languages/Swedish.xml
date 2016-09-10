@@ -6,10 +6,10 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.204</langversion>
+<langversion>6.8.1888</langversion>
 <langstatus>raw machine translation</langstatus>
 
-<author>Google Translate</author>
+<author>Google Translator</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -67,12 +67,12 @@
 
 <phrase>
 <original>Building font cache</original>
-<translation></translation>
+<translation>Byggnad fontcachen</translation>
 </phrase>
 
 <phrase>
 <original>Initializing clipboard interface</original>
-<translation></translation>
+<translation>Initierar urklipp gränssnitt</translation>
 </phrase>
 
 <phrase>
@@ -210,12 +210,12 @@
 
 <phrase>
 <original>Please wait while the tag database is created</original>
-<translation></translation>
+<translation>Vänta medan taggen databasen skapas</translation>
 </phrase>
 
 <phrase>
 <original>The tag database handles technical details of the 20,000+ metadata tags supported by PhotoDemon.  Creating the database takes 10 to 15 seconds, and it only needs to be created once, when the metadata editor is used for the first time.</original>
-<translation></translation>
+<translation>Taggen databas hanterar tekniska detaljerna i de 20.000 metadata taggar som stöds av PhotoDemon. Skapa databasen tar 10 till 15 sekunder, och det behöver bara skapas en gång, när metadata redaktör används för första gången.</translation>
 </phrase>
 
 <phrase>
@@ -385,12 +385,12 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation></translation>
+<translation>Tyvärr har denna PC inte har tillräckligt med minne för att skapa en %1x %2 bild. Minska den begärda storleken och försök igen.</translation>
 </phrase>
 
 <phrase>
 <original>Image too large</original>
-<translation></translation>
+<translation>Bilden är för stor</translation>
 </phrase>
 
 <!-- VBP_MenuModule.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -483,12 +483,12 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 
 <phrase>
 <original>Adjusting shadows and highlights</original>
-<translation></translation>
+<translation>Justera skuggor och högdagrar</translation>
 </phrase>
 
 <phrase>
 <original>Enhancing shadows and highlights</original>
-<translation></translation>
+<translation>Förbättra skuggor och högdagrar</translation>
 </phrase>
 
 <!-- VBP_Filters_Color_Effects.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
@@ -565,7 +565,7 @@ If problemet kvarstår, rapportera det till PhotoDemon utvecklarna via photodemo
 
 <phrase>
 <original>Total unique colors: %1</original>
-<translation></translation>
+<translation>Totalt unika färger: %1</translation>
 </phrase>
 
 <phrase>
@@ -929,7 +929,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Undo last action</original>
-<translation></translation>
+<translation>Ångra senaste åtgärden</translation>
 </phrase>
 
 <phrase>
@@ -939,7 +939,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Redo previous action</original>
-<translation></translation>
+<translation>Gör föregående åtgärd</translation>
 </phrase>
 
 <phrase>
@@ -979,12 +979,12 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Square</original>
-<translation></translation>
+<translation>Fyrkant</translation>
 </phrase>
 
 <phrase>
 <original>Circle</original>
-<translation></translation>
+<translation>Cirkel</translation>
 </phrase>
 
 <phrase>
@@ -1109,12 +1109,12 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Grain extract</original>
-<translation></translation>
+<translation>kornextrakt</translation>
 </phrase>
 
 <phrase>
 <original>Grain merge</original>
-<translation></translation>
+<translation>korn merge</translation>
 </phrase>
 
 <phrase>
@@ -1129,7 +1129,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>preview not available</original>
-<translation></translation>
+<translation>förhandsvisning inte tillgänglig</translation>
 </phrase>
 
 <!-- VBP_MiscInterface.bas contains 69 phrases. 21 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
@@ -1145,12 +1145,12 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Text layer</original>
-<translation></translation>
+<translation>textlager </translation>
 </phrase>
 
 <phrase>
 <original>Typography layer</original>
-<translation></translation>
+<translation>typografi skikt</translation>
 </phrase>
 
 <phrase>
@@ -1170,72 +1170,72 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Cropping layer to selected area</original>
-<translation></translation>
+<translation>Beskärnings skiktet till valt område</translation>
 </phrase>
 
 <phrase>
 <original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
-<translation></translation>
+<translation>Denna åtgärd kommer att konvertera text och vektorlager  för att avbilda (raster) lager, vilket innebär att du inte längre kan ändra skiktspecifika inställningar som text, typsnitt, färg eller form.</translation>
 </phrase>
 
 <phrase>
 <original>Are you sure you want to continue?</original>
-<translation></translation>
+<translation>Är du säker på att du vill fortsätta?</translation>
 </phrase>
 
 <phrase>
 <original>Yes.  Convert text and vector layers to image (raster) layers.</original>
-<translation></translation>
+<translation>Ja. Konvertera text och vektorlager  för att avbilda (raster) skikt.</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave text and vector layers as they are.</original>
-<translation></translation>
+<translation>Nej Lämna text- och vektorlager  som de är.</translation>
 </phrase>
 
 <phrase>
 <original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
-<translation></translation>
+<translation>Denna textlager  kommer att ändras till en bild (raster) skikt, vilket innebär att du inte längre kan ändra dess text eller teckensnitt.</translation>
 </phrase>
 
 <phrase>
 <original>Yes.  Please convert this text layer.</original>
-<translation></translation>
+<translation>Ja. Vänligen omvandla denna textlager.</translation>
 </phrase>
 
 <phrase>
 <original>No.  Leave this text layer as it is.</original>
-<translation></translation>
+<translation>Nej Lämna det här textlager  som det är.</translation>
 </phrase>
 
 <phrase>
 <original>I can't decide.  Cancel this action.</original>
-<translation></translation>
+<translation>Jag kan inte avgöra. Avbryta åtgärden.</translation>
 </phrase>
 
 <phrase>
 <original>In the future, automatically rasterize without prompting me</original>
-<translation></translation>
+<translation>I framtiden automatiskt rastrerar utan att fråga mig</translation>
 </phrase>
 
 <phrase>
 <original>Frame %1</original>
-<translation></translation>
+<translation>Frame %1</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2)</original>
-<translation></translation>
+<translation>Ikon ( %1x %2)</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>Ikon ( %1x %2 %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>Page %1</original>
-<translation></translation>
+<translation>Sida 1</translation>
 </phrase>
 
 <!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -1262,7 +1262,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>File not found: %1</original>
-<translation></translation>
+<translation>Filen hittades inte: %1</translation>
 </phrase>
 
 <phrase>
@@ -1295,12 +1295,16 @@ If här bilden ursprungligen placerad på flyttbara media (DVD, USB-enhet, etc.)
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation></translation>
+<translation>Tyvärr PhotoDemon kunde inte läsa följande bild: 
+
+ %1
+
+Please använda ett annat program för att spara bilden i en generisk format (såsom JPEG eller PNG) innan du laddar det. Tack!</translation>
 </phrase>
 
 <phrase>
 <original>Image import failed</original>
-<translation></translation>
+<translation>Bildimport  misslyckades</translation>
 </phrase>
 
 <phrase>
@@ -1333,7 +1337,7 @@ Please använda ett annat program för att spara denna bild i ett generiskt form
 
 <phrase>
 <original>%1 of %2 images loaded successfully</original>
-<translation></translation>
+<translation> %1 %2 bilder lästs</translation>
 </phrase>
 
 <phrase>
@@ -1341,12 +1345,12 @@ Please använda ett annat program för att spara denna bild i ett generiskt form
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation></translation>
+<translation>Tyvärr PhotoDemon kunde inte ladda följande bilder):                                                                                                                                  %1                                                                                           Kontrollera att dessa bild (s) existerar och att de använder en stöds bildformat (som JPEG eller PNG). Tack!</translation>
 </phrase>
 
 <phrase>
 <original>Some images were not loaded</original>
-<translation></translation>
+<translation>Vissa bilder var inte laddad</translation>
 </phrase>
 
 <phrase>
@@ -1379,12 +1383,12 @@ Please verify that these image(s) exist, and that they use a supported image for
 <original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
 
 (Press No to continue recording.)</original>
-<translation></translation>
+<translation>Detta makro innehåller inga inspelningsbara åtgärder. Är du säker på att du vill stoppa inspelningen? VbCrLf vbCrLf (Tryck Nej för att fortsätta inspelningen.)</translation>
 </phrase>
 
 <phrase>
 <original>Warning: invalid macro</original>
-<translation></translation>
+<translation>Varning: ogiltig makro</translation>
 </phrase>
 
 <phrase>
@@ -1394,7 +1398,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 
 <phrase>
 <original>Macro</original>
-<translation></translation>
+<translation>Makro</translation>
 </phrase>
 
 <phrase>
@@ -1510,7 +1514,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 
 <phrase>
 <original>artistic license</original>
-<translation></translation>
+<translation>konstnärligt licens</translation>
 </phrase>
 
 <phrase>
@@ -1520,12 +1524,12 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 
 <phrase>
 <original>FreeImage public license</original>
-<translation></translation>
+<translation>Gratis Bild Public License</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation></translation>
+<translation>MIT licens</translation>
 </phrase>
 
 <phrase>
@@ -1535,7 +1539,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 
 <phrase>
 <original>GNU GPLv3</original>
-<translation></translation>
+<translation>GNU GPLv3</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -1655,7 +1659,7 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>Applying tone-mapping</original>
-<translation></translation>
+<translation>Tillämpa ton-kartläggning</translation>
 </phrase>
 
 <!-- Plugin_FreeImage.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1666,12 +1670,12 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>Använda optipng att optimera PNG-filen. Detta kan ta en stund</translation>
 </phrase>
 
 <phrase>
 <original>OptiPNG optimization successful!</original>
-<translation></translation>
+<translation>Optipng optimering lyckad!</translation>
 </phrase>
 
 <!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1682,17 +1686,17 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>Använda pngquant att optimera PNG-filen. Detta kan ta en stund</translation>
 </phrase>
 
 <phrase>
 <original>pngquant optimization successful!</original>
-<translation></translation>
+<translation>pngquant optimering lyckad!</translation>
 </phrase>
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation></translation>
+<translation>Pngquant kunde inte skriva filen. Standard 32 bpp bilden sparades  i stället.</translation>
 </phrase>
 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -1895,7 +1899,7 @@ When klar klickar du på knappen Skicka. Tack!</translation>
 
 <phrase>
 <original>group</original>
-<translation></translation>
+<translation>grupp</translation>
 </phrase>
 
 <phrase>
@@ -1910,12 +1914,12 @@ When klar klickar du på knappen Skicka. Tack!</translation>
 
 <phrase>
 <original>X offset</original>
-<translation></translation>
+<translation>X offset</translation>
 </phrase>
 
 <phrase>
 <original>Y offset</original>
-<translation></translation>
+<translation>Y offset</translation>
 </phrase>
 
 <phrase>
@@ -1935,12 +1939,12 @@ When klar klickar du på knappen Skicka. Tack!</translation>
 
 <phrase>
 <original>visibility</original>
-<translation></translation>
+<translation>synlighet</translation>
 </phrase>
 
 <phrase>
 <original>non-destructive effect</original>
-<translation></translation>
+<translation>icke-förstörande effekt</translation>
 </phrase>
 
 <phrase>
@@ -1950,67 +1954,67 @@ When klar klickar du på knappen Skicka. Tack!</translation>
 
 <phrase>
 <original>text</original>
-<translation></translation>
+<translation>text</translation>
 </phrase>
 
 <phrase>
 <original>font (color)</original>
-<translation></translation>
+<translation>fontfärg)</translation>
 </phrase>
 
 <phrase>
 <original>font (face)</original>
-<translation></translation>
+<translation>typsnitt (ansikte)</translation>
 </phrase>
 
 <phrase>
 <original>font (size)</original>
-<translation></translation>
+<translation>textstorlek)</translation>
 </phrase>
 
 <phrase>
 <original>font (size unit)</original>
-<translation></translation>
+<translation>typsnitt (storlek enhet)</translation>
 </phrase>
 
 <phrase>
 <original>style (bold)</original>
-<translation></translation>
+<translation>stil (fet stil)</translation>
 </phrase>
 
 <phrase>
 <original>style (italic)</original>
-<translation></translation>
+<translation>stil (kursiv)</translation>
 </phrase>
 
 <phrase>
 <original>style (underline)</original>
-<translation></translation>
+<translation>stil (understrykning)</translation>
 </phrase>
 
 <phrase>
 <original>style (strikeout)</original>
-<translation></translation>
+<translation>stil (struken)</translation>
 </phrase>
 
 <phrase>
 <original>horizontal alignment</original>
-<translation></translation>
+<translation>horisontell justering</translation>
 </phrase>
 
 <phrase>
 <original>vertical alignment</original>
-<translation></translation>
+<translation>vertikal inriktning</translation>
 </phrase>
 
 <phrase>
 <original>antialiasing</original>
-<translation></translation>
+<translation>anti aliasing</translation>
 </phrase>
 
 <phrase>
 <original>antialiasing clarity</original>
-<translation></translation>
+<translation>anti aliasing klarhet</translation>
 </phrase>
 
 <phrase>
@@ -2368,7 +2372,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Rotate layer (on-canvas)</original>
-<translation></translation>
+<translation>Rotera lagret (på duk)</translation>
 </phrase>
 
 <phrase>
@@ -2573,7 +2577,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Image URL found.  Attempting to download</original>
-<translation></translation>
+<translation>Bildadress  hittas. Försöker hämta</translation>
 </phrase>
 
 <phrase>
@@ -2583,7 +2587,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Image download failed.  Please copy a valid image URL and try again.</original>
-<translation></translation>
+<translation>Nedladdning misslyckades. Kopiera en giltig bildadress  och försök igen.</translation>
 </phrase>
 
 <phrase>
@@ -2649,12 +2653,12 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Unknown adapter</original>
-<translation></translation>
+<translation>okänt adapter</translation>
 </phrase>
 
 <phrase>
 <original>Unknown display</original>
-<translation></translation>
+<translation>okänt display</translation>
 </phrase>
 
 <!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -2827,17 +2831,17 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Inferred</original>
-<translation></translation>
+<translation>antagen</translation>
 </phrase>
 
 <phrase>
 <original>Exif (thumbnail)</original>
-<translation></translation>
+<translation>Exif (miniatyr)</translation>
 </phrase>
 
 <phrase>
 <original>Exif</original>
-<translation></translation>
+<translation>exif</translation>
 </phrase>
 
 <phrase>
@@ -2847,262 +2851,262 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>XMP (Apple)</original>
-<translation></translation>
+<translation>XMP (Apple)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (ACD Systems)</original>
-<translation></translation>
+<translation>XMP (ACD Systems)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Album)</original>
-<translation></translation>
+<translation>XMP (Adobe Album)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe)</original>
-<translation></translation>
+<translation>XMP (Adobe)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Creative Commons)</original>
-<translation></translation>
+<translation>XMP (Creative Commons)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Sony Ericcson)</original>
-<translation></translation>
+<translation>XMP (Sony Ericsson)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe After Effects)</original>
-<translation></translation>
+<translation>XMP (Adobe After Effects)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Photoshop Camera Raw)</original>
-<translation></translation>
+<translation>XMP (Photoshop Camera Raw)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dublin Core)</original>
-<translation></translation>
+<translation>XMP (Dublin Core)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Description Explorer)</original>
-<translation></translation>
+<translation>XMP (Beskrivning Explorer)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (DICOM)</original>
-<translation></translation>
+<translation>XMP (DICOM)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (DigiKam)</original>
-<translation></translation>
+<translation>XMP (Digikam)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF)</original>
-<translation></translation>
+<translation>XMP (EXIF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF 2.3)</original>
-<translation></translation>
+<translation>XMP (EXIF 2.3)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Expression Media)</original>
-<translation></translation>
+<translation>XMP (Microsoft Expression Media)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Extensis Portfolio)</original>
-<translation></translation>
+<translation>XMP (Extensis Portfolio)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Fast Picture Viewer)</original>
-<translation></translation>
+<translation>XMP (Fastpictureviewer )</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Getty Images)</original>
-<translation></translation>
+<translation>XMP (Getty Images)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Google Photosphere)</original>
-<translation></translation>
+<translation>XMP (Google photosphere)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IDimager)</original>
-<translation></translation>
+<translation>XMP (IDimager)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Core)</original>
-<translation></translation>
+<translation>XMP (IPTC-kärnan)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (IPTC Extension)</original>
-<translation></translation>
+<translation>XMP (IPTC Extension)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Lightroom)</original>
-<translation></translation>
+<translation>XMP (Adobe Lightroom)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (iView MediaPro)</original>
-<translation></translation>
+<translation>XMP (iView MediaPro)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.0)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1,0)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.2)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1,2)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Microsoft Photo 1.1)</original>
-<translation></translation>
+<translation>XMP (Microsoft Photo 1,1)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (MWG)</original>
-<translation></translation>
+<translation>XMP (MWG)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe PDF)</original>
-<translation></translation>
+<translation>XMP (Adobe PDF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe PDF extended)</original>
-<translation></translation>
+<translation>XMP (Adobe PDF förlängd)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PhotoMechanic)</original>
-<translation></translation>
+<translation>XMP (Foto Mechanic)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe Photoshop)</original>
-<translation></translation>
+<translation>XMP (Adobe Photoshop)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PixelLive)</original>
-<translation></translation>
+<translation>XMP (PixelLive)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Plus License Data)</original>
-<translation></translation>
+<translation>XMP (Plus License Data)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM for images)</original>
-<translation></translation>
+<translation>XMP (PRISM för bilder)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM)</original>
-<translation></translation>
+<translation>XMP (PRISM)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Rights)</original>
-<translation></translation>
+<translation>XMP (PRISM rättigheter)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Recipe)</original>
-<translation></translation>
+<translation>XMP (PRISM recept)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (PRISM Usage Rights)</original>
-<translation></translation>
+<translation>XMP (PRISM Användningsrättigheter)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (RDF)</original>
-<translation></translation>
+<translation>XMP (RDF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Adobe SWF)</original>
-<translation></translation>
+<translation>XMP (Adobe SWF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (EXIF-TIFF)</original>
-<translation></translation>
+<translation>XMP (EXIF-TIFF)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Toolkit)</original>
-<translation></translation>
+<translation>XMP (Toolkit)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (General)</original>
-<translation></translation>
+<translation>XMP (General)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Basic Job)</original>
-<translation></translation>
+<translation>XMP (Basic jobb)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Dynamic Media)</original>
-<translation></translation>
+<translation>XMP (Dynamic Media)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Media Management)</original>
-<translation></translation>
+<translation>XMP (Media Management)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Note)</original>
-<translation></translation>
+<translation>XMP (Not)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Picture Licensing)</original>
-<translation></translation>
+<translation>XMP (Bild Licensing)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Rights Management)</original>
-<translation></translation>
+<translation>XMP (Rights Management)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Paged Text)</original>
-<translation></translation>
+<translation>XMP (Paged text)</translation>
 </phrase>
 
 <phrase>
 <original>XMP (Misc)</original>
-<translation></translation>
+<translation>XMP (Misc)</translation>
 </phrase>
 
 <phrase>
@@ -3143,7 +3147,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Load canceled.</original>
-<translation></translation>
+<translation>Belastning avbryts.</translation>
 </phrase>
 
 <!-- pdOpenSaveDialog.cls contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -3174,7 +3178,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation></translation>
+<translation>VARNING! Komprimerade katalog bit storlek visar möjlig CRC-fel (</translation>
 </phrase>
 
 <phrase>
@@ -3209,7 +3213,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation></translation>
+<translation>Fil nod är okomprimerade, men storleken är listad som noll. Ladda omöjligt; överge försöket.</translation>
 </phrase>
 
 <phrase>
@@ -3640,12 +3644,12 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>(enter text here)</original>
-<translation></translation>
+<translation>(Mata in text här)</translation>
 </phrase>
 
 <phrase>
 <original>New text layer</original>
-<translation></translation>
+<translation>Ny textlager </translation>
 </phrase>
 
 <phrase>
@@ -3655,7 +3659,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Center the image inside the viewport</original>
-<translation></translation>
+<translation>Centrera bilden i visnings</translation>
 </phrase>
 
 <!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
@@ -3694,27 +3698,27 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>RGB(%1, %2, %3)</original>
-<translation></translation>
+<translation>RGB ( %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
-<translation></translation>
+<translation>Klicka för att ange ett urval färgskärm.</translation>
 </phrase>
 
 <phrase>
 <original>Active color</original>
-<translation></translation>
+<translation>aktiv färg</translation>
 </phrase>
 
 <phrase>
 <original>Click to make the main screen's paint color the active color.</original>
-<translation></translation>
+<translation>Klicka för att göra huvudskärmen  lacken den aktiva färgen.</translation>
 </phrase>
 
 <phrase>
 <original>Main screen paint color</original>
-<translation></translation>
+<translation>Huvudfönstret  lacken</translation>
 </phrase>
 
 <!-- pdColorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -3725,67 +3729,67 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Current color</original>
-<translation></translation>
+<translation>Aktuell färg</translation>
 </phrase>
 
 <phrase>
 <original>Rotate hue clockwise</original>
-<translation></translation>
+<translation>Rotera nyans medurs</translation>
 </phrase>
 
 <phrase>
 <original>Increase saturation</original>
-<translation></translation>
+<translation>ökning mättnad</translation>
 </phrase>
 
 <phrase>
 <original>Increase luminance</original>
-<translation></translation>
+<translation>ökning luminans</translation>
 </phrase>
 
 <phrase>
 <original>Increase red</original>
-<translation></translation>
+<translation>öka produktionen av röda</translation>
 </phrase>
 
 <phrase>
 <original>Increase green</original>
-<translation></translation>
+<translation>öka grönt</translation>
 </phrase>
 
 <phrase>
 <original>Increase blue</original>
-<translation></translation>
+<translation>öka blå</translation>
 </phrase>
 
 <phrase>
 <original>Decrease luminance</original>
-<translation></translation>
+<translation>minskning luminans</translation>
 </phrase>
 
 <phrase>
 <original>Decrease saturation</original>
-<translation></translation>
+<translation>minskning mättnad</translation>
 </phrase>
 
 <phrase>
 <original>Rotate hue counterclockwise</original>
-<translation></translation>
+<translation>Rotera nyans moturs</translation>
 </phrase>
 
 <phrase>
 <original>Decrease blue</original>
-<translation></translation>
+<translation>minska blå</translation>
 </phrase>
 
 <phrase>
 <original>Decrease green</original>
-<translation></translation>
+<translation>minska grön</translation>
 </phrase>
 
 <phrase>
 <original>Decrease red</original>
-<translation></translation>
+<translation>minskat antal röda</translation>
 </phrase>
 
 <!-- pdColorVariants.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -3832,7 +3836,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>OK</original>
-<translation></translation>
+<translation>ok</translation>
 </phrase>
 
 <phrase>
@@ -3842,7 +3846,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Cancel</original>
-<translation></translation>
+<translation>Annullera</translation>
 </phrase>
 
 <phrase>
@@ -3918,22 +3922,22 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>before</original>
-<translation></translation>
+<translation>innan</translation>
 </phrase>
 
 <phrase>
 <original>after</original>
-<translation></translation>
+<translation>efter</translation>
 </phrase>
 
 <phrase>
 <original>1:1</original>
-<translation></translation>
+<translation>1: 1</translation>
 </phrase>
 
 <phrase>
 <original>fit</original>
-<translation></translation>
+<translation>passa</translation>
 </phrase>
 
 <!-- pdFxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
@@ -3956,12 +3960,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>CurrentLocationOnDisk</original>
-<translation></translation>
+<translation>Nuvarande plats på disken</translation>
 </phrase>
 
 <phrase>
 <original>OriginalFileName</original>
-<translation></translation>
+<translation>OriginalFileName</translation>
 </phrase>
 
 <phrase>
@@ -4017,22 +4021,22 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>general metadata settings</original>
-<translation></translation>
+<translation>allmänna metadatainställningar </translation>
 </phrase>
 
 <phrase>
 <original>click to review this image's metadata</original>
-<translation></translation>
+<translation>klicka för att granska denna bildens metadata</translation>
 </phrase>
 
 <phrase>
 <original>copy all relevant metadata to the new file</original>
-<translation></translation>
+<translation>kopiera all relevant metadata till den nya filen</translation>
 </phrase>
 
 <phrase>
 <original>erase tags that might be personal (including GPS and location)</original>
-<translation></translation>
+<translation>radera taggar som kan vara personlig (inklusive GPS och plats)</translation>
 </phrase>
 
 <phrase>
@@ -4042,22 +4046,22 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>This image contains metadata.</original>
-<translation></translation>
+<translation>Den här bilden innehåller metadata.</translation>
 </phrase>
 
 <phrase>
 <original>This image does not contain metadata.</original>
-<translation></translation>
+<translation>Denna bild innehåller inte metadata.</translation>
 </phrase>
 
 <phrase>
 <original>click to add metadata to this image</original>
-<translation></translation>
+<translation>klicka för att lägga till metadata till den här bilden</translation>
 </phrase>
 
 <phrase>
 <original>JPEG-specific settings</original>
-<translation></translation>
+<translation>JPEG-specifika inställningar</translation>
 </phrase>
 
 <!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -4113,12 +4117,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation></translation>
+<translation>De slutliga bredd och höjdmätningar  måste vara mellan 1 och s32760 pixlar.</translation>
 </phrase>
 
 <phrase>
 <original>Invalid measurement</original>
-<translation></translation>
+<translation>ogiltig mätning</translation>
 </phrase>
 
 <phrase>
@@ -4189,12 +4193,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Scroll</original>
-<translation></translation>
+<translation>Skrolla</translation>
 </phrase>
 
 <phrase>
 <original>Scroll here</original>
-<translation></translation>
+<translation>rulla här</translation>
 </phrase>
 
 <phrase>
@@ -4209,52 +4213,52 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Page up</original>
-<translation></translation>
+<translation>Sida upp</translation>
 </phrase>
 
 <phrase>
 <original>Page down</original>
-<translation></translation>
+<translation>Sida ned</translation>
 </phrase>
 
 <phrase>
 <original>Scroll up</original>
-<translation></translation>
+<translation>rulla upp</translation>
 </phrase>
 
 <phrase>
 <original>Scroll down</original>
-<translation></translation>
+<translation>Scrolla ner</translation>
 </phrase>
 
 <phrase>
 <original>Left edge</original>
-<translation></translation>
+<translation>vänstra kanten</translation>
 </phrase>
 
 <phrase>
 <original>Right edge</original>
-<translation></translation>
+<translation>höger kant</translation>
 </phrase>
 
 <phrase>
 <original>Page left</original>
-<translation></translation>
+<translation>sida vänster</translation>
 </phrase>
 
 <phrase>
 <original>Page right</original>
-<translation></translation>
+<translation>sida höger</translation>
 </phrase>
 
 <phrase>
 <original>Scroll left</original>
-<translation></translation>
+<translation>Bläddra åt vänster</translation>
 </phrase>
 
 <phrase>
 <original>Scroll right</original>
-<translation></translation>
+<translation>Bläddra åt höger</translation>
 </phrase>
 
 <!-- pdScrollBar.ctl contains 37 phrases. 23 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -4362,7 +4366,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation></translation>
+<translation>PhotoDemon av Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4432,17 +4436,17 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>&Batch operations</original>
-<translation></translation>
+<translation>batchåtgärder</translation>
 </phrase>
 
 <phrase>
 <original>Process</original>
-<translation></translation>
+<translation>Behandla</translation>
 </phrase>
 
 <phrase>
 <original>Repair</original>
-<translation></translation>
+<translation>Reparera</translation>
 </phrase>
 
 <phrase>
@@ -4592,12 +4596,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>90 clockwise</original>
-<translation></translation>
+<translation>90 medurs</translation>
 </phrase>
 
 <phrase>
 <original>90 counter-clockwise</original>
-<translation></translation>
+<translation>90 moturs</translation>
 </phrase>
 
 <phrase>
@@ -4627,7 +4631,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Edit metadata</original>
-<translation></translation>
+<translation>redigera metadata</translation>
 </phrase>
 
 <phrase>
@@ -4717,17 +4721,17 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Rotate 90 clockwise</original>
-<translation></translation>
+<translation>Rotera 90 medsols</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 90 counter-clockwise</original>
-<translation></translation>
+<translation>Rotera 90 moturs</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 180</original>
-<translation></translation>
+<translation>rotera 180</translation>
 </phrase>
 
 <phrase>
@@ -4767,12 +4771,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Rasterize</original>
-<translation></translation>
+<translation>Rastrera</translation>
 </phrase>
 
 <phrase>
 <original>All layers</original>
-<translation></translation>
+<translation>alla skikt</translation>
 </phrase>
 
 <phrase>
@@ -5057,7 +5061,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Red-eye removal</original>
-<translation></translation>
+<translation>borttagning av röda ögon</translation>
 </phrase>
 
 <phrase>
@@ -5172,7 +5176,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Symmetric nearest-neighbor</original>
-<translation></translation>
+<translation>Symmetrisk närmaste granne</translation>
 </phrase>
 
 <phrase>
@@ -5192,7 +5196,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Donut</original>
-<translation></translation>
+<translation>Munk</translation>
 </phrase>
 
 <phrase>
@@ -5252,7 +5256,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Range filter</original>
-<translation></translation>
+<translation>intervall filter</translation>
 </phrase>
 
 <phrase>
@@ -5332,7 +5336,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Metal</original>
-<translation></translation>
+<translation>Metall</translation>
 </phrase>
 
 <phrase>
@@ -5357,17 +5361,17 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Anisotropic diffusion</original>
-<translation></translation>
+<translation>anisotropisk   diffusion</translation>
 </phrase>
 
 <phrase>
 <original>Bilateral filter</original>
-<translation></translation>
+<translation>bilateral filtrering</translation>
 </phrase>
 
 <phrase>
 <original>Mean shift</original>
-<translation></translation>
+<translation>genomsnittlig förskjutning</translation>
 </phrase>
 
 <phrase>
@@ -5382,12 +5386,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Color halftone</original>
-<translation></translation>
+<translation>färg halvton</translation>
 </phrase>
 
 <phrase>
 <original>Crystallize</original>
-<translation></translation>
+<translation>Kristallisera</translation>
 </phrase>
 
 <phrase>
@@ -5397,12 +5401,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Mezzotint</original>
-<translation></translation>
+<translation>Mezzotint</translation>
 </phrase>
 
 <phrase>
 <original>Mosaic</original>
-<translation></translation>
+<translation>Mosaik</translation>
 </phrase>
 
 <phrase>
@@ -5427,7 +5431,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Portrait glow</original>
-<translation></translation>
+<translation>porträtt glöd</translation>
 </phrase>
 
 <phrase>
@@ -5587,7 +5591,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Developers</original>
-<translation></translation>
+<translation>utvecklare</translation>
 </phrase>
 
 <phrase>
@@ -5597,12 +5601,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Light theme</original>
-<translation></translation>
+<translation>ljus tema</translation>
 </phrase>
 
 <phrase>
 <original>Dark theme</original>
-<translation></translation>
+<translation>mörkt tema</translation>
 </phrase>
 
 <phrase>
@@ -5617,7 +5621,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Purple</original>
-<translation></translation>
+<translation>Lila</translation>
 </phrase>
 
 <phrase>
@@ -5805,7 +5809,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 
 <phrase>
 <original>Auto correct shadows and highlights</original>
-<translation></translation>
+<translation>Autokorrigering  skuggor och högdagrar</translation>
 </phrase>
 
 <phrase>
@@ -5825,7 +5829,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 
 <phrase>
 <original>Auto enhance shadows and highlights</original>
-<translation></translation>
+<translation>Auto förbättra skuggor och högdagrar</translation>
 </phrase>
 
 <phrase>
@@ -5845,7 +5849,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 
 <phrase>
 <original>Crop layer to selection</original>
-<translation></translation>
+<translation>Gröda skiktet till urvalet</translation>
 </phrase>
 
 <phrase>
@@ -5910,12 +5914,12 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 
 <phrase>
 <original>Rasterize layer</original>
-<translation></translation>
+<translation>Rastrera skikt</translation>
 </phrase>
 
 <phrase>
 <original>Rasterize all layers</original>
-<translation></translation>
+<translation>Rastrera alla lager</translation>
 </phrase>
 
 <phrase>
@@ -5990,7 +5994,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 
 <phrase>
 <original>Shadow and highlight</original>
-<translation></translation>
+<translation>Skugga och markera</translation>
 </phrase>
 
 <phrase>
@@ -6295,7 +6299,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>transparency</original>
-<translation></translation>
+<translation>genomskinlighet</translation>
 </phrase>
 
 <phrase>
@@ -6310,7 +6314,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>final colors</original>
-<translation></translation>
+<translation>slutliga färger</translation>
 </phrase>
 
 <phrase>
@@ -6370,12 +6374,12 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>do not modify</original>
-<translation></translation>
+<translation>inte ändrar</translation>
 </phrase>
 
 <phrase>
 <original>remove from image</original>
-<translation></translation>
+<translation>ta bort från bilden</translation>
 </phrase>
 
 <phrase>
@@ -6396,7 +6400,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>model</original>
-<translation></translation>
+<translation>modell</translation>
 </phrase>
 
 <phrase>
@@ -6411,7 +6415,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Adjusting brightness and contrast</original>
-<translation></translation>
+<translation>Justera ljusstyrka och kontrast</translation>
 </phrase>
 
 <phrase>
@@ -6421,7 +6425,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>legacy</original>
-<translation></translation>
+<translation>arv</translation>
 </phrase>
 
 <!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -6488,7 +6492,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>color space</original>
-<translation></translation>
+<translation>färgrymd </translation>
 </phrase>
 
 <phrase>
@@ -6503,12 +6507,12 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>CMY</original>
-<translation></translation>
+<translation>CMY</translation>
 </phrase>
 
 <phrase>
 <original>CMYK</original>
-<translation></translation>
+<translation>CMYK</translation>
 </phrase>
 
 <phrase>
@@ -6878,7 +6882,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Exit histogram</original>
-<translation></translation>
+<translation>exit histogram</translation>
 </phrase>
 
 <phrase>
@@ -6979,17 +6983,17 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>target histogram</original>
-<translation></translation>
+<translation>mål-histogram</translation>
 </phrase>
 
 <phrase>
 <original>mode</original>
-<translation></translation>
+<translation>läge</translation>
 </phrase>
 
 <phrase>
 <original>kernel shape</original>
-<translation></translation>
+<translation>kernel form</translation>
 </phrase>
 
 <phrase>
@@ -7014,7 +7018,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>local</original>
-<translation></translation>
+<translation>lokal</translation>
 </phrase>
 
 <!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -7566,57 +7570,57 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Red eye removal</original>
-<translation></translation>
+<translation>Borttagning av röda ögon</translation>
 </phrase>
 
 <phrase>
 <original>strictness</original>
-<translation></translation>
+<translation>stränghet</translation>
 </phrase>
 
 <phrase>
 <original>enforce shape restrictions</original>
-<translation></translation>
+<translation>verkställa formbegränsningar</translation>
 </phrase>
 
 <phrase>
 <original>color sensitivity</original>
-<translation></translation>
+<translation>färgkänslighet</translation>
 </phrase>
 
 <phrase>
 <original>object sensitivity</original>
-<translation></translation>
+<translation>objekt känslighet</translation>
 </phrase>
 
 <phrase>
 <original>highlight detected regions (preview only)</original>
-<translation></translation>
+<translation>markera upptäckt regioner (förhandsgranskning endast)</translation>
 </phrase>
 
 <phrase>
 <original>enforce size restrictions</original>
-<translation></translation>
+<translation>verkställa storleksbegränsningar </translation>
 </phrase>
 
 <phrase>
 <original>Searching image for potential red-eye locations</original>
-<translation></translation>
+<translation>Letar bild för potentiella röda ögon platser</translation>
 </phrase>
 
 <phrase>
 <original>Refining list of eye candidates</original>
-<translation></translation>
+<translation>Raffinering lista över ögat kandidater</translation>
 </phrase>
 
 <phrase>
 <original>Applying final false-positive checks</original>
-<translation></translation>
+<translation>Tillämpa slutliga falskt positiva kontroller</translation>
 </phrase>
 
 <phrase>
 <original>Applying final red-eye corrections (%1 of %2)</original>
-<translation></translation>
+<translation>Tillämpa slutliga röda ögon korrigeringar ( %1 %2)</translation>
 </phrase>
 
 <!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -7663,12 +7667,12 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>midtone contrast</original>
-<translation></translation>
+<translation>mellanregistrets kontrast</translation>
 </phrase>
 
 <phrase>
 <original>tonal width</original>
-<translation></translation>
+<translation>tonal bredd</translation>
 </phrase>
 
 <phrase>
@@ -7710,12 +7714,12 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Restore selected autosaves</original>
-<translation></translation>
+<translation>Återställa valda autosaves</translation>
 </phrase>
 
 <phrase>
 <original>Discard all autosaves</original>
-<translation></translation>
+<translation>Släng alla autosaves</translation>
 </phrase>
 
 <phrase>
@@ -7838,12 +7842,12 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>BMP export options</original>
-<translation></translation>
+<translation>BMP exportalternativ </translation>
 </phrase>
 
 <phrase>
 <original>restrict palette size</original>
-<translation></translation>
+<translation>begränsa palett storlek</translation>
 </phrase>
 
 <phrase>
@@ -7853,7 +7857,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>unique colors</original>
-<translation></translation>
+<translation>unika färger</translation>
 </phrase>
 
 <phrase>
@@ -7863,87 +7867,87 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>color model</original>
-<translation></translation>
+<translation>färgmodell </translation>
 </phrase>
 
 <phrase>
 <original>use RLE compression</original>
-<translation></translation>
+<translation>använda RLE-komprimering</translation>
 </phrase>
 
 <phrase>
 <original>premultiply alpha</original>
-<translation></translation>
+<translation>premultiply alfa</translation>
 </phrase>
 
 <phrase>
 <original>flip row order (top-down)</original>
-<translation></translation>
+<translation>flip rad ordning (top-down)</translation>
 </phrase>
 
 <phrase>
 <original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation></translation>
+<translation>använda äldre 15-bitars kodning (X1-R5-G5-B5)</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for user to specify export options</original>
-<translation></translation>
+<translation>Väntar på användaren att ange exportalternativ </translation>
 </phrase>
 
 <phrase>
 <original>auto</original>
-<translation></translation>
+<translation>bil</translation>
 </phrase>
 
 <phrase>
 <original>color + transparency</original>
-<translation></translation>
+<translation>färg-OH</translation>
 </phrase>
 
 <phrase>
 <original>color only</original>
-<translation></translation>
+<translation>enda färgen</translation>
 </phrase>
 
 <phrase>
 <original>grayscale</original>
-<translation></translation>
+<translation>gråskala</translation>
 </phrase>
 
 <phrase>
 <original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation></translation>
+<translation>32-BPP ARGB (X8-R8-G8-B8)</translation>
 </phrase>
 
 <phrase>
 <original>24-bpp RGB (R8-G8-B8)</original>
-<translation></translation>
+<translation>24bpp RGB (R8-G8-B8)</translation>
 </phrase>
 
 <phrase>
 <original>16-bpp (R5-G6-B5)</original>
-<translation></translation>
+<translation>16-bpp (R5-G6-B5)</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp (indexed)</original>
-<translation></translation>
+<translation>8bpp (indexerade)</translation>
 </phrase>
 
 <phrase>
 <original>8-bpp (256 shades)</original>
-<translation></translation>
+<translation>8-bpp (256 nyanser)</translation>
 </phrase>
 
 <phrase>
 <original>4-bpp (16 shades)</original>
-<translation></translation>
+<translation>4-bpp (16 nyanser)</translation>
 </phrase>
 
 <phrase>
 <original>1-bpp (monochrome)</original>
-<translation></translation>
+<translation>1bpp (svartvitt)</translation>
 </phrase>
 
 <!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
@@ -7954,22 +7958,22 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Fill settings</original>
-<translation></translation>
+<translation>Fyll inställningar</translation>
 </phrase>
 
 <phrase>
 <original>fill style</original>
-<translation></translation>
+<translation>Fillstyle </translation>
 </phrase>
 
 <phrase>
 <original>preview</original>
-<translation></translation>
+<translation>förhandsvisning</translation>
 </phrase>
 
 <phrase>
 <original>fill opacity</original>
-<translation></translation>
+<translation>fyll opacitet</translation>
 </phrase>
 
 <phrase>
@@ -7979,7 +7983,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>colors</original>
-<translation></translation>
+<translation>färger</translation>
 </phrase>
 
 <phrase>
@@ -7989,47 +7993,47 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>pattern</original>
-<translation></translation>
+<translation>mönster</translation>
 </phrase>
 
 <phrase>
 <original>pattern color</original>
-<translation></translation>
+<translation>mönster färg</translation>
 </phrase>
 
 <phrase>
 <original>solid</original>
-<translation></translation>
+<translation>fast form</translation>
 </phrase>
 
 <phrase>
 <original>gradient</original>
-<translation></translation>
+<translation>lutning</translation>
 </phrase>
 
 <phrase>
 <original>line</original>
-<translation></translation>
+<translation>linje</translation>
 </phrase>
 
 <phrase>
 <original>reflection</original>
-<translation></translation>
+<translation>reflexion</translation>
 </phrase>
 
 <phrase>
 <original>circle</original>
-<translation></translation>
+<translation>cirkel</translation>
 </phrase>
 
 <phrase>
 <original>rectangle</original>
-<translation></translation>
+<translation>rektangel</translation>
 </phrase>
 
 <phrase>
 <original>diamond</original>
-<translation></translation>
+<translation>diamant-</translation>
 </phrase>
 
 <!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
@@ -8040,12 +8044,12 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>&Yes</original>
-<translation></translation>
+<translation>Ja</translation>
 </phrase>
 
 <phrase>
 <original>&No</original>
-<translation></translation>
+<translation>Nej</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -8056,7 +8060,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Please wait a moment</original>
-<translation></translation>
+<translation>Var god vänta ett ögonblick</translation>
 </phrase>
 
 <phrase>
@@ -8072,17 +8076,17 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Gradient editor</original>
-<translation></translation>
+<translation>gradient editor</translation>
 </phrase>
 
 <phrase>
 <original>automatically distribute nodes evenly</original>
-<translation></translation>
+<translation>automatiskt distribuera noder jämnt</translation>
 </phrase>
 
 <phrase>
 <original>current node settings</original>
-<translation></translation>
+<translation>aktuella noden inställningar</translation>
 </phrase>
 
 <phrase>
@@ -8092,7 +8096,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>node editor</original>
-<translation></translation>
+<translation>nod redaktör</translation>
 </phrase>
 
 <phrase>
@@ -8102,37 +8106,37 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>additional tools</original>
-<translation></translation>
+<translation>ytterligare verktyg</translation>
 </phrase>
 
 <phrase>
 <original>edit mode</original>
-<translation></translation>
+<translation>redigeringsläge </translation>
 </phrase>
 
 <phrase>
 <original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
-<translation></translation>
+<translation>Vänsterklicka  för att lägga till nya noder eller redigera befintliga noder. Högerklicka  på en nod för att ta bort den.</translation>
 </phrase>
 
 <phrase>
 <original>manual</original>
-<translation></translation>
+<translation>manuell</translation>
 </phrase>
 
 <phrase>
 <original>automatic</original>
-<translation></translation>
+<translation>automatisk</translation>
 </phrase>
 
 <phrase>
 <original>node settings</original>
-<translation></translation>
+<translation>nod inställningar</translation>
 </phrase>
 
 <phrase>
 <original>please select a node</original>
-<translation></translation>
+<translation>välj en nod</translation>
 </phrase>
 
 <!-- Dialog_GradientEditor.frm contains 19 phrases. 6 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -8184,87 +8188,87 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Outline settings</original>
-<translation></translation>
+<translation>outline inställningar</translation>
 </phrase>
 
 <phrase>
 <original>outline color and opacity</original>
-<translation></translation>
+<translation>konturfärg  och opacitet</translation>
 </phrase>
 
 <phrase>
 <original>outline style</original>
-<translation></translation>
+<translation>fet stil</translation>
 </phrase>
 
 <phrase>
 <original>outline width</original>
-<translation></translation>
+<translation>kontur bredd</translation>
 </phrase>
 
 <phrase>
 <original>corner shape</original>
-<translation></translation>
+<translation>hörnet form</translation>
 </phrase>
 
 <phrase>
 <original>line cap shape</original>
-<translation></translation>
+<translation>linje cap form</translation>
 </phrase>
 
 <phrase>
 <original>miter limit</original>
-<translation></translation>
+<translation>fogstorlek</translation>
 </phrase>
 
 <phrase>
 <original>dashes</original>
-<translation></translation>
+<translation>streck</translation>
 </phrase>
 
 <phrase>
 <original>dots</original>
-<translation></translation>
+<translation>prickar</translation>
 </phrase>
 
 <phrase>
 <original>dash + dot</original>
-<translation></translation>
+<translation>streck dot</translation>
 </phrase>
 
 <phrase>
 <original>dash + dot + dot</original>
-<translation></translation>
+<translation>streck dot dot</translation>
 </phrase>
 
 <phrase>
 <original>flat</original>
-<translation></translation>
+<translation>platt</translation>
 </phrase>
 
 <phrase>
 <original>square</original>
-<translation></translation>
+<translation>fyrkant</translation>
 </phrase>
 
 <phrase>
 <original>round</original>
-<translation></translation>
+<translation>runda</translation>
 </phrase>
 
 <phrase>
 <original>triangle</original>
-<translation></translation>
+<translation>triangel</translation>
 </phrase>
 
 <phrase>
 <original>miter</original>
-<translation></translation>
+<translation>mitra</translation>
 </phrase>
 
 <phrase>
 <original>bevel</original>
-<translation></translation>
+<translation>fasa</translation>
 </phrase>
 
 <!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -8410,7 +8414,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>This image</original>
-<translation></translation>
+<translation>Denna bilden</translation>
 </phrase>
 
 <phrase>
@@ -8518,7 +8522,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>* current image state</original>
-<translation></translation>
+<translation>* Aktuell bild Stat</translation>
 </phrase>
 
 <phrase>
@@ -8528,7 +8532,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>layer: %1</original>
-<translation></translation>
+<translation>skikt: %1</translation>
 </phrase>
 
 <phrase>
@@ -8580,7 +8584,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>brush smoothing</original>
-<translation></translation>
+<translation>borst utjämning</translation>
 </phrase>
 
 <phrase>
@@ -8595,7 +8599,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Animating image</original>
-<translation></translation>
+<translation>animera bilden</translation>
 </phrase>
 
 <phrase>
@@ -8647,32 +8651,32 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>shadow cut-off</original>
-<translation></translation>
+<translation>skugga cut-off</translation>
 </phrase>
 
 <phrase>
 <original>contrast boost</original>
-<translation></translation>
+<translation>kontrast boost</translation>
 </phrase>
 
 <phrase>
 <original>highlight cut-off</original>
-<translation></translation>
+<translation>markera cut-off</translation>
 </phrase>
 
 <phrase>
 <original>contrast midpoint</original>
-<translation></translation>
+<translation>kontrast mittpunkten </translation>
 </phrase>
 
 <phrase>
 <original>film grain</original>
-<translation></translation>
+<translation>kornig film</translation>
 </phrase>
 
 <phrase>
 <original>Asking Sam Spade for help</original>
-<translation></translation>
+<translation>Frågar Sam Spade om hjälp</translation>
 </phrase>
 
 <!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -9024,7 +9028,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>gaussian</original>
-<translation></translation>
+<translation>gaussian</translation>
 </phrase>
 
 <!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9040,7 +9044,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>accuracy</original>
-<translation></translation>
+<translation>noggrannhet</translation>
 </phrase>
 
 <!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9051,7 +9055,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Generating symmetric pixel pairs</original>
-<translation></translation>
+<translation>Alstra symmetriska pixelparen</translation>
 </phrase>
 
 <!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9062,7 +9066,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>target</original>
-<translation></translation>
+<translation>mål</translation>
 </phrase>
 
 <phrase>
@@ -9177,22 +9181,22 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>initial angle</original>
-<translation></translation>
+<translation>initial vinkel</translation>
 </phrase>
 
 <phrase>
 <original>spread</original>
-<translation></translation>
+<translation>spridning</translation>
 </phrase>
 
 <phrase>
 <original>interior radius</original>
-<translation></translation>
+<translation>interiör radie</translation>
 </phrase>
 
 <phrase>
 <original>Deep-frying image</original>
-<translation></translation>
+<translation>Fritering bild</translation>
 </phrase>
 
 <!-- Effects_Distort_Donut.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9426,7 +9430,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Artistic contour edge detection</original>
-<translation></translation>
+<translation>Konstnärlig kontur kantavkänningen</translation>
 </phrase>
 
 <phrase>
@@ -9523,22 +9527,22 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>synchronize search radius</original>
-<translation></translation>
+<translation>synkronisera sökradie</translation>
 </phrase>
 
 <phrase>
 <original>horizontal radius</original>
-<translation></translation>
+<translation>horisontell radie</translation>
 </phrase>
 
 <phrase>
 <original>vertical radius</original>
-<translation></translation>
+<translation>vertikal radie</translation>
 </phrase>
 
 <phrase>
 <original>Searching each pixel range for edges</original>
-<translation></translation>
+<translation>Letar varje pixel intervall för kanter</translation>
 </phrase>
 
 <!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9680,12 +9684,12 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>smoothness</original>
-<translation></translation>
+<translation>släthet</translation>
 </phrase>
 
 <phrase>
 <original>Pouring smoldering metal onto image</original>
-<translation></translation>
+<translation>Hälla pyrande metall på bild</translation>
 </phrase>
 
 <!-- Effects_Natural_Metal.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -9759,37 +9763,37 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>directionality</original>
-<translation></translation>
+<translation>riktverkan </translation>
 </phrase>
 
 <phrase>
 <original>gradient flow</original>
-<translation></translation>
+<translation>gradient flöde</translation>
 </phrase>
 
 <phrase>
 <original>iterations</original>
-<translation></translation>
+<translation>iterationer</translation>
 </phrase>
 
 <phrase>
 <original>Calculating energy gradients (pass %1 of %2)</original>
-<translation></translation>
+<translation>Beräkning energi gradienter (för %1 %2)</translation>
 </phrase>
 
 <phrase>
 <original>4-way cardinal</original>
-<translation></translation>
+<translation>4-vägs cardinal</translation>
 </phrase>
 
 <phrase>
 <original>4-way ordinal</original>
-<translation></translation>
+<translation>4-vägs ordinal</translation>
 </phrase>
 
 <phrase>
 <original>8-way</original>
-<translation></translation>
+<translation>8-vägs</translation>
 </phrase>
 
 <phrase>
@@ -9799,7 +9803,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>smooth</original>
-<translation></translation>
+<translation>slät</translation>
 </phrase>
 
 <!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -9840,7 +9844,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation></translation>
+<translation>Bilateral filtrering är en komplicerad uppgift, och på stora bilder kan det ta mycket lång tid att bearbeta. PhotoDemon kan uppskatta vissa parametrar, vilket ger en stor hastighetsökning  på bekostnad av något lägre kvalitet.</translation>
 </phrase>
 
 <!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -9877,7 +9881,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Applying mean shift filter</original>
-<translation></translation>
+<translation>Applicering av medelskiftfilter</translation>
 </phrase>
 
 <!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9934,22 +9938,22 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>cyan angle</original>
-<translation></translation>
+<translation>cyan vinkel</translation>
 </phrase>
 
 <phrase>
 <original>magenta angle</original>
-<translation></translation>
+<translation>magenta vinkel</translation>
 </phrase>
 
 <phrase>
 <original>yellow angle</original>
-<translation></translation>
+<translation>gul vinkel</translation>
 </phrase>
 
 <phrase>
 <original>Printing image to digital halftone surface</original>
-<translation></translation>
+<translation>Tryckbild  till digitala halvtonsytan </translation>
 </phrase>
 
 <!-- Effects_Pixelate_ColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -9960,7 +9964,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Crystallizing image</original>
-<translation></translation>
+<translation>kristalliserande   bilden</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Crystallize.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -9987,47 +9991,47 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>type</original>
-<translation></translation>
+<translation>typ</translation>
 </phrase>
 
 <phrase>
 <original>randomness</original>
-<translation></translation>
+<translation>slumpmässighet</translation>
 </phrase>
 
 <phrase>
 <original>stippling</original>
-<translation></translation>
+<translation>stippling</translation>
 </phrase>
 
 <phrase>
 <original>Mezzotinting image</original>
-<translation></translation>
+<translation>Mezzotinting bild</translation>
 </phrase>
 
 <phrase>
 <original>dot</original>
-<translation></translation>
+<translation>punkt</translation>
 </phrase>
 
 <phrase>
 <original>horizontal stroke</original>
-<translation></translation>
+<translation>horisontella streck</translation>
 </phrase>
 
 <phrase>
 <original>vertical stroke</original>
-<translation></translation>
+<translation>vertikal stroke</translation>
 </phrase>
 
 <phrase>
 <original>coarse</original>
-<translation></translation>
+<translation>grov</translation>
 </phrase>
 
 <phrase>
 <original>fine</original>
-<translation></translation>
+<translation>bra</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Mezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -10038,7 +10042,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>synchronize block size</original>
-<translation></translation>
+<translation>synkroniserad blockstorlek </translation>
 </phrase>
 
 <phrase>
@@ -10053,7 +10057,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Applying mosaic</original>
-<translation></translation>
+<translation>applicering av mosaik</translation>
 </phrase>
 
 <!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -10107,27 +10111,27 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>glow radius</original>
-<translation></translation>
+<translation>glöd radie</translation>
 </phrase>
 
 <phrase>
 <original>exposure boost</original>
-<translation></translation>
+<translation>exponering boost</translation>
 </phrase>
 
 <phrase>
 <original>Applying petroleum jelly to camera lens</original>
-<translation></translation>
+<translation>Tillämpa vaselin på kameralinsen </translation>
 </phrase>
 
 <phrase>
 <original>classic</original>
-<translation></translation>
+<translation>klassisk</translation>
 </phrase>
 
 <phrase>
 <original>subtle</original>
-<translation></translation>
+<translation>subtil</translation>
 </phrase>
 
 <!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -10278,7 +10282,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>conversion</original>
-<translation></translation>
+<translation>omvandling</translation>
 </phrase>
 
 <phrase>
@@ -10402,7 +10406,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>som exportinställningar  för detta format</translation>
 </phrase>
 
 <phrase>
@@ -10417,7 +10421,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>apply photo editing actions</original>
-<translation></translation>
+<translation>tillämpa fotoredigering  åtgärder</translation>
 </phrase>
 
 <phrase>
@@ -10437,7 +10441,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>apply other actions from a saved macro file</original>
-<translation></translation>
+<translation>tillämpa andra åtgärder från en sparad makro fil</translation>
 </phrase>
 
 <phrase>
@@ -10452,37 +10456,37 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>include subfolders</original>
-<translation></translation>
+<translation>inkludera undermappar </translation>
 </phrase>
 
 <phrase>
 <original>current batch list</original>
-<translation></translation>
+<translation>aktuella uppsättningen lista</translation>
 </phrase>
 
 <phrase>
 <original>save list</original>
-<translation></translation>
+<translation>spara listan</translation>
 </phrase>
 
 <phrase>
 <original>load list</original>
-<translation></translation>
+<translation>lastlista</translation>
 </phrase>
 
 <phrase>
 <original>erase entire list</original>
-<translation></translation>
+<translation>radera hela listan</translation>
 </phrase>
 
 <phrase>
 <original>remove selected image</original>
-<translation></translation>
+<translation>ta bort den valda bilden</translation>
 </phrase>
 
 <phrase>
 <original>add individual images</original>
-<translation></translation>
+<translation>lägga till enskilda bilder</translation>
 </phrase>
 
 <phrase>
@@ -10492,27 +10496,27 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>add images</original>
-<translation></translation>
+<translation>lägga till bilder</translation>
 </phrase>
 
 <phrase>
 <original>modify list</original>
-<translation></translation>
+<translation>ändra förteckning</translation>
 </phrase>
 
 <phrase>
 <original>load / save list</original>
-<translation></translation>
+<translation>belastning/spara listan</translation>
 </phrase>
 
 <phrase>
 <original>add entire folder(s)</original>
-<translation></translation>
+<translation>lägga till hela mappar)</translation>
 </phrase>
 
 <phrase>
 <original>remove all images in this folder</original>
-<translation></translation>
+<translation>ta bort alla bilder i den här mappen</translation>
 </phrase>
 
 <phrase>
@@ -10651,7 +10655,7 @@ Would du spara din satslistan innan du avslutar?</translation>
 
 <phrase>
 <original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
-<translation></translation>
+<translation>Du har inte valt några bilder att bearbeta! Vänligen lägga till en eller flera bilder i batch lista.</translation>
 </phrase>
 
 <phrase>
@@ -10661,12 +10665,12 @@ Would du spara din satslistan innan du avslutar?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Innan du fortsätter måste du klicka på "set exportinställningarna  för detta format" för att ange vilken export inställningar du vill använda.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>Exportera inställningar som krävs</translation>
 </phrase>
 
 <phrase>
@@ -10716,17 +10720,17 @@ Would du spara din satslistan innan du avslutar?</translation>
 
 <phrase>
 <original>You can add files to the batch list in two ways</original>
-<translation></translation>
+<translation>Du kan lägga till filer i satslistan på två sätt</translation>
 </phrase>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation></translation>
+<translation>1) Genom att manuellt lägga till en eller flera bildfil (s) med en vanlig Öppna bild dialogrutan.</translation>
 </phrase>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation></translation>
+<translation>2) Genom att lägga till hela mappar på en gång. Bildfil (er) i mappen (eller undermappar, om vald) kommer att identifieras automatiskt.</translation>
 </phrase>
 
 <phrase>
@@ -11177,7 +11181,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
-<translation></translation>
+<translation>för närvarande tillgängliga program (anges av fönstertiteln)</translation>
 </phrase>
 
 <phrase>
@@ -11212,17 +11216,17 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>specific program</original>
-<translation></translation>
+<translation>delprogrammet</translation>
 </phrase>
 
 <phrase>
 <original>This program is currently minimized.  Restore it to normal size for best results.</original>
-<translation></translation>
+<translation>Detta program är för närvarande minimera. Återställa det till normal storlek för bästa resultat.</translation>
 </phrase>
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation></translation>
+<translation>Vissa program (inklusive Windows Store apps) inte tillåter direkta skärmdumpar. Om ett program förhandsgranskning visas som en svart fyrkant, måste du ta ett fullständigt skrivbords skärmdump, sedan manuellt beskära önskad fönsterområdet.</translation>
 </phrase>
 
 <phrase>
@@ -11431,32 +11435,32 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>GIF export options</original>
-<translation></translation>
+<translation>GIF exportalternativ </translation>
 </phrase>
 
 <phrase>
 <original>alpha cut-off</original>
-<translation></translation>
+<translation>alfa cut-off</translation>
 </phrase>
 
 <phrase>
 <original>transparent color (right-click image to select)</original>
-<translation></translation>
+<translation>transparent färg (högerklicka  bilden för att välja)</translation>
 </phrase>
 
 <phrase>
 <original>metadata</original>
-<translation></translation>
+<translation>metadata</translation>
 </phrase>
 
 <phrase>
 <original>by cut-off</original>
-<translation></translation>
+<translation>genom cut-off</translation>
 </phrase>
 
 <phrase>
 <original>by color</original>
-<translation></translation>
+<translation>efter färg</translation>
 </phrase>
 
 <!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11528,72 +11532,72 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>compression method</original>
-<translation></translation>
+<translation>komprimeringsmetod </translation>
 </phrase>
 
 <phrase>
 <original>chroma subsampling</original>
-<translation></translation>
+<translation>chroma subsampling</translation>
 </phrase>
 
 <phrase>
 <original>perfect (99)</original>
-<translation></translation>
+<translation>perfekt (99)</translation>
 </phrase>
 
 <phrase>
 <original>excellent (92)</original>
-<translation></translation>
+<translation>utmärkt (92)</translation>
 </phrase>
 
 <phrase>
 <original>good (80)</original>
-<translation></translation>
+<translation>bra (80)</translation>
 </phrase>
 
 <phrase>
 <original>average (65)</original>
-<translation></translation>
+<translation>genomsnitt (65)</translation>
 </phrase>
 
 <phrase>
 <original>low (40)</original>
-<translation></translation>
+<translation>låg (40)</translation>
 </phrase>
 
 <phrase>
 <original>custom quality</original>
-<translation></translation>
+<translation>anpassad kvalitet</translation>
 </phrase>
 
 <phrase>
 <original>baseline</original>
-<translation></translation>
+<translation>baslinje</translation>
 </phrase>
 
 <phrase>
 <original>optimized baseline</original>
-<translation></translation>
+<translation>optimerad baslinje</translation>
 </phrase>
 
 <phrase>
 <original>progressive</original>
-<translation></translation>
+<translation>progressiv</translation>
 </phrase>
 
 <phrase>
 <original>low (default)</original>
-<translation></translation>
+<translation>låg (standard)</translation>
 </phrase>
 
 <phrase>
 <original>color (24-bpp)</original>
-<translation></translation>
+<translation>färg (24-BPP)</translation>
 </phrase>
 
 <phrase>
 <original>black and white (8-bpp)</original>
-<translation></translation>
+<translation>svart och vitt (8-BPP)</translation>
 </phrase>
 
 <!-- File_Save_JPEGSettings.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
@@ -11645,32 +11649,32 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>Pixmap Export Options</original>
-<translation></translation>
+<translation>Pixmap exportalternativ </translation>
 </phrase>
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation></translation>
+<translation>ändra filändelsen att matcha färgmodell </translation>
 </phrase>
 
 <phrase>
 <original>format</original>
-<translation></translation>
+<translation>formatera</translation>
 </phrase>
 
 <phrase>
 <original>floating-point</original>
-<translation></translation>
+<translation>flytpunkt</translation>
 </phrase>
 
 <phrase>
 <original>binary</original>
-<translation></translation>
+<translation>binär</translation>
 </phrase>
 
 <phrase>
 <original>ASCII</original>
-<translation></translation>
+<translation>ASCII</translation>
 </phrase>
 
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11681,127 +11685,127 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>PNG export options</original>
-<translation></translation>
+<translation>PNG Exportalternativ </translation>
 </phrase>
 
 <phrase>
 <original>fast, larger file</original>
-<translation></translation>
+<translation>snabb, stor fil</translation>
 </phrase>
 
 <phrase>
 <original>use interlacing</original>
-<translation></translation>
+<translation>använda sammanflätning</translation>
 </phrase>
 
 <phrase>
 <original>compression level</original>
-<translation></translation>
+<translation>komprimeringsnivå </translation>
 </phrase>
 
 <phrase>
 <original>embed background color in file</original>
-<translation></translation>
+<translation>bädda in bakgrundsfärg  i filen</translation>
 </phrase>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation></translation>
+<translation>långsam, mindre fil</translation>
 </phrase>
 
 <phrase>
 <original>lossless file size optimization (OptiPNG)</original>
-<translation></translation>
+<translation>förlustfri filstorlek optimering (optipng)</translation>
 </phrase>
 
 <phrase>
 <original>palette size</original>
-<translation></translation>
+<translation>palett storlek</translation>
 </phrase>
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation></translation>
+<translation>klicka för att generera en ny förhandsvisningsbilden </translation>
 </phrase>
 
 <phrase>
 <original>lossy optimization options</original>
-<translation></translation>
+<translation>förstörande optimeringsalternativ </translation>
 </phrase>
 
 <phrase>
 <original>use dithering to improve quality</original>
-<translation></translation>
+<translation>Använd dithering att förbättra kvaliteten</translation>
 </phrase>
 
 <phrase>
 <original>target quality</original>
-<translation></translation>
+<translation>mål-kvalitet</translation>
 </phrase>
 
 <phrase>
 <original>apply lossy optimizations</original>
-<translation></translation>
+<translation>tillämpa lossy optimeringar</translation>
 </phrase>
 
 <phrase>
 <original>optimization level</original>
-<translation></translation>
+<translation>optimeringsnivå </translation>
 </phrase>
 
 <phrase>
 <original>lossless optimization options</original>
-<translation></translation>
+<translation>förlustfri optimeringsalternativ </translation>
 </phrase>
 
 <phrase>
 <original>standard PNG</original>
-<translation></translation>
+<translation>standard PNG</translation>
 </phrase>
 
 <phrase>
 <original>web-optimized PNG</original>
-<translation></translation>
+<translation>webb-optimerade PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic (default)</original>
-<translation></translation>
+<translation>grundläggande (default)</translation>
 </phrase>
 
 <phrase>
 <original>moderate</original>
-<translation></translation>
+<translation>måttlig</translation>
 </phrase>
 
 <phrase>
 <original>indexed</original>
-<translation></translation>
+<translation>indexeras</translation>
 </phrase>
 
 <phrase>
 <original>full</original>
-<translation></translation>
+<translation>full</translation>
 </phrase>
 
 <phrase>
 <original>binary (by cut-off)</original>
-<translation></translation>
+<translation>binära (av cut-off)</translation>
 </phrase>
 
 <phrase>
 <original>binary (by color)</original>
-<translation></translation>
+<translation>binär (efter färg)</translation>
 </phrase>
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation></translation>
+<translation>Vänta medan en ny förhandsgranskningsbild  skapas</translation>
 </phrase>
 
 <phrase>
 <original>These lossy optimization settings reduced file size by %1.</original>
-<translation></translation>
+<translation>Dessa förstörande optimeringsinställningar  minska filstorleken med %1.</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -11812,32 +11816,32 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>TIFF export options</original>
-<translation></translation>
+<translation>TIFF exportalternativ </translation>
 </phrase>
 
 <phrase>
 <original>color compression</original>
-<translation></translation>
+<translation>färgkomprimering </translation>
 </phrase>
 
 <phrase>
 <original>monochrome compression</original>
-<translation></translation>
+<translation>monokrom  komprimering</translation>
 </phrase>
 
 <phrase>
 <original>page format</original>
-<translation></translation>
+<translation>sidformat</translation>
 </phrase>
 
 <phrase>
 <original>single page (composited image)</original>
-<translation></translation>
+<translation>enda sida (sammansatt bild)</translation>
 </phrase>
 
 <phrase>
 <original>multipage (one page per layer)</original>
-<translation></translation>
+<translation>flersidig  (en sida per skikt)</translation>
 </phrase>
 
 <phrase>
@@ -11847,17 +11851,17 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>ZIP</original>
-<translation></translation>
+<translation>blixtlås</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 4</original>
-<translation></translation>
+<translation>CCITT Fax 4</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 3</original>
-<translation></translation>
+<translation>CCITT Fax 3</translation>
 </phrase>
 
 <!-- File_Save_TIFF.frm contains 43 phrases. 33 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -11992,7 +11996,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>quantization method</original>
-<translation></translation>
+<translation>kvantisering metod</translation>
 </phrase>
 
 <phrase>
@@ -12047,12 +12051,12 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>Metadata editor</original>
-<translation></translation>
+<translation>metadata redaktör</translation>
 </phrase>
 
 <phrase>
 <original>tools</original>
-<translation></translation>
+<translation>verktyg</translation>
 </phrase>
 
 <phrase>
@@ -12082,17 +12086,17 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>visit the ExifTool homepage</original>
-<translation></translation>
+<translation>besöka ExifTool hemsida</translation>
 </phrase>
 
 <phrase>
 <original>Remove tags that might contain personal information</original>
-<translation></translation>
+<translation>Ta bort taggar som kan innehålla personuppgifter </translation>
 </phrase>
 
 <phrase>
 <original>%1 groups in this image</original>
-<translation></translation>
+<translation> %1 grupper i den här bilden</translation>
 </phrase>
 
 <phrase>
@@ -12107,37 +12111,37 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>edit tags</original>
-<translation></translation>
+<translation>redigera taggar</translation>
 </phrase>
 
 <phrase>
 <original>editor options</original>
-<translation></translation>
+<translation>redaktör alternativ</translation>
 </phrase>
 
 <phrase>
 <original>Mark this tag for removal</original>
-<translation></translation>
+<translation>Markera denna tagg för att avlägsna</translation>
 </phrase>
 
 <phrase>
 <original>Reset tag to its original value</original>
-<translation></translation>
+<translation>Återställ tag till sitt ursprungliga värde</translation>
 </phrase>
 
 <phrase>
 <original>Mark this entire group for removal</original>
-<translation></translation>
+<translation>Markera hela gruppen för att avlägsna</translation>
 </phrase>
 
 <phrase>
 <original>Reset entire group to its original values</original>
-<translation></translation>
+<translation>Återställ hela gruppen till sina ursprungliga värden</translation>
 </phrase>
 
 <phrase>
 <original>Metadata support is provided by the open-source ExifTool library.</original>
-<translation></translation>
+<translation>Metadata stöd ges av öppen källkod ExifTool bibliotek.</translation>
 </phrase>
 
 <phrase>
@@ -12152,142 +12156,142 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>no tags in this category</original>
-<translation></translation>
+<translation>Inga taggar i denna kategori</translation>
 </phrase>
 
 <phrase>
 <original>"System" tags are provided by the operating system.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>"System" taggar tillhandahålls av operativsystemet. De är inte inbäddade som traditionell metadata.</translation>
 </phrase>
 
 <phrase>
 <original>"File" tags are required by this image format.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>"File" taggar som krävs enligt denna bildformat. De är inte inbäddade som traditionell metadata.</translation>
 </phrase>
 
 <phrase>
 <original>ICC profiles are handled automatically by PhotoDemon.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>ICC-profiler hanteras automatiskt av PhotoDemon. De är inte inbäddade som traditionell metadata.</translation>
 </phrase>
 
 <phrase>
 <original>"Inferred" tags are hypothetical values inferred from other metadata.  They are not embedded as traditional metadata.</original>
-<translation></translation>
+<translation>"antagen" taggar är hypotetiska värden härledas från andra metadata. De är inte inbäddade som traditionell metadata.</translation>
 </phrase>
 
 <phrase>
 <original>(" & strID & ") " & strValu</original>
-<translation></translation>
+<translation>("Strid") "strValu</translation>
 </phrase>
 
 <phrase>
 <original>(" & .TagValue & ") " & .TagValueFriendl</original>
-<translation></translation>
+<translation>(".TagValue") ".TagValueFriendl</translation>
 </phrase>
 
 <phrase>
 <original>tag restrictions</original>
-<translation></translation>
+<translation>taggbegränsningar </translation>
 </phrase>
 
 <phrase>
 <original>This is a protected tag.  Edits are allowed, but they may be overwritten to produce a valid image file.</original>
-<translation></translation>
+<translation>Detta är en skyddad tagg. Ändringar är tillåtna, men de kan skrivas över för att producera en giltig bildfil.</translation>
 </phrase>
 
 <phrase>
 <original>This tag is restricted.  It cannot be edited, and removal requests will be ignored if they result in an invalid file.</original>
-<translation></translation>
+<translation>Denna tagg är begränsad. Det kan inte redigeras, och begäranden  om borttagning kommer att ignoreras om de resulterar  i en ogiltig fil.</translation>
 </phrase>
 
 <phrase>
 <original>integers only [-127 to 127]</original>
-<translation></translation>
+<translation>endast heltal [-127 till 127]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [0 to 255]</original>
-<translation></translation>
+<translation>endast heltal [0-255]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [-32,768 to 32,767]</original>
-<translation></translation>
+<translation>endast heltal [-32768 till 32767]</translation>
 </phrase>
 
 <phrase>
 <original>integers only [0 to 65,535]</original>
-<translation></translation>
+<translation>endast heltal [0 till 65.535]</translation>
 </phrase>
 
 <phrase>
 <original>integers only</original>
-<translation></translation>
+<translation>endast heltal</translation>
 </phrase>
 
 <phrase>
 <original>integers >= 0</original>
-<translation></translation>
+<translation>heltal> = 0</translation>
 </phrase>
 
 <phrase>
 <original>numbers only</original>
-<translation></translation>
+<translation>endast nummer</translation>
 </phrase>
 
 <phrase>
 <original>numbers >= 0</original>
-<translation></translation>
+<translation>tal> = 0</translation>
 </phrase>
 
 <phrase>
 <original>file position marker</original>
-<translation></translation>
+<translation>fil positionsmarkör </translation>
 </phrase>
 
 <phrase>
 <original>binary data</original>
-<translation></translation>
+<translation>binärdata </translation>
 </phrase>
 
 <phrase>
 <original>digits</original>
-<translation></translation>
+<translation>siffror</translation>
 </phrase>
 
 <phrase>
 <original>dates only (YYYY:mm:dd HH:MM:SS[.ss][+/-HH:MM])</original>
-<translation></translation>
+<translation>endast datum (YYYY: mm: dd TT: MM: SS [.sss] [/ -HH: MM])</translation>
 </phrase>
 
 <phrase>
 <original>true or false only</original>
-<translation></translation>
+<translation>sant eller falskt bara</translation>
 </phrase>
 
 <phrase>
 <original>digits only</original>
-<translation></translation>
+<translation>siffror endast</translation>
 </phrase>
 
 <phrase>
 <original>%1 characters max</original>
-<translation></translation>
+<translation> %1 tecken max</translation>
 </phrase>
 
 <phrase>
 <original>%1 bytes max</original>
-<translation></translation>
+<translation> %1 byte max</translation>
 </phrase>
 
 <phrase>
 <original>%1 numbers max</original>
-<translation></translation>
+<translation> %1 siffror max</translation>
 </phrase>
 
 <phrase>
 <original>list of %1, one entry per line</original>
-<translation></translation>
+<translation>lista över %1, en post per rad</translation>
 </phrase>
 
 <!-- Image_Metadata.frm contains 115 phrases. 66 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
@@ -12429,7 +12433,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>border regions</original>
-<translation></translation>
+<translation>gränsregioner </translation>
 </phrase>
 
 <phrase>
@@ -12444,32 +12448,32 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>keep current</original>
-<translation></translation>
+<translation>Behåll nuvarande</translation>
 </phrase>
 
 <phrase>
 <original>enlarge to fit</original>
-<translation></translation>
+<translation>förstoring för att passa</translation>
 </phrase>
 
 <phrase>
 <original>nearest-neighbor</original>
-<translation></translation>
+<translation>Närmaste granne</translation>
 </phrase>
 
 <phrase>
 <original>bilinear</original>
-<translation></translation>
+<translation>bilinjär</translation>
 </phrase>
 
 <phrase>
 <original>bicubic</original>
-<translation></translation>
+<translation>bicubic</translation>
 </phrase>
 
 <phrase>
 <original>fill with color</original>
-<translation></translation>
+<translation>fyll med färg</translation>
 </phrase>
 
 <phrase>
@@ -12547,17 +12551,17 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>flatten behavior</original>
-<translation></translation>
+<translation>platta till beteende</translation>
 </phrase>
 
 <phrase>
 <original>keep transparency</original>
-<translation></translation>
+<translation>hålla insyn</translation>
 </phrase>
 
 <phrase>
 <original>remove transparency</original>
-<translation></translation>
+<translation>ta bort öppenhet</translation>
 </phrase>
 
 <!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12583,7 +12587,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>new opacity</original>
-<translation></translation>
+<translation>ny opacitet</translation>
 </phrase>
 
 <phrase>
@@ -12687,7 +12691,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>Inherit</original>
-<translation></translation>
+<translation>Ärva</translation>
 </phrase>
 
 <phrase>
@@ -12744,12 +12748,12 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>grow radius</original>
-<translation></translation>
+<translation>växa radie</translation>
 </phrase>
 
 <phrase>
 <original>shrink radius</original>
-<translation></translation>
+<translation>krympa radie</translation>
 </phrase>
 
 <phrase>
@@ -12786,17 +12790,17 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>overview</original>
-<translation></translation>
+<translation>Översikt</translation>
 </phrase>
 
 <phrase>
 <original>layers</original>
-<translation></translation>
+<translation>skikten</translation>
 </phrase>
 
 <phrase>
 <original>color selector</original>
-<translation></translation>
+<translation>färgväljaren </translation>
 </phrase>
 
 <!-- Toolbar_Layers.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -12833,17 +12837,17 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>n-d</original>
-<translation></translation>
+<translation>n-d</translation>
 </phrase>
 
 <phrase>
 <original>select</original>
-<translation></translation>
+<translation>välja</translation>
 </phrase>
 
 <phrase>
 <original>paint</original>
-<translation></translation>
+<translation>måla</translation>
 </phrase>
 
 <phrase>
@@ -12853,32 +12857,32 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>File tools: create, load, and save image files</original>
-<translation></translation>
+<translation>Fil verktyg: skapa, läsa in och spara bildfiler </translation>
 </phrase>
 
 <phrase>
 <original>Undo/Redo tools: revert destructive changes made to an image or layer</original>
-<translation></translation>
+<translation>Ångra/Gör om verktyg: återgå destruktiva ändringar som gjorts i en bild eller ett lager</translation>
 </phrase>
 
 <phrase>
 <original>Non-destructive tools: move, rotate, or apply certain photo adjustments without permanently modifying an image</original>
-<translation></translation>
+<translation>Oförstörande  verktyg: flytta, rotera eller tillämpa vissa foto justeringar utan att permanent ändra en bild</translation>
 </phrase>
 
 <phrase>
 <original>Select tools: isolate parts of an image or layer for further editing</original>
-<translation></translation>
+<translation>Välj verktyg: isolera delar av en bild eller ett lager för vidare redigering</translation>
 </phrase>
 
 <phrase>
 <original>Text tools: create and edit text layers</original>
-<translation></translation>
+<translation>Textverktyg: skapa och redigera textlager </translation>
 </phrase>
 
 <phrase>
 <original>Paint tools: use a mouse, touchpad, or pen tablet to apply brushstrokes to an image or layer</original>
-<translation></translation>
+<translation>Måla verktyg: använda en mus, pekplatta, och penna tablett för att tillämpa penseldrag  på en bild eller ett lager</translation>
 </phrase>
 
 <phrase>
@@ -12998,12 +13002,12 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>Text (basic)</original>
-<translation></translation>
+<translation>Text (före utspädning)</translation>
 </phrase>
 
 <phrase>
 <original>Typography (advanced)</original>
-<translation></translation>
+<translation>Typografi (avancerat)</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 52 phrases. 14 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
@@ -13014,27 +13018,27 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>transform quality</original>
-<translation></translation>
+<translation>omvandla kvalitet</translation>
 </phrase>
 
 <phrase>
 <original>layer position (x, y)</original>
-<translation></translation>
+<translation>skikt position (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>layer size (w, h)</original>
-<translation></translation>
+<translation>skikt storlek (w, h)</translation>
 </phrase>
 
 <phrase>
 <original>layer angle</original>
-<translation></translation>
+<translation>skikt vinkel</translation>
 </phrase>
 
 <phrase>
 <original>layer shear (x, y)</original>
-<translation></translation>
+<translation>skikt skjuvning (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -13059,7 +13063,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>show resize nodes</original>
-<translation></translation>
+<translation>show ändra storlek noder</translation>
 </phrase>
 
 <phrase>
@@ -13069,37 +13073,37 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>show rotate nodes</original>
-<translation></translation>
+<translation>visar rotera noder</translation>
 </phrase>
 
 <phrase>
 <original>Make layer changes permanent</original>
-<translation></translation>
+<translation>Gör ändringar skikt bestående</translation>
 </phrase>
 
 <phrase>
 <original>size and position</original>
-<translation></translation>
+<translation>storlek och position</translation>
 </phrase>
 
 <phrase>
 <original>angle and shear</original>
-<translation></translation>
+<translation>vinkel och skjuvning</translation>
 </phrase>
 
 <phrase>
 <original>tool settings</original>
-<translation></translation>
+<translation>verktygsinställningar </translation>
 </phrase>
 
 <phrase>
 <original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
-<translation></translation>
+<translation>Se aktuella lagret trans (storlek, vinkel och skjuvning) permanent. Denna åtgärd är inte nödvändigt, men om visnings rendering är trög, kan det förbättra prestanda.</translation>
 </phrase>
 
 <phrase>
 <original>Nearest neighbor</original>
-<translation></translation>
+<translation>närmaste granne</translation>
 </phrase>
 
 <!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -13110,7 +13114,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>all effects</original>
-<translation></translation>
+<translation>alla effekter</translation>
 </phrase>
 
 <phrase>
@@ -13327,42 +13331,42 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>font face</original>
-<translation></translation>
+<translation>typsnitt</translation>
 </phrase>
 
 <phrase>
 <original>font size</original>
-<translation></translation>
+<translation>textstorlek</translation>
 </phrase>
 
 <phrase>
 <original>font style</original>
-<translation></translation>
+<translation>typsnitt</translation>
 </phrase>
 
 <phrase>
 <original>alignment</original>
-<translation></translation>
+<translation>inriktning</translation>
 </phrase>
 
 <phrase>
 <original>Crisp</original>
-<translation></translation>
+<translation>Knaprig</translation>
 </phrase>
 
 <phrase>
 <original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
-<translation></translation>
+<translation>Detta skikt är en typografi skikt. Om du vill redigera det med grundtexten  verktyget måste du först konvertera den till en grundläggande textlager.</translation>
 </phrase>
 
 <phrase>
 <original>(This action is non-destructive.)</original>
-<translation></translation>
+<translation>(Denna åtgärd är icke-förstörande.)</translation>
 </phrase>
 
 <phrase>
 <original>Click here to convert this layer to a basic text layer.</original>
-<translation></translation>
+<translation>Klicka här för att omvandla detta skikt till en grundläggande textlager.</translation>
 </phrase>
 
 <!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -13373,167 +13377,167 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>hinting</original>
-<translation></translation>
+<translation>jakt</translation>
 </phrase>
 
 <phrase>
 <original>remap</original>
-<translation></translation>
+<translation>remap</translation>
 </phrase>
 
 <phrase>
 <original>spacing</original>
-<translation></translation>
+<translation>mellanrum</translation>
 </phrase>
 
 <phrase>
 <original>jitter</original>
-<translation></translation>
+<translation>jitter</translation>
 </phrase>
 
 <phrase>
 <original>mirror</original>
-<translation></translation>
+<translation>spegel</translation>
 </phrase>
 
 <phrase>
 <original>inflation</original>
-<translation></translation>
+<translation>inflation</translation>
 </phrase>
 
 <phrase>
 <original>fill background</original>
-<translation></translation>
+<translation>fylla bakgrund</translation>
 </phrase>
 
 <phrase>
 <original>border style</original>
-<translation></translation>
+<translation>ramformat</translation>
 </phrase>
 
 <phrase>
 <original>background border</original>
-<translation></translation>
+<translation>bakgrundskant </translation>
 </phrase>
 
 <phrase>
 <original>fill text</original>
-<translation></translation>
+<translation>fylla text</translation>
 </phrase>
 
 <phrase>
 <original>outline text</original>
-<translation></translation>
+<translation>kontur text</translation>
 </phrase>
 
 <phrase>
 <original>line wrap</original>
-<translation></translation>
+<translation>radbyte</translation>
 </phrase>
 
 <phrase>
 <original>h. padding</original>
-<translation></translation>
+<translation>h. stoppning</translation>
 </phrase>
 
 <phrase>
 <original>v. padding</original>
-<translation></translation>
+<translation>v. stoppning</translation>
 </phrase>
 
 <phrase>
 <original>line spacing</original>
-<translation></translation>
+<translation>radavstånd</translation>
 </phrase>
 
 <phrase>
 <original>character</original>
-<translation></translation>
+<translation>karaktär</translation>
 </phrase>
 
 <phrase>
 <original>paragraph</original>
-<translation></translation>
+<translation>paragraf</translation>
 </phrase>
 
 <phrase>
 <original>visual</original>
-<translation></translation>
+<translation>visuell</translation>
 </phrase>
 
 <phrase>
 <original>font</original>
-<translation></translation>
+<translation>font</translation>
 </phrase>
 
 <phrase>
 <original>special</original>
-<translation></translation>
+<translation>särskild</translation>
 </phrase>
 
 <phrase>
 <original>normal</original>
-<translation></translation>
+<translation>vanligt</translation>
 </phrase>
 
 <phrase>
 <original>crisp</original>
-<translation></translation>
+<translation>knaprig</translation>
 </phrase>
 
 <phrase>
 <original>both</original>
-<translation></translation>
+<translation>båda</translation>
 </phrase>
 
 <phrase>
 <original>hiragana</original>
-<translation></translation>
+<translation>hiragana</translation>
 </phrase>
 
 <phrase>
 <original>katakana</original>
-<translation></translation>
+<translation>katakana </translation>
 </phrase>
 
 <phrase>
 <original>simplified Chinese</original>
-<translation></translation>
+<translation>förenklad kinesiska</translation>
 </phrase>
 
 <phrase>
 <original>traditional Chinese</original>
-<translation></translation>
+<translation>traditionell kinesiska</translation>
 </phrase>
 
 <phrase>
 <original>Titlecase</original>
-<translation></translation>
+<translation>Titel Case</translation>
 </phrase>
 
 <phrase>
 <original>manual only</original>
-<translation></translation>
+<translation>endast manuell</translation>
 </phrase>
 
 <phrase>
 <original>characters</original>
-<translation></translation>
+<translation>tecken</translation>
 </phrase>
 
 <phrase>
 <original>words</original>
-<translation></translation>
+<translation>ord</translation>
 </phrase>
 
 <phrase>
 <original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
-<translation></translation>
+<translation>Detta skikt är en grundläggande textlager. Om du vill redigera den med typografi verktyget måste du först konvertera den till en typografi skikt.</translation>
 </phrase>
 
 <phrase>
 <original>Click here to convert this layer to a typography layer.</original>
-<translation></translation>
+<translation>Klicka här för att omvandla detta skikt till en typografi skikt.</translation>
 </phrase>
 
 <!-- Toolpanel_Typography.frm contains 60 phrases. 27 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
@@ -13961,7 +13965,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Click here to reset all options</original>
-<translation></translation>
+<translation>Klicka här för att återställa alla alternativ</translation>
 </phrase>
 
 <phrase>
@@ -13986,7 +13990,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>start over</original>
-<translation></translation>
+<translation>börja om</translation>
 </phrase>
 
 <phrase>
@@ -14106,7 +14110,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>copy any relevant metadata to the new file</original>
-<translation></translation>
+<translation>kopiera relevanta metadata till den nya filen</translation>
 </phrase>
 
 <phrase>
@@ -14116,7 +14120,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>default metadata behavior on first save</original>
-<translation></translation>
+<translation>standard metadata beteende på först spara</translation>
 </phrase>
 
 <phrase>
@@ -14146,12 +14150,12 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation></translation>
+<translation>radera taggar som kan vara personlig (GPS, kamera detaljer, etc)</translation>
 </phrase>
 
 <phrase>
 <original>list PhotoDemon as the last-used editing software</original>
-<translation></translation>
+<translation>lista PhotoDemon som den senast använda redigeringsprogram</translation>
 </phrase>
 
 <phrase>
@@ -14176,22 +14180,22 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation></translation>
+<translation>våld extrahera binär typ taggar som Base64 (långsam)</translation>
 </phrase>
 
 <phrase>
 <original>estimate original JPEG quality settings</original>
-<translation></translation>
+<translation>uppskatta originalinställningarna  JPEG-kvalitet</translation>
 </phrase>
 
 <phrase>
 <original>extract unknown tags</original>
-<translation></translation>
+<translation>extrahera okända taggar</translation>
 </phrase>
 
 <phrase>
 <original>automatically hide duplicate tags</original>
-<translation></translation>
+<translation>automatiskt dölja dubbla taggar</translation>
 </phrase>
 
 <phrase>
@@ -14704,12 +14708,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation></translation>
+<translation>VARNING: denna mapp är ogiltig (tillgång förbjuden). Ange en giltig mapp. Om en ny mapp inte tillhandahålls kommer PhotoDemon använda systemet temp-mappen.</translation>
 </phrase>
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation></translation>
+<translation>Detta nya läge temporär mapp kommer inte att träda i kraft förrän du startar programmet.</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
@@ -14725,27 +14729,27 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrase>
 <original>Reset all plugin options</original>
-<translation></translation>
+<translation>Återställ alla plugin alternativ</translation>
 </phrase>
 
 <phrase>
 <original>forcibly disable</original>
-<translation></translation>
+<translation>forcibly inaktive</translation>
 </phrase>
 
 <phrase>
 <original>homepage</original>
-<translation></translation>
+<translation>hemsida</translation>
 </phrase>
 
 <phrase>
 <original>license</original>
-<translation></translation>
+<translation>licens</translation>
 </phrase>
 
 <phrase>
 <original>%1 summary</original>
-<translation></translation>
+<translation> %1 Sammanfattning</translation>
 </phrase>
 
 <phrase>
@@ -14800,12 +14804,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrase>
 <original>installed and up to date</original>
-<translation></translation>
+<translation>installerade och aktuell</translation>
 </phrase>
 
 <phrase>
 <original>installed, but version is unexpected</original>
-<translation></translation>
+<translation>installerat, men versionen är oväntat</translation>
 </phrase>
 
 <phrase>
@@ -14815,7 +14819,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrase>
 <original>not installed</original>
-<translation></translation>
+<translation>inte installerad</translation>
 </phrase>
 
 <phrase>
@@ -14831,89 +14835,90 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrase>
 <original>Batch repair</original>
-<translation></translation>
+<translation>batch reparation</translation>
 </phrase>
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation></translation>
+<translation>Klicka på OK för att starta reparationen</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair image files</original>
-<translation></translation>
+<translation>Försök att reparera bildfiler </translation>
 </phrase>
 
 <phrase>
 <original>source folder</original>
-<translation></translation>
+<translation>källmappen</translation>
 </phrase>
 
 <phrase>
 <original>destination folder (for repaired files only)</original>
-<translation></translation>
+<translation>målmapp (för reparerade filer)</translation>
 </phrase>
 
 <phrase>
 <original>repair options</original>
-<translation></translation>
+<translation>reparationsalternativ </translation>
 </phrase>
 
 <phrase>
 <original>progress</original>
-<translation></translation>
+<translation>framsteg</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair video and audio files</original>
-<translation></translation>
+<translation>Försök att reparera video- och ljudfiler </translation>
 </phrase>
 
 <phrase>
 <original>overwrite matching filenames in the destination folder</original>
-<translation></translation>
+<translation>skriva matchande filnamn i destinationsmappen</translation>
 </phrase>
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation></translation>
+<translation>efter en framgångsrik återhämtning, radera den ursprungliga (oreparerade) fil</translation>
 </phrase>
 
 <phrase>
 <original>generating list of files to repair</original>
-<translation></translation>
+<translation>generera lista över filer för att reparera</translation>
 </phrase>
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation></translation>
+<translation>bearbetning fil %1 %2 ( %3 reparationer utförts)</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation></translation>
+<translation>Reparationer avslutad.  %1 filer repareras.</translation>
 </phrase>
 
 <phrase>
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation></translation>
+<translation> %1 filer (s) repaired.
+ vbCrLf reparerade filer har sparats till destinationsmappen. Oreparerade filer kvar i sina ursprungliga platser.</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete</original>
-<translation></translation>
+<translation>reparationer avslutad</translation>
 </phrase>
 
 <phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
-<translation></translation>
+<translation>källmappen  inte innehåller några filer. Försök en annan mapp.</translation>
 </phrase>
 
 <phrase>
 <original>No files found</original>
-<translation></translation>
+<translation>Inga filer hittades</translation>
 </phrase>
 
 <!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->

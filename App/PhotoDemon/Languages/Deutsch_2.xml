@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE) - (rk)</langname>
-<langversion>6.8.1882</langversion>
+<langversion>6.8.1888</langversion>
 <langstatus>Abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -10411,7 +10411,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>Exporteinstellungen für dieses Format festlegen</translation>
 </phrase>
 
 <phrase>
@@ -10670,12 +10670,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Bevor Sie fortfahren, müssen Sie auf den Button "Exporteinstellungen  für dieses Format festlegen" klicken, um zu spezifizieren, welche Exporteinstellungen Sie verwenden wollen.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>Exporteinstellungen erforderlich</translation>
 </phrase>
 
 <phrase>

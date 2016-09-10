@@ -6,8 +6,8 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.1882</langversion>
-<langstatus>complete</langstatus>
+<langversion>6.8.1888</langversion>
+<langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
 
@@ -10410,7 +10410,7 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>установить параметры экспорта для этого формата</translation>
 </phrase>
 
 <phrase>
@@ -10669,12 +10669,12 @@ Would вы хотите сохранить список партии перед 
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Прежде чем продолжить, вам нужно нажать "Установить параметры экспорта для этого формата", чтобы указать, какие параметры экспорта вы хотите использовать.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>Экспорт настроек требуется</translation>
 </phrase>
 
 <phrase>

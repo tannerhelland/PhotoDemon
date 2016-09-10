@@ -6,8 +6,8 @@
 
 <langid>hu-HU</langid>
 <langname>Magyar</langname>
-<langversion>6.8.1882</langversion>
-<langstatus>teljesen</langstatus>
+<langversion>6.8.1888</langversion>
+<langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
 
@@ -10393,7 +10393,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>megállapított export beállítások ebben a formátumban</translation>
 </phrase>
 
 <phrase>
@@ -10652,12 +10652,12 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Mielőtt továbbmennénk, meg kell kattintani a "set export beállítások ebben a formában" gombra határozni, hogy mi export beállításokat szeretne használni.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>Export szükséges beállításokat</translation>
 </phrase>
 
 <phrase>

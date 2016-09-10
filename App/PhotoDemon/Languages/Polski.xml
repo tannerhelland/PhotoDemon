@@ -6,8 +6,8 @@
 
 <langid>pl-PL</langid>
 <langname>Polski</langname>
-<langversion>6.8.1882</langversion>
-<langstatus>Całkowicie</langstatus>
+<langversion>6.8.1888</langversion>
+<langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
 
@@ -3665,8 +3665,10 @@ Please enter a numeric value.</original>
 
 You can also use the Open Image button on the left,
 or the File > Open and File > Import menus.</original>
-<translation>Przeciągnij obraz na tej przestrzeni, aby rozpocząć editing.                   
-Można także użyć przycisku Otwórz obraz po lewej stronie,                  lub Plik> Otwórz menu Plik> Importuj.</translation>
+<translation>Przeciągnij obraz na tej przestrzeni, aby rozpocząć editing.
+
+Można także użyć przycisku Otwórz obraz po lewej stronie, 
+lub Plik> Otwórz menu Plik> Importuj.</translation>
 </phrase>
 
 <!-- pdCanvasView.ctl contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
@@ -10393,7 +10395,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>ustawienia eksportu do tego formatu</translation>
 </phrase>
 
 <phrase>
@@ -10652,12 +10654,12 @@ Would chcesz zapisać swoją listę partii przed wyjściem?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Przed kontynuowaniem trzeba kliknąć "Set ustawienia eksportu do tego formatu", aby określić, jakie eksport ustawienia chcesz użyć.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>Wymagane ustawienia eksportu</translation>
 </phrase>
 
 <phrase>
