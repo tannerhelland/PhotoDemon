@@ -58,17 +58,8 @@ End Function
 ' Note that this function *does not touch* the main pdImages object, and as such, the created image will not yet have
 ' an imageID value.  That values is assigned when the object is added to the main pdImages() collection.
 Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
-    
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
     dstImage.currentZoomValue = g_Zoom.GetZoom100Index
-    
-    'Also, set default metadata handling values (which vary according to user preference)
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    cParams.AddParam "MetadataExportAllowed", g_UserPreferences.GetPref_Boolean("Saving", "PreserveMetadata", True)
-    cParams.AddParam "MetadataAnonymize", g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", False)
-    dstImage.imgStorage.AddEntry "MetadataSettings", cParams.GetParamString
-    
 End Sub
 
 'When loading an image file, there's a chance we won't be able to load the image correctly.  Because of that, we start

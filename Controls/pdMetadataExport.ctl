@@ -397,20 +397,11 @@ End Sub
 'If the parent image has metadata, we provide a bold notification to the user.  (We also retrieve the metadata presets,
 ' if any, from the parent image.)
 Private Sub EvaluatePresenceOfMetadata()
-    If Not (m_ImageCopy Is Nothing) Then
+    If (Not (m_ImageCopy Is Nothing)) Then
         If m_ImageCopy.imgMetadata.HasMetadata Then
             lblTitle.Caption = g_Language.TranslateMessage("This image contains metadata.")
             lblTitle.FontBold = True
             hplReviewMetadata.Caption = g_Language.TranslateMessage("click to review this image's metadata")
-            
-            Dim cParams As pdParamXML
-            Set cParams = New pdParamXML
-            cParams.SetParamString m_ImageCopy.imgStorage.GetEntry_String("MetadataSettings")
-            
-            If cParams.GetBool("MetadataExportAllowed", True) Then chkMetadata.Value = vbChecked Else chkMetadata.Value = vbUnchecked
-            If cParams.GetBool("MetadataAnonymize", False) Then chkAnonymize.Value = vbChecked Else chkAnonymize.Value = vbUnchecked
-            If cParams.GetBool("MetadataEmbedThumbnail", False) Then chkThumbnail.Value = vbChecked Else chkThumbnail.Value = vbUnchecked
-            
         Else
             lblTitle.Caption = g_Language.TranslateMessage("This image does not contain metadata.")
             lblTitle.FontBold = False

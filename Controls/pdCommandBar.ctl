@@ -657,7 +657,7 @@ Private Sub ResetSettings()
                 eControl.Text = "0"
                 
             'A metadata management control has its own "reset" function
-            Case "pdMetadata"
+            Case "pdMetadataExport"
                 eControl.Reset
         
         End Select
@@ -911,7 +911,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
                 controlValue = BuildParams(eControl.ResizeWidth, eControl.ResizeHeight, eControl.LockAspectRatio, eControl.UnitOfMeasurement, eControl.ResizeDPI, eControl.UnitOfResolution)
                 
             'Metadata management controls provide their own XML string
-            Case "pdMetadata"
+            Case "pdMetadataExport"
                 controlValue = eControl.GetMetadataSettings
                 
         End Select
@@ -1123,7 +1123,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.ResizeHeight = cParam.GetDouble(2, 1080)
                         
                     'Metadata management controls handle their own XML string parsing
-                    Case "pdMetadata"
+                    Case "pdMetadataExport"
                         eControl.SetMetadataSettings controlValue, True
                         
                 End Select
