@@ -6,10 +6,10 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.204</langversion>
+<langversion>6.8.1888</langversion>
 <langstatus>raw machine translation</langstatus>
 
-<author>Google Translate</author>
+<author>Google Translator</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -385,12 +385,12 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 
 <phrase>
 <original>Unfortunately, this PC does not have enough memory to create a %1x%2 image.  Please reduce the requested size and try again.</original>
-<translation></translation>
+<translation>Malangnya, PC ini tidak mempunyai memori yang cukup untuk mewujudkan %1x %2 imej. Sila mengurangkan saiz yang diminta dan cuba lagi.</translation>
 </phrase>
 
 <phrase>
 <original>Image too large</original>
-<translation></translation>
+<translation>Imej terlalu besar</translation>
 </phrase>
 
 <!-- VBP_MenuModule.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -565,7 +565,7 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 
 <phrase>
 <original>Total unique colors: %1</original>
-<translation></translation>
+<translation>Jumlah warna yang unik: %1</translation>
 </phrase>
 
 <phrase>
@@ -1220,22 +1220,22 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>Frame %1</original>
-<translation></translation>
+<translation>Frame %1</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2)</original>
-<translation></translation>
+<translation>Icon ( %1x %2)</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>Icon ( %1x %2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>Page %1</original>
-<translation></translation>
+<translation>Halaman %1</translation>
 </phrase>
 
 <!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -1262,7 +1262,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>File not found: %1</original>
-<translation></translation>
+<translation>Fail tidak dijumpai: %1</translation>
 </phrase>
 
 <phrase>
@@ -1519,7 +1519,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 
 <phrase>
 <original>artistic license</original>
-<translation></translation>
+<translation>lesen artistik</translation>
 </phrase>
 
 <phrase>
@@ -1529,12 +1529,12 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 
 <phrase>
 <original>FreeImage public license</original>
-<translation></translation>
+<translation>Free Image lesen awam</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation></translation>
+<translation>lesen MIT</translation>
 </phrase>
 
 <phrase>
@@ -1544,7 +1544,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 
 <phrase>
 <original>GNU GPLv3</original>
-<translation></translation>
+<translation>GNU GPLv3</translation>
 </phrase>
 
 <!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -1675,12 +1675,12 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 
 <phrase>
 <original>Using OptiPNG to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>Menggunakan OptiPNG untuk mengoptimumkan fail PNG. Ini mungkin mengambil sedikit masa</translation>
 </phrase>
 
 <phrase>
 <original>OptiPNG optimization successful!</original>
-<translation></translation>
+<translation>OptiPNG pengoptimuman berjaya!</translation>
 </phrase>
 
 <!-- Plugin_OptiPNG.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
@@ -1691,17 +1691,17 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 
 <phrase>
 <original>Using pngquant to optimize the PNG file.  This may take a moment</original>
-<translation></translation>
+<translation>Menggunakan pngquant untuk mengoptimumkan fail PNG. Ini mungkin mengambil sedikit masa</translation>
 </phrase>
 
 <phrase>
 <original>pngquant optimization successful!</original>
-<translation></translation>
+<translation>pengoptimuman pngquant berjaya!</translation>
 </phrase>
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation></translation>
+<translation>PNGQuant tidak boleh menulis fail. imej 32bpp keingkaran itu telah disimpan sebaliknya.</translation>
 </phrase>
 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -3218,7 +3218,7 @@ Please masukkan nilai berangka.</translation>
 
 <phrase>
 <original>File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt.</original>
-<translation></translation>
+<translation>Fail nod adalah tidak mampat, tetapi saiz disenaraikan sebagai sifar. Muatkan mustahil; meninggalkan percubaan.</translation>
 </phrase>
 
 <phrase>
@@ -4066,7 +4066,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>JPEG-specific settings</original>
-<translation></translation>
+<translation>tetapan JPEG khusus</translation>
 </phrase>
 
 <!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
@@ -4122,12 +4122,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>The final width and height measurements must be between 1 and 32760 pixels.</original>
-<translation></translation>
+<translation>Lebar dan ketinggian ukuran akhir mesti mengandungi antara 1 dan s32760 piksel.</translation>
 </phrase>
 
 <phrase>
 <original>Invalid measurement</original>
-<translation></translation>
+<translation>pengukuran yang tidak sah</translation>
 </phrase>
 
 <phrase>
@@ -4441,17 +4441,17 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>&Batch operations</original>
-<translation></translation>
+<translation>operasi Batch</translation>
 </phrase>
 
 <phrase>
 <original>Process</original>
-<translation></translation>
+<translation>Proses</translation>
 </phrase>
 
 <phrase>
 <original>Repair</original>
-<translation></translation>
+<translation>pembaikan</translation>
 </phrase>
 
 <phrase>
@@ -4601,12 +4601,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>90 clockwise</original>
-<translation></translation>
+<translation>90 mengikut arah jam</translation>
 </phrase>
 
 <phrase>
 <original>90 counter-clockwise</original>
-<translation></translation>
+<translation>90 lawan</translation>
 </phrase>
 
 <phrase>
@@ -4726,17 +4726,17 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Rotate 90 clockwise</original>
-<translation></translation>
+<translation>Putar 90 mengikut arah jam</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 90 counter-clockwise</original>
-<translation></translation>
+<translation>Putar 90 lawan</translation>
 </phrase>
 
 <phrase>
 <original>Rotate 180</original>
-<translation></translation>
+<translation>Putar 180</translation>
 </phrase>
 
 <phrase>
@@ -5606,12 +5606,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Light theme</original>
-<translation></translation>
+<translation>tema Light</translation>
 </phrase>
 
 <phrase>
 <original>Dark theme</original>
-<translation></translation>
+<translation>tema gelap</translation>
 </phrase>
 
 <phrase>
@@ -5626,7 +5626,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Purple</original>
-<translation></translation>
+<translation>Ungu</translation>
 </phrase>
 
 <phrase>
@@ -6379,12 +6379,12 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>do not modify</original>
-<translation></translation>
+<translation>tidak mengubah</translation>
 </phrase>
 
 <phrase>
 <original>remove from image</original>
-<translation></translation>
+<translation>keluarkan dari imej</translation>
 </phrase>
 
 <phrase>
@@ -6420,7 +6420,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>Adjusting brightness and contrast</original>
-<translation></translation>
+<translation>Melaraskan kecerahan dan kontras</translation>
 </phrase>
 
 <phrase>
@@ -6430,7 +6430,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>legacy</original>
-<translation></translation>
+<translation>legasi</translation>
 </phrase>
 
 <!-- Adjustments_BrightnessContrast.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -7988,7 +7988,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>colors</original>
-<translation></translation>
+<translation>warna</translation>
 </phrase>
 
 <phrase>
@@ -8003,7 +8003,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>pattern color</original>
-<translation></translation>
+<translation>warna corak</translation>
 </phrase>
 
 <phrase>
@@ -8527,7 +8527,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>* current image state</original>
-<translation></translation>
+<translation>* Negeri imej semasa</translation>
 </phrase>
 
 <phrase>
@@ -8537,7 +8537,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>layer: %1</original>
-<translation></translation>
+<translation>lapisan: %1</translation>
 </phrase>
 
 <phrase>
@@ -9435,7 +9435,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Artistic contour edge detection</original>
-<translation></translation>
+<translation>pengesanan pinggir Artistic kontur</translation>
 </phrase>
 
 <phrase>
@@ -9849,7 +9849,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Bilateral filtering is a complex task, and on large images it can take a very long time to process.  PhotoDemon can estimate certain parameters, providing a large speed boost at the cost of slightly lower quality.</original>
-<translation></translation>
+<translation>penapisan dua hala adalah satu tugas yang kompleks, dan pada imej-imej besar ia boleh mengambil masa yang sangat lama untuk memproses. PhotoDemon boleh menganggarkan parameter tertentu, memberikan peningkatan kelajuan yang besar pada kos kualiti lebih rendah sedikit.</translation>
 </phrase>
 
 <!-- Effects_Noise_BilateralFilter.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -10411,7 +10411,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>tetapan eksport ditetapkan untuk format ini</translation>
 </phrase>
 
 <phrase>
@@ -10426,7 +10426,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>apply photo editing actions</original>
-<translation></translation>
+<translation>memohon foto tindakan pengeditan</translation>
 </phrase>
 
 <phrase>
@@ -10446,7 +10446,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>apply other actions from a saved macro file</original>
-<translation></translation>
+<translation>menggunakan tindakan lain dari fail makro disimpan</translation>
 </phrase>
 
 <phrase>
@@ -10461,37 +10461,37 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>include subfolders</original>
-<translation></translation>
+<translation>termasuk subfolder</translation>
 </phrase>
 
 <phrase>
 <original>current batch list</original>
-<translation></translation>
+<translation>senarai kumpulan semasa</translation>
 </phrase>
 
 <phrase>
 <original>save list</original>
-<translation></translation>
+<translation>menyimpan senarai</translation>
 </phrase>
 
 <phrase>
 <original>load list</original>
-<translation></translation>
+<translation>senarai beban</translation>
 </phrase>
 
 <phrase>
 <original>erase entire list</original>
-<translation></translation>
+<translation>memadam keseluruhan senarai</translation>
 </phrase>
 
 <phrase>
 <original>remove selected image</original>
-<translation></translation>
+<translation>mengeluarkan imej yang dipilih</translation>
 </phrase>
 
 <phrase>
 <original>add individual images</original>
-<translation></translation>
+<translation>menambah imej individu</translation>
 </phrase>
 
 <phrase>
@@ -10501,27 +10501,27 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>add images</original>
-<translation></translation>
+<translation>menambah imej</translation>
 </phrase>
 
 <phrase>
 <original>modify list</original>
-<translation></translation>
+<translation>mengubah suai senarai</translation>
 </phrase>
 
 <phrase>
 <original>load / save list</original>
-<translation></translation>
+<translation>beban/menyimpan senarai</translation>
 </phrase>
 
 <phrase>
 <original>add entire folder(s)</original>
-<translation></translation>
+<translation>menambah folder keseluruhan)</translation>
 </phrase>
 
 <phrase>
 <original>remove all images in this folder</original>
-<translation></translation>
+<translation>keluarkan semua imej di dalam folder ini</translation>
 </phrase>
 
 <phrase>
@@ -10660,7 +10660,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>You have not selected any images to process!  Please add one or more images to the batch list.</original>
-<translation></translation>
+<translation>Anda belum memilih mana-mana imej untuk memproses! Sila tambah satu atau lebih imej ke senarai kumpulan.</translation>
 </phrase>
 
 <phrase>
@@ -10670,12 +10670,12 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Sebelum meneruskan, anda perlu klik "Tetapan eksport ditetapkan untuk ini format" untuk menentukan apa tetapan eksport yang anda mahu gunakan.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>tetapan eksport yang diperlukan</translation>
 </phrase>
 
 <phrase>
@@ -10725,17 +10725,17 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 
 <phrase>
 <original>You can add files to the batch list in two ways</original>
-<translation></translation>
+<translation>Anda boleh menambah fail ke senarai kumpulan dalam dua cara</translation>
 </phrase>
 
 <phrase>
 <original>1) By manually adding one or more image file(s) using a standard Open Image dialog.</original>
-<translation></translation>
+<translation>1) Dengan menambah satu atau lebih fail imej (s) menggunakan dialog Buka Imej yang standard manual.</translation>
 </phrase>
 
 <phrase>
 <original>2) By adding entire folders at once.  Image file(s) inside the folder (or subfolders, if selected) will be automatically identified.</original>
-<translation></translation>
+<translation>2) Dengan menambah keseluruhan folder sekaligus. fail imej (s) di dalam folder (atau subfolder, jika dipilih) akan secara automatik dikenal pasti.</translation>
 </phrase>
 
 <phrase>
@@ -11186,7 +11186,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>currently available programs (listed by window title)</original>
-<translation></translation>
+<translation>program-program yang disediakan (yang disenaraikan oleh tajuk tetingkap)</translation>
 </phrase>
 
 <phrase>
@@ -11221,7 +11221,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>specific program</original>
-<translation></translation>
+<translation>program tertentu</translation>
 </phrase>
 
 <phrase>
@@ -11231,7 +11231,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Some programs (including Windows Store apps) do not allow direct screen captures.  If an application preview appears as a black square, you will need to take a full desktop screenshot, then manually crop the desired window region.</original>
-<translation></translation>
+<translation>Beberapa program (termasuk aplikasi Windows Store) tidak membenarkan menangkap skrin langsung. Jika pratonton aplikasi muncul sebagai persegi hitam, anda akan perlu untuk mengambil tangkapan skrin desktop penuh, kemudian secara manual memangkas rantau tetingkap yang dikehendaki.</translation>
 </phrase>
 
 <phrase>
@@ -11654,32 +11654,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Pixmap Export Options</original>
-<translation></translation>
+<translation>Pixmap Pilihan Eksport</translation>
 </phrase>
 
 <phrase>
 <original>change file extension to match color model</original>
-<translation></translation>
+<translation>menukar sambungan fail untuk memadankan model warna</translation>
 </phrase>
 
 <phrase>
 <original>format</original>
-<translation></translation>
+<translation>format</translation>
 </phrase>
 
 <phrase>
 <original>floating-point</original>
-<translation></translation>
+<translation>titik terapung</translation>
 </phrase>
 
 <phrase>
 <original>binary</original>
-<translation></translation>
+<translation>binari</translation>
 </phrase>
 
 <phrase>
 <original>ASCII</original>
-<translation></translation>
+<translation>ASCII</translation>
 </phrase>
 
 <!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11690,127 +11690,127 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>PNG export options</original>
-<translation></translation>
+<translation>pilihan eksport PNG</translation>
 </phrase>
 
 <phrase>
 <original>fast, larger file</original>
-<translation></translation>
+<translation>cepat, fail besar</translation>
 </phrase>
 
 <phrase>
 <original>use interlacing</original>
-<translation></translation>
+<translation>menggunakan interlacing</translation>
 </phrase>
 
 <phrase>
 <original>compression level</original>
-<translation></translation>
+<translation>tahap mampatan</translation>
 </phrase>
 
 <phrase>
 <original>embed background color in file</original>
-<translation></translation>
+<translation>warna latar belakang embed dalam fail</translation>
 </phrase>
 
 <phrase>
 <original>slow, smaller file</original>
-<translation></translation>
+<translation>perlahan, fail yang lebih kecil</translation>
 </phrase>
 
 <phrase>
 <original>lossless file size optimization (OptiPNG)</original>
-<translation></translation>
+<translation>saiz fail Lossless pengoptimuman (OptiPNG)</translation>
 </phrase>
 
 <phrase>
 <original>palette size</original>
-<translation></translation>
+<translation>saiz palet</translation>
 </phrase>
 
 <phrase>
 <original>click to generate a new preview image</original>
-<translation></translation>
+<translation>klik untuk menjana imej pratonton baru</translation>
 </phrase>
 
 <phrase>
 <original>lossy optimization options</original>
-<translation></translation>
+<translation>pilihan pengoptimuman lossy</translation>
 </phrase>
 
 <phrase>
 <original>use dithering to improve quality</original>
-<translation></translation>
+<translation>menggunakan penggetaran untuk meningkatkan kualiti</translation>
 </phrase>
 
 <phrase>
 <original>target quality</original>
-<translation></translation>
+<translation>kualiti sasaran</translation>
 </phrase>
 
 <phrase>
 <original>apply lossy optimizations</original>
-<translation></translation>
+<translation>gunakan pengoptimuman lossy</translation>
 </phrase>
 
 <phrase>
 <original>optimization level</original>
-<translation></translation>
+<translation>tahap pengoptimuman</translation>
 </phrase>
 
 <phrase>
 <original>lossless optimization options</original>
-<translation></translation>
+<translation>pilihan Lossless pengoptimuman</translation>
 </phrase>
 
 <phrase>
 <original>standard PNG</original>
-<translation></translation>
+<translation>PNG standard</translation>
 </phrase>
 
 <phrase>
 <original>web-optimized PNG</original>
-<translation></translation>
+<translation>PNG web dioptimumkan</translation>
 </phrase>
 
 <phrase>
 <original>basic (default)</original>
-<translation></translation>
+<translation>asas (lalai)</translation>
 </phrase>
 
 <phrase>
 <original>moderate</original>
-<translation></translation>
+<translation>sederhana</translation>
 </phrase>
 
 <phrase>
 <original>indexed</original>
-<translation></translation>
+<translation>diindeks</translation>
 </phrase>
 
 <phrase>
 <original>full</original>
-<translation></translation>
+<translation>penuh</translation>
 </phrase>
 
 <phrase>
 <original>binary (by cut-off)</original>
-<translation></translation>
+<translation>binari (dengan cut-off)</translation>
 </phrase>
 
 <phrase>
 <original>binary (by color)</original>
-<translation></translation>
+<translation>binari (dengan warna)</translation>
 </phrase>
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation></translation>
+<translation>sila tunggu sebentar imej pratonton baru dicipta</translation>
 </phrase>
 
 <phrase>
 <original>These lossy optimization settings reduced file size by %1.</original>
-<translation></translation>
+<translation>Tetapan pengoptimuman lossy mengurangkan saiz fail dengan %1.</translation>
 </phrase>
 
 <!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -11821,32 +11821,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>TIFF export options</original>
-<translation></translation>
+<translation>pilihan eksport TIFF</translation>
 </phrase>
 
 <phrase>
 <original>color compression</original>
-<translation></translation>
+<translation>mampatan warna</translation>
 </phrase>
 
 <phrase>
 <original>monochrome compression</original>
-<translation></translation>
+<translation>mampatan monokrom</translation>
 </phrase>
 
 <phrase>
 <original>page format</original>
-<translation></translation>
+<translation>format halaman</translation>
 </phrase>
 
 <phrase>
 <original>single page (composited image)</original>
-<translation></translation>
+<translation>halaman tunggal (imej digubah)</translation>
 </phrase>
 
 <phrase>
 <original>multipage (one page per layer)</original>
-<translation></translation>
+<translation>halaman berbilang (satu halaman setiap lapisan)</translation>
 </phrase>
 
 <phrase>
@@ -11856,17 +11856,17 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>ZIP</original>
-<translation></translation>
+<translation>ZIP</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 4</original>
-<translation></translation>
+<translation>CCITT Faks 4</translation>
 </phrase>
 
 <phrase>
 <original>CCITT Fax 3</original>
-<translation></translation>
+<translation>CCITT Faks 3</translation>
 </phrase>
 
 <!-- File_Save_TIFF.frm contains 43 phrases. 33 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -12438,7 +12438,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>border regions</original>
-<translation></translation>
+<translation>kawasan sempadan</translation>
 </phrase>
 
 <phrase>
@@ -12453,32 +12453,32 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>keep current</original>
-<translation></translation>
+<translation>menjaga semasa</translation>
 </phrase>
 
 <phrase>
 <original>enlarge to fit</original>
-<translation></translation>
+<translation>membesarkan untuk dimuatkan</translation>
 </phrase>
 
 <phrase>
 <original>nearest-neighbor</original>
-<translation></translation>
+<translation>terdekat jiran</translation>
 </phrase>
 
 <phrase>
 <original>bilinear</original>
-<translation></translation>
+<translation>bilinear</translation>
 </phrase>
 
 <phrase>
 <original>bicubic</original>
-<translation></translation>
+<translation>Bicubic</translation>
 </phrase>
 
 <phrase>
 <original>fill with color</original>
-<translation></translation>
+<translation>mengisi dengan warna</translation>
 </phrase>
 
 <phrase>
@@ -12556,17 +12556,17 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>flatten behavior</original>
-<translation></translation>
+<translation>meleperkan tingkah laku</translation>
 </phrase>
 
 <phrase>
 <original>keep transparency</original>
-<translation></translation>
+<translation>menjaga ketelusan</translation>
 </phrase>
 
 <phrase>
 <original>remove transparency</original>
-<translation></translation>
+<translation>keluarkan ketelusan</translation>
 </phrase>
 
 <!-- Layer_Flatten.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13119,7 +13119,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>all effects</original>
-<translation></translation>
+<translation>semua kesan</translation>
 </phrase>
 
 <phrase>
@@ -14713,12 +14713,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
-<translation></translation>
+<translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika folder baru tidak diberikan, PhotoDemon akan menggunakan folder sistem temp.</translation>
 </phrase>
 
 <phrase>
 <original>This new temporary folder location will not take effect until you restart the program.</original>
-<translation></translation>
+<translation>lokasi folder sementara yang baru ini tidak akan berfungsi sehingga anda memulakan semula program.</translation>
 </phrase>
 
 <!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
@@ -14739,22 +14739,22 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>forcibly disable</original>
-<translation></translation>
+<translation>secara paksa yang tidak aktif</translation>
 </phrase>
 
 <phrase>
 <original>homepage</original>
-<translation></translation>
+<translation>laman utama</translation>
 </phrase>
 
 <phrase>
 <original>license</original>
-<translation></translation>
+<translation>lesen</translation>
 </phrase>
 
 <phrase>
 <original>%1 summary</original>
-<translation></translation>
+<translation> %1 ringkasan</translation>
 </phrase>
 
 <phrase>
@@ -14809,12 +14809,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>installed and up to date</original>
-<translation></translation>
+<translation>dipasang dan terkini</translation>
 </phrase>
 
 <phrase>
 <original>installed, but version is unexpected</original>
-<translation></translation>
+<translation>dipasang, tetapi versi yang tidak dijangka</translation>
 </phrase>
 
 <phrase>
@@ -14824,7 +14824,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>not installed</original>
-<translation></translation>
+<translation>tidak dipasang</translation>
 </phrase>
 
 <phrase>
@@ -14840,89 +14840,91 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>Batch repair</original>
-<translation></translation>
+<translation>pembaikan Batch</translation>
 </phrase>
 
 <phrase>
 <original>click OK to begin the repair operation</original>
-<translation></translation>
+<translation>klik OK untuk memulakan operasi pembaikan</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair image files</original>
-<translation></translation>
+<translation>cuba untuk membaiki fail imej</translation>
 </phrase>
 
 <phrase>
 <original>source folder</original>
-<translation></translation>
+<translation>folder sumber</translation>
 </phrase>
 
 <phrase>
 <original>destination folder (for repaired files only)</original>
-<translation></translation>
+<translation>folder destinasi (untuk fail dibaiki sahaja)</translation>
 </phrase>
 
 <phrase>
 <original>repair options</original>
-<translation></translation>
+<translation>pilihan pembaikan</translation>
 </phrase>
 
 <phrase>
 <original>progress</original>
-<translation></translation>
+<translation>kemajuan</translation>
 </phrase>
 
 <phrase>
 <original>attempt to repair video and audio files</original>
-<translation></translation>
+<translation>cuba untuk membaiki video dan fail audio</translation>
 </phrase>
 
 <phrase>
 <original>overwrite matching filenames in the destination folder</original>
-<translation></translation>
+<translation>menulis ganti yang sepadan dengan nama fail dalam folder destinasi</translation>
 </phrase>
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation></translation>
+<translation>selepas pemulihan yang berjaya, padamkan asal (tidak dibaiki) fail</translation>
 </phrase>
 
 <phrase>
 <original>generating list of files to repair</original>
-<translation></translation>
+<translation>menjana senarai fail untuk membaiki</translation>
 </phrase>
 
 <phrase>
 <original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation></translation>
+<translation>fail pemprosesan %1 daripada %2 ( %3 pembaikan dilakukan)</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation></translation>
+<translation>Pembaikan selesai.  %1 fail dibaiki.</translation>
 </phrase>
 
 <phrase>
 <original>%1 files(s) repaired.
 
 Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation></translation>
+<translation> %1 fail repaired.
+ 
+ fail Dibaiki (s) telah disimpan ke folder destinasi. fail tidak dibaiki kekal di lokasi asal mereka.</translation>
 </phrase>
 
 <phrase>
 <original>Repairs complete</original>
-<translation></translation>
+<translation>pembaikan selesai</translation>
 </phrase>
 
 <phrase>
 <original>The source folder does not contain any files.  Please try another folder.</original>
-<translation></translation>
+<translation>Folder sumber tidak mengandungi sebarang fail. Sila cuba folder lain.</translation>
 </phrase>
 
 <phrase>
 <original>No files found</original>
-<translation></translation>
+<translation>Tiada fail ditemui</translation>
 </phrase>
 
 <!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->

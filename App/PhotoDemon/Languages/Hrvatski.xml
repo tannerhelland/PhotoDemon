@@ -6,8 +6,8 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.1882</langversion>
-<langstatus>potpuno</langstatus>
+<langversion>6.8.1888</langversion>
+<langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
 
@@ -10410,7 +10410,7 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>set izvoza postavki za ovaj format</translation>
 </phrase>
 
 <phrase>
@@ -10669,12 +10669,12 @@ Would želite spremiti popis serija prije izlaska?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Prije nego što nastavite, potrebno je kliknuti na "postavljene postavke izvoza za ovaj format" gumb kako biste odredili koje postavke izvoz želite koristiti.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>izvoza postavki potrebna</translation>
 </phrase>
 
 <phrase>

@@ -6,8 +6,8 @@
 
 <langid>cs-CZ</langid>
 <langname>český</langname>
-<langversion>6.8.1882</langversion>
-<langstatus>úplně</langstatus>
+<langversion>6.8.1888</langversion>
+<langstatus>raw machine trnaslation</langstatus>
 
 <author>Google Translator</author>
 
@@ -10393,7 +10393,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>sada nastavení pro tento formát exportu</translation>
 </phrase>
 
 <phrase>
@@ -10652,12 +10652,12 @@ Would se vám líbí uložit seznam dávky před ukončením?</translation>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>Než budete pokračovat, budete muset kliknout na "Set nastavení exportu tohoto formátu" tlačítko pro upřesnění, jaká nastavení export, který chcete použít.</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>požadované nastavení exportu</translation>
 </phrase>
 
 <phrase>
