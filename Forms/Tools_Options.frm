@@ -597,16 +597,6 @@ Begin VB.Form FormPreferences
       Width           =   8295
       _ExtentX        =   0
       _ExtentY        =   0
-      Begin PhotoDemon.pdCheckBox chkSaveMetadata 
-         Height          =   375
-         Left            =   240
-         TabIndex        =   43
-         Top             =   4560
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-         Caption         =   "copy any relevant metadata to the new file"
-      End
       Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
          Height          =   330
          Left            =   240
@@ -634,17 +624,6 @@ Begin VB.Form FormPreferences
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdLabel lblSubheader 
-         Height          =   240
-         Index           =   3
-         Left            =   240
-         Top             =   4140
-         Width           =   7950
-         _ExtentX        =   14023
-         _ExtentY        =   503
-         Caption         =   "default metadata behavior on first save:"
-         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblInterfaceTitle 
          Height          =   285
@@ -716,22 +695,11 @@ Begin VB.Form FormPreferences
          FontSize        =   12
          ForeColor       =   5263440
       End
-      Begin PhotoDemon.pdCheckBox chkAnonymizeMetadata 
-         Height          =   375
-         Left            =   240
-         TabIndex        =   44
-         Top             =   4920
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   661
-         Caption         =   "erase tags that might be personal (GPS, camera details, etc)"
-         Value           =   0
-      End
       Begin PhotoDemon.pdCheckBox chkMetadataListPD 
          Height          =   375
          Left            =   240
-         TabIndex        =   49
-         Top             =   5280
+         TabIndex        =   47
+         Top             =   4200
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   661
@@ -837,7 +805,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataBinary 
          Height          =   330
          Left            =   240
-         TabIndex        =   45
+         TabIndex        =   43
          Top             =   2400
          Width           =   7920
          _ExtentX        =   13970
@@ -848,7 +816,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
          Height          =   330
          Left            =   240
-         TabIndex        =   46
+         TabIndex        =   44
          Top             =   1680
          Width           =   7920
          _ExtentX        =   13970
@@ -858,7 +826,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
          Height          =   330
          Left            =   240
-         TabIndex        =   47
+         TabIndex        =   45
          Top             =   2040
          Width           =   7920
          _ExtentX        =   13970
@@ -869,7 +837,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
          Height          =   330
          Left            =   240
-         TabIndex        =   48
+         TabIndex        =   46
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -1199,15 +1167,6 @@ Private Sub cboMonitors_Click()
     
 End Sub
 
-Private Sub chkAnonymizeMetadata_Click()
-    If CBool(chkAnonymizeMetadata.Value) Then
-        chkMetadataListPD.Value = vbUnchecked
-        chkMetadataListPD.Enabled = False
-    Else
-        chkMetadataListPD.Enabled = True
-    End If
-End Sub
-
 Private Sub cmdBarMini_OKClick()
     
     'Start by auto-validating any controls that accept user input
@@ -1347,11 +1306,8 @@ Private Sub cmdBarMini_OKClick()
     
         'END prompt on unsaved images
         
-        'START metadata-related options
-            g_UserPreferences.SetPref_Boolean "Saving", "PreserveMetadata", CBool(chkSaveMetadata.Value)
-            g_UserPreferences.SetPref_Boolean "Saving", "AnonymizeMetadata", CBool(chkAnonymizeMetadata.Value)
+        'START/END metadata-related options
             g_UserPreferences.SetPref_Boolean "Saving", "MetadataListPD", CBool(chkMetadataListPD.Value)
-        'END metadata-related options
         
         'START/END Save behavior (overwrite or copy)
             g_UserPreferences.SetPref_Long "Saving", "Overwrite Or Copy", cboSaveBehavior.ListIndex
@@ -1673,12 +1629,9 @@ Private Sub LoadAllPreferences()
             cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
         'END overwrite vs copy when saving
                
-        'START metadata export
-            If g_UserPreferences.GetPref_Boolean("Saving", "PreserveMetadata", True) Then chkSaveMetadata.Value = vbChecked Else chkSaveMetadata.Value = vbUnchecked
-            If g_UserPreferences.GetPref_Boolean("Saving", "AnonymizeMetadata", False) Then chkAnonymizeMetadata.Value = vbChecked Else chkAnonymizeMetadata.Value = vbUnchecked
+        'START/END metadata export
             If g_UserPreferences.GetPref_Boolean("Saving", "MetadataListPD", True) Then chkMetadataListPD.Value = vbChecked Else chkMetadataListPD.Value = vbUnchecked
-        'END metadata export
-    
+        
     'END Saving preferences
     
     '***************************************************************************

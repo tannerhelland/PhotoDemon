@@ -508,8 +508,6 @@ Private Sub CreateNewPreferencesFile()
         xmlEngine.WriteTag "ConfirmClosingUnsaved", "True"
         xmlEngine.WriteTag "OverwriteOrCopy", "0"
         xmlEngine.WriteTag "SuggestedFormat", "0"
-        xmlEngine.WriteTag "PreserveMetadata", "True"
-        xmlEngine.WriteTag "AnonymizeMetadata", "False"
         xmlEngine.WriteTag "MetadataListPD", "True"
     xmlEngine.CloseTag "Saving"
     xmlEngine.WriteBlankLine

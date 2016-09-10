@@ -1356,7 +1356,7 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         Dim forciblyAnonymize As Boolean
         forciblyAnonymize = cParams.GetBool("MetadataAnonymize", True)
         
-        If forciblyAnonymize And Me.HasMetadata Then
+        If (forciblyAnonymize And Me.HasMetadata) Then
         
             Message "Removing metadata with potential privacy concerns..."
         
