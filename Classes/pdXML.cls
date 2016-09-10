@@ -65,10 +65,8 @@ End Sub
 
 'If this class is being used to write out a new XML file, this function can be called to initialize the blank file.
 Public Sub PrepareNewXML(ByVal pdDataType As String)
-
     m_xmlContents = "<?xml version=""1.0"" encoding=""UTF-8""?>" & vbCrLf & vbCrLf
     m_xmlContents = m_xmlContents & ROOT_TAG & vbCrLf & vbCrLf & PD_DATA_ID & pdDataType & PD_DATA_ID_CLOSE & vbCrLf & ROOT_TAG_CLOSE & vbCrLf
-
 End Sub
 
 'PhotoDemon-specific XML files are required to encode a data type (filter, macro, etc).  This function can be used to quickly

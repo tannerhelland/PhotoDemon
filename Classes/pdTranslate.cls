@@ -159,13 +159,7 @@ End Function
 
 'If the currently active language is different from the default language, this function will return TRUE
 Public Function TranslationActive() As Boolean
-
-    If curLanguage = defaultLanguage Then
-        TranslationActive = False
-    Else
-        TranslationActive = True
-    End If
-
+    TranslationActive = Not CBool(curLanguage = defaultLanguage)
 End Function
 
 Public Sub WriteLanguagePreferencesToFile()
@@ -184,7 +178,7 @@ End Sub
 Public Sub NotifyHotPatchingComplete()
 
     'Figure out if the current language is affected by the patch
-    If curLanguage <> defaultLanguage Then
+    If (curLanguage <> defaultLanguage) Then
     
         'Retrieve the current language version
         Dim curLanguageVersion As String
@@ -345,7 +339,7 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
     'Mark the active language menu entry (and unmark all others)
     Dim i As Long
     For i = 0 To numOfLanguages - 1
-        If curLanguage = i Then FormMain.mnuLanguages(i).Checked = True Else FormMain.mnuLanguages(i).Checked = False
+        FormMain.mnuLanguages(i).Checked = CBool(curLanguage = i)
     Next i
     
     'If the language is set to anything other than the default, load the contents of the language XML file into memory.
@@ -409,7 +403,7 @@ Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     
     'If this is the official language folder, we will mark those entries specially, as they are the only ones PD is allowed to auto-update.
     Dim isOfficialFolder As Boolean
-    If StrComp(UCase(langTypeForThisFolder), "OFFICIAL", vbBinaryCompare) = 0 Then
+    If (StrComp(UCase(langTypeForThisFolder), "OFFICIAL", vbBinaryCompare) = 0) Then
         isOfficialFolder = True
     Else
         isOfficialFolder = False
@@ -418,6 +412,7 @@ Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     'An XML class will be used to parse the various language files
     Dim tmpXMLEngine As pdXML
     Set tmpXMLEngine = New pdXML
+    tmpXMLEngine.SetTextCompareMode vbBinaryCompare
     
     'A pdFSO class is required for Unicode support
     Dim cFile As pdFSO
@@ -447,7 +442,7 @@ Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
                     nLanguages = nLanguages + 1
                     
                     'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
-                    If nLanguages > UBound(availableLanguages) Then ReDim Preserve availableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
+                    If (nLanguages > UBound(availableLanguages)) Then ReDim Preserve availableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
                 
                 End If
                 
@@ -480,30 +475,7 @@ Public Sub CheckAvailableLanguages()
     availableLanguages(numOfLanguages).LangName = "English (US) - Default"
     availableLanguages(numOfLanguages).LangType = "Default"
     availableLanguages(numOfLanguages).LangStatus = "Complete"
-    
-    'If the MASTER.XML language file is available, retrieve versioning information directly from it.
-    Dim masterEnFile As String
-    masterEnFile = g_UserPreferences.GetLanguagePath() & "Master\MASTER.xml"
-        
-    If m_FSO.FileExist(masterEnFile) Then
-        
-        'Retrieve the version directly from file
-        Dim tmpXML As pdXML
-        Set tmpXML = New pdXML
-        If tmpXML.LoadXMLFile(masterEnFile) Then
-            
-            Dim curMasterVersion As String
-            curMasterVersion = tmpXML.GetUniqueTag_String("langversion")
-            availableLanguages(numOfLanguages).langVersion = curMasterVersion
-            
-        Else
-            availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
-        End If
-        
-    Else
-        availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
-    End If
-    
+    availableLanguages(numOfLanguages).langVersion = App.Major & "." & App.Minor & "." & App.Revision
     availableLanguages(numOfLanguages).IsOfficial = True
     numOfLanguages = numOfLanguages + 1
     
@@ -574,7 +546,7 @@ Private Sub FillLanguageInfo(ByRef srcXMLEngine As pdXML, ByRef targetLangHolder
         
 End Sub
 
-'Sort the availableLanguages array alphabetically, using language names as the sort parameter
+'Sort the availableLanguages() array alphabetically, using language names as the sort parameter
 Private Sub SortLanguageData()
 
     Dim i As Long, j As Long
@@ -584,9 +556,10 @@ Private Sub SortLanguageData()
         For j = 0 To numOfLanguages - 1
             
             'Compare two language names, and if one is less (e.g. earlier alphabetically) than the other, swap them
-            If StrComp(availableLanguages(i).LangName, availableLanguages(j).LangName, vbTextCompare) = -1 Then
+            If (StrComp(availableLanguages(i).LangName, availableLanguages(j).LangName, vbTextCompare) = -1) Then
                 SwapLanguageData availableLanguages(i), availableLanguages(j)
             End If
+            
         Next j
     Next i
 
