@@ -153,7 +153,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
     highlightStrength = cParams.GetDouble("highlight")
     artificialGrain = cParams.GetDouble("grain")
     
-    If Not toPreview Then Message "Asking Sam Spade for help..."
+    If (Not toPreview) Then Message "Asking Sam Spade for help..."
     
     'Shadow and highlight strength are on the range 0-100.  Invert highlight so it's on the range [155, 255]
     highlightStrength = 255 - highlightStrength
@@ -320,6 +320,4 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value)
 End Function
-
-
 

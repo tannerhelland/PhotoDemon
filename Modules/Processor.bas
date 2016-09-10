@@ -908,7 +908,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormTransparency_Basic
             Else
-                FormTransparency_Basic.simpleConvert32bpp cParams.GetLong(1)
+                FormTransparency_Basic.SimpleConvert32bpp cParams.GetLong(1)
             End If
             
         Case "Color to alpha"
@@ -1146,7 +1146,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormColorTemp
             Else
-                FormColorTemp.ApplyTemperatureToImage cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3)
+                FormColorTemp.ApplyTemperatureToImage cXMLParams.GetParamString
             End If
             
         Case "Tint"
