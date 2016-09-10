@@ -294,10 +294,6 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-Private Sub sltCoarseness_Change()
-    UpdatePreview
-End Sub
-
 Private Sub sltRandom_Change()
     UpdatePreview
 End Sub
@@ -305,8 +301,3 @@ End Sub
 Private Sub sltSmoothness_Change()
     UpdatePreview
 End Sub
-
-
-
-
-
