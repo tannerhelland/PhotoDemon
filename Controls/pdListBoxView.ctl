@@ -66,7 +66,7 @@ Private m_FontSize As Single
 Private Const LIST_PADDING_HORIZONTAL As Single = 4#
 Private Const LIST_PADDING_VERTICAL As Single = 2#
 
-'The rectangle where the list is actually rendered, and a boolean to track whether the mouse is inside that rect
+'The rectangle where the list is actually rendered
 Private m_ListRect As RECTF
 
 'List box support class.  Handles data storage and coordinate math for rendering.
@@ -408,7 +408,7 @@ Private Sub UpdateControlLayout()
     
     'Notify the list manager of our new size
     listSupport.NotifyParentRectF m_ListRect
-            
+    
 End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).

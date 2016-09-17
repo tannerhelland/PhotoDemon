@@ -64,7 +64,7 @@ End Function
 ' metadata inside a new image.)
 Public Function GetSerializedXMLData() As String
     
-    If m_NumOfTags > 0 Then
+    If (m_NumOfTags > 0) Then
         
         Dim cParams As pdParamXML
         Set cParams = New pdParamXML
