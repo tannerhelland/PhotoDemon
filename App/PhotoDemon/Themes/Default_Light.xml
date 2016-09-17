@@ -287,6 +287,24 @@
 				<Separator>GrayUltralight</Separator>
 			</PDImageStrip>
 			
+			<PDLayerBoxInner>
+				<Background>BackgroundDefault</Background>
+				<Border>GrayDefault</Border>
+				<SelectedItemFill>AccentDefault</SelectedItemFill>
+				<SelectedItemBorder>AccentDark</SelectedItemBorder> 
+				<SelectedItemText>TextInvert</SelectedItemText> 
+				<UnselectedItemFill>BackgroundDefault</UnselectedItemFill>
+				<UnselectedItemBorder>BackgroundDefault</UnselectedItemBorder>
+				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
+				<UnselectedItemText>TextDefault</UnselectedItemText>
+				<UnselectedItemText-hover>TextHyperlink</UnselectedItemText-hover>
+				<SelectedItemFill-disabled>GrayDisabled</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>GrayDisabled</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>BackgroundDefault</UnselectedItemBorder-disabled> 
+				<SelectedItemText-disabled>BackgroundDefault</SelectedItemText-disabled> 
+				<UnselectedItemText-disabled>GrayDisabled</UnselectedItemText-disabled>
+			</PDLayerBoxInner>
+			
 			<PDListBox>
 				<Background>BackgroundDefault</Background>
 			</PDListBox>
