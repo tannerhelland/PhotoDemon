@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.1888</langversion>
+<langversion>6.8.1894</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2609,6 +2609,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdCompositor.cls-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- BEGIN text for pdDIB.cls -->
 
 <phrase>
@@ -3996,6 +4002,17 @@ or the File > Open and File > Import menus.</original>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerListInner.ctl -->
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Перестановка слоев</translation>
+</phrase>
+
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdLayerListInner.ctl-->
 
 <!-- BEGIN text for pdListBox.ctl -->
 
@@ -6741,8 +6758,23 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
-<original>Adjust Color Temperature</original>
-<translation>Настройка цветовой температуры</translation>
+<original>Color temperature</original>
+<translation>Цветовая температура</translation>
+</phrase>
+
+<phrase>
+<original>method</original>
+<translation>метод</translation>
+</phrase>
+
+<phrase>
+<original>warmer</original>
+<translation>грелка</translation>
+</phrase>
+
+<phrase>
+<original>cooler</original>
+<translation>кулер</translation>
 </phrase>
 
 <phrase>
@@ -6770,7 +6802,17 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Применяя новую температуру к изображению</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>основной</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>продвинутый</translation>
+</phrase>
+
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -7684,17 +7726,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Настройка теней, полутонов и бликов</translation>
 </phrase>
 
-<phrase>
-<original>basic</original>
-<translation>основной</translation>
-</phrase>
-
-<phrase>
-<original>advanced</original>
-<translation>продвинутый</translation>
-</phrase>
-
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -7842,122 +7874,6 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
-
-<phrase>
-<original>BMP export options</original>
-<translation>Параметры экспорта BMP</translation>
-</phrase>
-
-<phrase>
-<original>restrict palette size</original>
-<translation>ограничить размер палитры</translation>
-</phrase>
-
-<phrase>
-<original>background color</original>
-<translation>фоновый цвет</translation>
-</phrase>
-
-<phrase>
-<original>unique colors</original>
-<translation>уникальные цвета</translation>
-</phrase>
-
-<phrase>
-<original>depth</original>
-<translation>глубина</translation>
-</phrase>
-
-<phrase>
-<original>color model</original>
-<translation>Цветовая модель</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression</original>
-<translation>использовать сжатие RLE</translation>
-</phrase>
-
-<phrase>
-<original>premultiply alpha</original>
-<translation>альфа предварительного умножения</translation>
-</phrase>
-
-<phrase>
-<original>flip row order (top-down)</original>
-<translation>флип порядок ряд (сверху вниз)</translation>
-</phrase>
-
-<phrase>
-<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>использование устаревших 15-битная кодировка (X1-R5-G5-B5)</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Ожидание пользователю указать параметры экспорта</translation>
-</phrase>
-
-<phrase>
-<original>auto</original>
-<translation>авто</translation>
-</phrase>
-
-<phrase>
-<original>color + transparency</original>
-<translation>цветной диапозитив</translation>
-</phrase>
-
-<phrase>
-<original>color only</original>
-<translation>только цвет</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>оттенки серого</translation>
-</phrase>
-
-<phrase>
-<original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation>32-BPP ARGB (X8-R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>24-bpp RGB (R8-G8-B8)</original>
-<translation>24bpp RGB (R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>16-bpp (R5-G6-B5)</original>
-<translation>16-BPP (R5-G6-B5)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (indexed)</original>
-<translation>8bpp (индексируются)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-BPP (256 оттенков)</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-BPP (16 оттенков)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1bpp (монохромный)</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
-
-<!-- END text for File_Save_BMP.frm-->
-
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
 <phrase>
@@ -8006,6 +7922,11 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 </phrase>
 
 <phrase>
+<original>background color</original>
+<translation>фоновый цвет</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>твердый</translation>
 </phrase>
@@ -8040,7 +7961,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>бриллиант</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8850,11 +8771,16 @@ If вы хотите сохранить его с другим именем фа
 </phrase>
 
 <phrase>
+<original>depth</original>
+<translation>глубина</translation>
+</phrase>
+
+<phrase>
 <original>Carving image relief</original>
 <translation>рельефная резьба изображение</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10386,6 +10312,106 @@ If вы хотите сохранить его с другим именем фа
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation>Пакетная ремонт</translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation>включают в себя вложенные папки</translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation>нажмите кнопку ОК, чтобы начать операцию по ремонту</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair image files</original>
+<translation>пытаться восстановить файлы изображений</translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation>Исходная папка</translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation>Папка назначения (для ремонтируемых файлов только)</translation>
+</phrase>
+
+<phrase>
+<original>repair options</original>
+<translation>варианты ремонта</translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation>прогресс</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation>пытаться ремонтировать видео и аудио файлов</translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation>перезаписать соответствующие имена файлов в папке назначения</translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
+<translation>после успешного восстановления, удалите оригинал (неотремонтированный) файл</translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation>генерирования списка файлов для ремонта</translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation>при обработке файла %1 %2 %3 (ремонт выполнен)</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete.  %1 files repaired.</original>
+<translation>Ремонт завершен.  %1 файлов восстановлены.</translation>
+</phrase>
+
+<phrase>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation> %1 файлов (s) repaired.
+ 
+ Восстановленные файлы были сохранены в папку назначения. Неустраненные файлы остаются в своих первоначальных местах.</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
+<translation>Ремонт завершен</translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation>Папка-источник не содержит каких-либо файлов. Пожалуйста, попробуйте другую папку.</translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation>Файлов не найдено</translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- BEGIN text for File_BatchWizard.frm (FormBatchWizard) -->
 
 <phrase>
@@ -10456,11 +10482,6 @@ If вы хотите сохранить его с другим именем фа
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>зафиксировать экспозицию и освещение проблем</translation>
-</phrase>
-
-<phrase>
-<original>include subfolders</original>
-<translation>включают в себя вложенные папки</translation>
 </phrase>
 
 <phrase>
@@ -10947,7 +10968,7 @@ Would вы хотите сохранить список партии перед 
 <translation>обрабатывается до отмены. Последнее обработанное изображение было " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11434,6 +11455,112 @@ I искренние извинения за неудобства, но, к со
 <!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
+
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
+
+<phrase>
+<original>BMP export options</original>
+<translation>Параметры экспорта BMP</translation>
+</phrase>
+
+<phrase>
+<original>restrict palette size</original>
+<translation>ограничить размер палитры</translation>
+</phrase>
+
+<phrase>
+<original>unique colors</original>
+<translation>уникальные цвета</translation>
+</phrase>
+
+<phrase>
+<original>color model</original>
+<translation>Цветовая модель</translation>
+</phrase>
+
+<phrase>
+<original>use RLE compression</original>
+<translation>использовать сжатие RLE</translation>
+</phrase>
+
+<phrase>
+<original>premultiply alpha</original>
+<translation>альфа предварительного умножения</translation>
+</phrase>
+
+<phrase>
+<original>flip row order (top-down)</original>
+<translation>флип порядок ряд (сверху вниз)</translation>
+</phrase>
+
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation>использование устаревших 15-битная кодировка (X1-R5-G5-B5)</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Ожидание пользователю указать параметры экспорта</translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>авто</translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation>цветной диапозитив</translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation>только цвет</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>оттенки серого</translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation>32-BPP ARGB (X8-R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation>24bpp RGB (R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation>16-BPP (R5-G6-B5)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation>8bpp (индексируются)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation>8-BPP (256 оттенков)</translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation>4-BPP (16 оттенков)</translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation>1bpp (монохромный)</translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
 
@@ -12644,63 +12771,8 @@ To включить поддержку этой функции, пожалуйс
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Нажмите, чтобы скрыть этот слой.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Нажмите, чтобы показать этот слой.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Нажмите, чтобы дублировать этот слой.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Нажмите, чтобы объединить этот слой со слоем под ним.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Этот слой не может слить, потому что нет никаких видимых слоев под ним.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Нажмите, чтобы объединить этот слой со слоем над ним.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Этот слой не может объединить вверх, потому что нет никаких видимых слоев над ним.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Нажмите, чтобы сделать этот активный слой.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Это в настоящее время активный слой.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Перестановка слоев</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>унаследовать</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(Скрытый)</translation>
 </phrase>
 
 <phrase>
@@ -12733,7 +12805,7 @@ To включить поддержку этой функции, пожалуйс
 <translation>Переместить слой вниз</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14113,18 +14185,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>копировать любые соответствующие метаданные в новый файл</translation>
-</phrase>
-
-<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>при закрытии изображения, предупреждают меня меня о несохраненных изменениях</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>Поведение метаданных по умолчанию на первом сохранении</translation>
 </phrase>
 
 <phrase>
@@ -14150,11 +14212,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>default file format when saving</original>
 <translation>Формат файла по умолчанию при сохранении</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>стереть метки, которые могут быть персональными (GPS, детали камеры, и т.д.)</translation>
 </phrase>
 
 <phrase>
@@ -14720,7 +14777,7 @@ If вы все еще отключить обновления, не забудь
 <translation>Это новое местоположение временной папки не вступят в силу только после перезапуска программы.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14835,113 +14892,12 @@ If вы все еще отключить обновления, не забудь
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
-
-<phrase>
-<original>Batch repair</original>
-<translation>Пакетная ремонт</translation>
-</phrase>
-
-<phrase>
-<original>click OK to begin the repair operation</original>
-<translation>нажмите кнопку ОК, чтобы начать операцию по ремонту</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair image files</original>
-<translation>пытаться восстановить файлы изображений</translation>
-</phrase>
-
-<phrase>
-<original>source folder</original>
-<translation>Исходная папка</translation>
-</phrase>
-
-<phrase>
-<original>destination folder (for repaired files only)</original>
-<translation>Папка назначения (для ремонтируемых файлов только)</translation>
-</phrase>
-
-<phrase>
-<original>repair options</original>
-<translation>варианты ремонта</translation>
-</phrase>
-
-<phrase>
-<original>progress</original>
-<translation>прогресс</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair video and audio files</original>
-<translation>пытаться ремонтировать видео и аудио файлов</translation>
-</phrase>
-
-<phrase>
-<original>overwrite matching filenames in the destination folder</original>
-<translation>перезаписать соответствующие имена файлов в папке назначения</translation>
-</phrase>
-
-<phrase>
-<original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>после успешного восстановления, удалите оригинал (неотремонтированный) файл</translation>
-</phrase>
-
-<phrase>
-<original>generating list of files to repair</original>
-<translation>генерирования списка файлов для ремонта</translation>
-</phrase>
-
-<phrase>
-<original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>при обработке файла %1 %2 %3 (ремонт выполнен)</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete.  %1 files repaired.</original>
-<translation>Ремонт завершен.  %1 файлов восстановлены.</translation>
-</phrase>
-
-<phrase>
-<original>%1 files(s) repaired.
-
-Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 файлов (s) repaired.
- 
- Восстановленные файлы были сохранены в папку назначения. Неустраненные файлы остаются в своих первоначальных местах.</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete</original>
-<translation>Ремонт завершен</translation>
-</phrase>
-
-<phrase>
-<original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>Папка-источник не содержит каких-либо файлов. Пожалуйста, попробуйте другую папку.</translation>
-</phrase>
-
-<phrase>
-<original>No files found</original>
-<translation>Файлов не найдено</translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
-
-<!-- END text for File_BatchRepair.frm-->
-
-<!-- BEGIN text for pdCrypto.cls -->
-
-<!-- pdCrypto.cls contains 0 phrases. -->
-
-<!-- END text for pdCrypto.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2540</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
-<!-- These 2540 phrases contain approximately 12817 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12722 total words. -->
 
 </pdData>

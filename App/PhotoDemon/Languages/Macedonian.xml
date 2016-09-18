@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Македонски</langname>
-<langversion>1.0.0</langversion>
+<langversion>1.0.2</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2609,6 +2609,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdCompositor.cls-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- BEGIN text for pdDIB.cls -->
 
 <phrase>
@@ -3996,6 +4002,17 @@ or the File > Open and File > Import menus.</original>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerListInner.ctl -->
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Преуредување слоеви</translation>
+</phrase>
+
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdLayerListInner.ctl-->
 
 <!-- BEGIN text for pdListBox.ctl -->
 
@@ -6741,8 +6758,23 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
-<original>Adjust Color Temperature</original>
-<translation>Прилагодете ја температурата на бојата</translation>
+<original>Color temperature</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>method</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>warmer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cooler</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6770,7 +6802,17 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Примена на нови температурата на сликата</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>основните</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>напредни</translation>
+</phrase>
+
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -7684,17 +7726,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Прилагодување на сенки, midtones, и нагласува</translation>
 </phrase>
 
-<phrase>
-<original>basic</original>
-<translation>основните</translation>
-</phrase>
-
-<phrase>
-<original>advanced</original>
-<translation>напредни</translation>
-</phrase>
-
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -7842,122 +7874,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
-
-<phrase>
-<original>BMP export options</original>
-<translation>извоз опции BMP</translation>
-</phrase>
-
-<phrase>
-<original>restrict palette size</original>
-<translation>ограничи големината палета</translation>
-</phrase>
-
-<phrase>
-<original>background color</original>
-<translation>боја на позадина</translation>
-</phrase>
-
-<phrase>
-<original>unique colors</original>
-<translation>уникатни бои</translation>
-</phrase>
-
-<phrase>
-<original>depth</original>
-<translation>длабочина</translation>
-</phrase>
-
-<phrase>
-<original>color model</original>
-<translation>боја модел</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression</original>
-<translation>УПИ користи компресија</translation>
-</phrase>
-
-<phrase>
-<original>premultiply alpha</original>
-<translation>premultiply алфа</translation>
-</phrase>
-
-<phrase>
-<original>flip row order (top-down)</original>
-<translation>флип цел ред (од горе надолу)</translation>
-</phrase>
-
-<phrase>
-<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>употреба наследство 15-битни кодирање (X1-R5-G5-B5)</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Чекајќи го корисникот да наведете опции извоз</translation>
-</phrase>
-
-<phrase>
-<original>auto</original>
-<translation>авто</translation>
-</phrase>
-
-<phrase>
-<original>color + transparency</original>
-<translation>транспарентност боја</translation>
-</phrase>
-
-<phrase>
-<original>color only</original>
-<translation>само боја</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>сиво</translation>
-</phrase>
-
-<phrase>
-<original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation>32-м ARGB (X8-R8-Г8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>24-bpp RGB (R8-G8-B8)</original>
-<translation>24bpp RGB (R8-Г8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>16-bpp (R5-G6-B5)</original>
-<translation>16-м (R5-G6-B5)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (indexed)</original>
-<translation>8bpp (индексирани)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-м (256 нијанси)</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-м (16 нијанси)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1bpp (црно-бело)</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
-
-<!-- END text for File_Save_BMP.frm-->
-
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
 <phrase>
@@ -8006,6 +7922,11 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
+<original>background color</original>
+<translation>боја на позадина</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>солиден</translation>
 </phrase>
@@ -8040,7 +7961,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>дијамант</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8850,11 +8771,16 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
+<original>depth</original>
+<translation>длабочина</translation>
+</phrase>
+
+<phrase>
 <original>Carving image relief</original>
 <translation>Резба релјефна претстава</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10386,6 +10312,106 @@ If сакате да ја спаси со друго име на датотек�
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation>поправка серија</translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation>валидни</translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation>кликнете ОК за да започне операцијата за поправка</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair image files</original>
+<translation>обиде да го поправи датотеки со слики</translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation>извор папка</translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation>дестинација папка (за поправени фајлови)</translation>
+</phrase>
+
+<phrase>
+<original>repair options</original>
+<translation>опции за поправка</translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation>напредок</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation>обиде да го поправи видео и аудио фајлови</translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation>пребришете појавување на имињата на датотеките во папка</translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
+<translation>по успешното опоравување, избрише оригиналната (unrepaired) датотека</translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation>генерирање на листа на датотеки за поправка</translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation>обработка на датотеката %1 %2 ( %3 поправка изведена)</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete.  %1 files repaired.</original>
+<translation>заврши поправки. поправени %1 датотеки.</translation>
+</phrase>
+
+<phrase>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation> %1 датотека (а) repaired.
+ 
+ Поправените датотеки се зачувани во папката дестинација. Unrepaired датотеки остане во нивната оригинална локации.</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
+<translation>поправки заврши</translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation>изворишниот не ги содржи сите датотеки. Обидете се со друга папка.</translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation>пронајдени датотеки</translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- BEGIN text for File_BatchWizard.frm (FormBatchWizard) -->
 
 <phrase>
@@ -10409,8 +10435,8 @@ If сакате да ја спаси со друго име на датотек�
 </phrase>
 
 <phrase>
-<original>click to set export settings for this format</original>
-<translation>Кликни за да го поставите поставувања за извоз за овој формат</translation>
+<original>set export settings for this format</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10456,11 +10482,6 @@ If сакате да ја спаси со друго име на датотек�
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>поправат проблемите на експозицијата и осветлување</translation>
-</phrase>
-
-<phrase>
-<original>include subfolders</original>
-<translation>валидни</translation>
 </phrase>
 
 <phrase>
@@ -10665,6 +10686,16 @@ Would сакате да ги зачувате вашата листа сериј
 <phrase>
 <original>No images selected</original>
 <translation>Нема избрани слики</translation>
+</phrase>
+
+<phrase>
+<original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Export settings required</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10937,7 +10968,7 @@ Would сакате да ги зачувате вашата листа сериј
 <translation>обработи пред отказ. Последните преработени сликата е " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 191 phrases. 82 were duplicates of existing phrases, so only 109 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11424,6 +11455,112 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
+
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
+
+<phrase>
+<original>BMP export options</original>
+<translation>извоз опции BMP</translation>
+</phrase>
+
+<phrase>
+<original>restrict palette size</original>
+<translation>ограничи големината палета</translation>
+</phrase>
+
+<phrase>
+<original>unique colors</original>
+<translation>уникатни бои</translation>
+</phrase>
+
+<phrase>
+<original>color model</original>
+<translation>боја модел</translation>
+</phrase>
+
+<phrase>
+<original>use RLE compression</original>
+<translation>УПИ користи компресија</translation>
+</phrase>
+
+<phrase>
+<original>premultiply alpha</original>
+<translation>premultiply алфа</translation>
+</phrase>
+
+<phrase>
+<original>flip row order (top-down)</original>
+<translation>флип цел ред (од горе надолу)</translation>
+</phrase>
+
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation>употреба наследство 15-битни кодирање (X1-R5-G5-B5)</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Чекајќи го корисникот да наведете опции извоз</translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>авто</translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation>транспарентност боја</translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation>само боја</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>сиво</translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation>32-м ARGB (X8-R8-Г8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation>24bpp RGB (R8-Г8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation>16-м (R5-G6-B5)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation>8bpp (индексирани)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation>8-м (256 нијанси)</translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation>4-м (16 нијанси)</translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation>1bpp (црно-бело)</translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
 
@@ -12634,63 +12771,8 @@ To овозможи поддршка за оваа функција, молам 
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Кликни за да се скрие овој слој.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Кликнете тука за да овој слој.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Кликни за да се дуплираат овој слој.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Кликни за да се логирате овој слој со слојот под него.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Овој слој не може да се логирате надолу, бидејќи не постојат видливи слоеви под него.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Кликни за да се логирате овој слој со слој над неа.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Овој слој не можат да се спојат, бидејќи не постојат видливи слоеви над него.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Кликни за да се направи овој активниот слој.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Ова е моментално активен слој.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Преуредување слоеви</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>наследат</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(Скриени)</translation>
 </phrase>
 
 <phrase>
@@ -12723,7 +12805,7 @@ To овозможи поддршка за оваа функција, молам 
 <translation>Премести надолу слој</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14103,18 +14185,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>копира сите податоци, треба да се новата датотека</translation>
-</phrase>
-
-<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>за затворање на слики, Предупреди ме мене за незачувани промени</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>однесување метаподатоци стандардно на првиот спаси</translation>
 </phrase>
 
 <phrase>
@@ -14140,11 +14212,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>default file format when saving</original>
 <translation>стандарден формат на датотека при зачувување</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>бришење на тагови кои можат да бидат лични (GPS, детали камера, итн)</translation>
 </phrase>
 
 <phrase>
@@ -14710,7 +14777,7 @@ If сеуште изберете да го исклучите ажурирања
 <translation>Оваа нова локација привремена папка нема да се случи се додека не рестартирам програмата.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14825,113 +14892,12 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
-
-<phrase>
-<original>Batch repair</original>
-<translation>поправка серија</translation>
-</phrase>
-
-<phrase>
-<original>click OK to begin the repair operation</original>
-<translation>кликнете ОК за да започне операцијата за поправка</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair image files</original>
-<translation>обиде да го поправи датотеки со слики</translation>
-</phrase>
-
-<phrase>
-<original>source folder</original>
-<translation>извор папка</translation>
-</phrase>
-
-<phrase>
-<original>destination folder (for repaired files only)</original>
-<translation>дестинација папка (за поправени фајлови)</translation>
-</phrase>
-
-<phrase>
-<original>repair options</original>
-<translation>опции за поправка</translation>
-</phrase>
-
-<phrase>
-<original>progress</original>
-<translation>напредок</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair video and audio files</original>
-<translation>обиде да го поправи видео и аудио фајлови</translation>
-</phrase>
-
-<phrase>
-<original>overwrite matching filenames in the destination folder</original>
-<translation>пребришете појавување на имињата на датотеките во папка</translation>
-</phrase>
-
-<phrase>
-<original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>по успешното опоравување, избрише оригиналната (unrepaired) датотека</translation>
-</phrase>
-
-<phrase>
-<original>generating list of files to repair</original>
-<translation>генерирање на листа на датотеки за поправка</translation>
-</phrase>
-
-<phrase>
-<original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>обработка на датотеката %1 %2 ( %3 поправка изведена)</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete.  %1 files repaired.</original>
-<translation>заврши поправки. поправени %1 датотеки.</translation>
-</phrase>
-
-<phrase>
-<original>%1 files(s) repaired.
-
-Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 датотека (а) repaired.
- 
- Поправените датотеки се зачувани во папката дестинација. Unrepaired датотеки остане во нивната оригинална локации.</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete</original>
-<translation>поправки заврши</translation>
-</phrase>
-
-<phrase>
-<original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>изворишниот не ги содржи сите датотеки. Обидете се со друга папка.</translation>
-</phrase>
-
-<phrase>
-<original>No files found</original>
-<translation>пронајдени датотеки</translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
-
-<!-- END text for File_BatchRepair.frm-->
-
-<!-- BEGIN text for pdCrypto.cls -->
-
-<!-- pdCrypto.cls contains 0 phrases. -->
-
-<!-- END text for pdCrypto.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2538</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1931 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12793 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12722 total words. -->
 
 </pdData>
