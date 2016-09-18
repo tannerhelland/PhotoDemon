@@ -24,7 +24,7 @@ Begin VB.Form layerpanel_Layers
    ScaleWidth      =   259
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdLayerListInner lstLayers 
+   Begin PhotoDemon.pdLayerList lstLayers 
       Height          =   2295
       Left            =   0
       TabIndex        =   9
@@ -432,37 +432,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
 End Sub
 
-'TODO: migrate this logic into the layer listbox
-'When an action occurs that potentially affects the visibility of the vertical scroll bar (such as resizing the form
-' vertically, or adding a new layer to the image), call this function to update the scroll bar visibility as necessary.
-Private Sub UpdateLayerScrollbarVisibility()
-
-'    'Determine if the vertical scrollbar needs to be visible or not (because there are so many layers that they overflow the box)
-'    Dim maxLayerBoxSize As Long
-'    maxLayerBoxSize = FixDPIFloat(BLOCKHEIGHT) * numOfThumbnails - 1
-'
-'    If maxLayerBoxSize < picLayers.ScaleHeight Then
-'
-'        'Hide the layer box scroll bar
-'        vsLayer.Visible = False
-'        vsLayer.Value = 0
-'
-'        'Extend the layer box to be the full size of the form
-'        picLayers.Width = (vsLayer.GetLeft + vsLayer.GetWidth) - picLayers.Left
-'
-'    Else
-'
-'        'Show the layer box scroll bar
-'        vsLayer.Visible = True
-'        vsLayer.Max = maxLayerBoxSize - picLayers.ScaleHeight
-'
-'        'Shrink the layer box so that it does not cover the vertical scroll bar
-'        picLayers.Width = (vsLayer.GetLeft - picLayers.Left)
-'
-'    End If
-
-End Sub
-
 'Change the opacity of the current layer
 Private Sub sltLayerOpacity_Change()
 
@@ -509,7 +478,7 @@ Private Sub ReflowInterface()
     If (sizeCheck > 0) Then
             
         lstLayers.SetHeight sizeCheck
-    
+        
         'Vertical resizing has now been covered successfully.  Time to handle horizontal resizing.
         
         'Left-align the opacity, blend and alpha mode controls against their respective labels.

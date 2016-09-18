@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>český</langname>
-<langversion>6.8.1894</langversion>
+<langversion>6.8.1895</langversion>
 <langstatus>raw machine trnaslation</langstatus>
 
 <author>Google Translator</author>
@@ -3990,6 +3990,12 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerList.ctl -->
+
+<!-- pdLayerList.ctl contains 0 phrases. -->
+
+<!-- END text for pdLayerList.ctl-->
 
 <!-- BEGIN text for pdLayerListInner.ctl -->
 

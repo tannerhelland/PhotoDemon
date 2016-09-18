@@ -1379,7 +1379,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             isPDControl = True
         ElseIf (TypeOf eControl Is pdDropDown) Or (TypeOf eControl Is pdDropDownFont) Then
             isPDControl = True
-        ElseIf (TypeOf eControl Is pdLayerListInner) Then
+        ElseIf (TypeOf eControl Is pdLayerList) Or (TypeOf eControl Is pdLayerListInner) Then
             isPDControl = True
         End If
         

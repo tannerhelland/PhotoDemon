@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.209</langversion>
+<langversion>6.7.210</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -3994,6 +3994,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerList.ctl -->
+
+<!-- pdLayerList.ctl contains 0 phrases. -->
+
+<!-- END text for pdLayerList.ctl-->
 
 <!-- BEGIN text for pdLayerListInner.ctl -->
 

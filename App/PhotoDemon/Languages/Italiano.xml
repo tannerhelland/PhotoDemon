@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.206</langversion>
+<langversion>6.7.207</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -3992,6 +3992,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerList.ctl -->
+
+<!-- pdLayerList.ctl contains 0 phrases. -->
+
+<!-- END text for pdLayerList.ctl-->
 
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
