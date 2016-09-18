@@ -29,8 +29,8 @@ Begin VB.UserControl pdLayerListInner
       Top             =   120
       Visible         =   0   'False
       Width           =   2655
-      _extentx        =   4683
-      _extenty        =   661
+      _ExtentX        =   4683
+      _ExtentY        =   661
    End
 End
 Attribute VB_Name = "pdLayerListInner"
@@ -66,6 +66,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'This control does not contain a scrollbar; instead, it bubbles scroll-related events upward, so its parent can
+' show/hide/update an embedded scroll bar accordingly.
+Public Event ScrollMaxChanged(ByVal newMax As Long)
+Public Event ScrollValueChanged(ByVal newValue As Long)
 
 'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
@@ -178,6 +183,10 @@ Private m_LayerNameEditMode As Boolean
 'When the mouse is over the layer list, this will be set to TRUE
 Private m_MouseOverLayerBox As Boolean
 
+'Current scroll bar value and maximum.  Note that this control does not possess a scroll bar; instead, it bubbles
+' changes upward, and our parent control maintains the actual scroll bar object.
+Private m_ScrollValue As Long, m_ScrollMax As Long
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
     Enabled = UserControl.Enabled
@@ -235,6 +244,21 @@ End Sub
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
+
+Public Function ScrollMax() As Long
+    ScrollMax = m_ScrollMax
+End Function
+
+Public Property Get ScrollValue() As Long
+    ScrollValue = m_ScrollValue
+End Property
+
+Public Property Let ScrollValue(ByRef newValue As Long)
+    If (m_ScrollValue <> newValue) Then
+        m_ScrollValue = newValue
+        RedrawBackBuffer
+    End If
+End Property
 
 'If the layer name textbox is visible and the Enter key is pressed, commit the changed layer name and hide the text box
 Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)
@@ -438,7 +462,6 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
             
             Else
                 markEventHandled = False
-                'Debug.Print "event not handled!"
             End If
             
         End If
@@ -451,6 +474,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         End If
         
     End If
+
 End Sub
 
 'MouseDown is used for drag/drop layer reordering
@@ -650,6 +674,8 @@ Private Sub UserControl_Initialize()
     UpdateHoveredLayer -1
     m_MouseX = -1
     m_MouseY = -1
+    m_ScrollValue = 0
+    m_ScrollMax = 0
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -779,9 +805,8 @@ Private Sub CacheLayerThumbnails()
         ReDim m_LayerThumbnails(0) As LayerThumbDisplay
     End If
     
-    'TODO: request scroll changes externally, as this control is *just* the list portion
-    'See if the vertical scroll bar needs to be displayed
-    'UpdateLayerScrollbarVisibility
+    'See if the list's scrollability has changed
+    UpdateLayerScrollbarVisibility
     
 End Sub
 
@@ -836,6 +861,9 @@ Private Sub UpdateControlLayout()
     ' width/height of each layer entry.
     m_ThumbHeight = Interface.FixDPI(LAYER_BLOCK_HEIGHT) - Interface.FixDPI(THUMBNAIL_PADDING) * 2
     m_ThumbWidth = m_ThumbHeight
+    
+    'See if a scroll bar needs to be displayed
+    UpdateLayerScrollbarVisibility
     
     'No other special preparation is required for this control, so proceed with recreating the back buffer
     RedrawBackBuffer
@@ -900,7 +928,7 @@ Private Sub RedrawBackBuffer()
         'Determine an offset based on the current scroll bar value
         'TODO!
         Dim scrollOffset As Long
-        scrollOffset = 0    'vsLayer.Value
+        scrollOffset = m_ScrollValue
         
         Dim layerIndex As Long, offsetX As Long, offsetY As Long
         Dim layerHoverIndex As Long, layerSelectedIndex As Long, layerIsHovered As Boolean, layerIsSelected As Boolean
@@ -945,8 +973,6 @@ Private Sub RedrawBackBuffer()
                         If (layerIsHovered) Then layerHoverIndex = layerIndex
                         layerIsSelected = CBool(tmpLayerRef.GetLayerID = pdImages(g_CurrentImage).GetActiveLayerID)
                         If (layerIsSelected) Then layerSelectedIndex = layerIndex
-                        
-                        'offsetY = offsetY + Interface.FixDPI(2)
                         
                         'To simplify drawing, convert the current block area into a rect; we'll use this for subsequent
                         ' layout decisions.
@@ -1147,7 +1173,7 @@ Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
     
         'TODO: track this value internally
         Dim vOffset As Long
-        vOffset = 0 'vsLayer.Value
+        vOffset = m_ScrollValue
     
         Dim tmpLayerCheck As Long
         tmpLayerCheck = (y + vOffset) \ Interface.FixDPI(LAYER_BLOCK_HEIGHT)
@@ -1178,6 +1204,30 @@ Private Function GetLayerAtPosition(ByVal x As Long, ByVal y As Long, Optional B
     End If
     
 End Function
+
+'When an action occurs that potentially affects the visibility of the vertical scroll bar (such as resizing the form
+' vertically, or adding a new layer to the image), call this function.  Any changes will be bubbled upward to our parent.
+Private Sub UpdateLayerScrollbarVisibility()
+    
+    Dim maxBoxSize As Long
+    maxBoxSize = Interface.FixDPIFloat(LAYER_BLOCK_HEIGHT) * m_NumOfThumbnails - 1
+    
+    If (maxBoxSize < m_ListRect.Height) Then
+        m_ScrollValue = 0
+        If (m_ScrollMax <> 0) Then
+            m_ScrollMax = 0
+            RaiseEvent ScrollMaxChanged(0)
+            RedrawBackBuffer
+        End If
+    Else
+        If (m_ScrollMax <> (maxBoxSize - m_ListRect.Height)) Then
+            m_ScrollMax = (maxBoxSize - m_ListRect.Height)
+            RaiseEvent ScrollMaxChanged(m_ScrollMax)
+            RedrawBackBuffer
+        End If
+    End If
+    
+End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.

@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.1894</langversion>
+<langversion>6.8.1895</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4002,6 +4002,12 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerList.ctl -->
+
+<!-- pdLayerList.ctl contains 0 phrases. -->
+
+<!-- END text for pdLayerList.ctl-->
 
 <!-- BEGIN text for pdLayerListInner.ctl -->
 
