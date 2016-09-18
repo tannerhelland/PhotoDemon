@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Magyar</langname>
-<langversion>6.8.1888</langversion>
+<langversion>6.8.1894</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2597,6 +2597,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdCompositor.cls-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- BEGIN text for pdDIB.cls -->
 
 <phrase>
@@ -3982,6 +3988,17 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerListInner.ctl -->
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>átrendezése rétegeket</translation>
+</phrase>
+
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdLayerListInner.ctl-->
 
 <!-- BEGIN text for pdListBox.ctl -->
 
@@ -6724,8 +6741,23 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
-<original>Adjust Color Temperature</original>
-<translation>Színhőmérséklet beállítása</translation>
+<original>Color temperature</original>
+<translation>Színhőmérséklet</translation>
+</phrase>
+
+<phrase>
+<original>method</original>
+<translation>módszer</translation>
+</phrase>
+
+<phrase>
+<original>warmer</original>
+<translation>melegítő</translation>
+</phrase>
+
+<phrase>
+<original>cooler</original>
+<translation>hűtő</translation>
 </phrase>
 
 <phrase>
@@ -6753,7 +6785,17 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Alkalmazása új hőmérsékletet fénykép</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>alapvető</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>fejlett</translation>
+</phrase>
+
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -7667,17 +7709,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Beállítása árnyékok, középtónusát és kiemeli</translation>
 </phrase>
 
-<phrase>
-<original>basic</original>
-<translation>alapvető</translation>
-</phrase>
-
-<phrase>
-<original>advanced</original>
-<translation>fejlett</translation>
-</phrase>
-
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -7825,122 +7857,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
-
-<phrase>
-<original>BMP export options</original>
-<translation>BMP export lehetőségek</translation>
-</phrase>
-
-<phrase>
-<original>restrict palette size</original>
-<translation>korlátozzák paletta mérete</translation>
-</phrase>
-
-<phrase>
-<original>background color</original>
-<translation>háttérszín</translation>
-</phrase>
-
-<phrase>
-<original>unique colors</original>
-<translation>egyedi színek</translation>
-</phrase>
-
-<phrase>
-<original>depth</original>
-<translation>mélység</translation>
-</phrase>
-
-<phrase>
-<original>color model</original>
-<translation>színes modell</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression</original>
-<translation>használja RLE tömörítés</translation>
-</phrase>
-
-<phrase>
-<original>premultiply alpha</original>
-<translation>premultiply alpha</translation>
-</phrase>
-
-<phrase>
-<original>flip row order (top-down)</original>
-<translation>flip-sor annak érdekében, (top-down)</translation>
-</phrase>
-
-<phrase>
-<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>használat legacy 15 bites kódolás (X1-R5-G5-B5)</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Várakozás felhasználó adja export lehetőségek</translation>
-</phrase>
-
-<phrase>
-<original>auto</original>
-<translation>kocsi</translation>
-</phrase>
-
-<phrase>
-<original>color + transparency</original>
-<translation>színtranszparenciát</translation>
-</phrase>
-
-<phrase>
-<original>color only</original>
-<translation>csak színes</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>szürkeárnyalatos</translation>
-</phrase>
-
-<phrase>
-<original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation>32 bpp argB (X8-R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>24-bpp RGB (R8-G8-B8)</original>
-<translation>24bpp RGB (R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>16-bpp (R5-G6-B5)</original>
-<translation>16 bpp (R5-G6-B5)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (indexed)</original>
-<translation>8bpp (indexált)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-bpp (256)</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-BPP (16 szín)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1bpp (monokróm)</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
-
-<!-- END text for File_Save_BMP.frm-->
-
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
 <phrase>
@@ -7989,6 +7905,11 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
+<original>background color</original>
+<translation>háttérszín</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>szilárd</translation>
 </phrase>
@@ -8023,7 +7944,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>gyémánt</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8833,11 +8754,16 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
+<original>depth</original>
+<translation>mélység</translation>
+</phrase>
+
+<phrase>
 <original>Carving image relief</original>
 <translation>Carving kép relief</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10369,6 +10295,105 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation>batch javítás</translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation>beleértve az almappákat</translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation>Kattintson az OK gombra a javítási művelet</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair image files</original>
+<translation>próbálja megjavítani képfájlokat</translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation>forrás mappa</translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation>célmappát (a javított fájlok esetén)</translation>
+</phrase>
+
+<phrase>
+<original>repair options</original>
+<translation>javítási lehetőségek</translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation>Haladás</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation>próbálja megjavítani a videó és audió fájlokat</translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation>felülírja megfelelő fájlneveket a célmappát</translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
+<translation>után a sikeres behajtás, törli az eredeti (javítanak) fájl</translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation>generáló fájlok listája javítani</translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation>feldolgozás file %1 %2 ( %3 javításokat elvégezték)</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete.  %1 files repaired.</original>
+<translation>Javítás befejeződött.  %1 fájl javítani.</translation>
+</phrase>
+
+<phrase>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation> %1 fájl (ok) repaired.
+ vbCrLf javított fájlokat mentettek ki a célmappát. Javítanak fájlok maradnak eredeti helyükön.</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
+<translation>javítás befejeződött</translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation>A forrás mappa nem tartalmaz fájlokat. Kérjük, próbálja meg egy másik mappát.</translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation>Nem található fájl</translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- BEGIN text for File_BatchWizard.frm (FormBatchWizard) -->
 
 <phrase>
@@ -10439,11 +10464,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>fix expozíció és megvilágítási problémákat</translation>
-</phrase>
-
-<phrase>
-<original>include subfolders</original>
-<translation>beleértve az almappákat</translation>
 </phrase>
 
 <phrase>
@@ -10930,7 +10950,7 @@ Would szeretné menteni a tétel lista kilépés előtt?</translation>
 <translation>feldolgozott törlés előtt. Az utolsó feldolgozott kép volt: " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11417,6 +11437,112 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
+
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
+
+<phrase>
+<original>BMP export options</original>
+<translation>BMP export lehetőségek</translation>
+</phrase>
+
+<phrase>
+<original>restrict palette size</original>
+<translation>korlátozzák paletta mérete</translation>
+</phrase>
+
+<phrase>
+<original>unique colors</original>
+<translation>egyedi színek</translation>
+</phrase>
+
+<phrase>
+<original>color model</original>
+<translation>színes modell</translation>
+</phrase>
+
+<phrase>
+<original>use RLE compression</original>
+<translation>használja RLE tömörítés</translation>
+</phrase>
+
+<phrase>
+<original>premultiply alpha</original>
+<translation>premultiply alpha</translation>
+</phrase>
+
+<phrase>
+<original>flip row order (top-down)</original>
+<translation>flip-sor annak érdekében, (top-down)</translation>
+</phrase>
+
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation>használat legacy 15 bites kódolás (X1-R5-G5-B5)</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Várakozás felhasználó adja export lehetőségek</translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>kocsi</translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation>színtranszparenciát</translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation>csak színes</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>szürkeárnyalatos</translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation>32 bpp argB (X8-R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation>24bpp RGB (R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation>16 bpp (R5-G6-B5)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation>8bpp (indexált)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation>8-bpp (256)</translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation>4-BPP (16 szín)</translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation>1bpp (monokróm)</translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
 
@@ -12627,63 +12753,8 @@ To támogatásának engedélyezéséhez ezt a szolgáltatást, kérjük, másolj
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Kattintson elrejteni ezt a réteget.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Kattintson ide, hogy ez a réteg.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Kattintson megismételni ezt a réteget.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Kattintson egyesíteni ezt a réteget a réteg alatta.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Ez a réteg nem tud egyesíteni le, mert nincs látható réteg alatta.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Kattintson egyesíteni ezt a réteget a réteg fölé.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Ez a réteg nem tud egyesíteni fel, mert nincs látható rétegek fölé.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Kattintson ide, hogy ez az aktív réteg.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Ez az aktív réteg.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>átrendezése rétegeket</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>Örököl</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(rejtett)</translation>
 </phrase>
 
 <phrase>
@@ -12716,7 +12787,7 @@ To támogatásának engedélyezéséhez ezt a szolgáltatást, kérjük, másolj
 <translation>Mozgás réteg lefelé</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14091,18 +14162,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>másolja a vonatkozó metaadatokat az új fájl</translation>
-</phrase>
-
-<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>bezárásakor képek, figyelmeztessen engem nem mentett módosítások</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>metaadatok alapértelmezett viselkedés először menteni</translation>
 </phrase>
 
 <phrase>
@@ -14128,11 +14189,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>default file format when saving</original>
 <translation>alapértelmezett fájlformátuma mentéskor</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>törli címkék lehet személyes (GPS, kamera részletek, stb.)</translation>
 </phrase>
 
 <phrase>
@@ -14697,7 +14753,7 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 <translation>Ez az új ideiglenes mappa helyét nem lép érvénybe, amíg újra nem indítja a programot.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14812,112 +14868,12 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
-
-<phrase>
-<original>Batch repair</original>
-<translation>batch javítás</translation>
-</phrase>
-
-<phrase>
-<original>click OK to begin the repair operation</original>
-<translation>Kattintson az OK gombra a javítási művelet</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair image files</original>
-<translation>próbálja megjavítani képfájlokat</translation>
-</phrase>
-
-<phrase>
-<original>source folder</original>
-<translation>forrás mappa</translation>
-</phrase>
-
-<phrase>
-<original>destination folder (for repaired files only)</original>
-<translation>célmappát (a javított fájlok esetén)</translation>
-</phrase>
-
-<phrase>
-<original>repair options</original>
-<translation>javítási lehetőségek</translation>
-</phrase>
-
-<phrase>
-<original>progress</original>
-<translation>Haladás</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair video and audio files</original>
-<translation>próbálja megjavítani a videó és audió fájlokat</translation>
-</phrase>
-
-<phrase>
-<original>overwrite matching filenames in the destination folder</original>
-<translation>felülírja megfelelő fájlneveket a célmappát</translation>
-</phrase>
-
-<phrase>
-<original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>után a sikeres behajtás, törli az eredeti (javítanak) fájl</translation>
-</phrase>
-
-<phrase>
-<original>generating list of files to repair</original>
-<translation>generáló fájlok listája javítani</translation>
-</phrase>
-
-<phrase>
-<original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>feldolgozás file %1 %2 ( %3 javításokat elvégezték)</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete.  %1 files repaired.</original>
-<translation>Javítás befejeződött.  %1 fájl javítani.</translation>
-</phrase>
-
-<phrase>
-<original>%1 files(s) repaired.
-
-Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 fájl (ok) repaired.
- vbCrLf javított fájlokat mentettek ki a célmappát. Javítanak fájlok maradnak eredeti helyükön.</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete</original>
-<translation>javítás befejeződött</translation>
-</phrase>
-
-<phrase>
-<original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>A forrás mappa nem tartalmaz fájlokat. Kérjük, próbálja meg egy másik mappát.</translation>
-</phrase>
-
-<phrase>
-<original>No files found</original>
-<translation>Nem található fájl</translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
-
-<!-- END text for File_BatchRepair.frm-->
-
-<!-- BEGIN text for pdCrypto.cls -->
-
-<!-- pdCrypto.cls contains 0 phrases. -->
-
-<!-- END text for pdCrypto.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2540</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
-<!-- These 2540 phrases contain approximately 12817 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12722 total words. -->
 
 </pdData>

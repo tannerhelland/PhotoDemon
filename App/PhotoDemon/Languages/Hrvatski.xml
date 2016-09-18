@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>hrvatski</langname>
-<langversion>6.8.1888</langversion>
+<langversion>6.8.1894</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2609,6 +2609,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdCompositor.cls-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- BEGIN text for pdDIB.cls -->
 
 <phrase>
@@ -3996,6 +4002,17 @@ or the File > Open and File > Import menus.</original>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerListInner.ctl -->
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Promjena rasporeda slojeva</translation>
+</phrase>
+
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdLayerListInner.ctl-->
 
 <!-- BEGIN text for pdListBox.ctl -->
 
@@ -6741,8 +6758,23 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovor "ne".)</transl
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
-<original>Adjust Color Temperature</original>
-<translation>Podesite temperaturu boje</translation>
+<original>Color temperature</original>
+<translation>temperatura boje</translation>
+</phrase>
+
+<phrase>
+<original>method</original>
+<translation>način</translation>
+</phrase>
+
+<phrase>
+<original>warmer</original>
+<translation>grijač</translation>
+</phrase>
+
+<phrase>
+<original>cooler</original>
+<translation>hladnjak</translation>
 </phrase>
 
 <phrase>
@@ -6770,7 +6802,17 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovor "ne".)</transl
 <translation>Primjena novog temperaturu na slici</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>osnovni</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>napredan</translation>
+</phrase>
+
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -7684,17 +7726,7 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovor "ne".)</transl
 <translation>Podešavanje sjena, srednje svijetlih i naglašava</translation>
 </phrase>
 
-<phrase>
-<original>basic</original>
-<translation>osnovni</translation>
-</phrase>
-
-<phrase>
-<original>advanced</original>
-<translation>napredan</translation>
-</phrase>
-
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -7842,122 +7874,6 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovor "ne".)</transl
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
-
-<phrase>
-<original>BMP export options</original>
-<translation>BMP opcije izvoza</translation>
-</phrase>
-
-<phrase>
-<original>restrict palette size</original>
-<translation>ograničiti veličinu paleta</translation>
-</phrase>
-
-<phrase>
-<original>background color</original>
-<translation>boja pozadine</translation>
-</phrase>
-
-<phrase>
-<original>unique colors</original>
-<translation>jedinstvene boje</translation>
-</phrase>
-
-<phrase>
-<original>depth</original>
-<translation>dubina</translation>
-</phrase>
-
-<phrase>
-<original>color model</original>
-<translation>model boja</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression</original>
-<translation>koristiti RLE kompresija</translation>
-</phrase>
-
-<phrase>
-<original>premultiply alpha</original>
-<translation>premultiply alfa</translation>
-</phrase>
-
-<phrase>
-<original>flip row order (top-down)</original>
-<translation>Flip row red (top-down)</translation>
-</phrase>
-
-<phrase>
-<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>Korištenje ostavština 15-bitni kodiranje (X1-R5-G5-B5)</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Čeka korisnicima da navedu mogućnosti izvoza</translation>
-</phrase>
-
-<phrase>
-<original>auto</original>
-<translation>auto</translation>
-</phrase>
-
-<phrase>
-<original>color + transparency</original>
-<translation>transparentnost u boji</translation>
-</phrase>
-
-<phrase>
-<original>color only</original>
-<translation>jedina boja</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>u sivim tonovima</translation>
-</phrase>
-
-<phrase>
-<original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation>32-BPP ARGB (X8-R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>24-bpp RGB (R8-G8-B8)</original>
-<translation>24bpp RGB (R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>16-bpp (R5-G6-B5)</original>
-<translation>16-BPP (R5-G6-B5)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (indexed)</original>
-<translation>8bpp (indeksirano)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-BPP (256 boja)</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-BPP (16 nijansi)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1bpp (crno-bijeli)</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
-
-<!-- END text for File_Save_BMP.frm-->
-
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
 <phrase>
@@ -8006,6 +7922,11 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovor "ne".)</transl
 </phrase>
 
 <phrase>
+<original>background color</original>
+<translation>boja pozadine</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>solidan</translation>
 </phrase>
@@ -8040,7 +7961,7 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovor "ne".)</transl
 <translation>dijamant</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8850,11 +8771,16 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 </phrase>
 
 <phrase>
+<original>depth</original>
+<translation>dubina</translation>
+</phrase>
+
+<phrase>
 <original>Carving image relief</original>
 <translation>Carving reljef slika</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10386,6 +10312,106 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation>hrpa popravak</translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation>su podmape</translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation>kliknite U redu za početak rada popravak</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair image files</original>
+<translation>popravljati slikovne datoteke</translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation>izvor mapu</translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation>odredišnu mapu (na popravljene datoteke)</translation>
+</phrase>
+
+<phrase>
+<original>repair options</original>
+<translation>opcije za popravak</translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation>napredak</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation>popravljati video i audio datoteke</translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation>prepisati odgovarajuće nazive datoteka u odredišnoj mapi</translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
+<translation>Nakon uspješnog oporavka, obrisati izvornu (nepopravljenog) datoteku</translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation>generiranje popisa datoteka za popravak</translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation>Obrada datoteka %1 od %2 ( %3 popravke obavlja)</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete.  %1 files repaired.</original>
+<translation>Popravci dovršen.  %1 datoteke popraviti.</translation>
+</phrase>
+
+<phrase>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation> %1 datoteke (s) repaired.
+ 
+ Popravljeni su datoteke spremljene u odredišnu mapu. Nepopravljenog datoteke ostaju u svojim izvornim mjestima.</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
+<translation>Popravci dovršen</translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation>Izvor mapa ne sadrži sve datoteke. Pokušajte drugu mapu.</translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation>Nije pronađena nijedna datoteka</translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- BEGIN text for File_BatchWizard.frm (FormBatchWizard) -->
 
 <phrase>
@@ -10456,11 +10482,6 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>riješiti probleme izloženosti i osvjetljenja</translation>
-</phrase>
-
-<phrase>
-<original>include subfolders</original>
-<translation>su podmape</translation>
 </phrase>
 
 <phrase>
@@ -10947,7 +10968,7 @@ Would želite spremiti popis serija prije izlaska?</translation>
 <translation>obraditi prije otkazivanja. Posljednja obrađena slika je " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11434,6 +11455,112 @@ I Iskreno se ispričavamo zbog neugodnosti, ali na žalost ne postoji ništa %2 
 <!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
+
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
+
+<phrase>
+<original>BMP export options</original>
+<translation>BMP opcije izvoza</translation>
+</phrase>
+
+<phrase>
+<original>restrict palette size</original>
+<translation>ograničiti veličinu paleta</translation>
+</phrase>
+
+<phrase>
+<original>unique colors</original>
+<translation>jedinstvene boje</translation>
+</phrase>
+
+<phrase>
+<original>color model</original>
+<translation>model boja</translation>
+</phrase>
+
+<phrase>
+<original>use RLE compression</original>
+<translation>koristiti RLE kompresija</translation>
+</phrase>
+
+<phrase>
+<original>premultiply alpha</original>
+<translation>premultiply alfa</translation>
+</phrase>
+
+<phrase>
+<original>flip row order (top-down)</original>
+<translation>Flip row red (top-down)</translation>
+</phrase>
+
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation>Korištenje ostavština 15-bitni kodiranje (X1-R5-G5-B5)</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Čeka korisnicima da navedu mogućnosti izvoza</translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>auto</translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation>transparentnost u boji</translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation>jedina boja</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>u sivim tonovima</translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation>32-BPP ARGB (X8-R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation>24bpp RGB (R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation>16-BPP (R5-G6-B5)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation>8bpp (indeksirano)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation>8-BPP (256 boja)</translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation>4-BPP (16 nijansi)</translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation>1bpp (crno-bijeli)</translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
 
@@ -12644,63 +12771,8 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Kliknite da biste sakrili taj sloj.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Kliknite za prikaz taj sloj.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Kliknite duplicirati taj sloj.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Kliknite za spajanje taj sloj sa slojem ispod njega.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Ovaj sloj se ne može spojiti dolje, jer nema vidljivih slojeva ispod njega.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Kliknite za spajanje taj sloj sa slojem iznad nje.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Ovaj sloj se ne može spojiti gore, jer nema vidljivih slojeva iznad njega.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Kliknite da bi ovaj aktivni sloj.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Ovo je trenutno aktivan sloj.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Promjena rasporeda slojeva</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>nasljediti</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(skriven)</translation>
 </phrase>
 
 <phrase>
@@ -12733,7 +12805,7 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 <translation>Premjestiti sloj dolje</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14113,18 +14185,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>kopirati sve relevantne metapodatke u novu datoteku</translation>
-</phrase>
-
-<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>kada se zatvara slike, upozoravaju mi mi o izmjenama koji nisu snimljeni</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>ponašanje zadani metapodataka na prvi uštedjeti</translation>
 </phrase>
 
 <phrase>
@@ -14150,11 +14212,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>default file format when saving</original>
 <translation>Zadani format datoteke prilikom spremanja</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>brisanje oznake koje bi mogle biti osobni (GPS, pojedinosti kamera, itd)</translation>
 </phrase>
 
 <phrase>
@@ -14720,7 +14777,7 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 <translation>Ova nova lokacija privremenu mapu neće stupiti na snagu dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14835,113 +14892,12 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
-
-<phrase>
-<original>Batch repair</original>
-<translation>hrpa popravak</translation>
-</phrase>
-
-<phrase>
-<original>click OK to begin the repair operation</original>
-<translation>kliknite U redu za početak rada popravak</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair image files</original>
-<translation>popravljati slikovne datoteke</translation>
-</phrase>
-
-<phrase>
-<original>source folder</original>
-<translation>izvor mapu</translation>
-</phrase>
-
-<phrase>
-<original>destination folder (for repaired files only)</original>
-<translation>odredišnu mapu (na popravljene datoteke)</translation>
-</phrase>
-
-<phrase>
-<original>repair options</original>
-<translation>opcije za popravak</translation>
-</phrase>
-
-<phrase>
-<original>progress</original>
-<translation>napredak</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair video and audio files</original>
-<translation>popravljati video i audio datoteke</translation>
-</phrase>
-
-<phrase>
-<original>overwrite matching filenames in the destination folder</original>
-<translation>prepisati odgovarajuće nazive datoteka u odredišnoj mapi</translation>
-</phrase>
-
-<phrase>
-<original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>Nakon uspješnog oporavka, obrisati izvornu (nepopravljenog) datoteku</translation>
-</phrase>
-
-<phrase>
-<original>generating list of files to repair</original>
-<translation>generiranje popisa datoteka za popravak</translation>
-</phrase>
-
-<phrase>
-<original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>Obrada datoteka %1 od %2 ( %3 popravke obavlja)</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete.  %1 files repaired.</original>
-<translation>Popravci dovršen.  %1 datoteke popraviti.</translation>
-</phrase>
-
-<phrase>
-<original>%1 files(s) repaired.
-
-Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 datoteke (s) repaired.
- 
- Popravljeni su datoteke spremljene u odredišnu mapu. Nepopravljenog datoteke ostaju u svojim izvornim mjestima.</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete</original>
-<translation>Popravci dovršen</translation>
-</phrase>
-
-<phrase>
-<original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>Izvor mapa ne sadrži sve datoteke. Pokušajte drugu mapu.</translation>
-</phrase>
-
-<phrase>
-<original>No files found</original>
-<translation>Nije pronađena nijedna datoteka</translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
-
-<!-- END text for File_BatchRepair.frm-->
-
-<!-- BEGIN text for pdCrypto.cls -->
-
-<!-- pdCrypto.cls contains 0 phrases. -->
-
-<!-- END text for pdCrypto.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2540</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
-<!-- These 2540 phrases contain approximately 12817 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12722 total words. -->
 
 </pdData>

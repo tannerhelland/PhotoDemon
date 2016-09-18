@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (DE) - (rk)</langname>
-<langversion>6.8.1888</langversion>
+<langversion>6.8.1894</langversion>
 <langstatus>Abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2610,6 +2610,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- END text for pdCompositor.cls-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- BEGIN text for pdDIB.cls -->
 
 <phrase>
@@ -3997,6 +4003,17 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerListInner.ctl -->
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Layer neu anordnen</translation>
+</phrase>
+
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdLayerListInner.ctl-->
 
 <!-- BEGIN text for pdListBox.ctl -->
 
@@ -5787,7 +5804,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <original>This copy of PhotoDemon is the newest version available.
 
 (Current version: %1.%2.%3)</original>
-<translation>Diese Kopie von PhotoDemon ist auf dem neuesten Stand.
+<translation>Diese Kopie von PhotoDemon ist die neueste verfügbare Version.
 
 (Aktuelle Version: %1.%2.%3)</translation>
 </phrase>
@@ -6742,8 +6759,23 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
-<original>Adjust Color Temperature</original>
-<translation>Farbtemperatur anpassen</translation>
+<original>Color temperature</original>
+<translation>Farbtemperatur</translation>
+</phrase>
+
+<phrase>
+<original>method</original>
+<translation>Methode</translation>
+</phrase>
+
+<phrase>
+<original>warmer</original>
+<translation>Wärmer</translation>
+</phrase>
+
+<phrase>
+<original>cooler</original>
+<translation>Kühler</translation>
 </phrase>
 
 <phrase>
@@ -6771,7 +6803,17 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Neue Temperatur wird auf Bild angewendet</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>Grundlegend</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>Erweitert</translation>
+</phrase>
+
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -7685,17 +7727,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Schatten, Mitteltöne und Glanzlichter werden angepasst</translation>
 </phrase>
 
-<phrase>
-<original>basic</original>
-<translation>Grundlegend</translation>
-</phrase>
-
-<phrase>
-<original>advanced</original>
-<translation>Erweitert</translation>
-</phrase>
-
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -7843,122 +7875,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
-
-<phrase>
-<original>BMP export options</original>
-<translation>BMP-Exportoptionen</translation>
-</phrase>
-
-<phrase>
-<original>restrict palette size</original>
-<translation>Palettengröße beschränken</translation>
-</phrase>
-
-<phrase>
-<original>background color</original>
-<translation>Hintergrundfarbe</translation>
-</phrase>
-
-<phrase>
-<original>unique colors</original>
-<translation>Eindeutige Farben</translation>
-</phrase>
-
-<phrase>
-<original>depth</original>
-<translation>Tiefe</translation>
-</phrase>
-
-<phrase>
-<original>color model</original>
-<translation>Farbmodell</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression</original>
-<translation>RLE-Kompression verwenden</translation>
-</phrase>
-
-<phrase>
-<original>premultiply alpha</original>
-<translation>Alpha vormulitplizieren</translation>
-</phrase>
-
-<phrase>
-<original>flip row order (top-down)</original>
-<translation>Reihenfolge umdrehen (Oben-Unten)</translation>
-</phrase>
-
-<phrase>
-<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>Legacy 15 Bit-Kodierung (X1-R5-G5-B5) verwenden</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Warten auf Benutzer, um Exportioptionen zu spezifizieren</translation>
-</phrase>
-
-<phrase>
-<original>auto</original>
-<translation>Automatisch</translation>
-</phrase>
-
-<phrase>
-<original>color + transparency</original>
-<translation>Farbe + Transparenz</translation>
-</phrase>
-
-<phrase>
-<original>color only</original>
-<translation>Nur Farbe</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>Graustufen</translation>
-</phrase>
-
-<phrase>
-<original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation>32-bpp XRGB (X8-R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>24-bpp RGB (R8-G8-B8)</original>
-<translation>24-bpp RGB (R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>16-bpp (R5-G6-B5)</original>
-<translation>16-bpp (R5-G6-B5)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (indexed)</original>
-<translation>8-bpp (indiziert)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-bpp (256 Farben)</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-bpp (16 Farben)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1-bpp (monochrom)</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
-
-<!-- END text for File_Save_BMP.frm-->
-
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
 <phrase>
@@ -8007,6 +7923,11 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
+<original>background color</original>
+<translation>Hintergrundfarbe</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>Solid</translation>
 </phrase>
@@ -8041,7 +7962,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Diamant</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8851,11 +8772,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>depth</original>
+<translation>Tiefe</translation>
+</phrase>
+
+<phrase>
 <original>Carving image relief</original>
 <translation>Bildrelief wird geschnitzt</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10387,6 +10313,104 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation>Batch-Reparatur</translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation>Unterordner einschließen</translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation>Klicken Sie auf OK, um die Reparaturoperation zu beginnen</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair image files</original>
+<translation>Versuchen, Bilddateien zu reparieren</translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation>Quellordner</translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation>Zielordner (nur für reparierte Dateien)</translation>
+</phrase>
+
+<phrase>
+<original>repair options</original>
+<translation>Reparaturoptionen</translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation>Fortschritt</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation>Versuchen, Video- und Audiodateien zu reparieren</translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation>Übereinstimmende Dateinamen im Zielordner überschreiben</translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
+<translation>Nach einer erfolgreichen Wiederherstellung die originale (nicht reparierte) Datei löschen</translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation>Liste der zu repariernden Dateien wird generiert</translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation>Verarbeitung der Datei %1 von %2 (%3 Reparaturen durchgeführt)</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete.  %1 files repaired.</original>
+<translation>Reparaturen fertiggestellt. %1 Dateien repariert.</translation>
+</phrase>
+
+<phrase>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien bleiben an deren Originalspeicherort.</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
+<translation>Reparaturen fertiggestellt</translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation>Der Quellordner enhält keinerlei Dateien. Versuchen Sie bitte einen anderen.</translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation>Keine Dateien gefunden</translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- BEGIN text for File_BatchWizard.frm (FormBatchWizard) -->
 
 <phrase>
@@ -10457,11 +10481,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>Belichtungs- und Beleuchtungsprobleme beheben</translation>
-</phrase>
-
-<phrase>
-<original>include subfolders</original>
-<translation>Unterordner einschließen</translation>
 </phrase>
 
 <phrase>
@@ -10945,10 +10964,10 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>processed before cancelation. Last processed image was "%1".</original>
-<translation>Verarbeitet vor Abbruch. Letzte verarbeitete Bild war "%1".</translation>
+<translation>Verarbeitet vor Abbruch. Letztes verarbeitetes Bild war "%1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11435,6 +11454,112 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
+
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
+
+<phrase>
+<original>BMP export options</original>
+<translation>BMP-Exportoptionen</translation>
+</phrase>
+
+<phrase>
+<original>restrict palette size</original>
+<translation>Palettengröße beschränken</translation>
+</phrase>
+
+<phrase>
+<original>unique colors</original>
+<translation>Eindeutige Farben</translation>
+</phrase>
+
+<phrase>
+<original>color model</original>
+<translation>Farbmodell</translation>
+</phrase>
+
+<phrase>
+<original>use RLE compression</original>
+<translation>RLE-Kompression verwenden</translation>
+</phrase>
+
+<phrase>
+<original>premultiply alpha</original>
+<translation>Alpha vormulitplizieren</translation>
+</phrase>
+
+<phrase>
+<original>flip row order (top-down)</original>
+<translation>Reihenfolge umdrehen (Oben-Unten)</translation>
+</phrase>
+
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation>Legacy 15 Bit-Kodierung (X1-R5-G5-B5) verwenden</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Warten auf Benutzer, um Exportioptionen zu spezifizieren</translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>Automatisch</translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation>Farbe + Transparenz</translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation>Nur Farbe</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>Graustufen</translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation>32-bpp XRGB (X8-R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation>24-bpp RGB (R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation>16-bpp (R5-G6-B5)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation>8-bpp (indiziert)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation>8-bpp (256 Farben)</translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation>4-bpp (16 Farben)</translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation>1-bpp (monochrom)</translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
 
@@ -12645,63 +12770,8 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Hier klicken, um diesen Layer auszublenden.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Hier klicken, um diesen Layer zu zeigen.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Hier klicken, um diesen Layer zu duplizieren.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Hier klicken, um diesen Layer mit dem unter ihm befindlichen Layer zusammenzuführen.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Dieser Layer kann nicht nach unten zusammengeführt werden, da es unter diesem keine sichtbaren Layer gibt.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Hier klicken, um diesen Layer mit dem über ihm befindlichen Layer zusammenzuführen.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Dieser Layer kann nicht nach oben zusammengeführt werden, da es über diesem keine sichtbaren Layer gibt.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Hier klicken, um diesen Layer als aktiv festzulegen.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Dies ist der derzeitig aktive Layer.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Layer neu anordnen</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>Übernehmen</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(ausgeblendet)</translation>
 </phrase>
 
 <phrase>
@@ -12734,7 +12804,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <translation>Layer nach unten verschieben</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14114,18 +14184,8 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>Jegliche relevanten Metadaten in die neue Datei kopieren</translation>
-</phrase>
-
-<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>Beim Schließen von Bildern mich bei nicht gespeicherte Änderungen warnen</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>Standardmäßiges Metadaten-Verhalten bei erstem Speichern</translation>
 </phrase>
 
 <phrase>
@@ -14151,11 +14211,6 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <phrase>
 <original>default file format when saving</original>
 <translation>Standarddateiformat beim Speichern</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>Tags löschen, die persönlich sein könnten (GPS, Kameradetails etc.)</translation>
 </phrase>
 
 <phrase>
@@ -14721,7 +14776,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Der neue Speicherort für den temporären Ordner wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14836,111 +14891,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
-
-<phrase>
-<original>Batch repair</original>
-<translation>Batch-Reparatur</translation>
-</phrase>
-
-<phrase>
-<original>click OK to begin the repair operation</original>
-<translation>Klicken Sie auf OK, um die Reparaturoperation zu beginnen</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair image files</original>
-<translation>Versuchen, Bilddateien zu reparieren</translation>
-</phrase>
-
-<phrase>
-<original>source folder</original>
-<translation>Quellordner</translation>
-</phrase>
-
-<phrase>
-<original>destination folder (for repaired files only)</original>
-<translation>Zielordner (nur für reparierte Dateien)</translation>
-</phrase>
-
-<phrase>
-<original>repair options</original>
-<translation>Reparaturoptionen</translation>
-</phrase>
-
-<phrase>
-<original>progress</original>
-<translation>Fortschritt</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair video and audio files</original>
-<translation>Versuchen, Video- und Audiodateien zu reparieren</translation>
-</phrase>
-
-<phrase>
-<original>overwrite matching filenames in the destination folder</original>
-<translation>Übereinstimmende Dateinamen im Zielordner überschreiben</translation>
-</phrase>
-
-<phrase>
-<original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>Nach einer erfolgreichen Wiederherstellung die originale (nicht reparierte) Datei löschen</translation>
-</phrase>
-
-<phrase>
-<original>generating list of files to repair</original>
-<translation>Liste der zu repariernden Dateien wird generiert</translation>
-</phrase>
-
-<phrase>
-<original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>Verarbeitung der Datei %1 von %2 (%3 Reparaturen durchgeführt)</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete.  %1 files repaired.</original>
-<translation>Reparaturen fertiggestellt. %1 Dateien repariert.</translation>
-</phrase>
-
-<phrase>
-<original>%1 files(s) repaired.
-
-Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation>Reparierte Dateien sind im Zielordner gespeichert worden. Nicht reparierte Dateien bleiben an deren Originalspeicherort.</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete</original>
-<translation>Reparaturen fertiggestellt</translation>
-</phrase>
-
-<phrase>
-<original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>Der Quellordner enhält keinerlei Dateien. Versuchen Sie bitte einen anderen.</translation>
-</phrase>
-
-<phrase>
-<original>No files found</original>
-<translation>Keine Dateien gefunden</translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
-
-<!-- END text for File_BatchRepair.frm-->
-
-<!-- BEGIN text for pdCrypto.cls -->
-
-<!-- pdCrypto.cls contains 0 phrases. -->
-
-<!-- END text for pdCrypto.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2540</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
-<!-- These 2540 phrases contain approximately 12817 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12722 total words. -->
 
 </pdData>

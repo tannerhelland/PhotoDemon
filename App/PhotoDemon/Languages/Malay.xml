@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.1888</langversion>
+<langversion>6.8.1894</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2610,6 +2610,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdCompositor.cls-->
 
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
+
 <!-- BEGIN text for pdDIB.cls -->
 
 <phrase>
@@ -3997,6 +4003,17 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerListInner.ctl -->
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Susun semula lapisan</translation>
+</phrase>
+
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdLayerListInner.ctl-->
 
 <!-- BEGIN text for pdListBox.ctl -->
 
@@ -6742,8 +6759,23 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
-<original>Adjust Color Temperature</original>
-<translation>Laraskan Warna Suhu</translation>
+<original>Color temperature</original>
+<translation>suhu warna</translation>
+</phrase>
+
+<phrase>
+<original>method</original>
+<translation>kaedah</translation>
+</phrase>
+
+<phrase>
+<original>warmer</original>
+<translation>lebih panas</translation>
+</phrase>
+
+<phrase>
+<original>cooler</original>
+<translation>sejuk</translation>
 </phrase>
 
 <phrase>
@@ -6771,7 +6803,17 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Menggunakan suhu baru kepada imej</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>asas</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>maju</translation>
+</phrase>
+
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -7685,17 +7727,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Melaraskan bayang-bayang, midtones, dan sorotan</translation>
 </phrase>
 
-<phrase>
-<original>basic</original>
-<translation>asas</translation>
-</phrase>
-
-<phrase>
-<original>advanced</original>
-<translation>maju</translation>
-</phrase>
-
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -7843,122 +7875,6 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
-
-<phrase>
-<original>BMP export options</original>
-<translation>pilihan eksport BMP</translation>
-</phrase>
-
-<phrase>
-<original>restrict palette size</original>
-<translation>mengehadkan saiz palet</translation>
-</phrase>
-
-<phrase>
-<original>background color</original>
-<translation>warna latar belakang</translation>
-</phrase>
-
-<phrase>
-<original>unique colors</original>
-<translation>warna yang unik</translation>
-</phrase>
-
-<phrase>
-<original>depth</original>
-<translation>mendalam</translation>
-</phrase>
-
-<phrase>
-<original>color model</original>
-<translation>model warna</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression</original>
-<translation>menggunakan mampatan RLE</translation>
-</phrase>
-
-<phrase>
-<original>premultiply alpha</original>
-<translation>alpha premultiply</translation>
-</phrase>
-
-<phrase>
-<original>flip row order (top-down)</original>
-<translation>flip perintah baris (atas ke bawah)</translation>
-</phrase>
-
-<phrase>
-<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>penggunaan warisan 15-bit pengekodan (X1-R5-G5-B5)</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Menunggu pengguna untuk menentukan pilihan eksport</translation>
-</phrase>
-
-<phrase>
-<original>auto</original>
-<translation>auto</translation>
-</phrase>
-
-<phrase>
-<original>color + transparency</original>
-<translation>ketelusan warna</translation>
-</phrase>
-
-<phrase>
-<original>color only</original>
-<translation>warna sahaja</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>skala kelabu</translation>
-</phrase>
-
-<phrase>
-<original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation>32 bpp XRGB (X8-R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>24-bpp RGB (R8-G8-B8)</original>
-<translation>24 bpp RGB (R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>16-bpp (R5-G6-B5)</original>
-<translation>16 bpp (R5-G6-B5)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (indexed)</original>
-<translation>8-bpp (diindeks)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-bpp (256 warna)</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-bpp (16 warna)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1-bpp (monokrom)</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
-
-<!-- END text for File_Save_BMP.frm-->
-
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
 <phrase>
@@ -8007,6 +7923,11 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 </phrase>
 
 <phrase>
+<original>background color</original>
+<translation>warna latar belakang</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>pepejal</translation>
 </phrase>
@@ -8041,7 +7962,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>berlian</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8851,11 +8772,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>depth</original>
+<translation>mendalam</translation>
+</phrase>
+
+<phrase>
 <original>Carving image relief</original>
 <translation>Ukiran relief imej</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10387,6 +10313,106 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation>pembaikan Batch</translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation>termasuk subfolder</translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation>klik OK untuk memulakan operasi pembaikan</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair image files</original>
+<translation>cuba untuk membaiki fail imej</translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation>folder sumber</translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation>folder destinasi (untuk fail dibaiki sahaja)</translation>
+</phrase>
+
+<phrase>
+<original>repair options</original>
+<translation>pilihan pembaikan</translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation>kemajuan</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation>cuba untuk membaiki video dan fail audio</translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation>menulis ganti yang sepadan dengan nama fail dalam folder destinasi</translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
+<translation>selepas pemulihan yang berjaya, padamkan asal (tidak dibaiki) fail</translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation>menjana senarai fail untuk membaiki</translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation>fail pemprosesan %1 daripada %2 ( %3 pembaikan dilakukan)</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete.  %1 files repaired.</original>
+<translation>Pembaikan selesai.  %1 fail dibaiki.</translation>
+</phrase>
+
+<phrase>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation> %1 fail repaired.
+ 
+ fail Dibaiki (s) telah disimpan ke folder destinasi. fail tidak dibaiki kekal di lokasi asal mereka.</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
+<translation>pembaikan selesai</translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation>Folder sumber tidak mengandungi sebarang fail. Sila cuba folder lain.</translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation>Tiada fail ditemui</translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- BEGIN text for File_BatchWizard.frm (FormBatchWizard) -->
 
 <phrase>
@@ -10457,11 +10483,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>menetapkan pendedahan dan pencahayaan masalah</translation>
-</phrase>
-
-<phrase>
-<original>include subfolders</original>
-<translation>termasuk subfolder</translation>
 </phrase>
 
 <phrase>
@@ -10948,7 +10969,7 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11435,6 +11456,112 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
+
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
+
+<phrase>
+<original>BMP export options</original>
+<translation>pilihan eksport BMP</translation>
+</phrase>
+
+<phrase>
+<original>restrict palette size</original>
+<translation>mengehadkan saiz palet</translation>
+</phrase>
+
+<phrase>
+<original>unique colors</original>
+<translation>warna yang unik</translation>
+</phrase>
+
+<phrase>
+<original>color model</original>
+<translation>model warna</translation>
+</phrase>
+
+<phrase>
+<original>use RLE compression</original>
+<translation>menggunakan mampatan RLE</translation>
+</phrase>
+
+<phrase>
+<original>premultiply alpha</original>
+<translation>alpha premultiply</translation>
+</phrase>
+
+<phrase>
+<original>flip row order (top-down)</original>
+<translation>flip perintah baris (atas ke bawah)</translation>
+</phrase>
+
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation>penggunaan warisan 15-bit pengekodan (X1-R5-G5-B5)</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Menunggu pengguna untuk menentukan pilihan eksport</translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>auto</translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation>ketelusan warna</translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation>warna sahaja</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>skala kelabu</translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation>32 bpp XRGB (X8-R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation>24 bpp RGB (R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation>16 bpp (R5-G6-B5)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation>8-bpp (diindeks)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation>8-bpp (256 warna)</translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation>4-bpp (16 warna)</translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation>1-bpp (monokrom)</translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
 
@@ -12645,63 +12772,8 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Klik untuk menyembunyikan lapisan ini.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Klik untuk menunjukkan lapisan ini.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Klik untuk menduplikasi lapisan ini.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Klik untuk bergabung lapisan ini dengan lapisan di bawahnya.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Lapisan ini tidak boleh bergabung ke bawah, kerana tidak ada lapisan yang dapat dilihat di bawahnya.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Klik untuk bergabung dengan lapisan ini lapisan di atasnya.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Lapisan ini tidak boleh bergabung sehingga, kerana tiada lapisan yang dapat dilihat di atas itu.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Klik untuk membuat ini lapisan aktif.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Ini adalah lapisan yang sedang aktif.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Susun semula lapisan</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>mewarisi</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(tersembunyi)</translation>
 </phrase>
 
 <phrase>
@@ -12734,7 +12806,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>Pindah ke bawah lapisan</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14114,18 +14186,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>menyalin mana-mana metadata yang berkaitan dengan fail baru</translation>
-</phrase>
-
-<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>apabila menutup imej, memberi amaran kepada saya saya tentang perubahan yang tidak disimpan</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>tingkah laku metadata lalai pada menyelamatkan pertama</translation>
 </phrase>
 
 <phrase>
@@ -14151,11 +14213,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>default file format when saving</original>
 <translation>lalai format fail apabila menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>memadam tag yang mungkin bersifat peribadi (GPS, butiran kamera, dan lain-lain)</translation>
 </phrase>
 
 <phrase>
@@ -14721,7 +14778,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>lokasi folder sementara yang baru ini tidak akan berfungsi sehingga anda memulakan semula program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14836,113 +14893,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
-
-<phrase>
-<original>Batch repair</original>
-<translation>pembaikan Batch</translation>
-</phrase>
-
-<phrase>
-<original>click OK to begin the repair operation</original>
-<translation>klik OK untuk memulakan operasi pembaikan</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair image files</original>
-<translation>cuba untuk membaiki fail imej</translation>
-</phrase>
-
-<phrase>
-<original>source folder</original>
-<translation>folder sumber</translation>
-</phrase>
-
-<phrase>
-<original>destination folder (for repaired files only)</original>
-<translation>folder destinasi (untuk fail dibaiki sahaja)</translation>
-</phrase>
-
-<phrase>
-<original>repair options</original>
-<translation>pilihan pembaikan</translation>
-</phrase>
-
-<phrase>
-<original>progress</original>
-<translation>kemajuan</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair video and audio files</original>
-<translation>cuba untuk membaiki video dan fail audio</translation>
-</phrase>
-
-<phrase>
-<original>overwrite matching filenames in the destination folder</original>
-<translation>menulis ganti yang sepadan dengan nama fail dalam folder destinasi</translation>
-</phrase>
-
-<phrase>
-<original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>selepas pemulihan yang berjaya, padamkan asal (tidak dibaiki) fail</translation>
-</phrase>
-
-<phrase>
-<original>generating list of files to repair</original>
-<translation>menjana senarai fail untuk membaiki</translation>
-</phrase>
-
-<phrase>
-<original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>fail pemprosesan %1 daripada %2 ( %3 pembaikan dilakukan)</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete.  %1 files repaired.</original>
-<translation>Pembaikan selesai.  %1 fail dibaiki.</translation>
-</phrase>
-
-<phrase>
-<original>%1 files(s) repaired.
-
-Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 fail repaired.
- 
- fail Dibaiki (s) telah disimpan ke folder destinasi. fail tidak dibaiki kekal di lokasi asal mereka.</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete</original>
-<translation>pembaikan selesai</translation>
-</phrase>
-
-<phrase>
-<original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>Folder sumber tidak mengandungi sebarang fail. Sila cuba folder lain.</translation>
-</phrase>
-
-<phrase>
-<original>No files found</original>
-<translation>Tiada fail ditemui</translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
-
-<!-- END text for File_BatchRepair.frm-->
-
-<!-- BEGIN text for pdCrypto.cls -->
-
-<!-- pdCrypto.cls contains 0 phrases. -->
-
-<!-- END text for pdCrypto.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2540</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
-<!-- These 2540 phrases contain approximately 12817 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12722 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>český</langname>
-<langversion>6.8.1888</langversion>
+<langversion>6.8.1894</langversion>
 <langstatus>raw machine trnaslation</langstatus>
 
 <author>Google Translator</author>
@@ -320,7 +320,8 @@
 <original>Before lossless copies can be saved, you must save this image at least once.
 
 Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation>Před bezeztrátové kopie lze uložit, je nutné uložit tento obraz alespoň bude once.                                                                                         
+<translation>Před bezeztrátové kopie lze uložit, je nutné uložit tento obraz alespoň bude once.
+
 Bezztrátový kopie uložena do stejné složky, jako je počáteční snímek ušetřit.</translation>
 </phrase>
 
@@ -813,12 +814,12 @@ You lze použít MenuTest (sub) v Filters_Miscellaneous modulu otestovat své vl
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 Ukládání selhalo (FreeImage_Save tichý selhání). Nahlaste prosím tuto chybu pomocí nápovědy -> Odeslat hlášení.</translation>
+<translation>%1 Ukládání selhalo (FreeImage_Save tichý selhání). Nahlaste prosím tuto chybu pomocí nápovědy -> Odeslat hlášení.</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation> %1 Ukládání selhalo (FreeImage vrátil prázdný rukojeť). Nahlaste prosím tuto chybu pomocí nápovědy -> Odeslat hlášení.</translation>
+<translation>%1 Ukládání selhalo (FreeImage vrátil prázdný rukojeť). Nahlaste prosím tuto chybu pomocí nápovědy -> Odeslat hlášení.</translation>
 </phrase>
 
 <phrase>
@@ -855,7 +856,7 @@ To povolit podporu pro tento formát obrazu, prosím, zkopírujte soubor FreeIma
 <original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
 
 To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
-<translation>Soubor PDI " %1" obsahuje komprimovaných dat, ale zlib plugin nebyl nalezen nebo je disabled.
+<translation>Soubor PDI "%1" obsahuje komprimovaných dat, ale zlib plugin nebyl nalezen nebo je disabled.
 
 To povolit podporu pro komprimované soubory PDI, klepněte na Nápověda> Zkontrolovat aktualizace a po výzvě, aby PhotoDemon stáhnout všechny doporučené pluginy.</translation>
 </phrase>
@@ -1268,7 +1269,8 @@ To povolit podporu pro komprimované soubory PDI, klepněte na Nápověda> Zkont
 <original>Unfortunately, the image '%1' could not be found.
 
 If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.</original>
-<translation>Bohužel, image '%1' nemohl být found.                                                 
+<translation>Bohužel, image '%1' nemohl být found.
+
 Pokud byl tento obraz původně umístěna na vyměnitelných médií (DVD, USB disk, etc), prosím, re-vložku nebo znovu připojit médium a zkuste to znovu.</translation>
 </phrase>
 
@@ -1295,7 +1297,7 @@ Pokud byl tento obraz původně umístěna na vyměnitelných médií (DVD, USB 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
 <translation>Bohužel, PhotoDemon nemohl načíst následující obrázek: 
 
- %1
+%1
 
 Please použít jiný program uložit tento obraz v obecném formátu (například JPEG nebo PNG) před vložením. Díky!</translation>
 </phrase>
@@ -1313,7 +1315,7 @@ Please použít jiný program uložit tento obraz v obecném formátu (napříkl
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
 <translation>Bohužel, PhotoDemon nemohl načíst následující obrázek: 
 
- %1
+%1
 
 Please použít jiný program uložit tento obraz v obecném formátu (například JPEG nebo PNG) Před vložením do PhotoDemon. Díky!</translation>
 </phrase>
@@ -2596,6 +2598,12 @@ Please enter a numeric value.</original>
 <!-- pdCompositor.cls contains 0 phrases. -->
 
 <!-- END text for pdCompositor.cls-->
+
+<!-- BEGIN text for pdCrypto.cls -->
+
+<!-- pdCrypto.cls contains 0 phrases. -->
+
+<!-- END text for pdCrypto.cls-->
 
 <!-- BEGIN text for pdDIB.cls -->
 
@@ -3982,6 +3990,17 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdLayerListInner.ctl -->
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Přeskupení vrstev</translation>
+</phrase>
+
+<!-- pdLayerListInner.ctl contains 3 phrases. 2 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdLayerListInner.ctl-->
 
 <!-- BEGIN text for pdListBox.ctl -->
 
@@ -6724,8 +6743,23 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <!-- BEGIN text for Adjustments_Color_Temperature.frm (FormColorTemp) -->
 
 <phrase>
-<original>Adjust Color Temperature</original>
-<translation>Upravit teplotu barev</translation>
+<original>Color temperature</original>
+<translation>Teplota barvy</translation>
+</phrase>
+
+<phrase>
+<original>method</original>
+<translation>metoda</translation>
+</phrase>
+
+<phrase>
+<original>warmer</original>
+<translation>ohřívač</translation>
+</phrase>
+
+<phrase>
+<original>cooler</original>
+<translation>chladič</translation>
 </phrase>
 
 <phrase>
@@ -6753,7 +6787,17 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Uplatňování nové teplotu na obrázku</translation>
 </phrase>
 
-<!-- Adjustments_Color_Temperature.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>základní</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>moderní</translation>
+</phrase>
+
+<!-- Adjustments_Color_Temperature.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Temperature.frm-->
 
@@ -7667,17 +7711,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Úprava stíny, střední tóny a světla</translation>
 </phrase>
 
-<phrase>
-<original>basic</original>
-<translation>základní</translation>
-</phrase>
-
-<phrase>
-<original>advanced</original>
-<translation>moderní</translation>
-</phrase>
-
-<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_ShadowAndHighlight.frm contains 17 phrases. 13 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Adjustments_ShadowAndHighlight.frm-->
 
@@ -7825,122 +7859,6 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 
 <!-- END text for Dialog_EditPreset.frm-->
 
-<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
-
-<phrase>
-<original>BMP export options</original>
-<translation>možnosti exportu BMP</translation>
-</phrase>
-
-<phrase>
-<original>restrict palette size</original>
-<translation>omezit velikost palety</translation>
-</phrase>
-
-<phrase>
-<original>background color</original>
-<translation>barva pozadí</translation>
-</phrase>
-
-<phrase>
-<original>unique colors</original>
-<translation>unikátních barvách</translation>
-</phrase>
-
-<phrase>
-<original>depth</original>
-<translation>hloubka</translation>
-</phrase>
-
-<phrase>
-<original>color model</original>
-<translation>barevný model</translation>
-</phrase>
-
-<phrase>
-<original>use RLE compression</original>
-<translation>použít RLE kompresi</translation>
-</phrase>
-
-<phrase>
-<original>premultiply alpha</original>
-<translation>premultiply alpha</translation>
-</phrase>
-
-<phrase>
-<original>flip row order (top-down)</original>
-<translation>Flip řádek příkaz (top-down)</translation>
-</phrase>
-
-<phrase>
-<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
-<translation>Použití starší 15-bitové kódování (X1-R5-G5-B5)</translation>
-</phrase>
-
-<phrase>
-<original>Waiting for user to specify export options</original>
-<translation>Čekání na uživateli určit možnosti exportu</translation>
-</phrase>
-
-<phrase>
-<original>auto</original>
-<translation>auto</translation>
-</phrase>
-
-<phrase>
-<original>color + transparency</original>
-<translation>průhlednost barva</translation>
-</phrase>
-
-<phrase>
-<original>color only</original>
-<translation>pouze barva</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>ve stupních šedi</translation>
-</phrase>
-
-<phrase>
-<original>32-bpp XRGB (X8-R8-G8-B8)</original>
-<translation>32 BPP ARGB (X8-R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>24-bpp RGB (R8-G8-B8)</original>
-<translation>24bpp RGB (R8-G8-B8)</translation>
-</phrase>
-
-<phrase>
-<original>16-bpp (R5-G6-B5)</original>
-<translation>16-BPP (R 5-G6-B5)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (indexed)</original>
-<translation>8bpp (indexované)</translation>
-</phrase>
-
-<phrase>
-<original>8-bpp (256 shades)</original>
-<translation>8-BPP (256 odstínů)</translation>
-</phrase>
-
-<phrase>
-<original>4-bpp (16 shades)</original>
-<translation>4-BPP (16 odstínů)</translation>
-</phrase>
-
-<phrase>
-<original>1-bpp (monochrome)</original>
-<translation>1bpp (monochromatický)</translation>
-</phrase>
-
-<!-- File_Save_BMP.frm contains 23 phrases.  One was a duplicate of an existing phrase, so only 22 new phrases were written to file. -->
-
-<!-- END text for File_Save_BMP.frm-->
-
 <!-- BEGIN text for Dialog_FillSettings.frm (dialog_FillSettings) -->
 
 <phrase>
@@ -7989,6 +7907,11 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 </phrase>
 
 <phrase>
+<original>background color</original>
+<translation>barva pozadí</translation>
+</phrase>
+
+<phrase>
 <original>solid</original>
 <translation>pevný</translation>
 </phrase>
@@ -8023,7 +7946,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>diamant</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8833,11 +8756,16 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
+<original>depth</original>
+<translation>hloubka</translation>
+</phrase>
+
+<phrase>
 <original>Carving image relief</original>
 <translation>Carving úleva image</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10369,6 +10297,105 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <!-- END text for Effects_Transform_Sphere.frm-->
 
+<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
+
+<phrase>
+<original>Batch repair</original>
+<translation>oprava šarže</translation>
+</phrase>
+
+<phrase>
+<original>include subfolders</original>
+<translation>zahrnout podsložky</translation>
+</phrase>
+
+<phrase>
+<original>click OK to begin the repair operation</original>
+<translation>klepnutím na tlačítko OK začne operace opravy</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair image files</original>
+<translation>pokusit opravit obrazových souborů</translation>
+</phrase>
+
+<phrase>
+<original>source folder</original>
+<translation>zdroj složka</translation>
+</phrase>
+
+<phrase>
+<original>destination folder (for repaired files only)</original>
+<translation>cílovou složku (pro opravené soubory jen)</translation>
+</phrase>
+
+<phrase>
+<original>repair options</original>
+<translation>možnosti opravy</translation>
+</phrase>
+
+<phrase>
+<original>progress</original>
+<translation>pokrok</translation>
+</phrase>
+
+<phrase>
+<original>attempt to repair video and audio files</original>
+<translation>pokusit opravit video a audio soubory</translation>
+</phrase>
+
+<phrase>
+<original>overwrite matching filenames in the destination folder</original>
+<translation>přepsat odpovídající názvy souborů v cílové složce</translation>
+</phrase>
+
+<phrase>
+<original>after a successful recovery, erase the original (unrepaired) file</original>
+<translation>po úspěšném zotavení, smazat původní soubor (neopravené)</translation>
+</phrase>
+
+<phrase>
+<original>generating list of files to repair</original>
+<translation>generování seznamu souborů opravit</translation>
+</phrase>
+
+<phrase>
+<original>processing file %1 of %2 (%3 repairs performed)</original>
+<translation>Zpracování souboru %1 z %2 ( %3 opravy provedl)</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete.  %1 files repaired.</original>
+<translation>Opravy dokončena.  %1 soubory opravit.</translation>
+</phrase>
+
+<phrase>
+<original>%1 files(s) repaired.
+
+Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
+<translation> %1 soubory (y) repaired.
+ vbCrLf Opravené soubory byly uloženy do cílové složky. Neopravené soubory zůstanou ve svých původních místech.</translation>
+</phrase>
+
+<phrase>
+<original>Repairs complete</original>
+<translation>oprav</translation>
+</phrase>
+
+<phrase>
+<original>The source folder does not contain any files.  Please try another folder.</original>
+<translation>Složka zdroj neobsahuje žádné soubory. Zkuste prosím jinou složku.</translation>
+</phrase>
+
+<phrase>
+<original>No files found</original>
+<translation>Nebyly nalezeny žádné soubory</translation>
+</phrase>
+
+<!-- File_BatchRepair.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for File_BatchRepair.frm-->
+
 <!-- BEGIN text for File_BatchWizard.frm (FormBatchWizard) -->
 
 <phrase>
@@ -10439,11 +10466,6 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 <phrase>
 <original>fix exposure and lighting problems</original>
 <translation>opravit expozici a osvětlení problémy</translation>
-</phrase>
-
-<phrase>
-<original>include subfolders</original>
-<translation>zahrnout podsložky</translation>
 </phrase>
 
 <phrase>
@@ -10930,7 +10952,7 @@ Would se vám líbí uložit seznam dávky před ukončením?</translation>
 <translation>zpracovány před zrušením účtu. Poslední zpracovaný obraz byl " %1".</translation>
 </phrase>
 
-<!-- File_BatchWizard.frm contains 193 phrases. 82 were duplicates of existing phrases, so only 111 new phrases were written to file. -->
+<!-- File_BatchWizard.frm contains 193 phrases. 83 were duplicates of existing phrases, so only 110 new phrases were written to file. -->
 
 <!-- END text for File_BatchWizard.frm-->
 
@@ -11417,6 +11439,112 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 <!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
+
+<!-- BEGIN text for File_Save_BMP.frm (dialog_ExportBMP) -->
+
+<phrase>
+<original>BMP export options</original>
+<translation>možnosti exportu BMP</translation>
+</phrase>
+
+<phrase>
+<original>restrict palette size</original>
+<translation>omezit velikost palety</translation>
+</phrase>
+
+<phrase>
+<original>unique colors</original>
+<translation>unikátních barvách</translation>
+</phrase>
+
+<phrase>
+<original>color model</original>
+<translation>barevný model</translation>
+</phrase>
+
+<phrase>
+<original>use RLE compression</original>
+<translation>použít RLE kompresi</translation>
+</phrase>
+
+<phrase>
+<original>premultiply alpha</original>
+<translation>premultiply alpha</translation>
+</phrase>
+
+<phrase>
+<original>flip row order (top-down)</original>
+<translation>Flip řádek příkaz (top-down)</translation>
+</phrase>
+
+<phrase>
+<original>use legacy 15-bit encoding (X1-R5-G5-B5)</original>
+<translation>Použití starší 15-bitové kódování (X1-R5-G5-B5)</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for user to specify export options</original>
+<translation>Čekání na uživateli určit možnosti exportu</translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>auto</translation>
+</phrase>
+
+<phrase>
+<original>color + transparency</original>
+<translation>průhlednost barva</translation>
+</phrase>
+
+<phrase>
+<original>color only</original>
+<translation>pouze barva</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>ve stupních šedi</translation>
+</phrase>
+
+<phrase>
+<original>32-bpp XRGB (X8-R8-G8-B8)</original>
+<translation>32 BPP ARGB (X8-R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>24-bpp RGB (R8-G8-B8)</original>
+<translation>24bpp RGB (R8-G8-B8)</translation>
+</phrase>
+
+<phrase>
+<original>16-bpp (R5-G6-B5)</original>
+<translation>16-BPP (R 5-G6-B5)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (indexed)</original>
+<translation>8bpp (indexované)</translation>
+</phrase>
+
+<phrase>
+<original>8-bpp (256 shades)</original>
+<translation>8-BPP (256 odstínů)</translation>
+</phrase>
+
+<phrase>
+<original>4-bpp (16 shades)</original>
+<translation>4-BPP (16 odstínů)</translation>
+</phrase>
+
+<phrase>
+<original>1-bpp (monochrome)</original>
+<translation>1bpp (monochromatický)</translation>
+</phrase>
+
+<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+
+<!-- END text for File_Save_BMP.frm-->
 
 <!-- BEGIN text for File_Save_GIF.frm (dialog_ExportGIF) -->
 
@@ -12627,63 +12755,8 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Kliknutím skrýt tuto vrstvu.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Kliknutím ukázat tuto vrstvu.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Kliknutím duplikovat tuto vrstvu.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Kliknutím sloučit tuto vrstvu s vrstvou pod ní.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Tato vrstva nelze sloučit dolů, protože tam nejsou žádné viditelné vrstvy pod ní.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Kliknutím sloučit tuto vrstvu s vrstvou nad ním.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Tato vrstva nelze sloučit nahoru, protože tam nejsou žádné viditelné vrstvy nad ní.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Klepněte na tlačítko, aby se tento aktivní vrstva.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>To je v současné době aktivní vrstva.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Přeskupení vrstev</translation>
-</phrase>
-
-<phrase>
 <original>Inherit</original>
 <translation>Zdědit</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(schovaný)</translation>
 </phrase>
 
 <phrase>
@@ -12716,7 +12789,7 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 <translation>Přesunout vrstvu dolů</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14091,18 +14164,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>copy any relevant metadata to the new file</original>
-<translation>kopírovat veškeré relevantní metadata do nového souboru</translation>
-</phrase>
-
-<phrase>
 <original>when closing images, warn me me about unsaved changes</original>
 <translation>Při zavírání obrázků, varují mě mi o neuložených</translation>
-</phrase>
-
-<phrase>
-<original>default metadata behavior on first save</original>
-<translation>výchozí chování metadata na první uložit</translation>
 </phrase>
 
 <phrase>
@@ -14128,11 +14191,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>default file format when saving</original>
 <translation>Výchozí formát souboru při ukládání</translation>
-</phrase>
-
-<phrase>
-<original>erase tags that might be personal (GPS, camera details, etc)</original>
-<translation>vymazání značky, které by mohly být osobní (GPS, podrobnosti kamery, atd)</translation>
 </phrase>
 
 <phrase>
@@ -14697,7 +14755,7 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 <translation>Tato nová umístění dočasné složky se projeví až po restartování programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 188 phrases. 38 were duplicates of existing phrases, so only 150 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14812,112 +14870,12 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for File_BatchRepair.frm (FormBatchRepair) -->
-
-<phrase>
-<original>Batch repair</original>
-<translation>oprava šarže</translation>
-</phrase>
-
-<phrase>
-<original>click OK to begin the repair operation</original>
-<translation>klepnutím na tlačítko OK začne operace opravy</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair image files</original>
-<translation>pokusit opravit obrazových souborů</translation>
-</phrase>
-
-<phrase>
-<original>source folder</original>
-<translation>zdroj složka</translation>
-</phrase>
-
-<phrase>
-<original>destination folder (for repaired files only)</original>
-<translation>cílovou složku (pro opravené soubory jen)</translation>
-</phrase>
-
-<phrase>
-<original>repair options</original>
-<translation>možnosti opravy</translation>
-</phrase>
-
-<phrase>
-<original>progress</original>
-<translation>pokrok</translation>
-</phrase>
-
-<phrase>
-<original>attempt to repair video and audio files</original>
-<translation>pokusit opravit video a audio soubory</translation>
-</phrase>
-
-<phrase>
-<original>overwrite matching filenames in the destination folder</original>
-<translation>přepsat odpovídající názvy souborů v cílové složce</translation>
-</phrase>
-
-<phrase>
-<original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>po úspěšném zotavení, smazat původní soubor (neopravené)</translation>
-</phrase>
-
-<phrase>
-<original>generating list of files to repair</original>
-<translation>generování seznamu souborů opravit</translation>
-</phrase>
-
-<phrase>
-<original>processing file %1 of %2 (%3 repairs performed)</original>
-<translation>Zpracování souboru %1 z %2 ( %3 opravy provedl)</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete.  %1 files repaired.</original>
-<translation>Opravy dokončena.  %1 soubory opravit.</translation>
-</phrase>
-
-<phrase>
-<original>%1 files(s) repaired.
-
-Repaired files have been saved to the destination folder.  Unrepaired files remain in their original locations.</original>
-<translation> %1 soubory (y) repaired.
- vbCrLf Opravené soubory byly uloženy do cílové složky. Neopravené soubory zůstanou ve svých původních místech.</translation>
-</phrase>
-
-<phrase>
-<original>Repairs complete</original>
-<translation>oprav</translation>
-</phrase>
-
-<phrase>
-<original>The source folder does not contain any files.  Please try another folder.</original>
-<translation>Složka zdroj neobsahuje žádné soubory. Zkuste prosím jinou složku.</translation>
-</phrase>
-
-<phrase>
-<original>No files found</original>
-<translation>Nebyly nalezeny žádné soubory</translation>
-</phrase>
-
-<!-- File_BatchRepair.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
-
-<!-- END text for File_BatchRepair.frm-->
-
-<!-- BEGIN text for pdCrypto.cls -->
-
-<!-- pdCrypto.cls contains 0 phrases. -->
-
-<!-- END text for pdCrypto.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2540</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1931 are duplicates, so only 2540 unique phrases have been written to file. -->
-<!-- These 2540 phrases contain approximately 12817 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12722 total words. -->
 
 </pdData>
