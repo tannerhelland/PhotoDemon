@@ -29,8 +29,8 @@ Begin VB.UserControl pdLayerListInner
       Top             =   120
       Visible         =   0   'False
       Width           =   2655
-      _ExtentX        =   4683
-      _ExtentY        =   661
+      _extentx        =   4683
+      _extenty        =   661
    End
 End
 Attribute VB_Name = "pdLayerListInner"
@@ -71,11 +71,6 @@ Option Explicit
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-
-'Padding around individual layer items.  This value is added to layer thumbnail sizes to arrive at a default
-' per-item size.
-Private Const LIST_PADDING_HORIZONTAL As Single = 4#
-Private Const LIST_PADDING_VERTICAL As Single = 2#
 
 'The rectangle where the list is actually rendered
 Private m_ListRect As RECTF
@@ -128,18 +123,22 @@ Private m_ThumbWidth As Long, m_ThumbHeight As Long
 'Height of each layer content block.  Note that this is effectively a "magic number", in pixels, representing the
 ' height of each layer block in the layer selection UI.  This number will be dynamically resized per the current
 ' screen DPI by the "RedrawLayerList" and "RenderLayerBlock" functions.
-Private Const LAYER_BLOCK_HEIGHT As Long = 48&
-
-'The distance (in pixels at 96 dpi) between clickable buttons in the "show on hover" layer block menu
-Private Const DIST_BETWEEN_HOVER_BUTTONS As Long = 12
+Private Const LAYER_BLOCK_HEIGHT As Long = 42&
 
 'I don't want thumbnails to fill the full height of their blocks, so a border is automatically applied to each
 ' side of the thumbnail.  (Like all other interface elements, it is dynamically modified for DPI as necessary.)
 Private Const THUMBNAIL_PADDING As Long = 4&
 
+'Finally, some horizontal padding is applied to each element of a layer block (visibility icon, lock icon, thumb,
+' layer name, etc)
+Private Const HORIZONTAL_ITEM_PADDING As Long = 4&
+
 'The currently hovered layer entry.  (Note that the currently *selected* layer is retrieved from the active
 ' pdImage object, rather than stored locally.)
 Private m_CurLayerHover As Long
+
+'The renderer highlights clickable elements, so it needs access to the current mouse coordinates
+Private m_MouseX As Single, m_MouseY As Single
 
 'Layer buttons are more easily referenced by this enum rather than their actual indices
 Private Enum LAYER_BUTTON_ID
@@ -155,15 +154,10 @@ End Enum
 
 'Extra interface images are loaded as resources at run-time
 Private img_EyeOpen As pdDIB, img_EyeClosed As pdDIB
-Private img_MergeUp As pdDIB, img_MergeDown As pdDIB
-Private img_MergeUpDisabled As pdDIB, img_MergeDownDisabled As pdDIB
-Private img_Duplicate As pdDIB
 
 'Some UI elements are dynamically rendered onto the layer box.  To simplify hit detection, their RECTs are stored
 ' at render-time, which allows the mouse actions to easily check hits regardless of layer box position.
-Private m_VisibilityRect As RECT, m_NameRect As RECT
-Private m_MergeUpRect As RECT, m_MergeDownRect As RECT
-Private m_DuplicateRect As RECT
+Private m_LayerHoverRect As RECT, m_VisibilityRect As RECT, m_NameRect As RECT, m_NameEditRect As RECT
 
 'Sometimes we need to make changes that will raise redraw-causing events.  (For example, we'll raise events that
 ' require external UI objects to re-sync against new settings.)  This value is set to TRUE when you know redraw
@@ -183,11 +177,6 @@ Private m_LayerNameEditMode As Boolean
 
 'When the mouse is over the layer list, this will be set to TRUE
 Private m_MouseOverLayerBox As Boolean
-
-'Because the layer toolbox changes tooltips dynamically (based on what area of the toolbox the user is hovering), we have to employ
-' some failsafes to prevent flicker.  This variable stores the last assigned tooltip.  When it comes time to assign a new tooltip,
-' we compare the new tooltip against this string, and only make a change if they differ.
-Private m_PreviousTooltip As String
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -291,7 +280,7 @@ Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, 
     If (Math_Functions.IsPointInRect(x, y, m_NameRect) And (Button = pdLeftButton)) Then
     
         'Move the text layer box into position
-        txtLayerName.SetPositionAndSize m_NameRect.Left, m_NameRect.Top, m_NameRect.Right - m_NameRect.Left, m_NameRect.Bottom - m_NameRect.Top
+        txtLayerName.SetPositionAndSize m_NameEditRect.Left, m_NameEditRect.Top, m_NameEditRect.Right - m_NameEditRect.Left, m_NameEditRect.Bottom - m_NameEditRect.Top
         txtLayerName.ZOrder 0
         txtLayerName.Visible = True
         
@@ -305,12 +294,10 @@ Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, 
         Processor.FlagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerName, pdImages(g_CurrentImage).GetLayerByIndex(GetLayerAtPosition(x, y)).GetLayerID
         
         txtLayerName.SetFocus
-        
+    
+    'Hide the text box if it isn't already
     Else
-    
-        'Hide the text box if it isn't already
         txtLayerName.Visible = False
-    
     End If
 
 End Sub
@@ -336,7 +323,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     Dim clickedLayer As Long
     clickedLayer = GetLayerAtPosition(x, y)
     
-    If clickedLayer >= 0 Then
+    If (clickedLayer >= 0) Then
         
         If (Not pdImages(g_CurrentImage) Is Nothing) And (Button = pdLeftButton) Then
             
@@ -351,25 +338,6 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             If Math_Functions.IsPointInRect(x, y, m_VisibilityRect) Then
                 Layer_Handler.SetLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerVisibility, True
                 actionInitiated = True
-            
-            'Duplicate rectangle?
-            ElseIf Math_Functions.IsPointInRect(x, y, m_DuplicateRect) Then
-                Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE_VECTORSAFE
-                actionInitiated = True
-            
-            'Merge down rectangle?
-            ElseIf Math_Functions.IsPointInRect(x, y, m_MergeDownRect) Then
-                If (Layer_Handler.IsLayerAllowedToMergeAdjacent(clickedLayer, True) >= 0) Then
-                    Process "Merge layer down", False, Str(clickedLayer), UNDO_IMAGE
-                    actionInitiated = True
-                End If
-            
-            'Merge up rectangle?
-            ElseIf Math_Functions.IsPointInRect(x, y, m_MergeUpRect) Then
-                If Layer_Handler.IsLayerAllowedToMergeAdjacent(clickedLayer, False) >= 0 Then
-                    Process "Merge layer up", False, Str(clickedLayer), UNDO_IMAGE
-                    actionInitiated = True
-                End If
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
             ' the active layer.
@@ -524,6 +492,8 @@ End Sub
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseOverLayerBox = False
     UpdateHoveredLayer -1
+    m_MouseX = -1
+    m_MouseY = -1
     ucSupport.RequestCursor IDC_DEFAULT
     RedrawBackBuffer
 End Sub
@@ -543,6 +513,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     'Don't process further MouseMove events if no images are loaded
     If (g_OpenImageCount = 0) Or (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+    
+    'Store the mouse coords at module-level; the renderer may use these to highlight clickable elements
+    m_MouseX = x
+    m_MouseY = y
     
     'Process any important interactions first.  If a live interaction is taking place (such as drag/drop layer reordering),
     ' other MouseMove events will be suspended until the drag/drop is completed.
@@ -577,74 +551,6 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     'If a layer other than the active one is being hovered, highlight that box
     UpdateHoveredLayer GetLayerAtPosition(x, y)
-    
-    'Update the tooltip contingent on the mouse position.
-    Dim toolString As String
-    
-    'Mouse is over a visibility toggle
-    If IsPointInRect(x, y, m_VisibilityRect) Then
-        
-        'Fast mouse movements can cause this event to trigger, even when no layer is hovered.
-        ' As such, we need to make sure we won't be attempting to access a bad layer index.
-        If (m_CurLayerHover >= 0) Then
-            If pdImages(g_CurrentImage).GetLayerByIndex(m_CurLayerHover).GetLayerVisibility Then
-                toolString = g_Language.TranslateMessage("Click to hide this layer.")
-            Else
-                toolString = g_Language.TranslateMessage("Click to show this layer.")
-            End If
-        End If
-        
-    'Mouse is over Duplicate
-    ElseIf IsPointInRect(x, y, m_DuplicateRect) Then
-    
-        If (m_CurLayerHover >= 0) Then
-            toolString = g_Language.TranslateMessage("Click to duplicate this layer.")
-        End If
-    
-    'Mouse is over Merge Down
-    ElseIf IsPointInRect(x, y, m_MergeDownRect) Then
-    
-        If (m_CurLayerHover >= 0) Then
-            If Layer_Handler.IsLayerAllowedToMergeAdjacent(m_CurLayerHover, True) >= 0 Then
-                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer beneath it.")
-            Else
-                toolString = g_Language.TranslateMessage("This layer can't merge down, because there are no visible layers beneath it.")
-            End If
-        End If
-            
-    'Mouse is over Merge Up
-    ElseIf IsPointInRect(x, y, m_MergeUpRect) Then
-    
-        If (m_CurLayerHover >= 0) Then
-            If Layer_Handler.IsLayerAllowedToMergeAdjacent(m_CurLayerHover, False) >= 0 Then
-                toolString = g_Language.TranslateMessage("Click to merge this layer with the layer above it.")
-            Else
-                toolString = g_Language.TranslateMessage("This layer can't merge up, because there are no visible layers above it.")
-            End If
-        End If
-            
-    'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
-    ' the active layer.
-    Else
-        
-        'The tooltip is irrelevant if the current layer is already active
-        If pdImages(g_CurrentImage).GetActiveLayerIndex <> GetLayerAtPosition(x, y) Then
-            
-            If (m_CurLayerHover >= 0) Then
-                toolString = g_Language.TranslateMessage("Click to make this the active layer.")
-            Else
-                toolString = ""
-            End If
-            
-        Else
-            toolString = g_Language.TranslateMessage("This is the currently active layer.")
-        End If
-        
-    End If
-    
-    'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
-    If StrComp(m_PreviousTooltip, toolString, vbBinaryCompare) <> 0 Then ucSupport.AssignTooltip Me.ContainerHwnd, toolString
-    m_PreviousTooltip = toolString
     
     'TODO: optimize this call; we may not need it if we redrew the buffer previously in this function
     RedrawBackBuffer
@@ -732,19 +638,8 @@ Private Sub UserControl_Initialize()
     
     'Load all hover UI image resources
     If g_IsProgramRunning Then
-        
         InitializeUIDib img_EyeOpen, "EYE_OPEN"
         InitializeUIDib img_EyeClosed, "EYE_CLOSE"
-        InitializeUIDib img_Duplicate, "DUPL_LAYER"
-        InitializeUIDib img_MergeUp, "MERGE_UP"
-        InitializeUIDib img_MergeDown, "MERGE_DOWN"
-        InitializeUIDib img_MergeUpDisabled, "MERGE_UP"
-        InitializeUIDib img_MergeDownDisabled, "MERGE_DOWN"
-        
-        'If a UI image can be disabled, make a grayscale copy of it in advance
-        Filters_Layers.GrayscaleDIB img_MergeUpDisabled, True
-        Filters_Layers.GrayscaleDIB img_MergeDownDisabled, True
-    
     End If
     
     'Reset all internal storage objects (used to track layer thumbnails, among other things)
@@ -753,6 +648,8 @@ Private Sub UserControl_Initialize()
     m_MouseOverLayerBox = False
     m_LayerRearrangingMode = False
     UpdateHoveredLayer -1
+    m_MouseX = -1
+    m_MouseY = -1
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -820,7 +717,7 @@ Private Sub InitializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
     Set dstDIB = New pdDIB
     
     'If the screen is high DPI, resize all DIBs to match
-    If (FixDPIFloat(1) > 1) Then
+    If (Interface.FixDPIFloat(1) > 1) Then
         dstDIB.CreateBlank FixDPI(tmpDIB.GetDIBWidth), FixDPI(tmpDIB.GetDIBHeight), tmpDIB.GetDIBColorDepth, 0
         GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
     Else
@@ -1006,8 +903,11 @@ Private Sub RedrawBackBuffer()
         scrollOffset = 0    'vsLayer.Value
         
         Dim layerIndex As Long, offsetX As Long, offsetY As Long
-        Dim layerIsHovered As Boolean, layerIsSelected As Boolean
+        Dim layerHoverIndex As Long, layerSelectedIndex As Long, layerIsHovered As Boolean, layerIsSelected As Boolean
         Dim layerFont As pdFont
+        Dim paintColor As Long
+        
+        layerHoverIndex = -1: layerSelectedIndex = -1
         
         'Determine if we're in "zero layer" mode.  "Zero layer" mode lets us skip a lot of rendering details.
         Dim zeroLayers As Boolean
@@ -1023,11 +923,15 @@ Private Sub RedrawBackBuffer()
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
             For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+            
+                'Because layers are displayed in reverse order (layer 0 is displayed at the bottom of the list, not the top),
+                ' we need to convert our For loop index into a matching layer index
                 layerIndex = (pdImages(g_CurrentImage).GetNumOfLayers - 1) - i
                 offsetX = m_ListRect.Left
                 offsetY = m_ListRect.Top + Interface.FixDPI(i * LAYER_BLOCK_HEIGHT) - scrollOffset  'FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
                 
-                'Start by figuring out if this layer is even visible in the current box
+                'Start by figuring out if this layer is even visible in the current box; if it isn't,
+                ' skip drawing entirely
                 If (((offsetY + Interface.FixDPI(LAYER_BLOCK_HEIGHT)) > 0) And (offsetY < m_ListRect.Top + m_ListRect.Height)) Then
                     
                     'For performance reasons, retrieve a local reference to the corresponding pdLayer object.
@@ -1038,15 +942,14 @@ Private Sub RedrawBackBuffer()
                     If (Not (tmpLayerRef Is Nothing)) Then
                         
                         layerIsHovered = CBool(layerIndex = m_CurLayerHover)
+                        If (layerIsHovered) Then layerHoverIndex = layerIndex
                         layerIsSelected = CBool(tmpLayerRef.GetLayerID = pdImages(g_CurrentImage).GetActiveLayerID)
-            
+                        If (layerIsSelected) Then layerSelectedIndex = layerIndex
+                        
                         'offsetY = offsetY + Interface.FixDPI(2)
                         
-                        Dim linePadding As Long
-                        linePadding = Interface.FixDPI(2)
-                        
-                        Dim paintColor As Long
-                        
+                        'To simplify drawing, convert the current block area into a rect; we'll use this for subsequent
+                        ' layout decisions.
                         Dim blockRect As RECTF
                         With blockRect
                             .Left = offsetX
@@ -1055,40 +958,79 @@ Private Sub RedrawBackBuffer()
                             .Height = Interface.FixDPI(LAYER_BLOCK_HEIGHT)
                         End With
                         
+                        If layerIsHovered Then
+                            With m_LayerHoverRect
+                                .Left = blockRect.Left
+                                .Top = blockRect.Top
+                                .Right = .Left + blockRect.Width
+                                .Bottom = .Top + blockRect.Height
+                            End With
+                        End If
+                        
                         'Fill this block with the appropriate color.  (The actively selected layer is highlighted.)
                         If layerIsSelected Then paintColor = itemColorSelectedFill Else paintColor = itemColorUnselectedFill
                         Drawing2D.QuickCreateSolidBrush cBrush, paintColor
                         m_Painter.FillRectangleF_FromRectF cSurface, cBrush, blockRect
                         
-                        'Object offsets are stored in these values as various elements are drawn to the screen.
-                        Dim xObjOffset As Long, yObjOffset As Long
+                        'Next, start painting block elements in LTR order.
+                        Dim objOffsetX As Long, objOffsetY As Long
                         
-                        'Render the layer thumbnail.  If the layer is not currently visible, render it at 30% opacity.
-                        xObjOffset = offsetX + FixDPI(THUMBNAIL_PADDING)
-                        yObjOffset = offsetY + FixDPI(THUMBNAIL_PADDING)
-                        If Not (m_LayerThumbnails(layerIndex).thumbDIB Is Nothing) Then
-                        
+                        'First, the layer visibility toggle
+                        If (Not img_EyeOpen Is Nothing) Then
+                            
+                            'Start by calculating the "clickable" rect where the visibility icon lives.  (It is the
+                            ' left-most item in the layer box.)  This rect is module-level, and this UC also uses
+                            ' it for hit-detection, so it needs to be pixel-accurate.
+                            If layerIsHovered Then
+                                With m_VisibilityRect
+                                    .Left = blockRect.Left
+                                    .Right = .Left + HORIZONTAL_ITEM_PADDING * 2 + img_EyeOpen.GetDIBWidth
+                                    .Top = blockRect.Top
+                                    .Bottom = .Top + LAYER_BLOCK_HEIGHT
+                                End With
+                            End If
+                            
+                            'Paint the appropriate visibility icon, centered in the current area
+                            objOffsetX = blockRect.Left + HORIZONTAL_ITEM_PADDING
+                            objOffsetY = blockRect.Top + (LAYER_BLOCK_HEIGHT - img_EyeOpen.GetDIBHeight) \ 2
+                            
                             If tmpLayerRef.GetLayerVisibility Then
-                                m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
+                                img_EyeOpen.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
                             Else
-                                m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 76, xObjOffset, yObjOffset
-                                
-                                'Also, render a "closed eye" icon in the corner.
-                                ' NOTE: I'm not sold on this being a good idea.  The icon seems to be clickable, but it isn't!
-                                'img_EyeClosed.alphaBlendToDC bufferDIB.getDIBDC, 210, xObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBWidth) - fixDPI(5), yObjOffset + (BLOCKHEIGHT - img_EyeClosed.getDIBHeight) - fixDPI(6)
-                                
+                                img_EyeClosed.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
+                            End If
+                            
+                            'Move the running offsets right
+                            offsetX = offsetX + HORIZONTAL_ITEM_PADDING * 2 + img_EyeOpen.GetDIBWidth
+                            
+                        End If
+                        
+                        'Next comes the layer thumbnail.  If the layer is not currently visible, render it at 30% opacity.
+                        If Not (m_LayerThumbnails(layerIndex).thumbDIB Is Nothing) Then
+                            
+                            objOffsetX = offsetX + HORIZONTAL_ITEM_PADDING
+                            objOffsetY = offsetY + (LAYER_BLOCK_HEIGHT - m_ThumbHeight) \ 2
+                            
+                            If tmpLayerRef.GetLayerVisibility Then
+                                m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
+                            Else
+                                m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 76, objOffsetX, objOffsetY
                             End If
                             
                         End If
                         
-                        'Render the layer name
+                        'Move the running offsets right
+                        offsetX = offsetX + m_ThumbWidth + HORIZONTAL_ITEM_PADDING * 2
+                        
+                        'Next comes the layer name
                         Dim drawString As String
                         drawString = tmpLayerRef.GetLayerName
                         
                         'If this layer is invisible, mark it as such.
                         ' NOTE: not sold on this behavior, but I'm leaving it for a bit to see how it affects workflow.
-                        If (Not tmpLayerRef.GetLayerVisibility) Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
+                        'If (Not tmpLayerRef.GetLayerVisibility) Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
                         
+                        'Retrieve a matching font object from the UI font cache, and prep it with the proper display settings
                         Set layerFont = Font_Management.GetMatchingUIFont(10, False, False, False)
                         If layerIsSelected Then
                             If layerIsHovered Then paintColor = fontColorSelectedHover Else paintColor = fontColorSelected
@@ -1099,88 +1041,62 @@ Private Sub RedrawBackBuffer()
                         layerFont.SetFontColor paintColor
                         layerFont.AttachToDC bufferDC
                         
+                        'Calculate where the string will actually lie.  This is important, as the text region is clickable
+                        ' (the user can double-click to edit the layer's name).
                         Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
-                        xTextOffset = offsetX + m_ThumbWidth + FixDPI(THUMBNAIL_PADDING) * 2
-                        yTextOffset = offsetY + FixDPI(4)
-                        xTextWidth = m_ListRect.Width - xTextOffset - FixDPI(4)
+                        xTextOffset = offsetX + HORIZONTAL_ITEM_PADDING
+                        xTextWidth = m_ListRect.Width - (xTextOffset + HORIZONTAL_ITEM_PADDING)
                         yTextHeight = layerFont.GetHeightOfString(drawString)
+                        yTextOffset = offsetY + (LAYER_BLOCK_HEIGHT - yTextHeight) \ 2
                         layerFont.FastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
                         layerFont.ReleaseFromDC
                         
                         'Store the resulting text area in the text rect; if the user clicks this, they can modify the layer name
-                        If layerIsHovered Then
+                        With m_NameRect
+                            If layerIsHovered Then
+                                .Left = offsetX
+                                .Top = offsetY
+                                .Right = m_ListRect.Left + m_ListRect.Width - 2
+                                .Bottom = offsetY + LAYER_BLOCK_HEIGHT
+                            End If
+                        End With
                         
-                            With m_NameRect
+                        'The edit rect is where the edit text box is actually displayed.  We want this to closely mimic the
+                        ' actual position of the text, rather than encompassing the entire clickable area.
+                        With m_NameEditRect
+                            If layerIsHovered Then
                                 .Left = xTextOffset - 2
                                 .Top = yTextOffset - 2
                                 .Right = xTextOffset + xTextWidth + 2
                                 .Bottom = yTextOffset + yTextHeight + 2
-                            End With
-                            
-                        End If
-                        
-                        'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
-                        yObjOffset = yTextOffset + yTextOffset + 6
-                        
-                        'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
-                        ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.
-                        ' (Note that this approach is not touch-friendly; I'm aware, and will revisit as necessary if users
-                        '  request a touch-centric UI.)
-                        If layerIsHovered Then
-                        
-                            'Start with an x-offset at the far right of the panel
-                            xObjOffset = (m_ListRect.Left + m_ListRect.Width) - img_EyeClosed.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-                        
-                            'Draw the visibility toggle.  Note that an icon for the opposite visibility state is drawn, to show
-                            ' the user what will happen if they click the icon.
-                            If tmpLayerRef.GetLayerVisibility Then
-                                img_EyeClosed.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
-                            Else
-                                img_EyeOpen.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
                             End If
-                            
-                            'Store the visibility toggle's rect (so that mouse events can more easily calculate hit events)
-                            FillRectWithDIBCoords m_VisibilityRect, img_EyeOpen, xObjOffset, yObjOffset
-                            
-                            'Next, provide a "duplicate layer" shortcut
-                            xObjOffset = xObjOffset - img_EyeOpen.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-                            img_Duplicate.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
-                            FillRectWithDIBCoords m_DuplicateRect, img_Duplicate, xObjOffset, yObjOffset
-                            
-                            'Next, give the user dedicated merge down/up buttons.  These are only available if the layer is visible.
-                            If tmpLayerRef.GetLayerVisibility Then
-                            
-                                'Merge down comes first...
-                                xObjOffset = xObjOffset - img_Duplicate.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-                                
-                                If Layer_Handler.IsLayerAllowedToMergeAdjacent(layerIndex, True) >= 0 Then
-                                    img_MergeDown.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
-                                Else
-                                    img_MergeDownDisabled.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
-                                End If
-                                FillRectWithDIBCoords m_MergeDownRect, img_MergeDown, xObjOffset, yObjOffset
-                                
-                                '...then Merge up
-                                xObjOffset = xObjOffset - img_MergeDown.GetDIBWidth - FixDPI(DIST_BETWEEN_HOVER_BUTTONS)
-                                If Layer_Handler.IsLayerAllowedToMergeAdjacent(layerIndex, False) >= 0 Then
-                                    img_MergeUp.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
-                                Else
-                                    img_MergeUpDisabled.AlphaBlendToDC bufferDC, 255, xObjOffset, yObjOffset
-                                End If
-                                FillRectWithDIBCoords m_MergeUpRect, img_MergeUp, xObjOffset, yObjOffset
-                                
-                            End If
-                           
-                        'Block is currently being hovered
-                        End If
+                        End With
                         
                     'Layer is non-empty
                     End If
+                    
+                    Set tmpLayerRef = Nothing
                 
                 'Layer is not visible
                 End If
                 
             Next i
+            
+            'After painting all layers, if a layer is currently hovered by the mouse, highlight any clickable regions
+            If (layerHoverIndex >= 0) Then
+                
+                'First, draw a thin border around the hovered layer
+                If (layerHoverIndex = layerSelectedIndex) Then paintColor = itemColorSelectedBorderHover Else paintColor = itemColorUnselectedBorderHover
+                Drawing2D.QuickCreateSolidPen cPen, 1, paintColor
+                m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_LayerHoverRect.Left, m_LayerHoverRect.Top, m_LayerHoverRect.Right, m_LayerHoverRect.Bottom
+                
+                'Next, if the mouse is specifically within the
+                If Math_Functions.IsPointInRect(m_MouseX, m_MouseY, m_VisibilityRect) Then
+                    Drawing2D.QuickCreateSolidPen cPen, 3, paintColor
+                    m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_VisibilityRect.Left, m_VisibilityRect.Top, m_VisibilityRect.Right, m_VisibilityRect.Bottom
+                End If
+                
+            End If
         
         'End zero-layer mode check
         End If
