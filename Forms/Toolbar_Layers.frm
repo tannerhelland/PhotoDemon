@@ -405,7 +405,7 @@ End Sub
 Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
 
     'Optimizing the layer listbox is TODO!
-    If ttlPanel(2).Value Then layerpanel_Layers.ForceRedraw True
+    If ttlPanel(2).Value Then layerpanel_Layers.ForceRedraw True, layerID
     
     'Redraw the navigator to match
     If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded

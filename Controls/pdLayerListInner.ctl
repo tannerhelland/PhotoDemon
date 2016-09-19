@@ -778,9 +778,9 @@ End Sub
 'External functions can request a redraw of the layer box by calling this function.  (This is necessary
 ' whenever layers are added, deleted, re-ordered, etc.)  If the action requires us to rebuild our thumbnail
 ' cache (because we switched images, maybe) make sure to clarify that via hte matching parameter.
-Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
+Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, Optional ByVal layerID As Long = -1)
     
-    If refreshThumbnailCache Then CacheLayerThumbnails
+    If refreshThumbnailCache Then CacheLayerThumbnails layerID
     
     'TODO: figure out whether we should raise a redraw internally, or rely on auto-redraws to save us
     RedrawBackBuffer
@@ -789,43 +789,65 @@ End Sub
 
 'Re-cache all thumbnails for all layers in the current image.  This is required when the user switches to a new image,
 ' or when an image is first loaded.
-Private Sub CacheLayerThumbnails()
+Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
 
     'Do not attempt to cache thumbnails if there are no open images
     If ((Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0)) Then
     
         'Make sure the active image has at least one layer.  (This should always be true, but better safe than sorry.)
         If (pdImages(g_CurrentImage).GetNumOfLayers > 0) Then
-    
-            'Retrieve the number of layers in the current image and prepare the thumbnail cache
-            m_NumOfThumbnails = pdImages(g_CurrentImage).GetNumOfLayers
-            ReDim m_LayerThumbnails(0 To m_NumOfThumbnails - 1) As LayerThumbDisplay
             
-            If (m_NumOfThumbnails > 0) Then
+            'We now have two options.
+            ' - If a valid layerID (>= 0) was specified, we can update just that layer.
+            ' - If a layerID was NOT specified, we need to update all layers.
+            Dim layerUpdateSuccessful As Boolean: layerUpdateSuccessful = False
+            Dim i As Long
             
-                Dim i As Long
+            'A layer ID was provided.  Search our thumbnail collection for this layer ID.  If we have an entry for it,
+            ' update the thumbnail to match.
+            If (layerID >= 0) And (m_NumOfThumbnails > 0) Then
                 For i = 0 To m_NumOfThumbnails - 1
-                    
-                    'Note that alongside the thumbnail, we also note each layer's canonical ID; this lets us
-                    ' reuse thumbnails if layer order changes.
-                    If (Not pdImages(g_CurrentImage).GetLayerByIndex(i) Is Nothing) Then
-                        m_LayerThumbnails(i).CanonicalLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
-                        Set m_LayerThumbnails(i).thumbDIB = New pdDIB
+                    If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
                         pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
+                        layerUpdateSuccessful = True
+                        Exit For
                     End If
-                    
                 Next i
+            End If
             
+            'If we failed to find the requested layer in our collection (or if our collection is currently empty), rebuild our
+            ' entire thumbnail collection from scratch.
+            If (Not layerUpdateSuccessful) Then
+                
+                'Retrieve the number of layers in the current image and prepare the thumbnail cache
+                m_NumOfThumbnails = pdImages(g_CurrentImage).GetNumOfLayers
+                If (UBound(m_LayerThumbnails) <> (m_NumOfThumbnails - 1)) Then ReDim m_LayerThumbnails(0 To m_NumOfThumbnails - 1) As LayerThumbDisplay
+                
+                If (m_NumOfThumbnails > 0) Then
+                
+                    For i = 0 To m_NumOfThumbnails - 1
+                        
+                        'Note that alongside the thumbnail, we also note each layer's canonical ID; this lets us
+                        ' reuse thumbnails if layer order changes.
+                        If (Not pdImages(g_CurrentImage).GetLayerByIndex(i) Is Nothing) Then
+                            m_LayerThumbnails(i).CanonicalLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
+                            pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
+                        End If
+                        
+                    Next i
+                
+                End If
+                
             End If
         
         Else
             m_NumOfThumbnails = 0
-            ReDim m_LayerThumbnails(0) As LayerThumbDisplay
+            If (UBound(m_LayerThumbnails) <> 0) Then ReDim m_LayerThumbnails(0) As LayerThumbDisplay
         End If
         
     Else
         m_NumOfThumbnails = 0
-        ReDim m_LayerThumbnails(0) As LayerThumbDisplay
+        If (UBound(m_LayerThumbnails) <> 0) Then ReDim m_LayerThumbnails(0) As LayerThumbDisplay
     End If
     
     'See if the list's scrollability has changed

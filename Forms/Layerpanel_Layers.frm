@@ -207,7 +207,7 @@ Private m_DisableRedraws As Boolean
 
 'External functions can force a full redraw by calling this sub.  (This is necessary whenever layers are added, deleted,
 ' re-ordered, etc.)
-Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
+Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, Optional ByVal layerID As Long = -1)
     
     'Sync opacity, blend mode, and other controls to the currently active layer
     m_DisableRedraws = True
@@ -231,7 +231,7 @@ Public Sub ForceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
     m_DisableRedraws = False
     
     'Notify the layer box of the redraw request
-    lstLayers.RequestRedraw refreshThumbnailCache
+    lstLayers.RequestRedraw refreshThumbnailCache, layerID
     
     'Determine which buttons need to be activated.
     CheckButtonEnablement
