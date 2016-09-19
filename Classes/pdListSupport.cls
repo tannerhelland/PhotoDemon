@@ -694,14 +694,14 @@ Public Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVa
         
             Dim newScrollValue As Long: newScrollValue = m_ScrollValue
             
-            If scrollAmount > 0 Then
+            If (scrollAmount > 0) Then
                 newScrollValue = newScrollValue - Me.DefaultItemHeight
             Else
                 newScrollValue = newScrollValue + Me.DefaultItemHeight
             End If
             
-            If newScrollValue < 0 Then newScrollValue = 0
-            If newScrollValue > m_ScrollMax Then newScrollValue = m_ScrollMax
+            If (newScrollValue < 0) Then newScrollValue = 0
+            If (newScrollValue > m_ScrollMax) Then newScrollValue = m_ScrollMax
             Me.ScrollValue = newScrollValue
             
         End If
@@ -709,13 +709,13 @@ Public Sub NotifyMouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVa
     'Dropdown mode
     Else
             
-        If m_NumOfItems > 1 Then
+        If (m_NumOfItems > 1) Then
             
             Dim newListIndex As Long: newListIndex = Me.ListIndex
-            If scrollAmount > 0 Then newListIndex = newListIndex - 1 Else newListIndex = newListIndex + 1
+            If (scrollAmount > 0) Then newListIndex = newListIndex - 1 Else newListIndex = newListIndex + 1
             
-            If newListIndex < 0 Then newListIndex = 0
-            If newListIndex > m_NumOfItems - 1 Then newListIndex = m_NumOfItems - 1
+            If (newListIndex < 0) Then newListIndex = 0
+            If (newListIndex > m_NumOfItems - 1) Then newListIndex = m_NumOfItems - 1
             Me.ListIndex = newListIndex
             
         End If
