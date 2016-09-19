@@ -194,6 +194,9 @@ Public Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal a
             accentName = vbNullString
     End Select
     
+    m_ThemeClass = themeClass
+    m_ThemeAccent = accentColor
+    
     If (Not g_UserPreferences Is Nothing) Then
         If (Len(themeName) <> 0) Then g_UserPreferences.WritePreference "Themes", "CurrentTheme", themeName
         If (Len(accentName) <> 0) Then g_UserPreferences.WritePreference "Themes", "CurrentAccent", accentName
