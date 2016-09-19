@@ -28,8 +28,8 @@ Begin VB.UserControl pdLayerList
       Top             =   360
       Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   2778
+      _ExtentX        =   450
+      _ExtentY        =   2778
    End
    Begin PhotoDemon.pdLayerListInner lbView 
       Height          =   1575
@@ -37,8 +37,8 @@ Begin VB.UserControl pdLayerList
       TabIndex        =   0
       Top             =   360
       Width           =   1575
-      _extentx        =   2778
-      _extenty        =   2778
+      _ExtentX        =   2778
+      _ExtentY        =   2778
    End
 End
 Attribute VB_Name = "pdLayerList"
@@ -160,8 +160,8 @@ End Sub
 
 'External functions can request a redraw of the layer box by calling this function.  (This is necessary
 ' whenever layers are added, deleted, re-ordered, etc.)
-Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
-    lbView.RequestRedraw refreshThumbnailCache
+Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True, Optional ByVal layerID As Long = -1)
+    lbView.RequestRedraw refreshThumbnailCache, layerID
 End Sub
 
 'Layer kust-specific functions and subs.  Most of these simply relay the request to the embedded
