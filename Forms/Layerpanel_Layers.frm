@@ -355,41 +355,6 @@ Private Sub cmdLayerAction_Click(Index As Integer)
     
 End Sub
 
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    
-    'TODO!  Transfer this code to the dedicated layer box control
-    
-'    'Vertical scrolling - only trigger it if the vertical scroll bar is actually visible
-'    If vsLayer.Visible Then
-'
-'        If scrollAmount < 0 Then
-'
-'            If vsLayer.Value + vsLayer.LargeChange > vsLayer.Max Then
-'                vsLayer.Value = vsLayer.Max
-'            Else
-'                vsLayer.Value = vsLayer.Value + vsLayer.LargeChange
-'            End If
-'
-'            'If a layer other than the active one is being hovered, highlight that box
-'            UpdateHoveredLayer GetLayerAtPosition(x, y)
-'
-'        ElseIf scrollAmount > 0 Then
-'
-'            If vsLayer.Value - vsLayer.LargeChange < vsLayer.Min Then
-'                vsLayer.Value = vsLayer.Min
-'            Else
-'                vsLayer.Value = vsLayer.Value - vsLayer.LargeChange
-'            End If
-'
-'            'If a layer other than the active one is being hovered, highlight that box
-'            UpdateHoveredLayer GetLayerAtPosition(x, y)
-'
-'        End If
-'
-'    End If
-
-End Sub
-
 Private Sub Form_Load()
         
     'Populate the alpha and blend mode boxes

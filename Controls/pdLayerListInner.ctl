@@ -631,7 +631,30 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    'TODO!
+    
+    If (m_ScrollMax > 0) And (scrollAmount <> 0) Then
+    
+        Dim newScrollValue As Long: newScrollValue = m_ScrollValue
+        
+        If (scrollAmount > 0) Then
+            newScrollValue = newScrollValue - Interface.FixDPI(LAYER_BLOCK_HEIGHT) \ 2
+        Else
+            newScrollValue = newScrollValue + Interface.FixDPI(LAYER_BLOCK_HEIGHT) \ 2
+        End If
+        
+        If (newScrollValue < 0) Then newScrollValue = 0
+        If (newScrollValue > m_ScrollMax) Then newScrollValue = m_ScrollMax
+        m_ScrollValue = newScrollValue
+        
+        'Because a new layer will now be under the mouse, calculate that now (*prior* to rendering the updated box)
+        UpdateHoveredLayer GetLayerAtPosition(x, y)
+        RedrawBackBuffer
+        
+        'Last of all, notify our parent so they can synchronize the scroll bar to our new internal scroll value
+        RaiseEvent ScrollValueChanged(newScrollValue)
+        
+    End If
+        
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -1012,13 +1035,13 @@ Private Sub RedrawBackBuffer()
                                     .Left = blockRect.Left
                                     .Right = .Left + HORIZONTAL_ITEM_PADDING * 2 + img_EyeOpen.GetDIBWidth
                                     .Top = blockRect.Top
-                                    .Bottom = .Top + LAYER_BLOCK_HEIGHT
+                                    .Bottom = .Top + Interface.FixDPI(LAYER_BLOCK_HEIGHT)
                                 End With
                             End If
                             
                             'Paint the appropriate visibility icon, centered in the current area
                             objOffsetX = blockRect.Left + HORIZONTAL_ITEM_PADDING
-                            objOffsetY = blockRect.Top + (LAYER_BLOCK_HEIGHT - img_EyeOpen.GetDIBHeight) \ 2
+                            objOffsetY = blockRect.Top + (Interface.FixDPI(LAYER_BLOCK_HEIGHT) - img_EyeOpen.GetDIBHeight) \ 2
                             
                             If tmpLayerRef.GetLayerVisibility Then
                                 img_EyeOpen.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
@@ -1035,7 +1058,7 @@ Private Sub RedrawBackBuffer()
                         If Not (m_LayerThumbnails(layerIndex).thumbDIB Is Nothing) Then
                             
                             objOffsetX = offsetX + HORIZONTAL_ITEM_PADDING
-                            objOffsetY = offsetY + (LAYER_BLOCK_HEIGHT - m_ThumbHeight) \ 2
+                            objOffsetY = offsetY + (Interface.FixDPI(LAYER_BLOCK_HEIGHT) - m_ThumbHeight) \ 2
                             
                             If tmpLayerRef.GetLayerVisibility Then
                                 m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
@@ -1073,7 +1096,7 @@ Private Sub RedrawBackBuffer()
                         xTextOffset = offsetX + HORIZONTAL_ITEM_PADDING
                         xTextWidth = m_ListRect.Width - (xTextOffset + HORIZONTAL_ITEM_PADDING)
                         yTextHeight = layerFont.GetHeightOfString(drawString)
-                        yTextOffset = offsetY + (LAYER_BLOCK_HEIGHT - yTextHeight) \ 2
+                        yTextOffset = offsetY + (Interface.FixDPI(LAYER_BLOCK_HEIGHT) - yTextHeight) \ 2
                         layerFont.FastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
                         layerFont.ReleaseFromDC
                         
@@ -1083,7 +1106,7 @@ Private Sub RedrawBackBuffer()
                                 .Left = offsetX
                                 .Top = offsetY
                                 .Right = m_ListRect.Left + m_ListRect.Width - 2
-                                .Bottom = offsetY + LAYER_BLOCK_HEIGHT
+                                .Bottom = offsetY + Interface.FixDPI(LAYER_BLOCK_HEIGHT)
                             End If
                         End With
                         
