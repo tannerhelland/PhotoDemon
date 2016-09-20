@@ -222,7 +222,7 @@ Private m_MouseTrackingActive() As Boolean
 
 'To prevent multiple hover events from being raised by multiple hWnds (or one reaaaally long hover), we stop raising
 ' hover events until the mouse moves again
-Private m_HoverModeActive As Boolean
+Private m_HoverModeActive As Boolean, m_LastHoverX As Single, m_LastHoverY As Single
 
 'If the user has requested that we force a persistent cursor for this object, the cursor handle will be stored here.
 Private m_CursorHandle As Long, m_PrevClassCursorHandle As Long
@@ -552,11 +552,11 @@ Private Function RequestMouseTrackingForHwnd(ByVal targetHwnd As Long)
         .cbSize = Len(eventTracker)
         .dwFlags = TME_LEAVE Or TME_HOVER
         .hWndTrack = targetHwnd
-        .dwHoverTime = &HEFFFFFFF
+        .dwHoverTime = &HFFFFFFFF       'Use the system default hover time (400 ms, I believe)
     End With
     
     'TrackMouseEvent returns non-zero values for success
-    If TrackMouseEvent(eventTracker) <> 0 Then
+    If (TrackMouseEvent(eventTracker) <> 0) Then
         RequestMouseTrackingForHwnd = True
     Else
         RequestMouseTrackingForHwnd = False
@@ -1154,7 +1154,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Note that a MouseUp event is raised either way, and if a Click event is also being raised,
                 ' we warn the user in the MouseUp event.  This way, they can choose to abandon MouseUp
                 ' processing if the _Click event is implemented.
-                If m_MouseMoveCount < 3 Then
+                If (m_MouseMoveCount < 3) Then
                     
                     RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, True)
                     RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt)
@@ -1219,13 +1219,15 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If m_MouseTrackingActive(indexOfHwnd) Then
                         
                         m_MouseTrackingActive(indexOfHwnd) = False
+                        m_LastHoverX = -1
+                        m_LastHoverY = -1
                         
                         'Only raise a MouseLeave event if this event is happening for the primary hWnd; otherwise, track
                         ' mouse events silently.
                         '
                         'NOTE! This will raise more MouseLeave events than we want in the case of a UC with multiple
                         '       tracked controls; I'll investigate a better solution if/when it proves necessary.
-                        If indexOfHwnd = 0 Then RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
+                        If (indexOfHwnd = 0) Then RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
                         
                         'If cursor handling is enabled for this hWnd, reset the cursor to its original value whenever
                         ' the mouse has left the control.  This will prevent us from mistakenly assigning our custom
@@ -1241,21 +1243,28 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Next, process MouseHover events.  We don't use this at present, but as it's basically the same code as
             ' MouseLeave, I've included it "just in case".
             Case WM_MOUSEHOVER
-            
+                
                 'Only process hover events if we care about tracking mouse movements for this hWnd
                 If m_MouseTrackingActive(indexOfHwnd) And (Not m_HoverModeActive) Then
+                    
+                    'Note that we are currently in hover mode; this won't be reset until some kind of MouseMove occurs
+                    m_HoverModeActive = True
+                    
+                    'Note the current mouse position.  Windows may mistakenly issue multiple hover events, but we only
+                    ' want to raise one hover event at a time.
                     
                     'Note that we don't change the tracking state, because we don't want to generate subsequent
                     ' MouseEnter events after this one!  Instead, silently re-request mouse tracking for this hWnd.
                     RequestMouseTrackingForHwnd lng_hWnd
                     
-                    'Note that we are currently in hover mode; this won't be reset until some kind of MouseMove occurs
-                    m_HoverModeActive = True
-                    
                     'Unlike Enter/Leave events, we want to raise hover events regardless of the hWnd; the assumption
                     ' here is that the target window will always want these events, and if it doesn't, it can do its
                     ' own bounds-checking to determine if a hover event is relevant or not.
-                    RaiseEvent MouseHover(retMouseButton, retShiftConstants, mouseX, mouseY)
+                    If ((m_LastHoverX <> mouseX) Or (m_LastHoverY <> mouseY)) Then
+                        m_LastHoverX = mouseX
+                        m_LastHoverY = mouseY
+                        RaiseEvent MouseHover(retMouseButton, retShiftConstants, mouseX, mouseY)
+                    End If
                     
                 End If
                 

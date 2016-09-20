@@ -731,6 +731,11 @@ Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByV
     RaiseEvent MouseEnter(Button, Shift, x, y)
 End Sub
 
+Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    'Hover events will soon be used to implement custom tooltip behavior
+    'Debug.Print "Hover event raised for #" & m_hWnd
+End Sub
+
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = False
     m_MouseEvents.SetSystemCursor IDC_DEFAULT
