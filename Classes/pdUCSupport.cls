@@ -79,6 +79,7 @@ End Type
 Private Const SWP_HIDEWINDOW As Long = &H80&
 Private Const SWP_SHOWWINDOW As Long = &H40&
 
+Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RECTL) As Boolean
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Const WM_SHOWWINDOW As Long = &H18&
@@ -148,6 +149,10 @@ Private m_CustomCaptionPaintingActive As Boolean
 ' every pixel of pdCanvas is covered by child controls, so it's extremely wasteful to manage a full backbuffer that would never be used!)
 ' This value is set to FALSE by default.
 Private m_NoBackBufferMode As Boolean
+
+'When a control requests a tooltip, we cache it locally.  If the length of (any of) these strings is non-zero, a tooltip is active
+Private m_TTX As Single, m_TTY As Single
+Private m_TTCaption As String, m_TTTitle As String
 
 'pd2DPaint classes, for generic fill/stroke capabilities
 Private m_Painter As pd2DPainter
@@ -731,14 +736,15 @@ Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByV
     RaiseEvent MouseEnter(Button, Shift, x, y)
 End Sub
 
+'On hover, request a tooltip (if one exists)
 Private Sub m_MouseEvents_MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    'Hover events will soon be used to implement custom tooltip behavior
-    'Debug.Print "Hover event raised for #" & m_hWnd
+    RaiseTooltip x, y
 End Sub
 
 Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = False
     m_MouseEvents.SetSystemCursor IDC_DEFAULT
+    HideTooltip
     RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
 
@@ -880,8 +886,42 @@ End Function
 '                  because the control isn't sited yet, so it must be supplied here.)
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    If m_hWndParent = 0 Then m_hWndParent = parentHwnd
-    m_ToolTipManager.SetTooltip m_hWnd, m_hWndParent, newTooltip, newTooltipTitle, newTooltipIcon
+    
+    'If m_hWndParent = 0 Then m_hWndParent = parentHwnd
+    'm_ToolTipManager.SetTooltip m_hWnd, m_hWndParent, newTooltip, newTooltipTitle, newTooltipIcon
+    
+    m_TTCaption = newTooltip
+    m_TTTitle = newTooltipTitle
+    
+    'If a tooltip is already active, update it immediately
+    If UserControl_Support.IsTooltipActive(m_hWnd) Then RaiseTooltip
+    
+End Sub
+
+Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1, Optional ByVal mouseHoverY As Single = -1)
+    
+    If ((Len(m_TTCaption) <> 0) And Me.AmIVisible And Me.AmIEnabled) Then
+        
+        'Cache the hovered (x, y) values; we'll re-use these if we need to refresh the tooltip
+        If (mouseHoverX <> -1) Then
+            m_TTX = mouseHoverX
+            m_TTY = mouseHoverY
+        End If
+        
+        'Note that we also pass the current control rect; this is used for optimal tooltip positioning.
+        ' (This rect must also be in *screen coordinates*, FYI.)
+        Dim curControlRect As RECTL
+        GetWindowRect m_hWnd, curControlRect
+        
+        'Request a tooltip, while converting the (x, y) coordinates to ratios; this simplifies positioning
+        UserControl_Support.ShowUCTooltip m_hWnd, curControlRect, m_TTX / (curControlRect.Right - curControlRect.Left), m_TTY / (curControlRect.Bottom - curControlRect.Top), m_TTCaption, m_TTTitle
+        
+    End If
+    
+End Sub
+
+Private Sub HideTooltip()
+    If (Len(m_TTCaption) <> 0) Then UserControl_Support.HideUCTooltip
 End Sub
 
 'If the control wants to know if it has focus, it can call this function.  API techniques are used, so even API windows
