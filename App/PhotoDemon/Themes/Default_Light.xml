@@ -515,6 +515,12 @@
 				<Border-hover>AccentDefault</Border-hover>
 			</PDToolButton>
 			
+			<PDTooltip>
+				<Background></Background>
+				<Border>GrayDefault</Border>
+				<Caption>TextDark</Caption>
+			</PDTooltip>
+			
 			<UIElements>
 				<UniversalAccent>AccentDefault</UniversalAccent>
 				<UniversalAccentDark>AccentDark</UniversalAccentDark>

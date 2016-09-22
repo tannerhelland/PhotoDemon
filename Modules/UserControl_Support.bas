@@ -92,8 +92,28 @@ Private m_PDControlCount As Long
 'Dropdown boxes are problematic, because we have to play some weird window ownership games to ensure that the dropdowns
 ' appear "above" or "outside" VB windows, as necessary.  As such, this function is notified whenever a listbox is raised,
 ' and the hWnd is cached so we can kill that window as necessary.
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByVal ptrToRect As Long, ByVal bErase As Long) As Long
+Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
+
+'Because there can only be one visible tooltip at a time, this support module is a great place to handle them.  Requests for new
+' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
+' are unloaded.
+Private Const SWP_SHOWWINDOW As Long = &H40
+Private Const SWP_NOACTIVATE As Long = &H10
+Private Const SWP_FRAMECHANGED As Long = &H20
+Private Const WS_EX_NOACTIVATE As Long = &H8000000
+Private Const WS_EX_TOOLWINDOW As Long = &H80
+Private Const WS_EX_WINDOWEDGE As Long = &H100
+Private Const WS_EX_TOPMOST As Long = &H8
+Private m_TooltipActive As Boolean, m_TooltipOwner As Long, m_TooltipHwnd As Long
+Private m_TTWindowStyleHasBeenSet As Boolean, m_OriginalTTWindowBits As Long, m_OriginalTTWindowBitsEx As Long
+Private m_tooltipRectCopy As RECTL
 
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
@@ -585,4 +605,114 @@ End Sub
 
 Public Sub PDControlLostFocus(ByVal controlHWnd As Long)
     
+    'If this control raised a tooltip (and said tooltip is still active), unload it now
+    If (controlHWnd = m_TooltipOwner) Then HideUCTooltip
+    
 End Sub
+
+'When an object requests a tooltip, they need to pass a number of additional parameters (like the window rect, which is used to
+' ideally position the tooltip).  Logic similar to pdDropDown is used to display the tooltip.
+Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL, ByVal mouseXRatio As Single, ByVal mouseYRatio As Single, ByRef ttCaption As String, ByRef ttTitle As String)
+    
+    On Error GoTo UnexpectedTooltipTrouble
+    
+    If (Not g_IsProgramRunning) Then Exit Sub
+    
+    m_TooltipOwner = OwnerHwnd
+    
+    'We now want to figure out the idealized coordinates for the tooltip.  The goal is to position the tooltip as
+    ' close to the mouse pointer as possible, while also positioning it outside the control rectangle (so that we
+    ' don't obscure the control's contents - a constant annoyance with normal tooltips).
+    Dim tooltipRect As RECTF
+    
+    '(For now, just position it at the mouse position, at the same size as the control.  This lets us know the tip is working.)
+    With tooltipRect
+        .Left = srcControlRect.Right
+        .Top = srcControlRect.Bottom
+        .Width = srcControlRect.Right - srcControlRect.Left
+        .Height = srcControlRect.Bottom - srcControlRect.Top
+    End With
+    
+    'The tooltip is now ready to go.  The first time we raise it, we want to cache its current window longs as
+    ' whatever VB has set.  (We must restore these before unloading the form, or VB's built-in teardown will
+    ' crash and burn.)
+    Load tool_Tooltip
+    m_TooltipHwnd = tool_Tooltip.hWnd
+    If (Not m_TTWindowStyleHasBeenSet) Then
+        m_TTWindowStyleHasBeenSet = True
+        m_OriginalTTWindowBits = g_WindowManager.GetWindowLongWrapper(m_TooltipHwnd)
+        m_OriginalTTWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_TooltipHwnd, True)
+    End If
+    
+    'Now we are ready to display the tooltip.  Overwrite VB's default window bits to ensure that the tooltip form
+    ' is handled like a tooltip window.
+    Const WS_POPUP As Long = &H80000000
+    g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, WS_POPUP, False, False, True
+    g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, WS_EX_NOACTIVATE Or WS_EX_TOOLWINDOW, False, True, True
+    
+    'Move the tooltip window into position *but do not display it*
+    With tooltipRect
+        SetWindowPos m_TooltipHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE Or SWP_FRAMECHANGED
+    End With
+    
+    'We also need to cache the tooltip rect's position; when it disappears, we will manually invalidate windows
+    ' beneath it (only on certain OS + theme combinations; Aero handles this correctly).
+    With m_tooltipRectCopy
+        .Left = tooltipRect.Left
+        .Top = tooltipRect.Top
+        .Right = tooltipRect.Left + tooltipRect.Width
+        .Bottom = tooltipRect.Top + tooltipRect.Height
+    End With
+    
+    'Now we can show the tooltip; we also notify the window of its changed window style bits
+    Const SWP_NOREDRAW As Long = &H8&
+
+    'With tooltipRect
+    '    SetWindowPos m_TooltipHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE
+    'End With
+    'g_WindowManager.SetEnablementByHWnd m_TooltipHwnd, False
+    ShowWindow m_TooltipHwnd, 8
+    
+    m_TooltipActive = True
+    
+    Exit Sub
+    
+UnexpectedTooltipTrouble:
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  UserControl_Support.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
+    #End If
+    
+End Sub
+
+Public Sub HideUCTooltip()
+    
+    If m_TooltipActive And (m_TooltipHwnd <> 0) Then
+        
+        'Restore the original VB window bits; this ensures that teardown happens correctly
+        If (m_OriginalTTWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, m_OriginalTTWindowBits, , , True
+        If (m_OriginalTTWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, m_OriginalTTWindowBits, , True, True
+        
+        'Hide (but do not unload!) the tooltip window
+        g_WindowManager.SetVisibilityByHWnd m_TooltipHwnd, False
+        m_TooltipHwnd = 0
+        
+        'If Aero theming is not active, hiding the tooltip may cause windows beneath the current one to render incorrectly.
+        If (g_IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
+            InvalidateRect 0&, VarPtr(m_tooltipRectCopy), 0&
+        End If
+        
+    End If
+    
+    m_TooltipOwner = 0
+    m_TooltipActive = False
+    
+    'Now, at the very end, we can unload the tooltip window itself
+    Unload tool_Tooltip
+    Set tool_Tooltip = Nothing
+    
+End Sub
+
+Public Function IsTooltipActive(ByVal OwnerHwnd As Long) As Boolean
+    IsTooltipActive = CBool(m_TooltipOwner = OwnerHwnd)
+End Function
