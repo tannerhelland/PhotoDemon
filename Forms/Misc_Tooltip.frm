@@ -64,7 +64,8 @@ Private m_Painter As pd2DPainter
 ' that effort, it fills a matching rect where various bits of the tooltip need to be rendered (like the border, title,
 ' caption, and others, as necessary).
 Private m_Caption As String, m_Title As String
-Private m_BorderRect As RECTF, m_TitleRect As RECTF, m_CaptionRect As RECTF
+Private m_BorderRect As RECTF
+Private m_InternalPadding As Long, m_TitlePadding As Long
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -88,14 +89,6 @@ End Enum
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
-
-Private Sub Form_GotFocus()
-    Debug.Print "tooltip got focus (VB) - why?"
-End Sub
-
-Private Sub ucSupport_GotFocusAPI()
-    Debug.Print "tooltip got focus - why?"
-End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
@@ -127,6 +120,14 @@ Private Sub Form_Resize()
     If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
+Public Sub NotifyTooltipSettings(ByRef ttCaption As String, ByRef ttTitle As String, ByVal internalPadding As Single, ByVal titlePadding As Single)
+    m_Caption = ttCaption
+    m_Title = ttTitle
+    m_InternalPadding = internalPadding
+    m_TitlePadding = titlePadding
+    RedrawBackBuffer
+End Sub
+
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
 ' call this function to recalculate the control's internal layout
 Private Sub UpdateControlLayout()
@@ -136,29 +137,8 @@ Private Sub UpdateControlLayout()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
-    ' caption text ends vertically.)
-    If ucSupport.IsCaptionActive Then
-        
-'        'The brush area is placed relative to the caption
-'        With m_BrushRect
-'            .Left = FixDPI(8)
-'            .Top = ucSupport.GetCaptionBottom + 2
-'            .Width = (bWidth - 2) - .Left
-'            .Height = (bHeight - 2) - .Top
-'        End With
-        
-    'If there's no caption, allow the clickable portion to fill the entire control
-    Else
-        
-'        With m_BrushRect
-'            .Left = 1
-'            .Top = 1
-'            .Width = (bWidth - 2) - .Left
-'            .Height = (bHeight - 2) - .Top
-'        End With
-        
-    End If
+    'At present, this control doesn't make any of its own rendering decisions.  Instead, it works with the size
+    ' of the form as set by the UserControl_Support module.
             
 End Sub
 
@@ -177,7 +157,7 @@ Private Sub RedrawBackBuffer()
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If g_IsProgramRunning Then
         
-        'For testing purposes, draw a border
+        'Start by rendering a border around the outside of the form
         Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         
@@ -185,6 +165,35 @@ Private Sub RedrawBackBuffer()
         m_Painter.DrawRectangleF cSurface, cPen, 0, 0, ucSupport.GetBackBufferWidth - 1, ucSupport.GetBackBufferHeight - 1
         
         Set cSurface = Nothing: Set cPen = Nothing: Set cBrush = Nothing
+        
+        'Next, paint the title (if any)
+        Dim yOffset As Long
+        yOffset = m_InternalPadding
+        
+        Dim availableTextWidth As Long
+        availableTextWidth = ucSupport.GetBackBufferWidth - m_InternalPadding * 2 + 1
+        
+        Dim ttFont As pdFont
+        
+        If (Len(m_Title) > 0) Then
+            Set ttFont = Font_Management.GetMatchingUIFont(10, True)
+            ttFont.AttachToDC bufferDC
+            ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
+            ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight, m_Title
+            yOffset = yOffset + ttFont.GetHeightOfWordwrapString(m_Title, availableTextWidth) + m_TitlePadding
+            ttFont.ReleaseFromDC
+        End If
+        
+        'Finally, paint the tooltip itself
+        If (Len(m_Caption) > 0) Then
+            Set ttFont = Font_Management.GetMatchingUIFont(10, False)
+            ttFont.AttachToDC bufferDC
+            ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
+            ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight - yOffset, m_Caption
+            ttFont.ReleaseFromDC
+        End If
+        
+        Set ttFont = Nothing
         
     End If
     

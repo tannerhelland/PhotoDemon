@@ -348,9 +348,17 @@ Public Function Acos(ByVal x As Double) As Double
     Acos = Atan2(Sqr(1 - x * x), x)
 End Function
 
-'Return the maximum of two floating point values
+'Max/min functions
+Public Function Max2Int(ByVal f1 As Long, ByVal f2 As Long) As Long
+    If (f1 > f2) Then
+        Max2Int = f1
+    Else
+        Max2Int = f2
+    End If
+End Function
+
 Public Function Max2Float_Single(f1 As Single, f2 As Single) As Single
-    If f1 > f2 Then
+    If (f1 > f2) Then
         Max2Float_Single = f1
     Else
         Max2Float_Single = f2

@@ -733,6 +733,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = True
+    UserControl_Support.HideUCTooltip
     RaiseEvent MouseEnter(Button, Shift, x, y)
 End Sub
 
@@ -893,8 +894,13 @@ Public Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, O
     m_TTCaption = newTooltip
     m_TTTitle = newTooltipTitle
     
-    'If a tooltip is already active, update it immediately
-    If UserControl_Support.IsTooltipActive(m_hWnd) Then RaiseTooltip
+    'If the tooltip is empty, release any existing tooltips
+    If (Len(m_TTCaption) = 0) Then
+        UserControl_Support.HideUCTooltip
+    Else
+        'If a tooltip is already active, update it immediately
+        If UserControl_Support.IsTooltipActive(m_hWnd) Then RaiseTooltip
+    End If
     
 End Sub
 

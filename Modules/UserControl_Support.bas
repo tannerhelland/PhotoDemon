@@ -104,6 +104,8 @@ Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
 'Because there can only be one visible tooltip at a time, this support module is a great place to handle them.  Requests for new
 ' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
 ' are unloaded.
+Private Const PD_TT_EXTERNAL_PADDING As Long = 2
+Private Const PD_TT_INTERNAL_PADDING As Long = 6
 Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOACTIVATE As Long = &H10
 Private Const SWP_FRAMECHANGED As Long = &H20
@@ -111,9 +113,9 @@ Private Const WS_EX_NOACTIVATE As Long = &H8000000
 Private Const WS_EX_TOOLWINDOW As Long = &H80
 Private Const WS_EX_WINDOWEDGE As Long = &H100
 Private Const WS_EX_TOPMOST As Long = &H8
-Private m_TooltipActive As Boolean, m_TooltipOwner As Long, m_TooltipHwnd As Long
+Private m_TTActive As Boolean, m_TTOwner As Long, m_TTHwnd As Long
 Private m_TTWindowStyleHasBeenSet As Boolean, m_OriginalTTWindowBits As Long, m_OriginalTTWindowBitsEx As Long
-Private m_tooltipRectCopy As RECTL
+Private m_TTRectCopy As RECTL
 
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
@@ -606,7 +608,7 @@ End Sub
 Public Sub PDControlLostFocus(ByVal controlHWnd As Long)
     
     'If this control raised a tooltip (and said tooltip is still active), unload it now
-    If (controlHWnd = m_TooltipOwner) Then HideUCTooltip
+    If (controlHWnd = m_TTOwner) Then HideUCTooltip
     
 End Sub
 
@@ -614,70 +616,134 @@ End Sub
 ' ideally position the tooltip).  Logic similar to pdDropDown is used to display the tooltip.
 Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL, ByVal mouseXRatio As Single, ByVal mouseYRatio As Single, ByRef ttCaption As String, ByRef ttTitle As String)
     
-    On Error GoTo UnexpectedTooltipTrouble
+    On Error GoTo UnexpectedTTTrouble
     
     If (Not g_IsProgramRunning) Then Exit Sub
     
-    m_TooltipOwner = OwnerHwnd
+    m_TTOwner = OwnerHwnd
     
     'We now want to figure out the idealized coordinates for the tooltip.  The goal is to position the tooltip as
     ' close to the mouse pointer as possible, while also positioning it outside the control rectangle (so that we
     ' don't obscure the control's contents - a constant annoyance with normal tooltips).
-    Dim tooltipRect As RECTF
+    Dim ttRect As RECTF
     
-    '(For now, just position it at the mouse position, at the same size as the control.  This lets us know the tip is working.)
-    With tooltipRect
-        .Left = srcControlRect.Right
-        .Top = srcControlRect.Bottom
-        .Width = srcControlRect.Right - srcControlRect.Left
-        .Height = srcControlRect.Bottom - srcControlRect.Top
+    'Start by figuring out which edge is closest to the current mouse position.  The passed mouse x/y ratios make this simple.
+    ' (Each mouse value is a value [0, 1] instead of a hard-coded coordinate.)
+    Dim positionRight As Boolean, positionBottom As Boolean
+    positionRight = CBool(mouseXRatio > 0.5)
+    positionBottom = CBool(mouseYRatio > 0.5)
+    
+    'Before computing a final position for the tooltip, let's figure out the size of the string we have to work with.
+    Dim ttCaptionWidth As Long, ttCaptionHeight As Long
+    Dim ttFont As pdFont
+    Set ttFont = Font_Management.GetMatchingUIFont(10)
+    
+    Const PD_TT_MAX_WIDTH As Long = 400
+    Dim dtRect As RECTL
+    ttFont.GetBoundaryRectOfMultilineString ttCaption, Interface.FixDPI(PD_TT_MAX_WIDTH), dtRect
+    ttCaptionWidth = dtRect.Right - dtRect.Left
+    If (ttCaptionWidth > Interface.FixDPI(PD_TT_MAX_WIDTH)) Then
+        ttCaptionWidth = Interface.FixDPI(PD_TT_MAX_WIDTH)
+        ttCaptionHeight = ttFont.GetHeightOfWordwrapString(ttCaption, ttCaptionWidth)
+    Else
+        ttCaptionHeight = dtRect.Bottom - dtRect.Top
+    End If
+    
+    'We now have a precise width/height measurement for our tooltip caption.  Repeat the steps for the tooltip title, if any.
+    Dim ttTitleWidth As Long, ttTitleHeight As Long
+    If (Len(ttTitle) > 0) Then
+        Set ttFont = Font_Management.GetMatchingUIFont(10, True)
+        ttTitleWidth = ttFont.GetWidthOfString(ttTitle)
+        
+        If (ttTitleWidth > Interface.FixDPI(PD_TT_MAX_WIDTH)) Then
+            ttTitleWidth = Interface.FixDPI(PD_TT_MAX_WIDTH)
+            ttTitleHeight = ttFont.GetHeightOfWordwrapString(ttTitle, ttTitleWidth)
+        Else
+            ttTitleHeight = ttFont.GetHeightOfString(ttTitle)
+        End If
+    Else
+        ttTitleWidth = 0
+        ttTitleHeight = 0
+    End If
+    
+    Set ttFont = Nothing
+    
+    'With all string sizes calculated, we can now calculate a total size for the tooltip, including padding, borders,
+    ' and spacing between the caption and title (if any).
+    Const PD_TT_TITLE_PADDING As Long = 4
+    
+    With ttRect
+        .Width = Interface.FixDPI(PD_TT_INTERNAL_PADDING) * 2 + Math_Functions.Max2Int(ttCaptionWidth, ttTitleWidth)
+        If (ttTitleHeight > 0) Then
+            .Height = Interface.FixDPI(PD_TT_INTERNAL_PADDING) * 2 + ttCaptionHeight + ttTitleHeight + Interface.FixDPI(PD_TT_TITLE_PADDING)
+        Else
+            .Height = Interface.FixDPI(PD_TT_INTERNAL_PADDING) * 2 + ttCaptionHeight
+        End If
     End With
+    
+    'With our tooltip size correctly calculated, we now need to determine tooltip position.
+    If positionRight Then
+        ttRect.Left = srcControlRect.Right + PD_TT_EXTERNAL_PADDING
+    Else
+        ttRect.Left = srcControlRect.Left - (PD_TT_EXTERNAL_PADDING + ttRect.Width)
+    End If
+    
+    If positionBottom Then
+        ttRect.Top = srcControlRect.Bottom + PD_TT_EXTERNAL_PADDING
+    Else
+        ttRect.Top = srcControlRect.Top - (PD_TT_EXTERNAL_PADDING + ttRect.Height)
+    End If
+    
+    'We have now calculated the tooltip position.  Time to display it!
     
     'The tooltip is now ready to go.  The first time we raise it, we want to cache its current window longs as
     ' whatever VB has set.  (We must restore these before unloading the form, or VB's built-in teardown will
     ' crash and burn.)
     Load tool_Tooltip
-    m_TooltipHwnd = tool_Tooltip.hWnd
+    m_TTHwnd = tool_Tooltip.hWnd
     If (Not m_TTWindowStyleHasBeenSet) Then
         m_TTWindowStyleHasBeenSet = True
-        m_OriginalTTWindowBits = g_WindowManager.GetWindowLongWrapper(m_TooltipHwnd)
-        m_OriginalTTWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_TooltipHwnd, True)
+        m_OriginalTTWindowBits = g_WindowManager.GetWindowLongWrapper(m_TTHwnd)
+        m_OriginalTTWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_TTHwnd, True)
     End If
     
     'Now we are ready to display the tooltip.  Overwrite VB's default window bits to ensure that the tooltip form
     ' is handled like a tooltip window.
     Const WS_POPUP As Long = &H80000000
-    g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, WS_POPUP, False, False, True
-    g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, WS_EX_NOACTIVATE Or WS_EX_TOOLWINDOW, False, True, True
+    g_WindowManager.SetWindowLongWrapper m_TTHwnd, WS_POPUP, False, False, True
+    g_WindowManager.SetWindowLongWrapper m_TTHwnd, WS_EX_NOACTIVATE Or WS_EX_TOOLWINDOW, False, True, True
     
     'Move the tooltip window into position *but do not display it*
-    With tooltipRect
-        SetWindowPos m_TooltipHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE Or SWP_FRAMECHANGED
+    With ttRect
+        SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE Or SWP_FRAMECHANGED
     End With
     
     'We also need to cache the tooltip rect's position; when it disappears, we will manually invalidate windows
     ' beneath it (only on certain OS + theme combinations; Aero handles this correctly).
-    With m_tooltipRectCopy
-        .Left = tooltipRect.Left
-        .Top = tooltipRect.Top
-        .Right = tooltipRect.Left + tooltipRect.Width
-        .Bottom = tooltipRect.Top + tooltipRect.Height
+    With m_TTRectCopy
+        .Left = ttRect.Left
+        .Top = ttRect.Top
+        .Right = ttRect.Left + ttRect.Width
+        .Bottom = ttRect.Top + ttRect.Height
     End With
+    
+    'As the last step before showing the tooltip, we need to notify the tooltip form of the tooltip caption and/or title
+    tool_Tooltip.NotifyTooltipSettings ttCaption, ttTitle, PD_TT_INTERNAL_PADDING, PD_TT_TITLE_PADDING
     
     'Now we can show the tooltip; we also notify the window of its changed window style bits
     Const SWP_NOREDRAW As Long = &H8&
-
-    'With tooltipRect
-    '    SetWindowPos m_TooltipHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE
-    'End With
-    'g_WindowManager.SetEnablementByHWnd m_TooltipHwnd, False
-    ShowWindow m_TooltipHwnd, 8
     
-    m_TooltipActive = True
+    'With ttRect
+    '    SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE
+    'End With
+    'g_WindowManager.SetEnablementByHWnd m_TTHwnd, False
+    ShowWindow m_TTHwnd, 8
+    
+    m_TTActive = True
     
     Exit Sub
     
-UnexpectedTooltipTrouble:
+UnexpectedTTTrouble:
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  UserControl_Support.ShowUCTooltip failed because of Err # " & Err.Number & ", " & Err.Description
@@ -687,25 +753,25 @@ End Sub
 
 Public Sub HideUCTooltip()
     
-    If m_TooltipActive And (m_TooltipHwnd <> 0) Then
+    If m_TTActive And (m_TTHwnd <> 0) Then
         
         'Restore the original VB window bits; this ensures that teardown happens correctly
-        If (m_OriginalTTWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, m_OriginalTTWindowBits, , , True
-        If (m_OriginalTTWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_TooltipHwnd, m_OriginalTTWindowBits, , True, True
+        If (m_OriginalTTWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_TTHwnd, m_OriginalTTWindowBits, , , True
+        If (m_OriginalTTWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_TTHwnd, m_OriginalTTWindowBits, , True, True
         
         'Hide (but do not unload!) the tooltip window
-        g_WindowManager.SetVisibilityByHWnd m_TooltipHwnd, False
-        m_TooltipHwnd = 0
+        g_WindowManager.SetVisibilityByHWnd m_TTHwnd, False
+        m_TTHwnd = 0
         
         'If Aero theming is not active, hiding the tooltip may cause windows beneath the current one to render incorrectly.
         If (g_IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
-            InvalidateRect 0&, VarPtr(m_tooltipRectCopy), 0&
+            InvalidateRect 0&, VarPtr(m_TTRectCopy), 0&
         End If
         
     End If
     
-    m_TooltipOwner = 0
-    m_TooltipActive = False
+    m_TTOwner = 0
+    m_TTActive = False
     
     'Now, at the very end, we can unload the tooltip window itself
     Unload tool_Tooltip
@@ -714,5 +780,5 @@ Public Sub HideUCTooltip()
 End Sub
 
 Public Function IsTooltipActive(ByVal OwnerHwnd As Long) As Boolean
-    IsTooltipActive = CBool(m_TooltipOwner = OwnerHwnd)
+    IsTooltipActive = CBool(m_TTOwner = OwnerHwnd)
 End Function
