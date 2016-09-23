@@ -580,6 +580,49 @@ Public Function GetHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
 
 End Function
 
+'This is just a thin wrapper to DrawText+DT_CALCRECT.  Note the (many) caveats, per MSDN:
+' "Determines the width and height of the rectangle. If there are multiple lines of text, DrawText uses the
+'  width of the rectangle pointed to by the lpRect parameter and extends the base of the rectangle to bound
+'  the last line of text. If the largest word is wider than the rectangle, the width is expanded. If the text
+'  is less than the width of the rectangle, the width is reduced. If there is only one line of text, DrawText
+'  modifies the right side of the rectangle so that it bounds the last character in the line. In either case,
+'  DrawText returns the height of the formatted text but does not draw the text."
+Friend Function GetBoundaryRectOfMultilineString(ByVal srcString As String, ByVal maxAllowedWidth As Long, ByRef dstRect As RECTL) As Boolean
+
+    Dim tmpRect As RECT
+    tmpRect.Left = 0
+    tmpRect.Top = 0
+    tmpRect.Bottom = 0
+    tmpRect.Right = maxAllowedWidth - 1
+    
+    'If we're not currently selected into a DC, silently plug in a temporary DC
+    Dim targetDC As Long, tmpDCActive As Boolean
+    If curDC = 0 Then
+        tmpDCActive = True
+        targetDC = GDI.GetMemoryDC()
+        AttachToDC targetDC
+    Else
+        targetDC = curDC
+    End If
+    
+    'Retrieve the string's dimensions
+    GetBoundaryRectOfMultilineString = CBool(DrawText(targetDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP) <> 0)
+    
+    With dstRect
+        .Left = tmpRect.Left
+        .Top = tmpRect.Top
+        .Right = tmpRect.Right
+        .Bottom = tmpRect.Bottom
+    End With
+    
+    'Release the temporary DC, as necessary
+    If tmpDCActive Then
+        ReleaseFromDC
+        GDI.FreeMemoryDC targetDC
+    End If
+
+End Function
+
 Private Sub Class_Initialize()
     
     'When the class is initialized, set up a default PhotoDemon font.  Face is automatically set per
