@@ -313,7 +313,9 @@ Public Function ssc_Subclass(ByVal lng_hWnd As Long, _
  Exit Function                                                                'Exit ssc_Subclass
     
 CatchDoubleSub:
- zError SUB_NAME, "Window handle is already subclassed"
+    'As part of v7.0 optimizations, PD may sometimes request additional subclassing for a window that is already
+    ' subclassed.  This is known behavior, and can be safely ignored.
+    'zError SUB_NAME, "Window handle is already subclassed"
       
 ReleaseMemory:
       VirtualFree z_ScMem, 0, MEM_RELEASE                                     'ssc_Subclass has failed after memory allocation, so release the memory

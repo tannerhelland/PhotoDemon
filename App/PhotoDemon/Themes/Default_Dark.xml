@@ -518,7 +518,7 @@
 			</PDToolButton>
 			
 			<PDTooltip>
-				<Background></Background>
+				<Background>#1e1e22</Background>
 				<Border>GrayDefault</Border>
 				<Caption>TextDark</Caption>
 			</PDTooltip>
