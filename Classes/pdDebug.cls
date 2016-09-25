@@ -116,7 +116,7 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         End If
         
         'We now know the Debug path exists.  Retrieve a relevant ID for this file.
-        m_debuggerID = getLogID()
+        m_debuggerID = GetLogID()
         
         'Generate a filename for this log, using that ID.
         m_logPath = m_logPath & "DebugReport_" & m_debuggerID & ".log"
@@ -221,7 +221,7 @@ End Function
 
 'Search the debug folder for existing debug files, sort them by date, and automatically give this log a unique ID on the
 ' range [0, 9].  If there are already 10 debug files present, steal the ID of the oldest file.
-Private Function getLogID() As Long
+Private Function GetLogID() As Long
 
     'Start by assembling a list of matching files
     Dim logFiles() As String
@@ -266,12 +266,12 @@ Private Function getLogID() As Long
         Next i
         
         'minID now contains the ID of the oldest debug log entry.  Return it as the log ID we want to use.
-        getLogID = minID
+        GetLogID = minID
     
     Else
     
         'There are not yet 10 log files.  Use the next ID number in line.
-        getLogID = numFiles
+        GetLogID = numFiles
     
     End If
     

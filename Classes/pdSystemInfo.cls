@@ -869,7 +869,7 @@ Public Function GetPhotoDemonResourceUsage(Optional ByVal resourceType As GUI_RE
     Dim procHandle As Long
     procHandle = GetPhotoDemonProcessHandle()
         
-    If procHandle <> 0 Then
+    If (procHandle <> 0) Then
                 
         'Attempt to retrieve resource information
         GetPhotoDemonResourceUsage = GetGuiResources(procHandle, resourceType)
