@@ -930,7 +930,7 @@ Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1, Optional ByV
         GetWindowRect m_hWnd, curControlRect
         
         'Request a tooltip, while converting the (x, y) coordinates to ratios; this simplifies positioning
-        UserControl_Support.ShowUCTooltip m_hWnd, curControlRect, m_TTX / (curControlRect.Right - curControlRect.Left), m_TTY / (curControlRect.Bottom - curControlRect.Top), m_TTCaption, m_TTTitle
+        UserControl_Support.ShowUCTooltip m_hWnd, curControlRect, m_TTX, m_TTY, m_TTCaption, m_TTTitle
         
     End If
     

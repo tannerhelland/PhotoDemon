@@ -516,7 +516,7 @@
 			</PDToolButton>
 			
 			<PDTooltip>
-				<Background></Background>
+				<Background>#efeff5</Background>
 				<Border>GrayDefault</Border>
 				<Caption>TextDark</Caption>
 			</PDTooltip>
