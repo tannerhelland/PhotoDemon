@@ -1091,7 +1091,14 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
     
     'When running, rely on the painter to paint the control for us
     If g_IsProgramRunning Then
+        
+        'In the event that a paint event is not called right away (because the control is invisible, or some
+        ' other reason), free the back buffer DIB from its DC to free up a bit of resources.  If a paint
+        ' event *is* called right away, this has no ill effects, because the DC is auto-generated as needed.
+        m_BackBuffer.FreeFromDC
+        
         m_WindowPainter.RequestRepaint raiseImmediateDrawEvent
+        
     Else
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
         If (Not (m_BackBuffer Is Nothing)) And (Not m_NoBackBufferMode) Then
