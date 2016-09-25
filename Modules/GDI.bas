@@ -71,8 +71,8 @@ Public Function StretchBltWrapper(ByVal hDstDC As Long, ByVal dstX As Long, ByVa
     StretchBltWrapper = CBool(StretchBlt(hDstDC, dstX, dstY, dstWidth, dstHeight, hSrcDC, srcX, srcY, srcWidth, srcHeight, rastOp) <> 0)
 End Function
 
-Public Function GetClientRectWrapper(ByVal srcHWnd As Long, ByVal ptrToDestRect As Long) As Boolean
-    GetClientRectWrapper = CBool(GetClientRect(srcHWnd, ptrToDestRect) <> 0)
+Public Function GetClientRectWrapper(ByVal srcHwnd As Long, ByVal ptrToDestRect As Long) As Boolean
+    GetClientRectWrapper = CBool(GetClientRect(srcHwnd, ptrToDestRect) <> 0)
 End Function
 
 Public Function GetBitmapHeaderFromDC(ByVal srcDC As Long) As GDI_Bitmap
@@ -92,10 +92,12 @@ End Function
 'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
 Public Function GetMemoryDC() As Long
     GetMemoryDC = CreateCompatibleDC(0&)
+    g_DCsCreated = g_DCsCreated + 1
 End Function
 
 Public Sub FreeMemoryDC(ByVal srcDC As Long)
     If (srcDC <> 0) Then DeleteDC srcDC
+    g_DCsDestroyed = g_DCsDestroyed + 1
 End Sub
 
 Public Sub ForceGDIFlush()
@@ -106,12 +108,12 @@ End Sub
 Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
     
     'Create a pen with the specified color
-    Dim newPen As Long
-    newPen = CreatePen(PS_SOLID, 1, crColor)
+    Dim tmpPen As Long
+    tmpPen = CreatePen(PS_SOLID, 1, crColor)
     
     'Select the pen into the target DC
     Dim oldObject As Long
-    oldObject = SelectObject(targetDC, newPen)
+    oldObject = SelectObject(targetDC, tmpPen)
     
     'Render the line
     MoveToEx targetDC, x1, y1, 0&
@@ -119,7 +121,7 @@ Public Sub DrawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
     
     'Remove the pen and delete it
     SelectObject targetDC, oldObject
-    DeleteObject newPen
+    DeleteObject tmpPen
 
 End Sub
 
