@@ -110,8 +110,8 @@ Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
 ' as necessary.
 Private Const PD_TT_EXTERNAL_PADDING As Long = 2
 Private Const PD_TT_INTERNAL_PADDING As Long = 6
-Private Const PD_TT_MAX_WIDTH As Long = 400         'Tooltips larger than this will be word-wrapped to fit.
-Private Const PD_TT_TITLE_PADDING As Long = 4       'Pixels between the tooltip title (if any) and caption
+Private Const PD_TT_MAX_WIDTH As Long = 400         'Tips larger than this will be word-wrapped to fit.
+Private Const PD_TT_TITLE_PADDING As Long = 4       'Pixels between the tip title (if any) and caption
 Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOACTIVATE As Long = &H10
 Private Const SWP_FRAMECHANGED As Long = &H20
