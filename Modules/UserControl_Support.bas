@@ -117,6 +117,18 @@ Private m_TTActive As Boolean, m_TTOwner As Long, m_TTHwnd As Long
 Private m_TTWindowStyleHasBeenSet As Boolean, m_OriginalTTWindowBits As Long, m_OriginalTTWindowBitsEx As Long
 Private m_TTRectCopy As RECTL
 
+'Tooltips can request icons, but as of 7.0, this behavior is unused.  (As such, these are not currently implemented.)
+Public Enum TT_ICON_TYPE
+    TTI_NONE = 0
+    TTI_INFO = 1
+    TTI_WARNING = 2
+    TTI_ERROR = 3
+End Enum
+
+#If False Then
+    Private Const TTI_NONE = 0, TTI_INFO = 1, TTI_WARNING = 2, TTI_ERROR = 3
+#End If
+
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
 ' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter

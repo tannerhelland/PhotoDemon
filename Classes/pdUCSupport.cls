@@ -96,7 +96,6 @@ Private WithEvents m_WindowPainter As pdWindowPainter
 Attribute m_WindowPainter.VB_VarHelpID = -1
 Private WithEvents m_MoveSize As pdWindowSize
 Attribute m_MoveSize.VB_VarHelpID = -1
-Private m_ToolTipManager As pdToolTip
 Private m_Caption As pdCaption
 
 'Persistent copy of the associated user control's hWnd and DC.  (If tooltips are activated, we also cache the parent hWnd.)
@@ -150,8 +149,11 @@ Private m_CustomCaptionPaintingActive As Boolean
 ' This value is set to FALSE by default.
 Private m_NoBackBufferMode As Boolean
 
-'When a control requests a tooltip, we cache it locally.  If the length of (any of) these strings is non-zero, a tooltip is active
+'This support class also manages tooltips.  Note that translations are handled automatically; the original English tooltips
+' are cached to make runtime translations possible.
+'A tooltip is active if the original, English caption string has a non-zero length.
 Private m_TTX As Single, m_TTY As Single
+Private m_TTCaptionEn As String, m_TTTitleEn As String
 Private m_TTCaption As String, m_TTTitle As String
 
 'pd2DPaint classes, for generic fill/stroke capabilities
@@ -200,9 +202,6 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
         
         'Some functionality is supplied "by default".  The caller does not have to request this behavior; they get it for free.
-        
-        'Themed, Unicode-compatible, multiline tooltips
-        Set m_ToolTipManager = New pdToolTip
         
         'Visual themes integration
         Set m_Colors = New pdThemeColors
@@ -888,18 +887,29 @@ End Function
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     
-    'If m_hWndParent = 0 Then m_hWndParent = parentHwnd
-    'm_ToolTipManager.SetTooltip m_hWnd, m_hWndParent, newTooltip, newTooltipTitle, newTooltipIcon
+    If g_IsProgramRunning Then
     
-    m_TTCaption = newTooltip
-    m_TTTitle = newTooltipTitle
-    
-    'If the tooltip is empty, release any existing tooltips
-    If (Len(m_TTCaption) = 0) Then
-        UserControl_Support.HideUCTooltip
-    Else
-        'If a tooltip is already active, update it immediately
-        If UserControl_Support.IsTooltipActive(m_hWnd) Then RaiseTooltip
+        'Cache the original English versions of this tooltip
+        m_TTCaptionEn = newTooltip
+        m_TTTitleEn = newTooltipTitle
+        
+        'If translations are active, apply a translation now
+        If g_Language.TranslationActive() Then
+            m_TTCaption = g_Language.TranslateMessage(m_TTCaptionEn)
+            m_TTTitle = g_Language.TranslateMessage(m_TTTitleEn)
+        Else
+            m_TTCaption = m_TTCaptionEn
+            m_TTTitle = m_TTTitleEn
+        End If
+        
+        'If the tooltip is empty, release any existing tooltips
+        If (Len(m_TTCaption) = 0) Then
+            UserControl_Support.HideUCTooltip
+        Else
+            'If a tooltip is already active, update it immediately
+            If UserControl_Support.IsTooltipActive(m_hWnd) Then RaiseTooltip
+        End If
+        
     End If
     
 End Sub
@@ -1132,18 +1142,28 @@ End Sub
 ' class as well.  We'll update things like the tooltip and text caption (if any) to match the new settings.
 Public Sub UpdateAgainstThemeAndLanguage()
     
-    'Tooltips must be refreshed (in case the active language has changed; tooltips manage translations internally)
-    m_ToolTipManager.UpdateAgainstCurrentTheme
-    
-    'This control requires some colors from the central themer; update its color cache now
-    UpdateColorList
-    
-    'The caption manager will also refresh itself
-    If m_Caption.IsCaptionActive Then m_Caption.UpdateAgainstCurrentTheme
-    
-    'After a theme change, the caller needs to repaint everything from scratch.
-    SyncBackBufferSize True
-    AskForARepaint True
+    If g_IsProgramRunning Then
+        
+        'Tooltips must be refreshed (in case the active language has changed)
+        If g_Language.TranslationActive() Then
+            m_TTCaption = g_Language.TranslateMessage(m_TTCaptionEn)
+            m_TTTitle = g_Language.TranslateMessage(m_TTTitleEn)
+        Else
+            m_TTCaption = m_TTCaptionEn
+            m_TTTitle = m_TTTitleEn
+        End If
+        
+        'This control requires some colors from the central themer; update its color cache now
+        UpdateColorList
+        
+        'The caption manager will also refresh itself
+        If m_Caption.IsCaptionActive Then m_Caption.UpdateAgainstCurrentTheme
+        
+        'After a theme change, the caller needs to repaint everything from scratch.
+        SyncBackBufferSize True
+        AskForARepaint True
+        
+    End If
     
 End Sub
 
@@ -1183,7 +1203,6 @@ Private Sub Class_Terminate()
     If Not (m_MoveSize Is Nothing) Then Set m_MoveSize = Nothing
     If Not (m_FocusDetector Is Nothing) Then Set m_FocusDetector = Nothing
     If Not (m_WindowPainter Is Nothing) Then Set m_WindowPainter = Nothing
-    If Not (m_ToolTipManager Is Nothing) Then Set m_ToolTipManager = Nothing
     
     'As a final step, release this class's internal subclasser
     If Not (m_Subclass Is Nothing) Then
