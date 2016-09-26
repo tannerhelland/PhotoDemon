@@ -719,6 +719,7 @@ End Sub
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
+    Set cMouseEvents = Nothing
     g_UserPreferences.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
     If g_ProgramShuttingDown Then ReleaseFormTheming Me
 End Sub
@@ -745,11 +746,11 @@ Private Sub NewToolSelected()
                 Else
                 
                     'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
-                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Then
-                        pdImages(g_CurrentImage).mainSelection.setSelectionShape sCircle
+                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sRectangle) Then
+                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape sCircle
                         
-                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle) Then
-                        pdImages(g_CurrentImage).mainSelection.setSelectionShape sRectangle
+                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sCircle) Then
+                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape sRectangle
                         
                     'A selection exists, but it does not match the current tool, and it cannot be non-destructively
                     ' changed to the current type.  Remove it.
@@ -874,11 +875,11 @@ Public Sub ResetToolButtonStates()
     If SelectionsAllowed(False) And (getRelevantToolFromSelectShape() <> g_CurrentTool) And (getSelectionShapeFromCurrentTool > -1) Then
         
         'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
-        If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sRectangle) Or _
-            (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.getSelectionShape = sCircle) Then
+        If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sRectangle) Or _
+            (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sCircle) Then
             
             'Simply update the shape and redraw the viewport
-            pdImages(g_CurrentImage).mainSelection.setSelectionShape Selection_Handler.getSelectionShapeFromCurrentTool
+            pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selection_Handler.getSelectionShapeFromCurrentTool
             syncTextToCurrentSelection g_CurrentImage
             Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
@@ -934,6 +935,7 @@ Public Sub ResetToolButtonStates()
             'If this is the active panel, display it
             If (StrComp(toolPanelCollection.GetKeyByIndex(i), LCase(m_ActiveToolPanelKey)) = 0) Then
                 g_WindowManager.ActivateToolPanel toolPanelCollection.GetValueByIndex(i), toolbar_Options.hWnd
+                Exit For
             End If
             
         Next i

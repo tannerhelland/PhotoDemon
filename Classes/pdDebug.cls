@@ -328,9 +328,11 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             deltaMem = curMemUsage - m_lastMemCheck
             
             'While here, also grab GDI and user object counts
-            Dim curGDIObjects As Long, curUserObjects As Long
+            Dim curGDIObjects As Long, curUserObjects As Long, gdiObjectPeak As Long, userObjectPeak As Long
             curGDIObjects = cSysInfo.GetPhotoDemonResourceUsage(GdiObjects)
             curUserObjects = cSysInfo.GetPhotoDemonResourceUsage(UserObjects)
+            gdiObjectPeak = cSysInfo.GetPhotoDemonResourceUsage(GdiObjectsPeak)
+            userObjectPeak = cSysInfo.GetPhotoDemonResourceUsage(UserObjectsPeak)
             
             'Format the strings into something more readable
             If (curMemUsage <> 0) Then
@@ -342,38 +344,53 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 If (deltaMem > 0) Then deltaMemString = "+" & deltaMemString
                 
                 Dim gdiUsageString As String, userUsageString As String
-                gdiUsageString = Format$(curGDIObjects, "###,##0")
-                userUsageString = Format$(curUserObjects, "###,##0")
+                gdiUsageString = Format$(curGDIObjects, "###,##0") & " (" & Format$(gdiObjectPeak, "###,##0") & ")"
+                userUsageString = Format$(curUserObjects, "###,##0") & " (" & Format$(userObjectPeak, "###,##0") & ")"
+                
+                'Ignore the supplied action string, and create our own
+                actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString _
+                                & " | GDI: " & gdiUsageString & " | USER: " & userUsageString
+                
+                'Also report some internal program object counts (DCs, hWnds, hFonts, etc)
+                Dim dcCountString As String
+                dcCountString = Format$(g_DCsCreated - g_DCsDestroyed, "###,##0")
+                dcCountString = dcCountString & " (" & Format$(g_DCsCreated, "###,##0") & ":" & Format$(g_DCsDestroyed, "###,##0") & ")"
+                actionString = actionString & vbCrLf & Space$(20) & "DC: " & dcCountString
                 
                 Dim apiWindowsCreated As Long, apiWindowsDestroyed As Long, apiWindowsNet As Long, apiWindowUsage As String
                 apiWindowsNet = UserControl_Support.GetAPIWindowCount(apiWindowsCreated, apiWindowsDestroyed)
                 apiWindowUsage = Format$(apiWindowsNet, "###,##0") & " (" & Format$(apiWindowsCreated, "###,##0") & ":" & Format$(apiWindowsDestroyed, "###,##0") & ")"
-                
-                'Ignore the supplied action string, and create our own
-                actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString _
-                                & " | GDI: " & gdiUsageString & " | USER: " & userUsageString & " | HWNDS: " & apiWindowUsage
-                
-                'Also report some internal program object counts (memory DCs, hFonts, etc)
-                Dim dcCountString As String
-                dcCountString = Format$(g_DCsCreated - g_DCsDestroyed, "###,##0")
-                dcCountString = dcCountString & "(" & Format$(g_DCsCreated, "###,##0") & ":" & Format$(g_DCsDestroyed, "###,##0") & ")"
-                actionString = actionString & vbCrLf & Space$(20) & "DCs: " & dcCountString
+                actionString = actionString & " | HWND: " & apiWindowUsage
                 
                 Dim fontCountString As String
                 fontCountString = Format$(g_FontsCreated - g_FontsDestroyed, "###,##0")
-                fontCountString = fontCountString & "(" & Format$(g_FontsCreated, "###,##0") & ":" & Format$(g_FontsDestroyed, "###,##0") & ")"
-                actionString = actionString & " | FONTS: " & fontCountString
+                fontCountString = fontCountString & " (" & Format$(g_FontsCreated, "###,##0") & ":" & Format$(g_FontsDestroyed, "###,##0") & ")"
+                actionString = actionString & " | FONT: " & fontCountString
                 
                 Dim dibCountString As String
                 dibCountString = Format$(g_DIBsCreated - g_DIBsDestroyed, "###,##0")
-                dibCountString = dibCountString & "(" & Format$(g_DIBsCreated, "###,##0") & ":" & Format$(g_DIBsDestroyed, "###,##0") & ")"
-                actionString = actionString & " | DIBS: " & dibCountString
+                dibCountString = dibCountString & " (" & Format$(g_DIBsCreated, "###,##0") & ":" & Format$(g_DIBsDestroyed, "###,##0") & ")"
+                actionString = actionString & " | DIB: " & dibCountString
                 
                 Dim icoUsageString As String
                 Dim icosNet As Long, icosCreated As Long, icosDestroyed As Long
                 icosNet = Icons_and_Cursors.GetCreatedIconCount(icosCreated, icosDestroyed)
                 icoUsageString = Format$(icosNet, "###,##0") & " (" & Format$(icosCreated, "###,##0") & ":" & Format$(icosDestroyed, "###,##0") & ")"
-                actionString = actionString & " | ICONS: " & icoUsageString
+                actionString = actionString & " | ICON: " & icoUsageString
+                
+                Dim hookUsageString As String
+                Dim hooksNet As Long, hooksCreated As Long, hooksDestroyed As Long
+                hooksNet = UserControl_Support.GetHookCount(hooksCreated, hooksDestroyed)
+                hookUsageString = Format$(hooksNet, "###,##0") & " (" & Format$(hooksCreated, "###,##0") & ":" & Format$(hooksDestroyed, "###,##0") & ")"
+                actionString = actionString & vbCrLf & Space$(20) & "HOOK: " & hookUsageString
+                
+                Dim timerUsageString As String
+                Dim timersNet As Long, timersCreated As Long, timersDestroyed As Long
+                timersNet = UserControl_Support.GetTimerCount(timersCreated, timersDestroyed)
+                timerUsageString = Format$(timersNet, "###,##0") & " (" & Format$(timersCreated, "###,##0") & ":" & Format$(timersDestroyed, "###,##0") & ")"
+                actionString = actionString & " | TIMER: " & timerUsageString
+                
+                actionString = actionString & " | UC: " & Format$(UserControl_Support.GetPDControlCount(), "###,##0")
                 
             Else
                 actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."

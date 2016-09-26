@@ -652,8 +652,6 @@ Public Sub FinalShutdown()
         pdDebug.LogAction "FinalShutdown() reached."
     #End If
     
-    g_IsProgramRunning = False
-    
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Manually unloading all remaining public class instances..."
     #End If
@@ -733,6 +731,8 @@ Public Sub FinalShutdown()
         pdDebug.TerminateDebugger
         Set pdDebug = Nothing
     #End If
+    
+    g_IsProgramRunning = False
     
     'We have now terminated everything we can physically terminate.
     

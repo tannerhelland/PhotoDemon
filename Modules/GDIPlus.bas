@@ -3042,7 +3042,9 @@ End Function
 ' 2) apply variable opacity
 ' 3) control stretch mode directly inside the call
 Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False)
-
+    
+    If (dstDIB Is Nothing) Then Exit Sub
+    
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
     ' have timing reports sent to the debug window.

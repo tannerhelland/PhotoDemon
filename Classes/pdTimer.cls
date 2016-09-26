@@ -57,7 +57,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If m_TimerID <> 0 Then StopTimer
+    If (m_TimerID <> 0) Then StopTimer
 End Sub
 
 Public Property Get Interval() As Long
@@ -65,9 +65,9 @@ Public Property Get Interval() As Long
 End Property
 
 Public Property Let Interval(ByVal newInterval As Long)
-    If newInterval <> m_Interval Then
+    If (newInterval <> m_Interval) Then
         m_Interval = newInterval
-        If m_TimerID <> 0 Then StartTimer
+        If (m_TimerID <> 0) Then StartTimer
     End If
 End Property
 
@@ -77,14 +77,18 @@ End Property
 
 Public Sub StartTimer()
 
-    If m_TimerID <> 0 Then StopTimer
+    If (m_TimerID <> 0) Then StopTimer
     
-    If m_Interval > 0 Then
+    If (m_Interval > 0) Then
+        
         If g_IsWin8OrLater Then
             m_TimerID = SetCoalescableTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VB_Hacks.StandInTimerProc, 0&)
         Else
             m_TimerID = SetTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VB_Hacks.StandInTimerProc)
         End If
+        
+        If (m_TimerID <> 0) Then UserControl_Support.NotifyTimerCreated
+        
     Else
         Debug.Print "WARNING!  Interval values passed to pdTimer must be > zero."
     End If
@@ -92,23 +96,27 @@ Public Sub StartTimer()
 End Sub
 
 Public Sub StopTimer()
-    If m_TimerID <> 0 Then
+
+    If (m_TimerID <> 0) Then
     
         Dim timerReleaseCheck As Boolean
         timerReleaseCheck = CBool(KillTimer(m_OwnerHWnd, ObjPtr(Me)) <> 0)
         m_TimerID = 0
         
-        If Not timerReleaseCheck Then
+        If timerReleaseCheck Then
+            UserControl_Support.NotifyTimerDestroyed
+        Else
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  pdTimer object was not released successfully."
             #End If
         End If
         
     End If
+    
 End Sub
 
 'This sub will be called by the VB_Hacks module whenever a new timer event arrives.  Note that stopping a timer does not
 ' remove already-posted WM_TIMER messages from the message queue; to prevent those from firing, we check the timer ID here.
 Public Sub TimerEventArrived()
-    If m_TimerID <> 0 Then RaiseEvent Timer
+    If (m_TimerID <> 0) Then RaiseEvent Timer
 End Sub

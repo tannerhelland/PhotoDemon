@@ -411,16 +411,16 @@ End Sub
 
 'Add the message to the specified table of the window handle
 Private Function zAddMsg(ByVal uMsg As Long, ByVal nTable As Long, ByVal z_ScMem As Long) As Boolean
-      Dim nCount As Long                                                        'Table entry count
-      Dim nBase  As Long                                                        'Remember z_ScMem
-      Dim i      As Long                                                        'Loop index
+    Dim nCount As Long                                                        'Table entry count
+    Dim nBase  As Long                                                        'Remember z_ScMem
+    Dim i      As Long                                                        'Loop index
     
-      zAddMsg = True
-      nBase = zData(nTable, z_ScMem)                                                 'Map zData() to the specified table
-      
-      If uMsg = ALL_MESSAGES Then                                               'If ALL_MESSAGES are being added to the table...
+    zAddMsg = True
+    nBase = zData(nTable, z_ScMem)                                                 'Map zData() to the specified table
+    
+    If uMsg = ALL_MESSAGES Then                                               'If ALL_MESSAGES are being added to the table...
         nCount = ALL_MESSAGES                                                   'Set the table entry count to ALL_MESSAGES
-      Else
+    Else
         
         nCount = zData(0, nBase)                                                      'Get the current table entry count
         For i = 1 To nCount                                                     'Loop through the table entries
@@ -440,9 +440,9 @@ Private Function zAddMsg(ByVal uMsg As Long, ByVal nTable As Long, ByVal z_ScMem
         End If
         
         zData(nCount, nBase) = uMsg                                                   'Store the message in the appended table entry
-      End If
+    End If
     
-      zData(0, nBase) = nCount                                                        'Store the new table entry count
+    zData(0, nBase) = nCount                                                        'Store the new table entry count
 Bail:
 
 End Function
@@ -580,10 +580,13 @@ Public Function shk_SetHook(ByVal HookType As eHookType, _
             z_Sc(IDX_PREVPROC) = SetWindowsHookExA(HookType, z_ScMem + PROC_OFF, App.hInstance, nID)
         End If
         
-        If z_Sc(IDX_PREVPROC) = 0 Then                                              'Ensure the new HookProc was set correctly
-          zError SUB_NAME, "SetWindowsHookEx failed, error #" & Err.LastDllError
-          GoTo ReleaseMemory
+        If (z_Sc(IDX_PREVPROC) = 0) Then                                              'Ensure the new HookProc was set correctly
+            zError SUB_NAME, "SetWindowsHookEx failed, error #" & Err.LastDllError
+            GoTo ReleaseMemory
+        Else
+            UserControl_Support.NotifyHookCreated
         End If
+        
         RtlMoveMemory z_ScMem + IDX_PREVPROC * 4, VarPtr(z_Sc(IDX_PREVPROC)), 4&    'Store the callback address
             
         shk_SetHook = True                                                          'Indicate success
@@ -803,6 +806,7 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
             ' if not unhooked, then unhook now
             If zData(IDX_SHUTDOWN, z_ScMem) = 0 Then UnhookWindowsHookEx zData(IDX_PREVPROC, z_ScMem)
             If zData(0, z_ScMem) = 0 Then                   ' not recursing then
+                UserControl_Support.NotifyHookDestroyed
                 VirtualFree z_ScMem, 0, MEM_RELEASE 'Release allocated memory
                 If ExistsInCollection(z_hkFunk, "h" & thunkID) Then
                     z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection

@@ -105,6 +105,10 @@ Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
 'To better manage resources, we also track how many API windows we've created/destroyed during this session
 Private m_APIWindowsCreated As Long, m_APIWindowsDestroyed As Long
 
+'Same goes for timers and certain other object types
+Private m_TimersCreated As Long, m_TimersDestroyed As Long
+Private m_HooksCreated As Long, m_HooksDestroyed As Long
+
 'Because there can only be one visible tooltip at a time, this support module is a great place to handle them.  Requests for new
 ' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
 ' are unloaded.
@@ -399,6 +403,34 @@ Public Function GetAPIWindowCount(Optional ByRef windowsCreated As Long, Optiona
     windowsCreated = m_APIWindowsCreated
     windowsDestroyed = m_APIWindowsDestroyed
     GetAPIWindowCount = (windowsCreated - windowsDestroyed)
+End Function
+
+Public Sub NotifyTimerCreated()
+    m_TimersCreated = m_TimersCreated + 1
+End Sub
+
+Public Sub NotifyTimerDestroyed()
+    m_TimersDestroyed = m_TimersDestroyed + 1
+End Sub
+
+Public Function GetTimerCount(Optional ByRef timersCreated As Long, Optional ByRef timersDestroyed As Long) As Long
+    timersCreated = m_TimersCreated
+    timersDestroyed = m_TimersDestroyed
+    GetTimerCount = (timersCreated - timersDestroyed)
+End Function
+
+Public Sub NotifyHookCreated()
+    m_HooksCreated = m_HooksCreated + 1
+End Sub
+
+Public Sub NotifyHookDestroyed()
+    m_HooksDestroyed = m_HooksDestroyed + 1
+End Sub
+
+Public Function GetHookCount(Optional ByRef hooksCreated As Long, Optional ByRef hooksDestroyed As Long) As Long
+    hooksCreated = m_HooksCreated
+    hooksDestroyed = m_HooksDestroyed
+    GetHookCount = (hooksCreated - hooksDestroyed)
 End Function
 
 'Edit boxes can all share the same background brush (as they are all themed identically).  Call this function instead
