@@ -74,7 +74,7 @@ Public Function LoadAllControlValues() As Boolean
     If cFile.FileExist(parentToolPath) Then
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
-        If (Not xmlEngine.LoadXMLFile(parentToolPath)) Or Not (xmlEngine.validateLoadedXMLData("toolName")) Then
+        If (Not xmlEngine.LoadXMLFile(parentToolPath)) Or Not (xmlEngine.ValidateLoadedXMLData("toolName")) Then
             Message "This form's preset file may be corrupted.  A new preset file has been created."
             ResetXMLData
         End If
@@ -89,23 +89,23 @@ Public Function LoadAllControlValues() As Boolean
 End Function
 
 Public Function SaveAllControlValues() As Boolean
-
+    
     'Write the current control values to the XML engine.  These will be loaded the next time the user uses this tool.
     FillXMLSettings
-    xmlEngine.writeXMLToFile parentToolPath
+    xmlEngine.WriteXMLToFile parentToolPath
 
 End Function
 
 'Reset the XML engine for this tool.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
 Private Function ResetXMLData()
 
-    xmlEngine.prepareNewXML "Tool preset"
-    xmlEngine.writeBlankLine
-    xmlEngine.writeTag "toolName", parentToolName
-    xmlEngine.writeTag "toolDescription", Trim$(parentForm.Caption)
-    xmlEngine.writeBlankLine
-    xmlEngine.writeComment "Everything past this point is preset values for the controls on this form."
-    xmlEngine.writeBlankLine
+    xmlEngine.PrepareNewXML "Tool preset"
+    xmlEngine.WriteBlankLine
+    xmlEngine.WriteTag "toolName", parentToolName
+    xmlEngine.WriteTag "toolDescription", Trim$(parentForm.Caption)
+    xmlEngine.WriteBlankLine
+    xmlEngine.WriteComment "Everything past this point is preset values for the controls on this form."
+    xmlEngine.WriteBlankLine
 
 End Function
 
@@ -118,15 +118,15 @@ Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used set
     'Create an XML-valid preset name here (e.g. remove spaces, etc).  The proper name will still be stored in the file,
     ' but we need a valid tag name for this section, and we need it before doing subsequent processing.
     Dim xmlSafePresetName As String
-    xmlSafePresetName = xmlEngine.getXMLSafeTagName(presetName)
+    xmlSafePresetName = xmlEngine.GetXMLSafeTagName(presetName)
     
     'Start by looking for this preset name in the file.  If it does not exist, create a new section for it.
     If Not xmlEngine.DoesTagExist("presetEntry", "id", xmlSafePresetName) Then
     
-        xmlEngine.writeTagWithAttribute "presetEntry", "id", xmlSafePresetName, "", True
-        xmlEngine.writeTag "fullPresetName", presetName
-        xmlEngine.closeTag "presetEntry"
-        xmlEngine.writeBlankLine
+        xmlEngine.WriteTagWithAttribute "presetEntry", "id", xmlSafePresetName, "", True
+        xmlEngine.WriteTag "fullPresetName", presetName
+        xmlEngine.CloseTag "presetEntry"
+        xmlEngine.WriteBlankLine
         
     End If
     
@@ -197,9 +197,9 @@ Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used set
         
             'If this control is part of a control array, we need to remember its index as well
             If controlIndex >= 0 Then
-                xmlEngine.updateTag controlName & ":" & controlIndex, controlValue, "presetEntry", "id", xmlSafePresetName
+                xmlEngine.UpdateTag controlName & ":" & controlIndex, controlValue, "presetEntry", "id", xmlSafePresetName
             Else
-                xmlEngine.updateTag controlName, controlValue, "presetEntry", "id", xmlSafePresetName
+                xmlEngine.UpdateTag controlName, controlValue, "presetEntry", "id", xmlSafePresetName
             End If
         End If
         
@@ -217,7 +217,7 @@ Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used set
         'Loop through the user data, and add each entry to the XML file
         Dim i As Long
         For i = 0 To numUserPresetEntries - 1
-            xmlEngine.updateTag "custom:" & userPresetNames(i), userPresetData(i), "presetEntry", "id", xmlSafePresetName
+            xmlEngine.UpdateTag "custom:" & userPresetNames(i), userPresetData(i), "presetEntry", "id", xmlSafePresetName
         Next i
     
     End If
@@ -244,7 +244,7 @@ End Function
 
 'This function is called when the user wants to read custom preset data from file
 Public Function RetrievePresetData(ByVal presetName As String, Optional ByVal returnValueIfMissing As String = "") As String
-    RetrievePresetData = xmlEngine.getUniqueTag_String("custom:" & presetName, returnValueIfMissing, , "presetEntry", "id", curPresetEntry)
+    RetrievePresetData = xmlEngine.GetUniqueTag_String("custom:" & presetName, returnValueIfMissing, , "presetEntry", "id", curPresetEntry)
 End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
@@ -256,7 +256,7 @@ Private Function ReadXMLSettings(Optional ByVal presetName As String = "last-use
     'Create an XML-valid preset name here (e.g. remove spaces, etc).  The proper name is stored in the file,
     ' but we need a valid tag name for this section, and we need it before doing subsequent processing.
     Dim xmlSafePresetName As String
-    xmlSafePresetName = xmlEngine.getXMLSafeTagName(presetName)
+    xmlSafePresetName = xmlEngine.GetXMLSafeTagName(presetName)
         
     'Iterate through each control on the form.  Check its type, then look for a relevant "Value" property in the
     ' saved preset file.
@@ -273,9 +273,9 @@ Private Function ReadXMLSettings(Optional ByVal presetName As String = "last-use
         'See if an entry exists for this control; note that controls that are part of an array use a unique identifier of the type
         ' controlname:controlindex
         If controlIndex >= 0 Then
-            controlValue = xmlEngine.getUniqueTag_String(controlName & ":" & controlIndex, "", , "presetEntry", "id", xmlSafePresetName)
+            controlValue = xmlEngine.GetUniqueTag_String(controlName & ":" & controlIndex, "", , "presetEntry", "id", xmlSafePresetName)
         Else
-            controlValue = xmlEngine.getUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
+            controlValue = xmlEngine.GetUniqueTag_String(controlName, "", , "presetEntry", "id", xmlSafePresetName)
         End If
         
         If Len(controlValue) <> 0 Then
@@ -371,8 +371,8 @@ End Function
 
 'This beautiful little function comes courtesy of coder Merri:
 ' http://www.vbforums.com/showthread.php?536960-RESOLVED-how-can-i-see-if-the-object-is-array-or-not
-Private Function InControlArray(Ctl As Object) As Boolean
-    InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
+Private Function InControlArray(ByRef Ctl As Object) As Boolean
+    InControlArray = Not (Ctl.Parent.Controls(Ctl.Name) Is Ctl)
 End Function
 
 Private Sub Class_Initialize()

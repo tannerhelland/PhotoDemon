@@ -233,6 +233,7 @@ Private Const WM_COMMAND As Long = &H111
 Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_CTLCOLOREDIT As Long = &H133
 Private Const WM_CTLCOLORSTATIC As Long = &H138
+Private Const WM_DESTROY As Long = &H2
 
 Private Const EN_UPDATE As Long = &H400
 Private Const EM_GETSEL As Long = &HB0
@@ -466,11 +467,11 @@ Public Property Let Text(ByRef newString As String)
     
 End Property
 
-Public Property Get TextColor() As Long
-    TextColor = m_TextColor
+Public Property Get textColor() As Long
+    textColor = m_TextColor
 End Property
 
-Public Property Let TextColor(ByVal newTextColor As Long)
+Public Property Let textColor(ByVal newTextColor As Long)
     newTextColor = Colors.ConvertSystemColor(newTextColor)
     If newTextColor <> m_TextColor Then
         m_TextColor = newTextColor
@@ -509,9 +510,6 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         If (m_EditBoxHwnd <> 0) Then curText = Text Else curText = m_TextBackup
         DestroyEditBox
         
-        'The edit box requires some GDI handles so it can auto-paint its own backgruond and text.  Create those objects now.
-        CreateEditBoxGDIObjects
-        
         'Some window style flags vary on user-editable properties; calculate those now
         Dim flagsWinStyle As Long, flagsWinStyleExtended As Long, flagsEditControl As Long
         flagsWinStyle = WS_VISIBLE Or WS_CHILD
@@ -533,41 +531,47 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
         If g_IsProgramRunning Then
             m_EditBoxHwnd = CreateWindowEx(flagsWinStyleExtended, ByVal StrPtr("EDIT"), ByVal StrPtr(""), flagsWinStyle Or flagsEditControl, _
                 x1, y1, xWidth, yHeight, parentHwnd, 0, App.hInstance, ByVal 0&)
+            If (m_EditBoxHwnd <> 0) Then UserControl_Support.NotifyAPIWindowCreated
         End If
         
-        'Now that the window exists, we need to pass it any relevant local settings
-        Me.Enabled = m_Enabled
-        Me.Visible = m_Visible
+        If (m_EditBoxHwnd <> 0) Then
         
-        'We need to subclass a number of different messages, both for the edit box window and for the parent control.
-        If g_IsProgramRunning Then
-            If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
-            If Not (cSubclass Is Nothing) Then
-                
-                'Subclass the edit box
-                cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
-                cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR
-                
-                'Subclass the parent window as well.  This is necessary for handling some update messages from the edit box.
-                If Not m_ParentHasBeenSubclassed Then
-                    m_ParentHWnd = parentHwnd
-                    cSubclass.ssc_Subclass parentHwnd, 0, 1, Me, True, True, False
-                    cSubclass.ssc_AddMsg parentHwnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_CTLCOLORSTATIC, WM_COMMAND
-                    m_ParentHasBeenSubclassed = True
+            'Now that the window exists, we need to pass it any relevant local settings
+            Me.Enabled = m_Enabled
+            Me.Visible = m_Visible
+            
+            'We need to subclass a number of different messages, both for the edit box window and for the parent control.
+            If g_IsProgramRunning Then
+                If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
+                If Not (cSubclass Is Nothing) Then
+                    
+                    'Subclass the edit box
+                    cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
+                    cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR, WM_DESTROY
+                    
+                    'Subclass the parent window as well.  This is necessary for handling some update messages from the edit box.
+                    If Not m_ParentHasBeenSubclassed Then
+                        m_ParentHWnd = parentHwnd
+                        cSubclass.ssc_Subclass parentHwnd, 0, 1, Me, True, True, False
+                        cSubclass.ssc_AddMsg parentHwnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_CTLCOLORSTATIC, WM_COMMAND
+                        m_ParentHasBeenSubclassed = True
+                    End If
+                    
+                    'Activate mouse events
+                    If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
+                    m_MouseEvents.AddInputTracker m_EditBoxHwnd, True, True, , True, , True
+                    
                 End If
-                
-                'Activate mouse events
-                If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
-                m_MouseEvents.AddInputTracker m_EditBoxHwnd, True, True, , True, , True
-                
             End If
+            
+            'Pass an appropriate font handle to the edit box; GDI will use this font for text rendering.
+            CreateEditBoxGDIObjects
+            If (m_EditBoxFont <> 0) Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
+            
+            'If the edit box had text before we killed it, restore that text now
+            If (Len(curText) <> 0) Then Text = curText
+            
         End If
-        
-        'Pass an appropriate font handle to the edit box; GDI will use this font for text rendering.
-        If (m_EditBoxHwnd <> 0) And (m_EditBoxFont <> 0) Then SendMessage m_EditBoxHwnd, WM_SETFONT, m_EditBoxFont, IIf(m_Visible, 1, 0)
-        
-        'If the edit box had text before we killed it, restore that text now
-        If Len(curText) <> 0 Then Text = curText
         
     End If
     
@@ -587,10 +591,21 @@ Public Function DestroyEditBox() As Boolean
     ReleaseEditBoxGDIObjects
         
     If (m_EditBoxHwnd <> 0) And g_IsProgramRunning Then
+    
         If Not (cSubclass Is Nothing) Then cSubclass.ssc_UnSubclass m_EditBoxHwnd
         If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
         DestroyEditBox = CBool(DestroyWindow(m_EditBoxHwnd) <> 0)
+        
+        If DestroyEditBox Then
+            UserControl_Support.NotifyAPIWindowDestroyed
+        Else
+            #If DEBUGMODE = 1 Then
+                If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  pdEditBoxW.DestroyEditBox failed.  System edit box #" & m_EditBoxHwnd & " *was not* destroyed!  DLL error was #" & Err.LastDllError
+            #End If
+        End If
+        
         m_EditBoxHwnd = 0
+        
     Else
         DestroyEditBox = True
     End If
@@ -664,12 +679,12 @@ End Sub
 Private Sub ReleaseEditBoxGDIObjects()
 
     'Release any GDI objects associated with the edit box
-    If m_EditBoxBrush <> 0 Then
+    If (m_EditBoxBrush <> 0) Then
         UserControl_Support.ReleaseSharedGDIBrushByHandle m_EditBoxBrush
         m_EditBoxBrush = 0
     End If
     
-    If m_EditBoxFont <> 0 Then
+    If (m_EditBoxFont <> 0) Then
         UserControl_Support.ReleaseSharedGDIFontByHandle m_EditBoxFont
         m_EditBoxFont = 0
     End If
@@ -1104,7 +1119,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.TextColor
+                SetTextColor wParam, Me.textColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 
@@ -1122,7 +1137,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.TextColor
+                SetTextColor wParam, Me.textColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 
@@ -1315,6 +1330,14 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If m_HasFocus Then
                 m_HasFocus = False
                 RaiseEvent LostFocusAPI
+            End If
+            
+        'Depending how our parent control is unloaded, the API edit box may receive a WM_DESTROY message before
+        ' this class is terminated.  If that happens, we'll manually invoke our own internal DestroyWindow code.
+        Case WM_DESTROY
+            If DestroyEditBox Then
+                lReturn = 0
+                bHandled = True
             End If
             
         'Other messages??

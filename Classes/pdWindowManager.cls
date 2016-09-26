@@ -506,7 +506,7 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
         
         If programIsGoingDown Then
             
-            If GetParent(targetHwnd) <> 0 Then
+            If (GetParent(targetHwnd) <> 0) Then
                 
                 'This is a dirty cheat, but basically, this function restores the initial WindowLong GWL_STYLE flags the window had
                 ' when it was first passed to the window manager.  This lets us reset the window state to whatever VB's defaults are,

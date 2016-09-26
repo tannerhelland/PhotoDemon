@@ -194,8 +194,10 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         
         'Subclass the user control immediately
         If g_IsProgramRunning Then
-            m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
-            m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SHOWWINDOW, WM_WINDOWPOSCHANGING
+            If (Not m_Subclass Is Nothing) Then
+                m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
+                m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SHOWWINDOW, WM_WINDOWPOSCHANGING
+            End If
         End If
         
         'Synchronize initial window visiblity
@@ -233,7 +235,7 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdUCSupport.RegisterControl was called with hWnd = 0."
+            If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  pdUCSupport.RegisterControl was called with hWnd = 0."
         #End If
     End If
     
@@ -261,7 +263,7 @@ Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  You can't request custom functionality prior to calling pdUCSupport.RegisterControl()!"
+            If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  You can't request custom functionality prior to calling pdUCSupport.RegisterControl()!"
         #End If
     End If
     
@@ -504,7 +506,7 @@ Public Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInterna
     
     If g_IsProgramRunning Then
         
-        m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, wMsg
+        If (Not m_Subclass Is Nothing) Then m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, wMsg
     
         'If the message is internal to PD, register the hWnd+message pair with PD's central marshaler
         If msgIsInternalToPD Then
@@ -609,7 +611,7 @@ End Function
 Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     
     'At compile-time, this event will likely be fired; because the back buffer doesn't exist, ignore the request
-    If (m_BackBuffer Is Nothing) Or m_NoBackBufferMode Then Exit Sub
+    If (m_BackBuffer Is Nothing) Or m_NoBackBufferMode Or g_ProgramShuttingDown Then Exit Sub
     
     'We only want to recreate the buffer when absolutely necessary, so start with a size check.
     Dim bufferWasResized As Boolean
@@ -1196,16 +1198,16 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    
+
     UserControl_Support.DecrementPDControlCount
-    
+
     'Release all subclassing now.  Note that the order in which we do this is important - don't change it!
-    
+
     'Release custom functionality first, in reverse-order
     If Not (m_Caption Is Nothing) Then Set m_Caption = Nothing
     If Not (m_KeyEvents Is Nothing) Then Set m_KeyEvents = Nothing
     If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
-    
+
     'Release default functionality next, also in reverse-order
     If Not (m_MoveSize Is Nothing) Then Set m_MoveSize = Nothing
     If Not (m_FocusDetector Is Nothing) Then Set m_FocusDetector = Nothing
@@ -1213,13 +1215,16 @@ Private Sub Class_Terminate()
     
     'As a final step, release this class's internal subclasser
     If Not (m_Subclass Is Nothing) Then
-        If g_IsProgramRunning Then m_Subclass.ssc_Terminate
+        If g_IsProgramRunning Then
+            m_Subclass.ssc_UnSubclass m_hWnd
+            m_Subclass.ssc_Terminate
+        End If
         Set m_Subclass = Nothing
     End If
-    
+
     'If the user control was registered for internal PD messages, de-register it with PD's central marshaler.
     If m_CustomInternalMessagesActive Then UserControl_Support.RemoveMessageRecipient m_hWnd
-    
+
 End Sub
 
 'All messages subclassed by m_Subclass are handled here.
@@ -1250,48 +1255,52 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     
     Dim initVisibility As Boolean
     
-    Select Case uMsg
-        
-        'WM_WINDOWPOSCHANGING covers some visibility change cases that WM_SHOWWINDOW does not;
-        ' see http://blogs.msdn.com/b/oldnewthing/archive/2008/01/15/7113860.aspx for details
-        Case WM_WINDOWPOSCHANGING
+    If (Not g_ProgramShuttingDown) Then
+    
+        Select Case uMsg
             
-            initVisibility = m_Visibility
-            
-            Dim tmpWindowPos As tagWINDOWPOS
-            CopyMemory ByVal VarPtr(tmpWindowPos), ByVal lParam, Len(tmpWindowPos)
-            
-            If (tmpWindowPos.wFlags And SWP_HIDEWINDOW) <> 0 Then m_Visibility = False
-            If (tmpWindowPos.wFlags And SWP_SHOWWINDOW) <> 0 Then
+            'WM_WINDOWPOSCHANGING covers some visibility change cases that WM_SHOWWINDOW does not;
+            ' see http://blogs.msdn.com/b/oldnewthing/archive/2008/01/15/7113860.aspx for details
+            Case WM_WINDOWPOSCHANGING
                 
-                m_Visibility = True
+                initVisibility = m_Visibility
+                
+                Dim tmpWindowPos As tagWINDOWPOS
+                CopyMemory ByVal VarPtr(tmpWindowPos), ByVal lParam, Len(tmpWindowPos)
+                
+                If (tmpWindowPos.wFlags And SWP_HIDEWINDOW) <> 0 Then m_Visibility = False
+                If (tmpWindowPos.wFlags And SWP_SHOWWINDOW) <> 0 Then
+                    
+                    m_Visibility = True
+                    
+                    'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
+                    ' one before the control is actually shown.)
+                    If (m_RedrawRequestCount > 0) Then AskForARepaint True, True
+                    
+                End If
+                
+                'Finally, notify the parent of the pending visibility change (if any)
+                If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
+                
+            Case WM_SHOWWINDOW
+                
+                initVisibility = m_Visibility
+                m_Visibility = CBool(wParam <> 0)
                 
                 'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
                 ' one before the control is actually shown.)
-                If (m_RedrawRequestCount > 0) Then AskForARepaint True, True
+                If m_Visibility And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
                 
-            End If
-            
-            'Finally, notify the parent of the pending visibility change (if any)
-            If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
-            
-        Case WM_SHOWWINDOW
-            
-            initVisibility = m_Visibility
-            m_Visibility = CBool(wParam <> 0)
-            
-            'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
-            ' one before the control is actually shown.)
-            If m_Visibility And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
-            
-            'Finally, notify the parent of the pending visibility change
-            If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
-            
-        'All other messages are custom requests from the window.  Use them to raise custom message events.
-        Case Else
-            RaiseEvent CustomMessage(uMsg, wParam, lParam, bHandled, lReturn)
+                'Finally, notify the parent of the pending visibility change
+                If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
+                
+            'All other messages are custom requests from the window.  Use them to raise custom message events.
+            Case Else
+                RaiseEvent CustomMessage(uMsg, wParam, lParam, bHandled, lReturn)
+        
+        End Select
     
-    End Select
+    End If
     
     bHandled = False
 

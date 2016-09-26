@@ -345,9 +345,13 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 gdiUsageString = Format$(curGDIObjects, "###,##0")
                 userUsageString = Format$(curUserObjects, "###,##0")
                 
+                Dim apiWindowsCreated As Long, apiWindowsDestroyed As Long, apiWindowsNet As Long, apiWindowUsage As String
+                apiWindowsNet = UserControl_Support.GetAPIWindowCount(apiWindowsCreated, apiWindowsDestroyed)
+                apiWindowUsage = Format$(apiWindowsNet, "###,##0") & " (" & Format$(apiWindowsCreated, "###,##0") & ":" & Format$(apiWindowsDestroyed, "###,##0") & ")"
+                
                 'Ignore the supplied action string, and create our own
                 actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString _
-                                & " | GDI: " & gdiUsageString & " | USER: " & userUsageString
+                                & " | GDI: " & gdiUsageString & " | USER: " & userUsageString & " | HWNDS: " & apiWindowUsage
                 
                 'Also report some internal program object counts (memory DCs, hFonts, etc)
                 Dim dcCountString As String
@@ -364,6 +368,12 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 dibCountString = Format$(g_DIBsCreated - g_DIBsDestroyed, "###,##0")
                 dibCountString = dibCountString & "(" & Format$(g_DIBsCreated, "###,##0") & ":" & Format$(g_DIBsDestroyed, "###,##0") & ")"
                 actionString = actionString & " | DIBS: " & dibCountString
+                
+                Dim icoUsageString As String
+                Dim icosNet As Long, icosCreated As Long, icosDestroyed As Long
+                icosNet = Icons_and_Cursors.GetCreatedIconCount(icosCreated, icosDestroyed)
+                icoUsageString = Format$(icosNet, "###,##0") & " (" & Format$(icosCreated, "###,##0") & ":" & Format$(icosDestroyed, "###,##0") & ")"
+                actionString = actionString & " | ICONS: " & icoUsageString
                 
             Else
                 actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."
