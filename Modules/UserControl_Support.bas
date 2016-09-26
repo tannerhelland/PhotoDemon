@@ -102,6 +102,9 @@ Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal h
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 Private m_CurrentDropDownHWnd As Long, m_CurrentDropDownListHWnd As Long
 
+'To better manage resources, we also track how many API windows we've created/destroyed during this session
+Private m_APIWindowsCreated As Long, m_APIWindowsDestroyed As Long
+
 'Because there can only be one visible tooltip at a time, this support module is a great place to handle them.  Requests for new
 ' tooltips automatically unload old ones, although user controls still need to request tooltip hiding when they lose focus and/or
 ' are unloaded.
@@ -383,6 +386,20 @@ Public Sub RemoveMessageRecipient(ByVal targetHwnd As Long)
     Next i
     
 End Sub
+
+Public Sub NotifyAPIWindowCreated()
+    m_APIWindowsCreated = m_APIWindowsCreated + 1
+End Sub
+
+Public Sub NotifyAPIWindowDestroyed()
+    m_APIWindowsDestroyed = m_APIWindowsDestroyed + 1
+End Sub
+
+Public Function GetAPIWindowCount(Optional ByRef windowsCreated As Long, Optional ByRef windowsDestroyed As Long) As Long
+    windowsCreated = m_APIWindowsCreated
+    windowsDestroyed = m_APIWindowsDestroyed
+    GetAPIWindowCount = (windowsCreated - windowsDestroyed)
+End Function
 
 'Edit boxes can all share the same background brush (as they are all themed identically).  Call this function instead
 ' of creating your own brush for every text box instance.

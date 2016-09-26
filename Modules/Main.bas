@@ -729,6 +729,7 @@ Public Sub FinalShutdown()
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "All human-written code complete.  Shutting down pdDebug and exiting gracefully."
+        pdDebug.LogAction "Final memory report", PDM_MEM_REPORT
         pdDebug.TerminateDebugger
         Set pdDebug = Nothing
     #End If

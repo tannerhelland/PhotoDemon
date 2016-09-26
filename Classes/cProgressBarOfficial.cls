@@ -95,7 +95,10 @@ Public Function CreateProgressBar(ByVal ContainerHwnd As Long, _
                         
     ' creates an API progress bar
     Dim lStyle As Long
-    If m_hWnd Then DestroyWindow m_hWnd: m_hWnd = 0&
+    If m_hWnd Then
+        If (DestroyWindow(m_hWnd) <> 0) Then UserControl_Support.NotifyAPIWindowDestroyed
+        m_hWnd = 0&
+    End If
     
     If Visible = True Then lStyle = WS_VISIBLE
     If Horizontal = False Then lStyle = lStyle Or PBS_VERTICAL
@@ -112,6 +115,10 @@ Public Function CreateProgressBar(ByVal ContainerHwnd As Long, _
         m_BackColor = m_ForeColor
         m_Speed = 30
         CreateProgressBar = True
+        UserControl_Support.NotifyAPIWindowCreated
+        #If DEBUGMODE = 1 Then
+            If (Not pdDebug Is Nothing) Then pdDebug.LogAction "Creating system progress bar..."
+        #End If
     End If
     
 End Function
@@ -346,7 +353,7 @@ Private Sub pvCopyBarProperties(Horizontal As Boolean, ByVal Smooth As Boolean, 
             m_hWnd = oldHwnd: lProp = Me.MarqueePaused: m_hWnd = newHwnd: Me.MarqueePaused = lProp
         End If
         m_hWnd = oldHwnd: lProp = Me.Visible: m_hWnd = newHwnd: Me.Visible = lProp
-        DestroyWindow oldHwnd
+        If (DestroyWindow(oldHwnd) <> 0) Then UserControl_Support.NotifyAPIWindowDestroyed
     Else
         m_hWnd = oldHwnd
     End If
@@ -355,5 +362,7 @@ End Sub
 
 
 Private Sub Class_Terminate()
-    If m_hWnd Then DestroyWindow m_hWnd
+    If m_hWnd Then
+        If (DestroyWindow(m_hWnd) <> 0) Then UserControl_Support.NotifyAPIWindowDestroyed
+    End If
 End Sub

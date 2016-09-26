@@ -941,7 +941,10 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    'Manually release any remaining classes
+    'Manually release any remaining classes and/or resources
+    Icons_and_Cursors.ReleaseIcon Me.curFormIcon16
+    Icons_and_Cursors.ReleaseIcon Me.curFormIcon32
+    
     Set imgCompositor = Nothing
     Set imgViewport = Nothing
     If (Not undoManager Is Nothing) Then Set undoManager.parentPDImage = Nothing

@@ -68,7 +68,7 @@ Private Type ICONINFO
 End Type
 
 'Used to apply and manage custom cursors (without subclassing)
-Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
+Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
 
@@ -104,6 +104,9 @@ Private customCursorHandles() As Long
 Private Const INITIAL_ICON_CACHE_SIZE As Long = 16
 Private m_numOfIcons As Long
 Private m_iconHandles() As Long
+
+'As of v7.0, icon creation and destruction is tracked locally.
+Private m_IconsCreated As Long, m_IconsDestroyed As Long
 
 'This constant is used for testing only.  It should always be set to TRUE for production code.
 Private Const ALLOW_DYNAMIC_ICONS As Boolean = True
@@ -667,7 +670,7 @@ Public Sub ResetMenuIcons()
             
                 'If the file exists, add it to the MRU icon handler
                 If cFile.FileExist(tmpFilename) Then
-                        
+                    
                     iconLocation = iconLocation + 1
                     cMRUIcons.AddImageFromFile tmpFilename
                     cMRUIcons.PutImageToVBMenu iconLocation, i, 0, 2
@@ -717,7 +720,7 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
         fi_DIB = FreeImage_RescaleByPixel(fi_DIB, iconSize, iconSize, True, FILTER_BILINEAR)
     End If
     
-    If fi_DIB <> 0 Then
+    If (fi_DIB <> 0) Then
     
         'Icon generation has a number of quirks.  One is that even if you want a 32bpp icon, you still must supply a blank
         ' monochrome mask for the icon, even though the API just discards it.  Prepare such a mask now.
@@ -734,7 +737,7 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
             .hbmColor = FreeImage_GetBitmapForDevice(fi_DIB)
         End With
         
-        GetIconFromDIB = CreateIconIndirect(icoInfo)
+        GetIconFromDIB = CreateNewIcon(icoInfo)
         
         'Delete the temporary monochrome mask and DDB
         DeleteObject monoBmp
@@ -778,14 +781,32 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
         'Set the new icons, then free the old ones
         srcImage.curFormIcon32 = hIcon32
         srcImage.curFormIcon16 = hIcon16
-        If (oldIcon32 <> 0) Then DestroyIcon oldIcon32
-        If (oldIcon16 <> 0) Then DestroyIcon oldIcon16
+        If (oldIcon32 <> 0) Then ReleaseIcon oldIcon32
+        If (oldIcon16 <> 0) Then ReleaseIcon oldIcon16
         
     Else
         Debug.Print "WARNING!  Image refused to provide a thumbnail!"
     End If
 
 End Sub
+
+Private Function CreateNewIcon(ByRef icoStruct As ICONINFO) As Long
+    CreateNewIcon = CreateIconIndirect(icoStruct)
+    If ((CreateNewIcon <> 0) And icoStruct.fIcon) Then m_IconsCreated = m_IconsCreated + 1
+End Function
+
+Public Sub ReleaseIcon(ByVal hIcon As Long)
+    If (hIcon <> 0) Then
+        DestroyIcon hIcon
+        m_IconsDestroyed = m_IconsDestroyed + 1
+    End If
+End Sub
+
+Public Function GetCreatedIconCount(Optional ByRef iconsCreated As Long, Optional ByRef iconsDestroyed As Long) As Long
+    iconsCreated = m_IconsCreated
+    iconsDestroyed = m_IconsDestroyed
+    GetCreatedIconCount = m_IconsCreated - m_IconsDestroyed
+End Function
 
 'Needs to be run only once, at the start of the program
 Public Sub InitializeIconHandler()
@@ -807,11 +828,11 @@ End Sub
 'Remove all icons generated since the program launched
 Public Sub DestroyAllIcons()
 
-    If m_numOfIcons = 0 Then Exit Sub
+    If (m_numOfIcons = 0) Then Exit Sub
     
     Dim i As Long
     For i = 0 To m_numOfIcons - 1
-        If m_iconHandles(i) <> 0 Then DestroyIcon m_iconHandles(i)
+        If m_iconHandles(i) <> 0 Then ReleaseIcon m_iconHandles(i)
     Next i
     
     'Reinitialize the icon handler, which will also reset the icon count and handle array
@@ -909,7 +930,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
         End With
                     
         'Create the cursor
-        CreateCursorFromResource = CreateIconIndirect(icoInfo)
+        CreateCursorFromResource = CreateNewIcon(icoInfo)
         
         'Release our temporary mask and resource container, as Windows has now made its own copies
         DeleteObject monoBmp
@@ -1016,13 +1037,13 @@ Public Function RequestCustomCursor(ByVal CursorName As String, Optional ByVal c
         Dim tmpHandle As Long
         tmpHandle = CreateCursorFromResource(CursorName, cursorHotspotX, cursorHotspotY)
         
-        ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
-        ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long
-        
-        customCursorNames(numOfCustomCursors) = CursorName
-        customCursorHandles(numOfCustomCursors) = tmpHandle
-        
-        numOfCustomCursors = numOfCustomCursors + 1
+        If (tmpHandle <> 0) Then
+            ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
+            ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long
+            customCursorNames(numOfCustomCursors) = CursorName
+            customCursorHandles(numOfCustomCursors) = tmpHandle
+            numOfCustomCursors = numOfCustomCursors + 1
+        End If
         
         RequestCustomCursor = tmpHandle
     End If

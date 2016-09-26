@@ -5,7 +5,7 @@ Begin VB.Form FormMain
    ClientHeight    =   11130
    ClientLeft      =   1290
    ClientTop       =   1065
-   ClientWidth     =   18900
+   ClientWidth     =   15510
    DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -22,7 +22,7 @@ Begin VB.Form FormMain
    OLEDropMode     =   1  'Manual
    ScaleHeight     =   742
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1260
+   ScaleWidth      =   1034
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
@@ -2947,6 +2947,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Hide the main window to make it appear as if we shut down quickly
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown initiated"
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     Me.Visible = False
@@ -2955,6 +2956,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Cancel any pending downloads
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Checking for (and terminating) any in-progress downloads..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     Me.asyncDownloader.Reset
@@ -2962,6 +2964,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Allow any objects on this form to save preferences and other user data
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Asking all FormMain components to write out final user preference values..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     FormMain.mainCanvas(0).WriteUserPreferences
@@ -2971,6 +2974,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ' copy of all supported formats - for this reason, this step may be a little slow.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutting down clipboard manager..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     If g_Clipboard.IsPDDataOnClipboard And g_IsProgramCompiled Then
@@ -2988,12 +2992,14 @@ Private Sub Form_Unload(Cancel As Integer)
         ExifTool.TerminateExifTool
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "ExifTool terminated"
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
         #End If
     End If
         
     'Perform any printer-related cleanup
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Removing printer temp files..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     Printing.PerformPrinterCleanup
@@ -3001,6 +3007,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Stop tracking hotkeys
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Turning off hotkey manager..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     pdHotkeys.DeactivateHook True
@@ -3009,6 +3016,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Destroy all custom-created form icons
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Destroying custom icons for this session..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     DestroyAllIcons
@@ -3016,6 +3024,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Release the hand cursor we use for all clickable objects
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading custom cursors for this session..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     UnloadAllCursors
@@ -3025,6 +3034,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ' the problematic image anyway.)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Saving recent file list..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     g_RecentFiles.MRU_SaveToFile
@@ -3033,6 +3043,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Restore the user's font smoothing setting as necessary.  (Only relevant on XP.)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Restoring ClearType settings (if any)..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     HandleClearType False
@@ -3040,6 +3051,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Release any Win7-specific features
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Releasing custom Windows 7 features..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     ReleaseWin7Features
@@ -3047,6 +3059,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Tool panels are forms that we manually embed inside other forms.  Manually unload them now.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading tool panels..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
@@ -3071,7 +3084,8 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'With all tool panels unloaded, unload all toolboxes as well
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Unloading toolboxes.."
+        pdDebug.LogAction "Unloading toolboxes..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     Unload toolbar_Layers
@@ -3084,6 +3098,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'Release this form from the window manager, and write out all window data to file
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutting down window manager..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     g_WindowManager.UnregisterForm Me
@@ -3092,6 +3107,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'As a final failsafe, forcibly unload any remaining forms
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Forcibly unloading any remaining forms..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     Dim tmpForm As Form
@@ -3113,6 +3129,7 @@ Private Sub Form_Unload(Cancel As Integer)
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Update_Support.patchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
+                pdDebug.LogAction vbNullString, PDM_MEM_REPORT
             #End If
             
             'If the user wants a restart, create a restart batch file now
@@ -3128,6 +3145,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ' it can compare its version against this value, to infer if an update occurred.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Writing session data to file..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     g_UserPreferences.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
@@ -3135,6 +3153,7 @@ Private Sub Form_Unload(Cancel As Integer)
     'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Final step: writing out new autosave checksum..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     Autosave_Handler.PurgeOldAutosaveData
@@ -3142,6 +3161,7 @@ Private Sub Form_Unload(Cancel As Integer)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to MainModule.FinalShutdown()..."
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
     #End If
     
     MainModule.FinalShutdown

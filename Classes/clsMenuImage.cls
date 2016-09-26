@@ -69,7 +69,7 @@ Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVe
 Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
-Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef Image As Long) As Long
+Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal fileName As Long, ByRef Image As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
@@ -643,43 +643,16 @@ AddIconFromHandle_Error:
 End Function
 
 
-Public Function AddImageFromFile(ByVal FileName As String, Optional bGhosted As Boolean) As Boolean
+Public Function AddImageFromFile(ByVal fileName As String, Optional bGhosted As Boolean) As Boolean
 
     On Local Error GoTo AddImageFromFile_Error
     
-    Dim hIcon As Long
-    Dim FileType As String
-    Dim hBmp As Long
     Dim hImage As Long
-    
-    FileType = UCase(Right(FileName, 3))
-    
-    If FileType = "ICO" Or FileType = "CUR" Then
-
-        hIcon = LoadImage(App.hInstance, FileName, IMAGE_ICON, m_lWidth, m_lHeight, LR_LOADFROMFILE)
-        
-        If hIcon <> 0 Then
-            If IsAlphaIcon(hIcon) Then
-                hImage = AlphaIconToBmp(hIcon, hBmp)
-            Else
-                GdipCreateBitmapFromHICON hIcon, hImage
-            End If
-            
-            DestroyIcon hIcon
-        End If
-        
-    Else
-    
-        Call GdipLoadImageFromFile(StrPtr(FileName), hImage)
-        
-    End If
-    
+    Call GdipLoadImageFromFile(StrPtr(fileName), hImage)
     AddImageFromFile = pvAddImagen(hImage, bGhosted)
     
-    If hBmp <> 0 Then GdipDisposeImage hBmp
-
 AddImageFromFile_Error:
-    
+
 End Function
 
 
