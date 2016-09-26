@@ -92,12 +92,27 @@ End Function
 'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
 Public Function GetMemoryDC() As Long
     GetMemoryDC = CreateCompatibleDC(0&)
-    g_DCsCreated = g_DCsCreated + 1
+    If (GetMemoryDC <> 0) Then
+        g_DCsCreated = g_DCsCreated + 1
+    Else
+        #If DEBUGMODE = 1 Then
+            If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  GDI.GetMemoryDC() failed to create a compatible DC.  DLL Error: #" & Err.LastDllError
+        #End If
+    End If
 End Function
 
 Public Sub FreeMemoryDC(ByVal srcDC As Long)
-    If (srcDC <> 0) Then DeleteDC srcDC
-    g_DCsDestroyed = g_DCsDestroyed + 1
+    If (srcDC <> 0) Then
+        Dim failsafeCheck As Boolean
+        failsafeCheck = CBool(DeleteDC(srcDC) <> 0)
+        If failsafeCheck Then
+            g_DCsDestroyed = g_DCsDestroyed + 1
+        Else
+            #If DEBUGMODE = 1 Then
+                If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release the requested DC.  DLL Error: #" & Err.LastDllError
+            #End If
+        End If
+    End If
 End Sub
 
 Public Sub ForceGDIFlush()

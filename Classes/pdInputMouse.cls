@@ -407,49 +407,54 @@ Public Function AddInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
     End If
     
     'Attach the subclasser to this hWnd
-    If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me, , targetWindowIsAPI, targetWindowIsAPI) Then
-        
-        Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHwnd & ".  Fix it!"
-        AddInputTracker = False
-        Exit Function
+    If (Not (cSubclass Is Nothing)) Then
     
-    End If
-        
-    'Subclassing was successful.  Add all relevant mouse messages.
-    ' (Note that we subclass MouseMove events even if the user doesn't want these events returned; this is
-    ' used to generate MouseEnter/Leave events.)
-    If Not disregardWheelEvents Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
-    
-    'Set any optional event subclassing as well
-    If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
-    If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_APPCOMMAND
-    If alsoTrackStandardMouseEvents Then
-        
-        'Mouse down...
-        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
-        
-        'Mouse up...
-        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
-        
-        'Double-clicks (including X-buttons)...
-        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
-        
-    End If
-    
-    'Cursor duties require response to WM_SETCURSOR
-    If alsoHandleCursorDuties Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_SETCURSOR
+        If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me, , targetWindowIsAPI, targetWindowIsAPI) Then
             
-    'If enter, leave, and hover events are desired, start mouse tracking now
-    If alsoTrackMouseEnterLeave Then
-    
-        If RequestMouseTrackingForHwnd(targetHwnd) Then
-            m_MouseTrackingActive(m_hWndCount - 1) = True
-        Else
-            
-            Debug.Print "WARNING: couldn't get Windows to track mouse events for hWnd #" & targetHwnd & ".  Fix it!"
+            Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHwnd & ".  Fix it!"
             AddInputTracker = False
             Exit Function
+        
+        End If
+        
+        
+        'Subclassing was successful.  Add all relevant mouse messages.
+        ' (Note that we subclass MouseMove events even if the user doesn't want these events returned; this is
+        ' used to generate MouseEnter/Leave events.)
+        If Not disregardWheelEvents Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
+        
+        'Set any optional event subclassing as well
+        If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
+        If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_APPCOMMAND
+        If alsoTrackStandardMouseEvents Then
+            
+            'Mouse down...
+            cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
+            
+            'Mouse up...
+            cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
+            
+            'Double-clicks (including X-buttons)...
+            cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
+            
+        End If
+        
+        'Cursor duties require response to WM_SETCURSOR
+        If alsoHandleCursorDuties Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_SETCURSOR
                 
+        'If enter, leave, and hover events are desired, start mouse tracking now
+        If alsoTrackMouseEnterLeave Then
+        
+            If RequestMouseTrackingForHwnd(targetHwnd) Then
+                m_MouseTrackingActive(m_hWndCount - 1) = True
+            Else
+                
+                Debug.Print "WARNING: couldn't get Windows to track mouse events for hWnd #" & targetHwnd & ".  Fix it!"
+                AddInputTracker = False
+                Exit Function
+                    
+            End If
+            
         End If
         
     End If

@@ -84,6 +84,7 @@ Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Lo
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Const WM_SHOWWINDOW As Long = &H18&
 Private Const WM_WINDOWPOSCHANGING As Long = &H46&
+Private Const WM_DESTROY As Long = &H2
 
 Private m_Subclass As cSelfSubHookCallback
 Private WithEvents m_MouseEvents As pdInputMouse
@@ -196,7 +197,7 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         If g_IsProgramRunning Then
             If (Not m_Subclass Is Nothing) Then
                 m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
-                m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SHOWWINDOW, WM_WINDOWPOSCHANGING
+                m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SHOWWINDOW, WM_WINDOWPOSCHANGING, WM_DESTROY
             End If
         End If
         
@@ -288,9 +289,9 @@ Public Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
         End If
         
     Else
-        #If DEBUGMODE = 1 Then
-            If Not (pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
-        #End If
+        '#If DEBUGMODE = 1 Then
+        '    If Not (pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
+        '#End If
     End If
     
 End Sub
@@ -1028,15 +1029,15 @@ Public Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boo
 End Function
 
 Public Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
-    m_MouseEvents.SetSystemCursor standardCursorType
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetSystemCursor standardCursorType
 End Sub
 
 Public Sub RequestCursor_PNG(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
-    m_MouseEvents.SetPNGCursor pngResourceName, cursorHotspotX, cursorHotspotY
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetPNGCursor pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
 Public Sub RequestMousePosition(ByVal mouseX As Double, ByVal mouseY As Double)
-    m_MouseEvents.MoveCursorToNewPosition mouseX, mouseY
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.MoveCursorToNewPosition mouseX, mouseY
 End Sub
 
 'Want a new control size?  No problem.  Request a resize here.  Missing width/height parameters will be set to match the
@@ -1198,11 +1199,33 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-
+    
+    'Release all subclassing now.
+    StopAllSubclassing
+    
+    'As a final step, release this class's internal subclasser
+    If Not (m_Subclass Is Nothing) Then
+        If g_IsProgramRunning Then
+            m_Subclass.ssc_UnSubclass m_hWnd
+            m_Subclass.ssc_Terminate
+        End If
+        Set m_Subclass = Nothing
+    End If
+    
     UserControl_Support.DecrementPDControlCount
+    
+End Sub
 
-    'Release all subclassing now.  Note that the order in which we do this is important - don't change it!
-
+'Release all internal classes where subclassing may be active.  Note that order may be important here - do not change it
+' without careful study of the order that the classes are created!
+Private Sub StopAllSubclassing()
+    
+    'If the user control was registered for internal PD messages, de-register it with PD's central marshaler.
+    If m_CustomInternalMessagesActive Then
+        UserControl_Support.RemoveMessageRecipient m_hWnd
+        m_CustomInternalMessagesActive = False
+    End If
+    
     'Release custom functionality first, in reverse-order
     If Not (m_Caption Is Nothing) Then Set m_Caption = Nothing
     If Not (m_KeyEvents Is Nothing) Then Set m_KeyEvents = Nothing
@@ -1213,18 +1236,6 @@ Private Sub Class_Terminate()
     If Not (m_FocusDetector Is Nothing) Then Set m_FocusDetector = Nothing
     If Not (m_WindowPainter Is Nothing) Then Set m_WindowPainter = Nothing
     
-    'As a final step, release this class's internal subclasser
-    If Not (m_Subclass Is Nothing) Then
-        If g_IsProgramRunning Then
-            m_Subclass.ssc_UnSubclass m_hWnd
-            m_Subclass.ssc_Terminate
-        End If
-        Set m_Subclass = Nothing
-    End If
-
-    'If the user control was registered for internal PD messages, de-register it with PD's central marshaler.
-    If m_CustomInternalMessagesActive Then UserControl_Support.RemoveMessageRecipient m_hWnd
-
 End Sub
 
 'All messages subclassed by m_Subclass are handled here.
@@ -1255,7 +1266,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     
     Dim initVisibility As Boolean
     
-    If (Not g_ProgramShuttingDown) Then
+    'If (Not g_ProgramShuttingDown) Then
     
         Select Case uMsg
             
@@ -1294,13 +1305,16 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Finally, notify the parent of the pending visibility change
                 If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
                 
+            Case WM_DESTROY
+                StopAllSubclassing
+            
             'All other messages are custom requests from the window.  Use them to raise custom message events.
             Case Else
                 RaiseEvent CustomMessage(uMsg, wParam, lParam, bHandled, lReturn)
         
         End Select
     
-    End If
+    'End If
     
     bHandled = False
 

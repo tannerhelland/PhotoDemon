@@ -555,7 +555,7 @@ End Sub
 ' in the resource file.  If the icon has already been loaded, it won't be loaded again; instead, the function will check the list
 ' of loaded icons and automatically fill in the numeric identifier as necessary.
 Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
-
+    
     Dim i As Long
     Dim iconLocation As Long
     Dim iconAlreadyLoaded As Boolean
@@ -928,7 +928,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
             .hbmMask = monoBmp
             .hbmColor = resDIB.GetDIBHandle
         End With
-                    
+        
         'Create the cursor
         CreateCursorFromResource = CreateNewIcon(icoInfo)
         
@@ -1139,9 +1139,17 @@ End Function
 'PD will automatically update its taskbar icon to reflect the current image being edited.  I find this especially helpful
 ' when multiple PD sessions are operating in parallel.
 Public Sub ChangeAppIcons(ByVal hIconSmall As Long, ByVal hIconLarge As Long)
+    
     If (Not ALLOW_DYNAMIC_ICONS) Then Exit Sub
-    SendMessageA FormMain.hWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall
-    SendMessageA FormMain.hWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge
+    Dim oldHIconL As Long, oldHIconS As Long
+    oldHIconS = SendMessageA(FormMain.hWnd, WM_SETICON, ICON_SMALL, ByVal hIconSmall)
+    oldHIconL = SendMessageA(FormMain.hWnd, WM_SETICON, ICON_BIG, ByVal hIconLarge)
+    
+    'Generally speaking, you want to destroy the old icons after a change, but we track (and manage)
+    ' these values internally, so there's no need to destroy icons at WM_SETICON time.
+    'If (oldHIconS <> 0) Then DestroyIcon oldHIconS
+    'If (oldHIconL <> 0) Then DestroyIcon oldHIconL
+    
 End Sub
 
 'When loading a modal dialog, the dialog will not have an icon by default.  We can assign an icon at run-time to ensure that icons
@@ -1163,7 +1171,7 @@ End Sub
 
 'When all images are unloaded (or when the program is first loaded), we must reset the program icon to its default values.
 Public Sub ResetAppIcons()
-
+    
     If (m_DefaultIconLarge = 0) Then
         m_DefaultIconLarge = LoadImageAsString(App.hInstance, "AAA", IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), LR_SHARED)
     End If

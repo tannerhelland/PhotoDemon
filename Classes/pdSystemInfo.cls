@@ -835,13 +835,13 @@ Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = F
     Dim procHandle As Long
     procHandle = GetPhotoDemonProcessHandle()
         
-    If procHandle <> 0 Then
+    If (procHandle <> 0) Then
                 
         'Attempt to retrieve process memory information
         Dim procMemInfo As PROCESS_MEMORY_COUNTERS
         procMemInfo.cb = LenB(procMemInfo)
         
-        If GetProcessMemoryInfo(procHandle, procMemInfo, procMemInfo.cb) <> 0 Then
+        If (GetProcessMemoryInfo(procHandle, procMemInfo, procMemInfo.cb) <> 0) Then
             
             If returnPeakValue Then
                 GetPhotoDemonMemoryUsage = procMemInfo.PeakWorkingSetSize / 1024
@@ -890,7 +890,7 @@ End Function
 Public Function GetPhotoDemonMasterHWnd() As Long
 
     'If we already grabbed the hWnd this session, we can skip right to the end
-    If m_ThunderMainHwnd = 0 Then
+    If (m_ThunderMainHwnd = 0) Then
         
         'If one or more forms exist, we can retrieve ThunderMain directly by grabbing the owner handle of any open form.
         If Forms.Count Then
