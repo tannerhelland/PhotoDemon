@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.1908</langversion>
+<langversion>6.8.1930</langversion>
 <langstatus>Abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -260,7 +260,7 @@
 
 <phrase>
 <original>Failed to start plugin service (couldn't create process: %1).</original>
-<translation>Start des Plugin-Dienstes fehlgeschlagen (konnte nicht erstellen Prozess: %1).</translation>
+<translation>Start des Plugin-Dienstes fehlgeschlagen (Prozess konnte nicht erstellt werden: %1).</translation>
 </phrase>
 
 <!-- Plugin_ExifTool.bas contains 15 phrases. 3 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -717,7 +717,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Image is already trimmed.  (No changes were made to the image.)</original>
-<translation>Bild ist bereits getrimmt. (Keine Anderungen wurden an dem Bild vorgenommen.)</translation>
+<translation>Bild ist bereits getrimmt. (Es wurden keine Anderungen an dem Bild vorgenommen.)</translation>
 </phrase>
 
 <phrase>
@@ -3852,7 +3852,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Exit this tool.  No changes will be made to the image.</original>
-<translation>Dieses Tool beenden. Am Bild werden keine Veränderungen vorgenommen.</translation>
+<translation>Dieses Tool beenden. Es werden keine Änderungen an dem Bild vorgenommen.</translation>
 </phrase>
 
 <phrase>
@@ -4469,12 +4469,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Process</original>
-<translation>Fortschritt</translation>
+<translation>Prozess</translation>
 </phrase>
 
 <phrase>
 <original>Repair</original>
-<translation>Reparieren</translation>
+<translation>Reparatur</translation>
 </phrase>
 
 <phrase>
@@ -5619,7 +5619,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Developers</original>
-<translation>Developer</translation>
+<translation>Entwickler</translation>
 </phrase>
 
 <phrase>
@@ -5629,12 +5629,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Light theme</original>
-<translation>Thema Light</translation>
+<translation>Thema Hell</translation>
 </phrase>
 
 <phrase>
 <original>Dark theme</original>
-<translation>Thema Dark</translation>
+<translation>Thema Dunkel</translation>
 </phrase>
 
 <phrase>
@@ -10388,7 +10388,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Repairs complete.  %1 files repaired.</original>
-<translation>Reparaturen fertiggestellt. %1 Dateien repariert.</translation>
+<translation>Reparaturen fertiggestellt. %1 Datei(en) repariert.</translation>
 </phrase>
 
 <phrase>
@@ -10626,7 +10626,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>Cancel batch processing</original>
-<translation>Batch-Processing abbrechen</translation>
+<translation>Batchverarbeitung abbrechen</translation>
 </phrase>
 
 <phrase>
@@ -10815,12 +10815,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation>Schritt 5: Warten Sie, bis das Batch-Processing beendet ist</translation>
+<translation>Schritt 5: Warten Sie, bis die Batchverarbeitung beendet ist</translation>
 </phrase>
 
 <phrase>
 <original>Batch processing is now underway.</original>
-<translation>Batch-Processing ist nun im Gange.</translation>
+<translation>Batchverarbeitung ist nun im Gange.</translation>
 </phrase>
 
 <phrase>
@@ -10830,7 +10830,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You can cancel batch processing at any time by pressing the "Cancel" button in the bottom-right corner.  If you choose to cancel, any processed images will still be present in the output folder, so you may need to remove them manually.</original>
-<translation>Sie können das Batch-Processing jederzeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie "Abbrechen" wählen, werden alle verarbeiteten Bilder dennoch im Ausgabeordner vorhanden sein, sodass Sie diese manuell entfernen müssen.</translation>
+<translation>Sie können die Batchverarbeitung jederzeit abbrechen, indem Sie den Button "Abbrechen" in der unteren rechten Ecke drücken. Wenn Sie "Abbrechen" wählen, werden alle verarbeiteten Bilder dennoch im Ausgabeordner vorhanden sein, sodass Sie diese manuell entfernen müssen.</translation>
 </phrase>
 
 <phrase>
@@ -10910,12 +10910,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Preparing batch processing engine</original>
-<translation>Batch-Verarbeitungs-Engine wird vorbereitet</translation>
+<translation>Batchverarbeitungs-Engine wird vorbereitet</translation>
 </phrase>
 
 <phrase>
 <original>Processing image # %1 of %2. %3</original>
-<translation>Bild # %1 von %2. 3% wird verarbeitet</translation>
+<translation>Bild # %1 von %2 wird verarbeitet. 3%</translation>
 </phrase>
 
 <phrase>
@@ -10950,7 +10950,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>%1 files were successfully processed!</original>
-<translation>%1 Dateien erfolgreich verarbeitet!</translation>
+<translation>%1 Dateien wurden erfolgreich verarbeitet!</translation>
 </phrase>
 
 <phrase>
