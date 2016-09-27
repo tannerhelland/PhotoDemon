@@ -179,6 +179,7 @@ Private Sub RedrawBackBuffer()
             Set ttFont = Font_Management.GetMatchingUIFont(10, True)
             ttFont.AttachToDC bufferDC
             ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
+            ttFont.SetTextAlignment vbLeftJustify
             ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight, m_Title
             yOffset = yOffset + ttFont.GetHeightOfWordwrapString(m_Title, availableTextWidth) + m_TitlePadding
             ttFont.ReleaseFromDC
@@ -189,6 +190,7 @@ Private Sub RedrawBackBuffer()
             Set ttFont = Font_Management.GetMatchingUIFont(10, False)
             ttFont.AttachToDC bufferDC
             ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
+            ttFont.SetTextAlignment vbLeftJustify
             ttFont.FastRenderMultilineTextWithClipping m_InternalPadding, yOffset, availableTextWidth, ucSupport.GetBackBufferHeight - yOffset, m_Caption
             ttFont.ReleaseFromDC
         End If

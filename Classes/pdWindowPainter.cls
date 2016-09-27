@@ -101,8 +101,10 @@ Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boo
     
         'Release the existing subclasser, if any
         If Not (cSubclass Is Nothing) Then
-            If (m_hWnd <> 0) Then cSubclass.ssc_UnSubclass m_hWnd
-            cSubclass.ssc_Terminate
+            If (m_hWnd <> 0) Then
+                cSubclass.ssc_UnSubclass m_hWnd
+                cSubclass.ssc_Terminate
+            End If
         End If
         
         m_hWnd = srcHwnd

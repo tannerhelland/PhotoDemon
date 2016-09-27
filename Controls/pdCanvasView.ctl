@@ -367,8 +367,6 @@ Private Sub ucSupport_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-        
-    If g_ProgramShuttingDown Then Exit Sub
     
     'If no images are loaded, repaint ourselves automatically
     If (g_OpenImageCount = 0) And g_IsProgramRunning Then

@@ -310,10 +310,10 @@ Private m_curChannel As Long
 Private m_LevelValues(0 To 3, 0 To 4) As Double
 
 'Two special input classes are required; one each for the input and output arrow boxes
-Private WithEvents cMouseEventsIn As pdInputMouse
-Attribute cMouseEventsIn.VB_VarHelpID = -1
-Private WithEvents cMouseEventsOut As pdInputMouse
-Attribute cMouseEventsOut.VB_VarHelpID = -1
+Private WithEvents m_MouseEventsIn As pdInputMouse
+Attribute m_MouseEventsIn.VB_VarHelpID = -1
+Private WithEvents m_MouseEventsOut As pdInputMouse
+Attribute m_MouseEventsOut.VB_VarHelpID = -1
 
 'If the user is using the mouse to slide nodes around, these values will be used to store the node's index
 Private m_ActiveArrow As Long
@@ -736,7 +736,7 @@ Private Sub cmdColorSelect_Click(Index As Integer)
 
 End Sub
 
-Private Sub cMouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
     If (Button And pdLeftButton) <> 0 Then
@@ -745,7 +745,7 @@ Private Sub cMouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstant
 
 End Sub
 
-Private Sub cMouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Left mouse button is down, and the user has a node selected
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2) Then
@@ -800,20 +800,20 @@ Private Sub cMouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstant
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
         If isCursorOverArrow(x, True) >= 0 Then
-            cMouseEventsIn.SetSystemCursor IDC_HAND
+            m_MouseEventsIn.SetSystemCursor IDC_HAND
         Else
-            cMouseEventsIn.SetSystemCursor IDC_ARROW
+            m_MouseEventsIn.SetSystemCursor IDC_ARROW
         End If
         
     End If
 
 End Sub
 
-Private Sub cMouseEventsIn_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub m_MouseEventsIn_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     m_ActiveArrow = -1
 End Sub
 
-Private Sub cMouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
     If (Button And pdLeftButton) <> 0 Then
@@ -822,7 +822,7 @@ Private Sub cMouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConstan
 
 End Sub
 
-Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'Left mouse button is down, and the user has a node selected
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 3) And (m_ActiveArrow <= 4) Then
@@ -874,16 +874,16 @@ Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
         If isCursorOverArrow(x, False) >= 0 Then
-            cMouseEventsOut.SetSystemCursor IDC_HAND
+            m_MouseEventsOut.SetSystemCursor IDC_HAND
         Else
-            cMouseEventsOut.SetSystemCursor IDC_ARROW
+            m_MouseEventsOut.SetSystemCursor IDC_ARROW
         End If
         
     End If
 
 End Sub
 
-Private Sub cMouseEventsOut_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub m_MouseEventsOut_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     m_ActiveArrow = -1
 End Sub
 
@@ -1036,10 +1036,11 @@ Private Sub Form_Load()
     btsChannel.AssignImageToItem 3, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, 24, 2)
     
     'Prepare the custom input handlers
-    Set cMouseEventsIn = New pdInputMouse
-    Set cMouseEventsOut = New pdInputMouse
-    cMouseEventsIn.AddInputTracker picInputArrows.hWnd, True, True, , True
-    cMouseEventsOut.AddInputTracker picOutputArrows.hWnd, True, True, , True
+    Set m_MouseEventsIn = New pdInputMouse
+    m_MouseEventsIn.AddInputTracker picInputArrows.hWnd, True, True, , True
+    
+    Set m_MouseEventsOut = New pdInputMouse
+    m_MouseEventsOut.AddInputTracker picOutputArrows.hWnd, True, True, , True
     
     'Add button images
     cmdColorSelect(0).AssignImage "EYE_DROPPER_GENERIC"

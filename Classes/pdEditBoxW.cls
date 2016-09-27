@@ -549,17 +549,17 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                     cSubclass.ssc_Subclass m_EditBoxHwnd, 0, 1, Me, True, True, True
                     cSubclass.ssc_AddMsg m_EditBoxHwnd, MSG_BEFORE, WM_KEYDOWN, WM_SETFOCUS, WM_KILLFOCUS, WM_CHAR, WM_UNICHAR, WM_DESTROY
                     
+                    'Activate mouse events
+                    If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
+                    m_MouseEvents.AddInputTracker m_EditBoxHwnd, True, True, , True, , True
+                    
                     'Subclass the parent window as well.  This is necessary for handling some update messages from the edit box.
-                    If Not m_ParentHasBeenSubclassed Then
+                    If (Not m_ParentHasBeenSubclassed) Then
                         m_ParentHWnd = parentHwnd
                         cSubclass.ssc_Subclass parentHwnd, 0, 1, Me, True, True, False
                         cSubclass.ssc_AddMsg parentHwnd, MSG_BEFORE, WM_CTLCOLOREDIT, WM_CTLCOLORSTATIC, WM_COMMAND
                         m_ParentHasBeenSubclassed = True
                     End If
-                    
-                    'Activate mouse events
-                    If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
-                    m_MouseEvents.AddInputTracker m_EditBoxHwnd, True, True, , True, , True
                     
                 End If
             End If
@@ -592,8 +592,8 @@ Public Function DestroyEditBox() As Boolean
         
     If (m_EditBoxHwnd <> 0) And g_IsProgramRunning Then
     
-        If Not (cSubclass Is Nothing) Then cSubclass.ssc_UnSubclass m_EditBoxHwnd
         If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
+        If Not (cSubclass Is Nothing) Then cSubclass.ssc_UnSubclass m_EditBoxHwnd
         DestroyEditBox = CBool(DestroyWindow(m_EditBoxHwnd) <> 0)
         
         If DestroyEditBox Then

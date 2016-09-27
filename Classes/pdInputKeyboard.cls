@@ -141,6 +141,23 @@ Private Sub Class_Initialize()
     
 End Sub
 
+Private Sub Class_Terminate()
+    Me.Shutdown
+End Sub
+
+'This function is automatically called at Class_Terminate time, but you can also call it manually if you want
+' to ensure a particular unload time.
+Public Sub Shutdown()
+    If g_IsProgramRunning Then
+        If (m_targetHwnd <> 0) Then
+            cSubclass.ssc_UnSubclass m_targetHwnd
+            m_targetHwnd = 0
+        End If
+        cSubclass.shk_TerminateHooks
+        cSubclass.ssc_Terminate
+    End If
+End Sub
+
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
 Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHwnd As Long, ParamArray listOfKeys() As Variant) As Boolean
     
@@ -247,13 +264,6 @@ Public Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
     
     End If
     
-End Sub
-
-Private Sub Class_Terminate()
-    If g_IsProgramRunning Then
-        cSubclass.shk_TerminateHooks
-        cSubclass.ssc_Terminate
-    End If
 End Sub
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
