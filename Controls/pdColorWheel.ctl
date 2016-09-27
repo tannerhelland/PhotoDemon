@@ -470,7 +470,7 @@ Private Sub CreateColorWheel()
     ' the max available diameter, and the current screen DPI.
     m_HueRadiusOuter = (CSng(wheelDiameter) / 2) - FixDPIFloat(WHEEL_PADDING)
     m_HueRadiusInner = m_HueRadiusOuter - FixDPIFloat(WHEEL_WIDTH)
-    If m_HueRadiusInner < 5 Then m_HueRadiusInner = 5
+    If (m_HueRadiusInner < 5) Then m_HueRadiusInner = 5
     
     'We're now going to cheat a bit and use a 2D drawing hack to solve for the alpha bytes of our wheel.  The wheel image is
     ' already a black square, and atop that we're going to draw a white circle at the outer radius size, and a black circle
@@ -575,7 +575,7 @@ Private Sub CreateSVSquare()
     End If
     
     'To prevent IDE crashes, bail now during compilation
-    If Not g_IsProgramRunning Then Exit Sub
+    If (Not g_IsProgramRunning) Then Exit Sub
     
     'We now need to fill the square with all possible saturation and value variants, in a pattern where...
     ' - The y-axis position determines value (1 -> 0)
