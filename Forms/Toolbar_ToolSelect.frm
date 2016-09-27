@@ -408,15 +408,15 @@ Private m_ActiveToolPanelKey As String
 ' re-enter the reflow code.
 Private m_InsideReflowCode As Boolean
 
-'This form supports a variety of resize modes, and we use cMouseEvents to handle cursor duties
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
+'This form supports a variety of resize modes, and we use m_MouseEvents to handle cursor duties
+Private WithEvents m_MouseEvents As pdInputMouse
+Attribute m_MouseEvents.VB_VarHelpID = -1
 
 Private Sub cmdFile_Click(Index As Integer)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
     ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
-    cMouseEvents.SetSystemCursor IDC_ARROW
+    m_MouseEvents.SetSystemCursor IDC_ARROW
         
     Select Case Index
     
@@ -453,11 +453,11 @@ End Sub
 
 'When the mouse leaves this toolbox, reset it to an arrow (so other forms don't magically acquire the west/east resize cursor, as the mouse is
 ' likely to leave off the right side of this form)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouseEvents.SetSystemCursor IDC_ARROW
+Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseEvents.SetSystemCursor IDC_ARROW
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
     ' the layer toolbox.
@@ -480,7 +480,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     If mouseInResizeTerritory Then
     
         'Change the cursor to a resize cursor
-        cMouseEvents.SetSystemCursor IDC_SIZEWE
+        m_MouseEvents.SetSystemCursor IDC_SIZEWE
         
         If (Button = vbLeftButton) Then
             m_WeAreResponsibleForResize = True
@@ -500,7 +500,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         End If
         
     Else
-        cMouseEvents.SetSystemCursor IDC_ARROW
+        m_MouseEvents.SetSystemCursor IDC_ARROW
     End If
     
     'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
@@ -546,8 +546,8 @@ Private Sub Form_Load()
     cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_BASICBRUSH"
     
     'Initialize a mouse handler
-    Set cMouseEvents = New pdInputMouse
-    cMouseEvents.AddInputTracker Me.hWnd, True, True, , True
+    Set m_MouseEvents = New pdInputMouse
+    m_MouseEvents.AddInputTracker Me.hWnd, True, True, , True
         
     g_PreviousTool = -1
     g_CurrentTool = g_UserPreferences.GetPref_Long("Tools", "LastUsedTool", NAV_DRAG)
@@ -565,7 +565,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_LostFocus()
-    cMouseEvents.SetSystemCursor IDC_DEFAULT
+    m_MouseEvents.SetSystemCursor IDC_DEFAULT
 End Sub
 
 'Reflow the form's contents
@@ -719,7 +719,7 @@ End Sub
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
-    Set cMouseEvents = Nothing
+    Set m_MouseEvents = Nothing
     g_UserPreferences.SetPref_Long "Tools", "LastUsedTool", g_CurrentTool
     If g_ProgramShuttingDown Then ReleaseFormTheming Me
 End Sub
@@ -968,7 +968,7 @@ Private Sub cmdTools_Click(Index As Integer)
         
         'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
         ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
-        cMouseEvents.SetSystemCursor IDC_ARROW
+        m_MouseEvents.SetSystemCursor IDC_ARROW
         
         'Repaint all tool buttons to reflect the new selection
         ResetToolButtonStates

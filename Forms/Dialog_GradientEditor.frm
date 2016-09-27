@@ -528,6 +528,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+    Set m_MouseEvents = Nothing
 End Sub
 
 'Update our two internal gradient classes against any/all changed settings.

@@ -371,6 +371,33 @@ Private Sub Class_Initialize()
     
 End Sub
 
+Private Sub Class_Terminate()
+    Me.Shutdown
+End Sub
+
+'This function is automatically called at Class_Terminate time, but you can also call it manually if you want
+' to ensure a particular unload time.
+Public Sub Shutdown()
+
+    If g_IsProgramRunning Then
+        
+        If (m_hWndCount > 0) Then
+            Dim i As Long
+            For i = 0 To m_hWndCount - 1
+                If (m_TrackingData(PDIT_DEFAULT, i) <> 0) Then
+                    cSubclass.ssc_UnSubclass m_TrackingData(0, i)
+                    m_TrackingData(0, i) = 0
+                End If
+            Next i
+        End If
+        
+        cSubclass.shk_TerminateHooks
+        cSubclass.ssc_Terminate
+        
+    End If
+    
+End Sub
+
 'Initiate input tracking of a given hWnd.  Aside from the required hWnd, a few other, optional parameters exist:
 '
 ' - Whether to track MouseMove events as well.  If this is specified, note that VB's intrinsic "MouseMove" event
@@ -386,7 +413,7 @@ End Sub
 Public Function AddInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False, Optional ByVal targetWindowIsAPI As Boolean = False) As Boolean
         
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
-    If targetHwnd <> 0 Then
+    If (targetHwnd <> 0) Then
     
         'Add the hWnd to our tracking array, and increment all subarrays accordingly
         m_hWndCount = m_hWndCount + 1
@@ -568,13 +595,6 @@ Private Function RequestMouseTrackingForHwnd(ByVal targetHwnd As Long)
     End If
     
 End Function
-
-Private Sub Class_Terminate()
-    If g_IsProgramRunning Then
-        cSubclass.shk_TerminateHooks
-        cSubclass.ssc_Terminate
-    End If
-End Sub
 
 'Note that the vKey constant below is a virtual key mapping, not (necessarily) a standard VB key constant - plan accordingly!
 Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean

@@ -153,8 +153,8 @@ Private inHoverState As Boolean
 Private clickToVisitText As String
 
 'An outside class provides access to specialized mouse events (mouse enter/leave, in this case)
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
+Private WithEvents m_MouseEvents As pdInputMouse
+Attribute m_MouseEvents.VB_VarHelpID = -1
 
 'When the mouse moves over something clickable, update the pointer and stop the timer
 Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
@@ -168,13 +168,13 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
             tmrText.Interval = 50
             
             'Display a hand cursor
-            cMouseEvents.SetSystemCursor IDC_HAND
+            m_MouseEvents.SetSystemCursor IDC_HAND
             
             'Mark the new hover state
             inHoverState = True
             
         Else
-            cMouseEvents.SetSystemCursor IDC_HAND
+            m_MouseEvents.SetSystemCursor IDC_HAND
         End If
         
     Else
@@ -185,13 +185,13 @@ Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
             tmrText.Interval = 17
             
             'Restore an arrow cursor
-            cMouseEvents.SetSystemCursor IDC_ARROW
+            m_MouseEvents.SetSystemCursor IDC_ARROW
             
             'Mark the new hover state
             inHoverState = False
         
         Else
-            If Not (cMouseEvents Is Nothing) Then cMouseEvents.SetSystemCursor IDC_ARROW
+            If Not (m_MouseEvents Is Nothing) Then m_MouseEvents.SetSystemCursor IDC_ARROW
         End If
         
     End If
@@ -228,18 +228,18 @@ Private Sub cmdSpeed_Click(Index As Integer)
     
 End Sub
 
-Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If curHoveredCredit >= 0 Then OpenURL creditList(curHoveredCredit).URL
+Private Sub m_MouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If (curHoveredCredit >= 0) Then OpenURL creditList(curHoveredCredit).URL
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     mouseX = -1
     mouseY = -1
     curHoveredCredit = -1
     updateHoverState False
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     mouseX = x
     mouseY = y
@@ -276,9 +276,9 @@ Private Sub Form_Load()
     clickToVisitText = "(" & g_Language.TranslateMessage("click to visit") & ") "
     
     'Enable mouse subclassing for the main buffer box, which allows us to track when the mouse leaves
-    Set cMouseEvents = New pdInputMouse
-    cMouseEvents.AddInputTracker picBuffer.hWnd, True, True, , True
-    cMouseEvents.SetSystemCursor IDC_ARROW
+    Set m_MouseEvents = New pdInputMouse
+    m_MouseEvents.AddInputTracker picBuffer.hWnd, True, True, , True
+    m_MouseEvents.SetSystemCursor IDC_ARROW
 
     'Load the logo from the resource file
     Set logoDIB = New pdDIB
@@ -469,6 +469,7 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
+    Set m_MouseEvents = Nothing
 End Sub
 
 'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the

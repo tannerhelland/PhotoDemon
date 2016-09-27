@@ -215,7 +215,13 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     If g_ProgramShuttingDown Then
-    
+        
+        'Release this window from any program-wide handlers
+        ReleaseFormTheming Me
+        
+        'Release our custom mouse handler
+        Set m_MouseEvents = Nothing
+        
         'Release the subpanel subclasser
         Set m_WindowSync = Nothing
         
@@ -223,12 +229,6 @@ Private Sub Form_Unload(Cancel As Integer)
         Unload layerpanel_Navigator
         Unload layerpanel_Colors
         Unload layerpanel_Layers
-        
-        'Release our custom mouse handler
-        Set m_MouseEvents = Nothing
-        
-        'Release this window from any program-wide handlers
-        ReleaseFormTheming Me
         
     End If
     

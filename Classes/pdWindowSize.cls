@@ -95,7 +95,7 @@ Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEv
         If m_SubclassActive And g_IsProgramRunning Then
             Set cSubclass = New cSelfSubHookCallback
             cSubclass.ssc_Subclass m_hWnd, , , Me
-            cSubclass.ssc_AddMsg m_hWnd, MSG_AFTER, WM_SIZE, WM_MOVE
+            cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SIZE, WM_MOVE
         End If
         
         'Cache an initial set of window dimensions

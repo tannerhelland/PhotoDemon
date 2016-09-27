@@ -612,7 +612,7 @@ End Function
 Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     
     'At compile-time, this event will likely be fired; because the back buffer doesn't exist, ignore the request
-    If (m_BackBuffer Is Nothing) Or m_NoBackBufferMode Or g_ProgramShuttingDown Then Exit Sub
+    If (m_BackBuffer Is Nothing) Or m_NoBackBufferMode Then Exit Sub
     
     'We only want to recreate the buffer when absolutely necessary, so start with a size check.
     Dim bufferWasResized As Boolean
@@ -1220,6 +1220,9 @@ End Sub
 ' without careful study of the order that the classes are created!
 Private Sub StopAllSubclassing()
     
+    'Release any non-subclassing classes first
+    If Not (m_Caption Is Nothing) Then Set m_Caption = Nothing
+    
     'If the user control was registered for internal PD messages, de-register it with PD's central marshaler.
     If m_CustomInternalMessagesActive Then
         UserControl_Support.RemoveMessageRecipient m_hWnd
@@ -1227,9 +1230,15 @@ Private Sub StopAllSubclassing()
     End If
     
     'Release custom functionality first, in reverse-order
-    If Not (m_Caption Is Nothing) Then Set m_Caption = Nothing
-    If Not (m_KeyEvents Is Nothing) Then Set m_KeyEvents = Nothing
-    If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
+    If Not (m_KeyEvents Is Nothing) Then
+        m_KeyEvents.Shutdown
+        Set m_KeyEvents = Nothing
+    End If
+    
+    If Not (m_MouseEvents Is Nothing) Then
+        m_MouseEvents.Shutdown
+        Set m_MouseEvents = Nothing
+    End If
 
     'Release default functionality next, also in reverse-order
     If Not (m_MoveSize Is Nothing) Then Set m_MoveSize = Nothing

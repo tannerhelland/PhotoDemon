@@ -1484,7 +1484,6 @@ Public Sub ReleaseFormTheming(ByRef tForm As Object)
     
     'This function may be triggered during compilation; avoid this
     If g_IsProgramRunning Then g_Themer.RemoveWindowPainter tForm.hWnd
-    Set tForm = Nothing
     
 End Sub
 

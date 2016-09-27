@@ -632,8 +632,8 @@ Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dx As Long, ByVal dy As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
 
 'pdInputMouse makes it easier to deal with a custom hand cursor for the many picture boxes on the form
-Private WithEvents cMouse As pdInputMouse
-Attribute cMouse.VB_VarHelpID = -1
+Private WithEvents m_MouseEvents As pdInputMouse
+Attribute m_MouseEvents.VB_VarHelpID = -1
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -836,9 +836,9 @@ Private Sub PrepSpecialMouseHandling(ByVal handleMode As Boolean)
     
     If g_IsProgramRunning And handleMode Then
     
-        Set cMouse = New pdInputMouse
+        Set m_MouseEvents = New pdInputMouse
         
-        With cMouse
+        With m_MouseEvents
         
             .AddInputTracker picColor.hWnd, True, False, False, True, True
             .AddInputTracker picHue.hWnd, True, False, False, True, True
@@ -862,7 +862,7 @@ Private Sub PrepSpecialMouseHandling(ByVal handleMode As Boolean)
         End With
         
     Else
-        Set cMouse = Nothing
+        Set m_MouseEvents = Nothing
     End If
     
 End Sub
@@ -1022,12 +1022,12 @@ Private Sub ResetXMLData()
 End Sub
 
 'Refresh the various color box cursors when the mouse enters
-Private Sub cMouse_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouse.SetSystemCursor IDC_HAND, cMouse.GetLastHwnd
+Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseEvents.SetSystemCursor IDC_HAND, m_MouseEvents.GetLastHwnd
 End Sub
 
-Private Sub cMouse_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    cMouse.SetSystemCursor IDC_HAND, cMouse.GetLastHwnd
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseEvents.SetSystemCursor IDC_HAND, m_MouseEvents.GetLastHwnd
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
