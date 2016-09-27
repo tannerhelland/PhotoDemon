@@ -211,7 +211,7 @@ Public Function ssc_Subclass(ByVal lng_hWnd As Long, _
   'Const IDX_BTABLE     As Long = 11    'Thunk data index of the Before table
   'Const IDX_ATABLE     As Long = 12    'Thunk data index of the After table
   'Const IDX_PARM_USER  As Long = 13    'Thunk data index of the User-defined callback parameter data index
-   Const IDX_DW         As Long = 14    'Thunk data index of the DestroyWinodw function address
+   Const IDX_DW         As Long = 14    'Thunk data index of the DestroyWindow function address
    Const IDX_ST         As Long = 15    'Thunk data index of the SetTimer function address
    Const IDX_KT         As Long = 16    'Thunk data index of the KillTimer function address
    Const IDX_EBX_TMR    As Long = 20    'Thunk code patch index of the thunk data for the delay timer
@@ -720,8 +720,7 @@ Private Function zAddressOf(ByVal oCallback As Object, ByVal nOrdinal As Long) A
   End If
   
   i = i + 4                                                                 'Bump to the next entry
-  'J = I + 1024                                                              'Set a reasonable limit, scan 256 vTable entries
-  j = i + 1024 * 2                                                     'Set a reasonable limit, scan 512 vTable entries
+  j = i + 1024 * 2                                                          'Set a reasonable limit, scan 512 vTable entries
   Do While i < j
     RtlMoveMemory VarPtr(nAddr), i, 4                                       'Get the address stored in this vTable entry
     
