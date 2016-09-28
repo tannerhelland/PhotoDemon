@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.209</langversion>
+<langversion>6.7.210</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -7821,12 +7821,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>huidige</translation>
 </phrase>
 
-<phrase>
-<original>Click this button to enable color capturing from anywhere on the screen.</original>
-<translation>Klik op deze knop om de kleur te kunnen vast te leggen van overal op het scherm.</translation>
-</phrase>
-
-<!-- Dialog_ColorSelector.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -14889,10 +14884,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4453 phrases. -->
-<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12722 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1923 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12710 total words. -->
 
 </pdData>

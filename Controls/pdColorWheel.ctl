@@ -70,7 +70,8 @@ Private m_MouseDownWheel As Boolean, m_MouseDownBox As Boolean
 Private Const WHEEL_PADDING As Long = 3
 
 'Width (in pixels) of the hue wheel.  This width is applied along the radial axis.
-Private Const WHEEL_WIDTH As Single = 15#
+Private Const WHEEL_WIDTH_DEFAULT As Single = 15#
+Private m_WheelWidth As Single
 
 'Various hue wheel positioning values.  These are calculated by the CreateColorWheel function and cached here, as a convenience
 ' for subsequent hit-testing and rendering.
@@ -140,13 +141,35 @@ End Property
 Public Property Let Color(ByVal newColor As Long)
     
     'Extract matching HSV values, then redraw the control to match
-    Colors.RGBtoHSV Colors.ExtractRed(newColor), Colors.ExtractGreen(newColor), Colors.ExtractBlue(newColor), m_Hue, m_Saturation, m_Value
-    CreateSVSquare
-    RedrawBackBuffer
+    Dim tmpHue As Double, tmpSaturation As Double, tmpValue As Double
+    Colors.RGBtoHSV Colors.ExtractRed(newColor), Colors.ExtractGreen(newColor), Colors.ExtractBlue(newColor), tmpHue, tmpSaturation, tmpValue
     
-    'Raise a matching event, and note that the source was external
-    RaiseEvent ColorChanged(newColor, False)
+    If ((tmpHue <> m_Hue) Or (tmpSaturation <> m_Saturation) Or (tmpValue <> m_Value)) Then
     
+        If (tmpSaturation <> 0) Then m_Hue = tmpHue
+        m_Saturation = tmpSaturation
+        m_Value = tmpValue
+        
+        CreateSVSquare
+        RedrawBackBuffer
+        
+        'Raise a matching event, and note that the source was external
+        RaiseEvent ColorChanged(newColor, False)
+    
+    End If
+    
+End Property
+
+Public Property Get WheelWidth() As Single
+    WheelWidth = m_WheelWidth
+End Property
+
+Public Property Let WheelWidth(ByVal newWidth As Single)
+    If (m_WheelWidth <> newWidth) Then
+        m_WheelWidth = newWidth
+        CreateSVSquare
+        RedrawBackBuffer
+    End If
 End Property
 
 'When the control receives focus, relay the event externally
@@ -417,6 +440,7 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     Color = RGB(50, 200, 255)
+    WheelWidth = WHEEL_WIDTH_DEFAULT
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -425,7 +449,10 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    Me.Color = PropBag.ReadProperty("Color", RGB(50, 200, 255))
+    With PropBag
+        Me.Color = .ReadProperty("Color", RGB(50, 200, 255))
+        Me.WheelWidth = .ReadProperty("WheelWidth", WHEEL_WIDTH_DEFAULT)
+    End With
 End Sub
 
 Private Sub UserControl_Resize()
@@ -435,6 +462,7 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Color", Me.Color, RGB(50, 200, 255)
+        .WriteProperty "WheelWidth", Me.WheelWidth, WHEEL_WIDTH_DEFAULT
     End With
 End Sub
 
@@ -469,7 +497,7 @@ Private Sub CreateColorWheel()
     'We're now going to calculate the inner and outer radius of the wheel.  These are based off hard-coded padding constants,
     ' the max available diameter, and the current screen DPI.
     m_HueRadiusOuter = (CSng(wheelDiameter) / 2) - FixDPIFloat(WHEEL_PADDING)
-    m_HueRadiusInner = m_HueRadiusOuter - FixDPIFloat(WHEEL_WIDTH)
+    m_HueRadiusInner = m_HueRadiusOuter - FixDPIFloat(m_WheelWidth)
     If (m_HueRadiusInner < 5) Then m_HueRadiusInner = 5
     
     'We're now going to cheat a bit and use a 2D drawing hack to solve for the alpha bytes of our wheel.  The wheel image is
