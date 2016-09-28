@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>Chinese simplified</langname>
-<langversion>6.8.1888</langversion>
+<langversion>6.8.1889</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -7819,12 +7819,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>当前</translation>
 </phrase>
 
-<phrase>
-<original>Click this button to enable color capturing from anywhere on the screen.</original>
-<translation>单击此按钮可从屏幕上的任何地方启用彩色捕获。</translation>
-</phrase>
-
-<!-- Dialog_ColorSelector.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -14886,10 +14881,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4453 phrases. -->
-<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12722 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1923 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12710 total words. -->
 
 </pdData>

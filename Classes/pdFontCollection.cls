@@ -296,12 +296,16 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    Dim i As Long
-    For i = LBound(m_FontCollection) To UBound(m_FontCollection)
-        If Not (m_FontCollection(i) Is Nothing) Then
-            m_FontCollection(i).DeleteCurrentFont
-            Set m_FontCollection(i) = Nothing
-        End If
-    Next i
+    If g_IsProgramRunning Then
+    
+        Dim i As Long
+        For i = LBound(m_FontCollection) To UBound(m_FontCollection)
+            If Not (m_FontCollection(i) Is Nothing) Then
+                m_FontCollection(i).DeleteCurrentFont
+                Set m_FontCollection(i) = Nothing
+            End If
+        Next i
+        
+    End If
     
 End Sub

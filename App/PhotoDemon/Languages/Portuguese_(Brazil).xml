@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Portuguese (Brazil)</langname>
-<langversion>6.8.1908</langversion>
+<langversion>6.8.1909</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -7831,12 +7831,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>atual</translation>
 </phrase>
 
-<phrase>
-<original>Click this button to enable color capturing from anywhere on the screen.</original>
-<translation>Clique nesse botão para ativar a captura de cores a partir de qualquer lugar na tela.</translation>
-</phrase>
-
-<!-- Dialog_ColorSelector.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -14900,10 +14895,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4453 phrases. -->
-<!-- 1923 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12722 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1923 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12710 total words. -->
 
 </pdData>
