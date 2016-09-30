@@ -1716,42 +1716,78 @@ End Sub
 '
 'IMPORTANT NOTE: this function does not deal with premultiplied alpha whatsoever.  It simply copies alpha data as-is.
 ' You must manually set the alpha premultiplication property yourself, and you must also make sure that any number of
-' un/premultiply steps are applied to both DIBs to keep the alpha values properly in sync.
+' un/premultiply steps are applied to both DIBs to keep the alpha values properly in sync.  The sole exception to this
+' occurs if you pass the binaryAlphaOnly parameter as TRUE; this means the alpha mask only contains 0 and 255 values,
+' and if that's the case, this function will handle premultiplication for you.
 
 'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE. Make sure that the passed pdDIB object is
-' THE SAME SIZE (or larger) than this DIB, or you will experience critical errors.
-Public Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB)
-
+' THE SAME SIZE (including scanline alignment) as this DIB, or you will experience critical errors.
+Public Sub CopyAlphaFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal binaryAlphaOnly As Boolean = False)
+    
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If (m_dibColorDepth <> 32) Then ConvertTo32bpp
-
-    'Prepare a SafeArray that points to our own DIB data
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    PrepInternalSafeArray tmpSA
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    If (m_dibColorDepth <> 32) Then Exit Sub
     
-    'Now make a second array that points to the source DIB data
-    Dim aData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    PrepExternalSafeArray srcDIB, srcSA
-    CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    Dim finalX As Long, finalY As Long
+    finalX = (m_dibWidth - 1) * 4
+    finalY = (m_dibHeight - 1)
     
-    Dim x As Long, y As Long, quickX As Long
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
+    ' 1D array, which we reset between scanlines.
+    Dim srcScanlineSize As Long, srcPointer As Long, dstScanlineSize As Long, dstPointer As Long
+    dstScanlineSize = Me.GetDIBStride
+    dstPointer = Me.GetDIBPointer
+    srcScanlineSize = srcDIB.GetDIBStride
+    srcPointer = srcDIB.GetDIBPointer
     
-    'Loop through the image, copying alpha values as we go
-    For x = 0 To m_dibWidth - 1
-        quickX = x * 4
-    For y = 0 To m_dibHeight - 1
+    Dim dstPixels() As Byte, dstSA As SAFEARRAY1D
+    PrepInternalSafeArray1D dstSA
+    
+    Dim srcPixels() As Byte, srcSA As SAFEARRAY1D
+    PrepInternalSafeArray1D srcSA
+    srcSA.cElements = srcScanlineSize
+    srcSA.pvData = srcPointer
+    
+    Dim x As Long, y As Long
+    
+    'Loop through the image, compositing as we go
+    For y = 0 To finalY
         
-        'Access the alpha data for this pixel
-        iData(quickX + 3, y) = aData(quickX + 3, y)
+        'Point our 1D pixel arrays at the proper scanlines
+        dstSA.pvData = dstPointer + dstScanlineSize * y
+        CopyMemory ByVal VarPtrArray(dstPixels()), VarPtr(dstSA), 4
+        
+        srcSA.pvData = srcPointer + srcScanlineSize * y
+        CopyMemory ByVal VarPtrArray(srcPixels()), VarPtr(srcSA), 4
+        
+        'Split handling based on premultiplication
+        If binaryAlphaOnly Then
+            
+            For x = 0 To finalX Step 4
+                If srcPixels(x + 3) = 255 Then
+                    dstPixels(x + 3) = 255
+                Else
+                    dstPixels(x) = 0
+                    dstPixels(x + 1) = 0
+                    dstPixels(x + 2) = 0
+                    dstPixels(x + 3) = 0
+                End If
+            Next x
+        
+        Else
+            For x = 0 To finalX Step 4
+                dstPixels(x + 3) = srcPixels(x + 3)
+            Next x
+        End If
         
     Next y
-    Next x
     
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    CopyMemory ByVal VarPtrArray(aData), 0&, 4
+    'With our alpha channel complete, point dibPixels() away from the DIB
+    CopyMemory ByVal VarPtrArray(dstPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(srcPixels), 0&, 4
+    
+    If binaryAlphaOnly Then Me.SetInitialAlphaPremultiplicationState True
     
 End Sub
 
