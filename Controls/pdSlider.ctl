@@ -96,6 +96,10 @@ Public Event ResetClick()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'If this is an owner-drawn slider, the slider will raise events when it needs an updated track image.
+' (This event is irrelevant for normal sliders.)
+Public Event RenderTrackImage(ByRef dstDIB As pdDIB, ByVal leftBoundary As Single, ByVal rightBoundary As Single)
+
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private textBoxInitiated As Boolean
 
@@ -356,6 +360,15 @@ End Sub
 Private Sub pdssPrimary_LostFocusAPI()
     m_ControlFocusCount = m_ControlFocusCount - 1
     EvaluateFocusCount True
+End Sub
+
+Private Sub pdssPrimary_RenderTrackImage(dstDIB As pdDIB, ByVal leftBoundary As Single, ByVal rightBoundary As Single)
+    RaiseEvent RenderTrackImage(dstDIB, leftBoundary, rightBoundary)
+End Sub
+
+'During owner-draw mode, our parent can call this sub if they need to modify their owner-drawn track image.
+Public Sub RequestOwnerDrawChange()
+    pdssPrimary.RequestOwnerDrawChange
 End Sub
 
 Private Sub tudPrimary_ResetClick()

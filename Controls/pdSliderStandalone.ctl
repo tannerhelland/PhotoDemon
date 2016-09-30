@@ -57,6 +57,10 @@ Public Event Change()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'If this is an owner-drawn slider, the slider will raise events when it needs an updated track image.
+' (This event is irrelevant for normal sliders.)
+Public Event RenderTrackImage(ByRef dstDIB As pdDIB, ByVal leftBoundary As Single, ByVal rightBoundary As Single)
+
 'Used to internally track value, min, and max values as floating-points
 Private m_Value As Double, m_Min As Double, m_Max As Double
 
@@ -685,7 +689,12 @@ Private Sub UpdateControlLayout()
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
     
     'Redraw any custom background images, followed by the whole slider
-    If ((m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Or (m_SliderStyle = HueSpectrum360)) Then CreateGradientTrack
+    If ((m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Or (m_SliderStyle = HueSpectrum360)) Then
+        CreateGradientTrack
+    ElseIf (m_SliderStyle = CustomOwnerDrawn) Then
+        CreateOwnerDrawnTrack
+    End If
+    
     RenderTrack
             
 End Sub
@@ -742,13 +751,13 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False)
         ' selected by the current knob.
         ElseIf (m_KnobStyle = SquareStyle) Then
             Drawing2D.QuickCreateSolidBrush cBrush, trackColor
-            cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+            cSurface.SetSurfaceAntialiasing P2_AA_None 'P2_AA_HighQuality
             
             Dim trackRadius As Single
             trackRadius = (m_TrackDiameter) \ 2
             
             GetKnobRectF tmpRectF
-            m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, GetTrackLeft - trackRadius, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 1, GetTrackRight + trackRadius + 1, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 1
+            m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, GetTrackLeft - trackRadius, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 2, GetTrackRight + trackRadius + 2, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 1
         End If
         
     End If
@@ -766,18 +775,24 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False)
             '(Basically, we draw the gradient effect DIB to the location where we'd normally draw the track line.  Alpha has already
             ' been calculated for the gradient DIB, so it will sit precisely inside the trackline drawn above, giving the track a
             ' sharp 1px border.)
-            Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
-                If (m_GradientDIB Is Nothing) Then CreateGradientTrack
+            '
+            'Note that the "custom owner drawn" slider uses identical code; the only difference is that our *parent* rendered
+            ' the gradient DIB at some point.
+            Case GradientTwoPoint, GradientThreePoint, HueSpectrum360, CustomOwnerDrawn
+                
+                'Perform a failsafe check to make sure the backing DIB exists.  (This DIB is expensive to create,
+                ' so we render it only when absolutely necessary.)
+                If (m_GradientDIB Is Nothing) Then
+                    If (m_SliderStyle = CustomOwnerDrawn) Then CreateOwnerDrawnTrack Else CreateGradientTrack
+                End If
+                
                 If (m_KnobStyle = DefaultKnobStyle) Then
                     m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2), 0
                 ElseIf (m_KnobStyle = SquareStyle) Then
                     m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2) + 1, 0
                 End If
                 m_GradientDIB.FreeFromDC
-            
-            'In the future, we may support fully owner-drawn sliders, but this is not currently implemented.
-            Case CustomOwnerDrawn
-        
+                
         End Select
         
         'While the control is enabled, we also draw a slight notch above and below the slider track at the "default" position.
@@ -895,11 +910,48 @@ Public Sub SizeDIBToTrackArea(ByRef targetDIB As pdDIB)
     targetDIB.CreateBlank (GetTrackRight - GetTrackLeft) + m_TrackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
 End Sub
 
+'During owner-draw mode, our parent can call this sub if they need to modify their owner-drawn track image.
+Public Sub RequestOwnerDrawChange()
+    CreateOwnerDrawnTrack
+End Sub
+
+'Owner-drawn tracks require us to ask our parent control for track images.  This function handles such a request.
+' (Some pre- and post-rendering modifications are required, so do not raise the associated event directly.)
+Private Sub CreateOwnerDrawnTrack()
+    
+    'The steps for prepping the owner-drawn DIB are identical to the gradient slider style, for a number of reasons.
+    
+    'First, we want to create a DIB at the required size.  Note that this is just a plain rectangular DIB.
+    ' (After the owner does their rendering, we'll modify the size and alpha as necessary.)
+    SizeDIBToTrackArea m_GradientDIB
+    If (Not g_IsProgramRunning) Then Exit Sub
+    
+    Dim trackRadius As Single
+    trackRadius = (m_TrackDiameter) \ 2
+    
+    'It's important that the renderer know where the left and right edges of the final track will appear.  Note that
+    ' these are *not* the same as the left and right edges of the DIB.  (The rounded edges of the default track style
+    ' require us to extend the background gradient a bit beyond final track position, to make everything look right.)
+    Dim leftBoundary As Single, rightBoundary As Single
+    leftBoundary = trackRadius
+    rightBoundary = m_GradientDIB.GetDIBWidth - trackRadius
+    
+    'We are now ready for the user's image
+    RaiseEvent RenderTrackImage(m_GradientDIB, leftBoundary, rightBoundary)
+    
+    'Finally, apply a custom alpha channel to the image
+    ApplyAlphaToGradientDIB
+    
+    'All this necessitates an immediate redraw of the entire slider
+    RenderTrack
+    
+End Sub
+
 'When using a two-color or three-color gradient track style, this function can be called to recreate the background track DIB.
 ' Please note that this process is expensive (as we have to manually calculate per-pixel alpha masking of the final gradient),
 ' so please only call this function when absolutely necessary.
 Private Sub CreateGradientTrack()
-
+    
     'Recreate the gradient DIB to the size of the background track area
     SizeDIBToTrackArea m_GradientDIB
     If (Not g_IsProgramRunning) Then Exit Sub
@@ -908,8 +960,6 @@ Private Sub CreateGradientTrack()
     trackRadius = (m_TrackDiameter) \ 2
     
     Dim x As Long
-    Dim relativeMiddlePosition As Single, tmpY As Single
-    
     Dim cSurface As pd2DSurface, cPen As pd2DPen
     
     'Draw the gradient differently depending on the type of gradient
@@ -922,6 +972,8 @@ Private Sub CreateGradientTrack()
         'Three-point gradients are more involved; draw a custom blend from left to middle to right, while accounting for the
         ' center point's position (which is variable, and which may change at run-time).
         Case GradientThreePoint
+            
+            Dim relativeMiddlePosition As Single, tmpY As Single
             
             'Calculate a relative pixel position for the supplied gradient middle value
             If (m_GradientMiddleValue >= m_Min) And (m_GradientMiddleValue <= m_Max) Then
@@ -961,6 +1013,8 @@ Private Sub CreateGradientTrack()
                 
             Next x
             
+            cSurface.ReleaseSurface
+            
     End Select
     
     'Next, on custom gradients, we need to fill in the DIB just past the gradient on either side; this makes the gradient's
@@ -983,18 +1037,34 @@ Private Sub CreateGradientTrack()
         
     End If
     
-    'Next, we need to crop the track DIB to the shape of the background slider area.  This is a fairly involved operation, as we need to
+    Set cSurface = Nothing: Set cPen = Nothing
+    
+    'Finally, we need to apply a new alpha channel to the DIB
+    ApplyAlphaToGradientDIB
+    
+    'The gradient mask is now complete!
+    
+End Sub
+
+Private Sub ApplyAlphaToGradientDIB()
+    
+    'This sub will crop the track DIB to the shape of the background slider area.  This is a fairly involved operation, as we need to
     ' render a track line slightly smaller than the usual size, then manually apply a per-pixel copy of alpha data from the created line
     ' to the internal DIB.  This will allows us to alpha-blend the custom DIB over a copy of the background line, to retain a small border.
+    
+    Dim trackRadius As Single
+    trackRadius = (m_TrackDiameter) \ 2
     
     'Start by creating the image we're going to use as our alpha mask.
     Dim alphaMask As pdDIB
     Set alphaMask = New pdDIB
     alphaMask.CreateBlank m_GradientDIB.GetDIBWidth, m_GradientDIB.GetDIBHeight, 32, 0, 0
     
+    Dim cSurface As pd2DSurface, cPen As pd2DPen
+    
     'Next, render a slightly smaller line than the typical track onto the alpha mask.  Antialiasing will automatically set the relevant
     ' alpha bytes for the region of interest.
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, True
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, CBool(m_KnobStyle = DefaultKnobStyle)
     If (m_KnobStyle = DefaultKnobStyle) Then
         Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
         m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
@@ -1008,17 +1078,22 @@ Private Sub CreateGradientTrack()
         
         Dim tmpRectF As RECTF
         GetKnobRectF tmpRectF
-        m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 2, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
+        m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 3, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
         
     End If
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself
-    m_GradientDIB.CopyAlphaFromExistingDIB alphaMask
+    If (m_KnobStyle = DefaultKnobStyle) Then
+        
+        m_GradientDIB.CopyAlphaFromExistingDIB alphaMask
+        
+        'Premultiply the gradient DIB, so we can successfully alpha-blend it later
+        m_GradientDIB.SetAlphaPremultiplication True
     
-    'Premultiply the gradient DIB, so we can successfully alpha-blend it later
-    m_GradientDIB.SetAlphaPremultiplication True
-    
-    'The gradient mask is now complete!
+    'For the rectangular knob style, we don't need variable alpha, so we can perform this step *very* quickly.
+    Else
+        m_GradientDIB.CopyAlphaFromExistingDIB alphaMask, True
+    End If
     
 End Sub
 
