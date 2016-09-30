@@ -25,10 +25,24 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdSlider sldRGB 
+      Height          =   375
+      Index           =   0
+      Left            =   6480
+      TabIndex        =   19
+      Top             =   1920
+      Width           =   4935
+      _ExtentX        =   8705
+      _ExtentY        =   661
+      Max             =   255
+      SliderKnobStyle =   1
+      SliderTrackStyle=   2
+      NotchPosition   =   2
+   End
    Begin PhotoDemon.pdColorWheel clrWheel 
       Height          =   3855
       Left            =   720
-      TabIndex        =   24
+      TabIndex        =   18
       Top             =   120
       Width           =   3855
       _ExtentX        =   6800
@@ -141,7 +155,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   21
+      TabIndex        =   15
       Top             =   4560
       Width           =   495
    End
@@ -156,7 +170,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   22
+      TabIndex        =   16
       Top             =   4560
       Width           =   495
    End
@@ -171,7 +185,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   23
+      TabIndex        =   17
       Top             =   4560
       Width           =   495
    End
@@ -186,7 +200,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   19
+      TabIndex        =   13
       Top             =   1320
       Width           =   3735
    End
@@ -201,7 +215,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   17
+      TabIndex        =   11
       Top             =   720
       Width           =   3735
    End
@@ -216,53 +230,8 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   15
+      TabIndex        =   9
       Top             =   120
-      Width           =   3735
-   End
-   Begin VB.PictureBox picSampleRGB 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Index           =   2
-      Left            =   6480
-      ScaleHeight     =   23
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   247
-      TabIndex        =   14
-      Top             =   3120
-      Width           =   3735
-   End
-   Begin VB.PictureBox picSampleRGB 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Index           =   1
-      Left            =   6480
-      ScaleHeight     =   23
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   247
-      TabIndex        =   12
-      Top             =   2520
-      Width           =   3735
-   End
-   Begin VB.PictureBox picSampleRGB 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      ForeColor       =   &H80000008&
-      Height          =   375
-      Index           =   0
-      Left            =   6480
-      ScaleHeight     =   23
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   247
-      TabIndex        =   10
-      Top             =   1920
       Width           =   3735
    End
    Begin VB.PictureBox picOriginal 
@@ -293,44 +262,11 @@ Begin VB.Form dialog_ColorSelector
       Top             =   4080
       Width           =   3360
    End
-   Begin PhotoDemon.pdSpinner tudRGB 
-      Height          =   345
-      Index           =   0
-      Left            =   10320
-      TabIndex        =   9
-      Top             =   1905
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
-   End
-   Begin PhotoDemon.pdSpinner tudRGB 
-      Height          =   345
-      Index           =   1
-      Left            =   10320
-      TabIndex        =   11
-      Top             =   2505
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
-   End
-   Begin PhotoDemon.pdSpinner tudRGB 
-      Height          =   345
-      Index           =   2
-      Left            =   10320
-      TabIndex        =   13
-      Top             =   3105
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
-   End
    Begin PhotoDemon.pdSpinner tudHSV 
       Height          =   345
       Index           =   0
       Left            =   10320
-      TabIndex        =   16
+      TabIndex        =   10
       Top             =   105
       Width           =   1095
       _ExtentX        =   1931
@@ -341,7 +277,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   345
       Index           =   1
       Left            =   10320
-      TabIndex        =   18
+      TabIndex        =   12
       Top             =   705
       Width           =   1095
       _ExtentX        =   1931
@@ -352,7 +288,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   345
       Index           =   2
       Left            =   10320
-      TabIndex        =   20
+      TabIndex        =   14
       Top             =   1305
       Width           =   1095
       _ExtentX        =   1931
@@ -485,6 +421,34 @@ Begin VB.Form dialog_ColorSelector
       ForeColor       =   0
       Layout          =   1
    End
+   Begin PhotoDemon.pdSlider sldRGB 
+      Height          =   375
+      Index           =   1
+      Left            =   6480
+      TabIndex        =   20
+      Top             =   2520
+      Width           =   4935
+      _ExtentX        =   8705
+      _ExtentY        =   661
+      Max             =   255
+      SliderKnobStyle =   1
+      SliderTrackStyle=   2
+      NotchPosition   =   2
+   End
+   Begin PhotoDemon.pdSlider sldRGB 
+      Height          =   375
+      Index           =   2
+      Left            =   6480
+      TabIndex        =   21
+      Top             =   3120
+      Width           =   4935
+      _ExtentX        =   8705
+      _ExtentY        =   661
+      Max             =   255
+      SliderKnobStyle =   1
+      SliderTrackStyle=   2
+      NotchPosition   =   2
+   End
 End
 Attribute VB_Name = "dialog_ColorSelector"
 Attribute VB_GlobalNameSpace = False
@@ -530,11 +494,10 @@ Private m_Red As Long, m_Green As Long, m_Blue As Long
 Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 
 'Backing DIBs are required for each individual color sample boxes
-Private sRed As pdDIB, sGreen As pdDIB, sBlue As pdDIB
 Private sHue As pdDIB, sSaturation As pdDIB, sValue As pdDIB
 
 'Left/right/up arrows for the hue and color boxes; these are 7x13 (or 13x7) and loaded from the resource at run-time
-Private leftSideArrow As pdDIB, rightSideArrow As pdDIB, upArrow As pdDIB
+Private upArrow As pdDIB
 
 'A temporary DIB for drawing any other elements
 Private m_tmpDIB As pdDIB
@@ -642,12 +605,7 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     m_DialogResult = vbCancel
     
     'Load the left/right side hue box arrow images from the resource file
-    Set leftSideArrow = New pdDIB
-    Set rightSideArrow = New pdDIB
     Set upArrow = New pdDIB
-    
-    LoadResourceToDIB "CLR_ARROW_L", leftSideArrow
-    LoadResourceToDIB "CLR_ARROW_R", rightSideArrow
     LoadResourceToDIB "CLR_ARROW_U", upArrow
     
     'The passed color may be an OLE constant rather than an actual RGB triplet, so convert it now.
@@ -667,6 +625,12 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     m_Red = Colors.ExtractRed(initialColor)
     m_Green = Colors.ExtractGreen(initialColor)
     m_Blue = Colors.ExtractBlue(initialColor)
+    sldRGB(0).NotchValueCustom = m_Red
+    sldRGB(0).DefaultValue = m_Red
+    sldRGB(1).NotchValueCustom = m_Green
+    sldRGB(1).DefaultValue = m_Green
+    sldRGB(2).NotchValueCustom = m_Blue
+    sldRGB(2).DefaultValue = m_Blue
     
     RGBtoHSV m_Red, m_Green, m_Blue, m_Hue, m_Saturation, m_Value
     
@@ -714,10 +678,6 @@ Private Sub PrepSpecialMouseHandling(ByVal handleMode As Boolean)
             
             For i = picSampleHSV.lBound To picSampleHSV.UBound
                 .AddInputTracker picSampleHSV(i).hWnd, True, False, False, True, True
-            Next i
-            
-            For i = picSampleRGB.lBound To picSampleRGB.UBound
-                .AddInputTracker picSampleRGB(i).hWnd, True, False, False, True, True
             Next i
             
             .SetSystemCursor IDC_HAND
@@ -942,9 +902,12 @@ Private Sub RedrawAllTextBoxes()
     m_suspendTextResync = True
     
     'Start by matching up the text values themselves
-    tudRGB(0) = m_Red
-    tudRGB(1) = m_Green
-    tudRGB(2) = m_Blue
+    sldRGB(0).Value = m_Red
+    sldRGB(1).Value = m_Green
+    sldRGB(2).Value = m_Blue
+    'tudRGB(0) = m_Red
+    'tudRGB(1) = m_Green
+    'tudRGB(2) = m_Blue
     
     tudHSV(0) = m_Hue * 359
     tudHSV(1) = m_Saturation * 100
@@ -955,34 +918,36 @@ Private Sub RedrawAllTextBoxes()
     arrowOffset = (upArrow.GetDIBWidth \ 2) - 1
     
     Dim leftOffset As Long
-    leftOffset = picSampleRGB(0).Left
+    leftOffset = picSampleHSV(0).Left
     
     Dim widthCheck As Long
-    widthCheck = picSampleRGB(0).ScaleWidth - 1
+    widthCheck = picSampleHSV(0).ScaleWidth - 1
     
     'Next, redraw all marker arrows
-    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((m_Red / 255) * widthCheck) - arrowOffset, picSampleRGB(0).Top + picSampleRGB(0).Height
-    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((m_Green / 255) * widthCheck) - arrowOffset, picSampleRGB(1).Top + picSampleRGB(1).Height
-    upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((m_Blue / 255) * widthCheck) - arrowOffset, picSampleRGB(2).Top + picSampleRGB(2).Height
+    'upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((m_Red / 255) * widthCheck) - arrowOffset, picSampleRGB(0).Top + picSampleRGB(0).Height
+    'upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((m_Green / 255) * widthCheck) - arrowOffset, picSampleRGB(1).Top + picSampleRGB(1).Height
+    'upArrow.AlphaBlendToDC Me.hDC, , leftOffset + ((m_Blue / 255) * widthCheck) - arrowOffset, picSampleRGB(2).Top + picSampleRGB(2).Height
     
     upArrow.AlphaBlendToDC Me.hDC, , leftOffset + (m_Hue * widthCheck) - arrowOffset, picSampleHSV(0).Top + picSampleHSV(0).Height
     upArrow.AlphaBlendToDC Me.hDC, , leftOffset + (m_Saturation * widthCheck) - arrowOffset, picSampleHSV(1).Top + picSampleHSV(1).Height
     upArrow.AlphaBlendToDC Me.hDC, , leftOffset + (m_Value * widthCheck) - arrowOffset, picSampleHSV(2).Top + picSampleHSV(2).Height
     
     'Next, we need to prep all our color bar DIBs
-    RenderSampleDIB sRed, ccRed
-    RenderSampleDIB sGreen, ccGreen
-    RenderSampleDIB sBlue, ccBlue
+    sldRGB(0).GradientColorLeft = RGB(0, m_Green, m_Blue)
+    sldRGB(0).GradientColorRight = RGB(255, m_Green, m_Blue)
+    sldRGB(1).GradientColorLeft = RGB(m_Red, 0, m_Blue)
+    sldRGB(1).GradientColorRight = RGB(m_Red, 255, m_Blue)
+    sldRGB(2).GradientColorLeft = RGB(m_Red, m_Green, 0)
+    sldRGB(2).GradientColorRight = RGB(m_Red, m_Green, 255)
+    'RenderSampleDIB sRed, ccRed
+    'RenderSampleDIB sGreen, ccGreen
+    'RenderSampleDIB sBlue, ccBlue
     
     RenderSampleDIB sHue, ccHue
     RenderSampleDIB sSaturation, ccSaturation
     RenderSampleDIB sValue, ccValue
     
     'Now we can render the bars to screen
-    sRed.RenderToPictureBox picSampleRGB(0)
-    sGreen.RenderToPictureBox picSampleRGB(1)
-    sBlue.RenderToPictureBox picSampleRGB(2)
-    
     sHue.RenderToPictureBox picSampleHSV(0)
     sSaturation.RenderToPictureBox picSampleHSV(1)
     sValue.RenderToPictureBox picSampleHSV(2)
@@ -1000,8 +965,8 @@ End Sub
 Private Sub RenderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As PD_COLOR_CHANGE)
 
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    If (dstDIB.GetDIBWidth <> picSampleRGB(0).ScaleWidth) Or (dstDIB.GetDIBHeight <> picSampleRGB(0).ScaleHeight) Then
-        dstDIB.CreateBlank picSampleRGB(0).ScaleWidth, picSampleRGB(0).ScaleHeight
+    If (dstDIB.GetDIBWidth <> picSampleHSV(0).ScaleWidth) Or (dstDIB.GetDIBHeight <> picSampleHSV(0).ScaleHeight) Then
+        dstDIB.CreateBlank picSampleHSV(0).ScaleWidth, picSampleHSV(0).ScaleHeight
     End If
     
     Dim r As Long, g As Long, b As Long
@@ -1109,7 +1074,7 @@ End Sub
 Private Sub HSVBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
 
     Dim boxWidth As Long
-    boxWidth = picSampleRGB(0).ScaleWidth
+    boxWidth = picSampleHSV(0).ScaleWidth
     
     'Restrict mouse clicks to the picture box area
     If xPos < 0 Then xPos = 0
@@ -1136,49 +1101,34 @@ Private Sub HSVBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
 
 End Sub
 
-Private Sub picSampleRGB_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
-    RGBBoxClicked Index, x
-End Sub
-
-Private Sub picSampleRGB_MouseMove(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
-    If Button = vbLeftButton Then RGBBoxClicked Index, x
-End Sub
-
-'Whenever one of the RGB sample boxes is clicked, this function is called; it calculates new RGB/HSV values, then redraws the interface
-Private Sub RGBBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
-
-    Dim boxWidth As Long
-    boxWidth = picSampleRGB(0).ScaleWidth
-    
-    'Restrict mouse clicks to the picture box area
-    If xPos < 0 Then xPos = 0
-    If xPos > boxWidth Then xPos = boxWidth
-
-    Select Case boxIndex
-    
-        Case ccRed
-            m_Red = (xPos / boxWidth) * 255
+Private Sub sldRGB_Change(Index As Integer)
         
-        Case ccGreen
-            m_Green = (xPos / boxWidth) * 255
+    If (Not m_suspendTextResync) Then
+    
+        'Update the current color values with the color of this box
+        Select Case Index
+            Case 0
+                m_Red = sldRGB(Index).Value
+            Case 1
+                m_Green = sldRGB(Index).Value
+            Case 2
+                m_Blue = sldRGB(Index).Value
+        End Select
         
-        Case ccBlue
-            m_Blue = (xPos / boxWidth) * 255
-    
-    End Select
-    
-    'Recalculate HSV based on the new RGB values
-    RGBtoHSV m_Red, m_Green, m_Blue, m_Hue, m_Saturation, m_Value
-    
-    'Redraw the interface
-    SyncInterfaceToCurrentColor
+        'Calculate new HSV values to match
+        RGBtoHSV m_Red, m_Green, m_Blue, m_Hue, m_Saturation, m_Value
+        
+        'Resync the interface to match the new value!
+        SyncInterfaceToCurrentColor
+        
+    End If
 
 End Sub
 
 'Whenever a text box value is changed, sync only the relevant value, then redraw the interface
 Private Sub tudHSV_Change(Index As Integer)
 
-    If Not m_suspendTextResync Then
+    If (Not m_suspendTextResync) Then
 
         Select Case (Index + 3)
         
@@ -1203,38 +1153,10 @@ Private Sub tudHSV_Change(Index As Integer)
 
 End Sub
 
-'Whenever a text box value is changed, sync only the relevant value, then redraw the interface
-Private Sub tudRGB_Change(Index As Integer)
-
-    If Not m_suspendTextResync Then
-
-        Select Case Index
-        
-            Case ccRed
-                If tudRGB(Index).IsValid Then m_Red = tudRGB(Index)
-            
-            Case ccGreen
-                If tudRGB(Index).IsValid Then m_Green = tudRGB(Index)
-        
-            Case ccBlue
-                If tudRGB(Index).IsValid Then m_Blue = tudRGB(Index)
-        
-        End Select
-        
-        'Recalculate HSV values based on the new RGB values
-        RGBtoHSV m_Red, m_Green, m_Blue, m_Hue, m_Saturation, m_Value
-        
-        'Redraw the interface
-        SyncInterfaceToCurrentColor
-        
-    End If
-
-End Sub
-
 'Full validation of hex input happens in its LostFocus event, but we also do a quick-and-dirty sync during change events
 Private Sub txtHex_Change()
     
-    If m_suspendHexInput Or m_suspendTextResync Then Exit Sub
+    If (m_suspendHexInput Or m_suspendTextResync) Then Exit Sub
     
     m_suspendHexInput = True
     

@@ -60,8 +60,8 @@ Public Event LostFocusAPI()
 'Used to internally track value, min, and max values as floating-points
 Private m_Value As Double, m_Min As Double, m_Max As Double
 
-'The number of significant digits for this control.  0 means integer values.
-Private m_significantDigits As Long
+'The number of significant digits for this control.  0 means integer-only values.
+Private m_SignificantDigits As Long
 
 'When the mouse is down on the slider, these values will be updated accordingly
 Private m_MouseDown As Boolean
@@ -85,7 +85,7 @@ Private m_SliderAreaWidth As Long, m_SliderAreaHeight As Long
 ' will automatically crop the supplied DIB to the rounded-rect shape required by the track, so the owner need only supply a stock
 ' rectangular DIB.
 Public Enum SLIDER_TRACK_STYLE
-    DefaultStyle = 0
+    DefaultTrackStyle = 0
     NoFrills = 1
     GradientTwoPoint = 2
     GradientThreePoint = 3
@@ -94,10 +94,24 @@ Public Enum SLIDER_TRACK_STYLE
 End Enum
 
 #If False Then
-    Const DefaultStyle = 0, NoFrills = 1, GradientTwoPoint = 2, GradientThreePoint = 3, HueSpectrum360 = 4, CustomOwnerDrawn = 5
+    Private Const DefaultTrackStyle = 0, NoFrills = 1, GradientTwoPoint = 2, GradientThreePoint = 3, HueSpectrum360 = 4, CustomOwnerDrawn = 5
 #End If
 
 Private m_SliderStyle As SLIDER_TRACK_STYLE
+
+'Knob style.  Most pdSlider controls use a circular knob atop a thin track (with rounded edges).  As of 7.0, a new "square" option
+' was created, which is used on the color selection screen for the individual channel sliders.  While this is called "knob style",
+' it does affect the shape of the underlying track, as well.
+Public Enum SLIDER_KNOB_STYLE
+    DefaultKnobStyle = 0
+    SquareStyle = 1
+End Enum
+
+#If False Then
+    Private Const DefaultKnobStyle = 0, SquareStyle = 1
+#End If
+
+Private m_KnobStyle As SLIDER_KNOB_STYLE
 
 'Gradient colors.  For the two-color gradient style, only colors Left and Right are relevant.  Color Middle is used for the
 ' 3-color style only, and note that it *must* be accompanied by an owner-supplied middle position value.
@@ -193,7 +207,7 @@ End Property
 
 Public Property Let GradientColorLeft(ByVal newColor As OLE_COLOR)
     newColor = ConvertSystemColor(newColor)
-    If newColor <> m_GradientColorLeft Then
+    If (newColor <> m_GradientColorLeft) Then
         m_GradientColorLeft = newColor
         CreateGradientTrack
         RedrawSlider
@@ -207,7 +221,7 @@ End Property
 
 Public Property Let GradientColorMiddle(ByVal newColor As OLE_COLOR)
     newColor = ConvertSystemColor(newColor)
-    If newColor <> m_GradientColorMiddle Then
+    If (newColor <> m_GradientColorMiddle) Then
         m_GradientColorMiddle = newColor
         CreateGradientTrack
         RedrawSlider
@@ -221,7 +235,7 @@ End Property
 
 Public Property Let GradientColorRight(ByVal newColor As OLE_COLOR)
     newColor = ConvertSystemColor(newColor)
-    If newColor <> m_GradientColorRight Then
+    If (newColor <> m_GradientColorRight) Then
         m_GradientColorRight = newColor
         CreateGradientTrack
         RedrawSlider
@@ -235,7 +249,7 @@ Public Property Get GradientMiddleValue() As Double
 End Property
 
 Public Property Let GradientMiddleValue(ByVal newValue As Double)
-    If newValue <> m_GradientMiddleValue Then
+    If (newValue <> m_GradientMiddleValue) Then
         m_GradientMiddleValue = newValue
         CreateGradientTrack
         RedrawSlider
@@ -255,7 +269,7 @@ End Property
 Public Property Let Max(ByVal newValue As Double)
     
     m_Max = newValue
-    If m_Value > m_Max Then Value = m_Max
+    If (m_Value > m_Max) Then Value = m_Max
     
     'If the background track style has a custom appearance (like a gradient), changing the maximum value potentially
     ' alters its appearance.  We have no choice but to recreate that background track image now.
@@ -273,7 +287,7 @@ End Property
 Public Property Let Min(ByVal newValue As Double)
     
     m_Min = newValue
-    If m_Value < m_Min Then Value = m_Min
+    If (m_Value < m_Min) Then Value = m_Min
     
     'If the background track style has a custom appearance (like a gradient), changing the maximum value potentially
     ' alters its appearance.  We have no choice but to recreate that background track image now.
@@ -310,12 +324,24 @@ End Property
 ' Because the slider's position is locked to allowable values, this setting requires a redraw, so try to limit how frequently
 ' you modify it.
 Public Property Get SigDigits() As Long
-    SigDigits = m_significantDigits
+    SigDigits = m_SignificantDigits
 End Property
 
 Public Property Let SigDigits(ByVal newValue As Long)
-    m_significantDigits = newValue
+    m_SignificantDigits = newValue
     PropertyChanged "SigDigits"
+End Property
+
+'Knob style has no mechanical bearing on the control - it only affects visual appearance.  As such, the correctness of its
+' behavior is not guaranteed if you change this setting at run-time.
+Public Property Get SliderKnobStyle() As SLIDER_KNOB_STYLE
+    SliderKnobStyle = m_KnobStyle
+End Property
+
+Public Property Let SliderKnobStyle(ByVal newStyle As SLIDER_KNOB_STYLE)
+    m_KnobStyle = newStyle
+    RedrawSlider
+    PropertyChanged "SliderKnobStyle"
 End Property
 
 'Track style has no mechanical bearing on the control - it only affects visual appearance.  As such, the correctness of its
@@ -343,10 +369,10 @@ Public Property Let Value(ByVal newValue As Double)
         m_FirstChangeEvent = False
         m_Value = newValue
         
-        'This control handles bound-checking differently from most common controls.  Out-of-bound value requests are silently
-        ' forced in-bounds.  This is by design, and the behavior cannot be modified by the caller.
-        If m_Value < m_Min Then m_Value = m_Min
-        If m_Value > m_Max Then m_Value = m_Max
+        'This control handles bound-checking differently from most common controls.  Out-of-bound value requests are
+        ' silently forced in-bounds.  This is by design.
+        If (m_Value < m_Min) Then m_Value = m_Min
+        If (m_Value > m_Max) Then m_Value = m_Max
                 
         'Because we support subpixel positioning for the slider, value changes always require a redraw, even if the slider's
         ' position only changes by a miniscule amount
@@ -392,6 +418,10 @@ Public Sub SetHeight(ByVal newHeight As Long)
     ucSupport.RequestNewSize , newHeight, True
 End Sub
 
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
 'This function serves two purposes: most of the time, we use it for hit-detection against the track slider, but some functions
 ' also use it to check hit-detection against the underlying track, which allows for "jump to position" behavior.
 Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Single, Optional ByVal alsoCheckBackgroundTrack As Boolean = True) As Boolean
@@ -400,17 +430,29 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     Dim sliderX As Single, sliderY As Single
     GetSliderCoordinates sliderX, sliderY
     
+    Dim overSlider As Boolean
+    If (m_KnobStyle = DefaultKnobStyle) Then
+        overSlider = CBool(DistanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < (FixDPIFloat(SLIDER_DIAMETER) / 2))
+    Else
+        Dim tmpRectF As RECTF
+        GetKnobRectF tmpRectF
+        overSlider = Math_Functions.IsPointInRectF(mouseX, mouseY, tmpRectF)
+    End If
+    
     'See if the mouse is within distance of the slider's center
-    If DistanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < (FixDPIFloat(SLIDER_DIAMETER) / 2) Then
+    If overSlider Then
         IsMouseOverSlider = True
     Else
         
         'If the mouse is not over the slider itself, check the background track as well
-        If IsPointInRectF(mouseX, mouseY, m_SliderTrackRect) And alsoCheckBackgroundTrack Then
-            IsMouseOverSlider = True
-        Else
-            IsMouseOverSlider = False
+        If alsoCheckBackgroundTrack Then
+            If Math_Functions.IsPointInRectF(mouseX, mouseY, m_SliderTrackRect) Then
+                IsMouseOverSlider = True
+            Else
+                IsMouseOverSlider = False
+            End If
         End If
+        
     End If
 
 End Function
@@ -440,8 +482,8 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
             m_MouseOverSlider = True
             m_MouseOverSliderTrack = False
             
-            'Calculate a new control value.  This will cause the slider to "jump" to a slightly modified position,
-            ' if positions are restricted by some combination of the total range and significant digit allowance.
+            'Calculate a new control value.  This will cause the slider to "jump" to a slightly modified position.
+            ' (Positions may be restricted by the control's value range, and/or significant digit property.)
             Value = (m_Max - m_Min) * ((x - GetTrackLeft) / (GetTrackRight - GetTrackLeft)) + m_Min
             
             'Retrieve the current slider x/y values, and store the mouse position relative to those values
@@ -484,6 +526,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     Else
         
         m_MouseOverSlider = IsMouseOverSlider(x, y, False)
+        
         If m_MouseOverSlider Then
             m_MouseOverSliderTrack = False
         Else
@@ -491,7 +534,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             m_MouseTrackX = x
         End If
         
-        If m_MouseOverSlider Or m_MouseOverSliderTrack Then
+        If (m_MouseOverSlider Or m_MouseOverSliderTrack) Then
             ucSupport.RequestCursor IDC_HAND
         Else
             ucSupport.RequestCursor IDC_ARROW
@@ -507,7 +550,7 @@ End Sub
 ' If intensive processing occurred while the slider was being used, this ensures that the mouse location at its
 ' exact point of release is correctly rendered.
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    If ((Button And pdLeftButton) <> 0) And m_MouseDown Then
+    If (((Button And pdLeftButton) <> 0) And m_MouseDown) Then
         Value = (m_Max - m_Min) * (((x + m_InitX) - GetTrackLeft) / (GetTrackRight - GetTrackLeft)) + m_Min
         m_MouseDown = False
     End If
@@ -560,11 +603,13 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+
     Value = 0
     Min = 0
     Max = 10
     SigDigits = 0
-    SliderTrackStyle = DefaultStyle
+    SliderTrackStyle = DefaultTrackStyle
+    SliderKnobStyle = DefaultKnobStyle
     
     'These default gradient values are useless; if you're using a gradient style, MAKE CERTAIN TO SPECIFY ACTUAL COLORS!
     GradientColorLeft = RGB(0, 0, 0)
@@ -578,6 +623,7 @@ Private Sub UserControl_InitProperties()
     ' the custom value you want in the corresponding property!
     NotchPosition = AutomaticPosition
     NotchValueCustom = 0
+    
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -597,12 +643,13 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         GradientMiddleValue = .ReadProperty("GradientMiddleValue", 0)
         NotchPosition = .ReadProperty("NotchPosition", 0)
         NotchValueCustom = .ReadProperty("NotchValueCustom", 0)
-        SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultStyle)
+        SliderKnobStyle = .ReadProperty("SliderKnobStyle", DefaultKnobStyle)
+        SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultTrackStyle)
     End With
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
 End Sub
 
 'If the track style is some kind of custom gradient, make sure our internal gradient backdrop is valid before the control
@@ -616,7 +663,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Min", m_Min, 0
         .WriteProperty "Max", m_Max, 10
-        .WriteProperty "SigDigits", m_significantDigits, 0
+        .WriteProperty "SigDigits", m_SignificantDigits, 0
         .WriteProperty "Value", m_Value, 0
         .WriteProperty "GradientColorLeft", m_GradientColorLeft, RGB(0, 0, 0)
         .WriteProperty "GradientColorRight", m_GradientColorRight, RGB(255, 255, 255)
@@ -624,7 +671,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "GradientMiddleValue", m_GradientMiddleValue, 0
         .WriteProperty "NotchPosition", m_NotchPosition, 0
         .WriteProperty "NotchValueCustom", m_CustomNotchValue, 0
-        .WriteProperty "SliderTrackStyle", m_SliderStyle, DefaultStyle
+        .WriteProperty "SliderKnobStyle", m_KnobStyle, DefaultKnobStyle
+        .WriteProperty "SliderTrackStyle", m_SliderStyle, DefaultTrackStyle
     End With
 End Sub
 
@@ -642,10 +690,10 @@ Private Sub UpdateControlLayout()
             
 End Sub
 
-'Render a custom slider to the slider area picture box.  Note that the background gradient, if any, should already have been created
+'Render a custom slider to the slider area.  Note that the background gradient, if any, should already have been created
 ' in a separate CreateGradientTrack request.
 Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
-
+    
     'Drawing is done in several stages.  The bulk of the slider is rendered to a persistent slider-only DIB, which contains everything
     ' but the knob and "highlighted" portion of the track.  These are rendered in a separate step, as they are the most common update
     ' required, and we can shortcut the process by not redrawing the full slider on every update.
@@ -657,7 +705,7 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     
     Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
     
-    'Initialize or repaint the background DIB, as necessary
+    'Start by painting the control background
     m_SliderAreaWidth = ucSupport.GetBackBufferWidth
     m_SliderAreaHeight = ucSupport.GetBackBufferHeight
     If (m_SliderBackgroundDIB.GetDIBWidth <> m_SliderAreaWidth) Or (m_SliderBackgroundDIB.GetDIBHeight <> m_SliderAreaHeight) Then
@@ -671,26 +719,33 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
         End If
     End If
         
-    'There are a few components to the slider:
-    ' 1) The track that sits behind the slider.  It has two relevant parameters: a radius, and a color.  Its width is automatically
-    '     calculated relevant to the width of the control as a whole.
-    ' 2) The slider knob that sits atop the track.  It has three relevant parameters: a radius, a fill color, and an edge color.
-    '     Its width is constant from a programmatic standpoint, though it does get updated at run-time to account for screen DPI.
+    'There are two main components to the slider:
+    ' 1) The track that sits behind the slider.  Its appearance varies depending on the current knob style.  (I realize this
+    '     is confusing; sorry.)  Note that the track's width is automatically calculated against the current control width.
+    ' 2) The slider knob that sits atop the track.  Its width is constant from a programmatic standpoint, though it does get
+    '     updated at run-time to account for screen DPI.
     
-    'We are going to assemble part (1) in this step.
+    'This function is responsible for rendering component (1).
     
-    'We always start with the default style: a gray track with rounded edges
+    'Regardless of control enablement, we always render the track background.  (If the control is *enabled*, we will draw
+    ' much more on top of this!)
     If g_IsProgramRunning Then
-        Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Round
-        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        If (m_KnobStyle = DefaultKnobStyle) Then
+            Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Round
+            cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        ElseIf (m_KnobStyle = SquareStyle) Then
+            Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Square
+            cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        End If
         m_Painter.DrawLineF cSurface, cPen, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2
     End If
     
     Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
+    'The rest of the track is only rendered if the control is currently enabled.
     If Me.Enabled And g_IsProgramRunning Then
     
-        'This control supports a variety of specialty track styles.  Some of these styles require a DIB supplied by the owner -
+        'This control supports a variety of specialty slider styles.  Some of these styles require a DIB supplied by the owner -
         ' note that they *will not* render properly until that DIB is provided!
         Select Case m_SliderStyle
             
@@ -907,7 +962,11 @@ Private Sub CreateGradientTrack()
     'Next, render a slightly smaller line than the typical track onto the alpha mask.  Antialiasing will automatically set the relevant
     ' alpha bytes for the region of interest.
     Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, True
-    Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
+    If (m_KnobStyle = DefaultKnobStyle) Then
+        Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
+    ElseIf (m_KnobStyle = SquareStyle) Then
+        Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Square
+    End If
     m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself
@@ -926,17 +985,36 @@ Private Sub GetSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Singl
     
     'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
     ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
-    If m_Min <> m_Max Then
+    If (m_Min <> m_Max) Then
         
         'If an integer-only slider is in use, we use a slightly modified formula
-        If SigDigits = 0 Then sliderX = (Int(m_Value + 0.5) - m_Min) Else sliderX = (m_Value - m_Min)
+        If (m_SignificantDigits = 0) Then sliderX = (Int(m_Value + 0.5) - m_Min) Else sliderX = (m_Value - m_Min)
         sliderX = GetTrackLeft + (sliderX / (m_Max - m_Min)) * (GetTrackRight - GetTrackLeft)
         
     Else
         sliderX = GetTrackLeft
     End If
     
-    If SigDigits = 0 Then sliderY = m_SliderAreaHeight \ 2 Else sliderY = m_SliderAreaHeight / 2
+    If (SigDigits = 0) Then sliderY = m_SliderAreaHeight \ 2 Else sliderY = m_SliderAreaHeight / 2
+    
+End Sub
+
+'PLEASE NOTE: this function is only relevant if m_KnobStyle is *NOT* set to the default style.
+Private Sub GetKnobRectF(ByRef dstRect As RECTF)
+    
+    Dim sX As Single, sY As Single
+    GetSliderCoordinates sX, sY
+    
+    If (m_KnobStyle = SquareStyle) Then
+        With dstRect
+            .Left = sX - m_SliderDiameter / 3
+            .Width = m_SliderDiameter * (2 / 3)
+            .Top = sY - m_SliderDiameter / 2
+            .Height = m_SliderDiameter
+        End With
+    Else
+        Debug.Print "WARNING! DO NOT USE pdSliderStandalone.GetKnobRectF FOR STANDARD SLIDERS!"
+    End If
     
 End Sub
 
@@ -945,7 +1023,7 @@ Private Sub GetCustomValueCoordinates(ByVal customValue As Single, ByRef customX
     
     'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
     ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
-    If m_Min <> m_Max Then
+    If (m_Min <> m_Max) Then
         customX = GetTrackLeft + ((customValue - m_Min) / (m_Max - m_Min)) * (GetTrackRight - GetTrackLeft)
     Else
         customX = GetTrackLeft
@@ -956,9 +1034,10 @@ Private Sub GetCustomValueCoordinates(ByVal customValue As Single, ByRef customX
 End Sub
 
 'Returns a single increment amount for the current control.  The increment amount varies according to the significant digits setting;
-' it can be as high as 1.0, or as low as 0.01.
+' it can be as high as 1.0, or as low as 0.01.  In a pdSlider control, this value is used by the spinner control to determine up/down
+' value changes when the arrows are clicked.
 Private Function GetIncrementAmount() As Double
-    GetIncrementAmount = 1 / (10 ^ m_significantDigits)
+    GetIncrementAmount = 1 / (10 ^ m_SignificantDigits)
 End Function
 
 'Return the min/max position of the track behind the slider.  This is used for a lot of things: rendering the track, calculating the
@@ -1013,7 +1092,7 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         
-        If (m_SliderStyle = DefaultStyle) Then
+        If ((m_SliderStyle = DefaultTrackStyle) And (m_KnobStyle = DefaultKnobStyle)) Then
         
             'Determine a minimum value for the control, using the formula provided:
             ' 1) If 0 is a valid control value, use 0.
@@ -1035,14 +1114,29 @@ Private Sub RedrawBackBuffer(Optional ByVal refreshImmediately As Boolean = Fals
         End If
         
         'Finally, draw the thumb
-        Drawing2D.QuickCreateSolidBrush cBrush, thumbFillColor
-        m_Painter.FillCircleF cSurface, cBrush, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
+        If (m_KnobStyle = DefaultKnobStyle) Then
+            Drawing2D.QuickCreateSolidBrush cBrush, thumbFillColor
+            m_Painter.FillCircleF cSurface, cBrush, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
         
-        'Draw the edge (exterior) circle around the slider.
-        Dim sliderWidth As Single
-        If m_MouseOverSlider Then sliderWidth = 2.5 Else sliderWidth = 1.5
-        Drawing2D.QuickCreateSolidPen cPen, sliderWidth, thumbBorderColor
-        m_Painter.DrawCircleF cSurface, cPen, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
+            'Draw the edge (exterior) circle around the slider.
+            Dim sliderWidth As Single
+            If m_MouseOverSlider Then sliderWidth = 2.5 Else sliderWidth = 1.5
+            Drawing2D.QuickCreateSolidPen cPen, sliderWidth, thumbBorderColor
+            m_Painter.DrawCircleF cSurface, cPen, relevantSliderPosX, relevantSliderPosY, m_SliderDiameter \ 2
+        
+        ElseIf (m_KnobStyle = SquareStyle) Then
+            
+            Dim cPenTop As pd2DPen
+            Drawing2D.QuickCreatePairOfUIPens cPen, cPenTop, m_MouseOverSlider
+            
+            Dim tmpRectF As RECTF
+            GetKnobRectF tmpRectF
+            m_Painter.DrawRectangleF_FromRectF cSurface, cPen, tmpRectF
+            m_Painter.DrawRectangleF_FromRectF cSurface, cPenTop, tmpRectF
+            
+            Set cPenTop = Nothing
+            
+        End If
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
         
