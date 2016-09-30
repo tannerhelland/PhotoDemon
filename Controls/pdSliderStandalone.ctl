@@ -195,7 +195,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    RedrawSlider
+    RenderTrack
     PropertyChanged "Enabled"
 End Property
 
@@ -210,7 +210,7 @@ Public Property Let GradientColorLeft(ByVal newColor As OLE_COLOR)
     If (newColor <> m_GradientColorLeft) Then
         m_GradientColorLeft = newColor
         CreateGradientTrack
-        RedrawSlider
+        RenderTrack
         PropertyChanged "GradientColorLeft"
     End If
 End Property
@@ -224,7 +224,7 @@ Public Property Let GradientColorMiddle(ByVal newColor As OLE_COLOR)
     If (newColor <> m_GradientColorMiddle) Then
         m_GradientColorMiddle = newColor
         CreateGradientTrack
-        RedrawSlider
+        RenderTrack
         PropertyChanged "GradientColorMiddle"
     End If
 End Property
@@ -238,7 +238,7 @@ Public Property Let GradientColorRight(ByVal newColor As OLE_COLOR)
     If (newColor <> m_GradientColorRight) Then
         m_GradientColorRight = newColor
         CreateGradientTrack
-        RedrawSlider
+        RenderTrack
         PropertyChanged "GradientColorRight"
     End If
 End Property
@@ -252,7 +252,7 @@ Public Property Let GradientMiddleValue(ByVal newValue As Double)
     If (newValue <> m_GradientMiddleValue) Then
         m_GradientMiddleValue = newValue
         CreateGradientTrack
-        RedrawSlider
+        RenderTrack
         PropertyChanged "GradientMiddleValue"
     End If
 End Property
@@ -275,7 +275,7 @@ Public Property Let Max(ByVal newValue As Double)
     ' alters its appearance.  We have no choice but to recreate that background track image now.
     If (m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Then CreateGradientTrack
     
-    RedrawSlider
+    RenderTrack
     PropertyChanged "Max"
     
 End Property
@@ -293,7 +293,7 @@ Public Property Let Min(ByVal newValue As Double)
     ' alters its appearance.  We have no choice but to recreate that background track image now.
     If (m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Then CreateGradientTrack
     
-    RedrawSlider
+    RenderTrack
     PropertyChanged "Min"
     
 End Property
@@ -305,7 +305,7 @@ End Property
 
 Public Property Let NotchPosition(ByVal newPosition As SLIDER_NOTCH_POSITION)
     m_NotchPosition = newPosition
-    RedrawSlider
+    RenderTrack
     PropertyChanged "NotchPosition"
 End Property
 
@@ -316,7 +316,7 @@ End Property
 
 Public Property Let NotchValueCustom(ByVal newValue As Double)
     m_CustomNotchValue = newValue
-    RedrawSlider
+    RenderTrack
     PropertyChanged "NotchValueCustom"
 End Property
 
@@ -340,7 +340,7 @@ End Property
 
 Public Property Let SliderKnobStyle(ByVal newStyle As SLIDER_KNOB_STYLE)
     m_KnobStyle = newStyle
-    RedrawSlider
+    RenderTrack
     PropertyChanged "SliderKnobStyle"
 End Property
 
@@ -352,7 +352,7 @@ End Property
 
 Public Property Let SliderTrackStyle(ByVal newStyle As SLIDER_TRACK_STYLE)
     m_SliderStyle = newStyle
-    RedrawSlider
+    RenderTrack
     PropertyChanged "SliderTrackStyle"
 End Property
 
@@ -505,7 +505,7 @@ End Sub
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseOverSlider = False
     m_MouseOverSliderTrack = False
-    RedrawSlider
+    RenderTrack
     ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
@@ -656,7 +656,7 @@ End Sub
 ' is shown for the first time.
 Private Sub UserControl_Show()
     UpdateControlLayout
-    RedrawSlider
+    RenderTrack
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -686,13 +686,13 @@ Private Sub UpdateControlLayout()
     
     'Redraw any custom background images, followed by the whole slider
     If ((m_SliderStyle = GradientTwoPoint) Or (m_SliderStyle = GradientThreePoint) Or (m_SliderStyle = HueSpectrum360)) Then CreateGradientTrack
-    RedrawSlider
+    RenderTrack
             
 End Sub
 
 'Render a custom slider to the slider area.  Note that the background gradient, if any, should already have been created
 ' in a separate CreateGradientTrack request.
-Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
+Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False)
     
     'Drawing is done in several stages.  The bulk of the slider is rendered to a persistent slider-only DIB, which contains everything
     ' but the knob and "highlighted" portion of the track.  These are rendered in a separate step, as they are the most common update
@@ -729,15 +729,28 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     
     'Regardless of control enablement, we always render the track background.  (If the control is *enabled*, we will draw
     ' much more on top of this!)
+    Dim tmpRectF As RECTF
     If g_IsProgramRunning Then
+    
+        'For default slider knobs, the underlying track is simply a line with rounded edges
         If (m_KnobStyle = DefaultKnobStyle) Then
             Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Round
             cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+            m_Painter.DrawLineF cSurface, cPen, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2
+            
+        'For a hollow-style knob, the underlying track is much larger, to make it easier to see the portion of the track
+        ' selected by the current knob.
         ElseIf (m_KnobStyle = SquareStyle) Then
-            Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter + 1, trackColor, , , P2_LC_Square
+            Drawing2D.QuickCreateSolidBrush cBrush, trackColor
             cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+            
+            Dim trackRadius As Single
+            trackRadius = (m_TrackDiameter) \ 2
+            
+            GetKnobRectF tmpRectF
+            m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, GetTrackLeft - trackRadius, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 1, GetTrackRight + trackRadius + 1, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 1
         End If
-        m_Painter.DrawLineF cSurface, cPen, GetTrackLeft, m_SliderAreaHeight \ 2, GetTrackRight, m_SliderAreaHeight \ 2
+        
     End If
     
     Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
@@ -755,7 +768,11 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
             ' sharp 1px border.)
             Case GradientTwoPoint, GradientThreePoint, HueSpectrum360
                 If (m_GradientDIB Is Nothing) Then CreateGradientTrack
-                m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2), 0
+                If (m_KnobStyle = DefaultKnobStyle) Then
+                    m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2), 0
+                ElseIf (m_KnobStyle = SquareStyle) Then
+                    m_GradientDIB.AlphaBlendToDC m_SliderBackgroundDIB.GetDIBDC, 255, GetTrackLeft - (m_TrackDiameter \ 2) + 1, 0
+                End If
                 m_GradientDIB.FreeFromDC
             
             'In the future, we may support fully owner-drawn sliders, but this is not currently implemented.
@@ -774,8 +791,16 @@ Private Sub RedrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     With m_SliderTrackRect
         .Left = GetTrackLeft
         .Width = GetTrackRight - .Left
-        .Top = (m_SliderAreaHeight / 2) - ((m_TrackDiameter + 1) / 2)
-        .Height = m_TrackDiameter + 1
+        
+        'Top and height vary depending on the current knob style
+        If (m_KnobStyle = DefaultKnobStyle) Then
+            .Top = (m_SliderAreaHeight / 2) - ((m_TrackDiameter + 1) / 2)
+            .Height = m_TrackDiameter + 1
+        ElseIf (m_KnobStyle = SquareStyle) Then
+            .Top = tmpRectF.Top + 1
+            .Height = tmpRectF.Height - 2
+        End If
+        
     End With
         
     'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
@@ -840,11 +865,19 @@ Private Sub DrawNotchToDIB(ByRef dstDIB As pdDIB)
         Dim customX As Single, customY As Single
         GetCustomValueCoordinates renderNotchValue, customX, customY
         
-        'Calculate the height of the notch; this varies by DPI, which is automatically factored into m_trackDiameter
+        'Calculate the height of the notch; this varies by DPI, which is automatically factored into m_trackDiameter.
+        ' Note that the size of the notch also varies depending on the current knob style.  (Default sliders use a
+        ' thin track and a large, round knob - so they get a larger notch - while hollow sliders get a smaller notch,
+        ' on account of their thicker track.)
         Dim notchSize As Single
-        notchSize = (m_SliderAreaHeight - m_TrackDiameter) \ 2 - 4
+        If (m_KnobStyle = DefaultKnobStyle) Then
+            notchSize = (m_SliderAreaHeight - m_TrackDiameter) \ 2 - 4
+        ElseIf (m_KnobStyle = SquareStyle) Then
+            Dim tmpRectF As RECTF
+            GetKnobRectF tmpRectF
+            notchSize = (m_SliderAreaHeight - tmpRectF.Height) \ 2 - 1
+        End If
         
-        'Currently, we draw a detached notch above and below the slider's track
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
         Drawing2D.QuickCreateSolidPen cPen, 1#, notchColor, , , P2_LC_Flat
@@ -964,10 +997,20 @@ Private Sub CreateGradientTrack()
     Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, True
     If (m_KnobStyle = DefaultKnobStyle) Then
         Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
+        m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
+    
+    'When using a hollow knob, we make the underlying gradient much larger, so it's easier for the user to see the color
+    ' beneath the current position.
     ElseIf (m_KnobStyle = SquareStyle) Then
-        Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Square
+    
+        Dim cBrush As pd2DBrush
+        Drawing2D.QuickCreateSolidBrush cBrush, vbBlack
+        
+        Dim tmpRectF As RECTF
+        GetKnobRectF tmpRectF
+        m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 2, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
+        
     End If
-    m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself
     m_GradientDIB.CopyAlphaFromExistingDIB alphaMask
