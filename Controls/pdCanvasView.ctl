@@ -215,7 +215,7 @@ Public Sub ClearCanvas()
 
             'Just above the text instructions, add a generic image icon
             iconLoadAnImage.AlphaBlendToDC bufferDC, 192, (bWidth - iconLoadAnImage.GetDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.GetDIBHeight) - FixDPI(20)
-
+            
         End If
 
         notifyFont.ReleaseFromDC

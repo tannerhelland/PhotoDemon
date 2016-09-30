@@ -1111,6 +1111,11 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 DeleteObject hBitmap
                 GDI.FreeMemoryDC gdiDC
                 
+                'As an added bonus, free the destination DIB from its DC as well.  (pdDIB objects automatically
+                ' select themselves into a DC, as necessary, so if this DIB isn't needed right away, we can
+                ' spare usage of a DC until it actually needs to be rendered.)
+                dstDIB.FreeFromDC
+                
                 LoadResourceToDIB = True
                 
             Else

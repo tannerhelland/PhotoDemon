@@ -350,6 +350,7 @@ Private Sub RedrawBackBuffer()
             'Paint the thumb rect without regard for the image region (as it will always be a square)
             With m_ThumbRect
                 GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_ImageThumbnail, 0, 0, .Width, .Height, , GP_IM_HighQualityBicubic, bufferDC
+                m_ImageThumbnail.FreeFromDC
             End With
                         
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself,

@@ -621,14 +621,19 @@ Private Sub RedrawBackBuffer()
         
         If (Not (sbIconCoords Is Nothing)) And m_LastEnabledState Then
             sbIconCoords.AlphaBlendToDC bufferDC, , m_LinePositions(1) + FixDPI(8), FixDPI(4), FixDPI(sbIconCoords.GetDIBWidth), FixDPI(sbIconCoords.GetDIBHeight)
+            sbIconCoords.FreeFromDC
         End If
         
         'Render the network access icon as necessary
         If m_NetworkAccessActive Then
             If m_LastEnabledState Then
                 sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(2) + FixDPI(8), FixDPI(4), FixDPI(sbIconNetwork.GetDIBWidth), FixDPI(sbIconNetwork.GetDIBHeight)
+                sbIconNetwork.FreeFromDC
             Else
-                If m_NetworkAccessActive Then sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(0), FixDPI(4), FixDPI(sbIconNetwork.GetDIBWidth), FixDPI(sbIconNetwork.GetDIBHeight)
+                If m_NetworkAccessActive Then
+                    sbIconNetwork.AlphaBlendToDC bufferDC, , m_LinePositions(0), FixDPI(4), FixDPI(sbIconNetwork.GetDIBWidth), FixDPI(sbIconNetwork.GetDIBHeight)
+                    sbIconNetwork.FreeFromDC
+                End If
             End If
         End If
         
