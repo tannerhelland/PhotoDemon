@@ -338,7 +338,6 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-'Mouse events are TODO
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Ignore user interaction while in drag/drop mode
@@ -371,7 +370,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             End If
             
             'Redraw the layer box to represent any changes from this interaction.
-            ' NOTE: this is not currently necessary, as all interactions will automatically force a redraw on their own.
+            ' NOTE: this is not currently necessary, as all interactions automatically force a redraw on their own.
             'RedrawLayerBox
                         
         End If
@@ -447,8 +446,6 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
             'I'm currently working on letting the user tab through the layer list, then tab *out of the control* upon reaching
             ' the last layer.  But this requires some changes to the pdCanvas control (it's complicated), so this doesn't work just yet.
             If (curLayerIndex >= 0) And (curLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers) Then
-                
-                'Debug.Print "HANDLING KEY!"
                 
                 'Activate the new layer
                 pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
@@ -971,7 +968,6 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
         
         'Determine an offset based on the current scroll bar value
-        'TODO!
         Dim scrollOffset As Long
         scrollOffset = m_ScrollValue
         
@@ -1067,8 +1063,10 @@ Private Sub RedrawBackBuffer()
                             
                             If tmpLayerRef.GetLayerVisibility Then
                                 img_EyeOpen.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
+                                img_EyeOpen.FreeFromDC
                             Else
                                 img_EyeClosed.AlphaBlendToDC bufferDC, 255, objOffsetX, objOffsetY
+                                img_EyeClosed.FreeFromDC
                             End If
                             
                             'Move the running offsets right
