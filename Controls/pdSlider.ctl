@@ -267,6 +267,15 @@ Public Property Let SigDigits(ByVal newValue As Long)
     PropertyChanged "SigDigits"
 End Property
 
+Public Property Get SliderKnobStyle() As SLIDER_KNOB_STYLE
+    SliderKnobStyle = pdssPrimary.SliderKnobStyle
+End Property
+
+Public Property Let SliderKnobStyle(ByVal newStyle As SLIDER_KNOB_STYLE)
+    pdssPrimary.SliderKnobStyle = newStyle
+    PropertyChanged "SliderKnobStyle"
+End Property
+
 Public Property Get SliderTrackStyle() As SLIDER_TRACK_STYLE
     SliderTrackStyle = pdssPrimary.SliderTrackStyle
 End Property
@@ -411,7 +420,8 @@ Private Sub UserControl_InitProperties()
     SigDigits = 0
     Value = 0
     
-    SliderTrackStyle = DefaultStyle
+    SliderKnobStyle = DefaultKnobStyle
+    SliderTrackStyle = DefaultTrackStyle
     GradientColorLeft = RGB(0, 0, 0)
     GradientColorRight = RGB(255, 255, 25)
     GradientColorMiddle = RGB(121, 131, 135)
@@ -430,7 +440,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         SigDigits = .ReadProperty("SigDigits", 0)
         Max = .ReadProperty("Max", 10)
         Min = .ReadProperty("Min", 0)
-        SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultStyle)
+        SliderKnobStyle = .ReadProperty("SliderKnobStyle", DefaultKnobStyle)
+        SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultTrackStyle)
         Value = .ReadProperty("Value", 0)
         GradientColorLeft = .ReadProperty("GradientColorLeft", RGB(0, 0, 0))
         GradientColorRight = .ReadProperty("GradientColorRight", RGB(255, 255, 255))
@@ -465,7 +476,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Min", Me.Min, 0
         .WriteProperty "Max", Me.Max, 10
         .WriteProperty "SigDigits", Me.SigDigits, 0
-        .WriteProperty "SliderTrackStyle", Me.SliderTrackStyle, DefaultStyle
+        .WriteProperty "SliderKnobStyle", Me.SliderKnobStyle, DefaultKnobStyle
+        .WriteProperty "SliderTrackStyle", Me.SliderTrackStyle, DefaultTrackStyle
         .WriteProperty "Value", Me.Value, 0
         .WriteProperty "GradientColorLeft", Me.GradientColorLeft, RGB(0, 0, 0)
         .WriteProperty "GradientColorRight", Me.GradientColorRight, RGB(255, 255, 255)
