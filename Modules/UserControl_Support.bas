@@ -119,9 +119,19 @@ Private Const PD_TT_EXTERNAL_PADDING As Long = 2
 Private Const PD_TT_INTERNAL_PADDING As Long = 6
 Private Const PD_TT_MAX_WIDTH As Long = 400         'Tips larger than this will be word-wrapped to fit.
 Private Const PD_TT_TITLE_PADDING As Long = 4       'Pixels between the tip title (if any) and caption
-Private Const SWP_SHOWWINDOW As Long = &H40
-Private Const SWP_NOACTIVATE As Long = &H10
+Private Const SWP_ASYNCWINDOWPOS As Long = &H4000
 Private Const SWP_FRAMECHANGED As Long = &H20
+Private Const SWP_NOACTIVATE As Long = &H10
+Private Const SWP_NOMOVE As Long = &H2
+Private Const SWP_NOOWNERZORDER As Long = &H200
+Private Const SWP_NOREDRAW As Long = &H8
+Private Const SWP_NOSENDCHANGING As Long = &H400
+Private Const SWP_NOSIZE As Long = &H1
+Private Const SWP_HIDEWINDOW As Long = &H80
+Private Const SWP_SHOWWINDOW As Long = &H40
+Private Const SWP_NOZORDER As Long = &H4
+Private Const SWP_DRAWFRAME As Long = &H20
+Private Const SWP_NOCOPYBITS As Long = &H100
 Private Const WS_EX_NOACTIVATE As Long = &H8000000
 Private Const WS_EX_TOOLWINDOW As Long = &H80
 Private Const WS_EX_WINDOWEDGE As Long = &H100
@@ -701,6 +711,7 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
     
     If (Not g_IsProgramRunning) Then Exit Sub
     
+    'If m_TTActive Then HideUCTooltip
     m_TTOwner = OwnerHwnd
     
     'We now want to figure out the idealized coordinates for the tooltip.  The goal is to position the tooltip as
@@ -844,23 +855,31 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
     
     'The first time we raise the tooltip form, we want to cache its current window longs.  (We must restore these before
     ' unloading the form, or VB's built-in teardown functions will crash and burn.)
-    Load tool_Tooltip
-    m_TTHwnd = tool_Tooltip.hWnd
-    If (Not m_TTWindowStyleHasBeenSet) Then
-        m_TTWindowStyleHasBeenSet = True
-        m_OriginalTTWindowBits = g_WindowManager.GetWindowLongWrapper(m_TTHwnd)
-        m_OriginalTTWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_TTHwnd, True)
-    End If
+    If (m_TTHwnd = 0) Then
+        
+        Load tool_Tooltip
+        m_TTHwnd = tool_Tooltip.hWnd
     
-    'Overwrite VB's default window bits to ensure that the tooltip form behaves like a tooltip window.  Of particular
-    ' importance is the WS_EX_NOACTIVATE option, to ensure that the tooltip does *not* receive focus.
-    Const WS_POPUP As Long = &H80000000
-    g_WindowManager.SetWindowLongWrapper m_TTHwnd, WS_POPUP, False, False, True
-    g_WindowManager.SetWindowLongWrapper m_TTHwnd, WS_EX_NOACTIVATE Or WS_EX_TOOLWINDOW, False, True, True
+        If (Not m_TTWindowStyleHasBeenSet) Then
+            m_TTWindowStyleHasBeenSet = True
+            m_OriginalTTWindowBits = g_WindowManager.GetWindowLongWrapper(m_TTHwnd)
+            m_OriginalTTWindowBitsEx = g_WindowManager.GetWindowLongWrapper(m_TTHwnd, True)
+        End If
+    
+        'Overwrite VB's default window bits to ensure that the tooltip form behaves like a tooltip window.  Of particular
+        ' importance is the WS_EX_NOACTIVATE option, to ensure that the tooltip does *not* receive focus.
+        Const WS_POPUP As Long = &H80000000
+        g_WindowManager.SetWindowLongWrapper m_TTHwnd, WS_POPUP, False, False, True
+        g_WindowManager.SetWindowLongWrapper m_TTHwnd, WS_EX_NOACTIVATE Or WS_EX_TOOLWINDOW, False, True, True
+            
+        'Notify the window of the frame changes
+        SetWindowPos m_TTHwnd, 0&, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_FRAMECHANGED Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
+        
+    End If
     
     'Move the tooltip window into position *but do not display it* just yet.
     With ttRect
-        SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE Or SWP_FRAMECHANGED
+        SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_NOACTIVATE
     End With
     
     'Cache the tooltip's display rect.  When the tooltip disappears, we will manually invalidate windows
@@ -879,7 +898,7 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
     'We are finally ready to display the tooltip; we also notify the window of its changed window style bits
     Const SWP_NOREDRAW As Long = &H8&
     With ttRect
-        SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE Or SWP_FRAMECHANGED
+        SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE
     End With
     'ShowWindow m_TTHwnd, 8
     
@@ -899,13 +918,8 @@ Public Sub HideUCTooltip()
     
     If m_TTActive And (m_TTHwnd <> 0) Then
         
-        'Restore the original VB window bits; this ensures that teardown happens correctly
-        If (m_OriginalTTWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_TTHwnd, m_OriginalTTWindowBits, , , True
-        If (m_OriginalTTWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_TTHwnd, m_OriginalTTWindowBits, , True, True
-        
         'Hide (but do not unload!) the tooltip window
         g_WindowManager.SetVisibilityByHWnd m_TTHwnd, False
-        m_TTHwnd = 0
         
         'If Aero theming is not active, hiding the tooltip may cause windows beneath the current one to render incorrectly.
         If (g_IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
@@ -917,12 +931,33 @@ Public Sub HideUCTooltip()
     m_TTOwner = 0
     m_TTActive = False
     
-    'Now, at the very end, we can unload the tooltip window itself
-    Unload tool_Tooltip
-    Set tool_Tooltip = Nothing
-    
 End Sub
 
 Public Function IsTooltipActive(ByVal OwnerHwnd As Long) As Boolean
     IsTooltipActive = CBool(m_TTOwner = OwnerHwnd)
 End Function
+
+'Do not call this function until the program is going down.  VB is very unhappy about changing window longs on the fly,
+' so we only do it once, when the tooltip form is first raised.  After that, we keep the form in memory as-is, and do not
+' touch its window longs again until the window is released.
+Public Sub FinalTooltipUnload()
+    
+    If (m_TTHwnd <> 0) Then
+    
+        'Before doing anything else, ensure the window is invisible
+        g_WindowManager.SetVisibilityByHWnd m_TTHwnd, False
+        
+        'Restore the original VB window bits; this ensures that teardown happens correctly
+        If (m_OriginalTTWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_TTHwnd, m_OriginalTTWindowBits, , , True
+        If (m_OriginalTTWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_TTHwnd, m_OriginalTTWindowBits, , True, True
+        
+        'Windows caches window longs; ensure that our changes are applied immediately
+        SetWindowPos m_TTHwnd, 0&, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_FRAMECHANGED Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
+    
+        'With all original settings restored, we can safely unload the tooltip window
+        Unload tool_Tooltip
+        Set tool_Tooltip = Nothing
+        
+    End If
+    
+End Sub

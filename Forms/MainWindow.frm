@@ -2991,7 +2991,7 @@ Private Sub Form_Unload(Cancel As Integer)
             pdDebug.LogAction "ExifTool terminated"
         #End If
     End If
-        
+    
     'Perform any printer-related cleanup
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Removing printer temp files..."
@@ -3006,6 +3006,13 @@ Private Sub Form_Unload(Cancel As Integer)
     
     pdHotkeys.DeactivateHook True
     pdHotkeys.ReleaseResources
+    
+    'Release the tooltip tracker
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Releasing tooltip manager..."
+    #End If
+    
+    UserControl_Support.FinalTooltipUnload
     
     'Destroy all custom-created form icons
     #If DEBUGMODE = 1 Then

@@ -645,7 +645,7 @@ Private Sub CheckLoadingEnvironment()
     g_IsProgramCompiled = CBool(App.logMode = 1)
 End Sub
 
-'The final step of FormMain's Unload process is invoking this function.
+'FormMain's Unload step calls this process as its final action.
 Public Sub FinalShutdown()
     
     #If DEBUGMODE = 1 Then
