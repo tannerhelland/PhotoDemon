@@ -92,6 +92,7 @@ Private m_PDControlCount As Long
 'Dropdown boxes are problematic, because we have to play some weird window ownership games to ensure that the dropdowns
 ' appear "above" or "outside" VB windows, as necessary.  As such, this function is notified whenever a listbox is raised,
 ' and the hWnd is cached so we can kill that window as necessary.
+Private Declare Function AnimateWindow Lib "user32" (ByVal hWnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
 Private Declare Function ClientToScreen Lib "user32" (ByVal hndWindow As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
@@ -119,6 +120,8 @@ Private Const PD_TT_EXTERNAL_PADDING As Long = 2
 Private Const PD_TT_INTERNAL_PADDING As Long = 6
 Private Const PD_TT_MAX_WIDTH As Long = 400         'Tips larger than this will be word-wrapped to fit.
 Private Const PD_TT_TITLE_PADDING As Long = 4       'Pixels between the tip title (if any) and caption
+Private Const AW_BLEND As Long = &H80000
+Private Const AW_HIDE As Long = &H10000
 Private Const SWP_ASYNCWINDOWPOS As Long = &H4000
 Private Const SWP_FRAMECHANGED As Long = &H20
 Private Const SWP_NOACTIVATE As Long = &H10
@@ -165,6 +168,11 @@ End Enum
 #If False Then
     Private Const TTS_Top = 0, TTS_Right = 1, TTS_Bottom = 2, TTS_Left = 3
 #End If
+
+'Tooltips are hidden based on a timer.  If a new tooltip is requested before the timer expires, we simply move the existing window
+' into place, rather than animating it.
+Private m_TimerEventSink As pdUCEventSink
+Private m_InitialTTTimerTime As Double
 
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
@@ -711,7 +719,12 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
     
     If (Not g_IsProgramRunning) Then Exit Sub
     
-    'If m_TTActive Then HideUCTooltip
+    'If a tooltip is currently active, suspend the release timer (because we're just going to "snap" the current
+    ' tooltip window into place, rather than waiting for an animation).
+    If ((Not m_TimerEventSink Is Nothing) And m_TTActive) Then
+        m_TimerEventSink.StopTTTimer
+    End If
+    
     m_TTOwner = OwnerHwnd
     
     'We now want to figure out the idealized coordinates for the tooltip.  The goal is to position the tooltip as
@@ -896,11 +909,12 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
     tool_Tooltip.NotifyTooltipSettings ttCaption, ttTitle, PD_TT_INTERNAL_PADDING, PD_TT_TITLE_PADDING
     
     'We are finally ready to display the tooltip; we also notify the window of its changed window style bits
-    Const SWP_NOREDRAW As Long = &H8&
-    With ttRect
-        SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE
-    End With
-    'ShowWindow m_TTHwnd, 8
+    AnimateWindow m_TTHwnd, 150&, AW_BLEND
+    
+    'If you don't want to animate the window, SetWindowPos can be used in place of AnimateWindow
+    'With ttRect
+    '    SetWindowPos m_TTHwnd, 0&, .Left, .Top, .Width, .Height, SWP_SHOWWINDOW Or SWP_NOACTIVATE
+    'End With
     
     m_TTActive = True
     
@@ -914,12 +928,49 @@ UnexpectedTTTrouble:
     
 End Sub
 
-Public Sub HideUCTooltip()
+Public Sub HideUCTooltip(Optional ByVal hideImmediately As Boolean = False, Optional ByVal useAnimation As Boolean = True)
     
+    If m_TTActive Then
+        
+        If hideImmediately Then
+            HideTTImmediately useAnimation
+        Else
+        
+            'Note the current time, then start the tooltip hide countdown
+            If (m_TimerEventSink Is Nothing) Then
+                Set m_TimerEventSink = New pdUCEventSink
+            Else
+                m_TimerEventSink.StopTTTimer
+            End If
+            
+            m_InitialTTTimerTime = Timer
+            m_TimerEventSink.StartTTTimer 100
+            
+        End If
+        
+    End If
+        
+End Sub
+
+Public Sub TTTimerFired()
+    
+    'If enough time has passed, hide the tooltip and release the countdown timer
+    If (Abs(Timer - m_InitialTTTimerTime) >= 0.5) Then HideTTImmediately
+    
+End Sub
+
+Private Sub HideTTImmediately(Optional ByVal useAnimation As Boolean = True)
+
+    If (Not m_TimerEventSink Is Nothing) Then m_TimerEventSink.StopTTTimer
+        
     If m_TTActive And (m_TTHwnd <> 0) Then
         
-        'Hide (but do not unload!) the tooltip window
-        g_WindowManager.SetVisibilityByHWnd m_TTHwnd, False
+        'Hide (but do not unload!) the tooltip window.  The commented out code is for a non-animated approach.
+        If useAnimation Then
+            AnimateWindow m_TTHwnd, 150&, AW_HIDE Or AW_BLEND
+        Else
+            g_WindowManager.SetVisibilityByHWnd m_TTHwnd, False
+        End If
         
         'If Aero theming is not active, hiding the tooltip may cause windows beneath the current one to render incorrectly.
         If (g_IsVistaOrLater And (Not g_WindowManager.IsDWMCompositionEnabled)) Then
@@ -930,7 +981,7 @@ Public Sub HideUCTooltip()
     
     m_TTOwner = 0
     m_TTActive = False
-    
+        
 End Sub
 
 Public Function IsTooltipActive(ByVal OwnerHwnd As Long) As Boolean
@@ -941,6 +992,12 @@ End Function
 ' so we only do it once, when the tooltip form is first raised.  After that, we keep the form in memory as-is, and do not
 ' touch its window longs again until the window is released.
 Public Sub FinalTooltipUnload()
+    
+    'If a release timer is already active, release it immediately
+    If (Not m_TimerEventSink Is Nothing) Then
+        m_TimerEventSink.StopTTTimer
+        Set m_TimerEventSink = Nothing
+    End If
     
     If (m_TTHwnd <> 0) Then
     

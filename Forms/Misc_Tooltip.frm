@@ -90,6 +90,10 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UserControl_Support.HideUCTooltip True
+End Sub
+
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
