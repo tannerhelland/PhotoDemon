@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.6</langversion>
+<langversion>1.0.7</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -14892,6 +14892,12 @@ If сеуште изберете да го исклучите ажурирања
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdUCEventSink.cls -->
+
+<!-- pdUCEventSink.cls contains 0 phrases. -->
+
+<!-- END text for pdUCEventSink.cls-->
 
 <!-- Automatic text extraction complete. -->
 

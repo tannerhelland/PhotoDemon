@@ -735,7 +735,7 @@ End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = True
-    UserControl_Support.HideUCTooltip
+    HideTooltip True
     RaiseEvent MouseEnter(Button, Shift, x, y)
 End Sub
 
@@ -907,7 +907,7 @@ Public Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, O
         
         'If the tooltip is empty, release any existing tooltips
         If (Len(m_TTCaption) = 0) Then
-            UserControl_Support.HideUCTooltip
+            HideTooltip True
         Else
             'If a tooltip is already active, update it immediately
             If UserControl_Support.IsTooltipActive(m_hWnd) Then RaiseTooltip
@@ -939,8 +939,12 @@ Private Sub RaiseTooltip(Optional ByVal mouseHoverX As Single = -1, Optional ByV
     
 End Sub
 
-Private Sub HideTooltip()
-    If (Len(m_TTCaption) <> 0) Then UserControl_Support.HideUCTooltip
+Private Sub HideTooltip(Optional ByVal forciblyRelease As Boolean = True)
+    If forciblyRelease Then
+        UserControl_Support.HideUCTooltip
+    Else
+        If (Len(m_TTCaption) <> 0) Then UserControl_Support.HideUCTooltip
+    End If
 End Sub
 
 'If the control wants to know if it has focus, it can call this function.  API techniques are used, so even API windows
