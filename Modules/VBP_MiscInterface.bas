@@ -1381,6 +1381,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             isPDControl = True
         ElseIf (TypeOf eControl Is pdLayerList) Or (TypeOf eControl Is pdLayerListInner) Then
             isPDControl = True
+        ElseIf (TypeOf eControl Is pdNewOld) Then
+            isPDControl = True
         End If
         
         'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them

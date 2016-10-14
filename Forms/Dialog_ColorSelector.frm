@@ -25,11 +25,20 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdNewOld noColor 
+      Height          =   1095
+      Left            =   720
+      TabIndex        =   17
+      Top             =   4080
+      Width           =   3855
+      _ExtentX        =   6800
+      _ExtentY        =   1931
+   End
    Begin PhotoDemon.pdSlider sldHSV 
       Height          =   375
       Index           =   0
       Left            =   6480
-      TabIndex        =   16
+      TabIndex        =   14
       Top             =   120
       Width           =   4935
       _ExtentX        =   8705
@@ -43,7 +52,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   0
       Left            =   6480
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   1920
       Width           =   4935
       _ExtentX        =   8705
@@ -56,7 +65,7 @@ Begin VB.Form dialog_ColorSelector
    Begin PhotoDemon.pdColorWheel clrWheel 
       Height          =   3855
       Left            =   720
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   120
       Width           =   3855
       _ExtentX        =   6800
@@ -76,7 +85,7 @@ Begin VB.Form dialog_ColorSelector
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
       Left            =   6480
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   3735
       Width           =   1455
       _ExtentX        =   2566
@@ -94,7 +103,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   4560
       Width           =   495
    End
@@ -109,7 +118,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   4560
       Width           =   495
    End
@@ -124,7 +133,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   4560
       Width           =   495
    End
@@ -139,7 +148,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   4560
       Width           =   495
    End
@@ -154,7 +163,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   4560
       Width           =   495
    End
@@ -169,7 +178,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   4560
       Width           =   495
    End
@@ -184,7 +193,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   4560
       Width           =   495
    End
@@ -199,37 +208,9 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   4560
       Width           =   495
-   End
-   Begin VB.PictureBox picOriginal 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   1200
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   222
-      TabIndex        =   2
-      Top             =   4560
-      Width           =   3360
-   End
-   Begin VB.PictureBox picCurrent 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Left            =   1200
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   222
-      TabIndex        =   1
-      Top             =   4080
-      Width           =   3360
    End
    Begin PhotoDemon.pdLabel lblColor 
       Height          =   600
@@ -329,39 +310,11 @@ Begin VB.Form dialog_ColorSelector
       Caption         =   "hue:"
       ForeColor       =   0
    End
-   Begin PhotoDemon.pdLabel lblColor 
-      Height          =   525
-      Index           =   1
-      Left            =   30
-      Top             =   4650
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   926
-      Alignment       =   1
-      Caption         =   "original:"
-      FontSize        =   11
-      ForeColor       =   0
-      Layout          =   1
-   End
-   Begin PhotoDemon.pdLabel lblColor 
-      Height          =   405
-      Index           =   0
-      Left            =   75
-      Top             =   4170
-      Width           =   1080
-      _ExtentX        =   1905
-      _ExtentY        =   714
-      Alignment       =   1
-      Caption         =   "current:"
-      FontSize        =   11
-      ForeColor       =   0
-      Layout          =   1
-   End
    Begin PhotoDemon.pdSlider sldRGB 
       Height          =   375
       Index           =   1
       Left            =   6480
-      TabIndex        =   14
+      TabIndex        =   12
       Top             =   2520
       Width           =   4935
       _ExtentX        =   8705
@@ -375,7 +328,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   2
       Left            =   6480
-      TabIndex        =   15
+      TabIndex        =   13
       Top             =   3120
       Width           =   4935
       _ExtentX        =   8705
@@ -389,7 +342,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   1
       Left            =   6480
-      TabIndex        =   17
+      TabIndex        =   15
       Top             =   720
       Width           =   4935
       _ExtentX        =   8705
@@ -403,7 +356,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   2
       Left            =   6480
-      TabIndex        =   18
+      TabIndex        =   16
       Top             =   1320
       Width           =   4935
       _ExtentX        =   8705
@@ -562,12 +515,6 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     'Cache the currentColor parameter so we can access it later
     m_OriginalColor = initialColor
     
-    'Render the old color to the screen.  Note that we must use a temporary DIB for this; otherwise, the color will
-    ' not be properly color-managed.
-    Dim tmpDIB As New pdDIB
-    tmpDIB.CreateBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, m_OriginalColor
-    tmpDIB.RenderToPictureBox picOriginal
-    
     'Sync all current color values to the initial color
     m_CurrentColor = initialColor
     m_Red = Colors.ExtractRed(initialColor)
@@ -623,8 +570,6 @@ Private Sub PrepSpecialMouseHandling(ByVal handleMode As Boolean)
         
         With m_MouseEvents
         
-            .AddInputTracker picOriginal.hWnd, True, False, False, True, True
-            
             Dim i As Long
             For i = picRecColor.lBound To picRecColor.UBound
                 .AddInputTracker picRecColor(i).hWnd, True, False, False, True, True
@@ -814,16 +759,8 @@ Private Sub SyncInterfaceToCurrentColor()
     'The integrated color wheel is easy.  Just make it match our current RGB values!
     clrWheel.Color = RGB(m_Red, m_Green, m_Blue)
     
-    'Render the current color box.  Note that we must use a temporary DIB for this; otherwise, the color will
-    ' not be properly color managed.
-    If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
-    If (m_tmpDIB.GetDIBWidth <> picCurrent.ScaleWidth) Or (m_tmpDIB.GetDIBHeight <> picCurrent.ScaleHeight) Then
-        m_tmpDIB.CreateBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(m_Red, m_Green, m_Blue)
-    Else
-        GDI_Plus.GDIPlusFillDIBRect m_tmpDIB, 0, 0, m_tmpDIB.GetDIBWidth, m_tmpDIB.GetDIBHeight, RGB(m_Red, m_Green, m_Blue)
-    End If
-    
-    m_tmpDIB.RenderToPictureBox picCurrent
+    'Render the "new" and "old" color boxes on the left
+    noColor.RequestRedraw True
     
     'Synchronize all text boxes to their current values
     RedrawAllTextBoxes
@@ -875,7 +812,39 @@ Private Sub RedrawAllTextBoxes()
     
 End Sub
 
-Private Sub picOriginal_Click()
+Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
+    
+    Dim tmpRectF As RECTF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    If g_IsProgramRunning Then
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface: Dim cBrush As pd2DBrush
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
+        Drawing2D.QuickCreateSolidBrush cBrush, RGB(m_Red, m_Green, m_Blue)
+        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cPainter = Nothing: Set cSurface = Nothing: Set cBrush = Nothing
+    End If
+    
+End Sub
+
+Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
+
+    Dim tmpRectF As RECTF
+    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+    If g_IsProgramRunning Then
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface: Dim cBrush As pd2DBrush
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
+        Drawing2D.QuickCreateSolidBrush cBrush, m_OriginalColor
+        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cPainter = Nothing: Set cSurface = Nothing: Set cBrush = Nothing
+    End If
+    
+End Sub
+
+Private Sub noColor_OldItemClicked()
 
     'Update the current color values with the color of this box
     m_Red = Colors.ExtractRed(m_OriginalColor)
@@ -887,7 +856,7 @@ Private Sub picOriginal_Click()
     
     'Resync the interface to match the new value!
     SyncInterfaceToCurrentColor
-
+    
 End Sub
 
 'When a recent color is clicked, update the screen with the new color
