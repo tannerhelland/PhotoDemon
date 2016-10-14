@@ -151,7 +151,7 @@ Public Property Let Color(ByVal newColor As Long)
         m_Value = tmpValue
         
         CreateSVSquare
-        RedrawBackBuffer
+        RedrawBackBuffer True
         
         'Raise a matching event, and note that the source was external
         RaiseEvent ColorChanged(newColor, False)
@@ -206,7 +206,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
             CreateSVSquare
             
             'Redraw the control to match
-            RedrawBackBuffer
+            RedrawBackBuffer True
             
             'Return the newly selected color
             RaiseEvent ColorChanged(Me.Color, True)
@@ -228,7 +228,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 ucSupport.RequestCursor IDC_HAND
                 
                 'Redraw the control to match
-                RedrawBackBuffer
+                RedrawBackBuffer True
                 
                 'Return the newly selected color
                 RaiseEvent ColorChanged(Me.Color, True)
@@ -311,7 +311,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     End If
     
     'Redraw the UC to match
-    RedrawBackBuffer
+    RedrawBackBuffer True
     
     'If the LMB is down, raise an event to match
     If m_MouseDownWheel Or m_MouseDownBox Then RaiseEvent ColorChanged(Me.Color, True)
@@ -662,7 +662,7 @@ Private Sub CreateSVSquare()
 End Sub
 
 'Redraw the UC.  Note that some UI elements must be created prior to calling this function (e.g. the color wheel).
-Private Sub RedrawBackBuffer()
+Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
@@ -833,7 +833,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint paintImmediately
 
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.1910</langversion>
+<langversion>6.8.1911</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3389,6 +3389,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdTranslate.cls-->
 
+<!-- BEGIN text for pdUCEventSink.cls -->
+
+<!-- pdUCEventSink.cls contains 0 phrases. -->
+
+<!-- END text for pdUCEventSink.cls-->
+
 <!-- BEGIN text for pdUCSupport.cls -->
 
 <!-- pdUCSupport.cls contains 0 phrases. -->
@@ -4092,6 +4098,22 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 <!-- pdNavigatorInner.ctl contains 0 phrases. -->
 
 <!-- END text for pdNavigatorInner.ctl-->
+
+<!-- BEGIN text for pdNewOld.ctl -->
+
+<phrase>
+<original>new</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>old</original>
+<translation></translation>
+</phrase>
+
+<!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for pdNewOld.ctl-->
 
 <!-- BEGIN text for pdPenSelector.ctl -->
 
@@ -7803,17 +7825,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>HTML/CSS</translation>
 </phrase>
 
-<phrase>
-<original>original</original>
-<translation>eredeti</translation>
-</phrase>
-
-<phrase>
-<original>current</original>
-<translation>jelenlegi</translation>
-</phrase>
-
-<!-- Dialog_ColorSelector.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -14869,18 +14881,12 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdUCEventSink.cls -->
-
-<!-- pdUCEventSink.cls contains 0 phrases. -->
-
-<!-- END text for pdUCEventSink.cls-->
-
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1923 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1925 are duplicates, so only 2529 unique phrases have been written to file. -->
 <!-- These 2529 phrases contain approximately 12710 total words. -->
 
 </pdData>

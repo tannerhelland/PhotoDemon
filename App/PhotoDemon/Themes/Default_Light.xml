@@ -359,6 +359,19 @@
 				<Background>BackgroundDefault</Background>
 			</PDNavInner>
 			
+			<PDNewOld>
+				<Background></Background>
+				<Border></Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+				<Caption>TextDefault</Caption>
+				<Caption-disable>GrayDisabled</Caption-disabled>
+				<Caption-active>TextDefault</Caption-active>
+				<Caption-hover>TextHyperlink</Caption-hover>
+				<Caption-activehover>TextHyperlink</Caption-activehover>
+			</PDNewOld>
+			
 			<PDPenSelector>
 				<Border></Border>
 				<Border-active></Border-active>

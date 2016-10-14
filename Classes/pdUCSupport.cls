@@ -245,7 +245,7 @@ End Sub
 'After RegisterControl has been called (above), the caller can request additional support via this function.
 ' (Because not all user controls require things like captions or custom input events, this functionality is restricted to
 '  an "as-required" basis.)
-Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False, Optional ByVal appCommandEvents As Boolean = False)
+Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False, Optional ByVal appCommandEvents As Boolean = False, Optional ByVal controlIsInteractive As Boolean = True)
     
     If (Not g_IsProgramRunning) Then Exit Sub
     
@@ -254,7 +254,7 @@ Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         'Initialize special subclassers, as requested
         If customMouseEvents Then
             Set m_MouseEvents = New pdInputMouse
-            If g_IsProgramRunning Then m_MouseEvents.AddInputTracker m_hWnd, True, True, appCommandEvents, True
+            If g_IsProgramRunning Then m_MouseEvents.AddInputTracker m_hWnd, True, True, appCommandEvents, controlIsInteractive
         End If
         
         If customKeyEvents Then
