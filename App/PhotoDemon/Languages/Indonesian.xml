@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.154</langversion>
+<langversion>6.6.155</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -3958,6 +3958,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <!-- END text for pdGradientSelector.ctl-->
 
+<!-- BEGIN text for pdHistory.ctl -->
+
+<!-- pdHistory.ctl contains 0 phrases. -->
+
+<!-- END text for pdHistory.ctl-->
+
 <!-- BEGIN text for pdHyperlink.ctl -->
 
 <!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
@@ -4113,7 +4119,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>old</original>
+<original>original</original>
 <translation></translation>
 </phrase>
 
@@ -7830,16 +7836,11 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>recent colors</original>
-<translation>warna baru-baru ini</translation>
-</phrase>
-
-<phrase>
 <original>HTML / CSS</original>
 <translation>HTML/CSS</translation>
 </phrase>
 
-<!-- Dialog_ColorSelector.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -14902,10 +14903,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2528</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4454 phrases. -->
-<!-- 1925 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12710 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1925 are duplicates, so only 2528 unique phrases have been written to file. -->
+<!-- These 2528 phrases contain approximately 12708 total words. -->
 
 </pdData>

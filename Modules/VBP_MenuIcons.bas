@@ -564,13 +564,13 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     
     'Loop through all icons that have been loaded, and see if this one has been requested already.
     For i = 0 To curIcon
-        
+    
         If iconNames(i) = resID Then
             iconAlreadyLoaded = True
             iconLocation = i
             Exit For
         End If
-        
+    
     Next i
     
     'If the icon was not found, load it and add it to the list

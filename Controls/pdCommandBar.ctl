@@ -912,7 +912,11 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
                 
             'Metadata management controls provide their own XML string
             Case "pdMetadataExport"
-                controlValue = eControl.GetMetadataSettings
+                controlValue = eControl.GetMetadataSettings()
+            
+            'History managers also provide their own XML string
+            Case "pdHistory"
+                controlValue = eControl.GetHistoryAsString()
                 
         End Select
         
@@ -1122,9 +1126,13 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.ResizeWidth = cParam.GetDouble(1, 1920)
                         eControl.ResizeHeight = cParam.GetDouble(2, 1080)
                         
-                    'Metadata management controls handle their own XML string parsing
+                    'Metadata management controls handle their own XML parsing
                     Case "pdMetadataExport"
                         eControl.SetMetadataSettings controlValue, True
+                        
+                    'History managers handle their own XML parsing
+                    Case "pdHistory"
+                        eControl.SetHistoryFromString controlValue
                         
                 End Select
     

@@ -266,7 +266,16 @@
 				<Border-disabled></Border-disabled>
 				<Border-hover></Border-hover>
 			</PDGradientSelector>
-									
+			
+			<PDHistory>
+				<Background></Background>
+				<Border>GrayNeutral</Border>
+				<Border-active></Border-active>
+				<Border-disabled></Border-disabled>
+				<Border-hover></Border-hover>
+				<Caption></Caption>
+			</PDHistory>
+			
 			<PDHyperlink>
 				<Background>BackgroundDefault</Background>
 				<Caption>TextHyperlink</Caption>

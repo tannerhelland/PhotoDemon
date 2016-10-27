@@ -1381,7 +1381,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             isPDControl = True
         ElseIf (TypeOf eControl Is pdLayerList) Or (TypeOf eControl Is pdLayerListInner) Then
             isPDControl = True
-        ElseIf (TypeOf eControl Is pdNewOld) Then
+        ElseIf (TypeOf eControl Is pdNewOld) Or (TypeOf eControl Is pdHistory) Then
             isPDControl = True
         End If
         

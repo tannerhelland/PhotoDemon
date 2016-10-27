@@ -25,20 +25,31 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdHistory hstColors 
+      Height          =   900
+      Left            =   5070
+      TabIndex        =   10
+      Top             =   4275
+      Width           =   6465
+      _ExtentX        =   11404
+      _ExtentY        =   1588
+      FontSize        =   10
+      HistoryRows     =   2
+   End
    Begin PhotoDemon.pdNewOld noColor 
       Height          =   1095
-      Left            =   720
-      TabIndex        =   17
+      Left            =   240
+      TabIndex        =   9
       Top             =   4080
-      Width           =   3855
-      _ExtentX        =   6800
+      Width           =   4350
+      _ExtentX        =   7673
       _ExtentY        =   1931
    End
    Begin PhotoDemon.pdSlider sldHSV 
       Height          =   375
       Index           =   0
       Left            =   6480
-      TabIndex        =   14
+      TabIndex        =   6
       Top             =   120
       Width           =   4935
       _ExtentX        =   8705
@@ -52,7 +63,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   0
       Left            =   6480
-      TabIndex        =   11
+      TabIndex        =   3
       Top             =   1920
       Width           =   4935
       _ExtentX        =   8705
@@ -65,7 +76,7 @@ Begin VB.Form dialog_ColorSelector
    Begin PhotoDemon.pdColorWheel clrWheel 
       Height          =   3855
       Left            =   720
-      TabIndex        =   10
+      TabIndex        =   2
       Top             =   120
       Width           =   3855
       _ExtentX        =   6800
@@ -92,141 +103,8 @@ Begin VB.Form dialog_ColorSelector
       _ExtentY        =   556
       Text            =   "abcdef"
    End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   7
-      Left            =   10680
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   2
-      Top             =   4560
-      Width           =   495
-   End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   6
-      Left            =   10080
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   3
-      Top             =   4560
-      Width           =   495
-   End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   5
-      Left            =   9480
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   4
-      Top             =   4560
-      Width           =   495
-   End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   4
-      Left            =   8880
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   5
-      Top             =   4560
-      Width           =   495
-   End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   3
-      Left            =   8280
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   6
-      Top             =   4560
-      Width           =   495
-   End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   2
-      Left            =   7680
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   7
-      Top             =   4560
-      Width           =   495
-   End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   1
-      Left            =   7080
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   8
-      Top             =   4560
-      Width           =   495
-   End
-   Begin VB.PictureBox picRecColor 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H80000008&
-      Height          =   495
-      Index           =   0
-      Left            =   6480
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   31
-      TabIndex        =   9
-      Top             =   4560
-      Width           =   495
-   End
    Begin PhotoDemon.pdLabel lblColor 
-      Height          =   600
-      Index           =   9
-      Left            =   5085
-      Top             =   4680
-      Width           =   1305
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Alignment       =   1
-      Caption         =   "recent colors:"
-      ForeColor       =   0
-      Layout          =   1
-   End
-   Begin PhotoDemon.pdLabel lblColor 
-      Height          =   720
+      Height          =   360
       Index           =   8
       Left            =   5070
       Top             =   3765
@@ -314,7 +192,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   1
       Left            =   6480
-      TabIndex        =   12
+      TabIndex        =   4
       Top             =   2520
       Width           =   4935
       _ExtentX        =   8705
@@ -328,7 +206,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   2
       Left            =   6480
-      TabIndex        =   13
+      TabIndex        =   5
       Top             =   3120
       Width           =   4935
       _ExtentX        =   8705
@@ -342,7 +220,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   1
       Left            =   6480
-      TabIndex        =   15
+      TabIndex        =   7
       Top             =   720
       Width           =   4935
       _ExtentX        =   8705
@@ -356,7 +234,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   375
       Index           =   2
       Left            =   6480
-      TabIndex        =   16
+      TabIndex        =   8
       Top             =   1320
       Width           =   4935
       _ExtentX        =   8705
@@ -380,6 +258,10 @@ Attribute VB_Exposed = False
 'Last update: improve real-time handling of hex input
 '
 'Basic color selection dialog.  At present, the dialog is heavily modeled after GIMP's color selection dialog.
+'
+'Special thank you to:
+' - "DawnBringer" from the PixelJoint forums - http://pixeljoint.com/forum/forum_posts.asp?TID=16247 -
+'    for the DB32 palette that provides a great default color selection on first load.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -424,24 +306,16 @@ End Enum
     Private Const ccRed = 0, ccGreen = 1, ccBlue = 2, ccHue = 3, ccSaturation = 4, ccValue = 5
 #End If
 
-'Recently used colors are stored in XML format
-Private m_XMLEngine As pdXML
-
-'The file where recent color data is stored.  The filename is generated by the ShowDialog function, and the
-' resulting file is saved in the /Data/Presets/ folder.
-Private m_RecentColorsFilename As String
-
-'The current list of recent colors.  Because we have to color-manage these, it's helpful to have them
-' in a non-string format.
-Private m_RecentColors() As Long
-
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send color updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
 Private m_ParentColorSelector As pdColorSelector
 
-'pdInputMouse makes it easier to deal with a custom hand cursor for the many picture boxes on the form
-Private WithEvents m_MouseEvents As pdInputMouse
-Attribute m_MouseEvents.VB_VarHelpID = -1
+'A painter is used for various owner-drawn elements
+Private m_Painter As pd2DPainter
+
+'The color selector history is saved and loaded to file by this class
+Private WithEvents m_lastUsedSettings As pdLastUsedSettings
+Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -489,8 +363,14 @@ Private Sub cmdBarMini_OKClick()
     'Store the m_NewColor value (which the dialog handler will use to return the selected color)
     m_NewColor = RGB(m_Red, m_Green, m_Blue)
     
-    'Save the current list of recently used colors
-    SaveRecentColorList
+    'Push the newly selected color onto the color history stack
+    hstColors.PushNewHistoryItem CStr(m_NewColor)
+    
+    'Save all last-used settings to file
+    If Not (m_lastUsedSettings Is Nothing) Then
+        m_lastUsedSettings.SaveAllControlValues
+        m_lastUsedSettings.SetParentForm Nothing
+    End If
     
     'To prevent circular references, free our parent control reference immediately
     Set m_ParentColorSelector = Nothing
@@ -502,10 +382,15 @@ End Sub
 
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl As pdColorSelector = Nothing)
-
+    
     'Store a reference to the calling control (if any)
     Set m_ParentColorSelector = callingControl
-
+    
+    'Load any last-used settings for this form
+    Set m_lastUsedSettings = New pdLastUsedSettings
+    m_lastUsedSettings.SetParentForm Me
+    m_lastUsedSettings.LoadAllControlValues
+    
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     m_DialogResult = vbCancel
     
@@ -514,6 +399,9 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     
     'Cache the currentColor parameter so we can access it later
     m_OriginalColor = initialColor
+    
+    'Prep a painter for owner-drawn objects
+    Drawing2D.QuickCreatePainter m_Painter
     
     'Sync all current color values to the initial color
     m_CurrentColor = initialColor
@@ -544,208 +432,9 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
-    'Manually assign a hand cursor to the various picture boxes.
-    PrepSpecialMouseHandling True
-    
-    'Initialize an XML engine, which we will use to read/write recent color data to file
-    Set m_XMLEngine = New pdXML
-    
-    'The XML file will be stored in the Preset path (/Data/Presets)
-    m_RecentColorsFilename = g_UserPreferences.GetPresetPath & "Color_Selector.xml"
-    
-    'If an XML file exists, load its contents now
-    LoadRecentColorList
-    
     'Display the dialog
     ShowPDDialog vbModal, Me, True
 
-End Sub
-
-'Capture-from-screen mode requires special handling
-Private Sub PrepSpecialMouseHandling(ByVal handleMode As Boolean)
-    
-    If g_IsProgramRunning And handleMode Then
-    
-        Set m_MouseEvents = New pdInputMouse
-        
-        With m_MouseEvents
-        
-            Dim i As Long
-            For i = picRecColor.lBound To picRecColor.UBound
-                .AddInputTracker picRecColor(i).hWnd, True, False, False, True, True
-            Next i
-            
-            .SetSystemCursor IDC_HAND
-            
-        End With
-        
-    Else
-        Set m_MouseEvents = Nothing
-    End If
-    
-End Sub
-
-'If the user has used the color selector before, their last-used colors will be stored to an XML file.  Use this function
-' to load those colors.
-Private Sub LoadRecentColorList()
-
-    'Start by seeing if an XML file with previously saved color data exists
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If cFile.FileExist(m_RecentColorsFilename) Then
-        
-        'Attempt to load and validate the current file; if we can't, create a new, blank XML object
-        If Not m_XMLEngine.LoadXMLFile(m_RecentColorsFilename) Then
-            Debug.Print "List of recent colors appears to be invalid.  A new recent color list has been created."
-            ResetXMLData
-        End If
-        
-    Else
-        ResetXMLData
-    End If
-        
-    'We are now ready to load the actual color data from file.
-    
-    'The XML engine will do most the heavy lifting for this task.  We pass it a String array, and it fills it with
-    ' all values corresponding to the given tag name and attribute.  (We must do this dynamically, because we don't
-    ' know how many recent colors are actually saved - it could be anywhere from 0 to picRecColor.Count.)
-    Dim allm_RecentColors() As String
-    Dim numColors As Long
-    
-    If m_XMLEngine.FindAllAttributeValues(allm_RecentColors, "colorEntry", "id") Then
-        
-        numColors = UBound(allm_RecentColors) + 1
-        
-        'Make sure the file does not contain more entries than are allowed (shouldn't theoretically be possible,
-        ' but it doesn't hurt to check).
-        If numColors > picRecColor.Count Then numColors = picRecColor.Count
-        
-    'No recent color entries were found.
-    Else
-        numColors = 0
-    End If
-    
-    Dim i As Long
-    
-    'If one or more recent colors were found, load them now.
-    If numColors > 0 Then
-        
-        ReDim m_RecentColors(0 To numColors - 1) As Long
-        
-        'Load the actual colors from the XML file
-        Dim tmpColorString As String
-        
-        For i = 0 To numColors - 1
-        
-            'Retrieve the color, in string format
-            tmpColorString = m_XMLEngine.GetUniqueTag_String("color", , , "colorEntry", "id", allm_RecentColors(i))
-            
-            'Translate the color into a long, and update the corresponding picture box
-            If Len(tmpColorString) <> 0 Then m_RecentColors(i) = CLng(tmpColorString)
-            
-        Next i
-    
-    'No recent colors were found.  Populate the list with a few default values.
-    Else
-        
-        ReDim m_RecentColors(0 To picRecColor.Count - 1)
-        m_RecentColors(0) = RGB(0, 0, 255)
-        m_RecentColors(1) = RGB(0, 255, 0)
-        m_RecentColors(2) = RGB(255, 0, 0)
-        m_RecentColors(3) = RGB(255, 0, 255)
-        m_RecentColors(4) = RGB(0, 255, 255)
-        m_RecentColors(5) = RGB(255, 255, 0)
-        m_RecentColors(6) = 0
-        m_RecentColors(7) = RGB(255, 255, 255)
-    End If
-    
-    'For color management reasons, we must use DIBs to copy colors onto the recent color picture boxes
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    
-    'Render the recent color list to their respective picture boxes
-    For i = 0 To picRecColor.Count - 1
-    
-        If i <= UBound(m_RecentColors) Then
-            tmpDIB.CreateBlank picRecColor(i).ScaleWidth, picRecColor(i).ScaleHeight, 24, m_RecentColors(i)
-            tmpDIB.RenderToPictureBox picRecColor(i)
-        End If
-    
-    Next i
-
-End Sub
-
-'Save the current list of last-used colors to an XML file, adding the color presently selected as the most-recent entry.
-Private Sub SaveRecentColorList()
-    
-    'Reset whatever XML data we may have stored at present - we will be rewriting the full MRU file from scratch.
-    ResetXMLData
-    
-    'We now need to update the colors array with the new color entry.  Start by seeing if this color is already in the
-    ' array.  If it is, simply swap its order.
-    Dim i As Long, j As Long
-    
-    Dim colorFound As Boolean
-    colorFound = False
-    
-    For i = 0 To picRecColor.Count - 1
-    
-        'This color already exists in the list.  Move it to the top of the list, and shift everything else downward.
-        If m_RecentColors(i) = m_NewColor Then
-            
-            colorFound = True
-            
-            For j = i To 1 Step -1
-                m_RecentColors(j) = m_RecentColors(j - 1)
-            Next j
-            
-            m_RecentColors(0) = m_NewColor
-            Exit For
-            
-        End If
-        
-    Next i
-    
-    'If this color is not already in the list, add it now.
-    If Not colorFound Then
-        
-        For i = picRecColor.Count - 1 To 1 Step -1
-            m_RecentColors(i) = m_RecentColors(i - 1)
-        Next i
-        
-        m_RecentColors(0) = m_NewColor
-    
-    End If
-    
-    'Add all color entries to the XML engine
-    For i = 0 To UBound(m_RecentColors)
-        m_XMLEngine.WriteTagWithAttribute "colorEntry", "id", Str(i), "", True
-        m_XMLEngine.WriteTag "color", m_RecentColors(i)
-        m_XMLEngine.CloseTag "colorEntry"
-        m_XMLEngine.WriteBlankLine
-    Next i
-    
-    'With the XML file now complete, write it out to file
-    m_XMLEngine.WriteXMLToFile m_RecentColorsFilename
-    
-End Sub
-
-'When creating a new recent coclors file, or overwriting a corrupt one, use this to initialize the new XML file.
-Private Sub ResetXMLData()
-    m_XMLEngine.PrepareNewXML "Recent colors"
-    m_XMLEngine.WriteBlankLine
-    m_XMLEngine.WriteComment "Everything past this point is recent color data.  Entries are sorted in reverse chronological order."
-    m_XMLEngine.WriteBlankLine
-End Sub
-
-'Refresh the various color box cursors when the mouse enters
-Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseEvents.SetSystemCursor IDC_HAND, m_MouseEvents.GetLastHwnd
-End Sub
-
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseEvents.SetSystemCursor IDC_HAND, m_MouseEvents.GetLastHwnd
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -812,18 +501,140 @@ Private Sub RedrawAllTextBoxes()
     
 End Sub
 
+Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
+    
+    If ((Len(histValue) <> 0) And g_IsProgramRunning) Then
+    
+        Dim tmpRectF As RECTF
+        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    
+        If (Not m_Painter Is Nothing) Then
+        
+            Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
+            Drawing2D.QuickCreateSolidBrush cBrush, CLng(histValue)
+            m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+            
+            Set cSurface = Nothing: Set cBrush = Nothing
+        
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub hstColors_HistoryDoesntExist(ByVal histIndex As Long, histValue As String)
+    
+    Dim newColor As Long
+    
+    Select Case histIndex
+    
+        Case 0
+            newColor = RGB(0, 0, 0)
+        Case 1
+            newColor = RGB(34, 32, 52)
+        Case 2
+            newColor = RGB(69, 40, 60)
+        Case 3
+            newColor = RGB(102, 57, 49)
+        Case 4
+            newColor = RGB(143, 86, 59)
+        Case 5
+            newColor = RGB(223, 113, 38)
+        Case 6
+            newColor = RGB(217, 160, 102)
+        Case 7
+            newColor = RGB(238, 195, 154)
+        Case 8
+            newColor = RGB(251, 242, 54)
+        Case 9
+            newColor = RGB(153, 229, 80)
+        Case 10
+            newColor = RGB(106, 190, 48)
+        Case 11
+            newColor = RGB(55, 148, 110)
+        Case 12
+            newColor = RGB(75, 105, 47)
+        Case 13
+            newColor = RGB(82, 75, 36)
+        Case 14
+            newColor = RGB(50, 60, 57)
+        Case 15
+            newColor = RGB(63, 63, 116)
+        Case 16
+            newColor = RGB(48, 96, 130)
+        Case 17
+            newColor = RGB(91, 110, 225)
+        Case 18
+            newColor = RGB(99, 155, 255)
+        Case 19
+            newColor = RGB(95, 205, 228)
+        Case 20
+            newColor = RGB(203, 219, 252)
+        Case 21
+            newColor = RGB(255, 255, 255)
+        Case 22
+            newColor = RGB(155, 173, 183)
+        Case 23
+            newColor = RGB(132, 126, 135)
+        Case 24
+            newColor = RGB(105, 106, 106)
+        Case 25
+            newColor = RGB(89, 86, 82)
+        Case 26
+            newColor = RGB(118, 66, 138)
+        Case 27
+            newColor = RGB(172, 50, 50)
+        Case 28
+            newColor = RGB(217, 87, 99)
+        Case 29
+            newColor = RGB(215, 123, 186)
+        Case 30
+            newColor = RGB(143, 151, 74)
+        Case 31
+            newColor = RGB(138, 111, 48)
+        Case Else
+            newColor = RGB(255, 255, 255)
+            
+    End Select
+    
+    histValue = CStr(newColor)
+    
+End Sub
+
+Private Sub hstColors_HistoryItemClicked(ByVal histIndex As Long, ByVal histValue As String)
+    
+    If (Len(histValue) <> 0) Then
+    
+        Dim clickedColor As Long
+        clickedColor = CLng(histValue)
+        
+        'Update the current color values with the color of this box
+        m_Red = Colors.ExtractRed(clickedColor)
+        m_Green = Colors.ExtractGreen(clickedColor)
+        m_Blue = Colors.ExtractBlue(clickedColor)
+        
+        'Calculate new HSV values to match
+        RGBtoHSV m_Red, m_Green, m_Blue, m_Hue, m_Saturation, m_Value
+        
+        'Resync the interface to match the new value!
+        SyncInterfaceToCurrentColor
+        
+    End If
+    
+End Sub
+
 Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
     Dim tmpRectF As RECTF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
-    If g_IsProgramRunning Then
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface: Dim cBrush As pd2DBrush
-        Drawing2D.QuickCreatePainter cPainter
+    If g_IsProgramRunning And (Not m_Painter Is Nothing) Then
+        Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
         Drawing2D.QuickCreateSolidBrush cBrush, RGB(m_Red, m_Green, m_Blue)
-        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
-        Set cPainter = Nothing: Set cSurface = Nothing: Set cBrush = Nothing
+        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cSurface = Nothing: Set cBrush = Nothing
     End If
     
 End Sub
@@ -833,13 +644,12 @@ Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     Dim tmpRectF As RECTF
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
-    If g_IsProgramRunning Then
-        Dim cPainter As pd2DPainter, cSurface As pd2DSurface: Dim cBrush As pd2DBrush
-        Drawing2D.QuickCreatePainter cPainter
+    If g_IsProgramRunning And (Not m_Painter Is Nothing) Then
+        Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
         Drawing2D.QuickCreateSolidBrush cBrush, m_OriginalColor
-        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
-        Set cPainter = Nothing: Set cSurface = Nothing: Set cBrush = Nothing
+        m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cSurface = Nothing: Set cBrush = Nothing
     End If
     
 End Sub
@@ -857,22 +667,6 @@ Private Sub noColor_OldItemClicked()
     'Resync the interface to match the new value!
     SyncInterfaceToCurrentColor
     
-End Sub
-
-'When a recent color is clicked, update the screen with the new color
-Private Sub picRecColor_Click(Index As Integer)
-
-    'Update the current color values with the color of this box
-    m_Red = Colors.ExtractRed(m_RecentColors(Index))
-    m_Green = Colors.ExtractGreen(m_RecentColors(Index))
-    m_Blue = Colors.ExtractBlue(m_RecentColors(Index))
-    
-    'Calculate new HSV values to match
-    RGBtoHSV m_Red, m_Green, m_Blue, m_Hue, m_Saturation, m_Value
-    
-    'Resync the interface to match the new value!
-    SyncInterfaceToCurrentColor
-
 End Sub
 
 Private Sub sldHSV_Change(Index As Integer)

@@ -651,7 +651,7 @@ Public Function ReturnCurrentXMLString(Optional ByVal suppressIndentation As Boo
     Dim tmpXMLCopy As String
     tmpXMLCopy = m_xmlContents
     
-    If Not suppressIndentation Then ApplyIndentation tmpXMLCopy
+    If (Not suppressIndentation) Then ApplyIndentation tmpXMLCopy
     
     ReturnCurrentXMLString = tmpXMLCopy
 
