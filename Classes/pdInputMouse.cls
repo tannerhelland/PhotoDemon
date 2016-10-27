@@ -15,54 +15,39 @@ Attribute VB_Exposed = False
 'PhotoDemon Mouse Input Handler (mouse, pen, etc) class
 'Copyright 2014-2016 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 02/October/14
-'Last update: implement high-resolution mouse tracking via GetMouseMovePointsEx and enable by default.  Also, implement
-'              auto-dropping of messages that are delayed beyond a certain threshold (100 ms by default).
+'Last updated: 27/October/16
+'Last update: big code clean-up and refinement.  This class no longer supports tracking of multiple hWnds.  You must use
+'              unique class instances for each hWnd (by design), which greatly simplifies the class's reliability,
+'              particularly where subclassing is involved.
 '
-'As I get ever closer to implementing paint tools in PhotoDemon, the need for a more comprehensive input solution has
-' become clear.  Until now, a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel)
-' has covered PD pretty well, but drawing tools and more advanced UI features require more detailed input handling, like
-' GetMouseMovePointsEx + spline interpolation for buttery smooth mouse input, or (ideally) some level of support for
-' touch and/or pen input.
-'
-'Because I would like to keep all input code as unified as possible, it is finally time to start merging PD's many
-' disparate pieces of input handling into this single class.  Besides the obvious mouse events that require special
-' handling (again, mousewheel), I'm also working on moving PD's (large!) collection of custom mouse cursor code into
-' this class, which should reduce code redundancy while improving reliability.
-'
-'Many thanks to Kroc Camen of camendesign.com, whose bluMouseEvents class served PD well for a long time prior to this
-' implementation.  If you need a lightweight mouse-handler that works well as a standalone solution, I recommend using
-' that instead of this very PD-specific class.  You can download a copy here (link good as of May '14):
-' https://github.com/Kroc/MaSS1VE/tree/master/CODE/Blu
+'As part of implementing paint tools in PhotoDemon, a comprehensive input solution was required.  (Prior to that point,
+' a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel) covered PD pretty well,
+' but drawing tools and more advanced UI features require more detailed input handling, like GetMouseMovePointsEx +
+' spline interpolation for buttery smooth mouse input, or improved support for touch and/or pen input.)
 '
 'A few important notes when using this class:
 '
 '- This class can optionally handle standard mouse events for a given hWnd (e.g. mouse events VB normally covers, like
 '   Click, DoubleClick, MouseMove, etc).  There are a lot of reasons to do this, but among the obvious benefits are things
 '   like x/y coordinates for click events, support for 32-bit mouse positions, support for X-keys as a button type, and more.
-'   In the future, the custom version of these events could also do things like supply a Pressure parameter for MouseDown
-'   events, or use interpolation to smooth out MouseMove coordinate reports.
+'   In the future, a custom version of these events could also supply things like a Pressure parameter for MouseDown events.
 '
-'- Multiple hWnds can be passed to a single instace of this class, but the first hWnd passed serves as the "master hWnd".
-'   This means that all mouse coordinates reported by this class will always be relative to *that hWnd*.  Tracking multiple
-'   hWnds at once is helpful if you want a child object to receive all mousewheel events for it and its parent, for example,
-'   or if you want to handle all mouse events for a collection of objects with a single MouseMove function (e.g., in a user
-'   control).  Similarly, if you want to subclass multiple controls within a single parent, that should work just fine, as
-'   long as you don't assign the parent hWnd to multiple instances of this class (e.g. create just ONE pdInput copy for the
-'   entire collection, rather than different ones for each child).
-'
-'- As implied above, mouse coordinate, button, and shift key modifiers are processed independent of window messages.  This
-'   allows us to supply such data even if a given window message doesn't automatically include them.  It also allows for
-'   higher accuracy when tracking mouse move data, as we use 32-bit values instead of 16-bit ones (which seems ridiculous
-'   now, but may not be forever).
+'- Mouse coordinate, button, and shift key modifiers are processed independent of window messages.  This allows the class to
+'   supply that data even if a given window message doesn't automatically include them.  It also allows for higher accuracy
+'   when tracking mouse move data, as we use 32-bit values instead of 16-bit ones (which seems ridiculous now, but may not
+'   in the future).
 '
 '- As a bonus, this class can also (optionally) handle WM_APP_COMMAND messages.  This is useful for handling some buttons that
 '   may appear on a mouse, such as back/forward, instead of using X-button messages (which may not be accurate, if the user has
 '   remapped functionality in a non-standard way).
 '
-'Also, let me give a big thank you to Steve McMahon for translating the GET_APPCOMMAND_LPARAM, GET_DEVICE_LPARAM, and
-' GET_KEYSTATE_LPARAM macros into VB; this class uses these events to respond to actions like "back"/"forward", regardless
-' of input source.  You can see Steve's original work on WM_APPCOMMAND messages here:
+'Many thanks to Kroc Camen of camendesign.com, whose bluMouseEvents class served PD well for a long time prior to this
+' implementation.  If you need a lightweight mouse-handler that works well as a standalone solution, I recommend using
+' that instead of this very PD-specific class.  You can download a copy here (link good as of May '14):
+' https://github.com/Kroc/MaSS1VE/tree/master/CODE/Blu
+'
+'Also, thank you to Steve McMahon for translating the GET_APPCOMMAND_LPARAM, GET_DEVICE_LPARAM, and GET_KEYSTATE_LPARAM macros
+' into VB.  You can see Steve's original work on WM_APPCOMMAND messages here:
 ' http://www.vbaccelerator.com/home/VB/Tips/Responding_to_AppCommands/article.asp
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -72,7 +57,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This class can raise many events.  The following events are raised for all tracked hWnds:
+'This class can potentially raise many events.  Note that events will only be raised if the associated tracking behavior
+' is explicitly requested (e.g. you don't *have* to request that the class handles all these events).
 Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -84,7 +70,7 @@ Public Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shi
 Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
 
-'The following events are raised only if specifically requested in the addInputTracker function
+'The following events are raised only if specifically requested in the AddInputTracker function
 Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
@@ -113,7 +99,7 @@ Private Const WM_MBUTTONDBLCLK As Long = &H209
 Private Const WM_RBUTTONDBLCLK As Long = &H206
 Private Const WM_XBUTTONDBLCLK As Long = &H20D
 
-'X buttons (sometimes called buttons 4 and 5 in MSDN docs) are typically used for forward/back maneuvering.
+'X buttons (sometimes called buttons 4 and 5 in MSDN docs) are often used for forward/back maneuvering.
 ' Users of this class can check their states in Mouse Up/Down events, but PD will preferentially use WM_APPCOMMAND instead,
 ' as it can be raised by both keyboard and mouse equivalents of forward/back keys, which is typically a better solution.
 Private Const WM_APPCOMMAND As Long = &H319
@@ -180,7 +166,7 @@ Private Type MOUSEMOVEPOINT
     dwExtraInfo As Long
 End Type
 
-Private Enum mouseResolution
+Private Enum PD_MouseResolution
     GMMP_USE_DISPLAY_POINTS = 1
     GMMP_USE_HIGH_RESOLUTION_POINTS = 2
 End Enum
@@ -189,7 +175,7 @@ End Enum
     Const GMMP_USE_DISPLAY_POINTS = 1, GMMP_USE_HIGH_RESOLUTION_POINTS = 2
 #End If
 
-Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMoveStruct As Long, ByRef currentMouseMovePoint As MOUSEMOVEPOINT, ByVal ptrToMouseMovePointArray As Long, ByVal numOfPointsToRetrieve As Long, ByVal resolutionFlag As mouseResolution) As Long
+Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMoveStruct As Long, ByRef currentMouseMovePoint As MOUSEMOVEPOINT, ByVal ptrToMouseMovePointArray As Long, ByVal numOfPointsToRetrieve As Long, ByVal resolutionFlag As PD_MouseResolution) As Long
 Private Declare Function GetMessageTime Lib "user32" () As Long
 Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
@@ -206,56 +192,39 @@ Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, B
 'MSDN best practices suggest that we always retrieve the user's setting for scroll wheel sensitivity, as it may change
 ' while a program is running.  SystemParametersInfo is used for this.  Note that horizontal and vertical settings
 ' are stored separately.
-Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoA" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
+Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoW" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
 Private Const SPI_GETWHEELSCROLLLINES As Long = &H68
 Private Const SPI_GETWHEELSCROLLCHARS As Long = &H6C
 
 'Master subclasser for all input actions
-Private cSubclass As cSelfSubHookCallback
+Private m_Subclass As cSelfSubHookCallback
 
-'hWnds to track.  At least one entry (position 0) is guaranteed present, but the user may supply more than one.
-' When shutting down the class, make sure to unsubclass all entries in the array.
-Private m_TrackingData() As Long, m_hWndCount As Long
+'The hWnd currently being tracked.  You can test this value against zero to see if the class is active.
+Private m_TargetHWnd As Long
 
-'Mouse tracking is active for a given hWnd
-Private m_MouseTrackingActive() As Boolean
+'You don't have to use all of the class's functionality.  For example, you may want to use VB for some mouse events,
+' and this class for others.  That's okay.  We keep track of which events we're currently tracking, so we know what
+' to unsubclass when the class is released.
+Private m_TrackMouseEnterLeave As Boolean, m_TrackStandardMouseEvents As Boolean, m_TrackAppCommands As Boolean, m_TrackCursor As Boolean
 
-'To prevent multiple hover events from being raised by multiple hWnds (or one reaaaally long hover), we stop raising
-' hover events until the mouse moves again
+'Windows requires you to file formal mouse tracking requests for things like mouse enter/leave messages.  If we have filed a request
+' (and said request has not been canceled), this will be TRUE.
+Private m_MouseTrackingActive As Boolean
+
+'To prevent multiple hover events from mistakenly being raised, we manually track hover state and disallow events until we detect
+' mouse movement since the last hover.
 Private m_HoverModeActive As Boolean, m_LastHoverX As Single, m_LastHoverY As Single
 
-'If the user has requested that we force a persistent cursor for this object, the cursor handle will be stored here.
+'If the user requests that we force a persistent cursor for this object, that cursor handle will be stored here.
 Private m_CursorHandle As Long, m_PrevClassCursorHandle As Long
-
-'If the user wants us to raise additional events using this class - e.g. MouseMove or AppCommands - we will use
-' this enum with the multidimensional tracking array to handle events accordingly.
-Private Enum PD_CUSTOM_INPUT_TRACKERS
-    PDIT_DEFAULT = 0
-    PDIT_MOUSE_ENTERLEAVE = 1
-    PDIT_STANDARD_MOUSE = 2
-    PDIT_APPCOMMAND = 3
-    PDIT_CURSOR = 4
-End Enum
-
-#If False Then
-    Private Const PDIT_DEFAULT = 0, PDIT_MOUSE_ENTERLEAVE = 1, PDIT_STANDARD_MOUSE = 2, PDIT_APPCOMMAND = 3, PDIT_CURSOR = 4
-#End If
-
-Private Const NUM_OF_CUSTOM_INPUT_TRACKERS = 5
 
 'This class will generate Click() events using its own algorithm for determining when an action constitutes a "click".
 ' Basically, a MouseDown/Up combination with two or less MouseMove messages between them constitutes a Click.  This variable
 ' is used to count MouseMove occurrences.
 Private m_MouseMoveCount As Long
 
-'In rare cases (e.g. the layer toolbox), a parent form and child control may have separate cursor tracking activated in two different
-' instances of this class.  When this happens, we don't want to automatically handle WM_SETCURSOR messages; otherwise, the parent's
-' cursor setting will always override the child.  In this rare instance, this override value will be set to TRUE to notify the class
-' that WM_SETCURSOR can be ignored for the parent object.  (Note that this behavior must be manually set via setCursorOverrideState.)
-Private m_OverrideSetCursorMessages As Boolean
-
 'While we can't track mouse events any faster than the WM_MOUSEMOVE messages we receive, we can reconstruct missed mouse events by
-' using GetMouseMovePointsEx.  To activate this feature, pass TRUE to the setHighResolutionTrackingMode sub, which will in turn
+' using GetMouseMovePointsEx.  To activate this feature, pass TRUE to the SetHighResolutionTrackingMode sub, which will in turn
 ' activate this boolean.  If active, the subclasser will reconstruct any missing mouse events history, and raise each missed event
 ' in turn.
 Private m_HighResModeActive As Boolean
@@ -277,155 +246,40 @@ Private Const DEFAULT_DELAY_THRESHOLD_MS = 120
 ' the mouse capture is released.
 Private m_CaptureCounter As Long
 
-'In some cases, the users may want to deal with mouse events only under certain circumstances.  If they test an event and realize that it's
-' useless to them, they can set this parameter to TRUE via the ignoreLastMessage() sub.  Upon returning from an event, that parameter
-' notifies the subclasser to not mark the event as handled, so DefWindowProc can have a swing at it.
-Private m_IgnoreLastMessage As Boolean
-
 'By default, PD forcibly captures the mouse when a button is pressed.  To disable this behavior, set this value to TRUE.
 Private m_DoNotCaptureOnButtonPress As Boolean
-
-'If tracking multiple hWnds, the caller may find it helpful to retrieve the relevant hWnd for a given event.  We track the last-handled
-' hwnd here.
-Private m_LastMsgHWnd As Long
 
 'If the mouse is currently captured, this will be set to TRUE
 Private m_MouseHasBeenCaptured As Boolean
 
-Public Function GetLastHwnd() As Long
-    GetLastHwnd = m_LastMsgHWnd
-End Function
-
-Public Sub SetCaptureOverride(ByVal newCaptureMode As Boolean)
-    
-    m_DoNotCaptureOnButtonPress = newCaptureMode
-    
-    'Also, release a current capture, if any
-    If newCaptureMode And m_MouseHasBeenCaptured Then
-        m_CaptureCounter = 0
-        ReleaseCapture
-        m_MouseHasBeenCaptured = False
-    End If
-    
-End Sub
-
-'For details, see the declaration for m_IgnoreLastMessage
-Public Sub IgnoreLastMessage()
-    m_IgnoreLastMessage = True
-End Sub
-
-'Use this function enable/disable automatic dropping of severely delayed events
-Public Sub SetAutoDropOfDelayedEvents(ByVal newMode As Boolean)
-    m_DelayTrackingActive = newMode
-End Sub
-
-'Use this function to set the threshold, in milliseconds, after which a message is considered unacceptably delayed.
-' NOTE: system timer resolution limits this value to roughly [10, 16] ms, so setting a threshold below that point may cause
-'       nearly all events to be dropped.  Try to limit the requested value to > 100 ms for best results.
-Public Sub SetAutoDropDelayThreshold(ByVal newThreshold As Long)
-    m_DelayThreshold = newThreshold
-    If m_DelayThreshold < 16 Then m_DelayThreshold = 16
-End Sub
-
-'Use this function to enable/disable high-resolution tracking
-Public Sub SetHighResolutionTrackingMode(ByVal newMode As Boolean)
-    m_HighResModeActive = newMode
-End Sub
-
-Public Sub SetCursorOverrideState(ByVal newOverride As Boolean)
-    m_OverrideSetCursorMessages = newOverride
-End Sub
-
-Public Sub ResetTracking()
-    ResetClassCursor
-    m_CaptureCounter = 0
-    m_MouseMoveCount = 0
-    m_MouseHasBeenCaptured = False
-    m_MouseTrackingActive(GetIndexFromHwnd(m_LastMsgHWnd)) = False
-End Sub
-
-Private Sub Class_Initialize()
-    
-    'Reset all input tracking variables
-    ReDim m_TrackingData(0 To NUM_OF_CUSTOM_INPUT_TRACKERS - 1, 0) As Long
-    ReDim m_MouseTrackingActive(0) As Boolean
-    
-    'Note that we are not currently tracking the mouse for this object
-    m_MouseTrackingActive(0) = False
-    
-    'Initialize the subclasser
-    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
-    
-    'Reset the cursor handle for this instance
-    m_CursorHandle = 0
-    
-    'Auto-dropping of severely delayed events is activated by default
-    m_DelayTrackingActive = True
-    m_DelayThreshold = DEFAULT_DELAY_THRESHOLD_MS
-    
-    'Debugging high-resolution mode is made easier by enabling it automatically.
-    m_HighResModeActive = True
-    
-    'Reset the capture counter
-    m_CaptureCounter = 0
-    
-End Sub
-
-Private Sub Class_Terminate()
-    Me.Shutdown
-End Sub
-
-'This function is automatically called at Class_Terminate time, but you can also call it manually if you want
-' to ensure a particular unload time.
-Public Sub Shutdown()
-
-    If g_IsProgramRunning Then
-        
-        If (m_hWndCount > 0) Then
-            Dim i As Long
-            For i = 0 To m_hWndCount - 1
-                If (m_TrackingData(PDIT_DEFAULT, i) <> 0) Then
-                    cSubclass.ssc_UnSubclass m_TrackingData(0, i)
-                    m_TrackingData(0, i) = 0
-                End If
-            Next i
-        End If
-        
-        cSubclass.shk_TerminateHooks
-        cSubclass.ssc_Terminate
-        
-    End If
-    
-End Sub
-
 'Initiate input tracking of a given hWnd.  Aside from the required hWnd, a few other, optional parameters exist:
 '
-' - Whether to track MouseMove events as well.  If this is specified, note that VB's intrinsic "MouseMove" event
-'    will not fire, as this function will process the messages and raise its own event, preventing VB from doing so.
+' - Tracking mouse enter/leave events.  Windows doesn't supply these by default - you have to manually request them.
+'
+' - Tracking traditional mouse events (move, mousedown/up, etc).  If this is requested, note that VB's intrinsic mouse
+'    events will not fire, as this class will intercept the messages and raise its own event(s), preventing VB from doing so.
 '
 ' - Whether to track AppCommand messages for this hWnd.  This is used for "virtual" functions like forward/back,
 '    which are typically generated by mouse buttons 4 and 5, but could also be generated by a multimedia keyboard
 '    or gestures on a tablet PC.
 '
-'BY DEFAULT, all added hWnds will have MouseEnter/Leave/Wheel events tracked "for free".
+' - Cursor management.  Generally, it's best to let this class handle cursor behavior, as it has more detailed information
+'    available than VB does.
 '
 'Note that this function will return TRUE if input tracking was initiated successfully.
 Public Function AddInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTrackMouseEnterLeave As Boolean = False, Optional ByVal alsoTrackStandardMouseEvents As Boolean = False, Optional ByVal alsoTrackAppCommands As Boolean = False, Optional ByVal alsoHandleCursorDuties As Boolean = False, Optional ByVal disregardWheelEvents As Boolean = False, Optional ByVal targetWindowIsAPI As Boolean = False) As Boolean
         
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
     If (targetHwnd <> 0) Then
-    
-        'Add the hWnd to our tracking array, and increment all subarrays accordingly
-        m_hWndCount = m_hWndCount + 1
-        ReDim Preserve m_TrackingData(0 To NUM_OF_CUSTOM_INPUT_TRACKERS - 1, 0 To m_hWndCount - 1) As Long
-        ReDim Preserve m_MouseTrackingActive(0 To m_hWndCount - 1) As Boolean
         
-        m_TrackingData(PDIT_DEFAULT, m_hWndCount - 1) = targetHwnd
-        m_TrackingData(PDIT_MOUSE_ENTERLEAVE, m_hWndCount - 1) = alsoTrackMouseEnterLeave
-        m_TrackingData(PDIT_STANDARD_MOUSE, m_hWndCount - 1) = alsoTrackStandardMouseEvents
-        m_TrackingData(PDIT_APPCOMMAND, m_hWndCount - 1) = alsoTrackAppCommands
-        m_TrackingData(PDIT_CURSOR, m_hWndCount - 1) = alsoHandleCursorDuties
-    
+        m_TargetHWnd = targetHwnd
+        m_TrackMouseEnterLeave = alsoTrackMouseEnterLeave
+        m_TrackStandardMouseEvents = alsoTrackStandardMouseEvents
+        m_TrackAppCommands = alsoTrackAppCommands
+        m_TrackCursor = alsoHandleCursorDuties
+        
+        m_MouseTrackingActive = False
+        
     'The calling function didn't supply an hWnd.  Warn and exit.
     Else
         Debug.Print "WARNING: a function just requested input tracking, but didn't supply an hWnd.  Fix it!"
@@ -433,95 +287,137 @@ Public Function AddInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
         Exit Function
     End If
     
-    'Attach the subclasser to this hWnd
-    If (Not (cSubclass Is Nothing)) Then
-    
-        If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me, , targetWindowIsAPI, targetWindowIsAPI) Then
-            
-            Debug.Print "WARNING: input subclasser failed to subclass hWnd #" & targetHwnd & ".  Fix it!"
+    'Attach a subclasser to this hWnd
+    If (Not (m_Subclass Is Nothing)) Then
+        
+        Dim subclassSuccess As Boolean
+        subclassSuccess = m_Subclass.ssc_Subclass(targetHwnd, , 1, Me, , targetWindowIsAPI, targetWindowIsAPI)
+        
+        If (Not subclassSuccess) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING: input subclasser failed to subclass a requested hWnd (" & targetHwnd & ")."
+            #End If
             AddInputTracker = False
             Exit Function
-        
         End If
         
-        
         'Subclassing was successful.  Add all relevant mouse messages.
-        ' (Note that we subclass MouseMove events even if the user doesn't want these events returned; this is
-        ' used to generate MouseEnter/Leave events.)
-        If Not disregardWheelEvents Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
         
-        'Set any optional event subclassing as well
-        If alsoTrackMouseEnterLeave Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
-        If alsoTrackAppCommands Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_APPCOMMAND
+        '(Note that we subclass MouseMove events even if the user doesn't want these events returned; this is
+        ' necessary for handling MouseEnter/Leave events.)
+        If alsoTrackMouseEnterLeave Then m_Subclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_MOUSEHOVER
+        If (Not disregardWheelEvents) Then m_Subclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_MOUSEWHEEL, WM_MOUSEHWHEEL
+        If alsoTrackAppCommands Then m_Subclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_APPCOMMAND
         If alsoTrackStandardMouseEvents Then
             
             'Mouse down...
-            cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
+            m_Subclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN
             
             'Mouse up...
-            cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
+            m_Subclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
             
             'Double-clicks (including X-buttons)...
-            cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
+            m_Subclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
             
         End If
         
         'Cursor duties require response to WM_SETCURSOR
-        If alsoHandleCursorDuties Then cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_SETCURSOR
+        If alsoHandleCursorDuties Then m_Subclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_SETCURSOR
                 
-        'If enter, leave, and hover events are desired, start mouse tracking now
+        'If enter, leave, and hover events are desired, immediately start mouse tracking
         If alsoTrackMouseEnterLeave Then
-        
-            If RequestMouseTrackingForHwnd(targetHwnd) Then
-                m_MouseTrackingActive(m_hWndCount - 1) = True
-            Else
-                
-                Debug.Print "WARNING: couldn't get Windows to track mouse events for hWnd #" & targetHwnd & ".  Fix it!"
+            
+            m_MouseTrackingActive = RequestMouseTrackingForHwnd
+            If (Not m_MouseTrackingActive) Then
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING: Windows refused to track mouse events for an hWnd (" & targetHwnd & ")."
+                #End If
                 AddInputTracker = False
                 Exit Function
-                    
             End If
             
         End If
         
     End If
     
+    'If we made it all the way here, input tracking is live!
     AddInputTracker = True
     
 End Function
 
-'Assign a cursor to the hWnd collection.  Call this function without a parameter to reset the cursor to the default arrow.
-Public Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT, Optional ByVal confirmHwnd As Long = 0)
+'Use this function enable/disable automatic dropping of severely delayed events
+Public Sub SetAutoDropOfDelayedEvents(ByVal newMode As Boolean)
+    m_DelayTrackingActive = newMode
+End Sub
+
+'Use this function to set the threshold, in milliseconds, after which a message is considered unacceptably delayed.
+' NOTE: system timer resolution limits this value to roughly 16 ms, so setting a threshold below that point may cause
+'       nearly all events to be dropped.  Try to limit the requested value to > 100 ms for best results.
+Public Sub SetAutoDropDelayThreshold(ByVal newThreshold As Long)
+    m_DelayThreshold = newThreshold
+    If (m_DelayThreshold < 16) Then m_DelayThreshold = 16
+End Sub
+
+'User controls that implement custom drag/drop behavior may choose to manually disable cursor capture, as it prevents dragging outside
+' a control's borders.
+Public Sub SetCaptureOverride(ByVal newCaptureMode As Boolean)
     
-    'Ignore requests while an override is active
-    If Not m_OverrideSetCursorMessages Then
+    m_DoNotCaptureOnButtonPress = newCaptureMode
     
-        'Load the relevant cursor handle
-        Dim tmpCursorHandle As Long
+    'Also, release a current capture, if any
+    If (newCaptureMode And m_MouseHasBeenCaptured) Then
+        m_CaptureCounter = 0
+        ReleaseCapture
+        m_MouseHasBeenCaptured = False
+    End If
+    
+End Sub
+
+'Use this function to enable/disable high-resolution tracking (where mouse motions between WM_MOUSEMOVE events are manually reconstructed)
+Public Sub SetHighResolutionTrackingMode(ByVal newMode As Boolean)
+    m_HighResModeActive = newMode
+End Sub
+
+Public Sub ResetTracking()
+    ResetClassCursor
+    m_CaptureCounter = 0
+    m_MouseMoveCount = 0
+    m_MouseHasBeenCaptured = False
+    m_MouseTrackingActive = False
+End Sub
+
+'This function is automatically called at Class_Terminate time, but you can also call it manually if you want
+' to ensure immediately release of the subclasser.
+Public Sub Shutdown()
+
+    If g_IsProgramRunning Then
         
-        If systemCursorType = IDC_DEFAULT Then
-            tmpCursorHandle = LoadCursor(0, IDC_ARROW)
-        Else
-            tmpCursorHandle = LoadCursor(0, systemCursorType)
+        If (m_TargetHWnd <> 0) Then
+            m_Subclass.ssc_UnSubclass m_TargetHWnd
+            m_TargetHWnd = 0
         End If
         
-        'Check for duplicate cursor requests, and ignore them as necessary
-        If (GetCursor() <> tmpCursorHandle) Then
-            
-            m_CursorHandle = tmpCursorHandle
-            
-            If confirmHwnd = 0 Then
-                ApplyCursorToHwnds False
-            Else
-                If GetIndexFromHwnd(confirmHwnd) >= 0 Then
-                    ApplyCursorToHwnds False, GetIndexFromHwnd(confirmHwnd)
-                Else
-                    ApplyCursorToHwnds False
-                End If
-            End If
-            
-        End If
+        m_Subclass.ssc_Terminate
         
+    End If
+    
+End Sub
+
+'Assign a system cursor to the underlying hWnd.  Call this function without a parameter to reset the cursor to the default arrow.
+Public Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT)
+    
+    'Load the relevant cursor handle
+    Dim tmpCursorHandle As Long
+    If systemCursorType = IDC_DEFAULT Then
+        tmpCursorHandle = LoadCursor(0, IDC_ARROW)
+    Else
+        tmpCursorHandle = LoadCursor(0, systemCursorType)
+    End If
+    
+    'Check for duplicate cursor requests, and ignore them as necessary
+    If (GetCursor() <> tmpCursorHandle) Then
+        m_CursorHandle = tmpCursorHandle
+        ApplyCursorToHwnds False
     End If
         
 End Sub
@@ -533,66 +429,46 @@ End Sub
 ' custom cursors at exit time, so this class need not concern itself with unloading requested cursors.
 Public Sub SetPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
     
-    If (Not m_OverrideSetCursorMessages) Then
+    Dim tmpCursorHandle As Long
+    tmpCursorHandle = Icons_and_Cursors.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
     
-        Dim tmpCursorHandle As Long
-        tmpCursorHandle = Icons_and_Cursors.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
-        
-        If m_CursorHandle <> tmpCursorHandle Then
-            m_CursorHandle = tmpCursorHandle
-            ApplyCursorToHwnds False
-        End If
-        
+    If (m_CursorHandle <> tmpCursorHandle) Then
+        m_CursorHandle = tmpCursorHandle
+        ApplyCursorToHwnds False
     End If
     
 End Sub
 
-'Private helper function used by setSystemCursor and setPNGCursor, above.  When setting the cursor for the first time
-' for our base hWnd, it is helpful to reset the class cursor definition so that Windows doesn't automatically raise
-' WM_SETCURSOR messages every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class
-' cursor and overwrite it with NULL.
-Private Sub ApplyCursorToHwnds(Optional ByVal removeExistingClassCursor As Boolean = False, Optional ByVal currentIndex As Long = 0)
-    
-    If (Not m_OverrideSetCursorMessages) Then
-    
-        'If removeExistingClassCursor is set, use SetClassLong to remove any existing class-level cursor definition
-        If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_TrackingData(PDIT_DEFAULT, currentIndex), GCL_HCURSOR, 0&)
-        
-        'Apply the new cursor using SetCursor
-        SetCursor m_CursorHandle
-        
-    End If
-
+'Private helper function used by SetSystemCursor and SetPNGCursor, above.  When setting the cursor for the first time,
+' it is helpful to reset the class cursor definition so that Windows doesn't automatically raise WM_SETCURSOR messages
+' every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class cursor and overwrite
+' it with NULL.
+Private Sub ApplyCursorToHwnds(Optional ByVal removeExistingClassCursor As Boolean = False)
+    If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_TargetHWnd, GCL_HCURSOR, 0&)
+    SetCursor m_CursorHandle
 End Sub
 
-'Partner to applyCursorToHwnds, above.  To be used only when the mouse leaves a cursor-controlled area.
-Private Sub ResetClassCursor(Optional ByVal currentIndex As Long = 0)
-    
-    If (Not m_OverrideSetCursorMessages) Then
-        SetClassLong m_TrackingData(PDIT_DEFAULT, currentIndex), GCL_HCURSOR, LoadCursor(0, IDC_DEFAULT) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via setHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
-        SetCursor LoadCursor(0, IDC_ARROW)      'Note that this MUST be IDC_ARROW; IDC_DEFAULT will show nothing on some control
-    End If
-    
+'Partner to ApplyCursorToHwnds, above.  To be used only when the mouse leaves a cursor-controlled area.
+Private Sub ResetClassCursor()
+    SetClassLong m_TargetHWnd, GCL_HCURSOR, LoadCursor(0, IDC_DEFAULT) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via SetHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
+    SetCursor LoadCursor(0, IDC_ARROW)      'Note that this MUST be IDC_ARROW; IDC_DEFAULT will show nothing on some controls
 End Sub
 
-'Given an hWnd, populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent function
-Private Function RequestMouseTrackingForHwnd(ByVal targetHwnd As Long)
+'Populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent API.  (This is done frequently, as Windows
+' automatically deactivates mouse tracking after raising a mouse-related event.)
+Private Function RequestMouseTrackingForHwnd()
 
     Dim eventTracker As TRACKMOUSEEVENT_STRUCT
     
     With eventTracker
         .cbSize = Len(eventTracker)
         .dwFlags = TME_LEAVE Or TME_HOVER
-        .hWndTrack = targetHwnd
+        .hWndTrack = m_TargetHWnd
         .dwHoverTime = &HFFFFFFFF       'Use the system default hover time (400 ms, I believe)
     End With
     
     'TrackMouseEvent returns non-zero values for success
-    If (TrackMouseEvent(eventTracker) <> 0) Then
-        RequestMouseTrackingForHwnd = True
-    Else
-        RequestMouseTrackingForHwnd = False
-    End If
+    RequestMouseTrackingForHwnd = CBool(TrackMouseEvent(eventTracker) <> 0)
     
 End Function
 
@@ -605,7 +481,7 @@ End Function
 Private Function IsMouseButtonDown(ByVal vKey As Long) As Boolean
     
     'Check for left/right mouse button switching, which is a system-wide user setting
-    If GetSystemMetrics(SM_SWAPBUTTON) <> 0 Then
+    If (GetSystemMetrics(SM_SWAPBUTTON) <> 0) Then
     
         'Reassign left/right mouse buttons as necessary
         If vKey = VK_LBUTTON Then
@@ -621,7 +497,7 @@ Private Function IsMouseButtonDown(ByVal vKey As Long) As Boolean
 End Function
 
 'Parse out the actual app command from the lParam of a WM_APPCOMMAND message.
-' A big thank you to Steve McMahon for translating the GET_APPCOMMAND_LPARAM, GET_DEVICE_LPARAM, and GET_KEYSTATE_LPARAM macros
+' Thank you to Steve McMahon for translating the GET_APPCOMMAND_LPARAM, GET_DEVICE_LPARAM, and GET_KEYSTATE_LPARAM macros
 ' into VB; you can see his original work here: http://www.vbaccelerator.com/home/VB/Tips/Responding_to_AppCommands/article.asp
 Private Function ParseAppCommand(ByVal lParam As Long, ByRef GET_APPCOMMAND_LPARAM As Long, Optional ByRef GET_DEVICE_LPARAM As Long, Optional ByRef GET_KEYSTATE_LPARAM As Long) As Long
 
@@ -639,37 +515,18 @@ Private Function ParseAppCommand(ByVal lParam As Long, ByRef GET_APPCOMMAND_LPAR
 
 End Function
 
-'Given an hWnd, retrieve its index in our tracking array
-Private Function GetIndexFromHwnd(ByVal srcHwnd As Long) As Long
-
-    Dim i As Long
-    For i = 0 To m_hWndCount - 1
-        If srcHwnd = m_TrackingData(PDIT_DEFAULT, i) Then
-            GetIndexFromHwnd = i
-            Exit Function
-        End If
-    Next i
-    
-    'If we made it all the way here, the requested hWnd was not found.
-    GetIndexFromHwnd = -1
-
-End Function
-
-'Use GetCursorPos to retrieve the current mouse pointer coordinates.  Note that getCursorPos always uses screen coordinates,
-' so we will manually translate the coords into the space of the passed hWnd.
-Private Function GetCurrentCursorPosition(ByVal srcHwnd As Long, ByRef controlX As Long, ByRef controlY As Long) As Boolean
+'Use GetCursorPos to retrieve the current mouse pointer coordinates.  Note that GetCursorPos always uses screen coordinates,
+' so we need to manually translate the coords into the space of our current hWnd.
+Private Function GetCurrentCursorPosition(ByRef controlX As Long, ByRef controlY As Long) As Boolean
 
     Dim tmpPoint As POINTAPI
     If GetCursorPos(tmpPoint) <> 0 Then
         
         'Convert the screen coordinates into the coordinate space of the supplied hWnd
-        If ScreenToClient(srcHwnd, tmpPoint) <> 0 Then
-            
+        If (ScreenToClient(m_TargetHWnd, tmpPoint) <> 0) Then
             controlX = tmpPoint.x
             controlY = tmpPoint.y
-            
             GetCurrentCursorPosition = True
-            
         Else
             GetCurrentCursorPosition = False
         End If
@@ -680,7 +537,7 @@ Private Function GetCurrentCursorPosition(ByVal srcHwnd As Long, ByRef controlX 
 
 End Function
 
-'The primary hWnd can use this function to move the mouse to some new position.
+'The primary hWnd can use this function to move the mouse to some new position.  (This is not currently used.)
 Public Sub MoveCursorToNewPosition(ByVal xRelativeToHwnd As Double, ByVal yRelativeToHwnd As Double)
 
     'Retrieve the requested position, in screen coordinates
@@ -688,7 +545,7 @@ Public Sub MoveCursorToNewPosition(ByVal xRelativeToHwnd As Double, ByVal yRelat
     tmpPoint.x = xRelativeToHwnd
     tmpPoint.y = yRelativeToHwnd
     
-    If ClientToScreen(m_TrackingData(PDIT_DEFAULT, 0), tmpPoint) <> 0 Then
+    If (ClientToScreen(m_TargetHWnd, tmpPoint) <> 0) Then
         
         'Cursor trails may cause ghosting, where we move the cursor, but a cursor is still shown at the old mouse position.
         ' To account for that, we must hide the cursor, move it, then re-display it.
@@ -704,8 +561,6 @@ End Sub
 Private Function GetUserScrollSetting(ByVal directionIsVertical As Long) As Double
 
     Dim tmpUserScrollReturn As Long
-    
-    'Retrieve the system scroll setting
     If directionIsVertical Then
         SystemParametersInfo SPI_GETWHEELSCROLLLINES, 0, tmpUserScrollReturn, 0
     Else
@@ -715,7 +570,7 @@ Private Function GetUserScrollSetting(ByVal directionIsVertical As Long) As Doub
     'Because we're going to use this function to calculate scroll amounts, don't allow it to be zero.
     ' (I don't know if Windows itself allows a 0 value, but it doesn't hurt to check, especially because
     ' the SystemParametersInfo call above could technically fail to return a value.)
-    If tmpUserScrollReturn = 0 Then tmpUserScrollReturn = 3
+    If (tmpUserScrollReturn = 0) Then tmpUserScrollReturn = 3
     
     GetUserScrollSetting = CDbl(tmpUserScrollReturn) / 120
 
@@ -760,7 +615,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
 
     'If we have never tracked a previous point, we don't want to reconstruct a mouse movement history yet (because this is the user's
     ' first click!)  Store the passed point for future reference, then exit immediately.
-    If Not m_PrevPointStored Then
+    If (Not m_PrevPointStored) Then
     
         m_PrevPointStored = True
         
@@ -781,7 +636,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     'Current tracking mode.  We can use either high-resolution pen input coordinates, or regular mouse coordinates.
     ' For now, PD only uses regular mouse coordinates, but perhaps we could make use of the pen code in the future,
     ' so I've included it here.
-    Dim curTrackingResolution As mouseResolution
+    Dim curTrackingResolution As PD_MouseResolution
     curTrackingResolution = GMMP_USE_DISPLAY_POINTS
     
     'First, we need to prepare a reference MOUSEMOVEPOINTS struct.  This struct is used as the reference for "current point",
@@ -811,14 +666,14 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     numPoints = GetMouseMovePointsEx(Len(curMouseMovePoint), curMouseMovePoint, VarPtr(mouseHistory(0)), 64, GMMP_USE_DISPLAY_POINTS)
         
     'If one or more valid points were returned, carry on
-    If numPoints > 0 Then
+    If (numPoints > 0) Then
     
         'We now want to search the mouse movement history for the previous point we returned.  All points after that will need to be manually raised.
         Dim i As Long
         For i = 0 To numPoints - 1
         
             'If we reach a point that occurred prior to our last tracked time, exit
-            If mouseHistory(i).ptTime < m_LastPointTracked.ptTime Then Exit For
+            If (mouseHistory(i).ptTime < m_LastPointTracked.ptTime) Then Exit For
             
             'If we reach our exact last point time, also exit
             If (mouseHistory(i).ptTime = m_LastPointTracked.ptTime) And (mouseHistory(i).x = m_LastPointTracked.x) And (mouseHistory(i).y = m_LastPointTracked.y) Then Exit For
@@ -828,7 +683,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
         'The variable "i" now contains the index of the previous point (or one that occurred just prior to it, if the previous point wasn't found).
         ' Iterate through all points following that one, and convert them to valid screen coordinates.
         numPoints = i - 1
-        If numPoints < 0 Then numPoints = 0
+        If (numPoints < 0) Then numPoints = 0
         
         For i = numPoints To 0 Step -1
         
@@ -836,12 +691,10 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             Select Case curTrackingResolution
             
                 Case GMMP_USE_DISPLAY_POINTS
-                
                     If (mouseHistory(i).x > 32767) Then mouseHistory(i).x = mouseHistory(i).x - 65536
                     If (mouseHistory(i).y > 32767) Then mouseHistory(i).y = mouseHistory(i).y - 65536
                 
                 Case GMMP_USE_HIGH_RESOLUTION_POINTS
-                
                     mouseHistory(i).x = ((mouseHistory(i).x * (nVirtualWidth - 1)) - (nVirtualLeft * 65536)) / nVirtualWidth
                     mouseHistory(i).y = ((mouseHistory(i).y * (nVirtualHeight - 1)) - (nVirtualTop * 65536)) / nVirtualHeight
                 
@@ -850,16 +703,14 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             'With this point successfully transformed, the last thing we need to do is convert it from screen to window coordinates.
             tmpPoint.x = mouseHistory(i).x
             tmpPoint.y = mouseHistory(i).y
-            ScreenToClient m_TrackingData(0, 0), tmpPoint
+            ScreenToClient m_TargetHWnd, tmpPoint
             
             'If automatic message dropping is active, make sure this message falls within the acceptable threshold
             ' before firing it.
             If m_DelayTrackingActive Then
-            
                 If (GetMessageDelay(mouseHistory(i).ptTime) <= m_DelayThreshold) Then
                     RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
                 End If
-            
             Else
                 RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
             End If
@@ -870,14 +721,10 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     ' simply raise the point we received, then exit.
     Else
         
-        'If automatic message dropping is active, make sure this message falls within the acceptable threshold
-        ' before firing it.
         If m_DelayTrackingActive Then
-        
             If (GetMessageDelay(msgTimestamp) <= m_DelayThreshold) Then
                 RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
             End If
-        
         Else
             RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
         End If
@@ -898,16 +745,32 @@ Private Function GetMessageDelay(ByVal srcMessageTime As Long) As Long
     GetMessageDelay = GetTickCount() - srcMessageTime
 End Function
 
+Private Sub Class_Initialize()
+    
+    m_MouseTrackingActive = False
+    m_CursorHandle = 0
+    m_CaptureCounter = 0
+    
+    'Unlike some PD classes, a subclasser is always initialized by this class.  (It can't function otherwise.)
+    If g_IsProgramRunning Then Set m_Subclass = New cSelfSubHookCallback
+    
+    'Note that auto-dropping of severely delayed events is activated by default
+    m_DelayTrackingActive = True
+    m_DelayThreshold = DEFAULT_DELAY_THRESHOLD_MS
+    
+    'In debug builds, high-resolution mode is made enabled automatically - but note that this value can be overridden by
+    ' a global value, currently used for further testing (and controllable from the Tools > Options dialog).
+    ' TODO: revisit this in final builds to make sure the default result provides the best experience.
+    m_HighResModeActive = True
+    
+End Sub
+
+Private Sub Class_Terminate()
+    Me.Shutdown
+End Sub
 
 'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
+Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
 '*************************************************************************************************
 '* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
 '*              you will know unless the callback for the uMsg value is specified as
@@ -933,15 +796,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     msgTimestamp = GetMessageTime()
     
     'Next, do a failsafe check to make sure the hWnd we've been passed is one we're actually responsible for.
-    ' (This should always be TRUE, but better safe than sorry.)
-    Dim indexOfHwnd As Long
-    indexOfHwnd = GetIndexFromHwnd(lng_hWnd)
-    
-    'If the hWnd was found in our tracking array, start processing the window message.
-    If (indexOfHwnd >= 0) Then
-        
-        'Note this hWnd, in case the user needs to retrieve it mid-event
-        m_LastMsgHWnd = lng_hWnd
+    ' (This should always be TRUE.)
+    If (lng_hWnd = m_TargetHWnd) Then
         
         'As VB already does with its own mouse events, it is helpful to supply key modifiers directly in the event
         ' params.  Unfortunately, the window messages that report key states will only report SHIFT and CTRL masks,
@@ -953,14 +809,13 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'Anyway, because the Alt key requires special handling, and some messages don't report button state, I just
         ' ignore window message reports entirely and pull key states manually using GetAsyncKeyState.
         Dim retShiftConstants As ShiftConstants
-        
         If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
         If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
         
-        'NOTE!  MSDN provides some odd instructions for tracking the ALT key (see Remarks here:
+        'NOTE!  MSDN provides odd instructions for tracking the ALT key (see Remarks here:
         ' http://msdn.microsoft.com/en-us/library/ms646242%28v=vs.85%29.aspx).  They state explicitly to use
         ' use GetKeyState and not GetAsyncKeyState, but they don't provide any rationale for this.  I have no
-        ' trouble with GetAsyncKeyState properly reporting Alt status on Win 7, so I'm leaving this strategy
+        ' trouble with GetAsyncKeyState properly reporting Alt status on Win XP through 10, so I'm leaving this strategy
         ' for now, but I remain intrigued by MSDN's oddly specific instructions on the point...
         If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
         
@@ -975,12 +830,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'Some functions also supply mouse button and coordinate values; we'll be retrieving these as well.
         ' To improve accuracy of the retrieved coordinates (and to make future support for GetMouseMovePointsEx
         ' easier to implement), we're going to manually retrieve coordinates using GetCursorPos, then translate
-        ' these into the coordinate space of the master hWnd given to this class.  This allows for some neat
-        ' extendability, like a user control with multiple child controls, but who receives only a singular
-        ' MouseMove event for the entire control, with all coordinates automatically transformed.
+        ' these into the coordinate space of the master hWnd given to this class.
         Dim mouseX As Long, mouseY As Long
-        If Not GetCurrentCursorPosition(m_TrackingData(PDIT_DEFAULT, 0), mouseX, mouseY) Then
-            Debug.Print "WARNING!  pdInput could not retrieve mouse coordinates relative to hWnd #" & lng_hWnd & ". Fix it!"
+        If Not GetCurrentCursorPosition(mouseX, mouseY) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdInput could not retrieve mouse coordinates relative to hWnd (" & lng_hWnd & ")."
+            #End If
         End If
         
         'As a failsafe, crucial mouse events (button down and up, particularly) can never afford to be delayed.  We must retrieve
@@ -993,48 +848,36 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'Regardless of which event we are handling, we now have Shift modifier, mouse button, and mouse coordinate
         ' data (relative to the master hWnd for this class).  This makes individual message parsing much easier, as
         ' some messages don't report this info automatically.
-        
-        'Parse window messages and raise any standard events; at present, this includes: mouse enter, mouse leave,
-        ' and mousewheel.  Other events handled by this class are optional, and will be handled separately.
         Select Case uMsg
         
             'First things first: handle mouse enter and leave events.
             Case WM_MOUSEMOVE
                 
-                'Regardless of button or hWnd, increment the MouseMove counter
+                'Regardless of button or tracking state, increment the MouseMove counter
                 m_MouseMoveCount = m_MouseMoveCount + 1
                 
                 'Make sure we are actually tracking mouse enter/leave events for this hWnd
-                If m_TrackingData(PDIT_MOUSE_ENTERLEAVE, indexOfHwnd) Then
+                If m_TrackMouseEnterLeave Then
                     
-                    'Reset hover mode tracking
+                    'Move events always mean we should reset hover mode tracking
                     m_HoverModeActive = False
                 
                     'If the mouse is moving, that means it has entered the control.  If we aren't already tracking it,
                     ' do so now, and raise a MouseEnter event to match.
-                    If Not m_MouseTrackingActive(indexOfHwnd) Then
+                    If (Not m_MouseTrackingActive) Then
                         
-                        m_MouseTrackingActive(indexOfHwnd) = True
-                        RequestMouseTrackingForHwnd lng_hWnd
+                        m_MouseTrackingActive = True
+                        RequestMouseTrackingForHwnd
                         
                         'If cursor handling is enabled, reset the class cursor and re-apply any custom cursor now.
-                        If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then ApplyCursorToHwnds True, indexOfHwnd
+                        If m_TrackCursor Then ApplyCursorToHwnds True
                         
-                        'Only raise a MouseEnter event if this event is happening for the primary hWnd; otherwise, track
-                        ' mouse events silently.
-                        '
-                        'NOTE! This will raise more MouseEnter events than we want in the case of a UC with multiple
-                        '       tracked controls; I'll investigate a better solution if/when it proves necessary.
-                        '
-                        'NOTE 2: As of March 2015, fixes to the color selection dialog require me to rework this.  I now
-                        ' raise MouseEnter for all tracked hWnds, so that the hWnd can request cursor changes as necessary.
-                        ' Hopefully this doesn't break anything elsewhere in the program...
                         RaiseEvent MouseEnter(retMouseButton, retShiftConstants, mouseX, mouseY)
                         
                     End If
                                         
                     'If custom MouseMove tracking has been requested for this hWnd, raise a mouse move event now
-                    If m_TrackingData(PDIT_STANDARD_MOUSE, indexOfHwnd) Then
+                    If m_TrackStandardMouseEvents Then
                         
                         'There are two ways to raise MouseMove events for a window.  If high-resolution tracking is active,
                         ' we need to reconstruct any missing mouse events and raise them all in turn.  Otherwise, we can
@@ -1046,11 +889,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             'If automatic message dropping is active, make sure this message falls within the acceptable threshold
                             ' before firing it.
                             If m_DelayTrackingActive Then
-                            
                                 If (GetMessageDelay(msgTimestamp) <= m_DelayThreshold) Then
                                     RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
                                 End If
-                                
                             Else
                                 RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
                             End If
@@ -1063,8 +904,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         ' is that DefWindowProc needs to pass the message onto the tooltip object so it can process its own
                         ' internal timer for showing the tooltip; by setting bHandled to True, we prevent that hand-off, so
                         ' the tooltip never gets notification.
-                        'bHandled = True
-                        
+                        '
+                        'NOTE: now that PD implements its own custom tooltips, this no longer matters.
+                        bHandled = True
                         lReturn = 0
                         
                     End If
@@ -1117,12 +959,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 RaiseEvent MouseDownCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt)
                 
-                If m_IgnoreLastMessage Then
-                    bHandled = False
-                    lReturn = DefWindowProc(lng_hWnd, uMsg, wParam, lParam)
-                    m_IgnoreLastMessage = False
-                End If
-            
             'Mouse up
             Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
             
@@ -1189,12 +1025,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, False)
                 End If
                 
-                If m_IgnoreLastMessage Then
-                    bHandled = False
-                    lReturn = DefWindowProc(lng_hWnd, uMsg, wParam, ByVal lParam)
-                    m_IgnoreLastMessage = False
-                End If
-                
             'Double-clicks
             Case WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK
             
@@ -1228,36 +1058,25 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 RaiseEvent DoubleClickCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
                 
-                If m_IgnoreLastMessage Then
-                    bHandled = False
-                    lReturn = DefWindowProc(lng_hWnd, uMsg, wParam, lParam)
-                    m_IgnoreLastMessage = False
-                End If
-            
             'Mouse leaving the client area
             Case WM_MOUSELEAVE
             
                 'Make sure we are actually tracking mouse enter/leave events for this hWnd
-                If m_TrackingData(PDIT_MOUSE_ENTERLEAVE, indexOfHwnd) Then
+                If m_TrackMouseEnterLeave Then
             
                     'If we've been tracking mouse movements for this hWnd, raise a MouseLeave event now
-                    If m_MouseTrackingActive(indexOfHwnd) Then
+                    If m_MouseTrackingActive Then
                         
-                        m_MouseTrackingActive(indexOfHwnd) = False
+                        m_MouseTrackingActive = False
                         m_LastHoverX = -1
                         m_LastHoverY = -1
                         
-                        'Only raise a MouseLeave event if this event is happening for the primary hWnd; otherwise, track
-                        ' mouse events silently.
-                        '
-                        'NOTE! This will raise more MouseLeave events than we want in the case of a UC with multiple
-                        '       tracked controls; I'll investigate a better solution if/when it proves necessary.
-                        If (indexOfHwnd = 0) Then RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
+                        RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
                         
                         'If cursor handling is enabled for this hWnd, reset the cursor to its original value whenever
                         ' the mouse has left the control.  This will prevent us from mistakenly assigning our custom
                         ' cursor to other objects that share this class.
-                        If m_TrackingData(PDIT_CURSOR, indexOfHwnd) Then ResetClassCursor
+                        If m_TrackCursor Then ResetClassCursor
                         
                     End If
                     
@@ -1265,12 +1084,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                 End If
                 
-            'Next, process MouseHover events.  We don't use this at present, but as it's basically the same code as
-            ' MouseLeave, I've included it "just in case".
+            'Next, process MouseHover events.  This behavior is important for PD's custom-built tooltip solution
             Case WM_MOUSEHOVER
                 
                 'Only process hover events if we care about tracking mouse movements for this hWnd
-                If m_MouseTrackingActive(indexOfHwnd) And (Not m_HoverModeActive) Then
+                If m_MouseTrackingActive And (Not m_HoverModeActive) Then
                     
                     'Note that we are currently in hover mode; this won't be reset until some kind of MouseMove occurs
                     m_HoverModeActive = True
@@ -1280,7 +1098,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                     'Note that we don't change the tracking state, because we don't want to generate subsequent
                     ' MouseEnter events after this one!  Instead, silently re-request mouse tracking for this hWnd.
-                    RequestMouseTrackingForHwnd lng_hWnd
+                    RequestMouseTrackingForHwnd
                     
                     'Unlike Enter/Leave events, we want to raise hover events regardless of the hWnd; the assumption
                     ' here is that the target window will always want these events, and if it doesn't, it can do its
@@ -1343,14 +1161,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     RaiseEvent MouseWheelVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
                 
                 End If
-                
-                If m_IgnoreLastMessage Then
-                    bHandled = False
-                    m_IgnoreLastMessage = False
-                Else
-                    lReturn = 1
-                    bHandled = True
-                End If
+                    
+                lReturn = 1
+                bHandled = True
                 
             'App commands are meta functions like "back" or "increase volume" or "media rewind".  They can be triggered
             ' by a variety of actions, depending on system configuration: mouse gestures, dedicated keyboard keys,
@@ -1359,7 +1172,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Case WM_APPCOMMAND
             
                 'At present, we don't process the additional device or key parameters - just the action ID
-                If m_TrackingData(PDIT_APPCOMMAND, indexOfHwnd) Then
+                If m_TrackAppCommands Then
                     Dim commandID As Long
                     ParseAppCommand lParam, commandID
                     RaiseEvent AppCommand(commandID, retShiftConstants, mouseX, mouseY)
@@ -1368,8 +1181,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'While handling cursor duties, we must respond to WM_SETCURSOR events.
             Case WM_SETCURSOR
             
-                If m_TrackingData(PDIT_CURSOR, indexOfHwnd) And (Not m_OverrideSetCursorMessages) Then
-                    ApplyCursorToHwnds False, indexOfHwnd
+                If m_TrackCursor Then
+                    ApplyCursorToHwnds False
                     bHandled = True
                     lReturn = 1
                 End If
@@ -1379,13 +1192,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     
     'Somehow, the hWnd we've captured is not in our tracking list!  Abandon ship.
     Else
-    
-        Debug.Print "WARNING!  Irrelevant hWnd intercepted by pdInput: " & lng_hWnd
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  Irrelevant hWnd intercepted by pdInput: " & CStr(lng_hWnd)
+        #End If
         bHandled = False
-    
     End If
-
-
+    
 
 ' *************************************************************
 ' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
