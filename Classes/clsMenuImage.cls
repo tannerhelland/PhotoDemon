@@ -69,7 +69,7 @@ Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVe
 Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef graphics As Long) As Long
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal graphics As Long) As Long
-Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal srcFileName As Long, ByRef Image As Long) As Long
+Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal srcFilename As Long, ByRef Image As Long) As Long
 Private Declare Function GdipDisposeImage Lib "gdiplus" (ByVal Image As Long) As Long
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal Image As Long, ByRef Width As Single, ByRef Height As Single) As Long
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal Width As Long, ByVal Height As Long, ByVal Stride As Long, ByVal PixelFormat As Long, Scan0 As Any, Bitmap As Long) As Long
@@ -283,7 +283,7 @@ Private mDIB() As MemoDIB
 Private IsWinVistaOrLater As Boolean
 Private cColl As Collection
 
-Private classicThemeWorkaround As Boolean
+Private m_ClassicThemeWorkaround As Boolean
 
 'Tanner's addition: convert this class to ise IDE-safe subclassing
 Private cSubclass As cSelfSubHookCallback
@@ -293,7 +293,7 @@ Public Property Get IsWindowVistaOrLater() As Boolean
 End Property
 
 Public Property Get CanWeTheme() As Boolean
-    CanWeTheme = Not classicThemeWorkaround
+    CanWeTheme = Not m_ClassicThemeWorkaround
 End Property
 
 Public Property Get ImageCount() As Long
@@ -332,7 +332,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     
     Dim tmpInfo As MENUINFO
     
-    If classicThemeWorkaround Then
+    If m_ClassicThemeWorkaround Then
         tmpInfo.cbSize = Len(tmpInfo)
         tmpInfo.fMask = MIM_APPLYTOSUBMENUS Or MIM_STYLE
         tmpInfo.dwStyle = MNS_CHECKORBMP
@@ -376,8 +376,8 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     End With
     
     PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
-   
-    If hSubMenu = hMenu Then DrawMenuBar m_hWnd
+    
+    If (hSubMenu = hMenu) Then DrawMenuBar m_hWnd
     
 End Function
 
@@ -643,12 +643,12 @@ AddIconFromHandle_Error:
 End Function
 
 
-Public Function AddImageFromFile(ByVal srcFileName As String, Optional bGhosted As Boolean) As Boolean
+Public Function AddImageFromFile(ByVal srcFilename As String, Optional bGhosted As Boolean) As Boolean
 
     On Local Error GoTo AddImageFromFile_Error
     
     Dim hImage As Long
-    Call GdipLoadImageFromFile(StrPtr(srcFileName), hImage)
+    Call GdipLoadImageFromFile(StrPtr(srcFilename), hImage)
     AddImageFromFile = pvAddImagen(hImage, bGhosted)
     
 AddImageFromFile_Error:
@@ -890,7 +890,7 @@ Private Sub Class_Initialize()
     sClass = "Window"
     hTheme = OpenThemeData(FormMain.hWnd, StrPtr(sClass))
     If hTheme = 0 Then
-        classicThemeWorkaround = True
+        m_ClassicThemeWorkaround = True
     Else
         CloseThemeData hTheme
     End If
@@ -1067,7 +1067,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 End If
                 
                 If g_IsVistaOrLater Then
-                    If classicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
+                    If m_ClassicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
                 Else
                     MIS.itemWidth = MIS.itemWidth + m_lWidth + 2
                 End If
@@ -1121,7 +1121,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
                 ' for users of the "classic theme"
-                If Not (classicThemeWorkaround And IsDisabled) Then
+                If Not (m_ClassicThemeWorkaround And IsDisabled) Then
                     DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
                 End If
                 

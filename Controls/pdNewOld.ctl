@@ -234,7 +234,7 @@ Private Sub UserControl_Initialize()
     'Inside the IDE, use placeholder text
     If (Not g_IsProgramRunning) Then
         m_NewCaptionTranslated = "new:"
-        m_OldCaptionTranslated = "old:"
+        m_OldCaptionTranslated = "original:"
     End If
     
     'Update the control size parameters at least once
@@ -349,11 +349,11 @@ Public Sub UpdateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
         m_NewCaptionTranslated = g_Language.TranslateMessage("new:")
-        m_OldCaptionTranslated = g_Language.TranslateMessage("old:")
+        m_OldCaptionTranslated = g_Language.TranslateMessage("original:")
         ucSupport.UpdateAgainstThemeAndLanguage
     Else
         m_NewCaptionTranslated = "new:"
-        m_OldCaptionTranslated = "old:"
+        m_OldCaptionTranslated = "original:"
     End If
     
 End Sub

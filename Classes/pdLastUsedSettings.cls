@@ -186,7 +186,10 @@ Private Sub FillXMLSettings(Optional ByVal presetName As String = "last-used set
             ' a single control), we must combine its various values into a single string.
             Case "pdResize"
                 controlValue = BuildParams(eControl.imgWidth, eControl.imgHeight, eControl.LockAspectRatio, eControl.UnitOfMeasurement, eControl.imgDPI, eControl.UnitOfResolution)
-        
+            
+            Case "pdHistory"
+                controlValue = eControl.GetHistoryAsString()
+            
         End Select
         
         'Remove VB's default padding from the generated string.  (Str() prepends positive numbers with a space)
@@ -353,6 +356,9 @@ Private Function ReadXMLSettings(Optional ByVal presetName As String = "last-use
                     eControl.imgHeight = cParam.GetDouble(2, 1080)
                     
                     Set cParam = Nothing
+                    
+                Case "pdHistory"
+                    eControl.SetHistoryFromString controlValue
             
             End Select
 

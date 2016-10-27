@@ -51,7 +51,7 @@ Public Sub StartMacro()
     ReDim Processes(0 To ProcessCount) As ProcessCall
     
     'Update any related macro UI elements
-    Macro_Interface.updateMacroUI True
+    Macro_Interface.UpdateMacroUI True
     
 End Sub
 
@@ -78,7 +78,7 @@ Public Sub StopMacro()
         If msgReturn = vbYes Then
             
             'Update any related macro UI elements
-            Macro_Interface.updateMacroUI False
+            Macro_Interface.UpdateMacroUI False
             
             'Reset the macro engine and exit
             MacroStatus = MacroSTOP
@@ -96,7 +96,7 @@ Public Sub StopMacro()
     MacroStatus = MacroSTOP
     
     'Update any related macro UI elements
-    Macro_Interface.updateMacroUI False
+    Macro_Interface.UpdateMacroUI False
     
     'Automatically launch the save macro data routine
     Dim saveDialog As pdOpenSaveDialog
@@ -115,18 +115,18 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
         'Save this macro's directory as the default macro path
-        g_UserPreferences.setMacroPath sFile
+        g_UserPreferences.SetMacroPath sFile
         
         'Create a pdXML class, which will help us assemble the macro file
         Dim xmlEngine As pdXML
         Set xmlEngine = New pdXML
-        xmlEngine.prepareNewXML "Macro"
+        xmlEngine.PrepareNewXML "Macro"
         
         'Write out the XML version we're using for this macro
-        xmlEngine.writeTag "pdMacroVersion", MACRO_VERSION_2014
+        xmlEngine.WriteTag "pdMacroVersion", MACRO_VERSION_2014
         
         'We now want to count the number of actual processes that we will be writing to file.  A valid process meets
         ' the following criteria:
@@ -138,8 +138,8 @@ SaveMacroAgain:
         ' and this value is guaranteed to be non-zero.
         
         'Write out the number of valid processes in the macro
-        xmlEngine.writeTag "processCount", CStr(numOfValidProcesses)
-        xmlEngine.writeBlankLine
+        xmlEngine.WriteTag "processCount", CStr(numOfValidProcesses)
+        xmlEngine.WriteBlankLine
         
         'Now, write out each macro entry in the current process list
         numOfValidProcesses = 0
@@ -151,26 +151,26 @@ SaveMacroAgain:
                 numOfValidProcesses = numOfValidProcesses + 1
                 
                 'Start each process entry with a unique identifier
-                xmlEngine.writeTagWithAttribute "processEntry", "index", numOfValidProcesses, "", True
+                xmlEngine.WriteTagWithAttribute "processEntry", "index", numOfValidProcesses, "", True
                 
                 'Write out all the properties of this entry
-                xmlEngine.writeTag "ID", Processes(i).Id
-                xmlEngine.writeTag "Parameters", Processes(i).Parameters
-                xmlEngine.writeTag "MakeUndo", Str(Processes(i).MakeUndo)
-                xmlEngine.writeTag "Tool", Str(Processes(i).Tool)
+                xmlEngine.WriteTag "ID", Processes(i).Id
+                xmlEngine.WriteTag "Parameters", Processes(i).Parameters
+                xmlEngine.WriteTag "MakeUndo", Str(Processes(i).MakeUndo)
+                xmlEngine.WriteTag "Tool", Str(Processes(i).Tool)
                 
                 'Note that the Dialog and Recorded properties are not written to file.  There is no need to remember
                 ' them, as we know their values must be FALSE and TRUE, respectively, per the check above.
             
                 'Close this process entry
-                xmlEngine.closeTag "processEntry"
-                xmlEngine.writeBlankLine
+                xmlEngine.CloseTag "processEntry"
+                xmlEngine.WriteBlankLine
             End If
             
         Next i
         
         'With all tags successfully written, we can now close the XML data and write it out to file.
-        xmlEngine.writeXMLToFile sFile
+        xmlEngine.WriteXMLToFile sFile
         
         Message "Macro saved successfully."
         
@@ -192,7 +192,7 @@ End Sub
 
 'All macro-related UI instructions should be placed here, as PD can terminate a macro recording session for any number of reasons,
 ' and it needs a uniform way to wipe macro-related UI changes).
-Private Sub updateMacroUI(ByVal recordingIsActive As Boolean)
+Private Sub UpdateMacroUI(ByVal recordingIsActive As Boolean)
 
     If recordingIsActive Then
     
@@ -232,12 +232,12 @@ Public Sub PlayMacro()
     cdTitle = g_Language.TranslateMessage("Open Macro File")
         
     'If we get a path, load that file
-    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, g_UserPreferences.GetMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
         Message "Loading macro data..."
         
         'Save this macro's folder as the default macro path
-        g_UserPreferences.setMacroPath sFile
+        g_UserPreferences.SetMacroPath sFile
                 
         PlayMacroFromFile sFile
         
@@ -258,14 +258,14 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     Set xmlEngine = New pdXML
     
     'Load the XML file into memory
-    xmlEngine.loadXMLFile MacroPath
+    xmlEngine.LoadXMLFile MacroPath
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon macro file
-    If xmlEngine.isPDDataType("Macro") And xmlEngine.validateLoadedXMLData("pdMacroVersion") Then
+    If xmlEngine.IsPDDataType("Macro") And xmlEngine.ValidateLoadedXMLData("pdMacroVersion") Then
     
         'Next, check the macro's version number, and make sure it's still supported
         Dim verCheck As String
-        verCheck = xmlEngine.getUniqueTag_String("pdMacroVersion")
+        verCheck = xmlEngine.GetUniqueTag_String("pdMacroVersion")
         
         Select Case verCheck
         
@@ -273,7 +273,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
             Case MACRO_VERSION_2014
             
                 'Retrieve the number of processes in this macro
-                ProcessCount = xmlEngine.getUniqueTag_Long("processCount")
+                ProcessCount = xmlEngine.GetUniqueTag_Long("processCount")
                 
                 If ProcessCount > 0 Then
                 
@@ -285,16 +285,16 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
                     
                         'Start by finding the location of the tag we want
                         Dim tagPosition As Long
-                        tagPosition = xmlEngine.getLocationOfTagPlusAttribute("processEntry", "index", i)
+                        tagPosition = xmlEngine.GetLocationOfTagPlusAttribute("processEntry", "index", i)
                         
                         If tagPosition > 0 Then
                         
                             'Use that tag position to retrieve the processor parameters we need.
                             With Processes(i - 1)
-                                .Id = xmlEngine.getUniqueTag_String("ID", , tagPosition)
-                                .Parameters = xmlEngine.getUniqueTag_String("Parameters", , tagPosition)
-                                .MakeUndo = xmlEngine.getUniqueTag_Long("MakeUndo", , tagPosition)
-                                .Tool = xmlEngine.getUniqueTag_Long("Tool", , tagPosition)
+                                .Id = xmlEngine.GetUniqueTag_String("ID", , tagPosition)
+                                .Parameters = xmlEngine.GetUniqueTag_String("Parameters", , tagPosition)
+                                .MakeUndo = xmlEngine.GetUniqueTag_Long("MakeUndo", , tagPosition)
+                                .Tool = xmlEngine.GetUniqueTag_Long("Tool", , tagPosition)
                                 
                                 'These two attributes can be assigned automatically, as we know what their values must be.
                                 .Dialog = False
