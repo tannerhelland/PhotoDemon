@@ -232,7 +232,7 @@ End Property
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
+Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
     If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
@@ -432,7 +432,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
             'Sticky toggle mode causes the button to toggle between true/false
             If m_StickyToggle Then
             
-                Value = Not Value
+                Value = (Not Value)
                 RedrawBackBuffer
                 RaiseEvent Click
             
@@ -447,7 +447,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                     'During auto-toggle mode, immediately reverse the value after the Click() event is raised
                     If m_AutoToggle Then
                         m_ButtonState = False
-                        RedrawBackBuffer
+                        RedrawBackBuffer True, False
                     End If
                     
                 End If
@@ -491,7 +491,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         'During auto-toggle mode, immediately reverse the value after the Click() event is raised
         If m_AutoToggle Then
             m_ButtonState = False
-            RedrawBackBuffer
+            RedrawBackBuffer True, False
         End If
         
     End If
@@ -613,14 +613,15 @@ End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
+Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean = False, Optional ByVal testMouseState As Boolean = True)
     
     'Because this control supports so many different behaviors, color decisions are somewhat complicated.  Note that the
     ' control's BackColor property is only relevant under certain conditions (e.g. if the matching UseCustomBackColor
     ' property is set, the button is not pressed, etc).
     Dim btnColorBorder As Long, btnColorFill As Long
     Dim considerActive As Boolean
-    considerActive = (m_ButtonState And (Not m_DontHighlightDownState)) Or (m_AutoToggle And ucSupport.IsMouseButtonDown(pdLeftButton))
+    considerActive = (m_ButtonState And (Not m_DontHighlightDownState))
+    If testMouseState Then considerActive = considerActive Or (m_AutoToggle And ucSupport.IsMouseButtonDown(pdLeftButton))
     
     'If our owner has requested a custom backcolor, it takes precedence (but only if the button is inactive)
     If m_UseCustomBackColor And (Not considerActive) Then
@@ -679,15 +680,6 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
     ucSupport.RequestRepaint raiseImmediateDrawEvent
     
 End Sub
-
-'The color selector dialog has the unique need of capturing colors from anywhere on the screen, using a custom hook solution.  For it to work,
-' the pdInputMouse class inside this button control must forcibly release its capture.
-' NOTE: this behavior has been disabled pending additional testing.  It causes some nasty side-effects on Win 10, and it's eclectic enough
-'        that fixing it isn't an immediate priority.
-'Public Sub OverrideMouseCapture(ByVal newState As Boolean)
-'    cMouseEvents.setCaptureOverride newState
-'    cMouseEvents.setCursorOverrideState newState
-'End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.
