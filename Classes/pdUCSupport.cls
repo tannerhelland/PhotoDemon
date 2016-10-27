@@ -699,6 +699,7 @@ End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
     If Not (m_MouseEvents Is Nothing) Then m_MouseEvents.SetSystemCursor IDC_ARROW
+    m_MouseButtonState = 0
     RaiseEvent LostFocusAPI
 End Sub
 
