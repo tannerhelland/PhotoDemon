@@ -361,7 +361,7 @@ Public Sub LoadUserSettings()
     g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 0)
-    g_HighResolutionInput = g_UserPreferences.GetPref_Boolean("Interface", "HighResolutionInput", True)
+    g_HighResolutionInput = g_UserPreferences.GetPref_Boolean("Interface", "HighResolutionInput", False)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
     
