@@ -27,13 +27,6 @@ Begin VB.Form toolbar_Options
    ScaleWidth      =   901
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.Line lnSeparatorTop 
-      BorderColor     =   &H80000002&
-      X1              =   0
-      X2              =   5000
-      Y1              =   0
-      Y2              =   0
-   End
 End
 Attribute VB_Name = "toolbar_Options"
 Attribute VB_GlobalNameSpace = False
@@ -44,8 +37,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tools Toolbox
 'Copyright 2013-2016 by Tanner Helland
 'Created: 03/October/13
-'Last updated: 16/October/14
-'Last update: rework all selection interface code to use the new property dictionary functions
+'Last updated: 31/October/16
+'Last update: minor code cleanup
 '
 'This form was initially integrated into the main MDI form.  In fall 2013, PhotoDemon left behind the MDI model,
 ' and all toolbars were moved to their own forms.
@@ -58,8 +51,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Form_Load()
-
-    Dim i As Long
         
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
@@ -84,12 +75,5 @@ Public Sub UpdateAgainstCurrentTheme()
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
-    
-    'The top separator line is colored according to the current shadow accent color
-    If Not g_Themer Is Nothing Then
-        lnSeparatorTop.borderColor = g_Themer.GetGenericUIColor(UI_GrayDark)
-    Else
-        lnSeparatorTop.borderColor = vbHighlight
-    End If
     
 End Sub

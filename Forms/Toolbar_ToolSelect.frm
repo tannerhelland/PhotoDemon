@@ -649,7 +649,7 @@ Private Sub ReflowToolboxLayout()
     'Paint group
     PositionToolLabel 5, cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
     ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_BASICBRUSH, hOffset, vOffset
-        
+    
     'Macro recording message
     If (vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height) Then
         vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + m_buttonMarginBottom
@@ -668,10 +668,7 @@ Private Sub PositionToolLabel(ByRef targetLabelIndex As Long, ByRef referenceBut
         Dim heightCalc As Long
         If ttlCategories(targetLabelIndex - 1).Value Then heightCalc = referenceButton.Height Else heightCalc = 0
         
-        'If vOffset < referenceButton.Top + heightCalc Then
-            vOffset = referenceButton.Top + heightCalc + m_buttonMarginBottom
-        'End If
-        
+        vOffset = referenceButton.Top + heightCalc + m_buttonMarginBottom
         vOffset = vOffset + m_labelMarginTop
         ttlCategories(targetLabelIndex).SetLeft m_hOffsetDefaultLabel
         ttlCategories(targetLabelIndex).SetTop vOffset
@@ -772,6 +769,12 @@ Private Sub NewToolSelected()
             ' on the current text tool.
             If (g_OpenImageCount > 0) Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
+        Case PAINT_BASICBRUSH
+        
+            'I'm not sure what paint tools require just yet, but a canvas redraw is always helpful to clear out any
+            ' overlays left behind from previous tools.
+            If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            
         Case Else
         
             'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
@@ -786,7 +789,7 @@ End Sub
 ' rectangular tool selector as the current tool)
 Public Sub SelectNewTool(ByVal newToolID As PDTools)
     
-    If newToolID <> g_CurrentTool Then
+    If (newToolID <> g_CurrentTool) Then
         g_PreviousTool = g_CurrentTool
         g_CurrentTool = newToolID
         ResetToolButtonStates
@@ -846,7 +849,13 @@ Public Sub ResetToolButtonStates()
             Load toolpanel_FancyText
             toolpanel_FancyText.UpdateAgainstCurrentTheme
             m_ActiveToolPanelKey = "FancyText"
-            
+        
+        'Paint tools
+        Case PAINT_BASICBRUSH
+            Load toolpanel_Paintbrush
+            toolpanel_Paintbrush.UpdateAgainstCurrentTheme
+            m_ActiveToolPanelKey = "Paintbrush"
+        
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
             m_ActiveToolPanelKey = "NoPanels"
@@ -922,6 +931,7 @@ Public Sub ResetToolButtonStates()
     If Not (toolpanel_Selections Is Nothing) Then toolPanelCollection.AddEntry "Selections", toolpanel_Selections.hWnd
     If Not (toolpanel_Text Is Nothing) Then toolPanelCollection.AddEntry "Text", toolpanel_Text.hWnd
     If Not (toolpanel_FancyText Is Nothing) Then toolPanelCollection.AddEntry "FancyText", toolpanel_FancyText.hWnd
+    If Not (toolpanel_Paintbrush Is Nothing) Then toolPanelCollection.AddEntry "Paintbrush", toolpanel_Paintbrush.hWnd
     
     g_WindowManager.DeactivateToolPanel False
     
