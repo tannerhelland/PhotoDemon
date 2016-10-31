@@ -3103,6 +3103,15 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "(above memory report is post-unload toolpanel_FancyText)"
     #End If
     
+    g_WindowManager.DeactivateToolPanel True, toolpanel_Paintbrush.hWnd
+    Unload toolpanel_Paintbrush
+    Set toolpanel_Paintbrush = Nothing
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+        pdDebug.LogAction "(above memory report is post-unload toolpanel_Paintbrush)"
+    #End If
+    
     'With all tool panels unloaded, unload all toolboxes as well
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading toolboxes..."
