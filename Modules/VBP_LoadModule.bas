@@ -253,7 +253,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             newLayerName = Layer_Handler.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB)
             
             'Create the new layer in the target image, and pass our created name to it
-            targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, targetImage
+            targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, targetImage, CBool(imageHasMultiplePages)
             targetImage.UpdateSize
             
             DoEvents
@@ -365,7 +365,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                     'Copy the newly loaded DIB into the target pdImage object
                     ImageImporter.ForceTo32bppMode targetDIB
                     newLayerName = Layer_Handler.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB, pageTracker)
-                    targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, targetImage
+                    targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, targetImage, True
                     
                 'If the load was unsuccessful, delete the placeholder layer we created
                 Else

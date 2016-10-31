@@ -1690,7 +1690,7 @@ End Function
 ' - Layer name
 ' - For image-type layers, a DIB can be passed; the layer's raster contents will be initialized to match the DIB
 ' - A parent pdImage object.  This is currently unused, but in the future, I may use it to center the new layer on the current viewport
-Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal newLayerName As String = "", Optional ByRef srcDIB As pdDIB = Nothing, Optional ByRef parentImage As pdImage = Nothing)
+Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal newLayerName As String = "", Optional ByRef srcDIB As pdDIB = Nothing, Optional ByRef parentImage As pdImage = Nothing, Optional ByVal cloneSourceLayerLocally As Boolean = False)
 
     'Mark the layer type.
     myLayerType = newLayerType
@@ -1736,7 +1736,14 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     
     'If passed, create a local copy of the passed DIB.
     Set layerDIB = New pdDIB
-    If Not (srcDIB Is Nothing) Then Set layerDIB = srcDIB
+    If cloneSourceLayerLocally Then
+        If Not (srcDIB Is Nothing) Then
+            Set layerDIB = New pdDIB
+            layerDIB.CreateFromExistingDIB srcDIB
+        End If
+    Else
+        If Not (srcDIB Is Nothing) Then Set layerDIB = srcDIB
+    End If
     
     'Set default offsets
     myLayerData.l_OffsetX = 0
