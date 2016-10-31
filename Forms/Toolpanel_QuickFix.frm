@@ -188,7 +188,7 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 Private m_NonDestructiveFXAllowed As Boolean
 
 'If external functions want to disable automatic non-destructive FX syncing, then can do so via this function
-Public Sub setNDFXControlState(ByVal newNDFXState As Boolean)
+Public Sub SetNDFXControlState(ByVal newNDFXState As Boolean)
     m_NonDestructiveFXAllowed = newNDFXState
 End Sub
 
@@ -201,7 +201,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
     Dim i As Long
 
     'Regardless of the action we're applying, we start by disabling all auto-refreshes
-    setNDFXControlState False
+    SetNDFXControlState False
     
     Select Case Index
     
@@ -241,7 +241,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
     Next i
     
     'Re-enable auto-refreshes
-    setNDFXControlState True
+    SetNDFXControlState True
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -338,10 +338,10 @@ End Sub
 
 Private Sub sltQuickFix_GotFocusAPI(Index As Integer)
     If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_NDFX Index, sltQuickFix(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
+    Processor.FlagInitialNDFXState_NDFX Index, sltQuickFix(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltQuickFix_LostFocusAPI(Index As Integer)
-    If Tool_Support.CanvasToolsAllowed Then Processor.flagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
+    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
 End Sub
 

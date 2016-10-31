@@ -29,7 +29,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   900
       Left            =   5070
       TabIndex        =   10
-      Top             =   4275
+      Top             =   4290
       Width           =   6465
       _ExtentX        =   11404
       _ExtentY        =   1588
