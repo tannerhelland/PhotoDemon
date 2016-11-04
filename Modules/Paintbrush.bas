@@ -223,7 +223,9 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         isFirstClick = True
         
         'Make sure the current scratch layer is properly initialized
-        pdImages(g_CurrentImage).ResetScratchLayer
+        pdImages(g_CurrentImage).ResetScratchLayer True
+        pdImages(g_CurrentImage).ScratchLayer.SetLayerOpacity m_BrushOpacity
+        pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_BrushBlendmode
         
         'Reset the "last mouse position" values to match the current ones
         m_MouseX = srcX

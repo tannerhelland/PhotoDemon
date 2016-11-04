@@ -2095,12 +2095,14 @@ Public Function GDIPlusFillDIBRectF(ByRef dstDIB As pdDIB, ByRef srcRectF As REC
 End Function
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
+' Note that - by design - this function assumes a COPY operation, not a traditional PAINT operation.  Copying is much faster,
+' and there should never be a need to alpha-blend the checkerboard pattern.
 Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal fixBoundaryPainting As Boolean = False) As Boolean
     
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
     
-    If useThisDCInstead <> 0 Then
+    If (useThisDCInstead <> 0) Then
         GdipCreateFromHDC useThisDCInstead, iGraphics
     Else
         GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
@@ -2109,6 +2111,7 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     GdipSetSmoothingMode iGraphics, GP_SM_Antialias
     GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
     GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
+    GdipSetCompositingMode iGraphics, GP_CM_SourceCopy
         
     'Create a texture fill brush from the source image
     Dim srcBitmap As Long, iBrush As Long
@@ -3048,25 +3051,25 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
     ' have timing reports sent to the debug window.
-    'Dim profileTime As Double
-    'profileTime = Timer
+    'Dim profileTime As Currency
+    'VB_Hacks.GetHighResTime profileTime
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
-    Dim iGraphics As Long, tBitmap As Long
+    Dim hGraphics As Long, hBitmap As Long
     If (useThisDestinationDCInstead <> 0) Then
-        GdipCreateFromHDC useThisDestinationDCInstead, iGraphics
+        GdipCreateFromHDC useThisDestinationDCInstead, hGraphics
     Else
-        GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
+        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     End If
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    GetGdipBitmapHandleFromDIB tBitmap, srcDIB
+    GetGdipBitmapHandleFromDIB hBitmap, srcDIB
     
     'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
     
     'Request the smoothing mode we were passed
-    If GdipSetInterpolationMode(iGraphics, interpolationType) = GP_OK Then
+    If (GdipSetInterpolationMode(hGraphics, interpolationType) = GP_OK) Then
         
         'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
         ' algorithm from drawing semi-transparent lines randomly around image borders.
@@ -3077,27 +3080,34 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
         ' pixel offsets (on pixel borders, instead of center points)
         If (Not disableEdgeFix) Then GdipSetImageAttributesWrapMode imgAttributesHandle, GP_WM_TileFlipXY, 0, 0
-        GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
-        If isZoomedIn Then GdipSetPixelOffsetMode iGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
+        GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
+        If isZoomedIn Then GdipSetPixelOffsetMode hGraphics, GP_POM_HighQuality Else GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
         
         'If modified alpha is requested, pass the new value to this image container
-        If (newAlpha <> 1) Then
+        If (newAlpha <> 1#) Then
             m_AttributesMatrix(3, 3) = newAlpha
             GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
         End If
         
         'If the caller doesn't care about source blending (e.g. they're painting to a known transparent destination),
-        ' copy mode can greatly improve performance.
-        If dstCopyIsOkay Then GdipSetCompositingMode iGraphics, GP_CM_SourceCopy
+        ' copy mode can improve performance.
+        If dstCopyIsOkay Then GdipSetCompositingMode hGraphics, GP_CM_SourceCopy
+        
+        'Because the resize step is the most cumbersome one, it can be helpful to track it
+        'Dim resizeTime As Currency
+        'VB_Hacks.GetHighResTime resizeTime
         
         'Perform the resize
-        GdipDrawImageRectRect iGraphics, tBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle
+        GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle
+        
+        'Report resize time here
+        'Debug.Print "GDI+ resize time: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
         
         'Release our image attributes object
         GdipDisposeImageAttributes imgAttributesHandle
         
         'Reset alpha in the master identity matrix
-        If (newAlpha <> 1) Then m_AttributesMatrix(3, 3) = 1
+        If (newAlpha <> 1#) Then m_AttributesMatrix(3, 3) = 1#
         
         'Update premultiplication status in the target
         If (Not (dstDIB Is Nothing)) Then dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
@@ -3105,12 +3115,11 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     End If
     
     'Release both the destination graphics object and the source bitmap object
-    GdipDisposeImage tBitmap
-    GdipDeleteGraphics iGraphics
+    GdipDisposeImage hBitmap
+    GdipDeleteGraphics hGraphics
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
-    
+    'Debug.Print "GDI+ wrapper time: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(profileTime) * 1000), "0000.00") & " ms"
     
 End Sub
 
