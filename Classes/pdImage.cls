@@ -128,6 +128,11 @@ Private m_numOfLayersEverCreated As Long
 ' zero-based; e.g. right after an image file is loaded, this will be set to 1.
 Private m_numOfLayers As Long
 
+'Scratch layer.  This layer can be used for any temporary work relevant to this image (e.g. storing paintbrush strokes).
+' Note that no guarantees are made regarding the scratch layer's initialization, size, or other attributes.  You should
+' always verify scratch layer attributes (or call ResetScratchLayer) prior to utilizing it.
+Public ScratchLayer As pdLayer
+
 'Image compositor.  Previously, all compositing was done internally, but as compositing has grown more complex, I have decided
 ' to move all compositing work to an external class (to keep pdImage from getting too bloated).
 Private imgCompositor As pdCompositor
@@ -1294,3 +1299,25 @@ Public Function GetNumOfRasterLayers() As Long
     GetNumOfRasterLayers = rasterLayerCount
 
 End Function
+
+'Want to use this image's scratch layer for something?  Call this function to validate the layer's current attributes.
+Public Sub ResetScratchLayer(Optional ByVal resetLayerSettingsToo As Boolean = False)
+
+    'In the future, it may be helpful to know when the scratch layer is first being created
+    Dim firstInitialization As Boolean
+    If (ScratchLayer Is Nothing) Then
+        Set ScratchLayer = New pdLayer
+        firstInitialization = True
+    End If
+    
+    'By design, the scratch layer should always match the current image size.
+    If (ScratchLayer.layerDIB.GetDIBWidth <> Me.Width) Or (ScratchLayer.layerDIB.GetDIBHeight <> Me.Height) Then
+        ScratchLayer.layerDIB.CreateBlank Me.Width, Me.Height, 32, 0, 0
+    Else
+        ScratchLayer.layerDIB.ResetDIB 0
+    End If
+    
+    'No other scratch layer attributes are set by this function, unless specifically requested
+    If resetLayerSettingsToo Then ScratchLayer.ResetLayerParameters
+
+End Sub

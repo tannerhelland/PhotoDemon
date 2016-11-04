@@ -81,6 +81,14 @@ Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal
     ' know to redraw themselves accordingly.
     UserControl_Support.PostPDMessage WM_PD_PRIMARY_COLOR_CHANGE, newColor
     
+    'We also check to see if a paint-related tool is active.  If it is, assign the new color immediately.
+    Select Case g_CurrentTool
+    
+        Case PAINT_BASICBRUSH
+            Paintbrush.SetBrushSourceColor newColor
+    
+    End Select
+    
 End Sub
 
 Private Sub clrWheel_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
@@ -148,3 +156,7 @@ End Sub
 Private Sub Form_Resize()
     ReflowInterface
 End Sub
+
+Public Function GetCurrentColor()
+    GetCurrentColor = clrVariants.Color
+End Function

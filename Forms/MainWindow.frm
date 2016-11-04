@@ -3014,20 +3014,21 @@ Private Sub Form_Unload(Cancel As Integer)
     
     UserControl_Support.FinalTooltipUnload
     
-    'Destroy all custom-created form icons
+    'Destroy all custom-created icons and cursors
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Destroying custom icons for this session..."
+        pdDebug.LogAction "Destroying custom icons and cursors..."
     #End If
     
-    DestroyAllIcons
+    Icons_and_Cursors.DestroyAllIcons
+    Icons_and_Cursors.UnloadAllCursors
     
-    'Release the hand cursor we use for all clickable objects
+    'Destroy all paint-related resources
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Unloading custom cursors for this session..."
+        pdDebug.LogAction "Destroying paintbrush resources..."
     #End If
     
-    UnloadAllCursors
-    
+    Paintbrush.FreeBrushResources
+        
     'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
     ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
     ' the problematic image anyway.)

@@ -123,7 +123,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 'Retrieve a copy of the current image's intersection rect, which controls boundaries for any selection overlays
                 Dim intRect As RECTF
                 srcImage.imgViewport.getIntersectRectCanvas intRect
-                srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, intRect.Left, intRect.Top
+                srcImage.mainSelection.RenderTransformNodes srcImage, dstCanvas, intRect.Left, intRect.Top
                 
             End If
             
@@ -135,6 +135,14 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 Drawing.DrawLayerCornerNodes dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
                 Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             End If
+            
+        'Paintbrush tools use the brush engine to paint a custom brush outline at the current mouse position
+        Case PAINT_BASICBRUSH
+            
+            If (Paintbrush.IsBrushActive Or FormMain.mainCanvas(0).IsMouseOverCanvas) Then
+                Paintbrush.RenderBrushOutline dstCanvas
+            End If
+            
             
     End Select
     
@@ -187,7 +195,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     If srcImage.selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.renderCustom frontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
+        srcImage.mainSelection.RenderCustom frontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
     
     End If
         

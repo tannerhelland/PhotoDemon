@@ -770,7 +770,10 @@ Private Sub NewToolSelected()
             If (g_OpenImageCount > 0) Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         Case PAINT_BASICBRUSH
-        
+            
+            'Synchronize all brush settings to the current UI
+            toolpanel_Paintbrush.SyncAllPaintbrushSettingsToUI
+            
             'I'm not sure what paint tools require just yet, but a canvas redraw is always helpful to clear out any
             ' overlays left behind from previous tools.
             If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)

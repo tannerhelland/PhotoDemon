@@ -82,8 +82,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Paintbrush Tool Panel
 'Copyright 2016-2016 by Tanner Helland
 'Created: 31/Oct/16
-'Last updated: 31/Oct/16
-'Last update: initial build
+'Last updated: 04/Nov/16
+'Last update: ongoing work on initial build
 '
 'This form includes all user-editable settings for the "paintbrush" canvas tool.
 '
@@ -136,4 +136,33 @@ Public Sub UpdateAgainstCurrentTheme()
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
 
+End Sub
+
+Private Sub sltBrushSetting_Change(Index As Integer)
+    
+    Select Case Index
+    
+        'Radius
+        Case 0
+            Paintbrush.SetBrushRadius sltBrushSetting(Index).Value
+        
+        'Opacity
+        Case 1
+            Paintbrush.SetBrushOpacity sltBrushSetting(Index).Value
+    
+    End Select
+    
+End Sub
+
+'If you want to set all paintbrush settings at once, use this function
+Public Sub SyncAllPaintbrushSettingsToUI()
+    Paintbrush.SetBrushRadius sltBrushSetting(0).Value
+    Paintbrush.SetBrushOpacity sltBrushSetting(1).Value
+    Paintbrush.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
+End Sub
+
+'If you want to synchronize all UI elements to match current paintbrush settings, use this function
+Public Sub SyncUIToAllPaintbrushSettings()
+    sltBrushSetting(0).Value = Paintbrush.GetBrushRadius
+    sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity
 End Sub
