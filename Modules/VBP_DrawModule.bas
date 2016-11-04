@@ -219,10 +219,10 @@ Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, By
         
         'If the caller wants the coordinates bound-checked, apply it now
         If forceInBounds Then
-            If imgX < 0 Then imgX = 0
-            If imgY < 0 Then imgY = 0
-            If imgX >= srcImage.Width - 1 Then imgX = srcImage.Width - 1
-            If imgY >= srcImage.Height - 1 Then imgY = srcImage.Height - 1
+            If (imgX < 0) Then imgX = 0
+            If (imgY < 0) Then imgY = 0
+            If (imgX >= srcImage.Width - 1) Then imgX = srcImage.Width - 1
+            If (imgY >= srcImage.Height - 1) Then imgY = srcImage.Height - 1
         End If
         
         ConvertCanvasCoordsToImageCoords = True
@@ -261,10 +261,10 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
             Dim vIntersectRect As RECTF
             srcImage.imgViewport.getIntersectRectCanvas vIntersectRect
             
-            If canvasX < vIntersectRect.Left Then canvasX = vIntersectRect.Left
-            If canvasY < vIntersectRect.Top Then canvasY = vIntersectRect.Top
-            If canvasX >= vIntersectRect.Left + vIntersectRect.Width Then canvasX = vIntersectRect.Left + vIntersectRect.Width - 1
-            If canvasY >= vIntersectRect.Top + vIntersectRect.Height Then canvasY = vIntersectRect.Top + vIntersectRect.Height - 1
+            If (canvasX < vIntersectRect.Left) Then canvasX = vIntersectRect.Left
+            If (canvasY < vIntersectRect.Top) Then canvasY = vIntersectRect.Top
+            If (canvasX >= vIntersectRect.Left + vIntersectRect.Width) Then canvasX = vIntersectRect.Left + vIntersectRect.Width - 1
+            If (canvasY >= vIntersectRect.Top + vIntersectRect.Height) Then canvasY = vIntersectRect.Top + vIntersectRect.Height - 1
             
         End If
         
@@ -276,8 +276,8 @@ End Sub
 ' if the layer has one or more non-destructive affine transforms active.
 Public Function ConvertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal imgX As Single, ByVal imgY As Single, ByRef layerX As Single, ByRef layerY As Single) As Boolean
 
-    If srcImage Is Nothing Then Exit Function
-    If srcLayer Is Nothing Then Exit Function
+    If (srcImage Is Nothing) Then Exit Function
+    If (srcLayer Is Nothing) Then Exit Function
     
     'If the layer has one or more active affine transforms, this step becomes complicated.
     If srcLayer.AffineTransformsActive(False) Then
@@ -361,10 +361,10 @@ Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
         
         'If the caller wants the coordinates bound-checked, apply it now
         If forceInBounds Then
-            If canvasX < vIntersectRect.Left Then canvasX = vIntersectRect.Left
-            If canvasY < vIntersectRect.Top Then canvasY = vIntersectRect.Top
-            If canvasX >= vIntersectRect.Left + vIntersectRect.Width Then canvasX = vIntersectRect.Left + vIntersectRect.Width - 1
-            If canvasY >= vIntersectRect.Top + vIntersectRect.Height Then canvasY = vIntersectRect.Top + vIntersectRect.Height - 1
+            If (canvasX < vIntersectRect.Left) Then canvasX = vIntersectRect.Left
+            If (canvasY < vIntersectRect.Top) Then canvasY = vIntersectRect.Top
+            If (canvasX >= vIntersectRect.Left) + vIntersectRect.Width Then canvasX = vIntersectRect.Left + vIntersectRect.Width - 1
+            If (canvasY >= vIntersectRect.Top) + vIntersectRect.Height Then canvasY = vIntersectRect.Top + vIntersectRect.Height - 1
         End If
         
         'Store the updated coordinate pair
@@ -375,11 +375,16 @@ Public Sub ConvertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
         
 End Sub
 
+'If you want to convert a position-agnostic size between image and canvas space, use this function
+Public Function ConvertImageSizeToCanvasSize(ByVal srcSize As Double, ByRef srcImage As pdImage) As Double
+    ConvertImageSizeToCanvasSize = srcSize * g_Zoom.GetZoomValue(srcImage.currentZoomValue)
+End Function
+
 'Given a source hWnd and a destination hWnd, translate a coordinate pair between their unique coordinate spaces.  Note that
 ' the screen coordinate space will be used as an intermediary in the conversion.
 Public Sub ConvertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Long, ByVal srcX As Long, ByVal srcY As Long, ByRef dstX As Long, ByRef dstY As Long)
     
-    'The API we're using require POINTAPI structs
+    'This API requires POINTAPI structs
     Dim tmpPoint As POINTAPI
     
     With tmpPoint
@@ -393,6 +398,30 @@ Public Sub ConvertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Lon
     'Report the transformed points back to the user
     dstX = tmpPoint.x
     dstY = tmpPoint.y
+    
+End Sub
+
+'Return an arbitrary conversion from image space to canvas space.  An optional image (x, y) can also passed.
+Public Sub GetTransformFromImageToCanvas(ByRef dstTransform As pd2DTransform, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, Optional ByVal srcX As Single = 0#, Optional ByVal srcY As Single = 0#)
+
+    If (dstTransform Is Nothing) Then Set dstTransform = New pd2DTransform
+
+    'Get the current zoom value from the source image
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.GetZoomValue(srcImage.currentZoomValue)
+    
+    'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
+    ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
+    ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
+    ' so we can ignore their value(s) here.
+    Dim translatedImageRect As RECTF
+    srcImage.imgViewport.getImageRectTranslated translatedImageRect
+    
+    'Apply scaling for zoom
+    dstTransform.ApplyScaling g_Zoom.GetZoomValue(srcImage.currentZoomValue), g_Zoom.GetZoomValue(srcImage.currentZoomValue)
+    
+    'Translate according to the current viewport setting, plus the original coordinates, if any
+    dstTransform.ApplyTranslation (srcX * zoomVal) + translatedImageRect.Left, (srcY * zoomVal) + translatedImageRect.Top
     
 End Sub
 
@@ -472,6 +501,7 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
     m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
     m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
+    Set cSurface = Nothing
     
 End Sub
 

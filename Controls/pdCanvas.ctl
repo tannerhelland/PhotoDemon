@@ -863,7 +863,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     Dim sCheck As Long
     
     'Check mouse button use
-    If Button = vbLeftButton Then
+    If (Button = vbLeftButton) Then
         
         m_LMBDown = True
         m_NumOfMouseMovements = 0
@@ -1062,7 +1062,11 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), False, 3
                 
                 End If
-                
+            
+            Case PAINT_BASICBRUSH
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
+                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+            
             'In the future, other tools can be handled here
             Case Else
             
@@ -1084,11 +1088,20 @@ Private Sub CanvasView_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal 
 End Sub
 
 'When the mouse leaves the window, if no buttons are down, clear the coordinate display.
-' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image.)
-' RELAY (partially)
+' (We must check for button states because the user is allowed to do things like drag selection nodes outside the image,
+'  or paint outside the image.)
 Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
     m_IsMouseOverCanvas = False
+    
+    Select Case g_CurrentTool
+        Case PAINT_BASICBRUSH
+            Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+    End Select
+    
+    'If the mouse is not being used, clear the image coordinate display entirely
     If (Not m_LMBDown) And (Not m_RMBDown) Then ClearImageCoordinatesDisplay
+    
 End Sub
 
 Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -1141,7 +1154,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 End If
                 
                 'Force a redraw of the viewport
-                If m_NumOfMouseMovements > 1 Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
+                If (m_NumOfMouseMovements > 1) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
             
             'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
             Case SELECT_LASSO
@@ -1177,6 +1190,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 Message "Shift key: preserve layer aspect ratio"
                 TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
             
+            Case PAINT_BASICBRUSH
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
+                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+            
         End Select
     
     'This else means the LEFT mouse button is NOT down
@@ -1202,7 +1219,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
                     ' over a layer, it will return -1.
-                    If layerUnderMouse > -1 Then
+                    If (layerUnderMouse > -1) Then
                         m_LayerAutoActivateIndex = layerUnderMouse
                         
                         'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
@@ -1232,6 +1249,10 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Text tools
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
+            Case PAINT_BASICBRUSH
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
+                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+                
             Case Else
             
         End Select
@@ -1258,7 +1279,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
     SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
     
     'Check mouse buttons
-    If Button = vbLeftButton Then
+    If (Button = vbLeftButton) Then
     
         m_LMBDown = False
     
@@ -1552,6 +1573,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
                 'Reset the generic tool mouse tracking function
                 Tool_Support.TerminateGenericToolTracking
+            
+            Case PAINT_BASICBRUSH
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
+                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
                 
             Case Else
                     
@@ -1559,7 +1584,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
     End If
     
-    If Button = vbRightButton Then m_RMBDown = False
+    If (Button = vbRightButton) Then m_RMBDown = False
     
     'Reset any tracked point of interest value for this layer
     m_CurPointOfInterest = -1
@@ -2293,7 +2318,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 
                 'Similar to the move tool, texts tools will request a redraw of the viewport when the POI changes, so that the current
                 ' POI can be highlighted.
-                If m_LastPointOfInterest <> curPOI Then
+                If (m_LastPointOfInterest <> curPOI) Then
                     m_LastPointOfInterest = curPOI
                     Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
                 End If
@@ -2303,12 +2328,23 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 CanvasView.RequestCursor_System IDC_IBEAM
             End If
         
+        Case PAINT_BASICBRUSH
+            
+            'Paint brushes are a little weird, because we custom-draw the current brush outline
+            CanvasView.RequestCursor_System IDC_ICON
+            Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+        
         Case Else
             CanvasView.RequestCursor_System IDC_ARROW
                     
     End Select
 
 End Sub
+
+'Is the mouse currently over the canvas?
+Public Function IsMouseOverCanvas() As Boolean
+    IsMouseOverCanvas = m_IsMouseOverCanvas
+End Function
 
 'Simple, unified way to see if canvas interaction is allowed.
 Public Function IsCanvasInteractionAllowed() As Boolean

@@ -228,6 +228,11 @@ Public Sub ClearCanvas()
     
 End Sub
 
+'Is the mouse over the canvas view right now?
+Public Function IsMouseOverCanvasView()
+    IsMouseOverCanvasView = ucSupport.IsMouseInside()
+End Function
+
 'Certain criteria prevent the user from interacting with this canvas object (e.g. no images being loaded).  External functions
 ' *must* check this value before attempting to render to the canvas.
 Public Function IsCanvasInteractionAllowed() As Boolean
