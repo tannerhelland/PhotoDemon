@@ -214,7 +214,7 @@ End Sub
 '
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
-Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1)
+Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1, Optional ByVal renderScratchLayerIndex As Long = -1)
 
     'Regardless of the pipeline branch we follow, we need local copies of the relevant region rects calculated by stage 1 of the pipeline.
     Dim ImageRect_CanvasCoords As RECTF, CanvasRect_ImageCoords As RECTF, CanvasRect_ActualPixels As RECTF
@@ -320,13 +320,13 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
                 
                 'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
                 If (g_ViewportPerformance = PD_PERF_FASTEST) Then
-                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, GP_IM_NearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport
+                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, GP_IM_NearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
                     
                 'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
                 ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
                 ' automatically (regardless of what method we request).
                 Else
-                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport
+                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
                 End If
                 
             End If
@@ -375,7 +375,7 @@ End Sub
 '
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
-Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1)
+Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1, Optional ByVal renderScratchLayerIndex As Long = -1)
         
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
@@ -403,13 +403,13 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         
         'Notify the parent object that a prepared composite buffer is required.  If the buffer is dirty, the parent will regenerate
         ' the composite for us.
-        srcImage.RebuildCompositeBuffer
+        srcImage.RebuildCompositeBuffer renderScratchLayerIndex
         
     'Other viewport performance settings can automatically proceed to stage 3
     End If
     
     'Pass control to the next stage of the pipeline.
-    Stage3_ExtractRelevantRegion srcImage, dstCanvas, pipelineOriginatedAtStageOne, curPOI
+    Stage3_ExtractRelevantRegion srcImage, dstCanvas, pipelineOriginatedAtStageOne, curPOI, renderScratchLayerIndex
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
     If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"

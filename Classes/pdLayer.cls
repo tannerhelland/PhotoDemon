@@ -2295,7 +2295,7 @@ End Sub
 Public Function SyncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic) As Boolean
 
     'If this is not a vector layer, rely on the "DIB has changed since last hash request" marker.
-    If myLayerType = PDL_IMAGE Then
+    If (myLayerType = PDL_IMAGE) Then
         SyncInternalDIB = m_DIBChangedSinceLastHash(levelOfDetail)
         Exit Function
     End If
@@ -2312,7 +2312,7 @@ Public Function SyncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_C
         Case PDL_TEXT, PDL_TYPOGRAPHY
             
             'Set the text rendering engine according to the layer type (text vs typography)
-            If myLayerType = PDL_TEXT Then
+            If (myLayerType = PDL_TEXT) Then
                 myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_WAPI
             Else
                 myTextRenderer.SetGenericTextProperty ptp_RenderingEngine, tre_PHOTODEMON

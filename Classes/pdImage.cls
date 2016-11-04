@@ -189,7 +189,7 @@ Public Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As L
 
 End Function
 
-Public Sub RebuildCompositeBuffer()
+Public Sub RebuildCompositeBuffer(Optional ByVal renderScratchLayerIndex As Long = -1)
 
     'If the buffer is already clean, ignore this request
     If m_CompositeCacheClean Then
@@ -197,7 +197,7 @@ Public Sub RebuildCompositeBuffer()
     Else
         
         'Rebuild the composite cache
-        imgCompositor.GetCompositedImage Me, compositeBuffer
+        imgCompositor.GetCompositedImage Me, compositeBuffer, , renderScratchLayerIndex
         
         'Mark the cache as clean
         'm_CompositeCacheClean = True
@@ -274,8 +274,8 @@ End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
-Public Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
-    imgCompositor.GetCompositedRect Me, dstDIB, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, interpolationType, ignoreInternalCaches, levelOfDetail
+Public Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
+    imgCompositor.GetCompositedRect Me, dstDIB, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, interpolationType, ignoreInternalCaches, levelOfDetail, renderScratchLayerIndex
 End Sub
 
 'Get the currently active layer index
@@ -1313,6 +1313,7 @@ Public Sub ResetScratchLayer(Optional ByVal resetLayerSettingsToo As Boolean = F
     'By design, the scratch layer should always match the current image size.
     If (ScratchLayer.layerDIB.GetDIBWidth <> Me.Width) Or (ScratchLayer.layerDIB.GetDIBHeight <> Me.Height) Then
         ScratchLayer.layerDIB.CreateBlank Me.Width, Me.Height, 32, 0, 0
+        ScratchLayer.layerDIB.SetInitialAlphaPremultiplicationState True
     Else
         ScratchLayer.layerDIB.ResetDIB 0
     End If
