@@ -56,6 +56,10 @@ Private frontBuffer As pdDIB
 'To avoid re-applying certain settings, we cache the target viewport's DC between calls.
 Private m_TargetDC As Long
 
+'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.  Note that stage 5 is ignored because
+' it only affects changes in zoom values (or switching between images).
+Private m_TimeStage2 As Double, m_TimeStage3 As Double, m_TimeStage4 As Double, m_TimeStage5 As Double
+
 'Stage5_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
 ' very fast, and should be used whenever full compositing is unnecessary.
@@ -68,6 +72,9 @@ Private m_TargetDC As Long
 ' the caller to optimize POI-based requests, e.g. not forwarding them unless the POI has changed, etc)
 Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
 
+    Dim startTime As Currency
+    VB_Hacks.GetHighResTime startTime
+    
     'If no images have been loaded, clear the canvas and exit
     If (g_OpenImageCount <= 0) Then
         FormMain.mainCanvas(0).ClearCanvas
@@ -75,7 +82,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     Else
         FormMain.mainCanvas(0).SetScrollVisibility PD_BOTH, True
     End If
-
+    
     'Apply a few failsafe checks to make sure all required rendering objects exist
     If (dstCanvas Is Nothing) Then Exit Sub
     If (srcImage Is Nothing) Then Exit Sub
@@ -122,7 +129,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 
                 'Retrieve a copy of the current image's intersection rect, which controls boundaries for any selection overlays
                 Dim intRect As RECTF
-                srcImage.imgViewport.getIntersectRectCanvas intRect
+                srcImage.imgViewport.GetIntersectRectCanvas intRect
                 srcImage.mainSelection.RenderTransformNodes srcImage, dstCanvas, intRect.Left, intRect.Top
                 
             End If
@@ -150,7 +157,10 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     
     'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
     dstCanvas.RequestViewportRedraw True
-
+    
+    'Before exiting, calculate the time spent in this stage
+    m_TimeStage5 = VB_Hacks.GetTimerDifferenceNow(startTime)
+    
 End Sub
 
 'Stage4_CompositeCanvas takes the current canvas (which has a checkerboard and fully layered image drawn atop it) and applies a few
@@ -165,7 +175,10 @@ End Sub
 'After this stage, the only things that should be rendered onto the canvas are uncolored UI elements, like custom-drawn cursors or
 ' control nodes.
 Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
-
+    
+    Dim startTime As Currency
+    VB_Hacks.GetHighResTime startTime
+    
     'If no images have been loaded, clear the canvas and exit
     If (g_OpenImageCount = 0) Then
         FormMain.mainCanvas(0).ClearCanvas
@@ -189,7 +202,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     
     'Retrieve a copy of the intersected viewport rect, which we forward to the selection engine (if a selection is active)
     Dim viewportIntersectRect As RECTF
-    srcImage.imgViewport.getIntersectRectCanvas viewportIntersectRect
+    srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRect
     
     'Check to see if a selection is active.
     If srcImage.selectionActive Then
@@ -198,7 +211,10 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         srcImage.mainSelection.RenderCustom frontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
     
     End If
-        
+    
+    'Before exiting, calculate the time spent in this stage
+    m_TimeStage4 = VB_Hacks.GetTimerDifferenceNow(startTime)
+    
     'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
     ' remaining UI elements!
     Stage5_FlipBufferAndDrawUI srcImage, dstCanvas, curPOI
@@ -215,13 +231,16 @@ End Sub
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
 Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1, Optional ByVal renderScratchLayerIndex As Long = -1)
-
+    
+    Dim startTime As Currency
+    VB_Hacks.GetHighResTime startTime
+    
     'Regardless of the pipeline branch we follow, we need local copies of the relevant region rects calculated by stage 1 of the pipeline.
     Dim ImageRect_CanvasCoords As RECTF, CanvasRect_ImageCoords As RECTF, CanvasRect_ActualPixels As RECTF
     With srcImage.imgViewport
-        .getCanvasRectActualPixels CanvasRect_ActualPixels
-        .getCanvasRectImageCoords CanvasRect_ImageCoords
-        .getImageRectCanvasCoords ImageRect_CanvasCoords
+        .GetCanvasRectActualPixels CanvasRect_ActualPixels
+        .GetCanvasRectImageCoords CanvasRect_ImageCoords
+        .GetImageRectCanvasCoords ImageRect_CanvasCoords
     End With
     
     'We also need to wipe the back buffer
@@ -263,19 +282,19 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     End With
     
     'This translated rect allows us to shortcut a lot of coordinate math, so cache a copy inside the source image.
-    srcImage.imgViewport.setImageRectTranslated translatedImageRect
+    srcImage.imgViewport.SetImageRectTranslated translatedImageRect
     
     'We now know where the full image lies, with zoom applied, relative to the canvas coordinate space.  Think of the canvas as
     ' a tiny window, and the image as a huge poster behind the window.  What we're going to do now is find the intersect rect
     ' between the window rect (which is easy - just the size of the canvas itself) and the image rect we've now calculated.
     Dim viewportRect As RECTF
-    srcImage.imgViewport.setIntersectState GDI_Plus.IntersectRectF(viewportRect, CanvasRect_ActualPixels, translatedImageRect)
+    srcImage.imgViewport.SetIntersectState GDI_Plus.IntersectRectF(viewportRect, CanvasRect_ActualPixels, translatedImageRect)
     
-    If srcImage.imgViewport.getIntersectState Then
+    If srcImage.imgViewport.GetIntersectState Then
         
         'The intersection between the canvas and image is now stored in viewportRect.  Cool!  This is the destination rect of
         ' our viewport StretchBlt function.
-        srcImage.imgViewport.setIntersectRectCanvas viewportRect
+        srcImage.imgViewport.SetIntersectRectCanvas viewportRect
         
         'What we need to do now is reverse-map that rect back onto the image itself.  How do we do this?
         ' Well, we need two key pieces of information:
@@ -344,12 +363,15 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
             .Width = srcWidth
             .Height = srcHeight
         End With
-        srcImage.imgViewport.setIntersectRectImage tmpSrcImageRect
+        srcImage.imgViewport.SetIntersectRectImage tmpSrcImageRect
         
     'The canvas and image do not overlap.  That's okay!  It means we don't have to do any compositing.  Exit now.
     Else
     
     End If
+    
+    'Before exiting, calculate the time spent in this stage
+    m_TimeStage3 = VB_Hacks.GetTimerDifferenceNow(startTime)
     
     'Note that calls to this function may need to be relayed to other UI elements.  (For example, viewport rulers need to
     ' be repositioned, and if the navigator panel is open, it needs to reflect the new scroll position, if any.)
@@ -376,7 +398,12 @@ End Sub
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
 Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1, Optional ByVal renderScratchLayerIndex As Long = -1)
-        
+    
+    'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
+    ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
+    Dim startTime As Currency
+    VB_Hacks.GetHighResTime startTime
+    
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
     'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
@@ -388,11 +415,6 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     'If the pdImage object associated with this form is inactive, ignore this request
     If (srcImage Is Nothing) Then Exit Sub
     If (Not srcImage.IsActive) Then Exit Sub
-    
-    'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
-    ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
-    Dim startTime As Double
-    If g_DisplayTimingReports Then startTime = Timer
     
     'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.compositeBuffer for us.  The goal of this stage
     ' is simple: fill the compositeBuffer object with a fully composited copy of the current image.
@@ -408,11 +430,17 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     'Other viewport performance settings can automatically proceed to stage 3
     End If
     
+    'Before exiting, calculate the time spent in this stage
+    m_TimeStage2 = VB_Hacks.GetTimerDifferenceNow(startTime)
+    
     'Pass control to the next stage of the pipeline.
     Stage3_ExtractRelevantRegion srcImage, dstCanvas, pipelineOriginatedAtStageOne, curPOI, renderScratchLayerIndex
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
-    If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"
+    If g_DisplayTimingReports Then
+        'Debug.Print "Viewport render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
+        Debug.Print "Viewport render timing by stage (net, 2, 3, 4, 5): " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms, " & Format(CStr(m_TimeStage2 * 1000), "0000.00") & " ms, " & Format(CStr(m_TimeStage3 * 1000), "0000.00") & " ms, " & Format(CStr(m_TimeStage4 * 1000), "0000.00") & " ms, " & Format(CStr(m_TimeStage5 * 1000), "0000.00") & " ms"
+    End If
     
 End Sub
 
@@ -636,9 +664,9 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'Because subsequent stages of the pipeline may need all the data we've assembled, store a copy of all relevant rects
     ' inside the source pdImage object.
     With srcImage.imgViewport
-        .setCanvasRectActualPixels CanvasRect_ActualPixels
-        .setCanvasRectImageCoords CanvasRect_ImageCoords
-        .setImageRectCanvasCoords ImageRect_CanvasCoords
+        .SetCanvasRectActualPixels CanvasRect_ActualPixels
+        .SetCanvasRectImageCoords CanvasRect_ImageCoords
+        .SetImageRectCanvasCoords ImageRect_CanvasCoords
     End With
     
     'The final step of this pipeline is optional.  If the user wants us to calculate specific scroll bar values, they must pass
@@ -690,7 +718,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 '...then set a fake, "translated" image rect, that is correct for the case of h/v/scroll = 0.  (Normally stage 3 of the
                 ' pipeline creates a translated rect, but we have to provide one now because the canvas/image coordinate translation code
                 ' relies on that rect!)
-                srcImage.imgViewport.setImageRectTranslated ImageRect_CanvasCoords
+                srcImage.imgViewport.SetImageRectTranslated ImageRect_CanvasCoords
                 
                 'With those values successfully set, we can now translate the target image coords into canvas coords, for the case of
                 ' h/v/scroll = 0.

@@ -582,7 +582,16 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         
         'If a scratch layer index has been specified, and it matches this layer index, paint it now
         If (paintScratchLayerIndex = i) Then
-            GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, interpolationType, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
+            
+            'Scratch layer interpolation varies by the current viewport performance setting
+            If (g_ViewportPerformance = PD_PERF_FASTEST) Then
+                GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, GP_IM_NearestNeighbor, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
+            ElseIf (g_ViewportPerformance = PD_PERF_BALANCED) Then
+                GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, GP_IM_Bilinear, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
+            Else
+                GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, interpolationType, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
+            End If
+            
         End If
         
     Next i
@@ -602,8 +611,8 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), bltWidth, bltHeight, m_dstDIB, 0, 0, bltWidth, bltHeight, 1, GP_IM_NearestNeighbor, , True
         
         'While we might be able to get away with GDI's AlphaBlend here, it may cause bleeding on the trailing width/height edges,
-        ' which can cause the underlying checkerboard to show through.
-        'm_dstDIB.alphaBlendToDCEx dstDIB.getDIBDC, Int(dstX), Int(dstY), dibWidthCalc, dibHeightCalc, 0, 0, dibWidthCalc, dibHeightCalc
+        ' which can cause the underlying checkerboard to show through.  (Also, the performance benefit isn't that meaningful.)
+        'm_dstDIB.AlphaBlendToDCEx dstDIB.GetDIBDC, Int(dstX), Int(dstY), bltWidth, bltHeight, 0, 0, bltWidth, bltHeight
         
     End If
     
@@ -908,7 +917,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 
                 'If the rect is zoomless, it means we don't have to perform subpixel positioning.  GDI's AlphaBlend is thus perfectly
                 ' acceptable, and it will be much faster (5-10x) than GDI+.
-                If isRectZoomless And (srcLayer.GetLayerCanvasXModifier = 1) And (srcLayer.GetLayerCanvasYModifier = 1) Then
+                If isRectZoomless And (srcLayer.GetLayerCanvasXModifier = 1#) And (srcLayer.GetLayerCanvasYModifier = 1#) Then
                     
                     'AlphaBlend is very picky about invalid width/height values.  Make sure the source rect is valid.
                     ' (It may be ever-so-slightly off due to rounding issues during all the floating-point math we perform.)
@@ -916,7 +925,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     'If srcRect.Height > srcLayer.getLayerHeight(False) Then srcRect.Height = srcLayer.getLayerHeight(False)
                     'srcLayer.layerDIB.alphaBlendToDCEx m_dstDIB.getDIBDC, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity * 2.55
                     
-                    'I have temporarily disabled the use of GDI's AlphaBlend function here, as it's causing inexplicable rendering failures
+                    'I have temporarily disabled the use of GDI's AlphaBlend function here, as it experiences inexplicable rendering failures
                     ' on certain image/viewport size combinations.
                     GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor
                     
@@ -952,7 +961,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                             'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
                             ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                             '  the function-wide resample mode.)
-                            If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
+                            If (srcLayer.GetLayerCanvasXModifier <> 1#) Or (srcLayer.GetLayerCanvasYModifier <> 1#) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
                             GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer, , True
                             
                             'Update the layer hash, so we can possibly skip this work in the future

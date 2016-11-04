@@ -91,6 +91,9 @@ Public Sub ContinueLoadingProgram()
     'If the program is in pre-alpha or alpha state, enable timing reports.
     If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then g_DisplayTimingReports = True
     
+    'Enable high-performance timer objects
+    VB_Hacks.EnableHighResolutionTimers
+    
     'Regardless of debug mode or not, we instantiate a pdDebug instance.  It will only be interacted with if the program is compiled
     ' with DEBUGMODE = 1, however.
     Set pdDebug = New pdDebugger

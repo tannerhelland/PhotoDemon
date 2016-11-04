@@ -40,6 +40,12 @@ Private Const GMEM_MOVEABLE As Long = &H2&
 'A system info class is used to retrieve ThunderMain's hWnd, if required
 Private m_SysInfo As pdSystemInfo
 
+'Higher-performance timing functions are also handled by this class.  Note that you *must* initialize the timer engine
+' before requesting any time values, or crashes will occurs because the frequency timer is 0.
+Private Declare Function QueryPerformanceCounter Lib "kernel32" (ByRef lpPerformanceCount As Currency) As Long
+Private Declare Function QueryPerformanceFrequency Lib "kernel32" (ByRef lpFrequency As Currency) As Long
+Private m_TimerFrequency As Currency
+
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
 Public Sub Alias2DArray_Byte(ByRef orig2DArray() As Byte, ByRef new2DArray() As Byte, ByRef newArraySA As SAFEARRAY2D)
@@ -254,3 +260,22 @@ Public Function IsArrayInitialized(arr) As Boolean
     IsArrayInitialized = (saAddress <> 0)
     If IsArrayInitialized Then IsArrayInitialized = UBound(arr) >= LBound(arr)
 End Function
+
+Public Sub EnableHighResolutionTimers()
+    QueryPerformanceFrequency m_TimerFrequency
+    If m_TimerFrequency = 0 Then m_TimerFrequency = 1
+End Sub
+
+Public Function GetTimerDifference(ByRef startTime As Currency, ByRef stopTime As Currency) As Double
+    GetTimerDifference = (stopTime - startTime) / m_TimerFrequency
+End Function
+
+Public Function GetTimerDifferenceNow(ByRef startTime As Currency) As Double
+    Dim tmpTime As Currency
+    QueryPerformanceCounter tmpTime
+    GetTimerDifferenceNow = (tmpTime - startTime) / m_TimerFrequency
+End Function
+
+Public Sub GetHighResTime(ByRef dstTime As Currency)
+    QueryPerformanceCounter dstTime
+End Sub
