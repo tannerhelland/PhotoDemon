@@ -204,7 +204,7 @@ Public Sub CreateCurrentBrushOutline()
         Case BE_GDIPlus
         
             Set m_BrushOutlinePath = New pd2DPath
-            If (m_BrushRadius > 0#) Then m_BrushOutlinePath.AddCircle 0, 0, m_BrushRadius + 1#
+            If (m_BrushRadius > 0#) Then m_BrushOutlinePath.AddCircle 0, 0, m_BrushRadius / 2 + 1#
     
     End Select
 
@@ -214,8 +214,49 @@ End Sub
 ' not screen space.  (Translation between spaces will be handled internally.)
 Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single, ByVal srcY As Single)
     
-    'If the mouse button is down, perform painting between the old and new points
-    'TODO!
+    Dim isFirstClick As Boolean
+    
+    'If this is a MouseDown operation, we need to prep the full paint engine.
+    ' (TODO: initialize this elsewhere, so there's no "hesitation" on first paint.)
+    If ((Not m_MouseDown) And mouseButtonDown) Then
+        
+        isFirstClick = True
+        
+        'Make sure the current scratch layer is properly initialized
+        pdImages(g_CurrentImage).ResetScratchLayer
+        
+        'Reset the "last mouse position" values to match the current ones
+        m_MouseX = srcX
+        m_MouseY = srcY
+    
+    End If
+    
+    'If the mouse button is down, perform painting between the old and new points.
+    ' (All painting occurs in image coordinate space, and is applied to the current image's scratch layer.)
+    If mouseButtonDown Then
+    
+        'Create required pd2D drawing tools (a painter and surface)
+        Dim cPainter As pd2DPainter
+        Drawing2D.QuickCreatePainter cPainter
+        
+        Dim cSurface As pd2DSurface
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, True
+        
+        Dim cPen As pd2DPen
+        Drawing2D.QuickCreateSolidPen cPen, m_BrushRadius, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
+        
+        'Render the line
+        'If isFirstClick Then
+        '    cPainter.DrawCircleF cSurface, cPen, srcX, srcY, m_BrushRadius \ 2
+        'Else
+            cPainter.DrawLineF cSurface, cPen, m_MouseX, m_MouseY, srcX, srcY
+        'End If
+        
+        Set cPainter = Nothing: Set cSurface = Nothing: Set cPen = Nothing
+    
+        pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
+    
+    End If
     
     'With all painting tasks complete, update all old state values to match the new state values
     m_MouseDown = mouseButtonDown

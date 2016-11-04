@@ -1192,8 +1192,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             Case PAINT_BASICBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
-                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
-            
+                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me, , , pdImages(g_CurrentImage).GetActiveLayerIndex
+                
         End Select
     
     'This else means the LEFT mouse button is NOT down

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Compositor class
 'Copyright 2014-2016 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 16/October/15
-'Last update: implement level-of-detail (LOD) caches for compositor requests
+'Last updated: 04/November/16
+'Last update: add support for scratch layer integration
 '
 'Image compositing is a fairly arduous process, especially when dealing with stuff like custom blend modes.
 ' Previously, the pdImage class handled all compositing on its own, but as PD's compositing needs have
@@ -121,12 +121,12 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     'We also need to commit any non-destructive effects; otherwise, the merged layer may look different from its on-screen representation,
     ' as the settings of the bottom layer will be "assumed" for the merged layer as well.
     If bottomLayer.GetLayerNonDestructiveFXState Then
-        Me.applyNDFXToDIB bottomLayer, bottomLayer.layerDIB
+        Me.ApplyNDFXToDIB bottomLayer, bottomLayer.layerDIB
         bottomLayer.DeactivateAllNDFX
     End If
     
     If topLayer.GetLayerNonDestructiveFXState Then
-        Me.applyNDFXToDIB topLayer, topLayer.layerDIB
+        Me.ApplyNDFXToDIB topLayer, topLayer.layerDIB
         topLayer.DeactivateAllNDFX
     End If
     
@@ -296,7 +296,10 @@ End Sub
 ' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
-Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
+'
+'As of 7.0, an optional scratch layer index can be specified.  If >= 0, the source image's scratch layer will be rendered atop the layer at the
+' requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the background layer.)
+Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True, Optional ByVal paintScratchLayerIndex As Long = -1)
     
     'TODO: perform special pre-check for 24bpp single-layer images.  For these, we can simply copy the current layer out,
     '       saving a lot of time!
@@ -324,9 +327,14 @@ Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
         If srcImage.GetLayerByIndex(i).GetLayerVisibility Then
             
             'Pass this layer to the helper function.  It will take care of the compositing step for us.
-            getCompositedImage_LayerHelper dstDIB, srcImage.GetLayerByIndex(i), i
+            GetCompositedImage_LayerHelper dstDIB, srcImage.GetLayerByIndex(i), i
         
         'End layer visibility check
+        End If
+        
+        'If a scratch layer index has been specified, and it matches this layer index, paint it now
+        If (paintScratchLayerIndex = i) Then
+            GetCompositedImage_LayerHelper dstDIB, srcImage.ScratchLayer, -1
         End If
         
     Next i
@@ -336,7 +344,7 @@ Friend Sub GetCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     If premultiplicationStatus Then
         dstDIB.SetInitialAlphaPremultiplicationState True
     Else
-        If dstDIB.GetDIBColorDepth = 32 Then dstDIB.SetAlphaPremultiplication False
+        If (dstDIB.GetDIBColorDepth = 32) Then dstDIB.SetAlphaPremultiplication False
     End If
     
 End Sub
@@ -349,7 +357,7 @@ End Sub
 '
 'For performance reasons, the module-level m_tmpDIB object is used.  This is by design, because images that have only one
 ' special-treatment layer (e.g. non-destructive FX, resizing, custom blend modes, etc) can avoid the creation of multiple temporary DIBs.
-Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer, ByVal srcLayerIndex As Long)
+Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer, ByVal srcLayerIndex As Long)
     
     'Hypothetically, we could write special handling for 24-bpp DIBs in the future.  But at present, PD only operates on 32-bpp DIBs.
     
@@ -365,7 +373,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     ' a lot of the compositing pipeline.
     Dim standardBlendingActive As Boolean
     
-    If srcLayerIndex = 0 Then
+    If (srcLayerIndex = 0) Then
         standardBlendingActive = True
     Else
         standardBlendingActive = CBool(srcLayer.GetLayerBlendMode = BL_NORMAL) And CBool(srcLayer.GetLayerAlphaMode = LA_NORMAL)
@@ -373,7 +381,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     
     'Start by separating our handling into "simple" and "complex" branches.  Basic layers with no non-destructive effects or much easier
     ' to deal with.
-    If Not srcLayer.GetLayerNonDestructiveFXState Then
+    If (Not srcLayer.GetLayerNonDestructiveFXState) Then
         
         'Non-destructive effects are not active.  Yay!
         
@@ -415,7 +423,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
             
             End If
         
-        'This Else statement represents the case "If srcLayer.getLayerBlendMode <> BL_NORMAL..."
+        'This Else statement represents the case "If (srcLayer.getLayerBlendMode <> BL_NORMAL)..."
         Else
         
             'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
@@ -462,7 +470,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         If layerBoundariesOkay Then
         
             'Apply any/all non-destructive effects to the temporary DIB
-            applyNDFXToDIB srcLayer, m_tmpDIB
+            ApplyNDFXToDIB srcLayer, m_tmpDIB
             
             With srcLayer
                 
@@ -503,7 +511,10 @@ End Sub
 'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  However, it's the secret
 ' to PD's incredible viewport performance.  (e.g., this function is how we can outperform both GIMP and Paint.NET despite being single-threaded
 ' and heavily CPU-bound)
-Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+'
+'As of 7.0, an optional scratch layer index can be specified.  If >= 0, the source image's scratch layer will be rendered atop the layer at the
+' requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the background layer.)
+Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal paintScratchLayerIndex As Long = -1)
     
     'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
     ' boundary regions for all individual layers.
@@ -564,9 +575,14 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         If srcImage.GetLayerByIndex(i).GetLayerVisibility Then
             
             'The helper function handles the actual compositing
-            getCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches, levelOfDetail
+            GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches, levelOfDetail
         
         'END block for layer visibility toggle
+        End If
+        
+        'If a scratch layer index has been specified, and it matches this layer index, paint it now
+        If (paintScratchLayerIndex = i) Then
+            GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.ScratchLayer, dstViewportRect, srcImageRect, interpolationType, isRectZoomless, False, ignoreInternalCaches, levelOfDetail
         End If
         
     Next i
@@ -606,7 +622,7 @@ End Sub
 ' the optional ignoreInternalCaches can be set to TRUE, in which case these caches must be forcibly regenerated.  If the caches do not need to
 ' be forcibly generated, the optional levelOfDetail parameter should be correctly set, which clues the compositor into which LOD cache to use
 ' in the target layer, greatly improving performance.
-Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
+Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic)
     
     'This function requires two non-optional rects as parameters:
     
@@ -729,7 +745,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         'We are now going to branch down two processing paths.  Layers with no complicated affine transforms active are much easier to handle,
         ' as we can mathematically determine a rectangular region of the layer to process.  Layers *with* active affine transforms require
         ' much uglier handling, and a fairly significant hit to processing speed.
-        If Not srcLayer.AffineTransformsActive(False) Then
+        If (Not srcLayer.AffineTransformsActive(False)) Then
             
             'For normal, rectangular layers, the composite operation works similar to StretchBlt, where we calculate a destination rectangle
             ' and a source rectangle.  We know that these two rectangles define the same rectangle of the image, which allows us to infer
@@ -771,7 +787,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             
             'Non-destructive effects, custom blend-modes, and custom alpha-modes require creation of a temporary DIB, because we must perform
             ' our own compositing (as GDI/GDI+ can't do it for us).  Check for those states now.
-            If srcLayer.GetLayerNonDestructiveFXState Or nonStandardBlendingActive Then
+            If (srcLayer.GetLayerNonDestructiveFXState Or nonStandardBlendingActive) Then
             
                 'One way or another, we will be using integer-based offsets to render the final image.  Calculate them now.
                 xOffsetInt = Int(dstRect.Left - dstViewportRect.Left)
@@ -795,7 +811,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                         BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                         
                         'Apply non-destructive FX now
-                        If srcLayer.GetLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
+                        If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
                     
                     'Zoom or non-destructive resize/rotate are active.  Extra work is required.
                     Else
@@ -832,10 +848,10 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                 
                                 'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
                                 ' as we only have to process a small fraction of the pixels
-                                applyNDFXToDIB srcLayer, m_NDFXDIB
+                                ApplyNDFXToDIB srcLayer, m_NDFXDIB
                                 
                                 'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
-                                GDI_Plus.GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, interpolationType, , Not isBaseLayer
+                                GDI_Plus.GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, interpolationType, , Not isBaseLayer, , True
                                                                 
                             'Non-destructive FX are not active.  Resize the source rectangle immediately.
                             Else
@@ -844,7 +860,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                 ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                                 '  the function-wide resample mode.)
                                 If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = GP_IM_NearestNeighbor
-                                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer
+                                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer, , True
                                 
                             End If
                         
@@ -856,10 +872,10 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                             ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                             '  the function-wide resample mode.)
                             If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
-                            GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer
+                            GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer, , True
                                 
                             'Apply non-destructive FX now
-                            If srcLayer.GetLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
+                            If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
                             
                         End If
                         
@@ -906,8 +922,8 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     
                 Else
                     
-                    If srcRect.Width > srcLayer.GetLayerWidth(False) Then srcRect.Width = srcLayer.GetLayerWidth(False)
-                    If srcRect.Height > srcLayer.GetLayerHeight(False) Then srcRect.Height = srcLayer.GetLayerHeight(False)
+                    If (srcRect.Width > srcLayer.GetLayerWidth(False)) Then srcRect.Width = srcLayer.GetLayerWidth(False)
+                    If (srcRect.Height > srcLayer.GetLayerHeight(False)) Then srcRect.Height = srcLayer.GetLayerHeight(False)
                     
                     'When zoomed in, nearest neighbor is preferred.  This is fast enough that we don't need to use a temporary DIB cache.
                     If srcImageRect.Width < dstViewportRect.Width Then
@@ -937,7 +953,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                             ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                             '  the function-wide resample mode.)
                             If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
-                            GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer
+                            GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer, , True
                             
                             'Update the layer hash, so we can possibly skip this work in the future
                             srcLayer.SetViewportHash_FromLong levelOfDetail, testHash
@@ -1041,7 +1057,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 End If
                     
                 'If non-destructive FX are active, apply them now
-                If srcLayer.GetLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, lodDIB
+                If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
                 
                 'Update the layer hash, so we can possibly skip this work in the future
                 srcLayer.SetViewportHash_FromLong levelOfDetail, testHash
@@ -1070,7 +1086,7 @@ End Sub
 'Given a layer containing one or more non-destructive effect parameters, and a target DIB, apply the layer's specified FX against
 ' the DIB.  Why supply the DIB separately?  Because during viewport composition, all layers are resized and/or cropped to their
 ' size relevant to the viewport.  By doing this, we hugely decrease the performance hit from non-destructive edit calculations.
-Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
+Public Sub ApplyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Start by unpremultiplying the layer alpha
     If (targetDIB.GetDIBColorDepth = 32) And targetDIB.GetAlphaPremultiplication Then targetDIB.SetAlphaPremultiplication False
