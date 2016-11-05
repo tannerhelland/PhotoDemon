@@ -39,14 +39,16 @@ Public Enum BRUSH_ATTRIBUTES
     BA_Source = 0
     BA_Radius = 1
     BA_Opacity = 2
-    BA_Blendmode = 3
+    BA_BlendMode = 3
+    BA_AlphaMode = 4
     
-    'Source-specific values can be stored here, as necessary
+    'Source-specific values can be stored here, as relevant
     BA_SourceColor = 1000
 End Enum
 
 #If False Then
-    Private Const BA_Source = 0, BA_Radius = 1, BA_Opacity = 2, BA_Blendmode = 3, BA_SourceColor = 1000
+    Private Const BA_Source = 0, BA_Radius = 1, BA_Opacity = 2, BA_BlendMode = 3, BA_AlphaMode = 4
+    Private Const BA_SourceColor = 1000
 #End If
 
 'The current brush engine is stored here.  Note that this value is not correct until a call has been made to
@@ -63,6 +65,7 @@ Private m_BrushSource As BRUSH_SOURCES
 Private m_BrushRadius As Single
 Private m_BrushOpacity As Single
 Private m_BrushBlendmode As LAYER_BLENDMODE
+Private m_BrushAlphamode As LAYER_ALPHAMODE
 
 'Note that some brush attributes only exist for certain brush sources.
 Private m_BrushSourceColor As Long
@@ -81,6 +84,7 @@ Public Function GetBrushSource() As BRUSH_SOURCES
     GetBrushSource = m_BrushSource
 End Function
 
+'Universal brush settings, applicable for all sources
 Public Function GetBrushRadius() As Single
     GetBrushRadius = m_BrushRadius
 End Function
@@ -93,6 +97,11 @@ Public Function GetBrushBlendMode() As LAYER_BLENDMODE
     GetBrushBlendMode = m_BrushBlendmode
 End Function
 
+Public Function GetBrushAlphaMode() As LAYER_ALPHAMODE
+    GetBrushAlphaMode = m_BrushAlphamode
+End Function
+
+'Brush settings that vary by source
 Public Function GetBrushSourceColor() As Long
     GetBrushSourceColor = m_BrushSourceColor
 End Function
@@ -125,6 +134,13 @@ Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As LAYER_BLENDMODE = BL
     End If
 End Sub
 
+Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+    If (newAlphaMode <> m_BrushAlphamode) Then
+        m_BrushAlphamode = newAlphaMode
+        m_BrushIsReady = False
+    End If
+End Sub
+
 Public Sub SetBrushSourceColor(Optional ByVal newColor As Long = vbWhite)
     If (newColor <> m_BrushSourceColor) Then
         m_BrushSourceColor = newColor
@@ -141,8 +157,10 @@ Public Function GetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES) As Variant
             GetBrushProperty = GetBrushRadius()
         Case BA_Opacity
             GetBrushProperty = GetBrushOpacity()
-        Case BA_Blendmode
+        Case BA_BlendMode
             GetBrushProperty = GetBrushBlendMode()
+        Case BA_AlphaMode
+            GetBrushProperty = GetBrushAlphaMode()
         Case BA_SourceColor
             GetBrushProperty = GetBrushSourceColor()
     End Select
@@ -158,8 +176,10 @@ Public Sub SetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES, ByVal newPropVa
             SetBrushRadius newPropValue
         Case BA_Opacity
             SetBrushOpacity newPropValue
-        Case BA_Blendmode
+        Case BA_BlendMode
             SetBrushBlendMode newPropValue
+        Case BA_AlphaMode
+            SetBrushAlphaMode newPropValue
         Case BA_SourceColor
             SetBrushSourceColor newPropValue
     End Select
@@ -226,6 +246,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         pdImages(g_CurrentImage).ResetScratchLayer True
         pdImages(g_CurrentImage).ScratchLayer.SetLayerOpacity m_BrushOpacity
         pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_BrushBlendmode
+        pdImages(g_CurrentImage).ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
         
         'Reset the "last mouse position" values to match the current ones
         m_MouseX = srcX
@@ -337,7 +358,7 @@ End Function
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached
 ' for performance reasons).
 Public Sub FreeBrushResources()
-
     Set m_GDIPPen = Nothing
-
+    Set m_BrushOutlineImage = Nothing
+    Set m_BrushOutlinePath = Nothing
 End Sub
