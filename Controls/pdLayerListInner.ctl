@@ -334,8 +334,15 @@ End Sub
 
 'When the control loses focus, erase any focus rects it may have active
 Private Sub ucSupport_LostFocusAPI()
+    
+    'Check for any non-destructive changes that may have been set via this window (e.g. visibility)
+    If (g_OpenImageCount > 0) Then
+        Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility
+    End If
+    
     RedrawBackBuffer
     RaiseEvent LostFocusAPI
+    
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -365,8 +372,14 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
             ' the active layer.
             Else
-                Layer_Handler.SetActiveLayerByIndex clickedLayer, False
-                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            
+                'See if the clicked layer differs from the current active layer
+                If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerID <> pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerID) Then
+                    Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility
+                    Layer_Handler.SetActiveLayerByIndex clickedLayer, False
+                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                End If
+                
             End If
             
             'Redraw the layer box to represent any changes from this interaction.
@@ -526,7 +539,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     If m_InOLEDragDropMode Then Exit Sub
     
     'Only display the hand cursor if the cursor is over a layer
-    If GetLayerAtPosition(x, y) <> -1 Then
+    If (GetLayerAtPosition(x, y) <> -1) Then
         ucSupport.RequestCursor IDC_HAND
     Else
         ucSupport.RequestCursor IDC_ARROW
@@ -859,25 +872,8 @@ Private Sub UpdateHoveredLayer(ByVal newLayerUnderMouse As Long)
     
     'If a layer other than the active one is being hovered, highlight that box
     If (m_CurLayerHover <> newLayerUnderMouse) Then
-        
-        'If this control has focus, finalize any Undo/Redo changes to the existing layer (curLayerHover)
-        If ((g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = Me.hWnd)) Then
-            If ((m_CurLayerHover > -1) And (m_CurLayerHover < pdImages(g_CurrentImage).GetNumOfLayers) And Tool_Support.CanvasToolsAllowed) Then
-                Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(m_CurLayerHover).GetLayerVisibility
-            End If
-        End If
-        
         m_CurLayerHover = newLayerUnderMouse
-        
-        'If this control has focus, mark the current Undo/Redo state of the newly selected layer (newLayerUnderMouse)
-        If ((g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = Me.hWnd)) Then
-            If ((m_CurLayerHover > -1) And (m_CurLayerHover < pdImages(g_CurrentImage).GetNumOfLayers)) Then
-                Processor.FlagInitialNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetLayerByIndex(m_CurLayerHover).GetLayerVisibility, pdImages(g_CurrentImage).GetLayerByIndex(m_CurLayerHover).GetLayerID
-            End If
-        End If
-        
         RedrawBackBuffer
-        
     End If
 
 End Sub

@@ -765,8 +765,8 @@ End Sub
 
 'When all images have been unloaded, the temporary front buffer can also be erased to keep memory usage as low as possible.
 ' While not actually part of the viewport pipeline, I find it intuitive to store this function here.
-Public Sub eraseViewportBuffers()
-    If Not frontBuffer Is Nothing Then
+Public Sub EraseViewportBuffers()
+    If (Not frontBuffer Is Nothing) Then
         frontBuffer.EraseDIB
         Set frontBuffer = Nothing
     End If
