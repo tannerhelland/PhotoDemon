@@ -171,8 +171,8 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         'Redraw the screen
         If redrawScreen Then
         
-            If g_OpenImageCount > 0 Then
-                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.getHScrollValue, pdImages(g_CurrentImage).imgViewport.getVScrollValue
+            If (g_OpenImageCount > 0) Then
+                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
             Else
                 FormMain.mainCanvas(0).ClearCanvas
             End If
@@ -186,7 +186,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     If (g_OpenImageCount = 0) Then
         
         'Unload the backbuffer of the primary canvas
-        Viewport_Engine.eraseViewportBuffers
+        Viewport_Engine.EraseViewportBuffers
         
         'Allow any tool panels to redraw themselves.  (Some tool panels dynamically change their contents based on the current image, so if no
         ' images are loaded, their contents may shift.)
@@ -316,7 +316,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optio
     Interface.NotifyImageRemoved imageIndex, resyncInterface
     
     'Before exiting, restore focus to the next child window in line.  (But only if this image was the active window!)
-    If g_CurrentImage = CLng(imageIndex) Then
+    If (g_CurrentImage = CLng(imageIndex)) Then
     
         If g_OpenImageCount > 0 Then
         
@@ -383,7 +383,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
     If (Not (pdImages(g_CurrentImage) Is Nothing)) And refreshScreen Then
         
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.getHScrollValue, pdImages(g_CurrentImage).imgViewport.getVScrollValue
+        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
         
         'Reflow any image-window-specific chrome (status bar, rulers, etc)
         FormMain.mainCanvas(0).AlignCanvasView
@@ -398,18 +398,18 @@ End Sub
 'Find out whether the mouse pointer is over image contents or just the viewport
 Public Function IsMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcImage As pdImage) As Boolean
 
-    If srcImage.imgViewport Is Nothing Then
+    If (srcImage.imgViewport Is Nothing) Then
         IsMouseOverImage = False
         Exit Function
     End If
     
     'Make sure the image is currently visible in the viewport
-    If srcImage.imgViewport.getIntersectState Then
+    If srcImage.imgViewport.GetIntersectState Then
         
         'Remember: the imgViewport's intersection rect contains the intersection of the canvas and the image.
         ' If the target point lies inside this, it's over the image!
         Dim intRect As RECTF
-        srcImage.imgViewport.getIntersectRectCanvas intRect
+        srcImage.imgViewport.GetIntersectRectCanvas intRect
         IsMouseOverImage = Math_Functions.IsPointInRectF(x1, y1, intRect)
         
     Else

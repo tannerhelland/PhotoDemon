@@ -290,16 +290,26 @@ End Sub
 Public Sub SetActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
-    If (pdImages(g_CurrentImage).GetActiveLayerID = newLayerID) Then Exit Sub
-    
-    'Notify the parent PD image of the change
-    pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
-    
-    'Sync the interface to the new layer
-    If alsoSyncInterface Then SyncInterfaceToCurrentImage
-    
-    'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If (pdImages(g_CurrentImage).GetActiveLayerID <> newLayerID) Then
+        
+        'Check for any non-destructive property changes to the previously active layer
+        'Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility, pdImages(g_CurrentImage).GetActiveLayerID
+        
+        'Notify the parent PD image of the change
+        pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+        
+        'Notify the Undo/Redo engine of all non-destructive property values for the newly activated layer.
+        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        
+        'Sync the interface to the new layer
+        If alsoSyncInterface Then SyncInterfaceToCurrentImage
+        
+        'Redraw the viewport, but only if requested
+        If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+    End If
         
 End Sub
 
@@ -307,17 +317,27 @@ End Sub
 Public Sub SetActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
-    If pdImages(g_CurrentImage).GetActiveLayerID = pdImages(g_CurrentImage).GetLayerByIndex(newLayerIndex).GetLayerID Then Exit Sub
-    
-    'Notify the parent PD image of the change
-    pdImages(g_CurrentImage).SetActiveLayerByIndex newLayerIndex
-    
-    'Sync the interface to the new layer
-    If alsoSyncInterface Then SyncInterfaceToCurrentImage
+    If (pdImages(g_CurrentImage).GetActiveLayerID <> pdImages(g_CurrentImage).GetLayerByIndex(newLayerIndex).GetLayerID) Then
         
-    'Redraw the viewport, but only if requested
-    If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
+        'Check for any non-destructive property changes to the previously active layer
+        'Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility, pdImages(g_CurrentImage).GetActiveLayerID
+        
+        'Notify the parent PD image of the change
+        pdImages(g_CurrentImage).SetActiveLayerByIndex newLayerIndex
+        
+        'Notify the Undo/Redo engine of all non-destructive property values for the newly activated layer.
+        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        
+        'Sync the interface to the new layer
+        If alsoSyncInterface Then SyncInterfaceToCurrentImage
+            
+        'Redraw the viewport, but only if requested
+        If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+    End If
+        
 End Sub
 
 'Set layer visibility.  Note that the layer's visibility state must be explicitly noted, e.g. there is no "toggle" option.

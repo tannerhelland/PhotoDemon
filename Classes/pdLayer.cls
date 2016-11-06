@@ -829,6 +829,9 @@ Friend Function GetGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC
         
         Case pgp_RotateCenterY
             GetGenericLayerProperty = myLayerData.l_RotateCenterY
+            
+        Case Else
+            GetGenericLayerProperty = 0
     
     End Select
 

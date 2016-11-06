@@ -232,7 +232,7 @@ Public Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional 
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
             m_CompositeCacheClean = False
             
-            If layerIndex <> -1 Then
+            If (layerIndex <> -1) Then
                 Me.GetLayerByIndex(layerIndex).NotifyOfDestructiveChanges
             Else
                 Debug.Print "WARNING!  Invalid params passed to pdImage.notifyImageChanged (-1 layer index for a layer action)"
@@ -335,8 +335,8 @@ End Sub
 Public Sub SetActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
 
     'Validate the incoming layer index
-    If newActiveLayerIndex < 0 Then newActiveLayerIndex = 0
-    If newActiveLayerIndex > m_numOfLayers - 1 Then newActiveLayerIndex = m_numOfLayers - 1
+    If (newActiveLayerIndex < 0) Then newActiveLayerIndex = 0
+    If (newActiveLayerIndex > m_numOfLayers - 1) Then newActiveLayerIndex = m_numOfLayers - 1
     
     m_curLayer = newActiveLayerIndex
     

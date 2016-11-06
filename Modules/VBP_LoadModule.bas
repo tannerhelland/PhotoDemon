@@ -482,6 +482,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'Synchronize all interface elements to match the newly loaded image(s)
     If handleUIDisabling Then SyncInterfaceToCurrentImage
     
+    'Synchronize any non-destructive settings to the currently active layer
+    If (handleUIDisabling And loadSuccessful) Then
+        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+    End If
+    
     '*************************************************************************************************************************************
     ' Before finishing, display any relevant load problems (missing files, invalid formats, etc)
     '*************************************************************************************************************************************
