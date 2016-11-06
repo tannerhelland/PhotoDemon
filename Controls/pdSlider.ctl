@@ -359,7 +359,7 @@ End Sub
 
 Private Sub pdssPrimary_LostFocusAPI()
     m_ControlFocusCount = m_ControlFocusCount - 1
-    EvaluateFocusCount True
+    EvaluateFocusCount False
 End Sub
 
 Private Sub pdssPrimary_RenderTrackImage(dstDIB As pdDIB, ByVal leftBoundary As Single, ByVal rightBoundary As Single)
@@ -596,12 +596,12 @@ Private Sub EvaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
     If focusCountJustIncremented Then
         
         'If just incremented from 0 to 1, raise a GotFocusAPI event
-        If m_ControlFocusCount = 1 Then RaiseEvent GotFocusAPI
+        If (m_ControlFocusCount = 1) Then RaiseEvent GotFocusAPI
         
     Else
     
         'If just decremented from 1 to 0, raise a LostFocusAPI event
-        If m_ControlFocusCount = 0 Then RaiseEvent LostFocusAPI
+        If (m_ControlFocusCount = 0) Then RaiseEvent LostFocusAPI
     
     End If
 
