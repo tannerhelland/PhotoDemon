@@ -305,7 +305,7 @@ Public Sub CommitBrushResults()
     'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch
     ' layer onto it.
     If pdImages(g_CurrentImage).GetActiveLayer.IsLayerRaster Then
-        pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer
+        pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, False
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Ask the central processor to create Undo/Redo data for us
