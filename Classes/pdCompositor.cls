@@ -158,9 +158,9 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         yOffset = bottomRect.Top - finalRect.Top
         
         'If no non-destructive resizes are active, we can simply copy the layer over as-is
-        If Not bottomLayer.AffineTransformsActive(True) Then
+        If (Not bottomLayer.AffineTransformsActive(True)) Then
         
-            If bottomLayer.GetLayerOpacity = 100 Then
+            If (bottomLayer.GetLayerOpacity = 100) Then
                 
                 With bottomLayer
                     BitBlt tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -234,10 +234,10 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     'Now all we need to do is merge the top layer onto it.
     
     'If the top layer has no non-destructive resizing active, this step becomes much easier.
-    If Not topLayer.AffineTransformsActive(True) Then
+    If (Not topLayer.AffineTransformsActive(True)) Then
         
         'We don't even need a temporary DIB - just composite the current layer as-is
-        If (topLayer.GetLayerBlendMode = BL_NORMAL) And (topLayer.GetLayerAlphaMode = LA_NORMAL) Then
+        If ((topLayer.GetLayerBlendMode = BL_NORMAL) And (topLayer.GetLayerAlphaMode = LA_NORMAL)) Then
             topLayer.layerDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, topLayer.GetLayerOpacity * 2.55, xOffset, yOffset
         Else
             CompositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.GetLayerBlendMode, xOffset, yOffset, topLayer.GetLayerOpacity / 100, topLayer.GetLayerAlphaMode
@@ -573,6 +573,10 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         
         'Only process a layer if it is currently visible.
         If srcImage.GetLayerByIndex(i).GetLayerVisibility Then
+            
+            'We now have to check for active paint strokes.  If the user is currently painting, we want to render the paint stroke onto
+            ' the current layer before compositing it.  (This is crucial if a non-standard blend or alpha mode is being used, for example,
+            ' because we need to composite the stroke and base layer *prior* to applying blend and/or alpha calculations.)
             
             'The helper function handles the actual compositing
             GetCompositedRect_LayerHelper m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches, levelOfDetail

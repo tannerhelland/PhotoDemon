@@ -408,7 +408,7 @@ Public Sub MergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
     mergeTarget = IsLayerAllowedToMergeAdjacent(dLayerIndex, mergeDown)
     
     'If we've been given a valid merge target, apply it now!
-    If mergeTarget >= 0 Then
+    If (mergeTarget >= 0) Then
     
         If mergeDown Then
         
