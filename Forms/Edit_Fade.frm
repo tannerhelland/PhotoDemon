@@ -127,6 +127,10 @@ Private Sub cmdBar_OKClick()
     Process "Fade", , BuildParams(sltOpacity.Value, cboBlendMode.ListIndex), UNDO_LAYER
 End Sub
 
+Private Sub cmdBar_RequestPreviewUpdate()
+    UpdatePreview
+End Sub
+
 Private Sub cmdBar_ResetClick()
     sltOpacity.Value = 50
 End Sub
@@ -151,8 +155,9 @@ Private Sub Form_Load()
         
         'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
         ' code should never trigger.  FYI!
-        Debug.Print "WARNING! Fade data could not be retrieved; something went horribly wrong!"
-        Unload Me
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING! Fade data could not be retrieved; something went horribly wrong!  Crash imminent!"
+        #End If
         
     End If
     
