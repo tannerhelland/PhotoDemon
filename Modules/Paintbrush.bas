@@ -234,13 +234,13 @@ End Sub
 ' not screen space.  (Translation between spaces will be handled internally.)
 Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single, ByVal srcY As Single)
     
-    Dim isFirstClick As Boolean
+    Dim isFirstStroke As Boolean, isLastStroke As Boolean
+    isFirstStroke = CBool((Not m_MouseDown) And mouseButtonDown)
+    isLastStroke = CBool(m_MouseDown And (Not mouseButtonDown))
     
     'If this is a MouseDown operation, we need to prep the full paint engine.
-    ' (TODO: initialize this elsewhere, so there's no "hesitation" on first paint.)
-    If ((Not m_MouseDown) And mouseButtonDown) Then
-        
-        isFirstClick = True
+    ' (TODO: initialize this elsewhere, so there's no "stutter" on first paint.)
+    If isFirstStroke Then
         
         'Make sure the current scratch layer is properly initialized
         pdImages(g_CurrentImage).ResetScratchLayer True
@@ -258,6 +258,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     ' (All painting occurs in image coordinate space, and is applied to the current image's scratch layer.)
     If mouseButtonDown Then
     
+        'Want to profile this function?  Use this line of code (and the matching report line at the bottom of the function).
+        Dim startTime As Currency
+        VB_Hacks.GetHighResTime startTime
+        
         'Create required pd2D drawing tools (a painter and surface)
         Dim cPainter As pd2DPainter
         Drawing2D.QuickCreatePainter cPainter
@@ -269,15 +273,20 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         Drawing2D.QuickCreateSolidPen cPen, m_BrushRadius, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
         
         'Render the line
-        'If isFirstClick Then
-        '    cPainter.DrawCircleF cSurface, cPen, srcX, srcY, m_BrushRadius \ 2
-        'Else
+        If isFirstStroke Then
+            'GDI+ refuses to draw a line if the start and end points match; this isn't documented (as far as I know),
+            ' but it may exist to provide backwards compatibility with GDI, which deliberately leaves the last point
+            ' of a line unplotted, in case you are drawing multiple connected lines.
+            cPainter.DrawLineF cSurface, cPen, srcX, srcY, srcX - 0.01, srcY - 0.01
+        Else
             cPainter.DrawLineF cSurface, cPen, m_MouseX, m_MouseY, srcX, srcY
-        'End If
+        End If
         
         Set cPainter = Nothing: Set cSurface = Nothing: Set cPen = Nothing
-    
+        
         pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
+        
+        Debug.Print "Paint tool render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
     
     End If
     
@@ -285,6 +294,50 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     m_MouseDown = mouseButtonDown
     m_MouseX = srcX
     m_MouseY = srcY
+    
+End Sub
+
+'Want to commit your current brush work?  Call this function to make the brush results permanent.
+Public Sub CommitBrushResults()
+
+    'Committing brush results is actually pretty easy!
+    
+    'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch
+    ' layer onto it.
+    If pdImages(g_CurrentImage).GetActiveLayer.IsLayerRaster Then
+        pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
+        
+        'Ask the central processor to create Undo/Redo data for us
+        Processor.Process "Paint stroke", , , UNDO_LAYER, g_CurrentTool
+    
+    'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
+    Else
+    
+        Dim newLayerID As Long
+        newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(pdImages(g_CurrentImage).GetActiveLayerIndex)
+        
+        'Point the new layer index at our scratch layer
+        pdImages(g_CurrentImage).PointLayerAtNewObject newLayerID, pdImages(g_CurrentImage).ScratchLayer
+        pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerName g_Language.TranslateMessage("Paint layer")
+        Set pdImages(g_CurrentImage).ScratchLayer = Nothing
+        
+        'Activate the new layer
+        pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+        
+        'Notify the parent image of the new layer
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+        
+        'Redraw the layer box, and note that thumbnails need to be re-cached
+        toolbar_Layers.NotifyLayerChange
+        
+        'Ask the central processor to create Undo/Redo data for us
+        Processor.Process "Paint stroke", , , UNDO_IMAGE_VECTORSAFE, g_CurrentTool
+        
+    End If
+    
+    'Redraw the main viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 

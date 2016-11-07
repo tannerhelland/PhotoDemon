@@ -62,8 +62,8 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     prevActiveLayerID = pdImages(g_CurrentImage).GetActiveLayerID
     
     'Validate the requested layer index
-    If dLayerIndex < 0 Then dLayerIndex = 0
-    If dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1 Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    If (dLayerIndex < 0) Then dLayerIndex = 0
+    If (dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
@@ -75,7 +75,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     
     'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
     ' initialize the new layer.  (Note that this is only relevant for raster layers.)
-    If dLayerType = PDL_IMAGE Then
+    If (dLayerType = PDL_IMAGE) Then
     
         Select Case dLayerSubType
         
@@ -105,7 +105,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     End If
     
     'Set the layer name
-    If Len(Trim$(dLayerName)) = 0 Then
+    If (Len(Trim$(dLayerName)) = 0) Then
     
         Select Case dLayerType
         
@@ -145,7 +145,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     pdImages(g_CurrentImage).SetActiveLayerByID prevActiveLayerID
     
     'Move the layer into position as necessary.
-    If dLayerPosition <> 0 Then
+    If (dLayerPosition <> 0) Then
     
         Select Case dLayerPosition
         
@@ -179,7 +179,7 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the main viewport (if requested)
-    If Not suspendRedraws Then
+    If (Not suspendRedraws) Then
         
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     

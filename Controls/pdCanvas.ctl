@@ -1065,8 +1065,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             
             Case PAINT_BASICBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
-                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
-            
+                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me, , , pdImages(g_CurrentImage).GetActiveLayerIndex
+                
             'In the future, other tools can be handled here
             Case Else
             
@@ -1507,7 +1507,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
                         'Update the layer's size.  At present, we simply make it fill the current viewport.
                         Dim curImageRectF As RECTF
-                        pdImages(g_CurrentImage).imgViewport.getIntersectRectImage curImageRectF
+                        pdImages(g_CurrentImage).imgViewport.GetIntersectRectImage curImageRectF
                         
                         With pdImages(g_CurrentImage)
                             .GetActiveLayer.SetLayerOffsetX curImageRectF.Left
@@ -1575,8 +1575,11 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 Tool_Support.TerminateGenericToolTracking
             
             Case PAINT_BASICBRUSH
+                
+                'Notify the brush engine of the final result, then permanently commit this round of brush work
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
-                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+                Paintbrush.CommitBrushResults
+                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
                 
             Case Else
                     
@@ -1807,7 +1810,7 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     
     'Regardless of viewport state, cache the current scroll bar value inside the current image
     If Not pdImages(g_CurrentImage) Is Nothing Then
-        pdImages(g_CurrentImage).imgViewport.setHScrollValue hScroll.Value
+        pdImages(g_CurrentImage).imgViewport.SetHScrollValue hScroll.Value
     End If
     
     If (Not Me.GetRedrawSuspension) Then
@@ -2053,7 +2056,7 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
         
     'Regardless of viewport state, cache the current scroll bar value inside the current image
     If Not pdImages(g_CurrentImage) Is Nothing Then
-        pdImages(g_CurrentImage).imgViewport.setVScrollValue vScroll.Value
+        pdImages(g_CurrentImage).imgViewport.SetVScrollValue vScroll.Value
     End If
         
     If (Not Me.GetRedrawSuspension) Then

@@ -158,7 +158,7 @@ Public Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As L
     If (m_numOfLayersEverCreated = 0) Then
         m_curLayer = 0
         
-    'The layer has images.  Extra work is involved
+    'The image has layers.  Extra work is involved
     Else
 
         'If no layer has been specified, insert the new layer above the requested layer
@@ -385,15 +385,42 @@ Public Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     
     Dim i As Long
     For i = 0 To m_numOfLayers - 1
-        If imgLayers(i).GetLayerID = requestedID Then
+        If (imgLayers(i).GetLayerID = requestedID) Then
             Set GetLayerByID = imgLayers(i)
             Exit Function
         End If
     Next i
     
     'If we made it all the way here, the requested layer was not found.  Return Nothing.
-    Debug.Print "WARNING!  getLayerByID received an invalid ID: " & requestedID
+    Debug.Print "WARNING!  GetLayerByID received an invalid ID: " & requestedID
     Set GetLayerByID = Nothing
+    
+End Function
+
+Public Function PointLayerAtNewObject(ByVal layerID As Long, ByRef newLayer As pdLayer) As Boolean
+
+    Dim targetLayerIndex As Long
+    targetLayerIndex = -1
+    
+    Dim i As Long
+    For i = 0 To m_numOfLayers - 1
+        If (imgLayers(i).GetLayerID = layerID) Then
+            targetLayerIndex = i
+            Exit For
+        End If
+    Next i
+    
+    If (targetLayerIndex >= 0) Then
+        
+        PointLayerAtNewObject = True
+        Set imgLayers(targetLayerIndex) = newLayer
+        
+        'Assign the new layer object the *old* layer's ID.
+        imgLayers(targetLayerIndex).AssignLayerID layerID
+        
+    Else
+        PointLayerAtNewObject = False
+    End If
     
 End Function
 
