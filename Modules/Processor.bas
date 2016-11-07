@@ -167,7 +167,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
     ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
-    If processID = "Repeat last action" Then
+    If (StrComp(LCase$(processID), "repeat last action") = 0) Then
         processID = LastProcess.Id
         ShowDialog = LastProcess.Dialog
         processParameters = LastProcess.Parameters
@@ -434,7 +434,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
         
         'First, check for on-canvas modifications to the selection (e.g. feathering slider changes, etc)
-        If Not pdImages(g_CurrentImage) Is Nothing Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then
         
             If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) And (createUndo <> UNDO_EVERYTHING) Then
             
@@ -1867,7 +1867,11 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Vibrate"
             MenuVibrate
             
-            
+        
+        'PAINT OPERATIONS
+        Case "Paint stroke"
+            'If we are in the midst of a batch operation, this is where we actually apply the paint stroke.  During normal operations,
+            ' however, we don't need to do anything here.
             
         'SPECIAL OPERATIONS
         Case "Fade"
@@ -1919,7 +1923,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 Case Else
                     'DEBUG FAILSAFE
                     ' This function should never be passed a process ID it can't parse, but if that happens, ask the user to report the unparsed ID
-                    If Len(processID) <> 0 Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
+                    If (Len(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
             
             End Select
             
@@ -1975,7 +1979,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             'The "Edit > Fade" action is unique, because it does not necessarily affect the active layer (e.g. if the user blurs
             ' a layer, then switches to a new layer, Fade will affect the *old layer* only).  Find the relevant layer ID
             ' before calling the Undo engine.
-            If processID = "Fade" Then
+            If (processID = "Fade") Then
                 Dim tmpDIB As pdDIB
                 pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
             End If

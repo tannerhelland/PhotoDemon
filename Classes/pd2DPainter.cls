@@ -362,6 +362,7 @@ Public Function DrawLineF(ByRef dstSurface As pd2DSurface, ByRef srcPen As pd2DP
         Select Case dstSurface.GetSurfaceBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
                 DrawLineF = GDI_Plus.GDIPlus_DrawLineF(dstSurface.GetHandle, srcPen.GetHandle, x1, y1, x2, y2)
+                If (Not DrawLineF) Then InternalError "LineDrawFailed", "GDIPlus_DrawLineF drew nothing"
         End Select
     End If
 End Function
