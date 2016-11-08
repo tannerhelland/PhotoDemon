@@ -410,8 +410,8 @@ Public Function GetLayerOpacity() As Long
 End Function
 
 Public Sub SetLayerOpacity(ByVal newLayerOpacity As Long)
-    If newLayerOpacity > 100 Then newLayerOpacity = 100
-    If newLayerOpacity < 0 Then newLayerOpacity = 0
+    If (newLayerOpacity > 100) Then newLayerOpacity = 100
+    If (newLayerOpacity < 0) Then newLayerOpacity = 0
     myLayerData.l_Opacity = newLayerOpacity
 End Sub
 
@@ -2402,7 +2402,7 @@ Public Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
     End With
     
     'Finally, hash any parameters we were passed.
-    If UBound(allParams) >= LBound(allParams) Then
+    If (UBound(allParams) >= LBound(allParams)) Then
     
         Dim i As Long
         For i = LBound(allParams) To UBound(allParams)
