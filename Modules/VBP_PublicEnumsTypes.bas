@@ -388,13 +388,14 @@ Public Enum COMPOSITOR_LOD_CLUE
     CLC_Generic = 0
     CLC_Viewport = 1
     CLC_Thumbnail = 2
+    CLC_Painting = 3
 End Enum
 
 #If False Then
-    Private Const CLC_Generic = 0, CLC_Viewport = 1, CLC_Thumbnail = 2
+    Private Const CLC_Generic = 0, CLC_Viewport = 1, CLC_Thumbnail = 2, CLC_Painting = 3
 #End If
 
-Public Const NUM_OF_LOD_CACHES As Long = 3
+Public Const NUM_OF_LOD_CACHES As Long = 4
 
 'PD's gotten much better about abstracting and encapsulating clipboard-specific functionality.  Unfortunately, some formats
 ' (most notably CF_BITMAP) require special heuristics from PD's image load function, because the alpha data CF_BITMAP

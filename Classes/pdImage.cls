@@ -363,19 +363,16 @@ End Function
 Public Function GetLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
     'As a failsafe, validate the incoming layer index
-    If layerIndex > UBound(imgLayers) Then
+    If (layerIndex > UBound(imgLayers)) Then
         layerIndex = UBound(imgLayers)
         Debug.Print "WARNING! Invalid layerIndex requested (" & layerIndex & ":" & UBound(imgLayers) & ")"
     End If
     
-    If layerIndex < 0 Then layerIndex = 0
+    If (layerIndex < 0) Then layerIndex = 0
     
-    'Return the requested layer
-    'If Not imgLayers(layerIndex) Is Nothing Then
-        Set GetLayerByIndex = imgLayers(layerIndex)
-    'Else
-    '    Set getLayerByIndex = Nothing
-    'End If
+    'Return the requested layer.  Note that by design, we allow the target layer to be returned even if it
+    ' does not exist.
+    Set GetLayerByIndex = imgLayers(layerIndex)
     
 End Function
 
