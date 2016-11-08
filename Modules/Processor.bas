@@ -48,7 +48,7 @@ Public LastProcess As ProcessCall
 Private m_Processing As Boolean
 
 'Elapsed time of this processor request (to enable this, see the top constant in the Public_Constants module)
-Private m_ProcessingTime As Double
+Private m_ProcessingTime As Currency
 
 'When calling a dialog, the main Processing function will actually get called twice: first, with showDialog = true,
 ' then a second, nested call with showDialog = false.  We track the nested function state because some tasks
@@ -429,7 +429,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         End With
         
         'If the user wants us to time how long this action takes, mark the current time now
-        If g_DisplayTimingReports Then m_ProcessingTime = Timer
+        If g_DisplayTimingReports Then VB_Hacks.GetHighResTime m_ProcessingTime
         
         'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
         
@@ -1934,9 +1934,8 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     If g_DisplayTimingReports And (createUndo <> UNDO_NOTHING) Then
         
         Dim timingString As String
-        
         timingString = g_Language.TranslateMessage("Time taken")
-        timingString = timingString & ": " & Format$(Timer - m_ProcessingTime, "#0.####") & " "
+        timingString = timingString & ": " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(m_ProcessingTime) * 1000), "#0.0000") & " "
         timingString = timingString & g_Language.TranslateMessage("seconds")
         
         Message timingString

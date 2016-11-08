@@ -376,13 +376,13 @@ Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     Select Case barType
     
         Case PD_HORIZONTAL
-            If newVisibility <> hScroll.Visible Then
+            If (newVisibility <> hScroll.Visible) Then
                 hScroll.Visible = newVisibility
                 changesMade = True
             End If
         
         Case PD_VERTICAL
-            If newVisibility <> vScroll.Visible Then
+            If (newVisibility <> vScroll.Visible) Then
                 vScroll.Visible = newVisibility
                 changesMade = True
             End If
@@ -396,11 +396,15 @@ Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     
     End Select
     
-    'The "center" button between the scroll bars has the same visibility as the scrollbars; it's only visible if both bars are visible
-    cmdCenter.Visible = CBool(hScroll.Visible And vScroll.Visible)
-    
     'When scroll bar visibility is changed, we must move the main canvas picture box to match
-    If changesMade Then AlignCanvasView
+    If changesMade Then
+    
+        'The "center" button between the scroll bars has the same visibility as the scrollbars; it's only visible if both bars are visible
+        cmdCenter.Visible = CBool(hScroll.Visible And vScroll.Visible)
+        
+        AlignCanvasView
+        
+    End If
     
 End Sub
 
