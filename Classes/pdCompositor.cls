@@ -205,6 +205,8 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             bottomLayer.SetLayerCanvasXModifier 1
             bottomLayer.SetLayerCanvasYModifier 1
             bottomLayer.SetLayerAngle 0
+            bottomLayer.SetLayerShearX 0#
+            bottomLayer.SetLayerShearY 0#
             
         End If
         
@@ -278,6 +280,127 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     End If
     
     'The two layers have been merged successfully!  Any further actions (like deleting the top layer) must be handled by the caller.
+    
+End Sub
+
+'Merge two layers together using paintbrush rules.  In paintbrush rules, the bottom layer retains all of its properties (blend mode,
+' opacity, etc), with the exception of non-destructive transforms (which are made permanent).
+'
+'Just like a regular merge operation, the optional parameter "bottomLayerIsFullSize" can be set to TRUE if the bottom layer is the
+' same size as the current image.  This saves processing time as we can skip certain rect intersection tests.
+'
+'Also, unlike the regular MergeLayers(), this sub *does not* handle vector layers, by design.  Instead of a merge, paint ops on a
+' vector layer will be placed into their own, new raster layer.
+Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
+
+    Dim xOffset As Double, yOffset As Double
+    Dim i As Long
+    
+    Dim tmpDIB As pdDIB
+    
+    'Start by finding the union rect of the two layers.  This is the smallest rectangle that holds both layers.
+    Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
+    Layer_Handler.FillRectForLayerF bottomLayer, bottomRect, True, True
+    Layer_Handler.FillRectForLayerF paintLayer, topRect, True, True
+    UnionRectF finalRect, topRect, bottomRect
+    
+    'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass this rect entirely, e.g. if the
+    ' bottom layer is image-sized and the top layer has no active affine transforms.)
+    
+    'If the bottom layer is the size of the image itself (e.g. when flattening the image), we can use its DIB as the target DIB instead of
+    ' creating a temporary one.  This can provide a nice performance boost depending on the complexity of subsequent layers.
+    bottomLayerIsFullSize = CBool(bottomLayerIsFullSize And (Not bottomLayer.AffineTransformsActive(True)))
+    
+    If bottomLayerIsFullSize Then
+        xOffset = paintLayer.GetLayerOffsetX
+        yOffset = paintLayer.GetLayerOffsetY
+    
+    'The bottom layer is not full-sized.  At present, the scratch layer is *always* full-sized, so we need to prepare a
+    ' new layer DIB for the bottom layer.
+    Else
+        
+        'Create a blank DIB at the dimensions of the union rect.
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank finalRect.Width, finalRect.Height, 32, 0
+        tmpDIB.SetInitialAlphaPremultiplicationState True
+        
+        'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
+        xOffset = bottomRect.Left - finalRect.Left
+        yOffset = bottomRect.Top - finalRect.Top
+        
+        'If no non-destructive resizes are active, we can simply copy the layer over as-is
+        If (Not bottomLayer.AffineTransformsActive(True)) Then
+        
+            With bottomLayer
+                BitBlt tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
+            End With
+            
+        'Active transforms must be made permanent prior to a merge.
+        Else
+            
+            'If the only active transform is rescaling, we can use a shortcut StretchBlt function for a performance boost.
+            If (Not bottomLayer.AffineTransformsActive(False)) Then
+            
+                With bottomLayer
+                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus, , , , True
+                End With
+            
+            'If rotation or other affine transforms are active, a more complicated solution is required.
+            Else
+            
+                'First, retrieve the layer's coordinates in the default image coordinate space
+                bottomLayer.GetLayerCornerCoordinates m_PlgPoints
+                
+                'Next, we need to convert those to the union rect coordinate space
+                For i = 0 To 3
+                    m_PlgPoints(i).x = (m_PlgPoints(i).x - finalRect.Left)
+                    m_PlgPoints(i).y = (m_PlgPoints(i).y - finalRect.Top)
+                Next i
+                
+                'Render the transformed DIB now.
+                With bottomLayer
+                    GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
+                End With
+            
+            End If
+            
+            'With the bottom layer successfully rendered onto the destination DIB, we can reset all non-destructive size modifiers now.
+            bottomLayer.SetLayerCanvasXModifier 1
+            bottomLayer.SetLayerCanvasYModifier 1
+            bottomLayer.SetLayerAngle 0#
+            bottomLayer.SetLayerShearX 0#
+            bottomLayer.SetLayerShearY 0#
+            
+        End If
+        
+        'We now need to calculate a new layer offset for this temporary DIB, which will eventually be copied into the bottom layer.
+        ' Without this, the main composite won't know where to stick the layer!
+        bottomLayer.SetLayerOffsetX finalRect.Left
+        bottomLayer.SetLayerOffsetY finalRect.Top
+        
+        'Assign this temporary DIB as the new bottom layer DIB.
+        Set bottomLayer.layerDIB = tmpDIB
+        
+        'Calculate new offsets for the top layer, then carry on with business as usual!
+        xOffset = topRect.Left - finalRect.Left
+        yOffset = topRect.Top - finalRect.Top
+        
+    End If
+    
+    'The bottom layer DIB now represents the target for the final layer merge.  Any non-destructive transforms have been made permanent,
+    ' and it has been resized to account for the union with the paintbrush layer.
+    
+    'Next, we need to merge the top layer onto it.
+    
+    'Unlike regular layers, we know that the paintbrush layer will never have any active transforms, so we can simply composite the top
+    ' layer as-is.
+    If ((paintLayer.GetLayerBlendMode = BL_NORMAL) And (paintLayer.GetLayerAlphaMode = LA_NORMAL)) Then
+        paintLayer.layerDIB.AlphaBlendToDC bottomLayer.layerDIB.GetDIBDC, paintLayer.GetLayerOpacity * 2.55, xOffset, yOffset
+    Else
+        CompositeAndBlendDIBs paintLayer.layerDIB, bottomLayer.layerDIB, paintLayer.GetLayerBlendMode, xOffset, yOffset, paintLayer.GetLayerOpacity / 100, paintLayer.GetLayerAlphaMode
+    End If
+    
+    'The paintbrush layer has been merged successfully!  Any further actions (like resetting the paint layer) must be handled by the caller.
     
 End Sub
 
@@ -1467,6 +1590,8 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     Layer_Handler.FillRectForLayerF srcImage.ScratchLayer, layerRect, True, False
     layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect)
     
+    Dim nonStandardBlendingActive As Boolean
+    
     'We generally assume that the current paintbrush overlaps the viewport, but for the sake of good coding, let's check
     ' just in case.
     If layerAndViewportIntersect Then
@@ -1486,7 +1611,6 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         Set lodDIB = srcImage.ScratchLayer.TmpLODDIB(CLC_Viewport)
         
         'Check for non-standard blend or alpha modes.  As expected, they require a custom processing pipeline.
-        Dim nonStandardBlendingActive As Boolean
         nonStandardBlendingActive = CBool(srcImage.ScratchLayer.GetLayerBlendMode <> BL_NORMAL) Or CBool(srcImage.ScratchLayer.GetLayerAlphaMode <> LA_NORMAL)
         
         'Just like the base layer, we now need to perform a composite operation similar to StretchBlt, where we calculate a
@@ -1632,6 +1756,8 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     If srcLayer.GetLayerNonDestructiveFXState Then ApplyNDFXToDIB srcLayer, lodDIB
     
     'Merge the final result onto the compositor stack
+    nonStandardBlendingActive = CBool(srcLayer.GetLayerBlendMode <> BL_NORMAL) Or CBool(srcLayer.GetLayerAlphaMode <> LA_NORMAL)
+    
     If nonStandardBlendingActive Then
         CompositeAndBlendDIBs lodDIB, m_dstDIB, srcLayer.GetLayerBlendMode, 0, 0, srcLayer.GetLayerOpacity / 100, srcLayer.GetLayerAlphaMode
         

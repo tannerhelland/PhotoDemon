@@ -250,8 +250,12 @@ End Function
 
 'Merge two layers together.  Note this can be used to merge any two arbitrary layers, with the bottom layer holding the result
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
-Public Sub MergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
-    imgCompositor.MergeLayers topLayer, bottomLayer, bottomLayerIsFullSize
+Public Sub MergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal usePaintStyleMerge As Boolean = False)
+    If usePaintStyleMerge Then
+        imgCompositor.MergeLayers_PaintStyle topLayer, bottomLayer, bottomLayerIsFullSize
+    Else
+        imgCompositor.MergeLayers topLayer, bottomLayer, bottomLayerIsFullSize
+    End If
 End Sub
 
 'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
