@@ -61,7 +61,7 @@ Begin VB.Form toolpanel_Paintbrush
       _ExtentY        =   1217
       Caption         =   "size"
       FontSizeCaption =   10
-      Min             =   0.1
+      Min             =   1
       Max             =   2000
       SigDigits       =   1
       Value           =   1

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.213</langversion>
+<langversion>6.7.214</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -14895,12 +14895,44 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
+
+<phrase>
+<original>alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Locked</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Paintbrush.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Paintbrush.frm-->
+
+<!-- BEGIN text for Paintbrush.bas -->
+
+<phrase>
+<original>Paint stroke</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation></translation>
+</phrase>
+
+<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Paintbrush.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2528</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4453 phrases. -->
-<!-- 1925 are duplicates, so only 2528 unique phrases have been written to file. -->
-<!-- These 2528 phrases contain approximately 12708 total words. -->
+<!-- As of this build, PhotoDemon contains 4463 phrases. -->
+<!-- 1931 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12715 total words. -->
 
 </pdData>
