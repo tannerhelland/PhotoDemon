@@ -1644,106 +1644,62 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         
         'With all coordinate math complete, we now proceed with compositing the paintbrush layer!
         
-        'Custom blend-modes and alpha-modes require creation of a temporary DIB, because we must perform
-        ' our own compositing (as GDI/GDI+ can't do it for us).  Check for those states now.
+        'One way or another, we will be using integer-based offsets to render the final image.  Calculate them now.
+        xOffsetInt = Int(dstRect.Left - dstViewportRect.Left)
+        yOffsetInt = Int(dstRect.Top - dstViewportRect.Top)
+        
+        'Create a new DIB in the cheapest way possible (e.g., if the current temporary DIB size is acceptable,
+        ' just reset it instead of fully redrawing it)
+        If (lodDIB.GetDIBWidth < dibWidthCalc) Or (lodDIB.GetDIBHeight < dibHeightCalc) Then
+            lodDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+            lodDIB.SetInitialAlphaPremultiplicationState True
+        Else
+            lodDIB.ResetDIB
+        End If
+                
+        'Check for the special case of 100% zoom; when this happens, we can completely skip the resize step and
+        ' simply use BitBlt (way faster).
+        If isRectZoomless Then
+            BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+            
+        'The viewport is zoomed, so extra work is required.
+        Else
+            
+            'If zoomed-in, we can switch to StretchBlt for performance gains.  (Nearest-neighbor interpolation will
+            ' be used regardless of the caller's requested interpolation type.)
+            If (srcImageRect.Width < dstViewportRect.Width) Then
+                
+                'We are zoomed-in to the image, e.g. zoom is larger than 100%.
+                
+                'Paint the resized DIB to the temporary DIB, at offset (0, 0), with subpixel offsets already accounted for.
+                ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
+                '  the function-wide resample mode.)
+                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, GP_IM_NearestNeighbor, , True, , True
+                
+            'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
+            ' option at present.
+            Else
+                
+                'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
+                ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
+                '  the function-wide resample mode.)
+                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, interpolationType, , True, , True
+                
+            End If
+            
+        End If
+        
+        'lodDIB now contains the chunk of this layer that appears on the viewport.  Our next step is to composite it onto our
+        ' temporary copy of the target layer DIB!
         If nonStandardBlendingActive Then
             
-            'One way or another, we will be using integer-based offsets to render the final image.  Calculate them now.
-            xOffsetInt = Int(dstRect.Left - dstViewportRect.Left)
-            yOffsetInt = Int(dstRect.Top - dstViewportRect.Top)
-            
-            'Create a new DIB in the cheapest way possible (e.g., if the current temporary DIB size is acceptable,
-            ' just reset it instead of fully redrawing it)
-            If (lodDIB.GetDIBWidth < dibWidthCalc) Or (lodDIB.GetDIBHeight < dibHeightCalc) Then
-                lodDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                lodDIB.SetInitialAlphaPremultiplicationState True
-            Else
-                lodDIB.ResetDIB
-            End If
-                    
-            'Check for the special case of 100% zoom; when this happens, we can completely skip the resize step and
-            ' simply use BitBlt (way faster).
-            If isRectZoomless Then
-                BitBlt lodDIB.GetDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcDIB.GetDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
-                
-            'The viewport is zoomed, so extra work is required.
-            Else
-                
-                'If zoomed-in, we can switch to StretchBlt for performance gains.  (Nearest-neighbor interpolation will
-                ' be used regardless of the caller's requested interpolation type.)
-                If (srcImageRect.Width < dstViewportRect.Width) Then
-                    
-                    'We are zoomed-in to the image, e.g. zoom is larger than 100%.
-                    
-                    'Paint the resized DIB to the temporary DIB, at offset (0, 0), with subpixel offsets already accounted for.
-                    ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
-                    '  the function-wide resample mode.)
-                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, GP_IM_NearestNeighbor, , True, , True
-                    
-                'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
-                ' option at present.
-                Else
-                    
-                    'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
-                    ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
-                    '  the function-wide resample mode.)
-                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, interpolationType, , True, , True
-                    
-                End If
-                
-            End If
-            
-            'lodDIB now contains the chunk of this layer that appears on the viewport.  Our next step is to composite it onto our
-            ' temporary copy of the target layer DIB!
-            If nonStandardBlendingActive Then
-                
-                'Composite and blend in one fell swoop
-                CompositeAndBlendDIBs lodDIB, srcImage.ScratchLayer.TmpLODDIB(CLC_Painting), srcImage.ScratchLayer.GetLayerBlendMode, xOffsetInt, yOffsetInt, srcImage.ScratchLayer.GetLayerOpacity / 100, srcImage.ScratchLayer.GetLayerAlphaMode
-            
-            'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost.
-            ' (Note that this is only possible because subpixel offsets have already been accounted for, when creating the temporary DIB.)
-            Else
-                lodDIB.AlphaBlendToDC srcImage.ScratchLayer.TmpLODDIB(CLC_Painting).GetDIBDC, srcImage.ScratchLayer.GetLayerOpacity * 2.55, xOffsetInt, yOffsetInt
-            End If
-            
-        'This is a simple brush, with no weird blend modes.  Composite it instantly, without using a temporary placeholder layer.
+            'Composite and blend in one fell swoop
+            CompositeAndBlendDIBs lodDIB, srcImage.ScratchLayer.TmpLODDIB(CLC_Painting), srcImage.ScratchLayer.GetLayerBlendMode, xOffsetInt, yOffsetInt, srcImage.ScratchLayer.GetLayerOpacity / 100, srcImage.ScratchLayer.GetLayerAlphaMode
+        
+        'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost.
+        ' (Note that this is only possible because subpixel offsets have already been accounted for, when creating the temporary DIB.)
         Else
-                
-            'If the rect is zoomless, it means we don't have to perform subpixel positioning.  GDI's AlphaBlend is thus perfectly
-            ' acceptable, and it will be much faster (5-10x) than GDI+.
-            If isRectZoomless Then
-                
-                'AlphaBlend is very picky about invalid width/height values.  Make sure the source rect is valid.
-                ' (It may be ever-so-slightly off due to rounding issues during all the floating-point math we perform.)
-                'If srcRect.Width > srcLayer.getLayerWidth(False) Then srcRect.Width = srcLayer.getLayerWidth(False)
-                'If srcRect.Height > srcLayer.getLayerHeight(False) Then srcRect.Height = srcLayer.getLayerHeight(False)
-                'srcDIB.alphaBlendToDCEx m_dstDIB.getDIBDC, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity * 2.55
-                
-                'I have temporarily disabled the use of GDI's AlphaBlend function here, as it experiences inexplicable rendering failures
-                ' on certain image/viewport size combinations.
-                GDIPlus_StretchBlt srcImage.ScratchLayer.TmpLODDIB(CLC_Painting), dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcImage.ScratchLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor
-                
-            Else
-                    
-                If (srcRect.Width > srcImage.ScratchLayer.GetLayerWidth(False)) Then srcRect.Width = srcImage.ScratchLayer.GetLayerWidth(False)
-                If (srcRect.Height > srcImage.ScratchLayer.GetLayerHeight(False)) Then srcRect.Height = srcImage.ScratchLayer.GetLayerHeight(False)
-                
-                'When zoomed in, nearest neighbor is preferred.  This is fast enough that we don't need to use a temporary DIB cache.
-                If (srcImageRect.Width < dstViewportRect.Width) Then
-                    GDIPlus_StretchBlt srcImage.ScratchLayer.TmpLODDIB(CLC_Painting), dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcImage.ScratchLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor, , , True
-                
-                'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
-                ' performance settings.
-                Else
-                    GDIPlus_StretchBlt srcImage.ScratchLayer.TmpLODDIB(CLC_Painting), dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcImage.ScratchLayer.GetLayerOpacity / 100, interpolationType, , , True
-                        
-                'End zoom in vs zoom out check
-                End If
-                
-            'End zoomless rect check (e.g. toggling GDI's AlphaBlend)
-            End If
-                
-        'End simple brush vs weird blend mode brush handling
+            lodDIB.AlphaBlendToDC srcImage.ScratchLayer.TmpLODDIB(CLC_Painting).GetDIBDC, srcImage.ScratchLayer.GetLayerOpacity * 2.55, xOffsetInt, yOffsetInt
         End If
         
     End If
