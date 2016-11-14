@@ -64,6 +64,8 @@ Begin VB.Form toolpanel_Paintbrush
       Min             =   1
       Max             =   2000
       SigDigits       =   1
+      ScaleStyle      =   1
+      ScaleExponent   =   3
       Value           =   1
       NotchPosition   =   1
       DefaultValue    =   1
