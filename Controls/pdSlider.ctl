@@ -260,6 +260,23 @@ Public Property Let NotchValueCustom(ByVal newValue As Double)
     PropertyChanged "NotchValueCustom"
 End Property
 
+'Scale style determines whether the slider knob moves linearly, or exponentially
+Public Property Get ScaleStyle() As PD_SLIDER_SCALESTYLE
+    ScaleStyle = pdssPrimary.ScaleStyle
+End Property
+
+Public Property Let ScaleStyle(ByVal newStyle As PD_SLIDER_SCALESTYLE)
+    pdssPrimary.ScaleStyle = newStyle
+End Property
+
+Public Property Get ScaleExponent() As Single
+    ScaleExponent = pdssPrimary.ScaleExponent
+End Property
+
+Public Property Let ScaleExponent(ByVal newExponent As Single)
+    pdssPrimary.ScaleExponent = newExponent
+End Property
+
 'Significant digits determines whether the control allows float values or int values (and with how much precision)
 Public Property Get SigDigits() As Long
     SigDigits = pdssPrimary.SigDigits
@@ -424,6 +441,7 @@ End Sub
 
 'Initialize control properties for the first time
 Private Sub UserControl_InitProperties()
+    
     FontSizeTUD = 10
     FontSizeCaption = 12
     Caption = ""
@@ -433,6 +451,8 @@ Private Sub UserControl_InitProperties()
     SigDigits = 0
     Value = 0
     
+    ScaleStyle = DefaultScaleLinear
+    ScaleExponent = 2#
     SliderKnobStyle = DefaultKnobStyle
     SliderTrackStyle = DefaultTrackStyle
     GradientColorLeft = RGB(0, 0, 0)
@@ -442,6 +462,7 @@ Private Sub UserControl_InitProperties()
     NotchPosition = AutomaticPosition
     NotchValueCustom = 0
     DefaultValue = NotchValueCustom
+    
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -453,6 +474,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         SigDigits = .ReadProperty("SigDigits", 0)
         Max = .ReadProperty("Max", 10)
         Min = .ReadProperty("Min", 0)
+        ScaleStyle = .ReadProperty("ScaleStyle", DefaultScaleLinear)
+        ScaleExponent = .ReadProperty("ScaleExponent", 2#)
         SliderKnobStyle = .ReadProperty("SliderKnobStyle", DefaultKnobStyle)
         SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultTrackStyle)
         Value = .ReadProperty("Value", 0)
@@ -489,6 +512,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Min", Me.Min, 0
         .WriteProperty "Max", Me.Max, 10
         .WriteProperty "SigDigits", Me.SigDigits, 0
+        .WriteProperty "ScaleStyle", Me.ScaleStyle, DefaultScaleLinear
+        .WriteProperty "ScaleExponent", Me.ScaleExponent, 2#
         .WriteProperty "SliderKnobStyle", Me.SliderKnobStyle, DefaultKnobStyle
         .WriteProperty "SliderTrackStyle", Me.SliderTrackStyle, DefaultTrackStyle
         .WriteProperty "Value", Me.Value, 0

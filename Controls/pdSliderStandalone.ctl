@@ -141,6 +141,24 @@ End Enum
 Private m_NotchPosition As SLIDER_NOTCH_POSITION
 Private m_CustomNotchValue As Double
 
+'As of 7.0, the slider now supports multiple "scale styles".  These styles control how the slider positions
+' the knob on the track.  Linear mode is the default; exponential mode is helpful when the slider covers
+' an enormous range, but it's expected that most users will spend most their time using smaller values.
+Public Enum PD_SLIDER_SCALESTYLE
+    DefaultScaleLinear = 0
+    ScaleExponential = 1
+    ScaleLogarithmic = 2
+End Enum
+
+#If False Then
+    Private Const DefaultScaleLinear = 0, ScaleExponential = 1, ScaleLogarithmic = 2
+#End If
+
+Private m_ScaleStyle As PD_SLIDER_SCALESTYLE
+
+'If the "exponential" slider style is used, this value is the exponent.  2 is the default value (e.g. Math.Sqr() is used)
+Private m_ScaleExponentialValue As Single
+
 'When the slider track is drawn, this rect will be filled with its relevant coordinates.  We use this to track Mouse_Over behavior,
 ' so we can change the cursor to a hand.
 Private m_SliderTrackRect As RECTF
@@ -324,6 +342,31 @@ Public Property Let NotchValueCustom(ByVal newValue As Double)
     PropertyChanged "NotchValueCustom"
 End Property
 
+'Scale style determines whether the slider knob moves linearly, or exponentially
+Public Property Get ScaleStyle() As PD_SLIDER_SCALESTYLE
+    ScaleStyle = m_ScaleStyle
+End Property
+
+Public Property Let ScaleStyle(ByVal newStyle As PD_SLIDER_SCALESTYLE)
+    If (m_ScaleStyle <> newStyle) Then
+        m_ScaleStyle = newStyle
+        RenderTrack
+        PropertyChanged "ScaleStyle"
+    End If
+End Property
+
+Public Property Get ScaleExponent() As Single
+    ScaleExponent = m_ScaleExponentialValue
+End Property
+
+Public Property Let ScaleExponent(ByVal newExponent As Single)
+    If (m_ScaleExponentialValue <> newExponent) Then
+        m_ScaleExponentialValue = newExponent
+        RenderTrack
+        PropertyChanged "ScaleExponent"
+    End If
+End Property
+
 'Significant digits determines whether the control allows float values or int values (and with how much precision).
 ' Because the slider's position is locked to allowable values, this setting requires a redraw, so try to limit how frequently
 ' you modify it.
@@ -488,7 +531,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
             
             'Calculate a new control value.  This will cause the slider to "jump" to a slightly modified position.
             ' (Positions may be restricted by the control's value range, and/or significant digit property.)
-            Value = (m_Max - m_Min) * ((x - GetTrackLeft) / (GetTrackRight - GetTrackLeft)) + m_Min
+            Value = GetCustomPositionValue(x)
             
             'Retrieve the current slider x/y values, and store the mouse position relative to those values
             Dim sliderX As Single, sliderY As Single
@@ -524,7 +567,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         
         'Calculate a new control value.  This will cause the slider to "jump" to the current position, if positions
         ' are restricted by some combination of the total range and significant digit allowance.
-        Value = (m_Max - m_Min) * (((x + m_InitX) - GetTrackLeft) / (GetTrackRight - GetTrackLeft)) + m_Min
+        Value = GetCustomPositionValue(x)
         
     'If the LMB is *not* down, modify the cursor according to its position relative to the slider and/or track
     Else
@@ -555,7 +598,7 @@ End Sub
 ' exact point of release is correctly rendered.
 Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     If (((Button And pdLeftButton) <> 0) And m_MouseDown) Then
-        Value = (m_Max - m_Min) * (((x + m_InitX) - GetTrackLeft) / (GetTrackRight - GetTrackLeft)) + m_Min
+        Value = GetCustomPositionValue(x)
         m_MouseDown = False
     End If
 End Sub
@@ -611,6 +654,9 @@ Private Sub UserControl_InitProperties()
     Value = 0
     Min = 0
     Max = 10
+    
+    ScaleStyle = DefaultScaleLinear
+    ScaleExponent = 2#
     SigDigits = 0
     SliderTrackStyle = DefaultTrackStyle
     SliderKnobStyle = DefaultKnobStyle
@@ -647,6 +693,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         GradientMiddleValue = .ReadProperty("GradientMiddleValue", 0)
         NotchPosition = .ReadProperty("NotchPosition", 0)
         NotchValueCustom = .ReadProperty("NotchValueCustom", 0)
+        ScaleStyle = .ReadProperty("ScaleStyle", DefaultScaleLinear)
+        ScaleExponent = .ReadProperty("ScaleExponent", 2#)
         SliderKnobStyle = .ReadProperty("SliderKnobStyle", DefaultKnobStyle)
         SliderTrackStyle = .ReadProperty("SliderTrackStyle", DefaultTrackStyle)
     End With
@@ -675,6 +723,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "GradientMiddleValue", m_GradientMiddleValue, 0
         .WriteProperty "NotchPosition", m_NotchPosition, 0
         .WriteProperty "NotchValueCustom", m_CustomNotchValue, 0
+        .WriteProperty "ScaleStyle", m_ScaleStyle, DefaultScaleLinear
+        .WriteProperty "ScaleExponent", m_ScaleExponentialValue, 2#
         .WriteProperty "SliderKnobStyle", m_KnobStyle, DefaultKnobStyle
         .WriteProperty "SliderTrackStyle", m_SliderStyle, DefaultTrackStyle
     End With
@@ -1105,9 +1155,44 @@ Private Sub GetSliderCoordinates(ByRef sliderX As Single, ByRef sliderY As Singl
     ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
     If (m_Min <> m_Max) Then
         
-        'If an integer-only slider is in use, we use a slightly modified formula
-        If (m_SignificantDigits = 0) Then sliderX = (Int(m_Value + 0.5) - m_Min) Else sliderX = (m_Value - m_Min)
-        sliderX = GetTrackLeft + (sliderX / (m_Max - m_Min)) * (GetTrackRight - GetTrackLeft)
+        Select Case m_ScaleStyle
+            
+            Case DefaultScaleLinear
+            
+                'If an integer-only slider is in use, we use a slightly modified formula.  This forces the slider to
+                ' discrete positions if the range is small.
+                If (m_SignificantDigits = 0) Then sliderX = (Int(m_Value + 0.5) - m_Min) Else sliderX = (m_Value - m_Min)
+                
+                sliderX = GetTrackLeft + (sliderX / (m_Max - m_Min)) * (GetTrackRight - GetTrackLeft)
+                
+            Case ScaleExponential
+                
+                'Failsafe modifier check
+                If (m_ScaleExponentialValue = 0#) Then m_ScaleExponentialValue = 2#
+                
+                'Calculate exponential max/min values
+                Dim minE As Single, maxE As Single
+                minE = m_Min ^ (1 / m_ScaleExponentialValue)
+                maxE = m_Max ^ (1 / m_ScaleExponentialValue)
+                
+                'Apply the same integer-only rule
+                If (m_SignificantDigits = 0) Then sliderX = ((Int(m_Value + 0.5) ^ (1 / m_ScaleExponentialValue)) - minE) Else sliderX = ((m_Value ^ (1 / m_ScaleExponentialValue)) - minE)
+                
+                sliderX = GetTrackLeft + (sliderX / (maxE - minE)) * (GetTrackRight - GetTrackLeft)
+            
+            Case ScaleLogarithmic
+            
+                'Calculate logarithmic max/min values
+                Dim minL As Single, maxL As Single
+                minL = Log(m_Min)
+                maxL = Log(m_Max)
+                
+                'Apply the same integer-only rule
+                If (m_SignificantDigits = 0) Then sliderX = (Log(Int(m_Value + 0.5)) - minL) Else sliderX = (Log(m_Value) - minL)
+                
+                sliderX = GetTrackLeft + (sliderX / (maxL - minL)) * (GetTrackRight - GetTrackLeft)
+            
+        End Select
         
     Else
         sliderX = GetTrackLeft
@@ -1142,7 +1227,32 @@ Private Sub GetCustomValueCoordinates(ByVal customValue As Single, ByRef customX
     'This dumb catch exists for when sliders are first loaded, and their max/min may both be zero.  This causes a divide-by-zero
     ' error in the horizontal slider position calculation, so if that happens, simply set the slider to its minimum position and exit.
     If (m_Min <> m_Max) Then
-        customX = GetTrackLeft + ((customValue - m_Min) / (m_Max - m_Min)) * (GetTrackRight - GetTrackLeft)
+    
+        Select Case m_ScaleStyle
+            
+            Case DefaultScaleLinear
+                customX = GetTrackLeft + ((customValue - m_Min) / (m_Max - m_Min)) * (GetTrackRight - GetTrackLeft)
+                
+            Case ScaleExponential
+                
+                'Failsafe modifier check
+                If (m_ScaleExponentialValue = 0#) Then m_ScaleExponentialValue = 2#
+                
+                Dim minE As Single, maxE As Single
+                minE = m_Min ^ (1 / m_ScaleExponentialValue)
+                maxE = m_Max ^ (1 / m_ScaleExponentialValue)
+                
+                customX = GetTrackLeft + (((customValue ^ (1 / m_ScaleExponentialValue)) - minE) / (maxE - minE)) * (GetTrackRight - GetTrackLeft)
+                
+            Case ScaleLogarithmic
+                Dim minL As Single, maxL As Single
+                minL = Log(m_Min)
+                maxL = Log(m_Max)
+                
+                customX = GetTrackLeft + ((Log(customValue) - minL) / (maxL - minL)) * (GetTrackRight - GetTrackLeft)
+            
+        End Select
+        
     Else
         customX = GetTrackLeft
     End If
@@ -1150,6 +1260,43 @@ Private Sub GetCustomValueCoordinates(ByVal customValue As Single, ByRef customX
     customY = m_SliderAreaHeight \ 2
     
 End Sub
+
+'Given an arbitrary (x, y) position on the slider control, return the value for that position.
+' (Note that the y-value doesn't actually matter; just the x.)
+Private Function GetCustomPositionValue(ByVal srcX As Single) As Single
+    
+    'Start by restricting mouse position to track left/right.
+    If (srcX <= GetTrackLeft) Then
+        GetCustomPositionValue = m_Min
+        
+    ElseIf (srcX >= GetTrackRight) Then
+        GetCustomPositionValue = m_Max
+        
+    Else
+        
+        Select Case m_ScaleStyle
+            Case DefaultScaleLinear
+                GetCustomPositionValue = (m_Max - m_Min) * ((srcX - GetTrackLeft) / (GetTrackRight - GetTrackLeft)) + m_Min
+                
+            Case ScaleExponential
+                Dim minE As Single, maxE As Single
+                minE = m_Min ^ (1 / m_ScaleExponentialValue)
+                maxE = m_Max ^ (1 / m_ScaleExponentialValue)
+                
+                GetCustomPositionValue = (minE + ((maxE - minE) / (GetTrackRight - GetTrackLeft)) * (srcX - GetTrackLeft)) ^ m_ScaleExponentialValue
+                
+            Case ScaleLogarithmic
+                Dim minL As Single, maxL As Single
+                minL = Log(m_Min)
+                maxL = Log(m_Max)
+                
+                GetCustomPositionValue = Exp(minL + ((maxL - minL) / (GetTrackRight - GetTrackLeft)) * (srcX - GetTrackLeft))
+                
+        End Select
+        
+    End If
+
+End Function
 
 'Returns a single increment amount for the current control.  The increment amount varies according to the significant digits setting;
 ' it can be as high as 1.0, or as low as 0.01.  In a pdSlider control, this value is used by the spinner control to determine up/down
