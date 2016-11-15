@@ -883,7 +883,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                     
                     With toolpanel_NDFX
                     
-                        .setNDFXControlState False
+                        .SetNDFXControlState False
                         
                         If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState() Then
                             For i = 0 To .cmdQuickFix.Count - 1
@@ -900,7 +900,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                             .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXValue(i)
                         Next i
                         
-                        .setNDFXControlState True
+                        .SetNDFXControlState True
                         
                     End With
                     
@@ -1786,9 +1786,23 @@ Public Sub PopulateBlendModeComboBox(ByRef dstCombo As pdDropDown, Optional ByVa
     dstCombo.AddItem "Color"
     dstCombo.AddItem "Luminosity", , True
     dstCombo.AddItem "Grain extract"
-    dstCombo.AddItem "Grain merge"
+    dstCombo.AddItem "Grain merge", , True
+    dstCombo.AddItem "Erase"
     
     dstCombo.ListIndex = blendIndex
+    
+End Sub
+
+'Given a combo box, populate it with all currently supported alpha modes
+Public Sub PopulateAlphaModeComboBox(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As LAYER_ALPHAMODE = LA_NORMAL)
+    
+    dstCombo.Clear
+    
+    dstCombo.AddItem "Normal", 0, True
+    dstCombo.AddItem "Inherit"
+    dstCombo.AddItem "Locked"
+    
+    dstCombo.ListIndex = alphaIndex
     
 End Sub
 
