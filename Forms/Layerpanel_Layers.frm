@@ -359,10 +359,7 @@ Private Sub Form_Load()
         
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeComboBox cboBlendMode, BL_NORMAL
-    
-    cboAlphaMode.AddItem "Normal", 0
-    cboAlphaMode.AddItem "Inherit", 1
-    cboAlphaMode.ListIndex = 0
+    Interface.PopulateAlphaModeComboBox cboAlphaMode, LA_NORMAL
         
     'Add images to the layer action buttons at the bottom of the toolbox
     cmdLayerAction(0).AssignImage "LAYER_ADD_32", , 50

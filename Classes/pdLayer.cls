@@ -87,6 +87,7 @@ Public Enum LAYER_BLENDMODE
     BL_LUMINOSITY = 23
     BL_GRAINEXTRACT = 24
     BL_GRAINMERGE = 25
+    BL_ERASE = 26
 End Enum
 
 #If False Then
@@ -94,6 +95,7 @@ End Enum
     Const BL_LINEARDODGE = 8, BL_OVERLAY = 9, BL_SOFTLIGHT = 10, BL_HARDLIGHT = 11, BL_VIVIDLIGHT = 12, BL_LINEARLIGHT = 13, BL_PINLIGHT = 14
     Const BL_HARDMIX = 15, BL_DIFFERENCE = 16, BL_EXCLUSION = 17, BL_SUBTRACT = 18, BL_DIVIDE = 19
     Const BL_HUE = 20, BL_SATURATION = 21, BL_COLOR = 22, BL_LUMINOSITY = 23, BL_GRAINEXTRACT = 24, BL_GRAINMERGE = 25
+    Const BL_ERASE = 26
 #End If
 
 'Layer resize quality is defined different from other resample places in the project.  (Only a subset of options are exposed, for performance reasons.)
@@ -110,13 +112,16 @@ End Enum
 'PD supports the notion "alpha modes", including "inheritance," where a layer "inherits" the alpha of a layer beneath it,
 ' (https://userbase.kde.org/Krita/Tutorial_2#Inherit_Alpha_.28alpha_.3D_transparency.29).  I may or may not choose to
 ' address masking via this property as well... I'm still deciding the best way to do it.
+'
+'Also, alpha locking is handled via mode.
 Public Enum LAYER_ALPHAMODE
     LA_NORMAL = 0
     LA_INHERIT = 1
+    LA_LOCKED = 2
 End Enum
 
 #If False Then
-    Const LA_NORMAL = 0, LA_INHERIT = 1
+    Private Const LA_NORMAL = 0, LA_INHERIT = 1, LA_LOCKED = 2
 #End If
 
 'Canonical ID value for this layer.  This value is set once, at layer creation time, and can never be changed again.  It is
