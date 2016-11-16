@@ -32,22 +32,11 @@ Begin VB.Form toolpanel_Paintbrush
       Left            =   3960
       TabIndex        =   2
       Top             =   0
-      Width           =   3855
-      _ExtentX        =   6800
+      Width           =   2250
+      _ExtentX        =   3969
       _ExtentY        =   1085
       Caption         =   "blend mode"
       FontSizeCaption =   10
-   End
-   Begin PhotoDemon.pdLabel lblWarning 
-      Height          =   495
-      Left            =   3960
-      Top             =   960
-      Width           =   7815
-      _ExtentX        =   13785
-      _ExtentY        =   873
-      Alignment       =   2
-      Caption         =   ""
-      Layout          =   1
    End
    Begin PhotoDemon.pdSlider sltBrushSetting 
       CausesValidation=   0   'False
@@ -90,13 +79,25 @@ Begin VB.Form toolpanel_Paintbrush
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   615
       Index           =   1
-      Left            =   7920
+      Left            =   6360
       TabIndex        =   3
       Top             =   0
-      Width           =   3855
-      _ExtentX        =   6800
+      Width           =   2250
+      _ExtentX        =   3969
       _ExtentY        =   1085
       Caption         =   "alpha mode"
+      FontSizeCaption =   10
+   End
+   Begin PhotoDemon.pdDropDown cboBrushSetting 
+      Height          =   615
+      Index           =   2
+      Left            =   8760
+      TabIndex        =   4
+      Top             =   0
+      Width           =   2250
+      _ExtentX        =   3969
+      _ExtentY        =   1085
+      Caption         =   "preview quality"
       FontSizeCaption =   10
    End
 End
@@ -136,6 +137,10 @@ Private Sub cboBrushSetting_Click(Index As Integer)
         'Alpha mode
         Case 1
             Paintbrush.SetBrushAlphaMode cboBrushSetting(Index).ListIndex
+            
+        'Preview quality
+        Case 2
+            Paintbrush.SetBrushPreviewQuality cboBrushSetting(Index).ListIndex
     
     End Select
     
@@ -143,13 +148,15 @@ End Sub
 
 Private Sub Form_Load()
     
-    Dim tmpString As String
-    tmpString = "This tool is currently under construction.  Do not use it!"
-    lblWarning.Caption = tmpString
-    
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeComboBox cboBrushSetting(0), BL_NORMAL
     Interface.PopulateAlphaModeComboBox cboBrushSetting(1), LA_NORMAL
+    
+    cboBrushSetting(2).Clear
+    cboBrushSetting(2).AddItem "Best quality", 0
+    cboBrushSetting(2).AddItem "Default", 1
+    cboBrushSetting(2).AddItem "Best performance", 2
+    cboBrushSetting(2).ListIndex = 1
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -208,6 +215,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Paintbrush.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Paintbrush.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Paintbrush.SetBrushAlphaMode cboBrushSetting(1).ListIndex
+    Paintbrush.SetBrushPreviewQuality cboBrushSetting(2).ListIndex
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
@@ -216,4 +224,5 @@ Public Sub SyncUIToAllPaintbrushSettings()
     sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity
     cboBrushSetting(0).ListIndex = Paintbrush.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Paintbrush.GetBrushAlphaMode()
+    cboBrushSetting(2).ListIndex = Paintbrush.GetBrushPreviewQuality()
 End Sub

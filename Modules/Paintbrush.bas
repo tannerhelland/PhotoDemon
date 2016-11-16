@@ -57,6 +57,10 @@ End Enum
 Private m_BrushEngine As BRUSH_ENGINE
 Private m_BrushOutlineImage As pdDIB, m_BrushOutlinePath As pd2DPath
 
+'Brush preview quality.  At present, this is directly exposed on the paintbrush toolpanel.  This may change
+' in the future, but for now, it's very helpful for testing.
+Private m_BrushPreviewQuality As PD_PERFORMANCE_SETTING
+
 'Brush resources, used only as necessary.  Check for null values before using.
 Private m_GDIPPen As pd2DPen
 
@@ -84,6 +88,20 @@ Public Function GetBrushSource() As BRUSH_SOURCES
     GetBrushSource = m_BrushSource
 End Function
 
+Public Function GetBrushPreviewQuality() As PD_PERFORMANCE_SETTING
+    GetBrushPreviewQuality = m_BrushPreviewQuality
+End Function
+
+Public Function GetBrushPreviewQuality_GDIPlus() As GP_InterpolationMode
+    If (m_BrushPreviewQuality = PD_PERF_FASTEST) Then
+        GetBrushPreviewQuality_GDIPlus = GP_IM_NearestNeighbor
+    ElseIf (m_BrushPreviewQuality = PD_PERF_BESTQUALITY) Then
+        GetBrushPreviewQuality_GDIPlus = GP_IM_HighQualityBicubic
+    Else
+        GetBrushPreviewQuality_GDIPlus = GP_IM_Bilinear
+    End If
+End Function
+
 'Universal brush settings, applicable for all sources
 Public Function GetBrushRadius() As Single
     GetBrushRadius = m_BrushRadius
@@ -109,6 +127,13 @@ End Function
 Public Sub SetBrushSource(ByVal newSource As BRUSH_SOURCES)
     If (newSource <> m_BrushSource) Then
         m_BrushSource = newSource
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushPreviewQuality(ByVal newQuality As PD_PERFORMANCE_SETTING)
+    If (newQuality <> m_BrushPreviewQuality) Then
+        m_BrushPreviewQuality = newQuality
         m_BrushIsReady = False
     End If
 End Sub
@@ -407,6 +432,11 @@ End Sub
 Public Function IsBrushActive() As Boolean
     IsBrushActive = m_MouseDown
 End Function
+
+'Any specialized initialization tasks can be handled here.  This function is called early in the PD load process.
+Public Sub InitializeBrushEngine()
+    m_BrushPreviewQuality = PD_PERF_BALANCED
+End Sub
 
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached
 ' for performance reasons).

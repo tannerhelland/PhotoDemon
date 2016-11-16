@@ -285,6 +285,7 @@ Public Sub ContinueLoadingProgram()
     
     'Now that a theme has been loaded, we can initialize additional UI rendering elements
     Drawing.CacheUIPensAndBrushes
+    Paintbrush.InitializeBrushEngine
     
     '*************************************************************************************************************************************
     ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
