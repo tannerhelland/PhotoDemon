@@ -1697,15 +1697,13 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             Else
                 
                 'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
-                ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
-                '  the function-wide resample mode.)
-                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, interpolationType, , True, , True
+                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, Paintbrush.GetBrushPreviewQuality_GDIPlus, , True, , True
                 
             End If
             
         End If
         
-        'lodDIB now contains the chunk of this layer that appears on the viewport.  Our next step is to composite it onto our
+        'lodDIB now contains the chunk of the paintbrush layer that appears on the viewport.  Our next step is to composite it onto our
         ' temporary copy of the target layer DIB!
         If nonStandardBlendingActive Then
             
