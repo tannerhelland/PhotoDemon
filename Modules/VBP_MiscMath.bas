@@ -77,13 +77,13 @@ Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcR
     'Union rects are easy: find the min top/left, and the max bottom/right
     With dstRect
         
-        If srcRect.Left < srcRect2.Left Then
+        If (srcRect.Left < srcRect2.Left) Then
             .Left = srcRect.Left
         Else
             .Left = srcRect2.Left
         End If
         
-        If srcRect.Top < srcRect2.Top Then
+        If (srcRect.Top < srcRect2.Top) Then
             .Top = srcRect.Top
         Else
             .Top = srcRect2.Top
@@ -102,7 +102,7 @@ Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcR
         End If
         
         'Find the max value and store it in srcRight
-        If srcRight < srcRight2 Then srcRight = srcRight2
+        If (srcRight < srcRight2) Then srcRight = srcRight2
         
         'Account for widthAndHeightAreReallyRightAndBottom (again)
         If widthAndHeightAreReallyRightAndBottom Then
@@ -122,7 +122,7 @@ Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcR
             srcBottom2 = srcRect2.Top + srcRect2.Height
         End If
         
-        If srcBottom < srcBottom2 Then srcBottom = srcBottom2
+        If (srcBottom < srcBottom2) Then srcBottom = srcBottom2
         
         If widthAndHeightAreReallyRightAndBottom Then
             .Height = srcBottom
