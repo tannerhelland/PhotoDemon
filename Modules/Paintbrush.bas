@@ -84,6 +84,16 @@ Private m_BrushCreatedAtLeastOnce As Boolean
 Private m_MouseDown As Boolean
 Private m_MouseX As Single, m_MouseY As Single
 
+'As brush movements are relayed to us, we keep a running note of the modified area of the scratch layer.
+' The compositor can use this information to only regenerate the compositor cache area that's changed since the
+' last repaint event.
+Private m_UnionRectRequired As Boolean
+Private m_ModifiedRectF As RECTF
+
+'The number of mouse events in the *current* brush stroke.  This value is reset after every mouse release.
+' The compositor uses this to know when to fully regenerate the paint cache from scratch.
+Private m_NumOfMouseEvents As Long
+
 Public Function GetBrushSource() As BRUSH_SOURCES
     GetBrushSource = m_BrushSource
 End Function
@@ -267,6 +277,9 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     ' (TODO: initialize this elsewhere, so there's no "stutter" on first paint.)
     If isFirstStroke Then
         
+        'Reset the number of mouse events
+        m_NumOfMouseEvents = 1
+        
         'Make sure the current scratch layer is properly initialized
         pdImages(g_CurrentImage).ResetScratchLayer True
         pdImages(g_CurrentImage).ScratchLayer.SetLayerOpacity m_BrushOpacity
@@ -277,6 +290,8 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         m_MouseX = srcX
         m_MouseY = srcY
     
+    Else
+        m_NumOfMouseEvents = m_NumOfMouseEvents + 1
     End If
     
     'If the mouse button is down, perform painting between the old and new points.
@@ -286,6 +301,9 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         'Want to profile this function?  Use this line of code (and the matching report line at the bottom of the function).
         Dim startTime As Currency
         VB_Hacks.GetHighResTime startTime
+        
+        'Calculate new modification rects (which the compositor requires)
+        UpdateModifiedRect srcX, srcY
         
         'Create required pd2D drawing tools (a painter and surface)
         Dim cPainter As pd2DPainter
@@ -322,9 +340,60 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     
 End Sub
 
+'Whenever we receive notifications of a new mouse (x, y) pair, you need to call this sub to calculate a new "affected area" rect.
+Private Sub UpdateModifiedRect(ByVal newX As Single, newY As Single)
+
+    'Start by calculating the affected rect for just this stroke.
+    Dim tmpRectF As RECTF
+    If (newX < m_MouseX) Then
+        tmpRectF.Left = newX
+        tmpRectF.Width = m_MouseX - newX
+    Else
+        tmpRectF.Left = m_MouseX
+        tmpRectF.Width = newX - m_MouseX
+    End If
+    
+    If (newY < m_MouseY) Then
+        tmpRectF.Top = newY
+        tmpRectF.Height = m_MouseY - newY
+    Else
+        tmpRectF.Top = m_MouseY
+        tmpRectF.Height = newY - m_MouseY
+    End If
+    
+    'Inflate the rect calculation by the radius of the current brush
+    tmpRectF.Left = tmpRectF.Left - m_BrushRadius
+    tmpRectF.Top = tmpRectF.Top - m_BrushRadius
+    tmpRectF.Width = tmpRectF.Width + m_BrushRadius * 2
+    tmpRectF.Height = tmpRectF.Height + m_BrushRadius * 2
+    
+    'If this is *not* the first modified rect calculation, union this rect with our previous update rect
+    If m_UnionRectRequired Then
+        Dim tmpOldRectF As RECTF
+        tmpOldRectF = m_ModifiedRectF
+        Math_Functions.UnionRectF m_ModifiedRectF, tmpRectF, tmpOldRectF
+    Else
+        m_UnionRectRequired = True
+        m_ModifiedRectF = tmpRectF
+    End If
+    
+End Sub
+
+Public Function GetModifiedUpdateRectF(Optional ByVal resetRectAfter As Boolean = True) As RECTF
+    GetModifiedUpdateRectF = m_ModifiedRectF
+    If resetRectAfter Then m_UnionRectRequired = False
+End Function
+
+Public Function GetNumOfStrokes() As Long
+    GetNumOfStrokes = m_NumOfMouseEvents
+End Function
+
 'Want to commit your current brush work?  Call this function to make the brush results permanent.
 Public Sub CommitBrushResults()
-
+    
+    'Reset the current mouse event counter
+    m_NumOfMouseEvents = 0
+    
     'Committing brush results is actually pretty easy!
     
     'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch

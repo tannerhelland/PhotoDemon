@@ -1594,16 +1594,16 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     'END block for layer intersecting the current viewport.  (Note that we simply ignore layers that don't intersect the viewport.)
     End If
     
-    'srcImage.ScratchLayer.TmpLODDIB(CLC_Painting) now contains a copy of the layer onto which we are painting.
-    ' The layer has had any/all transforms applied, but it has not had *any* blend mode, non-destructive FX, opacity, or alpha mode
-    ' calculations applied, by design.
+    'srcImage.ScratchLayer.TmpLODDIB(CLC_Painting) now contains a copy of the layer onto which we are painting.  The layer has had
+    ' any/all transforms applied, but it has not had *any* blend mode, non-destructive FX, opacity, or alpha mode calculations
+    ' applied, by design.
     
     'Next, we want to merge the paint stroke image onto this scratch layer srcImage.ScratchLayer.TmpLODDIB(CLC_Painting).
     ' The paintbrush may have its own combination of blend and/or alpha modes, and we will handle those as we go.
     
     'Start by calculating the intersection rect between the paintbrush image (which is always the full size of the base image),
     ' and the current viewport
-    Layer_Handler.FillRectForLayerF srcImage.ScratchLayer, layerRect, True, False
+    Layer_Handler.FillRectForLayerF srcImage.ScratchLayer, layerRect, False, False
     layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect)
     
     Dim nonStandardBlendingActive As Boolean
@@ -1615,11 +1615,9 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         'The paintbrush layer intersects the viewport.  No surprise there!
         
         'Normally, we would next test the DIB cache for this LOD setting, and re-use a previously cached image if available.
-        ' Unfortunately, paint strokes are never cached (as the paint stroke image must be newly regenerated on each mouse event).
-        ' We could possibly revisit this in the future with some kind of rect-based cache system, where we do actually cache the
-        ' paintbrush image, and we only update the portion that has changed since the last render... but that's easier said than done.
-        
-        'For now, we'll always use the entire scratch layer DIB
+        ' Paint strokes work a bit differently, however, as we always know that *some* portion of the cache must be regenerated.
+        ' If this is the first event in the current stroke, we need to generate the entire cache for the paint layer.  If this
+        ' is *not* the first event, however, we can simply repaint the portion of the cache that's changed since the last event.
         Set srcDIB = srcImage.ScratchLayer.layerDIB
         
         'Because non-standard blend and/or alpha modes require us to use our internal compositor, we may need to use a temporary
@@ -1637,21 +1635,43 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         ' destination viewport rect.  However, the intersect rect was calculated in the layer coordinate space, and we also need
         ' to know where it lies in the viewport coordinate space.  (In many cases, the intersect rect will only cover some subsection
         ' of the viewport, meaning our temporary compositing DIB can also be smaller than the viewport, saving time and memory).
-            
-        'The getDstRectFromSrcRectF() function uses our already calculated eight bare destination and source values (x/y/width/height)
+        
+        'The GetDstRectFromSrcRectF() function uses our already calculated eight bare destination and source values (x/y/width/height)
         ' to calculate a canvas-space destination rect for this layer, e.g. defining the destination region of the viewport covered by this layer.
+        
+        'Note that we calculate this differently depending on whether this is the first paint event in a stroke, or a subsequent one
+        Dim isFirstPaintEvent As Boolean
+        isFirstPaintEvent = CBool(Paintbrush.GetNumOfStrokes <= 1)
+        
+        'Note: by forcing isFirstPaintEvent to TRUE, you can forcibly regenerate the full cached image on each stroke.
+        'isFirstPaintEvent = True
+        
+        'If this is...
+        ' 1) Our first paint event for this stroke, or...
+        ' 2) A 100% zoom viewport, or...
+        ' 3) A zoomed-in viewport...
+        ' Rebuild the entire cache.  (This is really only strictly necessary for point (1), but the compositor needs to be updated below
+        '  to allow (2) and (3) to use partial viewport composites.)
+        Dim fullCacheCreationRequired As Boolean
+        fullCacheCreationRequired = isFirstPaintEvent Or isRectZoomless Or (srcImageRect.Width < dstViewportRect.Width)
+        
         GetDstRectFromSrcRectF dstRect, intRectSrc, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
+        
+        Dim intRectSrcStroke As RECTF, intRectDstStroke As RECTF
+        If (Not fullCacheCreationRequired) Then
+            GDI_Plus.IntersectRectF intRectSrcStroke, srcImageRect, Paintbrush.GetModifiedUpdateRectF
+            GetDstRectFromSrcRectF intRectDstStroke, intRectSrcStroke, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
+        End If
         
         'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
         
-        'In the future, we may check paint op boundaries and only size the relevant portion of the scratch layer.  For now,
-        ' however, this is basically a dummy calculation as the layer's offset (and x/y modifiers) will always be 0 and 1, respectively.
-        With srcRect
-            .Left = (intRectSrc.Left - CDbl(srcImage.ScratchLayer.GetLayerOffsetX)) * (1 / srcImage.ScratchLayer.GetLayerCanvasXModifier)
-            .Width = intRectSrc.Width * (1 / srcImage.ScratchLayer.GetLayerCanvasXModifier)
-            .Top = (intRectSrc.Top - CDbl(srcImage.ScratchLayer.GetLayerOffsetY)) * (1 / srcImage.ScratchLayer.GetLayerCanvasYModifier)
-            .Height = intRectSrc.Height * (1 / srcImage.ScratchLayer.GetLayerCanvasYModifier)
-        End With
+        'Next, we would normally apply any layer modifications (offset, x/y stretching, etc), but the paintbrush layer is not allowed
+        ' to use these.  Copy over the intersection rect as-is.
+        If fullCacheCreationRequired Then
+            srcRect = intRectSrc
+        Else
+            srcRect = intRectSrcStroke
+        End If
             
         'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
         ' to make sure the DIB is at least large enough to contain 0.999 offsets on either side.
@@ -1667,10 +1687,16 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         'Create a new DIB in the cheapest way possible (e.g., if the current temporary DIB size is acceptable,
         ' just reset it instead of fully redrawing it)
         If (lodDIB.GetDIBWidth < dibWidthCalc) Or (lodDIB.GetDIBHeight < dibHeightCalc) Then
+            
+            'We should only ever need to recreate the DIB on the first paint stroke, but just in case, reset the event tracker to match
+            isFirstPaintEvent = True
+            
             lodDIB.CreateBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
             lodDIB.SetInitialAlphaPremultiplicationState True
+            
         Else
-            lodDIB.ResetDIB
+            'If this is *not* the first paint event, we don't need to reset anything, as we'll only modify the changed region
+            If isFirstPaintEvent Then lodDIB.ResetDIB
         End If
                 
         'Check for the special case of 100% zoom; when this happens, we can completely skip the resize step and
@@ -1697,7 +1723,11 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             Else
                 
                 'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
-                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, Paintbrush.GetBrushPreviewQuality_GDIPlus, , True, , True
+                If fullCacheCreationRequired Then
+                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, Paintbrush.GetBrushPreviewQuality_GDIPlus, , True, , True
+                Else
+                    GDIPlus_StretchBlt lodDIB, (intRectDstStroke.Left - dstViewportRect.Left) - xOffsetInt, (intRectDstStroke.Top - dstViewportRect.Top) - yOffsetInt, intRectDstStroke.Width, intRectDstStroke.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, Paintbrush.GetBrushPreviewQuality_GDIPlus, , True, , True
+                End If
                 
             End If
             
