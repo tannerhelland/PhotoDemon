@@ -149,8 +149,8 @@ End Sub
 Private Sub Form_Load()
     
     'Populate the alpha and blend mode boxes
-    Interface.PopulateBlendModeComboBox cboBrushSetting(0), BL_NORMAL
-    Interface.PopulateAlphaModeComboBox cboBrushSetting(1), LA_NORMAL
+    Interface.PopulateBlendModeDropDown cboBrushSetting(0), BL_NORMAL
+    Interface.PopulateAlphaModeDropDown cboBrushSetting(1), LA_NORMAL
     
     cboBrushSetting(2).Clear
     cboBrushSetting(2).AddItem "Best quality", 0

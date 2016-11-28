@@ -77,6 +77,8 @@ Begin VB.Form dialog_ToneMapping
       Top             =   2040
       Visible         =   0   'False
       Width           =   6855
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltIntensity 
          Height          =   690
          Left            =   120
@@ -131,6 +133,8 @@ Begin VB.Form dialog_ToneMapping
       Top             =   2040
       Visible         =   0   'False
       Width           =   6855
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltGamma 
          Height          =   690
          Index           =   2
@@ -203,6 +207,8 @@ Begin VB.Form dialog_ToneMapping
       TabIndex        =   5
       Top             =   2040
       Width           =   6855
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltGamma 
          Height          =   690
          Index           =   0
@@ -275,6 +281,8 @@ Begin VB.Form dialog_ToneMapping
       Top             =   2040
       Visible         =   0   'False
       Width           =   6855
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltGamma 
          Height          =   690
          Index           =   1
@@ -406,8 +414,7 @@ Public Sub ShowDialog()
         
     'Automatically draw a question icon using the system icon set
     Dim iconY As Long
-    iconY = FixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    iconY = FixDPI(20)
     DrawSystemIcon IDI_ASTERISK, Me.hDC, FixDPI(22), iconY
     
     'Create a small copy of the image, for preview purposes.  Tone-mapping can be hideously slow, so we'll want to limit the size

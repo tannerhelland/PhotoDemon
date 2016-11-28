@@ -1757,7 +1757,7 @@ Public Sub EnableUserInput()
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes
-Public Sub PopulateBlendModeComboBox(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
+Public Sub PopulateBlendModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
     
     dstCombo.Clear
     
@@ -1794,7 +1794,7 @@ Public Sub PopulateBlendModeComboBox(ByRef dstCombo As pdDropDown, Optional ByVa
 End Sub
 
 'Given a combo box, populate it with all currently supported alpha modes
-Public Sub PopulateAlphaModeComboBox(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As LAYER_ALPHAMODE = LA_NORMAL)
+Public Sub PopulateAlphaModeDropDown(ByRef dstCombo As pdDropDown, Optional ByVal alphaIndex As LAYER_ALPHAMODE = LA_NORMAL)
     
     dstCombo.Clear
     
@@ -1804,6 +1804,19 @@ Public Sub PopulateAlphaModeComboBox(ByRef dstCombo As pdDropDown, Optional ByVa
     
     dstCombo.ListIndex = alphaIndex
     
+End Sub
+
+Public Sub PopulateRenderingIntentDropDown(ByRef dstCombo As pdDropDown, Optional ByVal intentIndex As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL)
+
+    dstCombo.Clear
+
+    dstCombo.AddItem "Perceptual", 0
+    dstCombo.AddItem "Relative colorimetric"
+    dstCombo.AddItem "Saturation"
+    dstCombo.AddItem "Absolute colorimetric"
+    
+    dstCombo.ListIndex = intentIndex
+
 End Sub
 
 'In an attempt to better serve high-DPI users, some of PD's stock UI icons are now generated at runtime.

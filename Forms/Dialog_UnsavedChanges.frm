@@ -215,7 +215,7 @@ Public Sub ShowDialog(ByRef ownerForm As Form)
     
     'When translations are active, some lengthy language may push the check box caption completely off-screen.
     ' To prevent this, give the check box a large buffer space if translations are active.
-    If g_Language.translationActive Then
+    If g_Language.TranslationActive Then
         chkRepeat.Left = FixDPI(8)
         chkRepeat.Width = Me.ScaleWidth - FixDPI(16)
     End If
@@ -226,8 +226,7 @@ Public Sub ShowDialog(ByRef ownerForm As Form)
     'Draw a warning icon using the system icon set.  (Note that we must do this *after* theming is applied, or it will
     ' be erased by the theming function.)
     Dim iconY As Long
-    iconY = FixDPI(24)
-    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    iconY = FixDPI(26)
     DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(277), iconY
     Me.Picture = Me.Image
     

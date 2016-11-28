@@ -292,7 +292,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.imgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
             pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
             pdDebug.LogAction vbTab & "Original color depth: " & targetImage.originalColorDepth, , True
-            pdDebug.LogAction vbTab & "Grayscale: " & CStr(g_IsImageGray), , True
             pdDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.HasICCData, , True
             pdDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
             pdDebug.LogAction vbTab & "Number of layers: " & targetImage.GetNumOfLayers, , True

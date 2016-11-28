@@ -146,7 +146,7 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
     
     'Populate the blend mode drop-down
-    Interface.PopulateBlendModeComboBox cboBlendMode, BL_NORMAL
+    Interface.PopulateBlendModeDropDown cboBlendMode, BL_NORMAL
     
     'Retrieve a copy of the relevant previous image state
     Set m_prevLayerDIB = New pdDIB

@@ -110,8 +110,8 @@ Public g_IsWin10OrLater As Boolean
 'Is theming enabled?  (Used to handle some menu icon rendering quirks)
 Public g_IsThemingEnabled As Boolean
 
-'Render the interface using Segoe UI if available; g_UseFancyFonts will be set to FALSE if we have to fall back to Tahoma
-Public g_UseFancyFonts As Boolean
+'Render the interface using Segoe UI if available; g_InterfaceFont will be set to something else (most likely Tahoma)
+' if Segoe UI doesn't exist on this system.
 Public g_InterfaceFont As String
 
 'This g_Displays object contains data on all display devices on this system.  It includes a ton of code to assist the program
@@ -132,26 +132,6 @@ Public g_ProgramShuttingDown As Boolean
 
 'The user is attempting to close all images (necessary for handling the "repeat for all images" check box)
 Public g_ClosingAllImages As Boolean
-
-'Color count
-Public g_LastColorCount As Long
-
-'Is the current image grayscale?  This variable is set by the quick count colors routine.  Do not trust its
-' state unless you have just called the quick count colors routine (otherwise it may be outdated).
-Public g_IsImageGray As Boolean
-
-'Is the current image black and white (literally, is it monochrome e.g. comprised of JUST black and JUST white)?
-' This variable is set by the quick count colors routine.  Do not trust its state unless you have just called
-' the quick count colors routine (otherwise it may be outdated).
-Public g_IsImageMonochrome As Boolean
-
-'What threshold should be used for simplifying an image's complex alpha channel?
-' (This is set by the custom alpha cutoff dialog.)
-Public g_AlphaCutoff As Byte
-
-'What background color should be used for compositing an image's complex alpha channel?
-' (This is also set by the custom alpha cutoff dialog.)
-Public g_AlphaCompositeColor As Long
 
 'When an image has its colors counted, the image's ID is stored here.  Other functions can use this to see if the
 ' current color count is relevant for a given image (e.g. if the image being worked on has just had its colors counted).
@@ -179,9 +159,6 @@ Public g_Themer As pdVisualThemes
 ' CHANGING: Replacing pdRecentFiles with pdMRUManager
 Public g_RecentFiles As pdMRUManager
 Public g_RecentMacros As pdMRUManager
-
-'Global color management setting.  If the user has requested use of custom profiles, this will be set to FALSE.
-Public g_UseSystemColorProfile As Boolean
 
 'Mouse accuracy for collision detection with on-screen objects.  This is typically 6 pixels, but it's re-calculated
 ' at run-time to account for high-DPI screens.  (It may even be worthwhile to let users adjust this value, or to

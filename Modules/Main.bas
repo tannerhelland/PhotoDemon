@@ -301,7 +301,6 @@ Public Sub ContinueLoadingProgram()
     g_Displays.RefreshDisplays
     
     'While here, also cache various display-related settings; this is faster than constantly retrieving them via APIs
-    ColorManagement.CacheCurrentSystemColorProfile
     Interface.CacheSystemDPI g_Displays.GetWindowsDPI
     
     
@@ -333,10 +332,8 @@ Public Sub ContinueLoadingProgram()
     ' (which some dialogs use to slightly modify their layout for better alignments).
     If tmpFontCheck.DoesFontExist("Segoe UI") Then
         g_InterfaceFont = "Segoe UI"
-        g_UseFancyFonts = True
     Else
         g_InterfaceFont = "Tahoma"
-        g_UseFancyFonts = False
     End If
     
     Set tmpFontCheck = Nothing
@@ -446,7 +443,6 @@ Public Sub ContinueLoadingProgram()
     
     'Populate the main canvas's size unit dropdown
     FormMain.mainCanvas(0).PopulateSizeUnits
-    
     
     
     '*************************************************************************************************************************************
@@ -564,6 +560,9 @@ Public Sub ContinueLoadingProgram()
     
     'Allow main form components to load any control-specific preferences they may utilize
     FormMain.mainCanvas(0).ReadUserPreferences
+    
+    'Prep the color management pipeline
+    ColorManagement.CacheDisplayCMMData
     
     'Apply visual styles
     g_Themer.SynchronizeThemeMenus

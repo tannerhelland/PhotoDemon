@@ -128,8 +128,7 @@ Public Sub ShowDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = FixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    iconY = FixDPI(20)
     DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(22), iconY
     
     lblWarning(1).Caption = g_Language.TranslateMessage("Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.")

@@ -202,8 +202,7 @@ Public Sub ShowDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = FixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    iconY = FixDPI(20)
     DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(22), iconY
     
     'Display a brief explanation of the dialog at the top of the window
@@ -277,7 +276,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
     QuickLoadImageToDIB srcImagePath, tmpDIB
     
     If Not (tmpDIB Is Nothing) Then
-      If (tmpDIB.getDIBWidth > 0) And (tmpDIB.getDIBHeight > 0) Then
+      If (tmpDIB.GetDIBWidth > 0) And (tmpDIB.GetDIBHeight > 0) Then
         tmpDIBExists = True
         tmpDIB.RenderToPictureBox picPreview
       End If

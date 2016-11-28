@@ -132,8 +132,7 @@ Public Sub ShowDialog(ByVal questionText As String, ByVal yesButtonText As Strin
 
     'Automatically draw the requested icon using the system icon set
     Dim iconY As Long
-    iconY = FixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    iconY = FixDPI(20)
     DrawSystemIcon icon, Me.hDC, FixDPI(22), iconY
     Me.Picture = Me.Image
     

@@ -977,7 +977,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 
                 'Notify the color management engine that the main window may have changed monitors, so it may need to
                 ' be redrawn with a new color profile.
-                If g_OpenImageCount > 0 Then CheckParentMonitor
+                ColorManagement.CheckParentMonitor
                 
             'The parent window is currently being resized
             Case WM_SIZING, WM_SIZE
@@ -986,7 +986,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 
                 'Note that in the case of WM_SIZING, we want to make sure the user is not stretching the window below an acceptable
                 ' minimum size.  Check that now.
-                If uMsg = WM_SIZING Then
+                If (uMsg = WM_SIZING) Then
 
                     userSizeTooSmall = False
 
@@ -1031,6 +1031,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'Remember the main window's location
                 UpdateStoredWindowLocation mainWindowIndex
+                
+                'Notify the color management engine that the main window may have changed monitors, so it may need to
+                ' be redrawn with a new color profile.
+                ColorManagement.CheckParentMonitor
                 
                 mainFormTriggeredChange = False
                                
