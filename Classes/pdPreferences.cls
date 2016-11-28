@@ -351,9 +351,6 @@ Public Sub LoadUserSettings()
     g_LastOpenFilter = GetPref_Long("Core", "LastOpenFilter", 1)
     g_LastSaveFilter = GetPref_Long("Core", "LastSaveFilter", 3)
     
-    'For performance reasons, cache the system color management setting
-    g_UseSystemColorProfile = g_UserPreferences.GetPref_Boolean("Transparency", "Use System Color Profile", True)
-    
     'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
     ' every time they're needed.)
     g_ColorPerformance = g_UserPreferences.GetPref_Long("Performance", "ColorPerformance", PD_PERF_BALANCED)
@@ -426,6 +423,13 @@ Private Sub CreateNewPreferencesFile()
         xmlEngine.WriteTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
         xmlEngine.WriteTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
     xmlEngine.CloseTag "BatchProcess"
+    xmlEngine.WriteBlankLine
+    
+    'Write out the "color management" block of preferences:
+    xmlEngine.WriteTag "ColorManagement", "", True
+        xmlEngine.WriteTag "Display CM Mode", Trim$(Str(DCM_NoManagement))
+        xmlEngine.WriteTag "Display Rendering Intent", Trim$(Str(INTENT_PERCEPTUAL))
+    xmlEngine.CloseTag "ColorManagement"
     xmlEngine.WriteBlankLine
     
     'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly

@@ -273,7 +273,7 @@ Public Function RefreshDisplays() As Long
     ' down strange issues.
     #If DEBUGMODE = 1 Then
                 
-        If m_NumOfDisplays > 0 Then
+        If (m_NumOfDisplays > 0) Then
         
             Dim i As Long, prefixText As String
             For i = 0 To m_NumOfDisplays - 1

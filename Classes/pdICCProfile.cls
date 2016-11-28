@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon ICC (International Color Consortium) Profile Manager
 'Copyright 2013-2016 by Tanner Helland
 'Created: 05/November/13
-'Last updated: 31/May/16
-'Last update: clean-up to better integrate the new LittleCMS color management engine
+'Last updated: 21/November/16
+'Last update: allow the class to create profiles directly from arbitrary files
 '
 'Most image formats support the notion of embedded ICC profiles.  ICC profiles can be used to convert an image
 ' to its "purest" color representation, taking into account any pecularities of the device that captured the
@@ -47,6 +47,10 @@ Private m_ICCDataExists As Boolean
 
 'The actual ICC Profile is stored in this array
 Private m_ICCData() As Byte
+
+'If this profile was created from a file, the filename will be stored here.  This will be null if the profile
+' was created from an arbitrary pointer.
+Private m_ICCFilename As String
 
 'Retrieve the source render intent from the contained ICC profile
 Public Function GetSourceRenderIntent() As Long
@@ -95,6 +99,12 @@ Public Function GetICCDataSize() As Long
     GetICCDataSize = UBound(m_ICCData) + 1
 End Function
 
+'If this path was created from a file, the filename is retrievable via this function.  A zero-length string is
+' returned if the profile was created from a bare pointer.
+Public Function GetOriginalICCPath() As String
+    GetOriginalICCPath = m_ICCFilename
+End Function
+
 Public Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
 
     #If DEBUGMODE = 1 Then
@@ -109,8 +119,41 @@ Public Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As 
         pdDebug.LogAction "ICC profile copied successfully."
     #End If
     
+    m_ICCFilename = vbNullString
     m_ICCDataExists = True
     LoadICCFromPtr = True
+
+End Function
+
+Public Function LoadICCFromFile(ByVal profilePath As String) As Boolean
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+        
+    If cFile.FileExist(profilePath) Then
+        
+        If cFile.LoadFileAsByteArray(profilePath, m_ICCData) Then
+            LoadICCFromFile = True
+        Else
+            LoadICCFromFile = False
+        End If
+        
+    Else
+        LoadICCFromFile = False
+    End If
+    
+    m_ICCDataExists = LoadICCFromFile
+    If m_ICCDataExists Then m_ICCFilename = profilePath Else m_ICCFilename = vbNullString
+    
+End Function
+
+Public Function IsEqual(ByRef srcProfile As pdICCProfile) As Boolean
+
+    If (srcProfile.GetICCDataSize = Me.GetICCDataSize) Then
+        IsEqual = VB_Hacks.MemCmp(Me.GetICCDataPointer, srcProfile.GetICCDataPointer, Me.GetICCDataSize)
+    Else
+        IsEqual = False
+    End If
 
 End Function
 

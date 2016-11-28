@@ -52,6 +52,7 @@ Private m_EDIDHeightInches As Double
 Private m_EDIDDiagonalInches As Double
 Private m_EDIDModelName As String
 Private m_EDIDSerialNumber As String
+Private m_EDIDSerialNumberMini As Long
 Private m_EDIDNativeResH As Long
 Private m_EDIDNativeResV As Long
 
@@ -153,6 +154,38 @@ Public Function GetMonitorResolutionAsString() As String
 
 End Function
 
+Public Function GetMonitorSerialNo(Optional ByVal getMiniDescriptor As Boolean = False, Optional ByVal getCombinedDescriptor As Boolean = False) As String
+    If getMiniDescriptor Then
+        GetMonitorSerialNo = CStr(m_EDIDSerialNumberMini)
+    ElseIf getCombinedDescriptor Then
+        GetMonitorSerialNo = CStr(m_EDIDSerialNumberMini) & "-" & m_EDIDSerialNumber
+    Else
+        GetMonitorSerialNo = m_EDIDSerialNumber
+    End If
+End Function
+
+Public Function HasSerialNo() As Boolean
+    HasSerialNo = CBool(Len(m_EDIDSerialNumber) <> 0)
+End Function
+
+Public Function GetUniqueDescriptor(Optional ByVal uniqueAcrossSessions As Boolean = True)
+    If uniqueAcrossSessions Then
+        
+        'Some display manufacturers don't provide any form of serial number.  This makes it really unpleasant to try
+        ' and identify a monitor uniquely.  In this worst-case scenario, fall back to the monitor's handle, as it's at
+        ' least guaranteed to be unique for this session (and likely unique across multiple sessions, if the user doesn't
+        ' plug in other monitors).
+        If (Len(m_EDIDSerialNumber) = 0) And (m_EDIDSerialNumberMini = 0) Then
+            GetUniqueDescriptor = Me.GetHandle
+        Else
+            GetUniqueDescriptor = Me.GetMonitorSerialNo(False, True)
+        End If
+        
+    Else
+        GetUniqueDescriptor = Me.GetHandle
+    End If
+End Function
+
 Public Function HasEDID() As Boolean
     HasEDID = m_hasEDID
 End Function
@@ -184,8 +217,9 @@ Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     ReDim m_EDID(0 To EDIDLength - 1) As Byte
     CopyMemoryStrict VarPtr(m_EDID(0)), VarPtr(edidArray(0)), EDIDLength
     
-    'EDIDs should never be shorter than 128 bytes.  Newer versions of the space may be *longer* than 128, but 128 is the minimum.
-    If EDIDLength < 128 Then
+    'EDIDs should never be shorter than 128 bytes.  Newer versions of the spec allow *longer* than 128, but 128 is
+    ' the minimum.
+    If (EDIDLength < 128) Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  This monitor's EDID is less than 128 bytes.  This shouldn't be possible - investigate??"
         #End If
@@ -197,8 +231,13 @@ Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     ' (which should never happen, but these are hardware manufacturers we're talking about!), we have no choice but
     ' to prematurely bail.
     
-    'The first spot we need to access is (68), which gives us the physical dimensions.
-    If EDIDLength >= 68 Then
+    'Try to grab a serial number, which is just a 4-byte long in positions 12-15 (0-based)
+    If (EDIDLength >= 16) Then
+        CopyMemoryStrict VarPtr(m_EDIDSerialNumberMini), VarPtr(m_EDID(12)), 4&
+    End If
+    
+    'Next we need to access is (68), which gives us the physical dimensions.
+    If (EDIDLength >= 68) Then
     
         'Start with the monitor's physical dimensions, specifically the monitor's physical size (in mm).
         m_EDIDWidthMM = ((m_EDID(68) And &HF0) * 16) + m_EDID(66)
@@ -221,7 +260,7 @@ Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     ' 54–71, 72–89, 90–107, 108–125
     '
     'Location of the monitor name is not guaranteed in advance, so each block must be parsed individually until found.
-    If EDIDLength >= 128 Then
+    If (EDIDLength >= 128) Then
     
         Dim descriptorBlock As Long, startOffset As Long, i As Long
         

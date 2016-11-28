@@ -34,12 +34,12 @@ Option Explicit
 
 
 'A handle (HMONITOR, specifically) to the main form's current monitor.  This value is updated by firing the
-' checkParentMonitor() function, below.
-Private currentMonitor As Long
+' CheckParentMonitor() function, below.
+Private m_CurrentMonitor As Long
 
 'When the main form's monitor changes, this string will automatically be updated with the corresponding ICC
 ' profile path of that monitor (if the user has selected a custom one)
-Private currentColorProfile As String
+Private m_CurrentDisplayProfile As String
 
 'ICC Profile header; this stores basic information about a given profile, and is use to interact with various
 ' ICC-related API functions.
@@ -136,7 +136,7 @@ End Enum
 
 'Retrieves the filename of the color management file associated with a given DC
 Private Declare Function GetICMProfile Lib "gdi32" Alias "GetICMProfileW" (ByVal hDC As Long, ByRef lpcbName As Long, ByVal ptrToBuffer As Long) As Long
-Private Declare Function SetICMProfile Lib "gdi32" Alias "SetICMProfileW" (ByVal hDC As Long, ByVal ptrToFileName As Long) As Long
+Private Declare Function SetICMProfile Lib "gdi32" Alias "SetICMProfileW" (ByVal hDC As Long, ByVal ptrToFilename As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
 'When PD is first loaded, the system's current color management file will be cached in this variable
@@ -145,12 +145,269 @@ Public g_IsSystemColorProfileSRGB As Boolean
 
 Private Const MAX_PATH As Long = 260
 
+'PD supports several different display color management modes
+Public Enum DISPLAY_COLOR_MANAGEMENT
+    DCM_NoManagement = 0
+    DCM_SystemProfile = 1
+    DCM_CustomProfile = 2
+End Enum
+
+#If False Then
+    Private Const DCM_NoManagement = 0, DCM_SystemProfile = 1, DCM_CustomProfile = 2
+#End If
+
+'The current display management mode, cached.  (This value is generally equal to the return value of
+' GetDisplayColorManagementPreference(), but - for example - if the user has selected "use system color profile"
+' and Windows doesn't return a valid profile, we will automatically switch to unmanaged mode.)
+Private m_DisplayCMMPolicy As DISPLAY_COLOR_MANAGEMENT
+
+'If loaded successfully, the current system profile will be found at this index into the profile cache.  Note that
+' this value *does not* support multiple monitors, due to flaws in the way Windows exposes the system profile
+' (you can only easily retrieve the default monitor profile).  As such, if the user has custom-configured a
+' monitor profile in the Tools > Options dialog, you shouldn't be using this value at all.
+Private m_SystemProfileIndex As Long
+
+'Current display index.  This value is automatically refreshed by calls to CheckParentMonitor, below, and is used
+' to support multimonitor systems.  On some configurations, it may be identical to m_SystemProfileIndex, above, or
+' m_sRGBIndex, below.
+Private m_CurrentDisplayIndex As Long
+
+'sRGB profile index.  One valid sRGB profile is always loaded into memory, and it is used as a failsafe when things
+' go horribly wrong (e.g. no system profile is configured, a requested display profile is corrupted or missing, etc).
+Private m_sRGBIndex As Long
+
+'Cached profiles contain more information than a typical ICC profile, to make it easier to match profiles
+' against each other.
+Private Type ICCProfileCache
+    fullProfile As pdICCProfile
+    isSystemProfile As Boolean
+    isPDDisplayProfile As Boolean
+    curDisplayID As Long
+End Type
+
+'Current ICC Profile cache.  As of 7.0, profiles are cached here, in this sub, and any object that uses a profile
+' simply receives an index into our cache.  This lets us reuse profiles for multiple objects.
+Private Const INITIAL_PROFILE_CACHE_SIZE As Long = 8
+Private m_NumOfCachedProfiles As Long
+Private m_ProfileCache() As ICCProfileCache
+
+Public Function GetDisplayColorManagementPreference() As DISPLAY_COLOR_MANAGEMENT
+    GetDisplayColorManagementPreference = g_UserPreferences.GetPref_Long("ColorManagement", "Display CM Mode", DCM_NoManagement)
+    
+    'Past PD versions used a true/false system to control this setting.  The old setting will be "-1" if the system
+    ' color profile is in use.
+    If (GetDisplayColorManagementPreference < 0) Then GetDisplayColorManagementPreference = DCM_SystemProfile
+End Function
+
+Public Sub SetDisplayColorManagementPreference(ByVal newPref As DISPLAY_COLOR_MANAGEMENT)
+    g_UserPreferences.SetPref_Long "ColorManagement", "Display CM Mode", newPref
+End Sub
+
+Public Function GetDisplayRenderingIntentPref() As LCMS_RENDERING_INTENT
+    GetDisplayRenderingIntentPref = g_UserPreferences.GetPref_Long("ColorManagement", "Display Rendering Intent", INTENT_PERCEPTUAL)
+End Function
+
+Public Sub SetDisplayRenderingIntentPref(Optional ByVal newPref As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL)
+    g_UserPreferences.SetPref_Long "ColorManagement", "Display Rendering Intent", newPref
+End Sub
+
+'Whenever color management settings change (or at program initialization), call this function to cache transforms
+' for the current screen monitor space.  Up-to-date preferences will be pulled from the user's pref file, so this
+' function is *not* particularly fast.  Do not use it inside a rendering chain, for example.
+Public Sub CacheDisplayCMMData()
+    
+    'Start by releasing the current profile collection, if one exists
+    FreeProfileCache
+    
+    Dim tmpProfile As pdICCProfile
+    Set tmpProfile = New pdICCProfile
+    
+    'Before doing anything else, load a default sRGB profile.  This will be used as a fallback for displays with broken
+    ' color management configurations.
+    
+    'Use LittleCMS to generate a default sRGB profile
+    Dim tmpHProfile As Long
+    tmpHProfile = LittleCMS.LCMS_LoadStockSRGBProfile()
+    Dim tmpByteArray() As Byte
+    
+    If LittleCMS.LCMS_SaveProfileToArray(tmpHProfile, tmpByteArray) Then
+    
+        'Wrap a dummy ICC profile object around the sRGB profile, then cache that locally
+        If tmpProfile.LoadICCFromPtr(UBound(tmpByteArray) + 1, VarPtr(tmpByteArray(0))) Then
+            m_sRGBIndex = AddProfileToCache(tmpProfile, False, False)
+        Else
+            m_SystemProfileIndex = -1
+            m_sRGBIndex = -1
+            m_DisplayCMMPolicy = DCM_NoManagement
+        End If
+    
+    'If we failed to generate a default sRGB profile, turn off display color management completely, because something
+    ' is horribly wrong with LittleCMS.
+    Else
+        m_SystemProfileIndex = -1
+        m_sRGBIndex = -1
+        m_DisplayCMMPolicy = DCM_NoManagement
+    End If
+    
+    'Remember to free our temporary profile!
+    If (tmpHProfile <> 0) Then LittleCMS.LCMS_CloseProfileHandle tmpHProfile
+    
+    'Next, load one or more display profiles based on the user's current color management settings.
+    ' (In some cases, we'll retrieve profile paths from Windows itself, while in others, we'll retrieve them
+    '  from internal PD settings the user has configured.)
+    m_DisplayCMMPolicy = GetDisplayColorManagementPreference
+    m_SystemProfileIndex = m_sRGBIndex
+    
+    'Start with the case where the user just wants us to use the default Windows system ICC profile.
+    If (m_DisplayCMMPolicy = DCM_SystemProfile) Then
+    
+        m_currentSystemColorProfile = GetDefaultICCProfilePath()
+        
+        Set tmpProfile = New pdICCProfile
+        If tmpProfile.LoadICCFromFile(m_currentSystemColorProfile) Then
+            m_SystemProfileIndex = AddProfileToCache(tmpProfile, False, True)
+        
+        'If we fail to load the current system profile, there's really no good option for continuing.  The least
+        ' of many evils is to simply point the current system profile at a default sRGB profile and hope for the best.
+        Else
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "System ICC profile couldn't be loaded.  Reverting to default sRGB policy..."
+            #End If
+            
+            m_SystemProfileIndex = m_sRGBIndex
+            
+        End If
+        
+    'If the user has manually specified per-monitor display profiles, we want to cache each display profile in turn.
+    ElseIf (m_DisplayCMMPolicy = DCM_CustomProfile) Then
+        
+        Dim tmpXML As pdXML
+        Set tmpXML = New pdXML
+        Dim i As Long, uniqueMonitorID As String, monICCPath As String
+        Dim profileLoadedSuccessfully As Boolean
+        
+        For i = 0 To g_Displays.GetDisplayCount - 1
+            
+            profileLoadedSuccessfully = False
+            
+            With g_Displays.Displays(i)
+                
+                'Retrieve a unique ID for this display
+                uniqueMonitorID = .GetUniqueDescriptor
+                
+                'Make it XML safe and look for a matching tag
+                uniqueMonitorID = tmpXML.GetXMLSafeTagName(uniqueMonitorID)
+                monICCPath = g_UserPreferences.GetPref_String("ColorManagement", "DisplayProfile_" & uniqueMonitorID, vbNullString)
+                
+                'If an ICC path exists, attempt to load it
+                If (Len(monICCPath) <> 0) Then
+                    
+                    Set tmpProfile = New pdICCProfile
+                    If tmpProfile.LoadICCFromFile(monICCPath) Then
+                        
+                        'Add the profile to our collection!
+                        AddProfileToCache tmpProfile, False, False, True, .GetHandle
+                        profileLoadedSuccessfully = True
+                        
+                    End If
+                
+                End If
+                
+                'If a profile was *not* loaded successfully, default to sRGB for this display
+                If (Not profileLoadedSuccessfully) Then
+                    AddProfileToCache GetCachedProfile_ByIndex(m_sRGBIndex).fullProfile, False, False, True, .GetHandle
+                End If
+                
+            End With
+        Next i
+        
+        'With all display profiles loaded correctly, identify the current display immediately
+        CheckParentMonitor False, True
+    
+    'If the user has selected "no color management", we don't have to do anything here!
+    Else
+    
+    End If
+    
+End Sub
+
+'Add a profile to the current cache.  The index of said profile is returned; use that for any subsequent cache accesses.
+Public Function AddProfileToCache(ByRef srcProfile As pdICCProfile, Optional ByVal matchDuplicates As Boolean = True, Optional ByVal isSystemProfile As Boolean = False, Optional ByVal isDisplayProfile As Boolean = False, Optional ByVal associatedMonitorID As Long = 0) As Long
+    
+    'Make sure the cache exists and is large enough to hold another profile
+    If (m_NumOfCachedProfiles = 0) Then
+        ReDim m_ProfileCache(0 To INITIAL_PROFILE_CACHE_SIZE - 1) As ICCProfileCache
+    Else
+        If (m_NumOfCachedProfiles > UBound(m_ProfileCache)) Then ReDim m_ProfileCache(0 To (UBound(m_ProfileCache) * 2 + 1)) As ICCProfileCache
+    End If
+    
+    'If the user wants profile matching to occur (so that duplicate profiles can be reused), look for a match now.
+    ' NOTE: this IF/THEN block contains an Exit Function clause, and it will use it if a match is found.
+    If ((m_NumOfCachedProfiles > 0) And matchDuplicates) Then
+    
+        Dim i As Long
+        For i = 0 To m_NumOfCachedProfiles - 1
+            If srcProfile.IsEqual(m_ProfileCache(i).fullProfile) Then
+                AddProfileToCache = i
+                Exit Function
+            End If
+        Next i
+    
+    End If
+    
+    'If we made it all the way here, assume we are good to add the current profile to our list
+    With m_ProfileCache(m_NumOfCachedProfiles)
+        Set .fullProfile = srcProfile
+        .isSystemProfile = isSystemProfile
+        .isPDDisplayProfile = isDisplayProfile
+        .curDisplayID = associatedMonitorID
+    End With
+    
+    AddProfileToCache = m_NumOfCachedProfiles
+    m_NumOfCachedProfiles = m_NumOfCachedProfiles + 1
+
+End Function
+
+Public Function GetCachedProfile_ByIndex(ByVal profileIndex As Long) As ICCProfileCache
+    If (profileIndex >= 0) And (profileIndex < m_NumOfCachedProfiles) Then
+        GetCachedProfile_ByIndex = m_ProfileCache(profileIndex)
+    End If
+End Function
+
+Public Function GetCachedDisplayProfileIndex_ByHandle(ByVal hMonitor As Long) As Long
+    If (hMonitor <> 0) And (m_NumOfCachedProfiles <> 0) Then
+        Dim i As Long
+        For i = 0 To m_NumOfCachedProfiles - 1
+            If m_ProfileCache(i).isPDDisplayProfile Then
+                If (m_ProfileCache(i).curDisplayID = hMonitor) Then
+                    GetCachedDisplayProfileIndex_ByHandle = i
+                    Exit For
+                End If
+            End If
+        Next i
+    Else
+        GetCachedDisplayProfileIndex_ByHandle = -1
+    End If
+End Function
+
+'Release the full ICC cache.  Do not do this until PD is fully unloaded, or things will break.
+Public Sub FreeProfileCache()
+    m_NumOfCachedProfiles = 0
+    ReDim m_ProfileCache(0) As ICCProfileCache
+    m_SystemProfileIndex = 0
+    m_CurrentDisplayIndex = 0
+    m_sRGBIndex = 0
+End Sub
+
 'Shorthand way to activate color management for anything with a DC
 Public Sub TurnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHwnd As Long)
     
-    'Perform a quick check to see if we the target DC is requesting sRGB management.  If it is, we can skip
+    'Perform a quick check to see if the target DC is requesting sRGB management.  If it is, we can skip
     ' color management entirely, because PD stores all RGB data in sRGB anyway.
-    If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
+    'TODO: fix this
+    'If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
+    If (Not g_IsSystemColorProfileSRGB) Then
         AssignDefaultColorProfileToObject targetHwnd, targetDC
         TurnOnColorManagementForDC targetDC
     End If
@@ -183,62 +440,26 @@ End Function
 Public Sub AssignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
     
     'If the current user setting is "use system color profile", our job is easy.
-    If g_UseSystemColorProfile Then
-        SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
-    Else
+    'TODO: fix this; g_UseSystemColorProfile is no longer used
+    
+    'If g_UseSystemColorProfile Then
+    '    SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
+    'Else
         
         'Use the form's containing monitor to retrieve a matching profile from the preferences file
-        If Len(currentColorProfile) <> 0 Then
-            SetICMProfile objectHDC, StrPtr(currentColorProfile)
+        If Len(m_CurrentDisplayProfile) <> 0 Then
+            SetICMProfile objectHDC, StrPtr(m_CurrentDisplayProfile)
         Else
             SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
         End If
         
-    End If
+    'End If
     
     'If you would like to test this function on a standalone ICC profile (generally something bizarre, to help you know
     ' that the function is working), use something similar to the code below.
     'Dim TEST_ICM As String
     'TEST_ICM = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\jpegs\ICC\WhackedRGB.icc"
     'SetICMProfile targetDC, StrPtr(TEST_ICM)
-    
-End Sub
-
-'When PD is first loaded, this function will be called, which caches the current color management file in use by the system
-Public Sub CacheCurrentSystemColorProfile()
-    
-    m_currentSystemColorProfile = GetDefaultICCProfilePath()
-    
-    'As part of this step, we will also temporarily load the default system ICC profile, and check to see if it's sRGB.
-    ' If it is, we can skip color management entirely, as all images are processed in sRGB.
-    
-    'Obtain a handle to the default system profile
-    Dim sysProfileHandle As Long
-    sysProfileHandle = ColorManagement.LoadICCProfileFromFile_WindowsCMS(m_currentSystemColorProfile)
-    
-    If (sysProfileHandle <> 0) Then
-    
-        'Obtain a handle to a stock sRGB profile.
-        Dim srgbProfileHandle As Long
-        srgbProfileHandle = ColorManagement.LoadStandardICCProfile_WindowsCMS(LCS_sRGB)
-        
-        'Compare the two profiles
-        If ColorManagement.AreColorProfilesEqual_WindowsCMS(sysProfileHandle, srgbProfileHandle) Then
-            g_IsSystemColorProfileSRGB = True
-        Else
-            g_IsSystemColorProfileSRGB = False
-        End If
-        
-        'Release our profile handles
-        ColorManagement.ReleaseICCProfile_WindowsCMS sysProfileHandle
-        ColorManagement.ReleaseICCProfile_WindowsCMS srgbProfileHandle
-        
-    Else
-        
-        Debug.Print "System ICC profile couldn't be loaded.  Default color management is disabled for this session."
-        g_IsSystemColorProfileSRGB = True
-        
-    End If
     
 End Sub
 
@@ -262,6 +483,67 @@ Public Function GetDefaultICCProfilePath() As String
     End If
     
 End Function
+
+'When the main PD window is moved, the window manager will trigger this function.  (Because the user can set color management
+' on a per-monitor basis, we must keep track of which monitor contains this PD instance.)
+Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, Optional ByVal forceRefresh As Boolean = False)
+    
+    Dim oldDisplayIndex As Long
+    oldDisplayIndex = m_CurrentDisplayIndex
+    
+    'Use the API to determine the monitor with the largest intersect with this window
+    Dim monitorCheck As Long
+    monitorCheck = MonitorFromWindow(FormMain.hWnd, MONITOR_DEFAULTTONEAREST)
+    
+    'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
+    If (monitorCheck <> m_CurrentMonitor) Or forceRefresh Then
+        
+        m_CurrentMonitor = monitorCheck
+        
+        'Update the current display index to match
+        If (m_DisplayCMMPolicy = DCM_SystemProfile) Then
+            m_CurrentDisplayIndex = m_SystemProfileIndex
+            
+        'If the user has manually specified per-monitor display profiles, we want to cache each display profile in turn.
+        ElseIf (m_DisplayCMMPolicy = DCM_CustomProfile) Then
+            m_CurrentDisplayIndex = GetCachedDisplayProfileIndex_ByHandle(m_CurrentMonitor)
+            If (m_CurrentDisplayIndex = -1) Then m_CurrentDisplayIndex = m_sRGBIndex
+        Else
+            m_CurrentDisplayIndex = -1
+        End If
+        
+        'm_CurrentDisplayIndex now points at the relevant display profile in our ICC profile cache.
+        ' If it has changed since the last refresh, recreate our default "working space to display" transform.
+        If ((m_CurrentDisplayIndex >= 0) And (m_CurrentDisplayIndex <> oldDisplayIndex)) Or forceRefresh Then
+        
+            'TODO!
+            #If DEBUGMODE = 1 Then
+                Dim tmpProfile As ICCProfileCache
+                tmpProfile = GetCachedProfile_ByIndex(m_CurrentDisplayIndex)
+                If (Not tmpProfile.fullProfile Is Nothing) Then pdDebug.LogAction "Monitor change detected, new profile is: " & tmpProfile.fullProfile.GetOriginalICCPath
+            #End If
+        
+        End If
+        
+        'If the user doesn't want us to redraw the main window to match the new profile, exit
+        If suspendRedraw Then Exit Sub
+        
+        'If no images have been loaded, exit
+        If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
+        
+        'If an image has been loaded, and it is valid, redraw it now
+        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).IsActive Then
+            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        End If
+        
+        'Note that the image tabstrip is also color-managed, so it needs to be redrawn as well
+        ' TODO: now that the tabstrip is integrated into the underlying canvas control, this line should be revisited.
+        ' I'd prefer to have the canvas handle this, rather than a specialized function.
+        Interface.RequestTabstripRedraw
+    
+    End If
+    
+End Sub
 
 'Turn on color management for a specified device context
 Public Sub TurnOnColorManagementForDC(ByVal dstDC As Long)
@@ -589,40 +871,6 @@ Public Function ApplyCMYKTransform_WindowsCMS(ByVal iccProfilePointer As Long, B
     End If
 
 End Function
-
-'When the main PD window is moved, the window manager will trigger this function.  (Because the user can set color management
-' on a per-monitor basis, we must keep track of which monitor contains this PD instance.)
-Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, Optional ByVal forceRefresh As Boolean = False)
-
-    'Use the API to determine the monitor with the largest intersect with this window
-    Dim monitorCheck As Long
-    monitorCheck = MonitorFromWindow(FormMain.hWnd, MONITOR_DEFAULTTONEAREST)
-    
-    'If the detected monitor does not match this one, update this window and refresh its image (if necessary)
-    If (monitorCheck <> currentMonitor) Or forceRefresh Then
-        
-        currentMonitor = monitorCheck
-        currentColorProfile = g_UserPreferences.GetPref_String("Transparency", "MonitorProfile_" & currentMonitor, "")
-        
-        'If the user doesn't want us to redraw the main window to match the new profile, exit
-        If suspendRedraw Then Exit Sub
-        
-        'If no images have been loaded, exit
-        If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
-        
-        'If an image has been loaded, and it is valid, redraw it now
-        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).IsActive Then
-            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-        End If
-        
-        'Note that the image tabstrip is also color-managed, so it needs to be redrawn as well
-        ' TODO: now that the tabstrip is integrated into the underlying canvas control, this line should be revisited.
-        ' I'd prefer to have the canvas handle this, rather than a specialized function.
-        Interface.RequestTabstripRedraw
-    
-    End If
-    
-End Sub
 
 'Compare two ICC profiles to determine equality.  Thank you to VB developer LaVolpe for this suggestion and original implementation.
 Public Function AreColorProfilesEqual_WindowsCMS(ByVal profileHandle1 As Long, ByVal profileHandle2 As Long) As Boolean

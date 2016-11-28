@@ -25,13 +25,13 @@ Begin VB.Form FormPrint
    ScaleWidth      =   583
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdTextBox txtCopies 
-      Height          =   375
+      Height          =   390
       Left            =   7080
       TabIndex        =   3
       Top             =   1560
       Width           =   1455
       _ExtentX        =   2566
-      _ExtentY        =   661
+      _ExtentY        =   688
    End
    Begin PhotoDemon.pdDropDown cmbDPI 
       Height          =   375
@@ -475,8 +475,6 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-
-    If g_UseFancyFonts Then txtCopies.Height = txtCopies.Height + 1
     
 End Sub
 

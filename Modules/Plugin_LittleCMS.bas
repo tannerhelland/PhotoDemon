@@ -295,6 +295,7 @@ Private Declare Function cmsCreate_sRGBProfile Lib "lcms2.dll" () As Long
 Private Declare Function cmsCreateRGBProfile Lib "lcms2.dll" (ByVal ptrToWhitePointxyY As Long, ByVal ptrTo3xyYPrimaries As Long, ByVal ptrTo3ToneCurves As Long) As Long
 Private Declare Function cmsCreateXYZProfile Lib "lcms2.dll" () As Long
 Private Declare Function cmsOpenProfileFromMem Lib "lcms2.dll" (ByVal ptrProfile As Long, ByVal profileSizeInBytes As Long) As Long
+Private Declare Function cmsSaveProfileToMem Lib "lcms2.dll" (ByVal srcProfile As Long, ByVal dstPtr As Long, ByRef sizeRequiredInBytes As Long) As Long
  
 'Profile information functions
 Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
@@ -495,6 +496,32 @@ Public Function LCMS_LoadProfileFromMemory(ByVal ptrToProfile As Long, ByVal siz
     LCMS_LoadProfileFromMemory = cmsOpenProfileFromMem(ptrToProfile, sizeOfProfileInBytes)
 End Function
 
+'Little CMS has its own "load from file" function, but it isn't Unicode-aware, so we just slam the file into a byte array
+' and use the "load from memory" function instead.
+Public Function LCMS_LoadProfileFromFile(ByVal profilePath As String) As Long
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+
+    'Start by loading the specified path into a byte array
+    Dim tmpProfileArray() As Byte
+        
+    If cFile.FileExist(profilePath) Then
+        
+        If (Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray)) Then
+            LCMS_LoadProfileFromFile = 0
+            Exit Function
+        End If
+        
+    Else
+        LCMS_LoadProfileFromFile = 0
+        Exit Function
+    End If
+    
+    LCMS_LoadProfileFromFile = cmsOpenProfileFromMem(VarPtr(tmpProfileArray(0)), UBound(tmpProfileArray) + 1)
+    
+End Function
+
 Public Function LCMS_LoadStockGrayProfile() As Long
     Dim tmpToneCurve As Long
     tmpToneCurve = LCMS_GetBasicToneCurve(1#)
@@ -542,6 +569,20 @@ Public Function LCMS_LoadStockLabProfile(Optional ByVal useVersion4 As Boolean =
     Else
         LCMS_LoadStockLabProfile = cmsCreateLab2Profile(0&)
     End If
+End Function
+
+Public Function LCMS_SaveProfileToArray(ByVal hProfile As Long, ByRef dstArray() As Byte) As Boolean
+    
+    Dim profSize As Long
+    
+    'Passing a null pointer will fill the "profile size" parameter with the required destination size
+    If (cmsSaveProfileToMem(hProfile, 0, profSize) <> 0) Then
+        ReDim dstArray(0 To profSize - 1) As Byte
+        LCMS_SaveProfileToArray = CBool(cmsSaveProfileToMem(hProfile, VarPtr(dstArray(0)), profSize) <> 0)
+    Else
+        LCMS_SaveProfileToArray = False
+    End If
+    
 End Function
 
 Public Function LCMS_CreateAbstractBCHSProfile(Optional ByVal newBrightness As Double = 0#, Optional ByVal newContrast As Double = 1#, Optional ByVal newHue As Double = 0#, Optional ByVal newSaturation As Double = 0#, Optional ByVal srcTemp As Long = 0, Optional ByVal dstTemp As Long = 0) As Long

@@ -91,7 +91,10 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
     
-    If (Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB)) Or (m_TargetDC <> dstCanvas.hDC) Then
+    'TODO: fix this; g_UseSystemColorProfile is no longer in use
+    
+    'If (Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB)) Or (m_TargetDC <> dstCanvas.hDC) Then
+    If (Not g_IsSystemColorProfileSRGB) Or (m_TargetDC <> dstCanvas.hDC) Then
         m_TargetDC = dstCanvas.hDC
         
         'TODO 7.0: migrate all color management tasks to LittleCMS
