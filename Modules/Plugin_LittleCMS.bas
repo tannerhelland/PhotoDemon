@@ -328,6 +328,16 @@ Private m_D65_XYZ() As Double, m_D65_xyY() As Double
 'Actual transform application functions
 Private Declare Sub cmsDoTransform Lib "lcms2.dll" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsToTransform As Long)
 
+'In 2.8, a dedicated line/stride transform function was added to LittleCMS.  Here is what the documentation says:
+' "This function translates bitmaps with complex organization. Each bitmap may contain several lines, and every line
+'  may have padding. The distance from one line to the next one is BytesPerLine{In/Out}.  In planar formats, each line
+'  may hold several planes, and each plane may have padding. Padding of lines and planes should be same across the whole
+'  bitmap, i.e. all lines in a bitmap must be padded the same way. This function may be more efficient that repeated calls
+'  to cmsDoTransform(), especially when customized plug-ins are being used."
+'
+'I do not currently make use of this function, but given the efficiency caveat above, it may be worth investigating in the future.
+Private Declare Sub cmsDoTransformLineStride Lib "lcms2.dll" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsPerLine As Long, ByVal numOfLines As Long, ByVal bytesPerLineIn As Long, ByVal bytesPerLineOut As Long, ByVal bytesPerPlaneIn As Long, ByVal bytesPerPlaneOut As Long)
+
 'A single LittleCMS handle is maintained for the life of a PD instance; see InitializeLCMS and ReleaseLCMS, below.
 Private m_LCMSHandle As Long
 
@@ -604,6 +614,7 @@ Public Function LCMS_FreeToneCurve(ByRef hCurve As Long) As Boolean
     LCMS_FreeToneCurve = True
 End Function
 
+'Apply an already-created transform to a pdDIB object.
 Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform As Long) As Boolean
     
     If (Not (srcDIB Is Nothing)) And (hTransform <> 0) Then

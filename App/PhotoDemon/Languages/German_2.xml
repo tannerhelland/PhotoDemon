@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.1980</langversion>
+<langversion>6.8.2014</langversion>
 <langstatus>Abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1118,6 +1118,36 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 </phrase>
 
 <phrase>
+<original>Erase</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Inherit</original>
+<translation>Übernehmen</translation>
+</phrase>
+
+<phrase>
+<original>Locked</original>
+<translation>Gesperrt</translation>
+</phrase>
+
+<phrase>
+<original>Perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Relative colorimetric</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Absolute colorimetric</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Are you sure you want to cancel %1?</original>
 <translation>Wollen Sie wirklich %1 abbrechen?</translation>
 </phrase>
@@ -1132,7 +1162,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 <translation>Vorschau nicht verfügbar</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 69 phrases. 21 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 77 phrases. 23 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1514,6 +1544,22 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen 
 <!-- FreeImageWrapper.bas contains 0 phrases. -->
 
 <!-- END text for FreeImageWrapper.bas-->
+
+<!-- BEGIN text for Paintbrush.bas -->
+
+<phrase>
+<original>Paint stroke</original>
+<translation>Pinselstrich</translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation>Paint-Layer</translation>
+</phrase>
+
+<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Paintbrush.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -4129,7 +4175,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>Original</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12784,11 +12830,6 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 </phrase>
 
 <phrase>
-<original>Inherit</original>
-<translation>Übernehmen</translation>
-</phrase>
-
-<phrase>
 <original>Add a blank layer to the image.</original>
 <translation>Einen blanken Layer dem Bild hinzufügen.</translation>
 </phrase>
@@ -12818,7 +12859,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <translation>Layer nach unten verschieben</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13198,6 +13239,37 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
+
+<!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
+
+<phrase>
+<original>alpha mode</original>
+<translation>Alphamodus</translation>
+</phrase>
+
+<phrase>
+<original>preview quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Best quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Best performance</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Paintbrush.frm-->
 
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
@@ -14053,6 +14125,176 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
+<original>display rendering intent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>Beim Schließen von Bildern mich bei nicht gespeicherte Änderungen warnen</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>Bei Verwendung von "Speichern unter" das Standarddateiformat entspr. festlegen auf</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>Bei Verwendung von "Speichern"</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>Verhalten beim Speichern: Überschreiben vs. eine Kopie erstellen</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>Nicht gespeicherte Bilder schließen</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>Standarddateiformat beim Speichern</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>PhotoDemon als zuletzt verwendete Bearbeitungssoftware listen</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>Optionen für Tone-Mapping beim Importieren von HDR- oder RAW-Bildern anzeigen</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>Automatische Drehinstruktionen innerhalb Bilddateien befolgen</translation>
+</phrase>
+
+<phrase>
+<original>when an image is first loaded, set its viewport zoom to</original>
+<translation>Wenn ein Bild das erste Mal geladen wird, dessen Viewport-Zoom festlegen auf</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>High Dynamic Range (HDR) Images</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>Binärtyp-Tags zwangsweise als Base64 extrahieren (langsam)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>Originale JPEG-Qualitätseinstellungen schätzen</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>Unbekannte Tags extrahieren</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>Duplikat-Tags automatisch ausblenden</translation>
+</phrase>
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>Daten für 'Rückgängig machen/Wiederherstellen' auf folgendem Level komprimieren</translation>
+</phrase>
+
+<phrase>
+<original>when calculating color values</original>
+<translation>Beim Berechnen von Farbwerten</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>Bei Dekoration der Interface-Elemente</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>Beim Generieren von Thumbnails für Bilder und Layer</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>Beim Rendering der Bildleinwand</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>Farbmanagement</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>Interface</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>Keine Kompression (am schnellsten)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>Max. Kompression (am langsamsten)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>Rückgängig machen/Wiederherstellen</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>Thumbnails (Vorschaubilder)</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>Viewport</translation>
+</phrase>
+
+<phrase>
 <original>Click here to reset all options</original>
 <translation>Hier klicken, um alle Optionen zurückzusetzen</translation>
 </phrase>
@@ -14138,48 +14380,8 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
-<original>recently used file shortcuts should be</original>
-<translation>Kürzlich verwendete Datei-Shortcuts sollten sein</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>Beschriftungen</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>Bildfenstertitel sollten sein</translation>
-</phrase>
-
-<phrase>
-<original>use the system color profile</original>
-<translation>Das Systemfarbprofil verwenden</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>Ein oder mehrere benutzerdefinierte Farbprofile verwenden</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>Farbprofil für ausgewählten Monitor</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>Verfügbare Monitore</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>Beim Rendering von Bildern auf dem Bildschirm</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>Farbmanagement</translation>
+<original>main window</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14190,141 +14392,6 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <phrase>
 <original>transparency checkerboard colors</original>
 <translation>Farben des Transparenz-Schachbretts</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>Transparenzmanagement</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>Beim Schließen von Bildern mich bei nicht gespeicherte Änderungen warnen</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>Verhalten beim Speichern: Überschreiben vs. eine Kopie erstellen</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>Bei Verwendung von "Speichern"</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>Nicht gespeicherte Bilder schließen</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>Bei Verwendung von "Speichern unter" das Standarddateiformat entspr. festlegen auf</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>Standarddateiformat beim Speichern</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>PhotoDemon als zuletzt verwendete Bearbeitungssoftware listen</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>Optionen für Tone-Mapping beim Importieren von HDR- oder RAW-Bildern anzeigen</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>Automatische Drehinstruktionen innerhalb Bilddateien befolgen</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>High Dynamic Range (HDR) Images</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>Wenn ein Bild das erste Mal geladen wird, dessen Viewport-Zoom festlegen auf</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>Binärtyp-Tags zwangsweise als Base64 extrahieren (langsam)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>Originale JPEG-Qualitätseinstellungen schätzen</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>Unbekannte Tags extrahieren</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>Duplikat-Tags automatisch ausblenden</translation>
-</phrase>
-
-<phrase>
-<original>when calculating color values</original>
-<translation>Beim Berechnen von Farbwerten</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>Bei Dekoration der Interface-Elemente</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>Interface</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>Keine Kompression (am schnellsten)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>Max. Kompression (am langsamsten)</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>Daten für 'Rückgängig machen/Wiederherstellen' auf folgendem Level komprimieren</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>Rückgängig machen/Wiederherstellen</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>Thumbnails (Vorschaubilder)</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>Beim Generieren von Thumbnails für Bilder und Layer</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>Beim Rendering der Bildleinwand</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>Viewport</translation>
 </phrase>
 
 <phrase>
@@ -14367,18 +14434,18 @@ Wollen Sie wirklich fortfahren?</translation>
 </phrase>
 
 <phrase>
-<original>compact - file name only</original>
-<translation>Kompakt - nur Dateinamen</translation>
+<original>compact - image names only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>descriptive - full location, including folder(s)</original>
-<translation>Beschreibend - vollständiger Speicherort, einschließl. Ordner</translation>
+<original>descriptive - full image locations, including folder(s)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-<translation>Bildfenster sind eher groß - also können Sie sich den vollständigen Speicherort jedes Bildes in den Bildfenstertitel-Leisten anzeigen lassen.</translation>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14387,18 +14454,63 @@ Wollen Sie wirklich fortfahren?</translation>
 </phrase>
 
 <phrase>
-<original>compact - file names only</original>
-<translation>Kompakt - nur Dateinamen</translation>
-</phrase>
-
-<phrase>
-<original>descriptive - full locations, including folder(s)</original>
-<translation>Beschreibend - vollständiger Speicherort einschließl. Ordner</translation>
-</phrase>
-
-<phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
 <translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite limitiert. PhotoDemon kann nur Bildnamen anzeigen anstelle von vollständigen Bildspeicherorten.</translation>
+</phrase>
+
+<phrase>
+<original>Highlight checks</original>
+<translation>Prüfung des Glanzlichts</translation>
+</phrase>
+
+<phrase>
+<original>Midtone checks</original>
+<translation>Prüfung des Mitteltons</translation>
+</phrase>
+
+<phrase>
+<original>Shadow checks</original>
+<translation>Prüfung des Schattens</translation>
+</phrase>
+
+<phrase>
+<original>Custom (click boxes to customize)</original>
+<translation>Benutzerdefiniert (zum Anpassen in Farbfeld klicken)</translation>
+</phrase>
+
+<phrase>
+<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
+<translation>Wenn ein Bild transparente Bereiche aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. In diesem Menü können Sie die Farben des Schachbrett ändern.</translation>
+</phrase>
+
+<phrase>
+<original>Click to change the first checkerboard background color for alpha channels</original>
+<translation>Klicken Sie hier, um die erste Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
+</phrase>
+
+<phrase>
+<original>Click to change the second checkerboard background color for alpha channels</original>
+<translation>Klicken Sie hier, um die zweite Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
+</phrase>
+
+<phrase>
+<original>Small (4x4 pixels)</original>
+<translation>Klein (4x4 Pixel)</translation>
+</phrase>
+
+<phrase>
+<original>Medium (8x8 pixels)</original>
+<translation>Mittel (8x8 Pixel)</translation>
+</phrase>
+
+<phrase>
+<original>Large (16x16 pixels)</original>
+<translation>Groß (16x16 Pixel)</translation>
+</phrase>
+
+<phrase>
+<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
+<translation>Wenn ein Bild transparente Bereichen aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. In diesem Menü können Sie die Größe des Schachbrett ändern.</translation>
 </phrase>
 
 <phrase>
@@ -14512,6 +14624,11 @@ Wollen Sie wirklich fortfahren?</translation>
 </phrase>
 
 <phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Diese Einstellung ist für die meisten Benutzer die beste Wahl. Wenn Sie keine Idee davon haben was Farbmanagement heißt, verwenden Sie diese Einstellung. Wenn Sie via Windows-Systemsteuerung ein Anzeigeprofil korrekt konfiguriert haben, verwenden Sie ebenfalls diese Einstellung.</translation>
 </phrase>
@@ -14532,58 +14649,8 @@ Wollen Sie wirklich fortfahren?</translation>
 </phrase>
 
 <phrase>
-<original>Highlight checks</original>
-<translation>Prüfung des Glanzlichts</translation>
-</phrase>
-
-<phrase>
-<original>Midtone checks</original>
-<translation>Prüfung des Mitteltons</translation>
-</phrase>
-
-<phrase>
-<original>Shadow checks</original>
-<translation>Prüfung des Schattens</translation>
-</phrase>
-
-<phrase>
-<original>Custom (click boxes to customize)</original>
-<translation>Benutzerdefiniert (zum Anpassen in Farbfeld klicken)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Wenn ein Bild transparente Bereiche aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. In diesem Menü können Sie die Farben des Schachbrett ändern.</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Klicken Sie hier, um die erste Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Klicken Sie hier, um die zweite Schachbrett-Hintergrundfarbe für Alphakanäle zu ändern</translation>
-</phrase>
-
-<phrase>
-<original>Small (4x4 pixels)</original>
-<translation>Klein (4x4 Pixel)</translation>
-</phrase>
-
-<phrase>
-<original>Medium (8x8 pixels)</original>
-<translation>Mittel (8x8 Pixel)</translation>
-</phrase>
-
-<phrase>
-<original>Large (16x16 pixels)</original>
-<translation>Groß (16x16 Pixel)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Wenn ein Bild transparente Bereichen aufweist, wird "hinter" dem Bild typischerweise ein Schachbrett angezeigt. In diesem Menü können Sie die Größe des Schachbrett ändern.</translation>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14696,11 +14763,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 </phrase>
 
 <phrase>
-<original>Color and Transparency</original>
-<translation>Farbe und Transparenz</translation>
-</phrase>
-
-<phrase>
 <original>Updates</original>
 <translation>Updates</translation>
 </phrase>
@@ -14751,13 +14813,13 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 </phrase>
 
 <phrase>
-<original>Color and transparency options include settings for color management (ICC profiles), and alpha channel handling.</original>
-<translation>Farb- und Transparenzoptionen enthalten Einstellungen für Farbmanagement (ICC-Profile) und Alphakanal-Handling.</translation>
+<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Color and Transparency Options</original>
-<translation>Farb- und Transparenzoptionen</translation>
+<original>Color Management Options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14790,7 +14852,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Der neue Speicherort für den temporären Ordner wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14905,44 +14967,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
-
-<phrase>
-<original>alpha mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Locked</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Paintbrush.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Toolpanel_Paintbrush.frm-->
-
-<!-- BEGIN text for Paintbrush.bas -->
-
-<phrase>
-<original>Paint stroke</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Paint layer</original>
-<translation></translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Paintbrush.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4463 phrases. -->
-<!-- 1931 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12715 total words. -->
+<!-- As of this build, PhotoDemon contains 4472 phrases. -->
+<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

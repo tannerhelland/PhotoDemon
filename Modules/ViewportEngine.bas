@@ -50,8 +50,8 @@ End Enum
 ' use this, so it's cached by the first pipeline staged and simply reused after that.
 Private m_ZoomRatio As Double
 
-'frontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
-Private frontBuffer As pdDIB
+'m_FrontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
+Private m_FrontBuffer As pdDIB
 
 'To avoid re-applying certain settings, we cache the target viewport's DC between calls.
 Private m_TargetDC As Long
@@ -104,7 +104,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     End If
     
     'Flip the front buffer to the screen
-    BitBlt m_TargetDC, 0, 0, frontBuffer.GetDIBWidth, frontBuffer.GetDIBHeight, frontBuffer.GetDIBDC, 0, 0, vbSrcCopy
+    BitBlt m_TargetDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
     
     'Lastly, do any tool-specific rendering directly onto the form.
     Select Case g_CurrentTool
@@ -171,7 +171,7 @@ End Sub
 ' current selection, if one is active.  This stage is the final stage before color-management is applied, so it's important to render
 ' any color-specific bits now, as the next stage will apply color-management processing to whatever is contained in the front buffer.
 '
-'When this stage is finished, the srcImage.frontBuffer object will contain a screen-ready copy of the canvas, with the fully
+'When this stage is finished, the srcImage.m_FrontBuffer object will contain a screen-ready copy of the canvas, with the fully
 ' composited image drawn atop a checkerboard in the viewport section of the canvas.  Standard canvas decorations will also be present,
 ' provided that the user's performance settings allow them.
 '
@@ -196,12 +196,16 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     If (Not srcImage.IsActive) Then Exit Sub
 
     'Create the front buffer as necessary
-    If (frontBuffer Is Nothing) Then Set frontBuffer = New pdDIB
-    If (frontBuffer.GetDIBWidth <> srcImage.canvasBuffer.GetDIBWidth) Or (frontBuffer.GetDIBHeight <> srcImage.canvasBuffer.GetDIBHeight) Then
-        frontBuffer.CreateFromExistingDIB srcImage.canvasBuffer
+    If (m_FrontBuffer Is Nothing) Then Set m_FrontBuffer = New pdDIB
+    If (m_FrontBuffer.GetDIBWidth <> srcImage.canvasBuffer.GetDIBWidth) Or (m_FrontBuffer.GetDIBHeight <> srcImage.canvasBuffer.GetDIBHeight) Then
+        m_FrontBuffer.CreateFromExistingDIB srcImage.canvasBuffer
     Else
-        BitBlt frontBuffer.GetDIBDC, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, srcImage.canvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
+        BitBlt m_FrontBuffer.GetDIBDC, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, srcImage.canvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
     End If
+    
+    '*Now* is when we want to apply color management to the front buffer.  At present, UI elements drawn atop the canvas are not
+    ' color-managed (for performance reasons).  We can revisit this in the future.
+    'LittleCMS.ApplyICCProfileToPDDIB
     
     'Retrieve a copy of the intersected viewport rect, which we forward to the selection engine (if a selection is active)
     Dim viewportIntersectRect As RECTF
@@ -211,7 +215,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     If srcImage.selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.RenderCustom frontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
+        srcImage.mainSelection.RenderCustom m_FrontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
     
     End If
     
@@ -769,8 +773,8 @@ End Sub
 'When all images have been unloaded, the temporary front buffer can also be erased to keep memory usage as low as possible.
 ' While not actually part of the viewport pipeline, I find it intuitive to store this function here.
 Public Sub EraseViewportBuffers()
-    If (Not frontBuffer Is Nothing) Then
-        frontBuffer.EraseDIB
-        Set frontBuffer = Nothing
+    If (Not m_FrontBuffer Is Nothing) Then
+        m_FrontBuffer.EraseDIB
+        Set m_FrontBuffer = Nothing
     End If
 End Sub
