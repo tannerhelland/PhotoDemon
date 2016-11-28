@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.1980</langversion>
+<langversion>6.8.1981</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1117,6 +1117,36 @@ To omogućiti podršku za komprimirani PDI datoteke, kliknite Pomoć> Provjeri a
 </phrase>
 
 <phrase>
+<original>Erase</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Inherit</original>
+<translation>nasljediti</translation>
+</phrase>
+
+<phrase>
+<original>Locked</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Perceptual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Relative colorimetric</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Absolute colorimetric</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Are you sure you want to cancel %1?</original>
 <translation>Jeste li sigurni da želite poništiti %1?</translation>
 </phrase>
@@ -1131,7 +1161,7 @@ To omogućiti podršku za komprimirani PDI datoteke, kliknite Pomoć> Provjeri a
 <translation>Pregled nije dostupan</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 69 phrases. 21 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 77 phrases. 23 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -1513,6 +1543,22 @@ In verzije 6.0 podržava, PhotoDemon makro datoteke su redizajnirani kako bi pod
 <!-- FreeImageWrapper.bas contains 0 phrases. -->
 
 <!-- END text for FreeImageWrapper.bas-->
+
+<!-- BEGIN text for Paintbrush.bas -->
+
+<phrase>
+<original>Paint stroke</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paint layer</original>
+<translation></translation>
+</phrase>
+
+<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Paintbrush.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -12785,11 +12831,6 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 </phrase>
 
 <phrase>
-<original>Inherit</original>
-<translation>nasljediti</translation>
-</phrase>
-
-<phrase>
 <original>Add a blank layer to the image.</original>
 <translation>Dodaj prazan sloj na slici.</translation>
 </phrase>
@@ -12819,7 +12860,7 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 <translation>Premjestiti sloj dolje</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 17 phrases. 9 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -13199,6 +13240,37 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 <!-- Toolpanel_MoveSize.frm contains 27 phrases. 9 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_MoveSize.frm-->
+
+<!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
+
+<phrase>
+<original>alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>preview quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Best quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Best performance</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Toolpanel_Paintbrush.frm-->
 
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
@@ -14054,6 +14126,176 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>display rendering intent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>available displays</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>turn off display color management</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use the current system profiles for each display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color profile for this display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display policies</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>use custom profiles for each display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>when closing images, warn me me about unsaved changes</original>
+<translation>kada se zatvara slike, upozoravaju mi mi o izmjenama koji nisu snimljeni</translation>
+</phrase>
+
+<phrase>
+<original>when using the "Save As" command, set the default file format according to</original>
+<translation>kada se koristi "Spremi kao" naredba, postavite zadani format datoteke u skladu s</translation>
+</phrase>
+
+<phrase>
+<original>when "Save" is used</original>
+<translation>kada je "Save" se koristi</translation>
+</phrase>
+
+<phrase>
+<original>save behavior: overwrite vs make a copy</original>
+<translation>spasiti ponašanje: prebrisati vs napraviti kopiju</translation>
+</phrase>
+
+<phrase>
+<original>closing unsaved images</original>
+<translation>zatvaranje spremljene slike</translation>
+</phrase>
+
+<phrase>
+<original>default file format when saving</original>
+<translation>Zadani format datoteke prilikom spremanja</translation>
+</phrase>
+
+<phrase>
+<original>list PhotoDemon as the last-used editing software</original>
+<translation>popis PhotoDemon kao posljednji korišten softver za uređivanje</translation>
+</phrase>
+
+<phrase>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>Prikaz ton mogućnosti mapiranja prilikom uvoza HDR i RAW slike</translation>
+</phrase>
+
+<phrase>
+<original>obey auto-rotate instructions inside image files</original>
+<translation>slušaju automatsko rotirati upute unutar slikovne datoteke</translation>
+</phrase>
+
+<phrase>
+<original>when an image is first loaded, set its viewport zoom to</original>
+<translation>kad se slika učita prvi put, postavite vidljivog dijela zumiranje</translation>
+</phrase>
+
+<phrase>
+<original>high-dynamic range (HDR) images</original>
+<translation>visoke Dynamic Range (HDR) slike</translation>
+</phrase>
+
+<phrase>
+<original>forcibly extract binary-type tags as Base64 (slow)</original>
+<translation>nasilno izdvajanje binarne tipa oznake na bazi 64 (sporo)</translation>
+</phrase>
+
+<phrase>
+<original>estimate original JPEG quality settings</original>
+<translation>procijeniti izvorne postavke kvalitete JPEG</translation>
+</phrase>
+
+<phrase>
+<original>extract unknown tags</original>
+<translation>ekstrakt nepoznate oznake</translation>
+</phrase>
+
+<phrase>
+<original>automatically hide duplicate tags</original>
+<translation>automatski sakriti dvostruke oznake</translation>
+</phrase>
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>stisnuti poništiti/ponoviti podatke na slijedećoj razini</translation>
+</phrase>
+
+<phrase>
+<original>when calculating color values</original>
+<translation>pri izračunu vrijednosti boja</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>kad uređenje elemenata sučelja</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>prilikom generiranja slike i sloj sličicama</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>pri donošenju platno slike</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>upravljanje bojama</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>sučelje</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>nema kompresije (najbrži)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>maksimalna kompresija (najsporije)</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>poništiti, povratiti</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>sličice</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>Početni prikaz</translation>
+</phrase>
+
+<phrase>
 <original>Click here to reset all options</original>
 <translation>Kliknite ovdje da biste vratili sve opcije</translation>
 </phrase>
@@ -14139,48 +14381,8 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>recently used file shortcuts should be</original>
-<translation>nedavno korištene datoteke prečaci bi trebao biti</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>opisi</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>Prozor slika naslova trebala bi biti</translation>
-</phrase>
-
-<phrase>
-<original>use the system color profile</original>
-<translation>korištenje profila boja sustav</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>koristiti jedan ili više prilagođenih profila boja</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>Boja profila za odabrani monitoru</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>Dostupno monitori</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>pri donošenju slike na ekranu</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>upravljanje bojama</translation>
+<original>main window</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14191,141 +14393,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>transparency checkerboard colors</original>
 <translation>Transparentnost šahovske boje</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>upravljanje transparentnost</translation>
-</phrase>
-
-<phrase>
-<original>when closing images, warn me me about unsaved changes</original>
-<translation>kada se zatvara slike, upozoravaju mi mi o izmjenama koji nisu snimljeni</translation>
-</phrase>
-
-<phrase>
-<original>save behavior: overwrite vs make a copy</original>
-<translation>spasiti ponašanje: prebrisati vs napraviti kopiju</translation>
-</phrase>
-
-<phrase>
-<original>when "Save" is used</original>
-<translation>kada je "Save" se koristi</translation>
-</phrase>
-
-<phrase>
-<original>closing unsaved images</original>
-<translation>zatvaranje spremljene slike</translation>
-</phrase>
-
-<phrase>
-<original>when using the "Save As" command, set the default file format according to</original>
-<translation>kada se koristi "Spremi kao" naredba, postavite zadani format datoteke u skladu s</translation>
-</phrase>
-
-<phrase>
-<original>default file format when saving</original>
-<translation>Zadani format datoteke prilikom spremanja</translation>
-</phrase>
-
-<phrase>
-<original>list PhotoDemon as the last-used editing software</original>
-<translation>popis PhotoDemon kao posljednji korišten softver za uređivanje</translation>
-</phrase>
-
-<phrase>
-<original>display tone mapping options when importing HDR and RAW images</original>
-<translation>Prikaz ton mogućnosti mapiranja prilikom uvoza HDR i RAW slike</translation>
-</phrase>
-
-<phrase>
-<original>obey auto-rotate instructions inside image files</original>
-<translation>slušaju automatsko rotirati upute unutar slikovne datoteke</translation>
-</phrase>
-
-<phrase>
-<original>high-dynamic range (HDR) images</original>
-<translation>visoke Dynamic Range (HDR) slike</translation>
-</phrase>
-
-<phrase>
-<original>when an image is first loaded, set its viewport zoom to</original>
-<translation>kad se slika učita prvi put, postavite vidljivog dijela zumiranje</translation>
-</phrase>
-
-<phrase>
-<original>forcibly extract binary-type tags as Base64 (slow)</original>
-<translation>nasilno izdvajanje binarne tipa oznake na bazi 64 (sporo)</translation>
-</phrase>
-
-<phrase>
-<original>estimate original JPEG quality settings</original>
-<translation>procijeniti izvorne postavke kvalitete JPEG</translation>
-</phrase>
-
-<phrase>
-<original>extract unknown tags</original>
-<translation>ekstrakt nepoznate oznake</translation>
-</phrase>
-
-<phrase>
-<original>automatically hide duplicate tags</original>
-<translation>automatski sakriti dvostruke oznake</translation>
-</phrase>
-
-<phrase>
-<original>when calculating color values</original>
-<translation>pri izračunu vrijednosti boja</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>kad uređenje elemenata sučelja</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>sučelje</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>nema kompresije (najbrži)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>maksimalna kompresija (najsporije)</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>stisnuti poništiti/ponoviti podatke na slijedećoj razini</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>poništiti, povratiti</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>sličice</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>prilikom generiranja slike i sloj sličicama</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>pri donošenju platno slike</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>Početni prikaz</translation>
 </phrase>
 
 <phrase>
@@ -14368,18 +14435,18 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>compact - file name only</original>
-<translation>samo naziv datoteke - kompaktan</translation>
+<original>compact - image names only</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>descriptive - full location, including folder(s)</original>
-<translation>opisno - puno lokacija, uključujući mape)</translation>
+<original>descriptive - full image locations, including folder(s)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-<translation>Slika prozori imaju tendenciju da se veliki, pa slobodno prikazati svaku od njih u potpunosti lokaciji u naslovnoj traci prozora sa slikom.</translation>
+<original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14388,18 +14455,63 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>compact - file names only</original>
-<translation>samo imena datoteka - kompaktan</translation>
-</phrase>
-
-<phrase>
-<original>descriptive - full locations, including folder(s)</original>
-<translation>opisni - puni lokacije, uključujući mape)</translation>
-</phrase>
-
-<phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
 <translation>"Nedavne datoteke" width meni je ograničena Windows. Da biste spriječili ovaj izbornik da iscuri, PhotoDemon može prikazati nazive slika samo umjesto pune slika lokacije.</translation>
+</phrase>
+
+<phrase>
+<original>Highlight checks</original>
+<translation>Označite obraze</translation>
+</phrase>
+
+<phrase>
+<original>Midtone checks</original>
+<translation>Mid Tone provjere</translation>
+</phrase>
+
+<phrase>
+<original>Shadow checks</original>
+<translation>Shadow provjere</translation>
+</phrase>
+
+<phrase>
+<original>Custom (click boxes to customize)</original>
+<translation>Custom (kliknite polja za prilagodbu)</translation>
+</phrase>
+
+<phrase>
+<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
+<translation>Ako slika ima transparentne površine, tabla za igranje dama obično se prikazuje "iza" slika. Ovaj okvir omogućuje promjenu šahovske boje.</translation>
+</phrase>
+
+<phrase>
+<original>Click to change the first checkerboard background color for alpha channels</original>
+<translation>Kliknite za promjenu prvu boju šahovnica pozadine za alfa kanala</translation>
+</phrase>
+
+<phrase>
+<original>Click to change the second checkerboard background color for alpha channels</original>
+<translation>Kliknite za promjenu drugu boju šahovnica pozadine za alfa kanala</translation>
+</phrase>
+
+<phrase>
+<original>Small (4x4 pixels)</original>
+<translation>Mali (4x4 piksela)</translation>
+</phrase>
+
+<phrase>
+<original>Medium (8x8 pixels)</original>
+<translation>Srednja (8x8 piksela)</translation>
+</phrase>
+
+<phrase>
+<original>Large (16x16 pixels)</original>
+<translation>Veliki (16x16 piksela)</translation>
+</phrase>
+
+<phrase>
+<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
+<translation>Ako slika ima transparentne površine, tabla za igranje dama obično se prikazuje "iza" slika. Ovaj okvir omogućuje promjenu veličine šahovske ploče.</translation>
 </phrase>
 
 <phrase>
@@ -14513,6 +14625,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Ova postavka je najbolji izbor za većinu korisnika. Ako nemate pojma menadžment Koje je boje, koristite ovu postavku. Ako ste ispravno podesili postavku prikaza preko upravljačkoj ploči sustava Windows, koristiti ovu postavku.</translation>
 </phrase>
@@ -14533,58 +14650,8 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Highlight checks</original>
-<translation>Označite obraze</translation>
-</phrase>
-
-<phrase>
-<original>Midtone checks</original>
-<translation>Mid Tone provjere</translation>
-</phrase>
-
-<phrase>
-<original>Shadow checks</original>
-<translation>Shadow provjere</translation>
-</phrase>
-
-<phrase>
-<original>Custom (click boxes to customize)</original>
-<translation>Custom (kliknite polja za prilagodbu)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's colors.</original>
-<translation>Ako slika ima transparentne površine, tabla za igranje dama obično se prikazuje "iza" slika. Ovaj okvir omogućuje promjenu šahovske boje.</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the first checkerboard background color for alpha channels</original>
-<translation>Kliknite za promjenu prvu boju šahovnica pozadine za alfa kanala</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the second checkerboard background color for alpha channels</original>
-<translation>Kliknite za promjenu drugu boju šahovnica pozadine za alfa kanala</translation>
-</phrase>
-
-<phrase>
-<original>Small (4x4 pixels)</original>
-<translation>Mali (4x4 piksela)</translation>
-</phrase>
-
-<phrase>
-<original>Medium (8x8 pixels)</original>
-<translation>Srednja (8x8 piksela)</translation>
-</phrase>
-
-<phrase>
-<original>Large (16x16 pixels)</original>
-<translation>Veliki (16x16 piksela)</translation>
-</phrase>
-
-<phrase>
-<original>If an image has transparent areas, a checkerboard is typically displayed "behind" the image.  This box lets you change the checkerboard's size.</original>
-<translation>Ako slika ima transparentne površine, tabla za igranje dama obično se prikazuje "iza" slika. Ovaj okvir omogućuje promjenu veličine šahovske ploče.</translation>
+<original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14697,11 +14764,6 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 </phrase>
 
 <phrase>
-<original>Color and Transparency</original>
-<translation>Boja i transparentnost</translation>
-</phrase>
-
-<phrase>
 <original>Updates</original>
 <translation>nadogradnje</translation>
 </phrase>
@@ -14752,13 +14814,13 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 </phrase>
 
 <phrase>
-<original>Color and transparency options include settings for color management (ICC profiles), and alpha channel handling.</original>
-<translation>Boja i prozirnost opcije uključuju postavke za upravljanje bojama (ICC profila), te rukovanje alfa kanal.</translation>
+<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Color and Transparency Options</original>
-<translation>Boja i prozirnost Mogućnosti</translation>
+<original>Color Management Options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14791,7 +14853,7 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 <translation>Ova nova lokacija privremenu mapu neće stupiti na snagu dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 185 phrases. 38 were duplicates of existing phrases, so only 147 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14906,44 +14968,12 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
-
-<phrase>
-<original>alpha mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Locked</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Paintbrush.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Toolpanel_Paintbrush.frm-->
-
-<!-- BEGIN text for Paintbrush.bas -->
-
-<phrase>
-<original>Paint stroke</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Paint layer</original>
-<translation></translation>
-</phrase>
-
-<!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for Paintbrush.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4463 phrases. -->
-<!-- 1931 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12715 total words. -->
+<!-- As of this build, PhotoDemon contains 4472 phrases. -->
+<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>
