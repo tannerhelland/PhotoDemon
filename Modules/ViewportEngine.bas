@@ -3,8 +3,8 @@ Attribute VB_Name = "Viewport_Engine"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright 2001-2016 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 13/September/15
-'Last update: completely overhaul the viewport pipeline to prep for paint tools!
+'Last updated: 29/November/16
+'Last update: reinstate all color management code under LittleCMS (instead of the Windows ICM engine, which is a hot mess)
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
 ' - Viewport_Engine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed,
@@ -53,9 +53,6 @@ Private m_ZoomRatio As Double
 'm_FrontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
 Private m_FrontBuffer As pdDIB
 
-'To avoid re-applying certain settings, we cache the target viewport's DC between calls.
-Private m_TargetDC As Long
-
 'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.  Note that stage 5 is ignored because
 ' it only affects changes in zoom values (or switching between images).
 Private m_TimeStage2 As Double, m_TimeStage3 As Double, m_TimeStage4 As Double, m_TimeStage5 As Double
@@ -88,23 +85,8 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     If (srcImage Is Nothing) Then Exit Sub
     If (Not srcImage.IsActive) Then Exit Sub
     
-    'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
-    ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
-    
-    'TODO: fix this; g_UseSystemColorProfile is no longer in use
-    
-    'If (Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB)) Or (m_TargetDC <> dstCanvas.hDC) Then
-    If (Not g_IsSystemColorProfileSRGB) Or (m_TargetDC <> dstCanvas.hDC) Then
-        m_TargetDC = dstCanvas.hDC
-        
-        'TODO 7.0: migrate all color management tasks to LittleCMS
-        'AssignDefaultColorProfileToObject dstCanvas.hWnd, m_TargetDC
-        'TurnOnColorManagementForDC m_TargetDC
-
-    End If
-    
-    'Flip the front buffer to the screen
-    BitBlt m_TargetDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
+    'Flip the viewport buffer over to the canvas control.  Any additional rendering must now happen there.
+    BitBlt dstCanvas.hDC, 0, 0, m_FrontBuffer.GetDIBWidth, m_FrontBuffer.GetDIBHeight, m_FrontBuffer.GetDIBDC, 0, 0, vbSrcCopy
     
     'Lastly, do any tool-specific rendering directly onto the form.
     Select Case g_CurrentTool
@@ -204,8 +186,8 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     End If
     
     '*Now* is when we want to apply color management to the front buffer.  At present, UI elements drawn atop the canvas are not
-    ' color-managed (for performance reasons).  We can revisit this in the future.
-    'LittleCMS.ApplyICCProfileToPDDIB
+    ' color-managed (for performance reasons).  I may revisit this in the future.
+    ColorManagement.ApplyDisplayColorManagement m_FrontBuffer
     
     'Retrieve a copy of the intersected viewport rect, which we forward to the selection engine (if a selection is active)
     Dim viewportIntersectRect As RECTF
@@ -663,7 +645,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     ' (TODO: creating the back buffer as 32-bit screws up selection rendering, because the current selection engine always assumes
     '         a 24-bit target.  Look at fixing this!)
     If (srcImage.canvasBuffer.GetDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.GetDIBHeight <> CanvasRect_ActualPixels.Height) Then
-        srcImage.canvasBuffer.CreateBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 24, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
+        srcImage.canvasBuffer.CreateBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 32, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
     Else
         GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
     End If

@@ -1012,6 +1012,7 @@ Public Sub FinalTooltipUnload()
         SetWindowPos m_TTHwnd, 0&, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_FRAMECHANGED Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
     
         'With all original settings restored, we can safely unload the tooltip window
+        tool_Tooltip.Visible = False
         Unload tool_Tooltip
         Set tool_Tooltip = Nothing
         

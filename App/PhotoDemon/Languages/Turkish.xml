@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1118,7 +1118,7 @@ To, sıkıştırılmış KAE dosyalar için destek sağlar Yardım'ı tıklatın
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>sil</translation>
 </phrase>
 
 <phrase>
@@ -1128,22 +1128,22 @@ To, sıkıştırılmış KAE dosyalar için destek sağlar Yardım'ı tıklatın
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>Kilitli</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>algısal</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>Nispi kolorimetrik</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>Mutlak kolorimetrik</translation>
 </phrase>
 
 <phrase>
@@ -1544,12 +1544,12 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>Boya vuruşu</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>Boya katmanı</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3332,7 +3332,7 @@ Please enter a numeric value.</original>
 <translation>İstenen seçim dosyası bulunamadı. Seçim yükü terk etti.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4168,7 +4168,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>orijinal</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13237,27 +13237,27 @@ To olarak FreeImage arayüzü plug-in (FreeImage.dll) kutlandı, FreeImage.dll p
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>alfa modu</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>önizleme kalitesi</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>En iyi kalite</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>Varsayılan</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>En iyi performans</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14114,37 +14114,37 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>Görüntü oluşturma niyetini göster</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>mevcut görüntüler</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>Görüntü renk yönetimini kapat</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>Her ekran için mevcut sistem profillerini kullanın</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>Bu ekran için renk profili</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>görüntüleme politikaları</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>Her ekran için özel profiller kullanın</translation>
 </phrase>
 
 <phrase>
@@ -14369,7 +14369,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>ana pencere</translation>
 </phrase>
 
 <phrase>
@@ -14422,17 +14422,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>Kompakt - yalnızca resim adları</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>Açıklayıcı - klasör (ler) de dahil olmak üzere tam resim konumları</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Ana PhotoDemon penceresinin başlık çubuğu, halihazırda yüklenen resimle ilgili bilgileri görüntüler. Ne kadar çok bilginin görüntüleneceğini denetlemek için bu tercihi kullanın.</translation>
 </phrase>
 
 <phrase>
@@ -14612,7 +14612,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Ekran rengi yönetimini kapatmak, küçük bir performans artışı sağlayabilir. Ekranınız şu anda renk yönetimi için yapılandırılmamışsa bu ayarı kullanın.</translation>
 </phrase>
 
 <phrase>
@@ -14637,7 +14637,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Bu ayarı ne kontrol ettiğini bilmiyorsanız, onu "Algılamalı" olarak ayarlayın. Algısal görüntü oluşturma niyeti, çoğu kullanıcı için en iyi seçimdir.</translation>
 </phrase>
 
 <phrase>
@@ -14801,12 +14801,12 @@ If yamalı vardır.</translation>
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Renk yönetimi seçenekleri, PhotoDemon'un görüntü dosyaları ve aygıtları için ICC profillerini nasıl kullandığını denetler.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Renk Yönetimi Seçenekleri</translation>
 </phrase>
 
 <phrase>
@@ -14958,8 +14958,8 @@ If yamalı vardır.</translation>
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

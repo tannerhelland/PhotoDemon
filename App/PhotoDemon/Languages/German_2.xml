@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2014</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>Abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1109,7 +1109,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Grain extract</original>
-<translation>Körnung       </translation>
+<translation>Körnung extrahieren</translation>
 </phrase>
 
 <phrase>
@@ -1119,7 +1119,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>Löschen</translation>
 </phrase>
 
 <phrase>
@@ -1134,17 +1134,17 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>Perzeptiv</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>Relativ kolorimetrisch</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>Absolut kolorimetrisch</translation>
 </phrase>
 
 <phrase>
@@ -3337,7 +3337,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Angeforderte Auswahldatei konnte nicht gefunden werden. Laden der Auswahl abgebrochen.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -9851,7 +9851,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating film grain texture</original>
-<translation>Filmkörnung-Textur wird generiert</translation>
+<translation>Filmkörnungstextur wird generiert</translation>
 </phrase>
 
 <phrase>
@@ -12592,7 +12592,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>Standardmäßig werden hier beschreibende anstelle technischer Bezeichnungen verwendet. Fortgeschrittene Benutzer können diese Option umschalten, um weitere Resampling-Verfahren zu exponieren.</translation>
+<translation>Standardmäßig werden hier deskriptive anstelle technischer Bezeichnungen verwendet. Fortgeschrittene Benutzer können diese Option umschalten, um weitere Resampling-Verfahren zu exponieren.</translation>
 </phrase>
 
 <phrase>
@@ -13249,22 +13249,22 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>Vorschauqualität</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Beste Qualität</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>Standard</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>Beste Performance</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -13739,7 +13739,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
-<translation>z. B. "vollständig", "unfertig", etc. Jeder beschreibende Text ist akzeptabel.</translation>
+<translation>z. B. "vollständig", "unfertig", etc. Jeder deskriptive Text ist akzeptabel.</translation>
 </phrase>
 
 <phrase>
@@ -14126,37 +14126,37 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>Rendering-Intent anzeigen</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>Verfügbare Anzeigen</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>Anzeige des Farbmanagements ausschalten</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>Die aktuellen Systemprofile für jede Anzeige verwenden</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>Farbprofil für diese Anzeige</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>Richtlinien anzeigen</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>Benutzerdefinierte Profile für jede Anzeige verwenden</translation>
 </phrase>
 
 <phrase>
@@ -14381,7 +14381,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>Hauptfenster</translation>
 </phrase>
 
 <phrase>
@@ -14435,17 +14435,17 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>Kompakt - Nur Bildnamen</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>Deskriptiv - Vollständige Bildspeicherorte, einschließlich Ordner</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Die Titelleiste des Hauptfensters von PhotoDemon zeigt Informationen über das derzeitig geladene Bild an. Verwenden Sie diese Einstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
 </phrase>
 
 <phrase>
@@ -14625,12 +14625,12 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Das Ausschalten der Anzeige des Farbmanagements kann für einen kleinen Performnace-Schub sorgen. Wenn Ihre Anzeige derzeitig nicht für das Farbmanagement konfiguriert ist, verwenden Sie diese Einstellung.</translation>
 </phrase>
 
 <phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Diese Einstellung ist für die meisten Benutzer die beste Wahl. Wenn Sie keine Idee davon haben was Farbmanagement heißt, verwenden Sie diese Einstellung. Wenn Sie via Windows-Systemsteuerung ein Anzeigeprofil korrekt konfiguriert haben, verwenden Sie ebenfalls diese Einstellung.</translation>
+<translation>Diese Einstellung ist für die meisten Benutzer die beste Wahl. Wenn Sie keine Idee davon haben, was Farbmanagement heißt, verwenden Sie diese Einstellung. Wenn Sie via Windows-Systemsteuerung ein Anzeigeprofil korrekt konfiguriert haben, verwenden Sie ebenfalls diese Einstellung.</translation>
 </phrase>
 
 <phrase>
@@ -14650,7 +14650,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Wenn Sie nicht wissen, was diese Einstellung steuert, legen Sie es auf "Perzeptiv" fest. Perzeptives Rendering-Intent ist die beste Wahl für die meisten Benutzer.</translation>
 </phrase>
 
 <phrase>
@@ -14814,12 +14814,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Farbmanagementoptionen steuern, wie PhotoDemon ICC-Profile für Bilddateien und Geräte verwendet.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Farbmanagementoptionen</translation>
 </phrase>
 
 <phrase>
@@ -14971,8 +14971,8 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

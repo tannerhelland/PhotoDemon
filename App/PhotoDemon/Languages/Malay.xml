@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1119,7 +1119,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>Padam</translation>
 </phrase>
 
 <phrase>
@@ -1129,22 +1129,22 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>Terkunci</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>persepsi</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>kolorimetri relatif</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>kolorimetri Absolute</translation>
 </phrase>
 
 <phrase>
@@ -1549,12 +1549,12 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>strok Paint</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>lapisan cat</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3337,7 +3337,7 @@ Please masukkan nilai berangka.</translation>
 <translation>Fail pilihan yang diminta tidak boleh ditempat. Beban Pemilihan terbengkalai.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4175,7 +4175,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>asal</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13246,27 +13246,27 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>mod alpha</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>kualiti pratonton</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Kualiti terbaik</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>lalai</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>persembahan terbaik</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14128,37 +14128,37 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>paparan rendering niat</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>memaparkan tersedia</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>mematikan pengurusan warna paparan</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>menggunakan profil sistem semasa bagi setiap paparan</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>profil warna untuk paparan ini</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>dasar paparan</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>menggunakan profil peribadi untuk setiap paparan</translation>
 </phrase>
 
 <phrase>
@@ -14383,7 +14383,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>tetingkap utama</translation>
 </phrase>
 
 <phrase>
@@ -14437,17 +14437,17 @@ Are anda pasti anda mahu teruskan?</translation>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>padat - nama gambar sahaja</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>deskriptif - lokasi imej penuh, termasuk folder (s)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Bar tajuk tetingkap PhotoDemon utama memaparkan maklumat tentang imej yang sedang dimuatkan. Gunakan pilihan ini untuk mengawal berapa banyak maklumat yang dipaparkan.</translation>
 </phrase>
 
 <phrase>
@@ -14627,7 +14627,7 @@ Are anda pasti anda mahu teruskan?</translation>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Mematikan pengurusan warna paparan boleh menyediakan rangsangan prestasi kecil. Jika paparan anda ini tidak dikonfigurasi untuk pengurusan warna, menggunakan tetapan ini.</translation>
 </phrase>
 
 <phrase>
@@ -14652,7 +14652,7 @@ Are anda pasti anda mahu teruskan?</translation>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Jika anda tidak tahu apa ini menetapkan kawalan, menetapkan ia untuk "Persepsi". Persepsi rendering niat adalah pilihan terbaik untuk kebanyakan pengguna.</translation>
 </phrase>
 
 <phrase>
@@ -14816,12 +14816,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>pilihan pengurusan warna mengawal bagaimana PhotoDemon menggunakan profil ICC untuk fail imej dan peranti.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Pilihan Pengurusan Warna</translation>
 </phrase>
 
 <phrase>
@@ -14973,8 +14973,8 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

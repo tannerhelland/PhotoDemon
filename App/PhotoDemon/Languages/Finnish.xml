@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1118,7 +1118,7 @@ To käyttöön tuen pakattu PDI tiedostoja valitsemalla Ohje> Tarkista päivityk
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>pyyhkiä</translation>
 </phrase>
 
 <phrase>
@@ -1128,22 +1128,22 @@ To käyttöön tuen pakattu PDI tiedostoja valitsemalla Ohje> Tarkista päivityk
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>kiinni</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>Havainnollinen</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>suhteellinen kolorimetrinen</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>absoluuttinen kolorimetrinen</translation>
 </phrase>
 
 <phrase>
@@ -1544,12 +1544,12 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>Paint aivohalvaus</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>maalikerroksen</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3330,7 +3330,7 @@ Please enter a numeric value.</original>
 <translation>Pyydetty valinta tiedostoa ei löydy. Valinta kuorma hylätty.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4168,7 +4168,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>alkuperäinen</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13239,27 +13239,27 @@ To käyttöön tuen tätä ominaisuutta, kopioi FreeImage.dll tiedosto plug-in h
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>alfa-tilassa</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>esikatselu laatu</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Paras laatu</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>oletusarvo</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>Paras esitys</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14121,37 +14121,37 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>näyttö muodostusperuste</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>käytettävissä näytöt</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>sammuttaa näytön väri hallinta</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>käyttää nykyistä järjestelmää profiilit kullekin näytölle</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>väriprofiili tähän näyttö</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>näyttö politiikkaa</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>käyttää omia profiileja kullekin näytölle</translation>
 </phrase>
 
 <phrase>
@@ -14376,7 +14376,7 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>pääikkuna</translation>
 </phrase>
 
 <phrase>
@@ -14430,17 +14430,17 @@ Oletko varma, että haluat jatkaa?</translation>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>kompakti - kuva nimet vain</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>kuvaileva - koko kuvan paikoissa, kuten kansio (t)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Otsikkorivillä tärkeimmistä PhotoDemon ikkuna näyttää tietoja tällä hetkellä ladattuna kuvan. Käytä tätä asetusta, miten paljon tietoa näytetään.</translation>
 </phrase>
 
 <phrase>
@@ -14620,7 +14620,7 @@ Oletko varma, että haluat jatkaa?</translation>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Sammuttaminen näytön väri hallinta voi tarjota pienen suorituskyvyn lisäämiseksi. Jos näyttö ei ole tällä hetkellä määritetty väri, käytä tätä asetusta.</translation>
 </phrase>
 
 <phrase>
@@ -14645,7 +14645,7 @@ Oletko varma, että haluat jatkaa?</translation>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Jos et tiedä, mitä tämä säätölaitteiksi, asettaa sen "Aistiperustainen". Havainnollinen muodostusperuste on paras vaihtoehto useimmille käyttäjille.</translation>
 </phrase>
 
 <phrase>
@@ -14809,12 +14809,12 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Väri hoitovaihtoehtojen hallita PhotoDemon käyttää ICC-profiileja kuvatiedostoja ja laitteita.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Color-asetukset</translation>
 </phrase>
 
 <phrase>
@@ -14966,8 +14966,8 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

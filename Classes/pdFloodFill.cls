@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flood Fill Engine
 'Copyright 2014-2016 by Tanner Helland
 'Created: 11/October/14
-'Last updated: 13/October/14
-'Last update: wrap up initial build
+'Last updated: 29/November/16
+'Last update: minor modifications to better support 32-bpp destination flood fill maps
 '
 'This class supplies the flood fill algorithm for a number of different tools in PD (magic wand, bucket fill, etc).
 ' The flood fill approach itself is pretty basic - a stack is used in place of recursion, and a global mapping array
@@ -27,12 +27,12 @@ Attribute VB_Exposed = False
 ' pixels can also be specified; individual channels (including alpha), luminosity, or a full composite check of all
 ' channels can be specified.  Finally, antialiasing can also be requested.  A custom AA solution is used for
 ' contiguous fills, and it's extremely fast as we know in advance which pixels should be examined for AA.  For
-' global fills, PD's standard quickBlur function is used (as we don't have a continuity map available).
+' global fills, PD's standard QuickBlur function is used (as we don't have a continuity map available).
 '
 'To allow this class to be used by any external function, it simply requires a source and destination DIB.  The
-' source DIB can be 24 or 32bpp; both are handled fine.  The destination DIB will be forcibly recreated as 24bpp,
-' and - this is important - FILL DATA WILL BE STORED IN THE BLUE CHANNEL ONLY.  This increases function speed, as
-' we only need one destination array access when building the fill map.
+' source DIB can be 24 or 32bpp; both are handled fine.  The destination DIB will be forcibly recreated as either
+' 24bpp or 32bpp (this is set by the caller), and - this is important - FILL DATA WILL BE STORED IN THE BLUE CHANNEL
+' ONLY.  This increases function speed, as we only need one destination array access when building the fill map.
 '
 'Similarly, how the caller uses the fill map is up to them.  In the case of magic wand selections, PD converts the
 ' flood fill map to a selection map.  For bucket fill, it simply merges the requested fill type onto the image,
@@ -96,59 +96,60 @@ Private m_AntialiasingMode As Boolean
 Private m_InitPoint As POINTAPI
 
 'Get/set functions for all relevant flood fill parameters
-Public Function getAntialiasingMode() As Boolean
-    getAntialiasingMode = m_AntialiasingMode
+Public Function GetAntialiasingMode() As Boolean
+    GetAntialiasingMode = m_AntialiasingMode
 End Function
 
-Public Sub setAntialiasingMode(ByVal newAntialiasingMode As Boolean)
+Public Sub SetAntialiasingMode(ByVal newAntialiasingMode As Boolean)
     m_AntialiasingMode = newAntialiasingMode
 End Sub
 
-Public Function getCompareMode() As PD_FLOOD_COMPARE
-    getCompareMode = m_CompareMode
+Public Function GetCompareMode() As PD_FLOOD_COMPARE
+    GetCompareMode = m_CompareMode
 End Function
 
-Public Function setCompareMode(ByVal newCompareMode As PD_FLOOD_COMPARE)
+Public Function SetCompareMode(ByVal newCompareMode As PD_FLOOD_COMPARE)
     m_CompareMode = newCompareMode
 End Function
 
-Friend Function getInitialPoint() As POINTAPI
-    getInitialPoint = m_InitPoint
+Friend Function GetInitialPoint() As POINTAPI
+    GetInitialPoint = m_InitPoint
 End Function
 
-Public Sub setInitialPoint(ByVal startX As Long, ByVal startY As Long)
+Public Sub SetInitialPoint(ByVal startX As Long, ByVal startY As Long)
     m_InitPoint.x = startX
     m_InitPoint.y = startY
 End Sub
 
-Public Function getSearchMode() As PD_FLOOD_SEARCH
-    getSearchMode = m_SearchMode
+Public Function GetSearchMode() As PD_FLOOD_SEARCH
+    GetSearchMode = m_SearchMode
 End Function
 
-Public Sub setSearchMode(ByVal newSearchMode As PD_FLOOD_SEARCH)
+Public Sub SetSearchMode(ByVal newSearchMode As PD_FLOOD_SEARCH)
     m_SearchMode = newSearchMode
 End Sub
 
-Public Function getTolerance() As Double
-    getTolerance = m_Tolerance
+Public Function GetTolerance() As Double
+    GetTolerance = m_Tolerance
 End Function
 
-Public Sub setTolerance(ByVal newTolerance As Double)
+Public Sub SetTolerance(ByVal newTolerance As Double)
     m_Tolerance = newTolerance
 End Sub
 
 'Initiate a flood fill operation.  This class doesn't actually fill anything; what it does is fill a destination DIB with a
 ' graymap of the flood results (black = unfilled, white = filled, gray = partially filled).  This allows the caller to
 ' use the flood results however they want, without having to modify this class to match.
-Public Function initiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
+Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal dstDibColorDepth As Long = 32) As Boolean
 
     'Initialize the destination DIB
-    dstDIB.createBlank srcDIB.getDIBWidth, srcDIB.getDIBHeight, 24, 0
+    If (dstDibColorDepth <> 32) Then dstDibColorDepth = 24
+    dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, dstDibColorDepth, 0
     
     'Make sure the passed x/y coords are valid.  If they aren't, exit now.
-    If (m_InitPoint.x < 0) Or (m_InitPoint.y < 0) Or (m_InitPoint.x >= srcDIB.getDIBWidth) Or (m_InitPoint.y >= srcDIB.getDIBHeight) Then
+    If (m_InitPoint.x < 0) Or (m_InitPoint.y < 0) Or (m_InitPoint.x >= srcDIB.GetDIBWidth) Or (m_InitPoint.y >= srcDIB.GetDIBHeight) Then
         Debug.Print "Invalid flood fill location requested.  Abandoning flood fill now."
-        initiateFloodFill = False
+        InitiateFloodFill = False
         Exit Function
     End If
     
@@ -156,10 +157,10 @@ Public Function initiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) 
     Select Case m_SearchMode
         
         Case PDFS_CONTIGUOUS
-            floodFillContiguous srcDIB, dstDIB
+            FloodFillContiguous srcDIB, dstDIB
         
         Case PDFS_WHOLEIMAGE
-            floodFillGlobal srcDIB, dstDIB
+            FloodFillGlobal srcDIB, dstDIB
         
     End Select
     
@@ -168,21 +169,21 @@ Public Function initiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) 
         
         'For contiguous fill modes, we use a custom AA solution that provides better results.
         If m_SearchMode = PDFS_CONTIGUOUS Then
-            floodFillCustomAA dstDIB
+            FloodFillCustomAA dstDIB
         
         'For global fill modes, a simple quick blur will do
         Else
-            quickBlurDIB dstDIB, 1
+            QuickBlurDIB dstDIB, 1
         End If
         
     End If
     
-    initiateFloodFill = True
+    InitiateFloodFill = True
 
 End Function
 
 'Perform a contiguous (default) flood fill.  Note that dstDIB is guaranteed to be properly initialized.
-Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
+Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
 
     'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
     ' if this class is used multiple times in a row.
@@ -190,8 +191,8 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     
     'Predetermine upper bounds for x/y checks
     Dim xBound As Long, yBound As Long
-    xBound = srcDIB.getDIBWidth - 1
-    yBound = srcDIB.getDIBHeight - 1
+    xBound = srcDIB.GetDIBWidth - 1
+    yBound = srcDIB.GetDIBHeight - 1
     
     'Reset the "has been filled" array
     ReDim m_AlreadyChecked(0 To xBound, 0 To yBound) As Byte
@@ -201,17 +202,20 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     
     'Make sure 24 and 32bpp sources are both handled correctly
     Dim x As Long, y As Long, quickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
-    xOffset = srcDIB.getDIBColorDepth \ 8
-    If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
+    xOffset = srcDIB.GetDIBColorDepth \ 8
+    If srcDIB.GetDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
+    
+    Dim xOffsetDst As Long
+    xOffsetDst = dstDIB.GetDIBColorDepth \ 8
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, dstImageData() As Byte
     Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
-    prepSafeArray dstSA, dstDIB
+    PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'A number of local variables are used to help optimize the flood function
@@ -228,9 +232,9 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     quickX = m_InitPoint.x * xOffset
     y = m_InitPoint.y
     
-    refR = srcImageData(quickX + 2, y)
-    refG = srcImageData(quickX + 1, y)
     refB = srcImageData(quickX, y)
+    refG = srcImageData(quickX + 1, y)
+    refR = srcImageData(quickX + 2, y)
     If hasAlpha Then refA = srcImageData(quickX + 3, y) Else refA = 0
     
     refL = 213 * refR + 715 * refG + 72 * refB
@@ -283,45 +287,43 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
                 
         'Retrieve RGB/A values for this point
         quickX = x * xOffset
-        r = srcImageData(quickX + 2, y)
-        g = srcImageData(quickX + 1, y)
         b = srcImageData(quickX, y)
+        g = srcImageData(quickX + 1, y)
+        r = srcImageData(quickX + 2, y)
         If hasAlpha Then a = srcImageData(quickX + 3, y)
     
         'Compare this pixel against the reference
-        Select Case m_CompareMode
-                
-            Case PDFC_COMPOSITE
-                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-                If hasAlpha Then thisValue = thisValue + Abs(a - refA)
-                If thisValue <= modifiedTolerance Then isWithinTolerance = True
-            
-            Case PDFC_COLOR
-                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-                If thisValue <= modifiedTolerance Then isWithinTolerance = True
-            
-            Case PDFC_LUMINANCE
-                l = 213 * r + 715 * g + 72 * b
-                If Abs(l - refL) <= modifiedTolerance Then isWithinTolerance = True
-            
-            Case PDFC_RED
-                If Abs(r - refR) <= modifiedTolerance Then isWithinTolerance = True
-            
-            Case PDFC_GREEN
-                If Abs(g - refG) <= modifiedTolerance Then isWithinTolerance = True
-                
-            Case PDFC_BLUE
-                If Abs(b - refB) <= modifiedTolerance Then isWithinTolerance = True
-                
-            Case PDFC_ALPHA
-                If Abs(a - refA) <= modifiedTolerance Then isWithinTolerance = True
+        If (m_CompareMode = PDFC_COMPOSITE) Then
+            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+            If hasAlpha Then thisValue = thisValue + Abs(a - refA)
+            If thisValue <= modifiedTolerance Then isWithinTolerance = True
         
-        End Select
+        ElseIf (m_CompareMode = PDFC_COLOR) Then
+            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+            If thisValue <= modifiedTolerance Then isWithinTolerance = True
+            
+        ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+            l = 213 * r + 715 * g + 72 * b
+            If Abs(l - refL) <= modifiedTolerance Then isWithinTolerance = True
+            
+        ElseIf (m_CompareMode = PDFC_RED) Then
+            If Abs(r - refR) <= modifiedTolerance Then isWithinTolerance = True
+            
+        ElseIf (m_CompareMode = PDFC_GREEN) Then
+            If Abs(g - refG) <= modifiedTolerance Then isWithinTolerance = True
+                
+        ElseIf (m_CompareMode = PDFC_BLUE) Then
+            If Abs(b - refB) <= modifiedTolerance Then isWithinTolerance = True
+                
+        ElseIf (m_CompareMode = PDFC_ALPHA) Then
+            If Abs(a - refA) <= modifiedTolerance Then isWithinTolerance = True
+        
+        End If
         
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
             
-            dstQuickX = x * 3
+            dstQuickX = x * xOffsetDst
             dstImageData(dstQuickX, y) = 255
             dstImageData(dstQuickX + 1, y) = 255
             dstImageData(dstQuickX + 2, y) = 255
@@ -330,11 +332,11 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             If m_AntialiasingMode Then m_AlreadyChecked(x, y) = 2
         
             'Push our four neighboring pixels onto the stack, as necessary
-            If x > 0 Then If m_AlreadyChecked(x - 1, y) = 0 Then PushOntoStack x - 1, y
-            If x < xBound Then If m_AlreadyChecked(x + 1, y) = 0 Then PushOntoStack x + 1, y
+            If (x > 0) Then If m_AlreadyChecked(x - 1, y) = 0 Then PushOntoStack x - 1, y
+            If (x < xBound) Then If m_AlreadyChecked(x + 1, y) = 0 Then PushOntoStack x + 1, y
             
-            If y > 0 Then If m_AlreadyChecked(x, y - 1) = 0 Then PushOntoStack x, y - 1
-            If y < yBound Then If m_AlreadyChecked(x, y + 1) = 0 Then PushOntoStack x, y + 1
+            If (y > 0) Then If m_AlreadyChecked(x, y - 1) = 0 Then PushOntoStack x, y - 1
+            If (y < yBound) Then If m_AlreadyChecked(x, y + 1) = 0 Then PushOntoStack x, y + 1
             
         End If
                 
@@ -345,31 +347,34 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
-    floodFillContiguous = True
+    FloodFillContiguous = True
     
 End Function
 
 'Perform a full-image, non-contiguous flood fill.  Note that dstDIB is guaranteed to be properly initialized.
-Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
+Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
     
      'Predetermine upper bounds for x/y checks
     Dim xBound As Long, yBound As Long
-    xBound = srcDIB.getDIBWidth - 1
-    yBound = srcDIB.getDIBHeight - 1
+    xBound = srcDIB.GetDIBWidth - 1
+    yBound = srcDIB.GetDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
     Dim x As Long, y As Long, quickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
-    xOffset = srcDIB.getDIBColorDepth \ 8
-    If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
+    xOffset = srcDIB.GetDIBColorDepth \ 8
+    If srcDIB.GetDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
+    
+    Dim xOffsetDst As Long
+    xOffsetDst = dstDIB.GetDIBColorDepth \ 8
     
     'Generate direct references to the source and destination DIB data
     Dim srcImageData() As Byte, dstImageData() As Byte
     Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
     
-    prepSafeArray srcSA, srcDIB
+    PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
-    prepSafeArray dstSA, dstDIB
+    PrepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'A number of local variables are used to help optimize the flood function
@@ -385,9 +390,9 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     quickX = m_InitPoint.x * xOffset
     y = m_InitPoint.y
     
-    refR = srcImageData(quickX + 2, y)
-    refG = srcImageData(quickX + 1, y)
     refB = srcImageData(quickX, y)
+    refG = srcImageData(quickX + 1, y)
+    refR = srcImageData(quickX + 2, y)
     If hasAlpha Then refA = srcImageData(quickX + 3, y) Else refA = 0
     
     refL = (213 * refR + 715 * refG + 72 * refB)
@@ -438,9 +443,9 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
         isWithinTolerance = False
         
         'Retrieve RGB/A values for this point
-        r = srcImageData(quickX + 2, y)
-        g = srcImageData(quickX + 1, y)
         b = srcImageData(quickX, y)
+        g = srcImageData(quickX + 1, y)
+        r = srcImageData(quickX + 2, y)
         If hasAlpha Then a = srcImageData(quickX + 3, y)
     
         'Compare this pixel against the reference
@@ -475,7 +480,7 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
         
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
-            dstQuickX = x * 3
+            dstQuickX = x * xOffsetDst
             dstImageData(dstQuickX, y) = 255
             dstImageData(dstQuickX + 1, y) = 255
             dstImageData(dstQuickX + 2, y) = 255
@@ -488,7 +493,7 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
-    floodFillGlobal = True
+    FloodFillGlobal = True
     
 End Function
 
@@ -498,7 +503,7 @@ Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
     m_StackPosition = m_StackPosition + 1
     
     'Resize the stack as necessary
-    If m_StackPosition > m_StackHeight Then
+    If (m_StackPosition > m_StackHeight) Then
         m_StackHeight = m_StackHeight * 2 + 1
         ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
     End If
@@ -527,21 +532,23 @@ End Sub
 
 'Apply a custom antialiasing solution to a DIB.  The DIB must contain the contents of a *contiguous* flood fill operation.
 ' A global flood fill won't work, as it doesn't build a fill table.
-Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
+Private Function FloodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     
     'Predetermine upper bounds for x/y checks
     Dim xBound As Long, yBound As Long
-    xBound = floodFillDIB.getDIBWidth - 1
-    yBound = floodFillDIB.getDIBHeight - 1
+    xBound = floodFillDIB.GetDIBWidth - 1
+    yBound = floodFillDIB.GetDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
     Dim x As Long, y As Long, quickX As Long
+    Dim xOffsetDst As Long
+    xOffsetDst = floodFillDIB.GetDIBColorDepth \ 8
     
     'Generate direct references to the source and destination DIB data
     Dim fImageData() As Byte
     Dim fSA As SAFEARRAY2D
     
-    prepSafeArray fSA, floodFillDIB
+    PrepSafeArray fSA, floodFillDIB
     CopyMemory ByVal VarPtrArray(fImageData()), VarPtr(fSA), 4
         
     'Populate our reference comparison values
@@ -553,7 +560,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     
     'Start processing the image!
     For x = 0 To xBound
-        quickX = x * 3
+        quickX = x * xOffsetDst
     For y = 0 To yBound
     
         'The floodfill map is used to calculate antialiasing.  If it contains a 1 at this location, it means this pixel
@@ -606,7 +613,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     'Release our array references
     CopyMemory ByVal VarPtrArray(fImageData), 0&, 4
     
-    floodFillCustomAA = True
+    FloodFillCustomAA = True
 
 End Function
 

@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1118,7 +1118,7 @@ To omogućiti podršku za komprimirani PDI datoteke, kliknite Pomoć> Provjeri a
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>brisati</translation>
 </phrase>
 
 <phrase>
@@ -1128,22 +1128,22 @@ To omogućiti podršku za komprimirani PDI datoteke, kliknite Pomoć> Provjeri a
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>Zaključan</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>Perceptivna</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>relativna Kolorimctrijski</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>Apsolutna Kolorimctrijski</translation>
 </phrase>
 
 <phrase>
@@ -1548,12 +1548,12 @@ In verzije 6.0 podržava, PhotoDemon makro datoteke su redizajnirani kako bi pod
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>Boja moždani udar</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>sloj boje</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3336,7 +3336,7 @@ Please enter a numeric value.</original>
 <translation>Traženi odabir datoteka nije pronađena. opterećenje Izbor napušten.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4174,7 +4174,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>izvornik</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13245,27 +13245,27 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>alfa način</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>kvaliteta pregled</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Najbolja kvaliteta</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>Zadano</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>Najbolja predstava</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14127,37 +14127,37 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>Prikaz renderiranje namjera</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>Dostupno prikazuje</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>isključivanje zaslona upravljanje bojama</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>korištenje trenutne profile sustava za svaki prikaz</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>Profil boja za ovaj prikaz</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>pravila za prikaz</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>koristiti prilagođene profile za svaku zaslonu</translation>
 </phrase>
 
 <phrase>
@@ -14382,7 +14382,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>glavni prozor</translation>
 </phrase>
 
 <phrase>
@@ -14436,17 +14436,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>samo nazivi slika - kompaktan</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>opisno - punu sliku lokacije, uključujući mapu (e)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Naslov bar glavnom prozoru PhotoDemon prikazuje informacije o trenutno učitava slike. Koristite ovu postavku za kontrolu koliko informacija se prikazuje.</translation>
 </phrase>
 
 <phrase>
@@ -14626,7 +14626,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Isključivanje prikaza upravljanje bojama mogu dati mali performanse. Ako vaš zaslon trenutno nije konfiguriran za upravljanje bojama, koristite ovu postavku.</translation>
 </phrase>
 
 <phrase>
@@ -14651,7 +14651,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Ako ne znate što je ovo podešavanje kontrole, postavite ga na "opa'ajne". Perceptivna renderiranje Namjera je najbolji izbor za većinu korisnika.</translation>
 </phrase>
 
 <phrase>
@@ -14815,12 +14815,12 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Opcije upravljanja bojama kontrolirati kako PhotoDemon koristi ICC profile za slikovnih datoteka i uređaja.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Mogućnosti upravljanja bojama</translation>
 </phrase>
 
 <phrase>
@@ -14972,8 +14972,8 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>
