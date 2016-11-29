@@ -153,6 +153,10 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     If m_MouseInsideGradientRect Then RaiseGradientDialog
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then RedrawBackBuffer
+End Sub
+
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
     If m_MouseInsideGradientRect Then
@@ -232,6 +236,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
     ucSupport.RequestCaptionSupport
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -341,7 +346,11 @@ Private Sub RedrawBackBuffer()
         
         m_Brush.ReleaseBrush
         
-        'Draw borders around the brush results.
+        'Before drawing borders around the brush results, ask our parent control to apply color-management to
+        ' the brush preview.  (Note that this *will* result in the background checkerboard being color-managed.
+        ' This isn't ideal, but we'll live with it for now as the alternative is messy.)
+        ucSupport.RequestBufferColorManagement VarPtr(m_GradientRect)
+        
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
         outlineColor = m_Colors.RetrieveColor(PDGS_Border, Me.Enabled, m_MouseDownGradientRect, m_MouseInsideGradientRect)

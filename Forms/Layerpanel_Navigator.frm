@@ -124,7 +124,7 @@ End Sub
 'The navigator will periodically request new thumbnails.  Supply them whenever requested.
 Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single, thumbY As Single)
     
-    If g_OpenImageCount > 0 Then
+    If (g_OpenImageCount > 0) Then
         
         'The thumbDIB passed to this function will always be sized to the largest size the navigator can physically support.
         ' Our job is to place a composited copy of the current image inside that DIB, automatically centered as necessary.
@@ -162,7 +162,10 @@ Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single,
         End Select
         
         pdImages(g_CurrentImage).GetCompositedRect thumbDIB, thumbX, thumbY, thumbImageWidth, thumbImageHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, iQuality, , CLC_Thumbnail
-    
+        
+        'Apply color management before exiting
+        ColorManagement.ApplyDisplayColorManagement thumbDIB
+        
     Else
         thumbX = 0
         thumbY = 0

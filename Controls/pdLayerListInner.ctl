@@ -295,6 +295,10 @@ Private Sub txtLayerName_LostFocusAPI()
     If txtLayerName.Visible Then txtLayerName.Visible = False
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then Me.RequestRedraw True
+End Sub
+
 'Double-clicks on the layer box raise "layer title edit mode", if the mouse is within a layer's title area
 Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
@@ -683,6 +687,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_DELETE, VK_INSERT, VK_SPACE, VK_TAB
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     'Prep painting classes
     Drawing2D.QuickCreatePainter m_Painter
@@ -819,6 +824,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                 For i = 0 To m_NumOfThumbnails - 1
                     If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
                         pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
+                        ColorManagement.ApplyDisplayColorManagement m_LayerThumbnails(i).thumbDIB
                         layerUpdateSuccessful = True
                         Exit For
                     End If
@@ -842,6 +848,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                         If (Not pdImages(g_CurrentImage).GetLayerByIndex(i) Is Nothing) Then
                             m_LayerThumbnails(i).CanonicalLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
                             pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
+                            ColorManagement.ApplyDisplayColorManagement m_LayerThumbnails(i).thumbDIB
                         End If
                         
                     Next i

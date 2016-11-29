@@ -187,7 +187,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     
     '*Now* is when we want to apply color management to the front buffer.  At present, UI elements drawn atop the canvas are not
     ' color-managed (for performance reasons).  I may revisit this in the future.
-    ColorManagement.ApplyDisplayColorManagement m_FrontBuffer
+    ColorManagement.ApplyDisplayColorManagement m_FrontBuffer, , False
     
     'Retrieve a copy of the intersected viewport rect, which we forward to the selection engine (if a selection is active)
     Dim viewportIntersectRect As RECTF

@@ -203,8 +203,12 @@ Private Type ICCProfileCache
     ' translates between that working space and the current display profile.  This transform is optimized at creation time,
     ' and subsequently shared between all users of that working-space profile.  (The index of the matching display transform
     ' is also cached, so that we can detect future mismatches.)
-    thisWSToDisplayTransform As Long
+    '
+    'Note that 24-bpp and 32-bpp transforms are stored and optimized separately.  Both must be freed manually, if available.
+    thisWSToDisplayTransform24 As Long
+    thisWSToDisplayTransform32 As Long
     indexOfDisplayTransform As Long
+    
 End Type
 
 'Current ICC Profile cache.  As of 7.0, profiles are cached here, in this sub, and any object that uses a profile
@@ -212,6 +216,10 @@ End Type
 Private Const INITIAL_PROFILE_CACHE_SIZE As Long = 8
 Private m_NumOfCachedProfiles As Long
 Private m_ProfileCache() As ICCProfileCache
+
+'Some transforms require us to do pre- and post-conversion alpha management.  That management is tracked here, to prevent individual
+' functions from needing to track it.
+Private m_PreAlphaManagementRequired As Boolean
 
 Public Function GetDisplayColorManagementPreference() As DISPLAY_COLOR_MANAGEMENT
     GetDisplayColorManagementPreference = g_UserPreferences.GetPref_Long("ColorManagement", "Display CM Mode", DCM_NoManagement)
@@ -451,15 +459,22 @@ Public Sub FreeProfileCache()
         For i = 0 To m_NumOfCachedProfiles - 1
             With m_ProfileCache(i)
                 
-                If (.thisWSToDisplayTransform <> 0) Then
-                    LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
-                    .thisWSToDisplayTransform = 0
+                If (.thisWSToDisplayTransform24 <> 0) Then
+                    LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform24
+                    .thisWSToDisplayTransform24 = 0
+                End If
+                
+                If (.thisWSToDisplayTransform32 <> 0) Then
+                    LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform32
+                    .thisWSToDisplayTransform32 = 0
                 End If
                 
                 If (.lcmsProfileHandle <> 0) Then
                     LittleCMS.LCMS_CloseProfileHandle .lcmsProfileHandle
                     .lcmsProfileHandle = 0
                 End If
+                
+                .indexOfDisplayTransform = -1
                 
             End With
         Next i
@@ -561,10 +576,18 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
                         ' 2) it matches an old display index...
                         '... we need to erase it.  (A new transform will be created on-demand, as necessary.)
                         ' Note that the "forceRefresh" parameter also affects this; when TRUE, we always release existing transforms
-                        If (.thisWSToDisplayTransform <> 0) Then
+                        If (.thisWSToDisplayTransform32 <> 0) Then
                             If (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Or forceRefresh Then
-                                LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
-                                .thisWSToDisplayTransform = 0
+                                LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform32
+                                .thisWSToDisplayTransform32 = 0
+                                .indexOfDisplayTransform = -1
+                            End If
+                        End If
+                        
+                        If (.thisWSToDisplayTransform24 <> 0) Then
+                            If (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Or forceRefresh Then
+                                LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform24
+                                .thisWSToDisplayTransform24 = 0
                                 .indexOfDisplayTransform = -1
                             End If
                         End If
@@ -586,9 +609,10 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         'If the user doesn't want us to redraw anything to match the new profile, exit
         If suspendRedraw Then Exit Sub
         
-        'Various on-screen elements are color-managed, so they need to be redrawn first
-        Interface.RequestTabstripRedraw True
-        Interface.RequestColorToolsUpdate
+        'Various on-screen elements are color-managed, so they need to be redrawn first.
+        
+        'Modern PD controls subclass color management changes, so all we need to do is post the matching message internally
+        UserControl_Support.PostPDMessage WM_PD_COLOR_MANAGEMENT_CHANGE
         
         'If no images have been loaded, exit
         If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
@@ -604,39 +628,46 @@ End Sub
 
 'Transform a given DIB from the specified working space (or sRGB, if no index is supplied) to the current display space.
 ' Do not call this if you don't know what you're doing, as it is *not* reversible.
-Public Sub ApplyDisplayColorManagement(ByRef srcDIB As pdDIB, Optional ByVal srcWorkingSpaceIndex As Long = -1)
+Public Sub ApplyDisplayColorManagement(ByRef srcDIB As pdDIB, Optional ByVal srcWorkingSpaceIndex As Long = -1, Optional ByVal checkPremultiplication As Boolean = True)
     
     'Note that this function does nothing if the display is not currently color managed
     If (Not srcDIB Is Nothing) And (m_DisplayCMMPolicy <> DCM_NoManagement) Then
-    
-        'If the caller doesn't specify a working space index, assume sRGB.  (NOTE: this should never happen, but better safe than sorry.)
-        If (srcWorkingSpaceIndex < 0) Then srcWorkingSpaceIndex = m_sRGBIndex
         
-        'Make sure a transform exists for the requested working space / display combination
-        With m_ProfileCache(srcWorkingSpaceIndex)
-            
-            'Make sure an LCMS-compatible handle exists for the working space profile
-            If (.lcmsProfileHandle = 0) Then
-                .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
-            End If
-            
-            'Make sure an LCMS-compatible handle exists for the display profile
-            If (m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = 0) Then
-                m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataPointer, m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataSize)
-            End If
-            
-            'Make sure a valid transform exists for this working space / display combination
-            If (.thisWSToDisplayTransform = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
-                If (.thisWSToDisplayTransform <> 0) Then LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
-                .thisWSToDisplayTransform = LittleCMS.LCMS_CreateTwoProfileTransform(.lcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle, TYPE_BGRA_8, TYPE_BGRA_8, m_DisplayRenderIntent, cmsFLAGS_COPY_ALPHA)
-                .indexOfDisplayTransform = m_CurrentDisplayIndex
-            End If
-            
-            'Apply the transformation to the source DIB
-            LittleCMS.LCMS_ApplyTransformToDIB srcDIB, .thisWSToDisplayTransform
-            
-        End With
+        ValidateWorkingSpaceDisplayTransform srcWorkingSpaceIndex, srcDIB
+        If checkPremultiplication Then PreValidatePremultiplicationForSrcDIB srcDIB
+        
+        'Apply the transformation to the source DIB
+        If (srcDIB.GetDIBColorDepth = 32) Then
+            LittleCMS.LCMS_ApplyTransformToDIB srcDIB, m_ProfileCache(srcWorkingSpaceIndex).thisWSToDisplayTransform32
+        Else
+            LittleCMS.LCMS_ApplyTransformToDIB srcDIB, m_ProfileCache(srcWorkingSpaceIndex).thisWSToDisplayTransform24
+        End If
+        
+        If checkPremultiplication Then PostValidatePremultiplicationForSrcDIB srcDIB
+        
+    End If
     
+End Sub
+
+'Transform some region of a given DIB from the specified working space (or sRGB, if no index is supplied) to the current display space.
+' Do not call this if you don't know what you're doing, as it is *not* reversible.
+Public Sub ApplyDisplayColorManagement_RectF(ByRef srcDIB As pdDIB, ByRef srcRectF As RECTF, Optional ByVal srcWorkingSpaceIndex As Long = -1, Optional ByVal checkPremultiplication As Boolean = True)
+    
+    'Note that this function does nothing if the display is not currently color managed
+    If (Not srcDIB Is Nothing) And (m_DisplayCMMPolicy <> DCM_NoManagement) Then
+        
+        ValidateWorkingSpaceDisplayTransform srcWorkingSpaceIndex, srcDIB
+        If checkPremultiplication Then PreValidatePremultiplicationForSrcDIB srcDIB
+        
+        'Apply the transformation to the source DIB
+        If (srcDIB.GetDIBColorDepth = 32) Then
+            LittleCMS.LCMS_ApplyTransformToDIB_RectF srcDIB, m_ProfileCache(srcWorkingSpaceIndex).thisWSToDisplayTransform32, srcRectF
+        Else
+            LittleCMS.LCMS_ApplyTransformToDIB_RectF srcDIB, m_ProfileCache(srcWorkingSpaceIndex).thisWSToDisplayTransform24, srcRectF
+        End If
+        
+        If checkPremultiplication Then PostValidatePremultiplicationForSrcDIB srcDIB
+        
     End If
     
 End Sub
@@ -652,55 +683,97 @@ Public Sub ApplyDisplayColorManagement_SingleColor(ByVal srcColor As Long, ByRef
     
     'Note that this function does nothing if the display is not currently color managed
     If (m_DisplayCMMPolicy <> DCM_NoManagement) And g_IsProgramRunning Then
-    
-        'If the caller doesn't specify a working space index, assume sRGB.  (NOTE: this should never happen, but better safe than sorry.)
-        If (srcWorkingSpaceIndex < 0) Then srcWorkingSpaceIndex = m_sRGBIndex
         
-        'Make sure a transform exists for the requested working space / display combination
-        With m_ProfileCache(srcWorkingSpaceIndex)
+        ValidateWorkingSpaceDisplayTransform srcWorkingSpaceIndex, Nothing
+        
+        'Apply the transformation to the source color, with special handling if the source is a long created by VB's RGB() function
+        If srcIsRGBLong Then
             
-            'Make sure an LCMS-compatible handle exists for the working space profile
-            If (.lcmsProfileHandle = 0) Then
-                .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
-            End If
+            Dim tmpRGBASrc As RGBQUAD, tmpRGBADst As RGBQUAD
+            With tmpRGBASrc
+                .alpha = 255
+                .Red = Colors.ExtractRed(srcColor)
+                .Green = Colors.ExtractGreen(srcColor)
+                .Blue = Colors.ExtractBlue(srcColor)
+            End With
             
-            'Make sure an LCMS-compatible handle exists for the display profile
-            If (m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = 0) Then
-                m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataPointer, m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataSize)
-            End If
+            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(tmpRGBASrc), VarPtr(tmpRGBADst), 1, m_ProfileCache(srcWorkingSpaceIndex).thisWSToDisplayTransform32
             
-            'Make sure a valid transform exists for this working space / display combination
-            If (.thisWSToDisplayTransform = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
-                If (.thisWSToDisplayTransform <> 0) Then LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
-                .thisWSToDisplayTransform = LittleCMS.LCMS_CreateTwoProfileTransform(.lcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle, TYPE_BGRA_8, TYPE_BGRA_8, m_DisplayRenderIntent, cmsFLAGS_COPY_ALPHA)
-                .indexOfDisplayTransform = m_CurrentDisplayIndex
-            End If
+            With tmpRGBADst
+                dstColor = RGB(.Red, .Green, .Blue)
+            End With
             
-            'Apply the transformation to the source color, with special handling if the source is a long created by VB's RGB() function
-            If srcIsRGBLong Then
-                
-                Dim tmpRGBASrc As RGBQUAD, tmpRGBADst As RGBQUAD
-                With tmpRGBASrc
-                    .alpha = 255
-                    .Red = Colors.ExtractRed(srcColor)
-                    .Green = Colors.ExtractGreen(srcColor)
-                    .Blue = Colors.ExtractBlue(srcColor)
-                End With
-                
-                LittleCMS.LCMS_TransformArbitraryMemory VarPtr(tmpRGBASrc), VarPtr(tmpRGBADst), 1, .thisWSToDisplayTransform
-                
-                With tmpRGBADst
-                    dstColor = RGB(.Red, .Green, .Blue)
-                End With
-                
-            Else
-                LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcColor), VarPtr(dstColor), 1, .thisWSToDisplayTransform
-            End If
-            
-        End With
-    
+        Else
+            LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcColor), VarPtr(dstColor), 1, m_ProfileCache(srcWorkingSpaceIndex).thisWSToDisplayTransform32
+        End If
+        
     End If
     
+End Sub
+
+Private Sub PreValidatePremultiplicationForSrcDIB(ByRef srcDIB As pdDIB)
+    
+    'If the source DIB is premultiplied, it needs to be un-premultiplied first
+    m_PreAlphaManagementRequired = False
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        m_PreAlphaManagementRequired = srcDIB.GetAlphaPremultiplication
+    End If
+    
+    If m_PreAlphaManagementRequired Then srcDIB.SetAlphaPremultiplication False
+    
+End Sub
+
+Private Sub PostValidatePremultiplicationForSrcDIB(ByRef srcDIB As pdDIB)
+    If m_PreAlphaManagementRequired Then srcDIB.SetAlphaPremultiplication True
+    m_PreAlphaManagementRequired = False
+End Sub
+
+'Before applying a working space to display transform, call this function to validate all involved profiles and transforms
+Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As Long, ByRef srcDIB As pdDIB)
+    
+    'If the caller doesn't specify a working space index, assume sRGB.  (NOTE: this should never happen, but better safe than sorry.)
+    If (srcWorkingSpaceIndex < 0) Then srcWorkingSpaceIndex = m_sRGBIndex
+    
+    'Make sure a transform exists for the requested working space / display combination
+    With m_ProfileCache(srcWorkingSpaceIndex)
+        
+        'Make sure an LCMS-compatible handle exists for the working space profile
+        If (.lcmsProfileHandle = 0) Then
+            .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
+        End If
+        
+        'Make sure an LCMS-compatible handle exists for the display profile
+        If (m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = 0) Then
+            m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataPointer, m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataSize)
+        End If
+        
+        'Make sure a valid transform exists for this bit-depth / working-space / display combination
+        Dim use32bppPath As Boolean
+        If (srcDIB Is Nothing) Then
+            use32bppPath = True
+        Else
+            use32bppPath = CBool(srcDIB.GetDIBColorDepth = 32)
+        End If
+        
+        If use32bppPath Then
+        
+            If (.thisWSToDisplayTransform32 = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
+                If (.thisWSToDisplayTransform32 <> 0) Then LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform32
+                .thisWSToDisplayTransform32 = LittleCMS.LCMS_CreateTwoProfileTransform(.lcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle, TYPE_BGRA_8, TYPE_BGRA_8, m_DisplayRenderIntent, cmsFLAGS_COPY_ALPHA)
+                .indexOfDisplayTransform = m_CurrentDisplayIndex
+            End If
+        
+        'Assume a 24-bpp source
+        Else
+            If (.thisWSToDisplayTransform24 = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
+                If (.thisWSToDisplayTransform24 <> 0) Then LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform24
+                .thisWSToDisplayTransform24 = LittleCMS.LCMS_CreateTwoProfileTransform(.lcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle, TYPE_BGR_8, TYPE_BGR_8, m_DisplayRenderIntent, 0&)
+                .indexOfDisplayTransform = m_CurrentDisplayIndex
+            End If
+        End If
+        
+    End With
+
 End Sub
 
 ''Shorthand way to activate color management for anything with a DC

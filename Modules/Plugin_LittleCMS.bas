@@ -653,6 +653,42 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
         
 End Function
 
+'Apply an already-created transform to some arbitrary sub-region of a pdDIB object.
+' NOTE!  This function performs no validation on the incoming rect.  You *must* ensure that its bounds fit entirely inside
+' the pdDIB object or this function will crash and burn.
+Public Function LCMS_ApplyTransformToDIB_RectF(ByRef srcDIB As pdDIB, ByVal hTransform As Long, ByRef dstRectF As RECTF) As Boolean
+    
+    If (Not (srcDIB Is Nothing)) And (hTransform <> 0) Then
+        
+        'Start by determining a few values generic to this DIB
+        Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long
+        iWidth = srcDIB.GetDIBWidth
+        iScanStart = srcDIB.GetDIBPointer
+        iScanWidth = srcDIB.GetDIBStride
+        
+        'Next, calculate unique offsets and strides based on the passed rect
+        Dim pxSizeBytes As Long
+        pxSizeBytes = srcDIB.GetDIBColorDepth \ 8
+        
+        Dim perLineOffset As Long, perLinePixels As Long
+        perLineOffset = (dstRectF.Left * pxSizeBytes)
+        perLinePixels = dstRectF.Width
+        
+        Dim startLine As Long, stopLine As Long
+        startLine = dstRectF.Top
+        stopLine = dstRectF.Top + dstRectF.Height
+        
+        For i = startLine To stopLine
+            cmsDoTransform hTransform, iScanStart + i * iScanWidth + perLineOffset, iScanStart + i * iScanWidth + perLineOffset, perLinePixels
+        Next i
+        
+        'The "cmsDoTransform" function has no return, so we assume success if passed a valid DIB and transform
+        LCMS_ApplyTransformToDIB_RectF = True
+        
+    End If
+        
+End Function
+
 Public Sub LCMS_TransformArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal WidthInPixels As Long, ByVal hTransform As Long)
     cmsDoTransform hTransform, srcPointer, dstPointer, WidthInPixels
 End Sub

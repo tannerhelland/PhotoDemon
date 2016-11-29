@@ -117,6 +117,10 @@ Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then Me.NotifyNewThumbNeeded
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
@@ -248,6 +252,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -356,7 +361,7 @@ Private Sub RedrawBackBuffer()
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself,
             ' in image coordinate space
             Dim viewportRect As RECTF
-            pdImages(g_CurrentImage).imgViewport.getIntersectRectImage viewportRect
+            pdImages(g_CurrentImage).imgViewport.GetIntersectRectImage viewportRect
             
             'We now want to convert the viewport rect into our little navigator coordinate space.  Start by converting the
             ' viewport dimensions to a 1-based system, relative to the original image's width and height.
@@ -409,7 +414,7 @@ End Sub
 Public Sub NotifyNewThumbNeeded()
     
     'Wipe the existing thumbnail, and request a new one.
-    If m_ImageThumbnail Is Nothing Then
+    If (m_ImageThumbnail Is Nothing) Then
         UpdateControlLayout
     Else
         m_ImageThumbnail.ResetDIB 0

@@ -124,9 +124,10 @@ Public Const VK_OEM_6 As Long = 221      'For the US standard keyboard, the ']}'
 ' ANSI or Unicode string behavior should be used.
 Public Const PDPACKAGE_UNICODE_FRIENDLY_VERSION As Long = 66
 
-'PD uses some of its own window messages to simplify things like notifications.
+'PD uses some of its own window messages to simplify things like cross-control notifications.
 Public Const WM_APP As Long = &H8000&
 Public Const WM_PD_PRIMARY_COLOR_CHANGE As Long = (WM_APP + 16&)
+Public Const WM_PD_COLOR_MANAGEMENT_CHANGE As Long = (WM_APP + 17&)
 
 'Inside the IDE, we can't rely on PD's central themer for color decisions (as it won't be initialized).
 ' A few constants are used instead.
