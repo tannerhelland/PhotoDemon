@@ -806,13 +806,6 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     End If
     
     If (m_dibDC <> 0) Then
-    
-        'Activate color management for this DC.
-        ' NOTE!  Due to rejiggering of PD's color management engine, this is no longer necessary.  Color management is only applied
-        '         at image load-time (to convert into sRGB), and when drawing to the screen - but when drawing to the screen, all
-        '         management is handled at the destination.  For performance reasons, we no longer color-manage DIBs themselves,
-        '         which allows us to move RGB/A data between them much more efficiently.
-        'turnOnColorManagementForDC m_dibDC
         
         'Create a DIB
         m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
@@ -1074,9 +1067,10 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
             GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight
         End If
         
+        'TODO: migrate this to LittleCMS... also, see where this function is still used in PD!
         'Activate color management for the destination picture box
-        AssignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
-        TurnOnColorManagementForDC dstPicture.hDC
+        'AssignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
+        'TurnOnColorManagementForDC dstPicture.hDC
         
         'Render the image to the picture box
         BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy

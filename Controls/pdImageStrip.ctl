@@ -1122,7 +1122,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Activate color management for our form
-    'TODO: figure out how to best handle color management under the new UC system
+    'TODO: migrate this to LittleCMS
     'AssignDefaultColorProfileToObject Me.hWnd, Me.hDC
     'TurnOnColorManagementForDC Me.hDC
     

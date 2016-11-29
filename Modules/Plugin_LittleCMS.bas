@@ -623,7 +623,7 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
         If (srcDIB.GetDIBColorDepth = 32) Then
         
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Applying ICC transform to 32-bpp DIB..."
+                'pdDebug.LogAction "Applying ICC transform to 32-bpp DIB..."
             #End If
             
             cmsDoTransform hTransform, srcDIB.GetDIBPointer, srcDIB.GetDIBPointer, srcDIB.GetDIBWidth * srcDIB.GetDIBHeight
@@ -632,7 +632,7 @@ Public Function LCMS_ApplyTransformToDIB(ByRef srcDIB As pdDIB, ByVal hTransform
         Else
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Applying ICC transform to 24-bpp DIB..."
+                'pdDebug.LogAction "Applying ICC transform to 24-bpp DIB..."
             #End If
             
             Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long

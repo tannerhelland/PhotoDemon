@@ -5,8 +5,8 @@
 <pdDataType>Translation</pdDataType>
 
 <langid>cn-CN</langid>
-<langname>Chinese simplified</langname>
-<langversion>6.8.1894</langversion>
+<langname>简体中文</langname>
+<langversion>6.8.2034</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1118,7 +1118,7 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>清除</translation>
 </phrase>
 
 <phrase>
@@ -1128,22 +1128,22 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>锁定</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>感知</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>相对比色</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>绝对色度法</translation>
 </phrase>
 
 <phrase>
@@ -1541,12 +1541,12 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>油漆笔</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>漆层</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3328,7 +3328,7 @@ Please enter a numeric value.</original>
 <translation>没有找到要打开的文件，取消打开。</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4160,12 +4160,12 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>new</original>
-<translation></translation>
+<translation>新建</translation>
 </phrase>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>原版</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6828,22 +6828,22 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Color temperature</original>
-<translation></translation>
+<translation>色温</translation>
 </phrase>
 
 <phrase>
 <original>method</original>
-<translation></translation>
+<translation>方法</translation>
 </phrase>
 
 <phrase>
 <original>warmer</original>
-<translation></translation>
+<translation>稍暖</translation>
 </phrase>
 
 <phrase>
 <original>cooler</original>
-<translation></translation>
+<translation>冷色</translation>
 </phrase>
 
 <phrase>
@@ -10381,17 +10381,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>attempt to repair image files</original>
-<translation>试图修复图像文件</translation>
+<translation>修复图像文件</translation>
 </phrase>
 
 <phrase>
 <original>source folder</original>
-<translation>源文件夹</translation>
+<translation>源文件夹：</translation>
 </phrase>
 
 <phrase>
 <original>destination folder (for repaired files only)</original>
-<translation>目标文件夹（只用于修复文件）</translation>
+<translation>目标文件夹：</translation>
 </phrase>
 
 <phrase>
@@ -10406,7 +10406,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>attempt to repair video and audio files</original>
-<translation>试图修复视频和音频文件</translation>
+<translation>修复视频和音频文件</translation>
 </phrase>
 
 <phrase>
@@ -10416,7 +10416,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>after a successful recovery, erase the original (unrepaired) file</original>
-<translation>恢复成功后，删除原来的文件（未修复）</translation>
+<translation>修复成功后，删除原始(未修复)文件</translation>
 </phrase>
 
 <phrase>
@@ -10485,7 +10485,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>set export settings for this format</original>
-<translation></translation>
+<translation>设置此格式的导出设置</translation>
 </phrase>
 
 <phrase>
@@ -10738,12 +10738,12 @@ Would you like to save your batch list before exiting?</original>
 
 <phrase>
 <original>Before proceeding, you need to click the "set export settings for this format" button to specify what export settings you want to use.</original>
-<translation></translation>
+<translation>在继续之前，您需要单击“设置此格式的导出设置”按钮以指定要使用的导出设置。</translation>
 </phrase>
 
 <phrase>
 <original>Export settings required</original>
-<translation></translation>
+<translation>需要导出设置</translation>
 </phrase>
 
 <phrase>
@@ -13234,27 +13234,27 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>Alpha模式</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>预览质量</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>质量最好</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>默认</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>最佳性能</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14114,37 +14114,37 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>显示渲染目标</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>可用显示器</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>关闭显示颜色管理</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>使用每个显示器的当前系统配置文件</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>颜色配置文件</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>显示策略</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>为每个显示使用自定义配置文件</translation>
 </phrase>
 
 <phrase>
@@ -14369,7 +14369,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>主窗口</translation>
 </phrase>
 
 <phrase>
@@ -14423,17 +14423,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>压缩--仅图像名称</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>描述--完整图像位置，包括文件夹</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>PhotoDemon主窗口的标题栏显示有关当前加载的图像的信息， 使用此首选项可以控制显示的信息量。</translation>
 </phrase>
 
 <phrase>
@@ -14613,7 +14613,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>关闭显示器颜色管理可以稍微提升性能， 如果您的显示器当前未配置颜色管理，请使用此设置。</translation>
 </phrase>
 
 <phrase>
@@ -14638,7 +14638,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>如果您不知道此设置的控制方式，请将其设置为“感知”。 感知渲染是大多数用户的最佳选择。</translation>
 </phrase>
 
 <phrase>
@@ -14801,12 +14801,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>颜色管理选项控制PhotoDemon如何为图像文件和设备使用ICC配置文件。</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>颜色管理选项</translation>
 </phrase>
 
 <phrase>
@@ -14958,8 +14958,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1118,7 +1118,7 @@ To включить поддержку сжатых файлов PDI, выбер
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>стирать</translation>
 </phrase>
 
 <phrase>
@@ -1128,22 +1128,22 @@ To включить поддержку сжатых файлов PDI, выбер
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>запертый</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>перцепционный</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>Относительная колориметрические</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>Абсолютный колориметрический</translation>
 </phrase>
 
 <phrase>
@@ -1548,12 +1548,12 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>штриха</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>слой краски</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3336,7 +3336,7 @@ Please enter a numeric value.</original>
 <translation>Запрошенный файл выбора не может быть найден. Выбор нагрузки отказались.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4174,7 +4174,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>оригинал</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13245,27 +13245,27 @@ To включить поддержку этой функции, пожалуйс
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>альфа-режим</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>качество предварительного просмотра</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Лучшее качество</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>По умолчанию</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>Лучшее представление</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14127,37 +14127,37 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>дисплей цветопередачи</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>доступные дисплеи</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>отключить управление цветом дисплея</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>использовать текущие профили системы для каждого дисплея</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>цветовой профиль для данного дисплея</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>политики отображения</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>использовать пользовательские профили для каждого дисплея</translation>
 </phrase>
 
 <phrase>
@@ -14382,7 +14382,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>Главное окно</translation>
 </phrase>
 
 <phrase>
@@ -14436,17 +14436,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>только имена изображений - компактный</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>описательная - полные места изображений, включая папки (ы)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>В строке заголовка главного окна PhotoDemon отображает информацию о загруженном изображении. Используйте этот параметр, чтобы контролировать, сколько информации отображается.</translation>
 </phrase>
 
 <phrase>
@@ -14626,7 +14626,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Отключение управления цветом дисплея может обеспечить небольшой прирост производительности. Если дисплей не настроен для управления цветом, используйте эту настройку.</translation>
 </phrase>
 
 <phrase>
@@ -14651,7 +14651,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Если вы не знаете, что этот параметр политики, установите его в положение "PERCEPTUAL". Перцепционного рендеринга является лучшим выбором для большинства пользователей.</translation>
 </phrase>
 
 <phrase>
@@ -14815,12 +14815,12 @@ If вы все еще отключить обновления, не забудь
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Параметры управления цветом контролировать то, как PhotoDemon использует профили ICC для графических файлов и устройств.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Параметры управления цветом</translation>
 </phrase>
 
 <phrase>
@@ -14972,8 +14972,8 @@ If вы все еще отключить обновления, не забудь
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

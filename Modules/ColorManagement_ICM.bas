@@ -141,8 +141,6 @@ Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 
 'When PD is first loaded, the system's current color management file will be cached in this variable
 Private m_currentSystemColorProfile As String
-Public g_IsSystemColorProfileSRGB As Boolean
-
 Private Const MAX_PATH As Long = 260
 
 'PD supports several different display color management modes
@@ -160,6 +158,10 @@ End Enum
 ' GetDisplayColorManagementPreference(), but - for example - if the user has selected "use system color profile"
 ' and Windows doesn't return a valid profile, we will automatically switch to unmanaged mode.)
 Private m_DisplayCMMPolicy As DISPLAY_COLOR_MANAGEMENT
+
+'Current display render intent.  As of 7.0, the user can change this from Perceptual (although it's really not
+' recommended unless soft-proofing is active).
+Private m_DisplayRenderIntent As LCMS_RENDERING_INTENT
 
 'If loaded successfully, the current system profile will be found at this index into the profile cache.  Note that
 ' this value *does not* support multiple monitors, due to flaws in the way Windows exposes the system profile
@@ -179,10 +181,30 @@ Private m_sRGBIndex As Long
 'Cached profiles contain more information than a typical ICC profile, to make it easier to match profiles
 ' against each other.
 Private Type ICCProfileCache
+    
+    'All profiles must be accompanied of a bytestream copy of their ICC profile contents.  This allows us to do things like
+    ' match duplicates, or look for duplicate source paths.
     fullProfile As pdICCProfile
+    
+    'Generally speaking, all profiles should also be accompanied by a LittleCMS handle to said profile.  Note that these
+    ' handles will leak if not manually released!
+    lcmsProfileHandle As Long
+    
+    'Flags to help us shortcut searches for certain profile types
     isSystemProfile As Boolean
     isPDDisplayProfile As Boolean
+    isWorkingSpaceProfile As Boolean
+    
+    'This field is only used for display profiles; it is the HMONITOR corresponding to this display (used to match profiles
+    ' to displays at run-time)
     curDisplayID As Long
+    
+    'When used as part of the main viewport pipeline, working-space profiles cache a reference to a LittleCMS transform that
+    ' translates between that working space and the current display profile.  This transform is optimized at creation time,
+    ' and subsequently shared between all users of that working-space profile.  (The index of the matching display transform
+    ' is also cached, so that we can detect future mismatches.)
+    thisWSToDisplayTransform As Long
+    indexOfDisplayTransform As Long
 End Type
 
 'Current ICC Profile cache.  As of 7.0, profiles are cached here, in this sub, and any object that uses a profile
@@ -211,6 +233,10 @@ Public Sub SetDisplayRenderingIntentPref(Optional ByVal newPref As LCMS_RENDERIN
     g_UserPreferences.SetPref_Long "ColorManagement", "Display Rendering Intent", newPref
 End Sub
 
+Public Function GetSRGBProfileIndex() As Long
+    GetSRGBProfileIndex = m_sRGBIndex
+End Function
+
 'Whenever color management settings change (or at program initialization), call this function to cache transforms
 ' for the current screen monitor space.  Up-to-date preferences will be pulled from the user's pref file, so this
 ' function is *not* particularly fast.  Do not use it inside a rendering chain, for example.
@@ -234,8 +260,10 @@ Public Sub CacheDisplayCMMData()
     
         'Wrap a dummy ICC profile object around the sRGB profile, then cache that locally
         If tmpProfile.LoadICCFromPtr(UBound(tmpByteArray) + 1, VarPtr(tmpByteArray(0))) Then
-            m_sRGBIndex = AddProfileToCache(tmpProfile, False, False)
+            m_sRGBIndex = AddProfileToCache(tmpProfile, False, False, False, False, True)
+            m_ProfileCache(m_sRGBIndex).lcmsProfileHandle = tmpHProfile
         Else
+            If (tmpHProfile <> 0) Then LittleCMS.LCMS_CloseProfileHandle tmpHProfile
             m_SystemProfileIndex = -1
             m_sRGBIndex = -1
             m_DisplayCMMPolicy = DCM_NoManagement
@@ -244,18 +272,20 @@ Public Sub CacheDisplayCMMData()
     'If we failed to generate a default sRGB profile, turn off display color management completely, because something
     ' is horribly wrong with LittleCMS.
     Else
+        If (tmpHProfile <> 0) Then LittleCMS.LCMS_CloseProfileHandle tmpHProfile
         m_SystemProfileIndex = -1
         m_sRGBIndex = -1
         m_DisplayCMMPolicy = DCM_NoManagement
     End If
     
-    'Remember to free our temporary profile!
-    If (tmpHProfile <> 0) Then LittleCMS.LCMS_CloseProfileHandle tmpHProfile
+    'Note that if our sRGB profile was created successfully, its LCMS handle is not freed here.  The handle is valid for the
+    ' life of this PD session, and it is not released until deep in the PD unload process.
     
     'Next, load one or more display profiles based on the user's current color management settings.
     ' (In some cases, we'll retrieve profile paths from Windows itself, while in others, we'll retrieve them
     '  from internal PD settings the user has configured.)
-    m_DisplayCMMPolicy = GetDisplayColorManagementPreference
+    m_DisplayCMMPolicy = GetDisplayColorManagementPreference()
+    m_DisplayRenderIntent = GetDisplayRenderingIntentPref()
     m_SystemProfileIndex = m_sRGBIndex
     
     'Start with the case where the user just wants us to use the default Windows system ICC profile.
@@ -266,7 +296,12 @@ Public Sub CacheDisplayCMMData()
         Set tmpProfile = New pdICCProfile
         If tmpProfile.LoadICCFromFile(m_currentSystemColorProfile) Then
             m_SystemProfileIndex = AddProfileToCache(tmpProfile, False, True)
-        
+            
+            'Create an LCMS-compatible profile handle to match
+            With m_ProfileCache(m_SystemProfileIndex)
+                .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
+            End With
+            
         'If we fail to load the current system profile, there's really no good option for continuing.  The least
         ' of many evils is to simply point the current system profile at a default sRGB profile and hope for the best.
         Else
@@ -285,7 +320,7 @@ Public Sub CacheDisplayCMMData()
         Dim tmpXML As pdXML
         Set tmpXML = New pdXML
         Dim i As Long, uniqueMonitorID As String, monICCPath As String
-        Dim profileLoadedSuccessfully As Boolean
+        Dim profileLoadedSuccessfully As Boolean, profileIndex As Long
         
         For i = 0 To g_Displays.GetDisplayCount - 1
             
@@ -307,8 +342,16 @@ Public Sub CacheDisplayCMMData()
                     If tmpProfile.LoadICCFromFile(monICCPath) Then
                         
                         'Add the profile to our collection!
-                        AddProfileToCache tmpProfile, False, False, True, .GetHandle
-                        profileLoadedSuccessfully = True
+                        profileIndex = AddProfileToCache(tmpProfile, False, False, True, .GetHandle)
+                        
+                        'Create an LCMS-compatible profile handle to match
+                        If (profileIndex >= 0) Then
+                            With m_ProfileCache(profileIndex)
+                                .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
+                            End With
+                            
+                            profileLoadedSuccessfully = True
+                        End If
                         
                     End If
                 
@@ -316,7 +359,13 @@ Public Sub CacheDisplayCMMData()
                 
                 'If a profile was *not* loaded successfully, default to sRGB for this display
                 If (Not profileLoadedSuccessfully) Then
-                    AddProfileToCache GetCachedProfile_ByIndex(m_sRGBIndex).fullProfile, False, False, True, .GetHandle
+                    profileIndex = AddProfileToCache(GetCachedProfile_ByIndex(m_sRGBIndex).fullProfile, False, False, True, .GetHandle)
+                    
+                    If (profileIndex >= 0) Then
+                        With m_ProfileCache(profileIndex)
+                            .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
+                        End With
+                    End If
                 End If
                 
             End With
@@ -333,7 +382,7 @@ Public Sub CacheDisplayCMMData()
 End Sub
 
 'Add a profile to the current cache.  The index of said profile is returned; use that for any subsequent cache accesses.
-Public Function AddProfileToCache(ByRef srcProfile As pdICCProfile, Optional ByVal matchDuplicates As Boolean = True, Optional ByVal isSystemProfile As Boolean = False, Optional ByVal isDisplayProfile As Boolean = False, Optional ByVal associatedMonitorID As Long = 0) As Long
+Public Function AddProfileToCache(ByRef srcProfile As pdICCProfile, Optional ByVal matchDuplicates As Boolean = True, Optional ByVal isSystemProfile As Boolean = False, Optional ByVal isDisplayProfile As Boolean = False, Optional ByVal associatedMonitorID As Long = 0, Optional ByVal isWorkingSpace As Boolean = False) As Long
     
     'Make sure the cache exists and is large enough to hold another profile
     If (m_NumOfCachedProfiles = 0) Then
@@ -362,6 +411,7 @@ Public Function AddProfileToCache(ByRef srcProfile As pdICCProfile, Optional ByV
         .isSystemProfile = isSystemProfile
         .isPDDisplayProfile = isDisplayProfile
         .curDisplayID = associatedMonitorID
+        .isWorkingSpaceProfile = isWorkingSpace
     End With
     
     AddProfileToCache = m_NumOfCachedProfiles
@@ -393,24 +443,34 @@ End Function
 
 'Release the full ICC cache.  Do not do this until PD is fully unloaded, or things will break.
 Public Sub FreeProfileCache()
+    
+    'If one or more profiles exist in the cache, we must free any/all LittleCMS handles prior to exiting (or they will leak)
+    If (m_NumOfCachedProfiles > 0) Then
+    
+        Dim i As Long
+        For i = 0 To m_NumOfCachedProfiles - 1
+            With m_ProfileCache(i)
+                
+                If (.thisWSToDisplayTransform <> 0) Then
+                    LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
+                    .thisWSToDisplayTransform = 0
+                End If
+                
+                If (.lcmsProfileHandle <> 0) Then
+                    LittleCMS.LCMS_CloseProfileHandle .lcmsProfileHandle
+                    .lcmsProfileHandle = 0
+                End If
+                
+            End With
+        Next i
+    
+    End If
+    
     m_NumOfCachedProfiles = 0
     ReDim m_ProfileCache(0) As ICCProfileCache
     m_SystemProfileIndex = 0
     m_CurrentDisplayIndex = 0
     m_sRGBIndex = 0
-End Sub
-
-'Shorthand way to activate color management for anything with a DC
-Public Sub TurnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHwnd As Long)
-    
-    'Perform a quick check to see if the target DC is requesting sRGB management.  If it is, we can skip
-    ' color management entirely, because PD stores all RGB data in sRGB anyway.
-    'TODO: fix this
-    'If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
-    If (Not g_IsSystemColorProfileSRGB) Then
-        AssignDefaultColorProfileToObject targetHwnd, targetDC
-        TurnOnColorManagementForDC targetDC
-    End If
     
 End Sub
 
@@ -434,34 +494,6 @@ Public Function GetSystemColorFolder() As String
     End If
 
 End Function
-
-'Assign the default color profile (whether the system profile or the user profile) to any arbitrary object.  Note that the object
-' MUST have an hWnd and an hDC property for this to work.
-Public Sub AssignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
-    
-    'If the current user setting is "use system color profile", our job is easy.
-    'TODO: fix this; g_UseSystemColorProfile is no longer used
-    
-    'If g_UseSystemColorProfile Then
-    '    SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
-    'Else
-        
-        'Use the form's containing monitor to retrieve a matching profile from the preferences file
-        If Len(m_CurrentDisplayProfile) <> 0 Then
-            SetICMProfile objectHDC, StrPtr(m_CurrentDisplayProfile)
-        Else
-            SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
-        End If
-        
-    'End If
-    
-    'If you would like to test this function on a standalone ICC profile (generally something bizarre, to help you know
-    ' that the function is working), use something similar to the code below.
-    'Dim TEST_ICM As String
-    'TEST_ICM = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\jpegs\ICC\WhackedRGB.icc"
-    'SetICMProfile targetDC, StrPtr(TEST_ICM)
-    
-End Sub
 
 'Returns the path to the default color mangement profile file (ICC or WCS) currently in use by the system.
 Public Function GetDefaultICCProfilePath() As String
@@ -513,10 +545,36 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         End If
         
         'm_CurrentDisplayIndex now points at the relevant display profile in our ICC profile cache.
-        ' If it has changed since the last refresh, recreate our default "working space to display" transform.
+        ' If it has changed since the last refresh, we need to reset any existing "working space to display" transforms
+        ' that do not match the current display.
         If ((m_CurrentDisplayIndex >= 0) And (m_CurrentDisplayIndex <> oldDisplayIndex)) Or forceRefresh Then
-        
-            'TODO!
+            
+            Dim i As Long
+            For i = 0 To m_NumOfCachedProfiles - 1
+                
+                'Only working space profiles need to be updated
+                With m_ProfileCache(i)
+                    If .isWorkingSpaceProfile Then
+                        
+                        'Check the current transform.  If it...
+                        ' 1) does exist, and...
+                        ' 2) it matches an old display index...
+                        '... we need to erase it.  (A new transform will be created on-demand, as necessary.)
+                        ' Note that the "forceRefresh" parameter also affects this; when TRUE, we always release existing transforms
+                        If (.thisWSToDisplayTransform <> 0) Then
+                            If (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Or forceRefresh Then
+                                LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
+                                .thisWSToDisplayTransform = 0
+                                .indexOfDisplayTransform = -1
+                            End If
+                        End If
+                        
+                    End If
+                End With
+            
+            Next i
+            
+            'As a convenience, note display changes in the debug log
             #If DEBUGMODE = 1 Then
                 Dim tmpProfile As ICCProfileCache
                 tmpProfile = GetCachedProfile_ByIndex(m_CurrentDisplayIndex)
@@ -545,15 +603,560 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
     
 End Sub
 
-'Turn on color management for a specified device context
-Public Sub TurnOnColorManagementForDC(ByVal dstDC As Long)
-    SetICMMode dstDC, ICM_ON
+'Transform a given DIB from the specified working space (or sRGB, if no index is supplied) to the current display space.
+' Do not call this if you don't know what you're doing, as it is *not* reversible.
+Public Sub ApplyDisplayColorManagement(ByRef srcDIB As pdDIB, Optional ByVal srcWorkingSpaceIndex As Long = -1)
+    
+    'Note that this function does nothing if the display is not currently color managed
+    If (Not srcDIB Is Nothing) And (m_DisplayCMMPolicy <> DCM_NoManagement) Then
+    
+        'If the caller doesn't specify a working space index, assume sRGB.  (NOTE: this should never happen, but better safe than sorry.)
+        If (srcWorkingSpaceIndex < 0) Then srcWorkingSpaceIndex = m_sRGBIndex
+        
+        'Make sure a transform exists for the requested working space / display combination
+        With m_ProfileCache(srcWorkingSpaceIndex)
+            
+            'Make sure an LCMS-compatible handle exists for the working space profile
+            If (.lcmsProfileHandle = 0) Then
+                .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
+            End If
+            
+            'Make sure an LCMS-compatible handle exists for the display profile
+            If (m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = 0) Then
+                m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataPointer, m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataSize)
+            End If
+            
+            'Make sure a valid transform exists for this working space / display combination
+            If (.thisWSToDisplayTransform = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
+                If (.thisWSToDisplayTransform <> 0) Then LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
+                .thisWSToDisplayTransform = LittleCMS.LCMS_CreateTwoProfileTransform(.lcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle, TYPE_BGRA_8, TYPE_BGRA_8, m_DisplayRenderIntent, cmsFLAGS_COPY_ALPHA)
+                .indexOfDisplayTransform = m_CurrentDisplayIndex
+            End If
+            
+            'Apply the transformation to the source DIB
+            LittleCMS.LCMS_ApplyTransformToDIB srcDIB, .thisWSToDisplayTransform
+            
+        End With
+    
+    End If
+    
 End Sub
 
-'Turn off color management for a specified device context
-Public Sub TurnOffColorManagementForDC(ByVal dstDC As Long)
-    SetICMMode dstDC, ICM_OFF
-End Sub
+''Shorthand way to activate color management for anything with a DC
+'' NOTE: now that GDI is no longer used for color management, this function is obsolete
+'Public Sub TurnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHwnd As Long)
+'
+'    'Perform a quick check to see if the target DC is requesting sRGB management.  If it is, we can skip
+'    ' color management entirely, because PD stores all RGB data in sRGB anyway.
+'    'TODO: fix this
+'    'If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
+'    If (Not g_IsSystemColorProfileSRGB) Then
+'        AssignDefaultColorProfileToObject targetHwnd, targetDC
+'        TurnOnColorManagementForDC targetDC
+'    End If
+'
+'End Sub
+
+''Assign the default color profile (whether the system profile or the user profile) to any arbitrary object.  Note that the object
+'' MUST have an hWnd and an hDC property for this to work.
+'' NOTE: now that GDI is no longer used for color management, this function is obsolete
+'Public Sub AssignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
+'
+'    'If the current user setting is "use system color profile", our job is easy.
+'    'TODO: fix this; g_UseSystemColorProfile is no longer used
+'
+'    'If g_UseSystemColorProfile Then
+'    '    SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
+'    'Else
+'
+'        'Use the form's containing monitor to retrieve a matching profile from the preferences file
+'        If Len(m_CurrentDisplayProfile) <> 0 Then
+'            SetICMProfile objectHDC, StrPtr(m_CurrentDisplayProfile)
+'        Else
+'            SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
+'        End If
+'
+'    'End If
+'
+'    'If you would like to test this function on a standalone ICC profile (generally something bizarre, to help you know
+'    ' that the function is working), use something similar to the code below.
+'    'Dim TEST_ICM As String
+'    'TEST_ICM = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\jpegs\ICC\WhackedRGB.icc"
+'    'SetICMProfile targetDC, StrPtr(TEST_ICM)
+'
+'End Sub
+'
+''Turn on color management for a specified device context
+'' NOTE: now that GDI is no longer used for color management, this function is obsolete
+'Public Sub TurnOnColorManagementForDC(ByVal dstDC As Long)
+'    SetICMMode dstDC, ICM_ON
+'End Sub
+'
+''Turn off color management for a specified device context
+'' NOTE: now that GDI is no longer used for color management, this function is obsolete
+'Public Sub TurnOffColorManagementForDC(ByVal dstDC As Long)
+'    SetICMMode dstDC, ICM_OFF
+'End Sub
+
+'RGB to XYZ conversion using custom endpoints requires a special transform.  We cannot use Microsoft's built-in transform methods as they do
+' not support variable white space endpoints (WTF, MICROSOFT).
+'
+'At present, this functionality is used for PNG files that specify their own cHRM (chromaticity) chunk.
+'
+'Note that this function supports transforms in *both* directions!  The optional treatEndpointsAsForwardValues can be set to TRUE to use the
+' endpoint math when converting TO the XYZ space; if false, sRGB will be used for the RGB -> XYZ conversion, then the optional parameters
+' will be used for the XYZ -> RGB conversion.  Directionality is important when working with filetypes (like PNG) that specify their own
+' endpoints, as the endpoints define the reverse transform, not the forward one.  (Found this out the hard way, ugh.)
+'
+'Gamma is also optional; if none is specified, the default sRGB gamma transform value will be used.  Note that sRGB uses a two-part curve
+' constructed around 2.4 - *not* a simple one-part 2.2 curve - so if you want 2.2 gamma, make sure you specify it!
+'
+'TODO: see if this can be migrated to LittleCMS instead; it will almost certainly be faster.
+Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX As Double, ByVal RedY As Double, ByVal GreenX As Double, ByVal GreenY As Double, ByVal BlueX As Double, ByVal BlueY As Double, ByVal WhiteX As Double, ByVal WhiteY As Double, Optional ByRef srcGamma As Double = 0#, Optional ByVal treatEndpointsAsForwardValues As Boolean = False, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+
+    'As always, Bruce Lindbloom provides very helpful conversion functions here:
+    ' http://brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
+    '
+    'The biggest problem with XYZ conversion is inverting the calculation matrix.  This is a big headache, as VB provides no inherent
+    ' matrix functions, so we have to do everything manually.
+    
+    'Start by calculating an XYZ triplet that corresponds to the incoming white point value
+    Dim Xw As Double, Yw As Double, Zw As Double
+    Xw = WhiteX / WhiteY
+    Yw = 1
+    Zw = (1 - WhiteX - WhiteY) / WhiteY
+    
+    'Next, calculate xyz triplets that correspond to the incoming RGB endpoints, using the same xyz to XYZ conversion as the white point.
+    Dim Xr As Double, Yr As Double, Zr As Double
+    Dim Xg As Double, Yg As Double, Zg As Double
+    Dim Xb As Double, Yb As Double, Zb As Double
+    
+    Xr = RedX / RedY
+    Yr = 1
+    Zr = (1 - RedX - RedY) / RedY
+    
+    Xg = GreenX / GreenY
+    Yg = 1
+    Zg = (1 - GreenX - GreenY) / GreenY
+    
+    Xb = BlueX / BlueY
+    Yb = 1
+    Zb = (1 - BlueX - BlueY) / BlueY
+    
+    'Now comes the ugly stuff.  We can think of the calculated XYZ values (for each of RGB) as a conversion matrix, which looks like this:
+    ' [Xr Xg Xb
+    '  Yr Yg Yb
+    '  Zr Zg Zb]
+    '
+    'We want to calculate a new conversion vector, [Sr Sg Sb], that takes into account the white endpoints specified above.  To calculate
+    ' such a vector, we need to multiple the white point vector [Xw Yw Zw] by the *inverse* of the matrix above.  Matrix inversion is
+    ' unpleasant work, as VB provides no internal function for it - so we must invert it manually.
+    '
+    'There are a number of different matrix inversion algorithms, but I'm going to use Gaussian elimination, as it's one of the few I
+    ' remember from school.  Thanks to Vagelis Plevris of Greece, whose FreeVBCode project provided a nice refresher on how one can
+    ' tackle this in VB (http://www.freevbcode.com/ShowCode.asp?ID=6221).
+    Dim invMatrix() As Double, srcMatrix() As Double
+    ReDim invMatrix(0 To 2, 0 To 2) As Double
+    ReDim srcMatrix(0 To 2, 0 To 2) As Double
+    
+    srcMatrix(0, 0) = Xr
+    srcMatrix(0, 1) = Xg
+    srcMatrix(0, 2) = Xb
+    srcMatrix(1, 0) = Yr
+    srcMatrix(1, 1) = Yg
+    srcMatrix(1, 2) = Yb
+    srcMatrix(2, 0) = Zr
+    srcMatrix(2, 1) = Zg
+    srcMatrix(2, 2) = Zb
+    
+    'Apply the inversion.  Note that *not all matrices are invertible*!  Image-encoded endpoints should be valid, but if they are not,
+    ' matrix inversion will fail.
+    If Invert3x3Matrix(invMatrix, srcMatrix) Then
+        
+        'Calculate the S conversion vector by multiplying the inverse matrix by the white point vector
+        Dim Sr As Double, Sg As Double, Sb As Double
+        Sr = invMatrix(0, 0) * Xw + invMatrix(0, 1) * Yw + invMatrix(0, 2) * Zw
+        Sg = invMatrix(1, 0) * Xw + invMatrix(1, 1) * Yw + invMatrix(1, 2) * Zw
+        Sb = invMatrix(2, 0) * Xw + invMatrix(2, 1) * Yw + invMatrix(2, 2) * Zw
+        
+        'We now have everything we need to calculate the primary transformation matrix [M], which is used as follows:
+        ' [X Y Z] = [M][R G B]
+        Dim mFinal() As Double
+        ReDim mFinal(0 To 2, 0 To 2) As Double
+        mFinal(0, 0) = Sr * Xr
+        mFinal(0, 1) = Sg * Xg
+        mFinal(0, 2) = Sb * Xb
+        mFinal(1, 0) = Sr * Yr
+        mFinal(1, 1) = Sg * Yg
+        mFinal(1, 2) = Sb * Yb
+        mFinal(2, 0) = Sr * Zr
+        mFinal(2, 1) = Sg * Zg
+        mFinal(2, 2) = Sb * Zb
+        
+        'Debug.Print "Forward matrix: "
+        'Debug.Print mFinal(0, 0), mFinal(0, 1), mFinal(0, 2)
+        'Debug.Print mFinal(1, 0), mFinal(1, 1), mFinal(1, 2)
+        'Debug.Print mFinal(2, 0), mFinal(2, 1), mFinal(2, 2)
+        
+        'Want to convert from XYZ to RGB?  Use the inverse matrix!  This is required for PNG files, because their endpoints specify
+        ' the reverse transform.  I'm not sure why this is.  My matrix math is rusty, but it's possible that we could skip the
+        ' first inversion, and simply multiply the S vector to the original source matrix, but I haven't tried this to see if it works
+        ' and my math skills are too rusty to know if that's a totally invalid operation.  As such, I just invert the matrix manually,
+        ' to be safe.
+        '
+        'Note that we don't have to check for a fail state here, as we know the matrix is invertible (because we inverted it ourselves
+        ' earlier on.  It's technically possible for faulty white point values to prevent this inversion, but PD doesn't provide a way
+        ' for users to enter faulty values, so I don't check that possibility here.
+        Dim mFinalInvert() As Double
+        ReDim mFinalInvert(0 To 2, 0 To 2) As Double
+        If Not treatEndpointsAsForwardValues Then Invert3x3Matrix mFinalInvert, mFinal
+        
+        'Debug.Print "Reverse matrix: "
+        'Debug.Print mFinalInvert(0, 0), mFinalInvert(0, 1), mFinalInvert(0, 2)
+        'Debug.Print mFinalInvert(1, 0), mFinalInvert(1, 1), mFinalInvert(1, 2)
+        'Debug.Print mFinalInvert(2, 0), mFinalInvert(2, 1), mFinalInvert(2, 2)
+        
+        'We now have everything we need to convert the DIB.  PARTY TIME!
+        Dim x As Long, y As Long
+        
+        'The actual XYZ transform is actually pretty simple.  Using the supplied endpoints, we use our custom matrix either during the
+        ' RGB -> XYZ step (forward transform), or XYZ -> RGB step (reverse transform).  The unused stage uses hard-coded sRGB values,
+        ' including hard-coded sRGB gamma (unless another gamma was specified).
+        '
+        'For forward transforms, we must pre-linearize the RGB values, using the supplied gamma.  Because the gamma is applied to the
+        ' [0, 255] range RGB values, we can use a look-up table to accelerate the process.
+        Dim gammaLookup(0 To 255) As Double, tmpCalc As Double
+        If treatEndpointsAsForwardValues Then
+            
+            'Invert gamma if it was specified
+            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
+            
+            For x = 0 To 255
+                tmpCalc = x / 255
+                
+                If srcGamma = 0 Then
+                    
+                    If tmpCalc > 0.04045 Then
+                        gammaLookup(x) = ((tmpCalc + 0.055) / (1.055)) ^ 2.4
+                    Else
+                        gammaLookup(x) = tmpCalc / 12.92
+                    End If
+                    
+                Else
+                    gammaLookup(x) = tmpCalc ^ srcGamma
+                End If
+                
+            Next x
+        
+        'Reverse transforms apply gamma directly to the floating-point RGB values, to reduce data loss due to clamping.
+        Else
+        
+            'Do nothing for reverse transforms, except to invert gamma as appropriate.
+            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
+            
+        End If
+        
+        Dim tmpX As Double, tmpY As Double, tmpZ As Double
+        
+        'Create a local array and point it at the pixel data we want to operate on
+        Dim ImageData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        PrepSafeArray tmpSA, srcDIB
+        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+            
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.GetDIBWidth - 1
+        finalY = srcDIB.GetDIBHeight - 1
+                
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = srcDIB.GetDIBColorDepth \ 8
+        
+        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+        ' based on the size of the area to be processed.
+        Dim progBarCheck As Long
+        If Not suppressMessages Then
+            If modifyProgBarMax = -1 Then
+                SetProgBarMax finalX
+            Else
+                SetProgBarMax modifyProgBarMax
+            End If
+            progBarCheck = FindBestProgBarValue()
+        End If
+        
+        'Color values
+        Dim r As Long, g As Long, b As Long
+        Dim fR As Double, fG As Double, fB As Double
+                
+        'Now we can loop through each pixel in the image, converting values as we go
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+                
+            'Get the source pixel color values
+            r = ImageData(QuickVal + 2, y)
+            g = ImageData(QuickVal + 1, y)
+            b = ImageData(QuickVal, y)
+            
+            'Branch now according to forward/reverse transforms.
+            
+            'Forward transform
+            If treatEndpointsAsForwardValues Then
+            
+                'Convert to compressed gamma representation
+                fR = gammaLookup(r)
+                fG = gammaLookup(g)
+                fB = gammaLookup(b)
+                
+                'Convert to XYZ
+                tmpX = mFinal(0, 0) * fR + mFinal(0, 1) * fG + mFinal(0, 2) * fB
+                tmpY = mFinal(1, 0) * fR + mFinal(1, 1) * fG + mFinal(1, 2) * fB
+                tmpZ = mFinal(2, 0) * fR + mFinal(2, 1) * fG + mFinal(2, 2) * fB
+                
+                'Convert back to sRGB
+                Colors.XYZtoRGB tmpX, tmpY, tmpZ, r, g, b
+            
+            'Reverse transform
+            Else
+            
+                'Use sRGB for the initial XYZ conversion
+                Colors.RGBtoXYZ r, g, b, tmpX, tmpY, tmpZ
+            
+                'Convert back to [0, 1] RGB, using our custom endpoints
+                fR = mFinalInvert(0, 0) * tmpX + mFinalInvert(0, 1) * tmpY + mFinalInvert(0, 2) * tmpZ
+                fG = mFinalInvert(1, 0) * tmpX + mFinalInvert(1, 1) * tmpY + mFinalInvert(1, 2) * tmpZ
+                fB = mFinalInvert(2, 0) * tmpX + mFinalInvert(2, 1) * tmpY + mFinalInvert(2, 2) * tmpZ
+            
+                'Convert to linear RGB, accounting for gamma
+                If srcGamma = 0 Then
+                
+                    'If the user didn't specify gamma, use a default sRGB transform.
+                    If (fR > 0.0031308) Then
+                        fR = 1.055 * (fR ^ (1 / 2.4)) - 0.055
+                    Else
+                        fR = 12.92 * fR
+                    End If
+                    
+                    If (fG > 0.0031308) Then
+                        fG = 1.055 * (fG ^ (1 / 2.4)) - 0.055
+                    Else
+                        fG = 12.92 * fG
+                    End If
+                    
+                    If (fB > 0.0031308) Then
+                        fB = 1.055 * (fB ^ (1 / 2.4)) - 0.055
+                    Else
+                        fB = 12.92 * fB
+                    End If
+                
+                Else
+                
+                    If fR > 0 Then
+                        r = (fR ^ srcGamma) * 255
+                    Else
+                        r = 0
+                    End If
+                    
+                    If fG > 0 Then
+                        g = (fG ^ srcGamma) * 255
+                    Else
+                        g = 0
+                    End If
+                    
+                    If fB > 0 Then
+                        b = (fB ^ srcGamma) * 255
+                    Else
+                        b = 0
+                    End If
+                
+                End If
+                
+                'Apply RGB clamping now
+                If r > 255 Then
+                    r = 255
+                ElseIf r < 0 Then
+                    r = 0
+                End If
+                
+                If g > 255 Then
+                    g = 255
+                ElseIf g < 0 Then
+                    g = 0
+                End If
+                
+                If b > 255 Then
+                    b = 255
+                ElseIf b < 0 Then
+                    b = 0
+                End If
+                
+            End If
+            
+            'Assign the new colors and continue
+            ImageData(QuickVal, y) = b
+            ImageData(QuickVal + 1, y) = g
+            ImageData(QuickVal + 2, y) = r
+            
+        Next y
+            If Not suppressMessages Then
+                If (x And progBarCheck) = 0 Then
+                    If UserPressedESC() Then Exit For
+                    SetProgBarVal x + modifyProgBarOffset
+                End If
+            End If
+        Next x
+                
+        'With our work complete, point ImageData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+        Erase ImageData
+        
+        If g_cancelCurrentAction Then ConvertRGBUsingCustomEndpoints = False Else ConvertRGBUsingCustomEndpoints = True
+        
+    Else
+        ConvertRGBUsingCustomEndpoints = False
+        Exit Function
+    End If
+    
+End Function
+
+'Invert a 3x3 matrix of double-type.  The matrices MUST BE DIMMED PROPERLY PRIOR TO CALLING THIS FUNCTION.
+' Failure returns FALSE; success, TRUE.
+'
+'Thanks to Vagelis Plevris of Greece, whose FreeVBCode project provided a nice refresher on how one might
+' tackle this in VB (http://www.freevbcode.com/ShowCode.asp?ID=6221).
+Private Function Invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() As Double) As Boolean
+
+    'Some matrices are not invertible.  If color endpoints are calculated correctly, this shouldn't be a problem,
+    ' but we need to have a failsafe for the case of determinant = 0
+    On Error GoTo cantCreateMatrix
+    
+    'Gaussian elimination will use an intermediate array, at double the width of the incoming srcMatrix()
+    Dim intMatrix() As Double
+    ReDim intMatrix(0 To 2, 0 To 5) As Double
+    
+    'Gaussian elimination works by using simple row operations to solve a system of linear equations.  This is
+    ' computationally slow, but algorithmically simple, and for a single 3x3 matrix no one cares about performance.
+    '
+    'To visualize what happens, see how we put the source matrix on the left and the identity matrix on the right, like so:
+    '
+    ' [ src11 src12 src13 | 1 0 0 ]
+    ' [ src21 src22 src23 | 0 1 0 ]
+    ' [ src31 src32 src33 | 0 0 1 ]
+    '
+    'When we're done, we will have constructed the inverse on the right, as a result of our row operations:
+    ' [ 1 0 0 | inv11 inv12 inv13 ]
+    ' [ 0 1 0 | inv21 inv22 inv23 ]
+    ' [ 0 0 1 | inv31 inv32 inv33 ]
+    
+    'Start by filling our calculation array with the input values
+    Dim x As Long, y As Long
+    For x = 0 To 2
+    For y = 0 To 2
+        intMatrix(x, y) = srcMatrix(x, y)
+    Next y
+    Next x
+    
+    'Populate the identity matrix on the right
+    intMatrix(0, 3) = 1
+    intMatrix(1, 4) = 1
+    intMatrix(2, 5) = 1
+    
+    'Start performing row operations that move us toward an identity matrix on the left
+    Dim k As Long, n As Long, m As Long, nonZeroLine As Long, tmpValue As Double
+    
+    For k = 0 To 2
+        
+        'A non-zero element is required.  Change lines if necessary to make this happen.
+        If intMatrix(k, k) = 0 Then
+            
+            'Find the first line with a non-zero element
+            For n = k To 2
+                If intMatrix(n, k) <> 0 Then
+                    nonZeroLine = n
+                    Exit For
+                End If
+            Next n
+            
+            'Swap line k and nonZeroLine
+            For m = k To 5
+                tmpValue = intMatrix(k, m)
+                intMatrix(k, m) = intMatrix(nonZeroLine, m)
+                intMatrix(nonZeroLine, m) = tmpValue
+            Next m
+            
+        End If
+            
+        tmpValue = intMatrix(k, k)
+        For n = k To 5
+            intMatrix(k, n) = intMatrix(k, n) / tmpValue
+        Next n
+        
+        'For other lines, make a zero element using the formula:
+        ' Ai1 = Aij - A11 * (Aij / A11)
+        For n = 0 To 2
+            
+            'Check finishing position
+            If (n = k) And (n = 2) Then Exit For
+            
+            'Check for elements already equal to one; it's not really good form to update a loop element like this,
+            ' but it's helpful in the absence of an easy way to tell VB to "Goto Next"
+            If (n = k) And (n < 2) Then n = n + 1
+            
+            'Do not touch elements that are already zero
+            If intMatrix(n, k) <> 0 Then
+            
+                If intMatrix(k, k) <> 0 Then
+                    
+                    tmpValue = intMatrix(n, k) / intMatrix(k, k)
+                    For m = k To 5
+                        intMatrix(n, m) = intMatrix(n, m) - intMatrix(k, m) * tmpValue
+                    Next m
+                    
+                'Failed determinant; exit function
+                Else
+                
+                    GoTo cantCreateMatrix
+                
+                End If
+                
+            End If
+            
+        Next n
+        
+    Next k
+    
+    'Inversion complete!  (Barring any divide-by-zero errors, which indicate an un-invertible matrix.)
+    
+    'Copy the solved section of the intermediate matrix into the destination
+    For n = 0 To 2
+    For k = 0 To 2
+        newMatrix(n, k) = intMatrix(n, 3 + k)
+    Next k
+    Next n
+    
+    'Report the successful inversion to the user, then exit
+    Invert3x3Matrix = True
+    Exit Function
+
+cantCreateMatrix:
+    Debug.Print "Matrix is not invertible; function cancelled."
+    Invert3x3Matrix = False
+
+End Function
+
+
+'***
+
+'IMPORTANT NOTE:
+' All functions below this line are legacy Windows CMS lines.  They use various Windows functions to apply basic color management tasks.
+' They are no longer used in PD except as last-resort fallbacks.  LittleCMS is used in their place.
+
+'***
+
 
 'Given a valid iccProfileArray (such as one stored in a pdICCProfile class), convert it to an internal Windows color profile
 ' handle, validate it, and return the result.  Returns a non-zero handle if successful.
@@ -995,450 +1598,4 @@ Public Function ApplyICCtoPDDib_WindowsCMS(ByRef targetDIB As pdDIB) As Boolean
         ApplyICCtoPDDib_WindowsCMS = False
     End If
     
-End Function
-
-'RGB to XYZ conversion using custom endpoints requires a special transform.  We cannot use Microsoft's built-in transform methods as they do
-' not support variable white space endpoints (WTF, MICROSOFT).
-'
-'Note that this function supports transforms in *both* directions!  The optional treatEndpointsAsForwardValues can be set to TRUE to use the
-' endpoint math when converting TO the XYZ space; if false, sRGB will be used for the RGB -> XYZ conversion, then the optional parameters
-' will be used for the XYZ -> RGB conversion.  Directionality is important when working with filetypes (like PNG) that specify their own
-' endpoints, as the endpoints define the reverse transform, not the forward one.  (Found this out the hard way, ugh.)
-'
-'Gamma is also optional; if none is specified, the default sRGB gamma transform value will be used.  Note that sRGB uses a two-part curve
-' constructed around 2.4 - *not* a simple one-part 2.2 curve - so if you want 2.2 gamma, make sure you specify it!
-Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX As Double, ByVal RedY As Double, ByVal GreenX As Double, ByVal GreenY As Double, ByVal BlueX As Double, ByVal BlueY As Double, ByVal WhiteX As Double, ByVal WhiteY As Double, Optional ByRef srcGamma As Double = 0#, Optional ByVal treatEndpointsAsForwardValues As Boolean = False, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
-
-    'As always, Bruce Lindbloom provides very helpful conversion functions here:
-    ' http://brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
-    '
-    'The biggest problem with XYZ conversion is inverting the calculation matrix.  This is a big headache, as VB provides no inherent
-    ' matrix functions, so we have to do everything manually.
-    
-    'Start by calculating an XYZ triplet that corresponds to the incoming white point value
-    Dim Xw As Double, Yw As Double, Zw As Double
-    Xw = WhiteX / WhiteY
-    Yw = 1
-    Zw = (1 - WhiteX - WhiteY) / WhiteY
-    
-    'Next, calculate xyz triplets that correspond to the incoming RGB endpoints, using the same xyz to XYZ conversion as the white point.
-    Dim Xr As Double, Yr As Double, Zr As Double
-    Dim Xg As Double, Yg As Double, Zg As Double
-    Dim Xb As Double, Yb As Double, Zb As Double
-    
-    Xr = RedX / RedY
-    Yr = 1
-    Zr = (1 - RedX - RedY) / RedY
-    
-    Xg = GreenX / GreenY
-    Yg = 1
-    Zg = (1 - GreenX - GreenY) / GreenY
-    
-    Xb = BlueX / BlueY
-    Yb = 1
-    Zb = (1 - BlueX - BlueY) / BlueY
-    
-    'Now comes the ugly stuff.  We can think of the calculated XYZ values (for each of RGB) as a conversion matrix, which looks like this:
-    ' [Xr Xg Xb
-    '  Yr Yg Yb
-    '  Zr Zg Zb]
-    '
-    'We want to calculate a new conversion vector, [Sr Sg Sb], that takes into account the white endpoints specified above.  To calculate
-    ' such a vector, we need to multiple the white point vector [Xw Yw Zw] by the *inverse* of the matrix above.  Matrix inversion is
-    ' unpleasant work, as VB provides no internal function for it - so we must invert it manually.
-    '
-    'There are a number of different matrix inversion algorithms, but I'm going to use Gaussian elimination, as it's one of the few I
-    ' remember from school.  Thanks to Vagelis Plevris of Greece, whose FreeVBCode project provided a nice refresher on how one can
-    ' tackle this in VB (http://www.freevbcode.com/ShowCode.asp?ID=6221).
-    Dim invMatrix() As Double, srcMatrix() As Double
-    ReDim invMatrix(0 To 2, 0 To 2) As Double
-    ReDim srcMatrix(0 To 2, 0 To 2) As Double
-    
-    srcMatrix(0, 0) = Xr
-    srcMatrix(0, 1) = Xg
-    srcMatrix(0, 2) = Xb
-    srcMatrix(1, 0) = Yr
-    srcMatrix(1, 1) = Yg
-    srcMatrix(1, 2) = Yb
-    srcMatrix(2, 0) = Zr
-    srcMatrix(2, 1) = Zg
-    srcMatrix(2, 2) = Zb
-    
-    'Apply the inversion.  Note that *not all matrices are invertible*!  Image-encoded endpoints should be valid, but if they are not,
-    ' matrix inversion will fail.
-    If Invert3x3Matrix(invMatrix, srcMatrix) Then
-        
-        'Calculate the S conversion vector by multiplying the inverse matrix by the white point vector
-        Dim Sr As Double, Sg As Double, Sb As Double
-        Sr = invMatrix(0, 0) * Xw + invMatrix(0, 1) * Yw + invMatrix(0, 2) * Zw
-        Sg = invMatrix(1, 0) * Xw + invMatrix(1, 1) * Yw + invMatrix(1, 2) * Zw
-        Sb = invMatrix(2, 0) * Xw + invMatrix(2, 1) * Yw + invMatrix(2, 2) * Zw
-        
-        'We now have everything we need to calculate the primary transformation matrix [M], which is used as follows:
-        ' [X Y Z] = [M][R G B]
-        Dim mFinal() As Double
-        ReDim mFinal(0 To 2, 0 To 2) As Double
-        mFinal(0, 0) = Sr * Xr
-        mFinal(0, 1) = Sg * Xg
-        mFinal(0, 2) = Sb * Xb
-        mFinal(1, 0) = Sr * Yr
-        mFinal(1, 1) = Sg * Yg
-        mFinal(1, 2) = Sb * Yb
-        mFinal(2, 0) = Sr * Zr
-        mFinal(2, 1) = Sg * Zg
-        mFinal(2, 2) = Sb * Zb
-        
-        'Debug.Print "Forward matrix: "
-        'Debug.Print mFinal(0, 0), mFinal(0, 1), mFinal(0, 2)
-        'Debug.Print mFinal(1, 0), mFinal(1, 1), mFinal(1, 2)
-        'Debug.Print mFinal(2, 0), mFinal(2, 1), mFinal(2, 2)
-        
-        'Want to convert from XYZ to RGB?  Use the inverse matrix!  This is required for PNG files, because their endpoints specify
-        ' the reverse transform.  I'm not sure why this is.  My matrix math is rusty, but it's possible that we could skip the
-        ' first inversion, and simply multiply the S vector to the original source matrix, but I haven't tried this to see if it works
-        ' and my math skills are too rusty to know if that's a totally invalid operation.  As such, I just invert the matrix manually,
-        ' to be safe.
-        '
-        'Note that we don't have to check for a fail state here, as we know the matrix is invertible (because we inverted it ourselves
-        ' earlier on.  It's technically possible for faulty white point values to prevent this inversion, but PD doesn't provide a way
-        ' for users to enter faulty values, so I don't check that possibility here.
-        Dim mFinalInvert() As Double
-        ReDim mFinalInvert(0 To 2, 0 To 2) As Double
-        If Not treatEndpointsAsForwardValues Then Invert3x3Matrix mFinalInvert, mFinal
-        
-        'Debug.Print "Reverse matrix: "
-        'Debug.Print mFinalInvert(0, 0), mFinalInvert(0, 1), mFinalInvert(0, 2)
-        'Debug.Print mFinalInvert(1, 0), mFinalInvert(1, 1), mFinalInvert(1, 2)
-        'Debug.Print mFinalInvert(2, 0), mFinalInvert(2, 1), mFinalInvert(2, 2)
-        
-        'We now have everything we need to convert the DIB.  PARTY TIME!
-        Dim x As Long, y As Long
-        
-        'The actual XYZ transform is actually pretty simple.  Using the supplied endpoints, we use our custom matrix either during the
-        ' RGB -> XYZ step (forward transform), or XYZ -> RGB step (reverse transform).  The unused stage uses hard-coded sRGB values,
-        ' including hard-coded sRGB gamma (unless another gamma was specified).
-        '
-        'For forward transforms, we must pre-linearize the RGB values, using the supplied gamma.  Because the gamma is applied to the
-        ' [0, 255] range RGB values, we can use a look-up table to accelerate the process.
-        Dim gammaLookup(0 To 255) As Double, tmpCalc As Double
-        If treatEndpointsAsForwardValues Then
-            
-            'Invert gamma if it was specified
-            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
-            
-            For x = 0 To 255
-                tmpCalc = x / 255
-                
-                If srcGamma = 0 Then
-                    
-                    If tmpCalc > 0.04045 Then
-                        gammaLookup(x) = ((tmpCalc + 0.055) / (1.055)) ^ 2.4
-                    Else
-                        gammaLookup(x) = tmpCalc / 12.92
-                    End If
-                    
-                Else
-                    gammaLookup(x) = tmpCalc ^ srcGamma
-                End If
-                
-            Next x
-        
-        'Reverse transforms apply gamma directly to the floating-point RGB values, to reduce data loss due to clamping.
-        Else
-        
-            'Do nothing for reverse transforms, except to invert gamma as appropriate.
-            If srcGamma <> 0 Then srcGamma = 1 / srcGamma
-            
-        End If
-        
-        Dim tmpX As Double, tmpY As Double, tmpZ As Double
-        
-        'Create a local array and point it at the pixel data we want to operate on
-        Dim ImageData() As Byte
-        Dim tmpSA As SAFEARRAY2D
-        PrepSafeArray tmpSA, srcDIB
-        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-            
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-        Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-        initX = 0
-        initY = 0
-        finalX = srcDIB.GetDIBWidth - 1
-        finalY = srcDIB.GetDIBHeight - 1
-                
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
-        qvDepth = srcDIB.GetDIBColorDepth \ 8
-        
-        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-        ' based on the size of the area to be processed.
-        Dim progBarCheck As Long
-        If Not suppressMessages Then
-            If modifyProgBarMax = -1 Then
-                SetProgBarMax finalX
-            Else
-                SetProgBarMax modifyProgBarMax
-            End If
-            progBarCheck = FindBestProgBarValue()
-        End If
-        
-        'Color values
-        Dim r As Long, g As Long, b As Long
-        Dim fR As Double, fG As Double, fB As Double
-                
-        'Now we can loop through each pixel in the image, converting values as we go
-        For x = initX To finalX
-            QuickVal = x * qvDepth
-        For y = initY To finalY
-                
-            'Get the source pixel color values
-            r = ImageData(QuickVal + 2, y)
-            g = ImageData(QuickVal + 1, y)
-            b = ImageData(QuickVal, y)
-            
-            'Branch now according to forward/reverse transforms.
-            
-            'Forward transform
-            If treatEndpointsAsForwardValues Then
-            
-                'Convert to compressed gamma representation
-                fR = gammaLookup(r)
-                fG = gammaLookup(g)
-                fB = gammaLookup(b)
-                
-                'Convert to XYZ
-                tmpX = mFinal(0, 0) * fR + mFinal(0, 1) * fG + mFinal(0, 2) * fB
-                tmpY = mFinal(1, 0) * fR + mFinal(1, 1) * fG + mFinal(1, 2) * fB
-                tmpZ = mFinal(2, 0) * fR + mFinal(2, 1) * fG + mFinal(2, 2) * fB
-                
-                'Convert back to sRGB
-                Colors.XYZtoRGB tmpX, tmpY, tmpZ, r, g, b
-            
-            'Reverse transform
-            Else
-            
-                'Use sRGB for the initial XYZ conversion
-                Colors.RGBtoXYZ r, g, b, tmpX, tmpY, tmpZ
-            
-                'Convert back to [0, 1] RGB, using our custom endpoints
-                fR = mFinalInvert(0, 0) * tmpX + mFinalInvert(0, 1) * tmpY + mFinalInvert(0, 2) * tmpZ
-                fG = mFinalInvert(1, 0) * tmpX + mFinalInvert(1, 1) * tmpY + mFinalInvert(1, 2) * tmpZ
-                fB = mFinalInvert(2, 0) * tmpX + mFinalInvert(2, 1) * tmpY + mFinalInvert(2, 2) * tmpZ
-            
-                'Convert to linear RGB, accounting for gamma
-                If srcGamma = 0 Then
-                
-                    'If the user didn't specify gamma, use a default sRGB transform.
-                    If (fR > 0.0031308) Then
-                        fR = 1.055 * (fR ^ (1 / 2.4)) - 0.055
-                    Else
-                        fR = 12.92 * fR
-                    End If
-                    
-                    If (fG > 0.0031308) Then
-                        fG = 1.055 * (fG ^ (1 / 2.4)) - 0.055
-                    Else
-                        fG = 12.92 * fG
-                    End If
-                    
-                    If (fB > 0.0031308) Then
-                        fB = 1.055 * (fB ^ (1 / 2.4)) - 0.055
-                    Else
-                        fB = 12.92 * fB
-                    End If
-                
-                Else
-                
-                    If fR > 0 Then
-                        r = (fR ^ srcGamma) * 255
-                    Else
-                        r = 0
-                    End If
-                    
-                    If fG > 0 Then
-                        g = (fG ^ srcGamma) * 255
-                    Else
-                        g = 0
-                    End If
-                    
-                    If fB > 0 Then
-                        b = (fB ^ srcGamma) * 255
-                    Else
-                        b = 0
-                    End If
-                
-                End If
-                
-                'Apply RGB clamping now
-                If r > 255 Then
-                    r = 255
-                ElseIf r < 0 Then
-                    r = 0
-                End If
-                
-                If g > 255 Then
-                    g = 255
-                ElseIf g < 0 Then
-                    g = 0
-                End If
-                
-                If b > 255 Then
-                    b = 255
-                ElseIf b < 0 Then
-                    b = 0
-                End If
-                
-            End If
-            
-            'Assign the new colors and continue
-            ImageData(QuickVal, y) = b
-            ImageData(QuickVal + 1, y) = g
-            ImageData(QuickVal + 2, y) = r
-            
-        Next y
-            If Not suppressMessages Then
-                If (x And progBarCheck) = 0 Then
-                    If UserPressedESC() Then Exit For
-                    SetProgBarVal x + modifyProgBarOffset
-                End If
-            End If
-        Next x
-                
-        'With our work complete, point ImageData() away from the DIB and deallocate it
-        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-        Erase ImageData
-        
-        If g_cancelCurrentAction Then ConvertRGBUsingCustomEndpoints = False Else ConvertRGBUsingCustomEndpoints = True
-        
-    Else
-        ConvertRGBUsingCustomEndpoints = False
-        Exit Function
-    End If
-    
-End Function
-
-'Invert a 3x3 matrix of double-type.  The matrices MUST BE DIMMED PROPERLY PRIOR TO CALLING THIS FUNCTION.
-' Failure returns FALSE; success, TRUE.
-'
-'Thanks to Vagelis Plevris of Greece, whose FreeVBCode project provided a nice refresher on how one might
-' tackle this in VB (http://www.freevbcode.com/ShowCode.asp?ID=6221).
-Private Function Invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() As Double) As Boolean
-
-    'Some matrices are not invertible.  If color endpoints are calculated correctly, this shouldn't be a problem,
-    ' but we need to have a failsafe for the case of determinant = 0
-    On Error GoTo cantCreateMatrix
-    
-    'Gaussian elimination will use an intermediate array, at double the width of the incoming srcMatrix()
-    Dim intMatrix() As Double
-    ReDim intMatrix(0 To 2, 0 To 5) As Double
-    
-    'Gaussian elimination works by using simple row operations to solve a system of linear equations.  This is
-    ' computationally slow, but algorithmically simple, and for a single 3x3 matrix no one cares about performance.
-    '
-    'To visualize what happens, see how we put the source matrix on the left and the identity matrix on the right, like so:
-    '
-    ' [ src11 src12 src13 | 1 0 0 ]
-    ' [ src21 src22 src23 | 0 1 0 ]
-    ' [ src31 src32 src33 | 0 0 1 ]
-    '
-    'When we're done, we will have constructed the inverse on the right, as a result of our row operations:
-    ' [ 1 0 0 | inv11 inv12 inv13 ]
-    ' [ 0 1 0 | inv21 inv22 inv23 ]
-    ' [ 0 0 1 | inv31 inv32 inv33 ]
-    
-    'Start by filling our calculation array with the input values
-    Dim x As Long, y As Long
-    For x = 0 To 2
-    For y = 0 To 2
-        intMatrix(x, y) = srcMatrix(x, y)
-    Next y
-    Next x
-    
-    'Populate the identity matrix on the right
-    intMatrix(0, 3) = 1
-    intMatrix(1, 4) = 1
-    intMatrix(2, 5) = 1
-    
-    'Start performing row operations that move us toward an identity matrix on the left
-    Dim k As Long, n As Long, m As Long, nonZeroLine As Long, tmpValue As Double
-    
-    For k = 0 To 2
-        
-        'A non-zero element is required.  Change lines if necessary to make this happen.
-        If intMatrix(k, k) = 0 Then
-            
-            'Find the first line with a non-zero element
-            For n = k To 2
-                If intMatrix(n, k) <> 0 Then
-                    nonZeroLine = n
-                    Exit For
-                End If
-            Next n
-            
-            'Swap line k and nonZeroLine
-            For m = k To 5
-                tmpValue = intMatrix(k, m)
-                intMatrix(k, m) = intMatrix(nonZeroLine, m)
-                intMatrix(nonZeroLine, m) = tmpValue
-            Next m
-            
-        End If
-            
-        tmpValue = intMatrix(k, k)
-        For n = k To 5
-            intMatrix(k, n) = intMatrix(k, n) / tmpValue
-        Next n
-        
-        'For other lines, make a zero element using the formula:
-        ' Ai1 = Aij - A11 * (Aij / A11)
-        For n = 0 To 2
-            
-            'Check finishing position
-            If (n = k) And (n = 2) Then Exit For
-            
-            'Check for elements already equal to one; it's not really good form to update a loop element like this,
-            ' but it's helpful in the absence of an easy way to tell VB to "Goto Next"
-            If (n = k) And (n < 2) Then n = n + 1
-            
-            'Do not touch elements that are already zero
-            If intMatrix(n, k) <> 0 Then
-            
-                If intMatrix(k, k) <> 0 Then
-                    
-                    tmpValue = intMatrix(n, k) / intMatrix(k, k)
-                    For m = k To 5
-                        intMatrix(n, m) = intMatrix(n, m) - intMatrix(k, m) * tmpValue
-                    Next m
-                    
-                'Failed determinant; exit function
-                Else
-                
-                    GoTo cantCreateMatrix
-                
-                End If
-                
-            End If
-            
-        Next n
-        
-    Next k
-    
-    'Inversion complete!  (Barring any divide-by-zero errors, which indicate an un-invertible matrix.)
-    
-    'Copy the solved section of the intermediate matrix into the destination
-    For n = 0 To 2
-    For k = 0 To 2
-        newMatrix(n, k) = intMatrix(n, 3 + k)
-    Next k
-    Next n
-    
-    'Report the successful inversion to the user, then exit
-    Invert3x3Matrix = True
-    Exit Function
-
-cantCreateMatrix:
-    Debug.Print "Matrix is not invertible; function cancelled."
-    Invert3x3Matrix = False
-
 End Function

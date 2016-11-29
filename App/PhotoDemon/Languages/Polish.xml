@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1118,7 +1118,7 @@ To włączyć obsługę plików skompresowanych PDI, należy kliknąć Pomoc> Sp
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>Wymazać</translation>
 </phrase>
 
 <phrase>
@@ -1128,22 +1128,22 @@ To włączyć obsługę plików skompresowanych PDI, należy kliknąć Pomoc> Sp
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>Zablokowany</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>Percepcyjny</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>względna kolorymetryczna</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>absolutna kolorymetryczna</translation>
 </phrase>
 
 <phrase>
@@ -1542,12 +1542,12 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>farba udar</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>warstwa farby</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3324,7 +3324,7 @@ Please enter a numeric value.</original>
 <translation>Żądany plik wybór nie może być zlokalizowany. opuszczone obciążenia Selection.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4162,7 +4162,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>oryginalny</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13229,27 +13229,27 @@ To włączyć obsługę tej funkcji, proszę skopiuj plik FreeImage.dll do katal
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>tryb alfa</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>jakość podgląd</translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Najwyższa jakość</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>Zaniedbanie</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>Najlepsza wydajność</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14106,37 +14106,37 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>rendering intent wyświetlacz</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>dostępne wyświetlacze</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>wyłączyć zarządzanie kolorem wyświetlacza</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>korzystać z aktualnych profili systemowych dla każdego wyświetlacza</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>profil kolorów dla tego monitora</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>zasady wyświetlania</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>używać własnych profili dla każdego wyświetlacza</translation>
 </phrase>
 
 <phrase>
@@ -14361,7 +14361,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>okno główne</translation>
 </phrase>
 
 <phrase>
@@ -14414,17 +14414,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>tylko nazwy obrazów - kompaktowe</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>opisowe - pełny obraz miejsca, w tym folderze (s)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Na pasku tytułu okna głównego PhotoDemon wyświetla informacje o aktualnie załadowanego obrazu. Użyj tego ustawienia, aby kontrolować, ile informacja jest wyświetlana.</translation>
 </phrase>
 
 <phrase>
@@ -14604,7 +14604,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Wyłączanie zarządzania kolorem wyświetlacza może stanowić niewielki wzrost wydajności. Jeśli monitor nie jest obecnie skonfigurowany do zarządzania kolorami, należy użyć tego ustawienia.</translation>
 </phrase>
 
 <phrase>
@@ -14629,7 +14629,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Jeśli nie wiesz, co to ustawienie kontroli, ustaw go na "Wywołań". Postrzegana rendering intent to najlepszy wybór dla większości użytkowników.</translation>
 </phrase>
 
 <phrase>
@@ -14793,12 +14793,12 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Opcje zarządzania kolorami kontrolować PhotoDemon wykorzystuje profile ICC dla plików graficznych i urządzeń.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Opcje zarządzania kolorami</translation>
 </phrase>
 
 <phrase>
@@ -14950,8 +14950,8 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

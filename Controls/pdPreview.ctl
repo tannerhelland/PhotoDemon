@@ -584,7 +584,7 @@ Private Sub UserControl_Show()
         
         CalculateScrollMaxMin
         
-        'TODO: solve color management for this control... it's messy without a persistent DC.
+        'TODO: migrate this to LittleCMS
         'Enable color management
         'AssignDefaultColorProfileToObject picPreview.hWnd, picPreview.hDC
         'TurnOnColorManagementForDC picPreview.hDC

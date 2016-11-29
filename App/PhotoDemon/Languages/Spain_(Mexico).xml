@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.218</langversion>
+<langversion>6.7.219</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -3328,7 +3328,7 @@ Please válida Introduzca un valor numérico.</translation>
 <translation>Archivo de selección solicitada no se pudo encontrar. Carga Selección abandonado.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -14962,8 +14962,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

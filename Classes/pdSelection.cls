@@ -1579,7 +1579,8 @@ Private Sub CreateSelectionMask()
     
     'Start by creating a blank mask (this will also erase any existing mask)
     If (selMask.GetDIBWidth <> containingPDImage.Width) Or (selMask.GetDIBHeight <> containingPDImage.Height) Then
-        selMask.CreateBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
+        selMask.CreateBlank containingPDImage.Width, containingPDImage.Height, 32, maskBackColor
+        selMask.SetAlphaPremultiplication False
     Else
         selMask.ResetDIB maskBackByte
     End If
@@ -1761,11 +1762,11 @@ Private Sub CreateSelectionMask()
             Set cFloodFill = New pdFloodFill
             
             'Set all initial parameters
-            cFloodFill.setAntialiasingMode (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
-            cFloodFill.setInitialPoint x1, y1
-            cFloodFill.setTolerance getSelectionProperty_Double(SP_WAND_TOLERANCE)
-            cFloodFill.setSearchMode getSelectionProperty_Long(SP_WAND_SEARCH_MODE)
-            cFloodFill.setCompareMode getSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
+            cFloodFill.SetAntialiasingMode (getSelectionProperty_Long(SP_SMOOTHING) > sNone)
+            cFloodFill.SetInitialPoint x1, y1
+            cFloodFill.SetTolerance getSelectionProperty_Double(SP_WAND_TOLERANCE)
+            cFloodFill.SetSearchMode getSelectionProperty_Long(SP_WAND_SEARCH_MODE)
+            cFloodFill.SetCompareMode getSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
             
             'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class
             Dim tmpLayer As pdLayer
@@ -1783,7 +1784,7 @@ Private Sub CreateSelectionMask()
             End If
             
             'Apply the flood fill
-            cFloodFill.initiateFloodFill tmpDIB, selMask
+            cFloodFill.InitiateFloodFill tmpDIB, selMask
             
             'Erase our temporary objects
             Set tmpDIB = Nothing
@@ -1965,66 +1966,9 @@ Private Sub FixBoundsToImageSize()
     
 End Sub
 
-'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we do this via GDI+.  Otherwise we use
-' our own internal blur functions (which are fast but lower quality).
-' TODO: replace this with QuickBlur
+'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we may choose to do this via GDI+.
 Private Sub ApplyFeatheringToMask()
-    
-    'If GDI+ 1.1 exists, use it for a faster blur operation.
-    If GDI_Plus.IsGDIPlusV11Available Then
-        
-        'GDIPlusBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS), boundLeft, boundTop, boundWidth, boundHeight
-        QuickBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS)
-    
-    'If GDI+ v1.0 is found, blurring is not supported, so fall back to PD's internal Gaussian blur function.
-    Else
-    
-        'For exterior selections, the whole mask needs to be blurred.  No way around that.  But for interior and bordered selections,
-        ' we can blur only the active area of the selection - saving precious time in the process.
-        If (getSelectionProperty_Long(SP_AREA) = sExterior) Or ((boundLeft = 0) And (boundTop = 0) And (boundWidth = containingPDImage.Width - 1) And (boundHeight = containingPDImage.Height - 1)) Then
-            
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.CreateFromExistingDIB selMask
-        
-            Message "Feathering selection..."
-            CreateApproximateGaussianBlurDIB getSelectionProperty_Long(SP_FEATHERING_RADIUS), tmpDIB, selMask, 1, True
-            SetProgBarVal 0
-            ReleaseProgressBar
-            Message "Finished."
-            
-        Else
-        
-            'Create a DIB the size of the active selection, and copy the selection mask into that
-            Message "Feathering selection..."
-            Dim srcDIB As pdDIB
-            Set srcDIB = New pdDIB
-            srcDIB.CreateBlank boundWidth, boundHeight, 24
-            BitBlt srcDIB.GetDIBDC, 0, 0, boundWidth, boundHeight, selMask.GetDIBDC, boundLeft, boundTop, vbSrcCopy
-            
-            'Create a second DIB (which will receive the blurred data)
-            Dim dstDIB As pdDIB
-            Set dstDIB = New pdDIB
-            dstDIB.CreateBlank boundWidth, boundHeight, 24
-            
-            'Blur the selection
-            CreateApproximateGaussianBlurDIB getSelectionProperty_Long(SP_FEATHERING_RADIUS), srcDIB, dstDIB, 1, True
-            
-            'Copy the blurred area back onto the selection mask
-            BitBlt selMask.GetDIBDC, boundLeft, boundTop, boundWidth, boundHeight, dstDIB.GetDIBDC, 0, 0, vbSrcCopy
-            
-            'Erase both temporary DIBs
-            Set srcDIB = Nothing
-            Set dstDIB = Nothing
-            
-            SetProgBarVal 0
-            ReleaseProgressBar
-            Message "Finished."
-        
-        End If
-    
-    End If
-
+    QuickBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS), False
 End Sub
 
 'While a selection tool is active, we draw transform nodes around it.  The viewport renderer invokes this function as necessary.
@@ -2119,7 +2063,7 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     If rejectRefreshRequests Then Exit Sub
 
     'Is the selection mask ready to be used?  If not, prepare it now.
-    If Not isMaskReady Then CreateSelectionMask
+    If (Not isMaskReady) Then CreateSelectionMask
     
     'A few different criteria can cause us to abandon this function in favor of renderOutlineOnly (which, per its name,
     ' renders the active selection as just an outline):
@@ -2169,19 +2113,22 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     rightBound = imgLeft + imgWidth - 1
     bottomBound = imgTop + imgHeight - 1
             
-    If rightBound > srcImage.canvasBuffer.GetDIBWidth - 1 Then rightBound = srcImage.canvasBuffer.GetDIBWidth - 1
-    If bottomBound > srcImage.canvasBuffer.GetDIBHeight - 1 Then bottomBound = srcImage.canvasBuffer.GetDIBHeight - 1
+    If (rightBound > srcImage.canvasBuffer.GetDIBWidth - 1) Then rightBound = srcImage.canvasBuffer.GetDIBWidth - 1
+    If (bottomBound > srcImage.canvasBuffer.GetDIBHeight - 1) Then bottomBound = srcImage.canvasBuffer.GetDIBHeight - 1
     
     'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
     ' every pixel inside the loop.  Note also that this code is identical among various selection render methods.
     Dim newX As Double, newY As Double, newXInt As Long
     Dim xLookup() As Long, yLookup() As Long
     
+    Dim xPxSizeInBytes As Long
+    If (dstDIB.GetDIBColorDepth = 32) Then xPxSizeInBytes = 4 Else xPxSizeInBytes = 3
+    
     ReDim xLookup(imgLeft To rightBound) As Long
     For x = imgLeft To rightBound
         Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, x, imgTop, newX, newY, True
         newXInt = Int(newX)
-        xLookup(x) = newXInt * 3&
+        xLookup(x) = newXInt * xPxSizeInBytes
     Next x
     
     ReDim yLookup(imgTop To bottomBound) As Long
@@ -2216,7 +2163,7 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
                                     
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
-                QuickVal = x * 3
+                QuickVal = x * xPxSizeInBytes
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
@@ -2256,7 +2203,7 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
                         
             'Highlight the selected parts of the image
             For x = imgLeft To rightBound
-                QuickVal = x * 3
+                QuickVal = x * xPxSizeInBytes
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
@@ -2996,5 +2943,9 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Else
         RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, GP_IM_HighQualityBicubic)
     End If
+    
+    'NOTE: now that selection masks are 32-bpp, the destination thumbnail DIB is going to have wonky alpha values in the selection
+    ' mask region.  Premultiply alpha manually to compensate.
+    dstThumbnailDIB.SetAlphaPremultiplication True
     
 End Function

@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.215</langversion>
+<langversion>6.7.216</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3327,7 +3327,7 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Dossier de sélection demandée n'a pas pu être localisé. Charge sélection abandonné.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -14962,8 +14962,8 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

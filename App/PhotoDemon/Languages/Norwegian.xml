@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1118,7 +1118,7 @@ To aktivere støtte for komprimerte PDI-filer, klikker du på Hjelp> Se etter op
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>Viske ut</translation>
 </phrase>
 
 <phrase>
@@ -1128,22 +1128,22 @@ To aktivere støtte for komprimerte PDI-filer, klikker du på Hjelp> Se etter op
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>Låst</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>Perceptual</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>relativ kolo</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>absolutt kolo</translation>
 </phrase>
 
 <phrase>
@@ -1548,12 +1548,12 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>Paint hjerneslag</translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>Paint lag</translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3336,7 +3336,7 @@ Please enter a numeric value.</original>
 <translation>Forespurte utvalg fil ble ikke funnet. Utvalg last forlatt.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4174,7 +4174,7 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>opprinnelig</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13245,27 +13245,27 @@ To aktivere støtte for denne funksjonen, kan du kopiere FreeImage.dll filen inn
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>alfamodus </translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>forhåndsvisningskvalitet </translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Beste kvalitet</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>Misligholde</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>Best ytelse</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14127,37 +14127,37 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>Displayet gjengivelse</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>tilgjengelige skjermer</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>slå av skjermen fargestyring</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>bruke dagens system profiler for hver skjerm</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>fargeprofil  for skjermen</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>displayet politikk</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>bruke egendefinerte  profiler for hver skjerm</translation>
 </phrase>
 
 <phrase>
@@ -14382,7 +14382,7 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>hoved~~POS=TRUNC vinduet~~POS=HEADCOMP</translation>
 </phrase>
 
 <phrase>
@@ -14436,17 +14436,17 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>bare bilde navn - kompakt</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>beskrivende - fullstendig bilde steder, inkludert mappe (r)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Tittellinjen  i hoved PhotoDemon vinduet viser informasjon om den lastet bilde. Bruk denne innstillingen til å kontrollere hvor mye informasjon som vises.</translation>
 </phrase>
 
 <phrase>
@@ -14626,7 +14626,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Slå av skjermen fargestyring kan gi en liten ytelsesforbedring. Hvis skjermen ikke er konfigurert for fargebehandling, kan du bruke denne innstillingen.</translation>
 </phrase>
 
 <phrase>
@@ -14651,7 +14651,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Hvis du ikke vet hva denne innstillingen kontroller, sett den til "Perceptual". Perceptual gjengivelse er det beste valget for de fleste brukere.</translation>
 </phrase>
 
 <phrase>
@@ -14815,12 +14815,12 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Color ledelse alternativer kontrollere hvordan PhotoDemon bruker ICC-profiler for bildefiler  og enheter.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Fargebehandling  alternativer</translation>
 </phrase>
 
 <phrase>
@@ -14972,8 +14972,8 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>

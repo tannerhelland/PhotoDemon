@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.1981</langversion>
+<langversion>6.8.2033</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1119,7 +1119,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Erase</original>
-<translation></translation>
+<translation>Radera</translation>
 </phrase>
 
 <phrase>
@@ -1129,22 +1129,22 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Locked</original>
-<translation></translation>
+<translation>låst</translation>
 </phrase>
 
 <phrase>
 <original>Perceptual</original>
-<translation></translation>
+<translation>perceptuell</translation>
 </phrase>
 
 <phrase>
 <original>Relative colorimetric</original>
-<translation></translation>
+<translation>relativt färg</translation>
 </phrase>
 
 <phrase>
 <original>Absolute colorimetric</original>
-<translation></translation>
+<translation>absolut färg</translation>
 </phrase>
 
 <phrase>
@@ -1544,12 +1544,12 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 
 <phrase>
 <original>Paint stroke</original>
-<translation></translation>
+<translation>sprutningspulsen </translation>
 </phrase>
 
 <phrase>
 <original>Paint layer</original>
-<translation></translation>
+<translation>färgskiktet </translation>
 </phrase>
 
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -3332,7 +3332,7 @@ Please ange ett numeriskt värde.</translation>
 <translation>Begärd val filen kunde inte hittas. Urval belastning övergiven.</translation>
 </phrase>
 
-<!-- pdSelection.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -4170,7 +4170,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>original</original>
-<translation></translation>
+<translation>original-</translation>
 </phrase>
 
 <!-- pdNewOld.ctl contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -13240,27 +13240,27 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>alpha mode</original>
-<translation></translation>
+<translation>alfamod</translation>
 </phrase>
 
 <phrase>
 <original>preview quality</original>
-<translation></translation>
+<translation>förhandsgranskningskvalitet </translation>
 </phrase>
 
 <phrase>
 <original>Best quality</original>
-<translation></translation>
+<translation>Bästa kvalitet</translation>
 </phrase>
 
 <phrase>
 <original>Default</original>
-<translation></translation>
+<translation>Standard</translation>
 </phrase>
 
 <phrase>
 <original>Best performance</original>
-<translation></translation>
+<translation>bästa prestanda</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -14122,37 +14122,37 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>display rendering intent</original>
-<translation></translation>
+<translation>display återgivning</translation>
 </phrase>
 
 <phrase>
 <original>available displays</original>
-<translation></translation>
+<translation>tillgängliga displayer</translation>
 </phrase>
 
 <phrase>
 <original>turn off display color management</original>
-<translation></translation>
+<translation>stänga visnings färghantering</translation>
 </phrase>
 
 <phrase>
 <original>use the current system profiles for each display</original>
-<translation></translation>
+<translation>använda de nuvarande systemprofiler  för varje display</translation>
 </phrase>
 
 <phrase>
 <original>color profile for this display</original>
-<translation></translation>
+<translation>färgprofil  för denna display</translation>
 </phrase>
 
 <phrase>
 <original>display policies</original>
-<translation></translation>
+<translation>visnings politik</translation>
 </phrase>
 
 <phrase>
 <original>use custom profiles for each display</original>
-<translation></translation>
+<translation>använda anpassade profiler för varje display</translation>
 </phrase>
 
 <phrase>
@@ -14377,7 +14377,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>main window</original>
-<translation></translation>
+<translation>huvud~~POS=TRUNC fönstret~~POS=HEADCOMP</translation>
 </phrase>
 
 <phrase>
@@ -14431,17 +14431,17 @@ Are du säker på att du vill fortsätta?</translation>
 
 <phrase>
 <original>compact - image names only</original>
-<translation></translation>
+<translation>kompakt - bildnamn endast</translation>
 </phrase>
 
 <phrase>
 <original>descriptive - full image locations, including folder(s)</original>
-<translation></translation>
+<translation>beskrivande - bild fulla platser, inklusive mapp (s)</translation>
 </phrase>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation></translation>
+<translation>Titelfältet i huvud PhotoDemon fönstret visas information om den aktuella laddade bilden. Använd denna inställning för att styra hur mycket information som visas.</translation>
 </phrase>
 
 <phrase>
@@ -14621,7 +14621,7 @@ Are du säker på att du vill fortsätta?</translation>
 
 <phrase>
 <original>Turning off display color management can provide a small performance boost.  If your display is not currently configured for color management, use this setting.</original>
-<translation></translation>
+<translation>Stänga display färghantering kan ge en liten prestandaökning. Om skärmen inte är för närvarande konfigurerad för färghantering, använda denna inställning.</translation>
 </phrase>
 
 <phrase>
@@ -14646,7 +14646,7 @@ Are du säker på att du vill fortsätta?</translation>
 
 <phrase>
 <original>If you do not know what this setting controls, set it to "Perceptual".  Perceptual rendering intent is the best choice for most users.</original>
-<translation></translation>
+<translation>Om du inte vet vad den här inställningen kontroller, ställ in den på "Perceptuell". Perceptuell återgivning är det bästa valet för de flesta användare.</translation>
 </phrase>
 
 <phrase>
@@ -14810,12 +14810,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrase>
 <original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
+<translation>Färghanterings alternativen styr hur PhotoDemon använder ICC-profiler för bildfiler  och enheter.</translation>
 </phrase>
 
 <phrase>
 <original>Color Management Options</original>
-<translation></translation>
+<translation>Färghantering Alternativ</translation>
 </phrase>
 
 <phrase>
@@ -14967,8 +14967,8 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrasecount>2538</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1934 are duplicates, so only 2538 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4468 phrases. -->
+<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
 <!-- These 2538 phrases contain approximately 12764 total words. -->
 
 </pdData>
