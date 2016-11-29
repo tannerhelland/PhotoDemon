@@ -272,7 +272,10 @@ End Sub
 
 'On program-wide color changes, redraw ourselves accordingly
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef bHandled As Boolean, ByRef lReturn As Long)
-    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then RedrawBackBuffer
+    Select Case wMsg
+        Case WM_PD_PRIMARY_COLOR_CHANGE, WM_PD_COLOR_MANAGEMENT_CHANGE
+            RedrawBackBuffer
+    End Select
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -294,6 +297,7 @@ Private Sub UserControl_Initialize()
     
     'This class needs to redraw itself when the primary window color changes.  Request notifications from the program-wide color change wMsg.
     ucSupport.SubclassCustomMessage WM_PD_PRIMARY_COLOR_CHANGE, True
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

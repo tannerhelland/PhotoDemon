@@ -79,6 +79,7 @@ End Type
 Private Const SWP_HIDEWINDOW As Long = &H80&
 Private Const SWP_SHOWWINDOW As Long = &H40&
 
+Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal srcHwnd As Long, ByRef dstRectL As RECTL) As Boolean
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
@@ -619,7 +620,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     bufferWasResized = False
     
     If (m_BackBuffer.GetDIBWidth <> m_Width) Or (m_BackBuffer.GetDIBHeight <> m_Height) Then
-        m_BackBuffer.CreateBlank m_Width, m_Height, 24
+        m_BackBuffer.CreateBlank m_Width, m_Height, 32, , 255
         bufferWasResized = True
     End If
     
@@ -1089,6 +1090,23 @@ Public Sub RequestFullMove(Optional ByVal newLeft As Long = -100, Optional ByVal
     m_MoveSize.SetSizeAndPosition newLeft, newTop, newWidth, newHeight
     m_ResizeEventsSuspended = False
     
+End Sub
+
+'Some controls may want to color-manage certain regions of their back buffer DIB.  By design, this user control support
+' class does not expose the DIB directly (which allows for certain caching mechanisms that are otherwise very complicated).
+' As such, if our owner wants something color-managed, they need to notify us, and we will handle it for them.
+'
+'To avoid the unwanted management of UI elements, a target rect needs to be explicitly specified.  *Only* the contents of
+' this rect will be color-managed.  Everything else will not.  Please ensure that no colored UI elements are included
+' in the managed rect, as the will look out-of-place next to the rest of the UI (which is explicitly *not* color-managed
+' for performance reasons).
+'
+'Also, note that requests are not persistent, by design.  The caller must re-request management any time the underlying
+' contents change (as this class has no way of being auto-notified).
+Public Sub RequestBufferColorManagement(ByVal ptrToSrcRectF As Long)
+    Dim tmpRectF As RECTF
+    CopyMemory_Strict VarPtr(tmpRectF), ptrToSrcRectF, 16&
+    ColorManagement.ApplyDisplayColorManagement_RectF m_BackBuffer, tmpRectF, , False
 End Sub
 
 'Want a paint event fired?  Call this function.  By default, the painter will add a WM_PAINT message to the stack, and wait

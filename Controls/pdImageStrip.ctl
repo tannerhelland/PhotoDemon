@@ -320,6 +320,10 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then Me.RequestTotalRedraw True
+End Sub
+
 Private Sub ucSupport_GotFocusAPI()
     RedrawBackBuffer
     RaiseEvent GotFocusAPI
@@ -863,6 +867,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors

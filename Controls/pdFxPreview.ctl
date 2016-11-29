@@ -233,8 +233,8 @@ End Sub
 
 'Use this to supply the object with a copy of the processed image's data.  The preview object can use this to display
 ' the processed image again if the user clicks the "show original image" link, then clicks it again.
-Public Sub SetFXImage(ByRef srcDIB As pdDIB)
-    pdPreviewBox.SetFXImage srcDIB
+Public Sub SetFXImage(ByRef srcDIB As pdDIB, Optional ByVal colorManagementAlreadyHandled As Boolean = False)
+    pdPreviewBox.SetFXImage srcDIB, colorManagementAlreadyHandled
 End Sub
 
 'Has this preview control had an original version of the image set?

@@ -1138,7 +1138,7 @@ Private Sub ApplyAlphaToGradientDIB()
         m_GradientDIB.CopyAlphaFromExistingDIB alphaMask
         
         'Apply color-management
-        ColorManagement.ApplyDisplayColorManagement m_GradientDIB
+        ColorManagement.ApplyDisplayColorManagement m_GradientDIB, , False
         
         'Premultiply the gradient DIB, so we can successfully alpha-blend it later
         m_GradientDIB.SetAlphaPremultiplication True
@@ -1148,7 +1148,7 @@ Private Sub ApplyAlphaToGradientDIB()
         m_GradientDIB.CopyAlphaFromExistingDIB alphaMask, True
         
         'Apply color-management.  (It is okay to do this after copying alpha, as we know only 0 and 255 values are in use.)
-        ColorManagement.ApplyDisplayColorManagement m_GradientDIB
+        ColorManagement.ApplyDisplayColorManagement m_GradientDIB, , False
         
     End If
     

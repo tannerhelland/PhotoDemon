@@ -172,6 +172,10 @@ Public Property Let WheelWidth(ByVal newWidth As Single)
     End If
 End Property
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then NotifyColorManagementChange
+End Sub
+
 'When the control receives focus, relay the event externally
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
@@ -423,6 +427,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     'Prep painting classes
     Drawing2D.QuickCreatePainter m_Painter
@@ -466,7 +471,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
 End Sub
 
-Public Sub NotifyColorManagementChange()
+Private Sub NotifyColorManagementChange()
     CreateColorWheel
     CreateSVSquare
     RedrawBackBuffer True
@@ -672,7 +677,7 @@ Private Sub CreateSVSquare()
     m_SVRectF.Top = tmpY
     
     'If color management is active, apply it now
-    ColorManagement.ApplyDisplayColorManagement m_SquareBuffer
+    ColorManagement.ApplyDisplayColorManagement m_SquareBuffer, , False
     
 End Sub
 

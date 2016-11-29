@@ -2030,12 +2030,6 @@ Public Sub RequestTabstripRedraw(Optional ByVal regenerateThumbsToo As Boolean =
     FormMain.mainCanvas(0).NotifyTabstripTotalRedrawRequired regenerateThumbsToo
 End Sub
 
-'Color management changes require us to update the on-screen color selection tools
-Public Sub RequestColorToolsUpdate()
-    layerpanel_Colors.clrWheel.NotifyColorManagementChange
-    layerpanel_Colors.clrVariants.NotifyColorManagementChange
-End Sub
-
 'If a preview control won't be activated for a given dialog, call this function to display a persistent
 ' "no preview available" message.  (Note: for this to work, you must not attempt to supply updated preview images
 ' to the underlying control.  If you do, those images will obviously overwrite this warning!)

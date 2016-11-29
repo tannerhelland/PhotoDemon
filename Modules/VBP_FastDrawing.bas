@@ -764,13 +764,20 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         Else
             
+            'Prior to premultiplying alpha, apply color management.  (It is more efficient to do it here, prior to premultiplying
+            ' alpha values, then to let the preview control handle it manually - as it must undo premultiplication to calculate
+            ' a proper result.)
+            Dim weCanHandleCM As Boolean: weCanHandleCM = False
+            
             If (workingDIB.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+                weCanHandleCM = True
+                ColorManagement.ApplyDisplayColorManagement workingDIB
                 workingDIB.SetAlphaPremultiplication True
             Else
                 workingDIB.SetInitialAlphaPremultiplicationState True
             End If
             
-            previewTarget.SetFXImage workingDIB
+            previewTarget.SetFXImage workingDIB, weCanHandleCM
         
         End If
         

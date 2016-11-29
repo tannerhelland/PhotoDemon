@@ -190,6 +190,10 @@ Public Property Let WheelShape(ByVal newShape As COLOR_WHEEL_SHAPE)
     End If
 End Property
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then NotifyColorManagementChange
+End Sub
+
 'When the control receives focus, relay the event externally
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
@@ -289,6 +293,7 @@ Private Sub UserControl_Initialize()
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     m_MouseInsideRegion = -1
     
@@ -363,7 +368,7 @@ Public Sub DisplayColorSelection()
     
 End Sub
 
-Public Sub NotifyColorManagementChange()
+Private Sub NotifyColorManagementChange()
     ColorManagement.ApplyDisplayColorManagement_SingleColor m_ColorList(CV_Primary), m_ColorDisplay(CV_Primary)
     CalculateVariantColors
     RedrawBackBuffer

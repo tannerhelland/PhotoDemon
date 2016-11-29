@@ -157,6 +157,10 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
     If m_MouseInsidePenRect Then RaisePenDialog
 End Sub
 
+Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
+    If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then RedrawBackBuffer
+End Sub
+
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     UpdateMousePosition x, y
     If m_MouseInsidePenRect Then
@@ -238,6 +242,7 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd
     ucSupport.RequestExtraFunctionality True
     ucSupport.RequestCaptionSupport
+    ucSupport.SubclassCustomMessage WM_PD_COLOR_MANAGEMENT_CHANGE, True
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
@@ -355,6 +360,11 @@ Private Sub RedrawBackBuffer()
         
         cSurface.SetSurfaceClip_FromRectF m_PenRect, P2_CM_Replace
         m_Painter.DrawPath cSurface, cPen, m_PreviewPath
+        
+        'Before drawing borders around the pen results, ask our parent control to apply color-management to
+        ' the pen preview.  (Note that this *will* result in the background checkerboard being color-managed.
+        ' This isn't ideal, but we'll live with it for now as the alternative is messy.)
+        ucSupport.RequestBufferColorManagement VarPtr(m_PenRect)
         
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long

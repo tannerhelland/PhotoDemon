@@ -248,13 +248,16 @@ Public Sub SetOriginalImage(ByRef srcDIB As pdDIB)
     If (m_OriginalImage Is Nothing) Then Set m_OriginalImage = New pdDIB
     m_OriginalImage.CreateFromExistingDIB srcDIB
     
+    'Apply color management now; then we never have to do it again
+    If (Not srcDIB Is Nothing) Then ColorManagement.ApplyDisplayColorManagement m_OriginalImage
+    
     If (m_OriginalImage.GetDIBColorDepth = 32) And (Not m_OriginalImage.GetAlphaPremultiplication) Then m_OriginalImage.SetAlphaPremultiplication True
     
 End Sub
 
 'Use this to supply the object with a copy of the processed image's data.  The preview object can use this to display
 ' the processed image again if the user clicks the "show original image" link, then clicks it again.
-Public Sub SetFXImage(ByRef srcDIB As pdDIB)
+Public Sub SetFXImage(ByRef srcDIB As pdDIB, Optional ByVal colorManagementAlreadyHandled As Boolean = False)
 
     'Note that we have a copy of the original image, so the calling function doesn't attempt to supply it again
     m_HasFX = True
@@ -262,6 +265,11 @@ Public Sub SetFXImage(ByRef srcDIB As pdDIB)
     'Make a copy of the DIB passed in
     If (m_fxImage Is Nothing) Then Set m_fxImage = New pdDIB
     m_fxImage.CreateFromExistingDIB srcDIB
+    
+    'Apply color management now; then we never have to do it again
+    If (Not srcDIB Is Nothing) And (Not colorManagementAlreadyHandled) Then
+        If (m_fxImage.GetDIBWidth <> 0) Then ColorManagement.ApplyDisplayColorManagement m_fxImage
+    End If
     
     'Redraw the on-screen image (as necessary)
     RedrawBackBuffer
