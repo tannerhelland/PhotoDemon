@@ -1137,12 +1137,19 @@ Private Sub ApplyAlphaToGradientDIB()
         
         m_GradientDIB.CopyAlphaFromExistingDIB alphaMask
         
+        'Apply color-management
+        ColorManagement.ApplyDisplayColorManagement m_GradientDIB
+        
         'Premultiply the gradient DIB, so we can successfully alpha-blend it later
         m_GradientDIB.SetAlphaPremultiplication True
     
     'For the rectangular knob style, we don't need variable alpha, so we can perform this step *very* quickly.
     Else
         m_GradientDIB.CopyAlphaFromExistingDIB alphaMask, True
+        
+        'Apply color-management.  (It is okay to do this after copying alpha, as we know only 0 and 255 values are in use.)
+        ColorManagement.ApplyDisplayColorManagement m_GradientDIB
+        
     End If
     
 End Sub

@@ -436,16 +436,22 @@ Private Sub RedrawBackBuffer()
         Dim defaultBorderColor As Long, activeBorderColor As Long
         defaultBorderColor = m_Colors.RetrieveColor(PDCS_Border, Me.Enabled)
         activeBorderColor = m_Colors.RetrieveColor(PDCS_Border, Me.Enabled, , True)
-                
+        
+        'Note that primary and second color buttons *are* color-managed, so their appearance changes based
+        ' on the current working space.
+        Dim primaryColorCM As Long, secondaryColorCM As Long
+        
         'Render the primary and secondary color button default appearances
         With m_PrimaryColorRect
-            GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, Me.Color, 255
+            ColorManagement.ApplyDisplayColorManagement_SingleColor Me.Color, primaryColorCM
+            GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, primaryColorCM, 255
             GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, GP_LJ_Miter
         End With
         
         If m_ShowMainWindowColor Then
+            ColorManagement.ApplyDisplayColorManagement_SingleColor layerpanel_Colors.clrVariants.Color, secondaryColorCM
             With m_SecondaryColorRect
-                GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, layerpanel_Colors.clrVariants.Color, 255
+                GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, secondaryColorCM, 255
                 GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, GP_LJ_Miter
             End With
         End If

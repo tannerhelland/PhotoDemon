@@ -466,6 +466,12 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
 End Sub
 
+Public Sub NotifyColorManagementChange()
+    CreateColorWheel
+    CreateSVSquare
+    RedrawBackBuffer True
+End Sub
+
 'Call this to recreate all buffers against a changed control size.
 Private Sub UpdateControlLayout()
     
@@ -485,7 +491,7 @@ Private Sub CreateColorWheel()
     
     'For now, the color wheel DIB is always square, sized to fit the smallest dimension of the back buffer
     Dim wheelDiameter As Long
-    If ucSupport.GetBackBufferWidth < ucSupport.GetBackBufferHeight Then wheelDiameter = ucSupport.GetBackBufferWidth Else wheelDiameter = ucSupport.GetBackBufferHeight
+    If (ucSupport.GetBackBufferWidth < ucSupport.GetBackBufferHeight) Then wheelDiameter = ucSupport.GetBackBufferWidth Else wheelDiameter = ucSupport.GetBackBufferHeight
     
     If (m_WheelBuffer Is Nothing) Then Set m_WheelBuffer = New pdDIB
     If (m_WheelBuffer.GetDIBWidth <> wheelDiameter) Or (m_WheelBuffer.GetDIBHeight <> wheelDiameter) Then
@@ -582,6 +588,9 @@ Private Sub CreateColorWheel()
     'With our work complete, point the array away from the DIB before VB attempts to deallocate it
     CopyMemory ByVal VarPtrArray(hPixels), 0&, 4
     
+    'If color management is active, apply it now
+    ColorManagement.ApplyDisplayColorManagement m_WheelBuffer
+    
     'Mark the wheel DIB's premultiplied alpha state
     m_WheelBuffer.SetInitialAlphaPremultiplicationState True
         
@@ -597,9 +606,9 @@ Private Sub CreateSVSquare()
     
     If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB
     If (m_SquareBuffer.GetDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.GetDIBHeight <> CLng(m_SVRectF.Height)) Then
-        m_SquareBuffer.CreateBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 24
+        m_SquareBuffer.CreateBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 32, , 255
     Else
-        m_SquareBuffer.ResetDIB 0
+        m_SquareBuffer.ResetDIB 255
     End If
     
     'To prevent IDE crashes, bail now during compilation
@@ -613,11 +622,14 @@ Private Sub CreateSVSquare()
     PrepSafeArray svSA, m_SquareBuffer
     CopyMemory ByVal VarPtrArray(svPixels()), VarPtr(svSA), 4
     
+    Dim xPxWidth As Long
+    xPxWidth = m_SquareBuffer.GetDIBColorDepth \ 8
+    
     Dim x As Long, y As Long
     Dim r As Long, g As Long, b As Long
     
     Dim loopWidth As Long, loopHeight As Long
-    loopWidth = (m_SquareBuffer.GetDIBWidth - 1) * 3
+    loopWidth = (m_SquareBuffer.GetDIBWidth - 1) * xPxWidth
     loopHeight = (m_SquareBuffer.GetDIBHeight - 1)
     
     Dim lineValue As Double
@@ -626,7 +638,7 @@ Private Sub CreateSVSquare()
     ' (They are constant for each line.)
     Dim xPresets() As Double
     ReDim xPresets(0 To loopWidth) As Double
-    For x = 0 To loopWidth Step 3
+    For x = 0 To loopWidth Step xPxWidth
         xPresets(x) = (loopWidth - x) / loopWidth
     Next x
     
@@ -636,7 +648,7 @@ Private Sub CreateSVSquare()
         lineValue = (loopHeight - y) / loopHeight
         lineValue = Sqr(lineValue)
         
-    For x = 0 To loopWidth Step 3
+    For x = 0 To loopWidth Step xPxWidth
         
         'The x-axis position determines saturation (1 -> 0)
         'The y-axis position determines value (1 -> 0)
@@ -658,6 +670,9 @@ Private Sub CreateSVSquare()
     Math_Functions.ConvertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
     m_SVRectF.Left = tmpX
     m_SVRectF.Top = tmpY
+    
+    'If color management is active, apply it now
+    ColorManagement.ApplyDisplayColorManagement m_SquareBuffer
     
 End Sub
 
