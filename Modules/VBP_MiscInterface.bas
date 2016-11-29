@@ -2024,11 +2024,16 @@ Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
     
 End Sub
 
-'I'm not very happy about needing this function.  If an action does something that requires a tabstrip redraw, it should be handled
-' by the dedicated NotifyXYZ functions, above.  The tabstrip should not require special handling.  That said, this is a temporary stopgap
-' until we fix some widespread UI synchronization issues throughout the project.
-Public Sub RequestTabstripRedraw()
-    FormMain.mainCanvas(0).NotifyTabstripTotalRedrawRequired
+'This function should only be used if the entire tabstrip needs to be redrawn due to some massive display-related change
+' (such as changing the display color management policy).
+Public Sub RequestTabstripRedraw(Optional ByVal regenerateThumbsToo As Boolean = False)
+    FormMain.mainCanvas(0).NotifyTabstripTotalRedrawRequired regenerateThumbsToo
+End Sub
+
+'Color management changes require us to update the on-screen color selection tools
+Public Sub RequestColorToolsUpdate()
+    layerpanel_Colors.clrWheel.NotifyColorManagementChange
+    layerpanel_Colors.clrVariants.NotifyColorManagementChange
 End Sub
 
 'If a preview control won't be activated for a given dialog, call this function to display a persistent

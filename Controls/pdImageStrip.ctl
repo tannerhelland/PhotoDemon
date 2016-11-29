@@ -573,6 +573,9 @@ Public Sub AddNewThumb(ByVal pdImageIndex As Long)
         pdImages(pdImageIndex).RequestThumbnail m_Thumbs(m_NumOfThumbs).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
     End If
     
+    'If display color management is active, apply a conversion now
+    ColorManagement.ApplyDisplayColorManagement m_Thumbs(m_NumOfThumbs).thumbDIB
+    
     'If user preferences allow, create a matching drop-shadow DIB
     If (g_InterfacePerformance <> PD_PERF_FASTEST) Then UpdateShadowDIB m_NumOfThumbs
     
@@ -778,8 +781,11 @@ Public Sub NotifyUpdatedImage(ByVal pdImageIndex As Long)
         Else
             pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
         End If
-            
-        If g_InterfacePerformance <> PD_PERF_FASTEST Then UpdateShadowDIB thumbIndex
+        
+        'If display color management is active, apply a conversion now
+        ColorManagement.ApplyDisplayColorManagement m_Thumbs(thumbIndex).thumbDIB
+    
+        If (g_InterfacePerformance <> PD_PERF_FASTEST) Then UpdateShadowDIB thumbIndex
         RedrawBackBuffer
         
     End If
@@ -971,13 +977,13 @@ Private Sub LoadImageStripIcons()
     
 End Sub
 
-Public Sub RequestTotalRedraw()
-    UpdateControlLayout
+Public Sub RequestTotalRedraw(Optional ByVal regenerateThumbsToo As Boolean = False)
+    UpdateControlLayout regenerateThumbsToo
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
+Private Sub UpdateControlLayout(Optional ByVal thumbsMustBeUpdated As Boolean = False)
     
     'We can improve shutdown performance by ignoring redraw requests when the program is going down
     If g_ProgramShuttingDown Then
@@ -993,7 +999,6 @@ Private Sub UpdateControlLayout()
     If g_IsProgramRunning Then
         
         'If the control's size has changed in the dimension that determines thumb size, we need to recreate all image thumbnails
-        Dim thumbsMustBeUpdated As Boolean
         Dim oldThumbWidth As Long, oldThumbHeight As Long
         oldThumbWidth = m_ThumbWidth: oldThumbHeight = m_ThumbHeight
         
@@ -1015,7 +1020,8 @@ Private Sub UpdateControlLayout()
             Dim i As Long
             For i = 0 To m_NumOfThumbs - 1
                 pdImages(m_Thumbs(i).indexInPDImages).RequestThumbnail m_Thumbs(i).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
-                If g_InterfacePerformance <> PD_PERF_FASTEST Then UpdateShadowDIB i
+                ColorManagement.ApplyDisplayColorManagement m_Thumbs(i).thumbDIB
+                If (g_InterfacePerformance <> PD_PERF_FASTEST) Then UpdateShadowDIB i
             Next i
             
         End If

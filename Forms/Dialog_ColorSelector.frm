@@ -509,10 +509,14 @@ Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue A
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
         If (Not m_Painter Is Nothing) Then
+            
+            'Note that this control *is* color-managed inside this dialog
+            Dim cmResult As Long
+            ColorManagement.ApplyDisplayColorManagement_SingleColor CLng(histValue), cmResult
         
             Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
             Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
-            Drawing2D.QuickCreateSolidBrush cBrush, CLng(histValue)
+            Drawing2D.QuickCreateSolidBrush cBrush, cmResult
             m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
             
             Set cSurface = Nothing: Set cBrush = Nothing
@@ -630,11 +634,17 @@ Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     If g_IsProgramRunning And (Not m_Painter Is Nothing) Then
+        
+        'Note that this control *is* color-managed inside this dialog
+        Dim cmResult As Long
+        ColorManagement.ApplyDisplayColorManagement_SingleColor RGB(m_Red, m_Green, m_Blue), cmResult
+        
         Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
-        Drawing2D.QuickCreateSolidBrush cBrush, RGB(m_Red, m_Green, m_Blue)
+        Drawing2D.QuickCreateSolidBrush cBrush, cmResult
         m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
         Set cSurface = Nothing: Set cBrush = Nothing
+        
     End If
     
 End Sub
@@ -645,11 +655,17 @@ Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long
     CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
     
     If g_IsProgramRunning And (Not m_Painter Is Nothing) Then
+        
+        'Note that this control *is* color-managed inside this dialog
+        Dim cmResult As Long
+        ColorManagement.ApplyDisplayColorManagement_SingleColor m_OriginalColor, cmResult
+        
         Dim cSurface As pd2DSurface: Dim cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, targetDC
-        Drawing2D.QuickCreateSolidBrush cBrush, m_OriginalColor
+        Drawing2D.QuickCreateSolidBrush cBrush, cmResult
         m_Painter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
         Set cSurface = Nothing: Set cBrush = Nothing
+        
     End If
     
 End Sub

@@ -441,8 +441,8 @@ Public Sub NotifyTabstripRemoveThumb(ByVal pdImageIndex As Long, Optional ByVal 
     ImageStrip.RemoveThumb pdImageIndex, refreshStrip
 End Sub
 
-Public Sub NotifyTabstripTotalRedrawRequired()
-    ImageStrip.RequestTotalRedraw
+Public Sub NotifyTabstripTotalRedrawRequired(Optional ByVal regenerateThumbsToo As Boolean = False)
+    ImageStrip.RequestTotalRedraw regenerateThumbsToo
 End Sub
 
 'Return the current width/height of the underlying canvas view

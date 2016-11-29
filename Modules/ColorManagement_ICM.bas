@@ -583,8 +583,12 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         
         End If
         
-        'If the user doesn't want us to redraw the main window to match the new profile, exit
+        'If the user doesn't want us to redraw anything to match the new profile, exit
         If suspendRedraw Then Exit Sub
+        
+        'Various on-screen elements are color-managed, so they need to be redrawn first
+        Interface.RequestTabstripRedraw True
+        Interface.RequestColorToolsUpdate
         
         'If no images have been loaded, exit
         If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
@@ -594,11 +598,6 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
             Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
-        'Note that the image tabstrip is also color-managed, so it needs to be redrawn as well
-        ' TODO: now that the tabstrip is integrated into the underlying canvas control, this line should be revisited.
-        ' I'd prefer to have the canvas handle this, rather than a specialized function.
-        Interface.RequestTabstripRedraw
-    
     End If
     
 End Sub
@@ -635,6 +634,68 @@ Public Sub ApplyDisplayColorManagement(ByRef srcDIB As pdDIB, Optional ByVal src
             
             'Apply the transformation to the source DIB
             LittleCMS.LCMS_ApplyTransformToDIB srcDIB, .thisWSToDisplayTransform
+            
+        End With
+    
+    End If
+    
+End Sub
+
+'Convert a single RGBA long from the specified working space (or sRGB, if no index is supplied) to the current display space.
+' Note that if the source has been created via VB's RGB() function, bytes will be in the wrong order (compared to a display buffer).
+' Notify this function accordingly, and it will handle the temporary transforms required.
+Public Sub ApplyDisplayColorManagement_SingleColor(ByVal srcColor As Long, ByRef dstColor As Long, Optional ByVal srcWorkingSpaceIndex As Long = -1, Optional ByVal srcIsRGBLong As Boolean = True)
+    
+    'Start by mirroring the source color to the destination; this is our fallback result if something goes wrong
+    ' (or if color management is entirely disabled.
+    dstColor = srcColor
+    
+    'Note that this function does nothing if the display is not currently color managed
+    If (m_DisplayCMMPolicy <> DCM_NoManagement) And g_IsProgramRunning Then
+    
+        'If the caller doesn't specify a working space index, assume sRGB.  (NOTE: this should never happen, but better safe than sorry.)
+        If (srcWorkingSpaceIndex < 0) Then srcWorkingSpaceIndex = m_sRGBIndex
+        
+        'Make sure a transform exists for the requested working space / display combination
+        With m_ProfileCache(srcWorkingSpaceIndex)
+            
+            'Make sure an LCMS-compatible handle exists for the working space profile
+            If (.lcmsProfileHandle = 0) Then
+                .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
+            End If
+            
+            'Make sure an LCMS-compatible handle exists for the display profile
+            If (m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = 0) Then
+                m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataPointer, m_ProfileCache(m_CurrentDisplayIndex).fullProfile.GetICCDataSize)
+            End If
+            
+            'Make sure a valid transform exists for this working space / display combination
+            If (.thisWSToDisplayTransform = 0) Or (.indexOfDisplayTransform <> m_CurrentDisplayIndex) Then
+                If (.thisWSToDisplayTransform <> 0) Then LittleCMS.LCMS_DeleteTransform .thisWSToDisplayTransform
+                .thisWSToDisplayTransform = LittleCMS.LCMS_CreateTwoProfileTransform(.lcmsProfileHandle, m_ProfileCache(m_CurrentDisplayIndex).lcmsProfileHandle, TYPE_BGRA_8, TYPE_BGRA_8, m_DisplayRenderIntent, cmsFLAGS_COPY_ALPHA)
+                .indexOfDisplayTransform = m_CurrentDisplayIndex
+            End If
+            
+            'Apply the transformation to the source color, with special handling if the source is a long created by VB's RGB() function
+            If srcIsRGBLong Then
+                
+                Dim tmpRGBASrc As RGBQUAD, tmpRGBADst As RGBQUAD
+                With tmpRGBASrc
+                    .alpha = 255
+                    .Red = Colors.ExtractRed(srcColor)
+                    .Green = Colors.ExtractGreen(srcColor)
+                    .Blue = Colors.ExtractBlue(srcColor)
+                End With
+                
+                LittleCMS.LCMS_TransformArbitraryMemory VarPtr(tmpRGBASrc), VarPtr(tmpRGBADst), 1, .thisWSToDisplayTransform
+                
+                With tmpRGBADst
+                    dstColor = RGB(.Red, .Green, .Blue)
+                End With
+                
+            Else
+                LittleCMS.LCMS_TransformArbitraryMemory VarPtr(srcColor), VarPtr(dstColor), 1, .thisWSToDisplayTransform
+            End If
             
         End With
     

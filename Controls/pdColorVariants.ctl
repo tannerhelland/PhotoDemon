@@ -93,6 +93,10 @@ End Enum
 ' to calculate them in the rendering loop.
 Private m_ColorList() As Long
 
+'The same color list as m_ColorList(), but color-managed.  This is used for painting the on-screen appearance *only*.
+' Never retrieve these RGB values.
+Private m_ColorDisplay() As Long
+
 'Initially, we used a collection of RectF objects to house the coordinates for each subregion, but to increase flexibility,
 ' these were later moved to generic path objects.  This is how we are able to provide both rectangular and circular appearances,
 ' with almost no changes to the underlying code.
@@ -161,6 +165,8 @@ End Property
 Public Property Let Color(ByVal newColor As Long)
     
     m_ColorList(0) = newColor
+    ColorManagement.ApplyDisplayColorManagement_SingleColor m_ColorList(0), m_ColorDisplay(0)
+    
     MakeNewTooltip CV_Primary
     
     'Recalculate all color variants, then redraw the control
@@ -209,6 +215,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 DisplayColorSelection
             Else
                 m_ColorList(0) = m_ColorList(m_MouseInsideRegion)
+                ColorManagement.ApplyDisplayColorManagement_SingleColor m_ColorList(0), m_ColorDisplay(0)
             End If
             
             'Recalculate all color variants to match the new color (if any) and redraw the control
@@ -296,6 +303,7 @@ Private Sub UserControl_Initialize()
     
     'Prep the various color variant lists
     ReDim m_ColorList(0 To NUM_OF_VARIANTS - 1) As Long
+    ReDim m_ColorDisplay(0 To NUM_OF_VARIANTS - 1) As Long
     ReDim m_ColorRegions(0 To NUM_OF_VARIANTS - 1) As pd2DPath
     
     Dim i As Long
@@ -326,7 +334,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
 End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -351,6 +359,14 @@ Public Sub DisplayColorSelection()
         m_ColorList(0) = oldColor
     End If
     
+    ColorManagement.ApplyDisplayColorManagement_SingleColor m_ColorList(0), m_ColorDisplay(0)
+    
+End Sub
+
+Public Sub NotifyColorManagementChange()
+    ColorManagement.ApplyDisplayColorManagement_SingleColor m_ColorList(CV_Primary), m_ColorDisplay(CV_Primary)
+    CalculateVariantColors
+    RedrawBackBuffer
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
@@ -654,6 +670,9 @@ Private Sub CalculateVariantColors()
         
         'Cache the new RGB values
         m_ColorList(i) = RGB(rNew, gNew, bNew)
+        
+        'If color management is active, apply it now
+        ColorManagement.ApplyDisplayColorManagement_SingleColor m_ColorList(i), m_ColorDisplay(i)
     
     Next i
     
@@ -686,7 +705,7 @@ Private Sub RedrawBackBuffer()
         'Draw each subregion in turn, filling it first, then tracing its borders.
         Dim i As Long, regionBrush As Long
         For i = CV_Primary To CV_RedDown
-            Drawing2D.QuickCreateSolidBrush cBrush, m_ColorList(i)
+            Drawing2D.QuickCreateSolidBrush cBrush, m_ColorDisplay(i)
             m_Painter.FillPath cSurface, cBrush, m_ColorRegions(i)
             m_Painter.DrawPath cSurface, cPen, m_ColorRegions(i)
         Next i
