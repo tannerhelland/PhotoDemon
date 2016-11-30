@@ -647,9 +647,12 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     If ppMayBeNeeded Then ppMayBeNeeded = CBool(parentImageID <= UBound(pdImages))
     If ppMayBeNeeded Then ppMayBeNeeded = Not (pdImages(parentImageID) Is Nothing)
     
+    Dim relevantTagIndex As Long
+        
     'At present, the only post-processing supplied by this function is limited to:
     ' 1) Rare PNG chunks that the color-management system is unable to handle on its own
-    ' 2) Multipage TIFFs that may have per-page information stored (like lpage names)
+    ' 2) Multipage TIFFs that may have per-page information stored (like page names)
+    ' 3) ICC Profiles that FreeImage is unable to retrieve (but ExifTool can)
     
     'Because of this, we only need to proceed if the image meets some very specific criteria.
     If ppMayBeNeeded Then
@@ -660,11 +663,17 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
         If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).originalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).imgStorage.GetEntry_Boolean("MultipageImportActive", False))
         
+        'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some esoteric formats),
+        ' we may be able to use ExifTool to manually retrieve the full profile data.
+        If (Not ppMayBeNeeded) Then
+            If (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) Then
+                ppMayBeNeeded = DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare)
+            End If
+        End If
+        
     End If
     
     If ppMayBeNeeded Then
-    
-        Dim relevantTagIndex As Long
         
         'PNG-specific tags:
         If (pdImages(parentImageID).originalFileFormat = PDIF_PNG) Then
@@ -692,6 +701,8 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                 ColorManagement.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).GetActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
                 
                 sRGBHandled = True
+                
+                ApplyMetadataPostProcessing = True
             
             End If
                 
@@ -782,6 +793,8 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                                 Interface.NotifyImageChanged parentImageID
                             End If
                             
+                            ApplyMetadataPostProcessing = True
+                            
                         End If
                     
                     Else
@@ -839,8 +852,10 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                         Interface.NotifyImageChanged parentImageID
                     End If
                     
+                    ApplyMetadataPostProcessing = True
+                    
                 End If
-            
+                
             'END gAMA chunk handling
             End If
                 
@@ -855,13 +870,70 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
             For i = 0 To pdImages(parentImageID).GetNumOfLayers - 1
                 If DoesTagExistFullName("IFD" & i & ":PageName", relevantTagIndex, vbBinaryCompare) Then
                     pdImages(parentImageID).GetLayerByIndex(i).SetLayerName GetTagValue("IFD" & i & ":PageName", vbBinaryCompare)
+                    ApplyMetadataPostProcessing = True
                 End If
             Next i
         
         'END TIFF TAGS
         End If
         
-        ApplyMetadataPostProcessing = True
+        'NON-FORMAT-SPECIFIC tags:
+        If (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData) And DoesTagExistFullName("ICC_Profile:ICC_Profile", relevantTagIndex, vbBinaryCompare) Then
+            
+            'ExifTool pulled an ICC profile from this image file, but FreeImage did not.  This may be an esoteric format or one with
+            ' broken formatting.  Let's see if we can still apply the ICC profile post-load.  (This may not possible if the profile is
+            ' tied to something like CMYK, and we have already converted it to RGB - but we can still try.)
+            
+            'Ask ExifTool to extract the ICC profile to a standalone temp file
+            If ExifTool.ExtractICCMetadataToFile(pdImages(parentImageID)) Then
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Pausing load process while ExifTool extracts ICC profile to standalone file..."
+                #End If
+                
+                'Next, we need to pause while ExifTool does its thing
+                Do While ExifTool.IsVerificationModeActive()
+                    DoEvents
+                Loop
+                
+                'Retrieve the temp file name ExifTool used
+                Dim srcFilename As String
+                srcFilename = ExifTool.GetExtractedICCProfilePath()
+                
+                'Pull the ICC profile into a byte array
+                Dim cFile As pdFSO
+                Set cFile = New pdFSO
+                
+                Dim iccBytes() As Byte
+                If cFile.LoadFileAsByteArray(srcFilename, iccBytes) Then
+                    
+                    'Load the ICC bytes into the target DIB
+                    If pdImages(parentImageID).GetActiveDIB.ICCProfile.LoadICCFromPtr(UBound(iccBytes) + 1, VarPtr(iccBytes(0))) Then
+                        
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "ICC profile retrieved successfully.  Applying now..."
+                        #End If
+                
+                        'Apply ICC conversion now
+                        ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
+                        
+                        If (parentImageID = g_CurrentImage) Then
+                            Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                            Interface.NotifyImageChanged parentImageID
+                        End If
+                        
+                        ApplyMetadataPostProcessing = True
+                    
+                    End If
+                    
+                End If
+                
+                'Free the temp file we used
+                cFile.KillFile srcFilename
+                
+            End If
+            
+        End If
         
         #If DEBUGMODE = 1 Then
             If ApplyMetadataPostProcessing Then pdDebug.LogAction "NOTE!  Metadata-based post-processing was applied to this image."
