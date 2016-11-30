@@ -140,7 +140,13 @@ Private imgCompositor As pdCompositor
 'As of April 2015, each pdImage object now maintains a persistent copy of its fully composited layer stack (inside the
 ' compositeBuffer pdDIB).  To avoid recompositing the image unless absolutely necessary, new trackers were required.
 Private m_CompositeCacheClean As Boolean
-    
+
+'As of v7.0, PD's color management engine now supports a "preserve embedded profile" type of policy.  This means that
+' individual images may operate in different working spaces, even during the same session.  The current working space
+' of this image is stored here; you must access it via matching Get/Set functions.
+'
+'If the working space index is -1, the image has no working space.  Assume sRGB.
+Private m_WorkingSpaceIndex As Long
     
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
 ' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
@@ -289,7 +295,7 @@ End Function
 
 'Get the currently active layer canonical ID
 Public Function GetActiveLayerID() As Long
-    If m_curLayer > UBound(imgLayers) Then
+    If (m_curLayer > UBound(imgLayers)) Then
         GetActiveLayerID = imgLayers(0).GetLayerID
     Else
         GetActiveLayerID = imgLayers(m_curLayer).GetLayerID
@@ -310,12 +316,9 @@ End Function
 
 'Retrieve the currently active layer
 Public Function GetActiveLayer() As pdLayer
-    If m_numOfLayers > 0 Then
-        
-        'Failsafe check for a valid current layer
-        If m_curLayer > UBound(imgLayers) Then m_curLayer = 0
+    If (m_numOfLayers > 0) Then
+        If (m_curLayer > UBound(imgLayers)) Then m_curLayer = 0
         Set GetActiveLayer = imgLayers(m_curLayer)
-        
     Else
         Set GetActiveLayer = Nothing
     End If
@@ -326,7 +329,7 @@ Public Sub SetActiveLayerByID(ByVal newActiveLayerID As Long)
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        If imgLayers(i).GetLayerID = newActiveLayerID Then
+        If (imgLayers(i).GetLayerID = newActiveLayerID) Then
             m_curLayer = i
             Exit For
         End If
@@ -351,7 +354,7 @@ Public Function GetLayerIndexFromID(ByVal requestedID As Long) As Long
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
-        If imgLayers(i).GetLayerID = requestedID Then
+        If (imgLayers(i).GetLayerID = requestedID) Then
             GetLayerIndexFromID = i
             Exit Function
         End If
@@ -756,6 +759,52 @@ Public Function GetSaveState(ByVal desiredSaveType As PD_SAVE_EVENT) As Boolean
     
 End Function
 
+'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
+' processing based on the state of this variable, we provide this interface.
+Public Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As PD_SAVE_EVENT)
+    
+    'The image has just been saved
+    If newSaveState Then
+        
+        Select Case typeOfSaveEvent
+            
+            'This value should never be passed in!
+            Case pdSE_AnySave
+                Debug.Print "The pdSE_AnySave type is only for GETTING image save state, not SETTING it!  Fix this!"
+                
+            'Image has been saved to PDI format, meaning layers are intact
+            Case pdSE_SavePDI
+                hasBeenSavedPDI = True
+                
+            'Image has been saved to some flat format (JPEG, PNG, etc)
+            Case pdSE_SaveFlat
+                hasBeenSavedFlat = True
+            
+        End Select
+        
+        'Remember the undo value at this juncture; if the user performs additional actions, but "Undos" to this point,
+        ' we want to disable the save button for them
+        undoManager.NotifyImageSaved typeOfSaveEvent
+    
+    'Some change has occurred, meaning the image has not been saved (to any format) in its current state
+    Else
+        hasBeenSavedPDI = False
+        hasBeenSavedFlat = False
+    End If
+        
+End Sub
+
+'Working space index related to color management.  It is the index of this image's current working spcae profile, as it is
+' found in the ColorManagement module's ICC profile cache.  (Accessing by index is way faster than doing large byte array
+' comparisons, which is why we do it this way.)
+Public Function GetWorkingSpaceIndex() As Long
+    GetWorkingSpaceIndex = m_WorkingSpaceIndex
+End Function
+
+Public Sub SetWorkingSpaceIndex(ByVal newIndex As Long)
+    m_WorkingSpaceIndex = newIndex
+End Sub
+
 'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
 ' image must be re-composited on every request, so please do not call this function unless absolutely necessary!
 Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
@@ -853,41 +902,6 @@ Public Sub DeactivateImage()
     
 End Sub
     
-'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
-' processing based on the state of this variable, we provide this interface.
-Public Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As PD_SAVE_EVENT)
-    
-    'The image has just been saved
-    If newSaveState Then
-        
-        Select Case typeOfSaveEvent
-            
-            'This value should never be passed in!
-            Case pdSE_AnySave
-                Debug.Print "The pdSE_AnySave type is only for GETTING image save state, not SETTING it!  Fix this!"
-                
-            'Image has been saved to PDI format, meaning layers are intact
-            Case pdSE_SavePDI
-                hasBeenSavedPDI = True
-                
-            'Image has been saved to some flat format (JPEG, PNG, etc)
-            Case pdSE_SaveFlat
-                hasBeenSavedFlat = True
-            
-        End Select
-        
-        'Remember the undo value at this juncture; if the user performs additional actions, but "Undos" to this point,
-        ' we want to disable the save button for them
-        undoManager.NotifyImageSaved typeOfSaveEvent
-    
-    'Some change has occurred, meaning the image has not been saved (to any format) in its current state
-    Else
-        hasBeenSavedPDI = False
-        hasBeenSavedFlat = False
-    End If
-        
-End Sub
-
 'If the images's size has somehow changed, this can be called to update it.
 '
 'The first optional parameter, assumed to be TRUE, makes the image the same size as its base layer.  This is helpful when
@@ -969,7 +983,10 @@ Private Sub Class_Initialize()
 
     'Initialize this image's compositor
     Set imgCompositor = New pdCompositor
-
+    
+    'Initialize any color management trackers
+    m_WorkingSpaceIndex = -1
+    
 End Sub
 
 Private Sub Class_Terminate()
@@ -1101,17 +1118,17 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
                     
                     'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
                     ' we premultiply alpha, after all!)
-                    r = srcImageData(srcQuickX + 2, srcQuickY)
-                    g = srcImageData(srcQuickX + 1, srcQuickY)
                     b = srcImageData(srcQuickX, srcQuickY)
+                    g = srcImageData(srcQuickX + 1, srcQuickY)
+                    r = srcImageData(srcQuickX + 2, srcQuickY)
                     
                     'Calculate a new multiplier, based on the strength of the selection at this location
                     blendAlpha = thisAlpha / 255
                     
                     'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
-                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
-                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
                     dstImageData(dstQuickX, y) = b * blendAlpha
+                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
+                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
                     
                     'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
                     ' the original alpha value, and the selection mask value at this location.
@@ -1205,17 +1222,17 @@ Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
                     
                     'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
                     ' we premultiply alpha, after all!)
-                    r = dstImageData(dstQuickX + 2, y)
-                    g = dstImageData(dstQuickX + 1, y)
                     b = dstImageData(dstQuickX, y)
+                    g = dstImageData(dstQuickX + 1, y)
+                    r = dstImageData(dstQuickX + 2, y)
                     
                     'Calculate a new multiplier, based on the strength of the selection at this location
                     blendAlpha = thisAlpha / 255
                     
                     'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
-                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
-                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
                     dstImageData(dstQuickX, y) = b * blendAlpha
+                    dstImageData(dstQuickX + 1, y) = g * blendAlpha
+                    dstImageData(dstQuickX + 2, y) = r * blendAlpha
                     
                     'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
                     ' the original alpha value, and the selection mask value at this location.
