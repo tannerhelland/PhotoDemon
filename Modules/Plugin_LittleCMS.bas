@@ -225,6 +225,19 @@ Public Enum LCMS_PIXEL_FORMAT
     TYPE_ABGR_HALF_FLT = &H44041A
 End Enum
 
+#If False Then
+    Private Const TYPE_GRAY_8 = &H30009, TYPE_GRAY_8_REV = &H32009, TYPE_GRAY_16 = &H3000A, TYPE_GRAY_16_REV = &H3200A, TYPE_GRAY_16_SE = &H3080A, TYPE_GRAYA_8 = &H30089, TYPE_GRAYA_16 = &H3008A, TYPE_GRAYA_16_SE = &H3088A, TYPE_GRAYA_8_PLANAR = &H31089, TYPE_GRAYA_16_PLANAR = &H3108A, TYPE_RGB_8 = &H40019, TYPE_RGB_8_PLANAR = &H41019, TYPE_BGR_8 = &H40419, TYPE_BGR_8_PLANAR = &H41419, TYPE_RGB_16 = &H4001A, TYPE_RGB_16_PLANAR = &H4101A
+    Private Const TYPE_RGB_16_SE = &H4081A, TYPE_BGR_16 = &H4041A, TYPE_BGR_16_PLANAR = &H4141A, TYPE_BGR_16_SE = &H40C1A, TYPE_RGBA_8 = &H40099, TYPE_RGBA_8_PLANAR = &H41099, TYPE_ARGB_8_PLANAR = &H45099, TYPE_ABGR_8_PLANAR = &H41499, TYPE_BGRA_8_PLANAR = &H45499, TYPE_RGBA_16 = &H4009A, TYPE_RGBA_16_PLANAR = &H4109A, TYPE_RGBA_16_SE = &H4089A, TYPE_ARGB_8 = &H44099, TYPE_ARGB_16 = &H4409A, TYPE_ABGR_8 = &H40499, TYPE_ABGR_16 = &H4049A
+    Private Const TYPE_ABGR_16_PLANAR = &H4149A, TYPE_ABGR_16_SE = &H40C9A, TYPE_BGRA_8 = &H44499, TYPE_BGRA_16 = &H4449A, TYPE_BGRA_16_SE = &H4489A, TYPE_CMY_8 = &H50019, TYPE_CMY_8_PLANAR = &H51019, TYPE_CMY_16 = &H5001A, TYPE_CMY_16_PLANAR = &H5101A, TYPE_CMY_16_SE = &H5081A, TYPE_CMYK_8 = &H60021, TYPE_CMYKA_8 = &H600A1, TYPE_CMYK_8_REV = &H62021, TYPE_YUVK_8 = &H62021, TYPE_CMYK_8_PLANAR = &H61021, TYPE_CMYK_16 = &H60022
+    Private Const TYPE_CMYK_16_REV = &H62022, TYPE_YUVK_16 = &H62022, TYPE_CMYK_16_PLANAR = &H61022, TYPE_CMYK_16_SE = &H60822, TYPE_KYMC_8 = &H60421, TYPE_KYMC_16 = &H60422, TYPE_KYMC_16_SE = &H60C22, TYPE_KCMY_8 = &H64021, TYPE_KCMY_8_REV = &H66021, TYPE_KCMY_16 = &H64022, TYPE_KCMY_16_REV = &H66022, TYPE_KCMY_16_SE = &H64822, TYPE_CMYK5_8 = &H130029, TYPE_CMYK5_16 = &H13002A, TYPE_CMYK5_16_SE = &H13082A, TYPE_KYMC5_8 = &H130429
+    Private Const TYPE_KYMC5_16 = &H13042A, TYPE_KYMC5_16_SE = &H130C2A, TYPE_CMYK6_8 = &H140031, TYPE_CMYK6_8_PLANAR = &H141031, TYPE_CMYK6_16 = &H140032, TYPE_CMYK6_16_PLANAR = &H141032, TYPE_CMYK6_16_SE = &H140832, TYPE_CMYK7_8 = &H150039, TYPE_CMYK7_16 = &H15003A, TYPE_CMYK7_16_SE = &H15083A, TYPE_KYMC7_8 = &H150439, TYPE_KYMC7_16 = &H15043A, TYPE_KYMC7_16_SE = &H150C3A, TYPE_CMYK8_8 = &H160041, TYPE_CMYK8_16 = &H160042
+    Private Const TYPE_CMYK8_16_SE = &H160842, TYPE_KYMC8_8 = &H160441, TYPE_KYMC8_16 = &H160442, TYPE_KYMC8_16_SE = &H160C42, TYPE_CMYK9_8 = &H170049, TYPE_CMYK9_16 = &H17004A, TYPE_CMYK9_16_SE = &H17084A, TYPE_KYMC9_8 = &H170449, TYPE_KYMC9_16 = &H17044A, TYPE_KYMC9_16_SE = &H170C4A, TYPE_CMYK10_8 = &H180051, TYPE_CMYK10_16 = &H180052, TYPE_CMYK10_16_SE = &H180852, TYPE_KYMC10_8 = &H180451, TYPE_KYMC10_16 = &H180452
+    Private Const TYPE_KYMC10_16_SE = &H180C52, TYPE_CMYK11_8 = &H190059, TYPE_CMYK11_16 = &H19005A, TYPE_CMYK11_16_SE = &H19085A, TYPE_KYMC11_8 = &H190459, TYPE_KYMC11_16 = &H19045A, TYPE_KYMC11_16_SE = &H190C5A, TYPE_CMYK12_8 = &H1A0061, TYPE_CMYK12_16 = &H1A0062, TYPE_CMYK12_16_SE = &H1A0862, TYPE_KYMC12_8 = &H1A0461, TYPE_KYMC12_16 = &H1A0462, TYPE_KYMC12_16_SE = &H1A0C62, TYPE_XYZ_16 = &H9001A, TYPE_Lab_8 = &HA0019
+    Private Const TYPE_ALab_8 = &HA0499, TYPE_Lab_16 = &HA001A, TYPE_Yxy_16 = &HE001A, TYPE_YCbCr_8 = &H70019, TYPE_YCbCr_8_PLANAR = &H71019, TYPE_YCbCr_16 = &H7001A, TYPE_YCbCr_16_PLANAR = &H7101A, TYPE_YCbCr_16_SE = &H7081A, TYPE_YUV_8 = &H80019, TYPE_YUV_8_PLANAR = &H81019, TYPE_YUV_16 = &H8001A, TYPE_YUV_16_PLANAR = &H8101A, TYPE_YUV_16_SE = &H8081A, TYPE_HLS_8 = &HD0019, TYPE_HLS_8_PLANAR = &HD1019, TYPE_HLS_16 = &HD001A
+    Private Const TYPE_HLS_16_PLANAR = &HD101A, TYPE_HLS_16_SE = &HD081A, TYPE_HSV_8 = &HC0019, TYPE_HSV_8_PLANAR = &HC1019, TYPE_HSV_16 = &HC001A, TYPE_HSV_16_PLANAR = &HC101A, TYPE_HSV_16_SE = &HC081A, TYPE_NAMED_COLOR_INDEX = &HA&, TYPE_XYZ_FLT = &H49001C, TYPE_Lab_FLT = &H4A001C, TYPE_GRAY_FLT = &H43000C, TYPE_RGB_FLT = &H44001C, TYPE_CMYK_FLT = &H460024, TYPE_XYZA_FLT = &H49009C, TYPE_LabA_FLT = &H4A009C, TYPE_RGBA_FLT = &H44009C
+    Private Const TYPE_XYZ_DBL = &H490018, TYPE_Lab_DBL = &H4A0018, TYPE_GRAY_DBL = &H430008, TYPE_RGB_DBL = &H440018, TYPE_CMYK_DBL = &H460020, TYPE_LabV2_8 = &H1E0019, TYPE_ALabV2_8 = &H1E0499, TYPE_LabV2_16 = &H1E001A, TYPE_GRAY_HALF_FLT = &H43000A, TYPE_RGB_HALF_FLT = &H44001A, TYPE_RGBA_HALF_FLT = &H44009A, TYPE_CMYK_HALF_FLT = &H460022, TYPE_ARGB_HALF_FLT = &H44409A, TYPE_BGR_HALF_FLT = &H44041A, TYPE_BGRA_HALF_FLT = &H44449A, TYPE_ABGR_HALF_FLT = &H44041A
+#End If
+
 'LCMS supports more intents than the default ICC spec does
 Public Enum LCMS_RENDERING_INTENT
     INTENT_PERCEPTUAL = 0
@@ -238,6 +251,10 @@ Public Enum LCMS_RENDERING_INTENT
     INTENT_PRESERVE_K_PLANE_RELATIVE_COLORIMETRIC = 14
     INTENT_PRESERVE_K_PLANE_SATURATION = 15
 End Enum
+
+#If False Then
+    Private Const INTENT_PERCEPTUAL = 0, INTENT_RELATIVE_COLORIMETRIC = 1, INTENT_SATURATION = 2, INTENT_ABSOLUTE_COLORIMETRIC = 3, INTENT_PRESERVE_K_ONLY_PERCEPTUAL = 10, INTENT_PRESERVE_K_ONLY_RELATIVE_COLORIMETRIC = 11, INTENT_PRESERVE_K_ONLY_SATURATION = 12, INTENT_PRESERVE_K_PLANE_PERCEPTUAL = 13, INTENT_PRESERVE_K_PLANE_RELATIVE_COLORIMETRIC = 14, INTENT_PRESERVE_K_PLANE_SATURATION = 15
+#End If
 
 'When creating transforms, additional flags can be used to modify the transform process
 Public Enum LCMS_TRANSFORM_FLAGS
@@ -266,6 +283,10 @@ Public Enum LCMS_TRANSFORM_FLAGS
     cmsFLAGS_COPY_ALPHA = &H4000000                ' alpha channels are copied on cmsDoTransform()
 End Enum
 
+#If False Then
+    Private Const cmsFLAGS_NOCACHE = &H40&, cmsFLAGS_NOOPTIMIZE = &H100&, cmsFLAGS_NULLTRANSFORM = &H200&, cmsFLAGS_GAMUTCHECK = &H1000&, cmsFLAGS_SOFTPROOFING = &H4000&, cmsFLAGS_BLACKPOINTCOMPENSATION = &H2000&, cmsFLAGS_NOWHITEONWHITEFIXUP = &H4&, cmsFLAGS_HIGHRESPRECALC = &H400&, cmsFLAGS_LOWRESPRECALC = &H800&, cmsFLAGS_8BITS_DEVICELINK = &H8&, cmsFLAGS_GUESSDEVICECLASS = &H20&, cmsFLAGS_KEEP_SEQUENCE = &H80&, cmsFLAGS_FORCE_CLUT = &H2&, cmsFLAGS_CLUT_POST_LINEARIZATION = &H1&, cmsFLAGS_CLUT_PRE_LINEARIZATION = &H10&, cmsFLAGS_NODEFAULTRESOURCEDEF = &H1000000, cmsFLAGS_COPY_ALPHA = &H4000000
+#End If
+
 'Only the first eight values (through F8) are actual LCMS defines; the others are provided for reference and interop, only
 Public Enum LCMS_ILLUMINANT
     cmsILLUMINANT_TYPE_UNKNOWN = &H0
@@ -278,6 +299,29 @@ Public Enum LCMS_ILLUMINANT
     cmsILLUMINANT_TYPE_E = &H7
     cmsILLUMINANT_TYPE_F8 = &H8
 End Enum
+
+#If False Then
+    Private Const cmsILLUMINANT_TYPE_UNKNOWN = &H0, cmsILLUMINANT_TYPE_D50 = &H1, cmsILLUMINANT_TYPE_D65 = &H2, cmsILLUMINANT_TYPE_D93 = &H3, cmsILLUMINANT_TYPE_F2 = &H4, cmsILLUMINANT_TYPE_D55 = &H5, cmsILLUMINANT_TYPE_A = &H6, cmsILLUMINANT_TYPE_E = &H7, cmsILLUMINANT_TYPE_F8 = &H8
+#End If
+
+'Want to pull basic information from an ICC profile?  These "quick" enums can be retrieved, and they are all
+' Unicode-aware.
+Public Enum LCMS_INFOTYPE
+    cmsInfoDescription = 0
+    cmsInfoManufacturer = 1
+    cmsInfoModel = 2
+    cmsInfoCopyright = 3
+End Enum
+
+#If False Then
+    Private Const cmsInfoDescription = 0, cmsInfoManufacturer = 1, cmsInfoModel = 2, cmsInfoCopyright = 3
+#End If
+
+'Unicode-aware LCMS functions require three-char ISO language and region names.  We use a dummy struct to simply
+' the process of enforcing a trailing null char, regardless of lang/region name length.
+Private Type ThreeAsciiChars
+    Chars(0 To 3) As Byte
+End Type
 
 'Return the current library version as a Long, e.g. "2.7" is returned as "2070"
 Private Declare Function cmsGetEncodedCMMversion Lib "lcms2.dll" () As Long
@@ -296,9 +340,10 @@ Private Declare Function cmsCreateRGBProfile Lib "lcms2.dll" (ByVal ptrToWhitePo
 Private Declare Function cmsCreateXYZProfile Lib "lcms2.dll" () As Long
 Private Declare Function cmsOpenProfileFromMem Lib "lcms2.dll" (ByVal ptrProfile As Long, ByVal profileSizeInBytes As Long) As Long
 Private Declare Function cmsSaveProfileToMem Lib "lcms2.dll" (ByVal srcProfile As Long, ByVal dstPtr As Long, ByRef sizeRequiredInBytes As Long) As Long
- 
+
 'Profile information functions
 Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
+Private Declare Function cmsGetProfileInfo Lib "lcms2.dll" (ByVal hProfile As Long, ByVal srcInfo As LCMS_INFOTYPE, ByVal ptrToLanguageCode As Long, ByVal ptrToCountryCode As Long, ByVal ptrToWCharBuffer As Long, ByVal necessaryBufferSize As Long) As Long
 
 'Tone curve creation/destruction
 Private Declare Function cmsBuildParametricToneCurve Lib "lcms2.dll" (ByVal ContextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
@@ -337,6 +382,8 @@ Private Declare Sub cmsDoTransform Lib "lcms2.dll" (ByVal hTransform As Long, By
 '
 'I do not currently make use of this function, but given the efficiency caveat above, it may be worth investigating in the future.
 Private Declare Sub cmsDoTransformLineStride Lib "lcms2.dll" (ByVal hTransform As Long, ByVal ptrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal numOfPixelsPerLine As Long, ByVal numOfLines As Long, ByVal bytesPerLineIn As Long, ByVal bytesPerLineOut As Long, ByVal bytesPerPlaneIn As Long, ByVal bytesPerPlaneOut As Long)
+
+Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal ptrDst As Long, ByVal ptrSrc As Long, ByVal numOfBytes As Long) As Long
 
 'A single LittleCMS handle is maintained for the life of a PD instance; see InitializeLCMS and ReleaseLCMS, below.
 Private m_LCMSHandle As Long
@@ -469,6 +516,43 @@ Public Function LCMS_GetIlluminantTemperature(ByRef dstTemperature As Double, Op
             LCMS_GetIlluminantTemperature = False
     End Select
 
+End Function
+
+Public Function LCMS_GetProfileInfoString(ByVal hInputProfile As Long, ByVal profileInfoType As LCMS_INFOTYPE, Optional ByVal languageCode As String = "en", Optional ByVal countryCode As String = "US") As String
+    
+    If (hInputProfile <> 0) Then
+    
+        'LCMS requires ISO country and region codes for locale-aware information.  For now, default to en-US.
+        ' (In the future, it would be nice to change these to match the current program language.)
+        Dim langCode As ThreeAsciiChars, countCode As ThreeAsciiChars
+        
+        Dim i As Long, lenInput As Long
+        lenInput = Len(languageCode)
+        If (lenInput > 3) Then lenInput = 3
+        
+        For i = 0 To lenInput - 1
+            langCode.Chars(i) = Asc(Mid$(languageCode, i + 1, 1))
+        Next i
+       
+        lenInput = Len(countryCode)
+        If (lenInput > 3) Then lenInput = 3
+       
+        For i = 0 To lenInput - 1
+            countCode.Chars(i) = Asc(Mid$(countryCode, i + 1, 1))
+        Next i
+        
+        'Start by retrieving the length of the requested information
+        Dim infoLength As Long
+        infoLength = cmsGetProfileInfo(hInputProfile, profileInfoType, VarPtr(langCode.Chars(0)), VarPtr(countCode.Chars(0)), 0&, 0&)
+        
+        'If the length is non-zero, retrieve the full information string
+        If (infoLength <> 0) Then
+            LCMS_GetProfileInfoString = Space$(infoLength \ 2)
+            cmsGetProfileInfo hInputProfile, profileInfoType, VarPtr(langCode.Chars(0)), VarPtr(countCode.Chars(0)), StrPtr(LCMS_GetProfileInfoString), infoLength
+        End If
+        
+    End If
+    
 End Function
 
 Public Function LCMS_CreateTwoProfileTransform(ByVal hInputProfile As Long, ByVal hOutputProfile As Long, Optional ByVal hInputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal hOutputFormat As LCMS_PIXEL_FORMAT = TYPE_BGRA_8, Optional ByVal trnsRenderingIntent As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL, Optional ByVal trnsFlags As LCMS_TRANSFORM_FLAGS = cmsFLAGS_COPY_ALPHA) As Long

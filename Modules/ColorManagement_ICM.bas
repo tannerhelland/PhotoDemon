@@ -357,7 +357,6 @@ Public Sub CacheDisplayCMMData()
                             With m_ProfileCache(profileIndex)
                                 .lcmsProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(.fullProfile.GetICCDataPointer, .fullProfile.GetICCDataSize)
                             End With
-                            
                             profileLoadedSuccessfully = True
                         End If
                         
