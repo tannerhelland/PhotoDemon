@@ -280,6 +280,10 @@ Private m_DatabaseString As String
 Private m_technicalReportModeActive As Boolean
 Private m_technicalReportSrcImage As String
 
+'As of 7.0, ExifTool can be used to extract esoteric ICC profiles that FreeImage might miss.
+Private m_ICCExtractionModeActive As Boolean
+Private m_ICCExtractionSrcImage As String
+
 'Prior to writing out a file's metadata, we must cache the information we want written in a temp file.  (ExifTool requires
 ' a source file when writing metadata out to file; the alternative is to manually request the writing of each tag in turn,
 ' but if we do this, we lose many built-in utilities like automatically removing duplicate tags, and reassigning invalid
@@ -377,34 +381,46 @@ Private Sub StopVerificationMode()
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If (Not m_technicalReportModeActive) Then
+    If (Not m_technicalReportModeActive) And (Not m_ICCExtractionModeActive) Then
         
         m_VerificationString = ""
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
         If cFile.FileExist(m_tmpMetadataFilePath) Then cFile.KillFile m_tmpMetadataFilePath
-        
-    Else
     
-        'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata report
-        If (Len(m_VerificationString) <> 0) Then m_VerificationString = Replace$(m_VerificationString, "{ready}", "")
+    Else
         
-        'Write the completed technical report out to a temp file
-        Dim tmpFilename As String
-        tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(m_technicalReportSrcImage) & ".html"
+        If m_technicalReportModeActive Then
         
-        cFile.SaveStringToTextFile m_VerificationString, tmpFilename
+            'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata report
+            If (Len(m_VerificationString) <> 0) Then m_VerificationString = Replace$(m_VerificationString, "{ready}", "")
+            
+            'Write the completed technical report out to a temp file
+            Dim tmpFilename As String
+            tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & GetFilenameWithoutExtension(m_technicalReportSrcImage) & ".html"
+            
+            cFile.SaveStringToTextFile m_VerificationString, tmpFilename
+            
+            'Shell the default HTML viewer for the user
+            m_VerificationString = ""
+            OpenURL tmpFilename
+            
+            m_technicalReportSrcImage = ""
+            m_technicalReportModeActive = False
+            
+        End If
         
-        'Shell the default HTML viewer for the user
-        m_VerificationString = ""
-        OpenURL tmpFilename
-        
-        m_technicalReportSrcImage = ""
-        m_technicalReportModeActive = False
+        If m_ICCExtractionModeActive Then m_ICCExtractionModeActive = False
         
     End If
     
 End Sub
+
+'After using ExifTool to extract an ICC profile to a standalone file, you can retrieve the destination filename
+' via this function.
+Public Function GetExtractedICCProfilePath() As String
+    GetExtractedICCProfilePath = m_ICCExtractionSrcImage
+End Function
 
 'Returns TRUE if ExifTool is currently parsing metadata asynchronously
 Public Function IsMetadataPipeActive() As Boolean
@@ -593,6 +609,9 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
         cmdParams = cmdParams & "--a" & vbCrLf
     End If
     
+    'Forcibly retrieve a binary copy of the entire ICC profile, if available
+    cmdParams = cmdParams & "-api" & vbCrLf & "RequestTags=ICC_Profile" & vbCrLf
+    
     'Historically, we needed to explicitly set a charset; this shouldn't be necessary with current versions (as UTF-8 is
     ' automatically supported), but if desired, specific metadata types can be coerced into requested character sets like so:
     'cmdParams = cmdParams & "-charset" & vbCrLf & "UTF8" & vbCrLf
@@ -642,7 +661,7 @@ End Function
 ' of ExifTool's "htmldump" facility, which provides a detailed hex report of all metadata in a file.  This function can be used
 ' to generate such a report, but note that it only works for images that exist on disk (obviously).
 Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Boolean
-
+    
     'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -680,6 +699,63 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
     
     Else
         CreateTechnicalMetadataReport = False
+    End If
+
+End Function
+
+'Extract an image's ICC profile to a standalone file.  If no destination filename is used, a temporary file will be generated.
+' Use the ExifTool.GetExtractedICCProfilePath() function to retrieve said filename.  If you pass your own filename,
+' make *absolutely certain* it ends in .icc or icm, or ExifTool may not extract the profile correctly.
+Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByVal dstFilename As String = vbNullString) As Boolean
+    
+    'For this to work, the target file must exist on disk.  (ExifTool requires a disk copy to extract the
+    ' ICC profile out to file.)
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    If cFile.FileExist(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
+    
+        Dim cmdParams As String
+        cmdParams = ""
+        
+        'Extract the icc profile
+        cmdParams = cmdParams & "-icc_profile" & vbCrLf
+        
+        'To do this correctly, we must also request the processing of binary-type tags
+        cmdParams = cmdParams & "-b" & vbCrLf
+        
+        'We want to *write* a new file, but instead of using "-w" (which only takes an extension argument),
+        ' use "-o" which lets us specify the full output path.
+        Dim tmpFilename As String
+        If (Len(dstFilename) = 0) Then
+            tmpFilename = FileSystem.RequestTempFile()
+            tmpFilename = tmpFilename & ".icc"
+        Else
+            tmpFilename = dstFilename
+        End If
+        
+        cmdParams = cmdParams & "-o" & vbCrLf & tmpFilename & vbCrLf
+        
+        'Cache the filename at module level, so we can retrieve it when we're done
+        m_ICCExtractionSrcImage = tmpFilename
+        
+        'Finally, add the original filename
+        cmdParams = cmdParams & srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk") & vbCrLf
+        
+        'Finally, add the special command "-execute" which tells ExifTool to start operations
+        cmdParams = cmdParams & "-execute" & vbCrLf
+        
+        'Activate verification mode.  This will asynchronously wait for the metadata to be written out to file, and when it
+        ' has finished, it will erase our temp file.
+        m_ICCExtractionModeActive = True
+        StartVerificationMode
+        
+        'Ask the user control to start processing this image's metadata.  It will handle things from here.
+        FormMain.shellPipeMain.SendData cmdParams
+        
+        ExtractICCMetadataToFile = True
+    
+    Else
+        ExtractICCMetadataToFile = False
     End If
 
 End Function

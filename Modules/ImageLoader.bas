@@ -1167,8 +1167,8 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 
                 'During debug mode, color-management performance is an item of interest
                 #If DEBUGMODE = 1 Then
-                    Dim startTime As Double
-                    startTime = Timer
+                    Dim startTime As Currency
+                    VB_Hacks.GetHighResTime startTime
                 #End If
                 
                 'LittleCMS is our preferred color management engine.  Use it whenever possible.
@@ -1181,7 +1181,7 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 #If DEBUGMODE = 1 Then
                     Dim engineUsed As String
                     If g_LCMSEnabled Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
-                    pdDebug.LogAction "Note: color management of the imported image took " & CStr(Timer - startTime) & " ms using " & engineUsed
+                    pdDebug.LogAction "Note: color management of the imported image took " & CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000) & " ms using " & engineUsed
                 #End If
                 
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
