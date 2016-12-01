@@ -427,7 +427,6 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
 
 End Function
 
-
 'Save the current image to PhotoDemon's native PDI format
 ' TODO:
 '  - Add support for storing a PNG copy of the fully composited image, preferably in the data chunk of the first node.
@@ -440,7 +439,7 @@ End Function
 '    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -455,6 +454,11 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of compressing individual layers,
     ' and storing everything to a running byte stream.
+    ' TODO: roll these declarations over to pdPackager2.  The v2 of the class is working well, but until I nail down the final
+    '       details of the new PDI spec, I don't want users of the nightly builds writing incompatible files.  Because of that,
+    '       nightly builds still write v1 PDI files for the time being.
+    'Dim pdiWriter As pdPackager2
+    'Set pdiWriter = New pdPackager2
     Dim pdiWriter As pdPackager
     Set pdiWriter = New pdPackager
     pdiWriter.Init_ZLib "", True, g_ZLibEnabled
@@ -537,7 +541,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonImage = pdiWriter.WritePackageToFile(PDIPath, secondPassDirectoryCompression, secondPassDataCompression, srcIsUndo)
+    SavePhotoDemonImage = pdiWriter.WritePackageToFile(PDIPath, secondPassDirectoryCompression, srcIsUndo)
     
     If (Not suppressMessages) Then Message "%1 save complete.", sFileType
     
@@ -556,9 +560,9 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     On Error GoTo SavePDLayerError
     
     'Perform a few failsafe checks
-    If srcLayer Is Nothing Then Exit Function
-    If srcLayer.layerDIB Is Nothing Then Exit Function
-    If Len(PDIPath) = 0 Then Exit Function
+    If (srcLayer Is Nothing) Then Exit Function
+    If (srcLayer.layerDIB) Is Nothing Then Exit Function
+    If (Len(PDIPath) = 0) Then Exit Function
     
     Dim sFileType As String
     sFileType = "PDI"
@@ -566,8 +570,8 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     If (Not suppressMessages) Then Message "Saving %1 layer...", sFileType
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
-    Dim pdiWriter As pdPackager
-    Set pdiWriter = New pdPackager
+    Dim pdiWriter As pdPackager2
+    Set pdiWriter = New pdPackager2
     pdiWriter.Init_ZLib "", True, g_ZLibEnabled
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
@@ -616,7 +620,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonLayer = pdiWriter.WritePackageToFile(PDIPath, , , srcIsUndo)
+    SavePhotoDemonLayer = pdiWriter.WritePackageToFile(PDIPath, , srcIsUndo)
     
     If (Not suppressMessages) Then Message "%1 save complete.", sFileType
     
@@ -769,16 +773,16 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
             srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_IMAGEHEADER
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, True, , , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, True, , , , True
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
@@ -795,7 +799,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
             Debug.Print "Unknown Undo data write requested - is it possible to avoid this request entirely??"
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False, , , , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False, , , , , True
         
     End Select
     
