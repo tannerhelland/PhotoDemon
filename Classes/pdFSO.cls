@@ -64,6 +64,8 @@ Private Const INVALID_HANDLE_VALUE As Long = -1
 Private Const PAGE_READWRITE As Long = 4
 Private Const FILE_MAP_WRITE As Long = 2
 
+Private Const INVALID_SET_FILE_POINTER As Long = -1
+
 Public Enum PDFSO_FILE_ACCESS_OPTIMIZE
     OptimizeNone = 0
     OptimizeRandomAccess = 1
@@ -75,7 +77,7 @@ End Enum
     Private Const OptimizeNone = 0, OptimizeRandomAccess = 1, OptimizeSequentialAccess = 2, OptimizeTempFile = 3
 #End If
 
-Private Enum FILE_POINTER_MOVE_METHOD
+Public Enum FILE_POINTER_MOVE_METHOD
     FILE_BEGIN = 0
     FILE_CURRENT = 1
     FILE_END = 2
@@ -1589,6 +1591,11 @@ Friend Function ReleaseMMHandle(ByVal srcMappedHandle As Long, ByVal srcBaseAddr
         ReleaseMMHandle = False
     End If
     
+End Function
+
+'After a file has been opened, you can use this function to manually move the file pointer around
+Friend Function MoveFilePointer(ByVal srcHandle As Long, ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
+    MoveFilePointer = CBool(SetFilePointer(srcHandle, newPosition, 0&, startingPosition) <> INVALID_SET_FILE_POINTER)
 End Function
 
 'Close an open file handle.
