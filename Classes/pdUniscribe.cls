@@ -140,7 +140,7 @@ Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 '  1) position of the flag, which must be in the range [0, 31]
 '  2) value of the flag, TRUE for 1, FALSE for 0
 '  3) The Long-type value where you want the flag placed
-Private Sub setBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
+Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, ByRef copyOfDstLong As Long)
 
     If (flagPosition >= 0) And (flagPosition <= 31) Then
     
@@ -174,14 +174,14 @@ End Sub
 ' Inputs:
 '  1) position of the flag, which must be in the range [0, 31]
 '  2) The Long from which you want the bit retrieved
-Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
+Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
 
     If (flagPosition >= 0) And (flagPosition <= 31) Then
     
         'Create a bitmask, using flagPosition to determine bit offset
         Dim longMask As Long
         If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        getBitFlag = CBool(CLng(srcLong And longMask) <> 0)
+        GetBitFlag = CBool(CLng(srcLong And longMask) <> 0)
         
         'If you're curious about how this function works (and what it returns), you can uncomment the line below
         'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"
@@ -457,10 +457,10 @@ Public Function Step2_ScriptLayout() As Boolean
         'Technically the bitfield contains 5 bits for potential values on the range [0, 31].  But there are really only values on the
         ' range [0, 3], basically every combination of LTR and RTL text embedded within each other.  As such, we only need to retrieve
         ' the bottom 2 of 5 bytes.
-        tmpFlag = getBitFlag(0, tmpPBLevel)
+        tmpFlag = GetBitFlag(0, tmpPBLevel)
         If tmpFlag Then extractedPBLevel = 1 Else extractedPBLevel = 0
         
-        tmpFlag = getBitFlag(1, tmpPBLevel)
+        tmpFlag = GetBitFlag(1, tmpPBLevel)
         If tmpFlag Then extractedPBLevel = extractedPBLevel + 2
         
         'Curious about the bidi levels we've extracted?  Display our analysis using this line of code:

@@ -708,6 +708,13 @@ Public Sub FinalShutdown()
         #End If
     End If
     
+    If g_ZstdEnabled Then
+        Plugin_zstd.ReleaseZstd
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "zstd released"
+        #End If
+    End If
+    
     'Release any active drawing backends
     Drawing.ReleaseUIPensAndBrushes
     Set g_CheckerboardPattern = Nothing

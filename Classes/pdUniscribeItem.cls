@@ -328,7 +328,7 @@ Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
             tmpLong = charAttributesCache(i).fBitFields
             
             'Like most horribly obnoxious Uniscribe structs, data is embedded at the bit level.  Retrieve the flag bit for soft breaks.
-            If getBitFlag(0, tmpLong) Then
+            If GetBitFlag(0, tmpLong) Then
                 
                 'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
                 If tmpIndex >= 0 And tmpIndex < m_NumOfGlyphs Then
@@ -340,7 +340,7 @@ Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
             End If
             
             '...and the same thing, but for white space
-            If getBitFlag(1, tmpLong) Then
+            If GetBitFlag(1, tmpLong) Then
                 
                 'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
                 If tmpIndex >= 0 And tmpIndex < m_NumOfGlyphs Then
@@ -360,7 +360,7 @@ Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
             tmpLong = m_VisualAttributesCache(i).fBitFields1
         
             'Retrieve the zero-width bit
-            If getBitFlag(6, tmpLong) Then
+            If GetBitFlag(6, tmpLong) Then
                 
                 'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
                 m_GlyphZeroWidthCache(i) = True
@@ -397,7 +397,7 @@ Friend Function getCorrespondingCharIndex(ByVal gPos As Long) As Long
             getCorrespondingCharIndex = m_RelativeStartPos + i
             Exit For
         End If
-    
+        
     Next i
     
 End Function
@@ -408,14 +408,14 @@ End Function
 ' Inputs:
 '  1) position of the flag, which must be in the range [0, 31]
 '  2) The Long from which you want the bit retrieved
-Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
+Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
 
     If (flagPosition >= 0) And (flagPosition <= 31) Then
     
         'Create a bitmask, using flagPosition to determine bit offset
         Dim longMask As Long
         If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
-        getBitFlag = CBool(CLng(srcLong And longMask) <> 0)
+        GetBitFlag = CBool(CLng(srcLong And longMask) <> 0)
         
         'If you're curious about how this function works (and what it returns), you can uncomment the line below
         'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"

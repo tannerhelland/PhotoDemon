@@ -439,7 +439,7 @@ End Function
 '    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = False, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressLayers As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PDP_COMPRESSION_ENGINES = PDP_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -461,11 +461,9 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     ' TODO: roll these declarations over to pdPackager2.  The v2 of the class is working well, but until I nail down the final
     '       details of the new PDI spec, I don't want users of the nightly builds writing incompatible files.  Because of that,
     '       nightly builds still write v1 PDI files for the time being.
-    'Dim pdiWriter As pdPackager2
-    'Set pdiWriter = New pdPackager2
-    Dim pdiWriter As pdPackager
-    Set pdiWriter = New pdPackager
-    pdiWriter.Init_ZLib "", True, g_ZLibEnabled
+    Dim pdiWriter As pdPackager2
+    Set pdiWriter = New pdPackager2
+    pdiWriter.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
@@ -478,7 +476,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     Dim dataString As String
     srcPDImage.WriteExternalData dataString, True
     
-    pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
+    pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders
     
     'The pdImage header only requires one of the two buffers in its node; the other can be happily left blank.
     
@@ -500,7 +498,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         '        these headers, there is no meaningful gain from higher compression settings, but higher settings kills
         '        performance, so we stick with the default recommended zLib compression level.)
         layerXMLHeader = srcPDImage.GetLayerByIndex(i).GetLayerHeaderAsXML(True)
-        pdiWriter.AddNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
+        pdiWriter.AddNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders
         
         'If this is not a header-only file, retrieve any layer-type-specific data and add it to the data section of this node
         ' (Note: the user's compression setting *is* used for this data section, as it can be quite large for raster layers
@@ -512,16 +510,16 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
             'Image layers save their raster contents as a raw byte stream
             If srcPDImage.GetLayerByIndex(i).IsLayerRaster Then
                 
-                Debug.Print "Writing layer index " & i & " out to file as RASTER layer."
+                'Debug.Print "Writing layer index " & i & " out to file as RASTER layer."
                 srcPDImage.GetLayerByIndex(i).layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-                pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+                pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel
                 
             'Text (and other vector layers) save their vector contents in XML format
             ElseIf srcPDImage.GetLayerByIndex(i).IsLayerVector Then
                 
-                Debug.Print "Writing layer index " & i & " out to file as VECTOR layer."
+                'Debug.Print "Writing layer index " & i & " out to file as VECTOR layer."
                 layerXMLData = srcPDImage.GetLayerByIndex(i).GetVectorDataAsXML(True)
-                pdiWriter.AddNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
+                pdiWriter.AddNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel
             
             'No other layer types are currently supported
             Else
@@ -538,8 +536,8 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
         If srcPDImage.imgMetadata.HasMetadata Then
             nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
-            pdiWriter.AddNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.GetOriginalXMLMetadataString, compressHeaders, , embedChecksums
-            pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.imgMetadata.GetSerializedXMLData, compressHeaders, , embedChecksums
+            pdiWriter.AddNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.GetOriginalXMLMetadataString, compressHeaders
+            pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.imgMetadata.GetSerializedXMLData, compressHeaders
         End If
     
     End If
@@ -564,13 +562,13 @@ End Function
 
 'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressLayers As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDLayerError
     
     'Perform a few failsafe checks
     If (srcLayer Is Nothing) Then Exit Function
-    If (srcLayer.layerDIB) Is Nothing Then Exit Function
+    If (srcLayer.layerDIB Is Nothing) Then Exit Function
     If (Len(PDIPath) = 0) Then Exit Function
     
     Dim sFileType As String
@@ -581,7 +579,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
     Dim pdiWriter As pdPackager2
     Set pdiWriter = New pdPackager2
-    pdiWriter.Init_ZLib "", True, g_ZLibEnabled
+    pdiWriter.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
@@ -600,7 +598,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     Dim dataString As String
     dataString = srcLayer.GetLayerHeaderAsXML(True)
     
-    pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders, , embedChecksums
+    pdiWriter.AddNodeDataFromString nodeIndex, True, dataString, compressHeaders
     
     'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
     ' into the pdPackage instance
@@ -613,13 +611,13 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
         
             Dim layerDIBPointer As Long, layerDIBLength As Long
             srcLayer.layerDIB.RetrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-            pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+            pdiWriter.AddNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel
         
         'Text (and other vector layers) save their vector contents in XML format
         ElseIf srcLayer.IsLayerVector Then
             
             dataString = srcLayer.GetVectorDataAsXML(True)
-            pdiWriter.AddNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel, embedChecksums
+            pdiWriter.AddNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel
         
         'Other layer types are not currently supported
         Else
@@ -630,8 +628,6 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonLayer = pdiWriter.WritePackageToFile(PDIPath, , srcIsUndo)
-    
-    If (Not suppressMessages) Then Message "%1 save complete.", sFileType
     
     Exit Function
     
@@ -773,8 +769,8 @@ End Sub
 Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1) As Boolean
     
     #If DEBUGMODE = 1 Then
-        Dim timeAtUndoStart As Double
-        timeAtUndoStart = Timer
+        Dim timeAtUndoStart As Currency
+        VB_Hacks.GetHighResTime timeAtUndoStart
     #End If
     
     'What kind of Undo data we save is determined by the current processType.
@@ -782,24 +778,24 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
             srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_IMAGEHEADER
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, True, , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), PDP_CE_NoCompression, True, , , , True
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), True
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LAYERHEADER
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, False, False, True, , True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), PDP_CE_NoCompression, True, , True
             
         'Selection data only
         Case UNDO_SELECTION
@@ -808,13 +804,13 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
             Debug.Print "Unknown Undo data write requested - is it possible to avoid this request entirely??"
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, False, False, False, , , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, , , , True
         
     End Select
     
     #If DEBUGMODE = 1 Then
         'Want to test undo timing?  Uncomment the line below
-        Debug.Print "Time take for Undo file creation: " & Format$(Timer - timeAtUndoStart, "#0.####") & " seconds"
+        Debug.Print "Time taken for Undo file creation: " & Format$(VB_Hacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
     #End If
     
 End Function
