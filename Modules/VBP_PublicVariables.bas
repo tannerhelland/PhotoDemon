@@ -58,6 +58,9 @@ Public g_CommandLine As String
 'Is compression via zLib enabled?
 Public g_ZLibEnabled As Boolean
 
+'Is compression via zstd enabled?
+Public g_ZstdEnabled As Boolean
+
 'Is metadata handling via ExifTool enabled?
 Public g_ExifToolEnabled As Boolean
 

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.216</langversion>
+<langversion>6.7.218</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -848,11 +848,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>Die ausgewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
-</phrase>
-
-<phrase>
 <original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
 
 To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
@@ -882,11 +877,16 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 </phrase>
 
 <phrase>
+<original>Selected file is not in PDI format.  Load abandoned.</original>
+<translation>Die ausgewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
+</phrase>
+
+<phrase>
 <original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
 <translation>GDI+ weigert sich das Bild zu laden; Rückkehr zu internen Routinen und neuer Versuch</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 23 phrases. 16 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -1584,7 +1584,12 @@ In Version 6.0 wurden das Format der PhotoDemon-Makrodateien überarbeitet, um n
 <translation></translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>BSD license</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -1750,6 +1755,12 @@ Um mit dem Scanner arbeiten zu können, kopieren Sie bitte die Datei EZTW32.dll 
 <!-- Plugin_ZLib.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_ZLib.bas-->
+
+<!-- BEGIN text for Plugin_zstd.bas -->
+
+<!-- Plugin_zstd.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_zstd.bas-->
 
 <!-- BEGIN text for VBP_PrinterSupport.bas -->
 
@@ -3270,6 +3281,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
+
+<!-- BEGIN text for pdPackager2.cls -->
+
+<!-- pdPackager2.cls contains 0 phrases. -->
+
+<!-- END text for pdPackager2.cls-->
 
 <!-- BEGIN text for pdParamXML.cls -->
 
@@ -14958,10 +14975,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2538</phrasecount>
+<phrasecount>2539</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4468 phrases. -->
-<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12764 total words. -->
+<!-- As of this build, PhotoDemon contains 4478 phrases. -->
+<!-- 1939 are duplicates, so only 2539 unique phrases have been written to file. -->
+<!-- These 2539 phrases contain approximately 12766 total words. -->
 
 </pdData>
