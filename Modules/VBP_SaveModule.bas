@@ -396,7 +396,7 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
             
         Case PDIF_PDI
             If g_ZLibEnabled Then
-                ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, , , , , , True)
+                ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, , , , False, , True)
             Else
                 ExportToSpecificFormat = False
             End If
@@ -439,13 +439,17 @@ End Function
 '    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = False, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
     'Perform a few failsafe checks
     If (srcPDImage Is Nothing) Then Exit Function
     If (Len(PDIPath) = 0) Then Exit Function
+    
+    'Want to time this function?  Here's your chance:
+    Dim startTime As Currency
+    VB_Hacks.GetHighResTime startTime
     
     Dim sFileType As String
     sFileType = "PDI"
@@ -542,6 +546,11 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonImage = pdiWriter.WritePackageToFile(PDIPath, secondPassDirectoryCompression, srcIsUndo)
+    
+    'Report timing on debug builds
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Saved PDI file in " & CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
+    #End If
     
     If (Not suppressMessages) Then Message "%1 save complete.", sFileType
     

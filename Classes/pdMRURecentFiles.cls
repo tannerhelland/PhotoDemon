@@ -121,9 +121,10 @@ End Function
 'Saves a thumbnail PNG of a pdImage object.  The thumbnail is saved to the /Data/Icons directory
 Private Sub SaveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
 
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Saving recent file menu thumbnail..."
-    #End If
+    'During debug builds, it is sometimes nice to know how frequently this function is called
+    '#If DEBUGMODE = 1 Then
+    '    pdDebug.LogAction "Saving recent file menu thumbnail..."
+    '#End If
     
     'First, generate a path at which to save the file in question
     Dim sFilename As String

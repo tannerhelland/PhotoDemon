@@ -3,8 +3,8 @@ Attribute VB_Name = "PluginManager"
 'Core Plugin Manager
 'Copyright 2014-2016 by Tanner Helland
 'Created: 30/August/15
-'Last updated: 30/August/15
-'Last update: migrate a ton of scattered plugin management code to this singular module
+'Last updated: 01/December/16
+'Last update: integrate zstd as a permanent plugin
 '
 'As PD grows, it's more and more difficult to supply the functionality we need through WAPI alone.  To that end,
 ' a number of third-party plugins are now required for proper program operation.
@@ -32,10 +32,11 @@ Public Enum CORE_PLUGINS
     CCP_OptiPNG = 4
     CCP_PNGQuant = 5
     CCP_zLib = 6
+    CCP_zstd = 7
 End Enum
 
 #If False Then
-    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_OptiPNG = 4, CCP_PNGQuant = 5, CCP_zLib = 6
+    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_OptiPNG = 4, CCP_PNGQuant = 5, CCP_zLib = 6, CCP_zstd = 7
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -47,10 +48,11 @@ Private Const EXPECTED_LITTLECMS_VERSION As String = "2.8.0"
 Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.6"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
+Private Const EXPECTED_ZSTD_VERSION As String = "10102"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
-Private Const CORE_PLUGIN_COUNT As Long = 7
+Private Const CORE_PLUGIN_COUNT As Long = 8
 
 'Much of the version-checking code used in this module was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
 ' Many thanks to those authors for their work on demystifying obscure API calls
@@ -176,6 +178,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "pngquant.exe"
         Case CCP_zLib
             GetPluginFilename = "zlibwapi.dll"
+        Case CCP_zstd
+            GetPluginFilename = "libzstd.dll"
     End Select
 End Function
 
@@ -195,6 +199,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "PNGQuant"
         Case CCP_zLib
             GetPluginName = "zLib"
+        Case CCP_zstd
+            GetPluginName = "zstd"
         Case Else
             Debug.Print "WARNING!  PluginManager.GetPluginName was handed an invalid Enum ID."
     End Select
@@ -230,6 +236,10 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         'PNGQuant can write its version number to stdout
         Case CCP_PNGQuant
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_PNGQuant.GetPngQuantVersion()
+        
+        'zstd provides a dedicated version-checking function
+        Case CCP_zstd
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_zstd.GetZstdVersion()
         
         'All other plugins pull their version info directly from file metadata
         Case Else
@@ -271,7 +281,10 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         
         Case CCP_zLib
             dstStringStack.AddString "zlib-README.txt"
-    
+            
+        Case CCP_zstd
+            dstStringStack.AddString "libzstd-LICENSE.txt"
+            
     End Select
     
     GetNonEssentialPluginFiles = CBool(dstStringStack.GetNumOfStrings <> 0)
@@ -308,6 +321,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = g_ImageFormats.pngQuantEnabled
         Case CCP_zLib
             IsPluginCurrentlyEnabled = g_ZLibEnabled
+        Case CCP_zstd
+            IsPluginCurrentlyEnabled = g_ZstdEnabled
     End Select
 End Function
 
@@ -330,6 +345,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             g_ImageFormats.pngQuantEnabled = newEnabledState
         Case CCP_zLib
             g_ZLibEnabled = newEnabledState
+        Case CCP_zstd
+            g_ZstdEnabled = newEnabledState
     End Select
 End Sub
 
@@ -359,6 +376,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_PNGQUANT_VERSION
         Case CCP_zLib
             ExpectedPluginVersion = EXPECTED_ZLIB_VERSION
+        Case CCP_zstd
+            ExpectedPluginVersion = EXPECTED_ZSTD_VERSION
     End Select
 End Function
 
@@ -379,6 +398,8 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginHomepage = "https://pngquant.org/"
         Case CCP_zLib
             GetPluginHomepage = "http://zlib.net/"
+        Case CCP_zstd
+            GetPluginHomepage = " http://www.zstd.net"
     End Select
 End Function
 
@@ -399,6 +420,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("GNU GPLv3")
         Case CCP_zLib
             GetPluginLicenseName = g_Language.TranslateMessage("zLib license")
+        Case CCP_zstd
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
     End Select
 End Function
 
@@ -419,6 +442,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "https://raw.githubusercontent.com/pornel/pngquant/master/COPYRIGHT"
         Case CCP_zLib
             GetPluginLicenseURL = "http://zlib.net/zlib_license.html"
+        Case CCP_zstd
+            GetPluginLicenseURL = "https://github.com/facebook/zstd/blob/dev/LICENSE"
     End Select
 End Function
 
@@ -465,7 +490,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_LittleCMS
             initializationSuccessful = LittleCMS.InitializeLCMS()
         
-        'TODO!
+        'OptiPNG and PNGQuant are loaded on-demand, as they may not be used in every session
         Case CCP_OptiPNG
             initializationSuccessful = True
             
@@ -475,6 +500,10 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_zLib
             'zLib maintains a program-wide handle for the life of the program, which we attempt to generate now.
             initializationSuccessful = Plugin_zLib_Interface.InitializeZLib()
+            
+        Case CCP_zstd
+            'zstd maintains a program-wide handle for the life of the program, which we attempt to generate now.
+            initializationSuccessful = Plugin_zstd.InitializeZStd()
             
     End Select
 
@@ -509,6 +538,9 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_zLib
             g_ZLibEnabled = pluginState
+            
+        Case CCP_zstd
+            g_ZstdEnabled = pluginState
             
     End Select
     
@@ -640,8 +672,8 @@ Private Function RetrieveGenericVersionString(ByVal FullFileName As String) As S
     MoveMemory udtVerBuffer, lVerPointer, Len(udtVerBuffer)
     
     'If it proves helpful in the future, here's code for retrieving versioning of the file itself
-    'Dim FileVer As String
-    'FileVer = Trim(Format$(udtVerBuffer.dwFileVersionMSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionMSl)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSl))
+    'Dim fileVer As String
+    'fileVer = Trim(Format$(udtVerBuffer.dwFileVersionMSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionMSl)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSh)) & "." & Trim(Format$(udtVerBuffer.dwFileVersionLSl))
     
     '...but right now, we're only concerned with product versioning
     RetrieveGenericVersionString = Trim$(Format$(udtVerBuffer.dwProductVersionMSh)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionMSl)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionLSh)) & "." & Trim$(Format$(udtVerBuffer.dwProductVersionLSl))

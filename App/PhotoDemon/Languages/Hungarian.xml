@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2033</langversion>
+<langversion>6.8.2035</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -847,11 +847,6 @@ To támogatásának engedélyezéséhez Ez a képformátum másolja a FreeImage.
 <!-- BEGIN text for ImageLoader.bas -->
 
 <phrase>
-<original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>A kiválasztott fájl nem PDF formátumban. Load elhagyott.</translation>
-</phrase>
-
-<phrase>
 <original>The PDI file "%1" contains compressed data, but the zLib plugin is missing or disabled.
 
 To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
@@ -881,11 +876,16 @@ To támogatásának engedélyezéséhez tömörített PDI fájlokat, kattintson 
 </phrase>
 
 <phrase>
+<original>Selected file is not in PDI format.  Load abandoned.</original>
+<translation>A kiválasztott fájl nem PDF formátumban. Load elhagyott.</translation>
+</phrase>
+
+<phrase>
 <original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
 <translation>GDI hajlandó betölteni a képet. Csepegés vissza a belső rutinokat és próbálja újra</translation>
 </phrase>
 
-<!-- ImageLoader.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- ImageLoader.bas contains 23 phrases. 16 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for ImageLoader.bas-->
 
@@ -1586,7 +1586,12 @@ In 6.0 verzió, PhotoDemon makrófájlokat újratervezték, hogy támogassa az �
 <translation>GNU GPLv3</translation>
 </phrase>
 
-<!-- Plugin_Management.bas contains 14 phrases. 8 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>BSD license</original>
+<translation></translation>
+</phrase>
+
+<!-- Plugin_Management.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -1751,6 +1756,12 @@ To lehetővé lapolvasótámaszt másolja a EZTW32.dll fájlt (letölthető http
 <!-- Plugin_ZLib.bas contains 0 phrases. -->
 
 <!-- END text for Plugin_ZLib.bas-->
+
+<!-- BEGIN text for Plugin_zstd.bas -->
+
+<!-- Plugin_zstd.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_zstd.bas-->
 
 <!-- BEGIN text for VBP_PrinterSupport.bas -->
 
@@ -3268,6 +3279,12 @@ Please enter a numeric value.</original>
 <!-- pdPackager.cls contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
+
+<!-- BEGIN text for pdPackager2.cls -->
+
+<!-- pdPackager2.cls contains 0 phrases. -->
+
+<!-- END text for pdPackager2.cls-->
 
 <!-- BEGIN text for pdParamXML.cls -->
 
@@ -14946,10 +14963,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2538</phrasecount>
+<phrasecount>2539</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4468 phrases. -->
-<!-- 1930 are duplicates, so only 2538 unique phrases have been written to file. -->
-<!-- These 2538 phrases contain approximately 12764 total words. -->
+<!-- As of this build, PhotoDemon contains 4478 phrases. -->
+<!-- 1939 are duplicates, so only 2539 unique phrases have been written to file. -->
+<!-- These 2539 phrases contain approximately 12766 total words. -->
 
 </pdData>
