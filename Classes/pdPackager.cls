@@ -164,7 +164,7 @@ End Enum
 ' The list of currently supported flags is as follows:
 Public Enum PDP_FLAGS
     PDP_FLAG_ZLIB_REQUIRED = 0    'There are one or more compressed entries in this chunk, so zLib will be required to read it
-    PDP_FLAG_FILE_NODE = 1        'This node contains a file added via the shortcut autoAddNodeFromFile() function.
+    PDP_FLAG_FILE_NODE = 1        'This node contains a file added via the shortcut AutoAddNodeFromFile() function.
 End Enum
 
 #If False Then

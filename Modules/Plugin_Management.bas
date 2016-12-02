@@ -399,7 +399,7 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_zLib
             GetPluginHomepage = "http://zlib.net/"
         Case CCP_zstd
-            GetPluginHomepage = " http://www.zstd.net"
+            GetPluginHomepage = "http://www.zstd.net"
     End Select
 End Function
 
@@ -439,7 +439,7 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
         Case CCP_OptiPNG
             GetPluginLicenseURL = "http://optipng.sourceforge.net/license.txt"
         Case CCP_PNGQuant
-            GetPluginLicenseURL = "https://raw.githubusercontent.com/pornel/pngquant/master/COPYRIGHT"
+            GetPluginLicenseURL = "https://github.com/pornel/pngquant/blob/master/COPYRIGHT"
         Case CCP_zLib
             GetPluginLicenseURL = "http://zlib.net/zlib_license.html"
         Case CCP_zstd

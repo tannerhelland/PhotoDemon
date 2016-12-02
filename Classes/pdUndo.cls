@@ -66,7 +66,7 @@ Option Explicit
 
 'If you need to debug Undo/Redo data, set this to TRUE.  It will cause the current Undo stack's contents to be printed to the
 ' debug window whenever the stack changes.
-Private Const UNDO_DEBUG_MODE As Boolean = True
+Private Const UNDO_DEBUG_MODE As Boolean = False
 
 'In the Undo/Redo stack, which entry is this image currently on?
 Private undoNum As Long
@@ -190,10 +190,10 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is sometimes helpful to
     ' display that info in the debug window.
-    'Debug.Print "Saved " & getCurrentUndoFilename() & " as Undo file #" & undoNum & "."
+    'Debug.Print "Saved " & GetCurrentUndoFilename() & " as Undo file #" & undoNum & "."
     
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
-    If undoNum <> UBound(undoStack) Then ReDim Preserve undoStack(0 To undoNum) As UndoEntry
+    If (undoNum <> UBound(undoStack)) Then ReDim Preserve undoStack(0 To undoNum) As UndoEntry
     With undoStack(undoNum)
         .processID = processID
         .processParamString = pParamString
@@ -997,33 +997,33 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     'Create a pdXML class, which will help us assemble the XML file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
-    xmlEngine.prepareNewXML "Undo stack"
+    xmlEngine.PrepareNewXML "Undo stack"
     
     'Write out the XML version we're using for this macro
-    xmlEngine.writeTag "pdUndoVersion", pdUndoVersionID
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "pdUndoVersion", pdUndoVersionID
+    xmlEngine.WriteBlankLine
     
     'Write out some basic information about our parent pdImage object.  In the event of a critical program crash,
     ' the AutoSave engine can use this information to reconstruct any missing images.
-    xmlEngine.writeTag "imageID", parentPDImage.imageID
-    xmlEngine.writeTag "friendlyName", parentPDImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString) & "." & parentPDImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
-    xmlEngine.writeTag "originalPath", parentPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteTag "imageID", parentPDImage.imageID
+    xmlEngine.WriteTag "friendlyName", parentPDImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString) & "." & parentPDImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
+    xmlEngine.WriteTag "originalPath", parentPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    xmlEngine.WriteBlankLine
     
     'Write out the size of the current Undo stack, including the Max and Total values
-    xmlEngine.writeTag "StackHeight", undoMax
-    xmlEngine.writeTag "StackAbsoluteMaximum", undoTotal
-    xmlEngine.writeTag "CurrentStackPointer", undoNum
+    xmlEngine.WriteTag "StackHeight", undoMax
+    xmlEngine.WriteTag "StackAbsoluteMaximum", undoTotal
+    xmlEngine.WriteTag "CurrentStackPointer", undoNum
     
     'We probably don't need the undoNumAtLastSave values, but it doesn't hurt to embed them, "just in case"
-    xmlEngine.writeTag "UndoNumAtLastSave_Flat", undoNumAtLastSave_Flat
-    xmlEngine.writeTag "UndoNumAtLastSave_PDI", undoNumAtLastSave_PDI
+    xmlEngine.WriteTag "UndoNumAtLastSave_Flat", undoNumAtLastSave_Flat
+    xmlEngine.WriteTag "UndoNumAtLastSave_PDI", undoNumAtLastSave_PDI
     
     'Finally, add the current session ID, a 16-character string unique to each running PD instance.  This ID is appended to all
     ' Undo files, which allows multiple PD sessions to run concurrently without trouble.
-    xmlEngine.writeTag "OriginalSessionID", g_SessionID
+    xmlEngine.WriteTag "OriginalSessionID", g_SessionID
     
-    xmlEngine.writeBlankLine
+    xmlEngine.WriteBlankLine
     
     'Next, we're going to write out all Undo stack entries. If PD's "UndoEntry" type is ever changed, note
     ' that this function will need to be updated to match!
@@ -1031,23 +1031,23 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     For i = 0 To UBound(undoStack)
         
         'Start each undo entry with a unique numeric identifier (that corresponds to its location in the stack)
-        xmlEngine.writeTagWithAttribute "UndoEntry", "index", i, "", True
+        xmlEngine.WriteTagWithAttribute "UndoEntry", "index", i, "", True
         
         'Write out all the properties of this entry
-        xmlEngine.writeTag "ProcessID", undoStack(i).processID
-        xmlEngine.writeTag "ProcessParameters", undoStack(i).processParamString
-        xmlEngine.writeTag "UndoType", undoStack(i).undoType
-        xmlEngine.writeTag "RelevantLayerID", undoStack(i).undoLayerID
-        xmlEngine.writeTag "RelevantTool", undoStack(i).relevantTool
+        xmlEngine.WriteTag "ProcessID", undoStack(i).processID
+        xmlEngine.WriteTag "ProcessParameters", undoStack(i).processParamString
+        xmlEngine.WriteTag "UndoType", undoStack(i).undoType
+        xmlEngine.WriteTag "RelevantLayerID", undoStack(i).undoLayerID
+        xmlEngine.WriteTag "RelevantTool", undoStack(i).relevantTool
         
         'Close this undo entry
-        xmlEngine.closeTag "UndoEntry"
-        xmlEngine.writeBlankLine
+        xmlEngine.CloseTag "UndoEntry"
+        xmlEngine.WriteBlankLine
     
     Next i
     
     'With all Undo data successfully written, close the XML data and write it out to file.
-    xmlEngine.writeXMLToFile dstFilename, False
+    xmlEngine.WriteXMLToFile dstFilename, False
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
@@ -1066,17 +1066,17 @@ Public Function ReconstructStackFromExternalSource(ByRef srcXMLString As String)
     Set xmlEngine = New pdXML
     
     'Validate the XML string
-    If xmlEngine.loadXMLFromString(srcXMLString) Then
+    If xmlEngine.LoadXMLFromString(srcXMLString) Then
     
         'Make sure the XML string actually contains Undo/Redo data
-        If xmlEngine.isPDDataType("Undo stack") And xmlEngine.validateLoadedXMLData("pdUndoVersion") Then
+        If xmlEngine.IsPDDataType("Undo stack") And xmlEngine.ValidateLoadedXMLData("pdUndoVersion") Then
             
             'The file checks out!  Start by initiating a few module-level values to match the data in the file.
-            undoMax = xmlEngine.getUniqueTag_Long("StackHeight")
-            undoTotal = xmlEngine.getUniqueTag_Long("StackAbsoluteMaximum")
-            undoNum = xmlEngine.getUniqueTag_Long("CurrentStackPointer")
-            undoNumAtLastSave_Flat = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave_Flat")
-            undoNumAtLastSave_PDI = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave_PDI")
+            undoMax = xmlEngine.GetUniqueTag_Long("StackHeight")
+            undoTotal = xmlEngine.GetUniqueTag_Long("StackAbsoluteMaximum")
+            undoNum = xmlEngine.GetUniqueTag_Long("CurrentStackPointer")
+            undoNumAtLastSave_Flat = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave_Flat")
+            undoNumAtLastSave_PDI = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave_PDI")
             
             'Next, we must reconstruct the Undo stack itself.  Start by preparing the stack array.
             ReDim undoStack(0 To undoTotal) As UndoEntry
@@ -1087,18 +1087,18 @@ Public Function ReconstructStackFromExternalSource(ByRef srcXMLString As String)
                 
                 'Start by finding the location of the tag we want
                 Dim tagPosition As Long
-                tagPosition = xmlEngine.getLocationOfTagPlusAttribute("UndoEntry", "index", i)
+                tagPosition = xmlEngine.GetLocationOfTagPlusAttribute("UndoEntry", "index", i)
                 
                 'If a matching tag was found, retrieve its data and store it in the stack
                 If tagPosition > 0 Then
                 
                     With undoStack(i)
                     
-                        .processID = xmlEngine.getUniqueTag_String("ProcessID", , tagPosition)
-                        .processParamString = xmlEngine.getUniqueTag_String("ProcessParameters", , tagPosition)
-                        .undoType = xmlEngine.getUniqueTag_Long("UndoType", , tagPosition)
-                        .undoLayerID = xmlEngine.getUniqueTag_Long("RelevantLayerID", , tagPosition)
-                        .relevantTool = xmlEngine.getUniqueTag_Long("RelevantTool", , tagPosition)
+                        .processID = xmlEngine.GetUniqueTag_String("ProcessID", , tagPosition)
+                        .processParamString = xmlEngine.GetUniqueTag_String("ProcessParameters", , tagPosition)
+                        .undoType = xmlEngine.GetUniqueTag_Long("UndoType", , tagPosition)
+                        .undoLayerID = xmlEngine.GetUniqueTag_Long("RelevantLayerID", , tagPosition)
+                        .relevantTool = xmlEngine.GetUniqueTag_Long("RelevantTool", , tagPosition)
                         
                     End With
                     
