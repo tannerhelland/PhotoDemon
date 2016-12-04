@@ -129,6 +129,32 @@ Public Function ZstdCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData A
 
 End Function
 
+'Compress some arbitrary source buffer to an arbitrary destination buffer.  Caller is responsible for all allocations.
+Public Function ZstdCompressNakedPointers(ByVal dstPointer As Long, ByRef dstSizeInBytes As Long, ByVal srcPointer As Long, ByVal srcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1) As Boolean
+    
+    'Validate the incoming compression level parameter
+    If (compressionLevel < 1) Then
+        compressionLevel = -1
+    ElseIf (compressionLevel > m_ZstdCompressLevelMax) Then
+        compressionLevel = m_ZstdCompressLevelMax
+    End If
+    
+    'Perform the compression
+    Dim finalSize As Long
+    finalSize = ZSTD_compress(dstPointer, dstSizeInBytes, srcPointer, srcSizeInBytes, compressionLevel)
+    
+    'Check for error returns
+    ZstdCompressNakedPointers = CBool(ZSTD_isError(finalSize) = 0)
+    
+    If ZstdCompressNakedPointers Then
+        dstSizeInBytes = finalSize
+    Else
+        InternalError "ZSTD_compress failed", finalSize
+        finalSize = 0
+    End If
+    
+End Function
+
 'Decompress some arbitrary source pointer + length into a destination array.  Pass the optional "dstArrayIsReady" as TRUE
 ' (with a matching size descriptor) if you don't want us to auto-size the destination for you.
 '
@@ -187,10 +213,10 @@ Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturn
             ptrChar = ZSTD_getErrorName(faultyReturnCode)
             
             'Convert the char * to a VB string
+            Dim errDescription As String
+            
             Dim cUnicode As pdUnicode
             Set cUnicode = New pdUnicode
-            
-            Dim errDescription As String
             errDescription = cUnicode.ConvertCharPointerToVBString(ptrChar, False, 255)
     
             pdDebug.LogAction "zstd returned an error code (" & faultyReturnCode & "): " & errDescription, PDM_EXTERNAL_LIB

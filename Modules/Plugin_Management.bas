@@ -499,7 +499,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         Case CCP_zLib
             'zLib maintains a program-wide handle for the life of the program, which we attempt to generate now.
-            initializationSuccessful = Plugin_zLib_Interface.InitializeZLib()
+            initializationSuccessful = Plugin_zLib.InitializeZLib()
             
         Case CCP_zstd
             'zstd maintains a program-wide handle for the life of the program, which we attempt to generate now.

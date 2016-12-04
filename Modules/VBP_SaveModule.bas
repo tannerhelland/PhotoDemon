@@ -439,7 +439,7 @@ End Function
 '    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressLayers As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PDP_COMPRESSION_ENGINES = PDP_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
@@ -562,7 +562,7 @@ End Function
 
 'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressLayers As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDLayerError
     
@@ -778,24 +778,24 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
             srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_IMAGEHEADER
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), PDP_CE_NoCompression, True, , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), PD_CE_NoCompression, True, , , , True
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), True
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LAYERHEADER
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), PDP_CE_NoCompression, True, , True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), PD_CE_NoCompression, True, , True
             
         'Selection data only
         Case UNDO_SELECTION
@@ -804,7 +804,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
             Debug.Print "Unknown Undo data write requested - is it possible to avoid this request entirely??"
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PDP_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PDP_CE_NoCompression, PDP_CE_Zstd), False, , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, , , , True
         
     End Select
     

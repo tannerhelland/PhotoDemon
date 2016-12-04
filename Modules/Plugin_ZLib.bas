@@ -1,4 +1,4 @@
-Attribute VB_Name = "Plugin_zLib_Interface"
+Attribute VB_Name = "Plugin_zLib"
 '***************************************************************************
 'File Compression Interface (via zLib)
 'Copyright 2002-2016 by Tanner Helland
@@ -16,9 +16,16 @@ Attribute VB_Name = "Plugin_zLib_Interface"
 
 Option Explicit
 
+Private Const ZLIB_OK = 0
+
+Private Const Z_MIN_LEVEL = 0
+Private Const Z_DEFAULT_LEVEL = 3
+Private Const Z_MAX_LEVEL = 9
+
 'API Declarations
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function compress Lib "zlibwapi" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function compress2 Lib "zlibwapi" (ByVal ptrDstBuffer As Long, ByRef dstLen As Long, ByVal ptrSrcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
 Private Declare Function uncompress Lib "zlibwapi" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 
@@ -127,14 +134,22 @@ Public Function CompressNakedPointerToArray(ByVal srcPointer As Long, ByVal srcL
     
 End Function
 
+'Given arbitrary pointers to both source and destination buffers, compress a zLib stream.  Obviously, it's assumed the caller
+' has knowledge of the size required by the destination buffer, because this function will not modify any buffer sizes.
+Public Function CompressNakedPointers(ByVal dstPointer As Long, ByRef dstLength As Long, ByVal srcPointer As Long, ByVal srcLength As Long, Optional ByVal compressionLevel As Long = -1) As Boolean
+    If (compressionLevel) < Z_MIN_LEVEL Then
+        compressionLevel = Z_DEFAULT_LEVEL
+    ElseIf (compressionLevel > Z_MAX_LEVEL) Then
+        compressionLevel = Z_MAX_LEVEL
+    End If
+    CompressNakedPointers = CBool(compress2(dstPointer, dstLength, srcPointer, srcLength, compressionLevel) = ZLIB_OK)
+End Function
+
 'Given arbitrary pointers to both source and destination buffers, decompress a zLib stream.  Obviously, it's assumed the caller
 ' has knowledge of the size required by the destination buffer (e.g. the decompressed data size was previously stored in a
 ' file or something), because this function will not modify any buffer sizes.
-Public Function DecompressNakedPointers(ByVal srcPointer As Long, ByVal srcLength As Long, ByVal dstPointer As Long, ByVal dstLength As Long) As Boolean
-    
-    'Decompress the data using zLib
+Public Function DecompressNakedPointers(ByVal dstPointer As Long, ByVal dstLength As Long, ByVal srcPointer As Long, ByVal srcLength As Long) As Boolean
     DecompressNakedPointers = CBool(uncompress(ByVal dstPointer, dstLength, ByVal srcPointer, srcLength) = 0)
-    
 End Function
 
 'Fill a destination array with the compressed version of a source array.  Also, ask for the original size,
