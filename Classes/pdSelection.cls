@@ -2567,7 +2567,7 @@ Public Function WriteSelectionToFile(ByVal dstFilename As String) As Boolean
         cFile.WriteDataToFile hFile, VarPtr(writeTransformable), 2&
         
         'If this selection is *not* transformable, we must also embed the full selection mask.
-        If (sShape = sRaster) And maskHasBeenCreated Then selMask.WriteToFile vbNullString, PD_CE_Zstd, True, hFile
+        If (sShape = sRaster) And maskHasBeenCreated Then selMask.WriteToFile vbNullString, PD_CE_Lz4, True, hFile
         
         'All done!
         cFile.CloseFileHandle hFile

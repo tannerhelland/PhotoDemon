@@ -55,7 +55,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     ' from the source file.
     Dim pdiReader As pdPackager2
     Set pdiReader = New pdPackager2
-    pdiReader.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
+    pdiReader.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -291,7 +291,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
     ' from the source file.
     Dim pdiReader As pdPackager2
     Set pdiReader = New pdPackager2
-    pdiReader.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
+    pdiReader.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -403,7 +403,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
     ' from the source file.
     Dim pdiReader As pdPackager2
     Set pdiReader = New pdPackager2
-    pdiReader.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
+    pdiReader.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -541,7 +541,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
     ' from the source file.
     Dim pdiReader As pdPackager2
     Set pdiReader = New pdPackager2
-    pdiReader.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
+    pdiReader.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'Load the file into the pdPackager instance.  pdPackager It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.

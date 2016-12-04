@@ -55,11 +55,10 @@ Public g_PluginPath As String
 'Command line (used here for processing purposes)
 Public g_CommandLine As String
 
-'Is compression via zLib enabled?
+'Is compression via various libraries enabled?
 Public g_ZLibEnabled As Boolean
-
-'Is compression via zstd enabled?
 Public g_ZstdEnabled As Boolean
+Public g_Lz4Enabled As Boolean
 
 'Is metadata handling via ExifTool enabled?
 Public g_ExifToolEnabled As Boolean

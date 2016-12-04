@@ -3,11 +3,11 @@ Attribute VB_Name = "Compression"
 'Unified Compression Interface for PhotoDemon
 'Copyright 2016-2016 by Tanner Helland
 'Created: 02/December/16
-'Last updated: 02/December/16
-'Last update: start unifying various compression bits across PD into these dedicated, optimized functions
+'Last updated: 04/December/16
+'Last update: add support for lz4 compression
 'Dependencies: standalone plugin modules for whatever compression engines you want to use (e.g. the
-'              Plugin_ZLib module for zlib compress; Plugin_zstd for zstd).  This module simply wraps those
-'              dedicated functions, and it performs no initialization of its own.
+'              Plugin_ZLib module for zlib compression).  This module simply wraps those dedicated functions,
+'              and it performs no library initialization (or termination) of its own.
 '
 'As of v7.0, PhotoDemon performs a *lot* of custom compression work.  There are a lot of different needs in
 ' image processing - for example, when the user saves a large, multi-layer image, it's okay to take plenty of time
@@ -68,10 +68,11 @@ Public Enum PD_COMPRESSION_ENGINES
     PD_CE_NoCompression = 0
     PD_CE_ZLib = 1
     PD_CE_Zstd = 2
+    PD_CE_Lz4 = 3
 End Enum
 
 #If False Then
-    Private Const PD_CE_NoCompression = 0, PD_CE_ZLib = 1, PD_CE_Zstd = 2
+    Private Const PD_CE_NoCompression = 0, PD_CE_ZLib = 1, PD_CE_Zstd = 2, PD_CE_Lz4 = 3
 #End If
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
@@ -132,6 +133,8 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
         CompressPtrToPtr = Plugin_zLib.CompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         CompressPtrToPtr = Plugin_zstd.ZstdCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
+    ElseIf (compressionEngine = PD_CE_Lz4) Then
+        CompressPtrToPtr = Plugin_lz4.Lz4CompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     End If
     
     'If compression failed, perform a direct source-to-dst copy
@@ -187,6 +190,8 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
         DecompressPtrToPtr = Plugin_zLib.DecompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         DecompressPtrToPtr = CBool(Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
+    ElseIf (compressionEngine = PD_CE_Lz4) Then
+        DecompressPtrToPtr = CBool(Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
     End If
     
     'If compression failed, perform a direct source-to-dst copy
@@ -211,6 +216,8 @@ Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compr
         GetWorstCaseSize = srcBufferSizeInBytes + (CDbl(srcBufferSizeInBytes) * 0.01) + 12
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         GetWorstCaseSize = Plugin_zstd.ZstdGetMaxCompressedSize(srcBufferSizeInBytes)
+    ElseIf (compressionEngine = PD_CE_Lz4) Then
+        GetWorstCaseSize = Plugin_lz4.Lz4GetMaxCompressedSize(srcBufferSizeInBytes)
     End If
 
 End Function

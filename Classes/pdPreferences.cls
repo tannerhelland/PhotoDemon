@@ -357,7 +357,7 @@ Public Sub LoadUserSettings()
     g_InterfacePerformance = g_UserPreferences.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
     g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
-    g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 0)
+    g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 1)
     g_HighResolutionInput = g_UserPreferences.GetPref_Boolean("Interface", "HighResolutionInput", False)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
@@ -492,7 +492,7 @@ Private Sub CreateNewPreferencesFile()
         xmlEngine.WriteTag "InterfaceDecorationPerformance", "1"
         xmlEngine.WriteTag "ThumbnailPerformance", "1"
         xmlEngine.WriteTag "ViewportRenderPerformance", "1"
-        xmlEngine.WriteTag "UndoCompression", "0"
+        xmlEngine.WriteTag "UndoCompression", "1"
     xmlEngine.CloseTag "Performance"
     xmlEngine.WriteBlankLine
     

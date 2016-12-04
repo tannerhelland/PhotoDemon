@@ -117,7 +117,7 @@ Public Sub CaptureScreen(ByVal screenCaptureParams As String)
     tmpFilename = g_UserPreferences.GetTempPath & PROGRAMNAME & " Screen Capture.tmpdib"
     
     'Ask the DIB to write out its data to file in PD's internal temporary DIB format
-    tmpDIB.WriteToFile tmpFilename, PD_CE_Zstd
+    tmpDIB.WriteToFile tmpFilename, PD_CE_Lz4
         
     'We are now done with the temporary DIB, so free it up
     tmpDIB.EraseDIB

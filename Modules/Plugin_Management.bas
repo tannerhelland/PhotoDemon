@@ -29,14 +29,15 @@ Public Enum CORE_PLUGINS
     CCP_EZTwain = 1
     CCP_FreeImage = 2
     CCP_LittleCMS = 3
-    CCP_OptiPNG = 4
-    CCP_PNGQuant = 5
-    CCP_zLib = 6
-    CCP_zstd = 7
+    CCP_lz4 = 4
+    CCP_OptiPNG = 5
+    CCP_PNGQuant = 6
+    CCP_zLib = 7
+    CCP_zstd = 8
 End Enum
 
 #If False Then
-    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_OptiPNG = 4, CCP_PNGQuant = 5, CCP_zLib = 6, CCP_zstd = 7
+    Private Const CCP_ExifTool = 0, CCP_EZTwain = 1, CCP_FreeImage = 2, CCP_LittleCMS = 3, CCP_lz4 = 4, CCP_OptiPNG = 5, CCP_PNGQuant = 6, CCP_zLib = 7, CCP_zstd = 8
 #End If
 
 'Expected version numbers of plugins.  These are updated at each new PhotoDemon release (if a new version of
@@ -45,6 +46,7 @@ Private Const EXPECTED_EXIFTOOL_VERSION As String = "10.24"
 Private Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Private Const EXPECTED_FREEIMAGE_VERSION As String = "3.18.0"
 Private Const EXPECTED_LITTLECMS_VERSION As String = "2.8.0"
+Private Const EXPECTED_LZ4_VERSION As String = "10705"
 Private Const EXPECTED_OPTIPNG_VERSION As String = "0.7.6"
 Private Const EXPECTED_PNGQUANT_VERSION As String = "2.5.2"
 Private Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
@@ -52,7 +54,7 @@ Private Const EXPECTED_ZSTD_VERSION As String = "10102"
 
 'This constant is used to iterate all core plugins (as listed under the CORE_PLUGINS enum), so if you add or remove
 ' a plugin, make sure to update this!
-Private Const CORE_PLUGIN_COUNT As Long = 8
+Private Const CORE_PLUGIN_COUNT As Long = 9
 
 'Much of the version-checking code used in this module was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
 ' Many thanks to those authors for their work on demystifying obscure API calls
@@ -172,6 +174,8 @@ Public Function GetPluginFilename(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginFilename = "FreeImage.dll"
         Case CCP_LittleCMS
             GetPluginFilename = "lcms2.dll"
+        Case CCP_lz4
+            GetPluginFilename = "liblz4.dll"
         Case CCP_OptiPNG
             GetPluginFilename = "optipng.exe"
         Case CCP_PNGQuant
@@ -193,6 +197,8 @@ Public Function GetPluginName(ByVal pluginEnumID As CORE_PLUGINS) As String
             GetPluginName = "FreeImage"
         Case CCP_LittleCMS
             GetPluginName = "LittleCMS"
+        Case CCP_lz4
+            GetPluginName = "LZ4"
         Case CCP_OptiPNG
             GetPluginName = "OptiPNG"
         Case CCP_PNGQuant
@@ -229,6 +235,10 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_LittleCMS
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = LittleCMS.GetLCMSVersion()
         
+        'LZ4 provides a dedicated version-checking function
+        Case CCP_lz4
+            If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_lz4.GetLz4Version()
+            
         'OptiPNG can write its version number to stdout
         Case CCP_OptiPNG
             If PluginManager.IsPluginCurrentlyInstalled(pluginEnumID) Then GetPluginVersion = Plugin_OptiPNG.GetOptiPNGVersion()
@@ -272,6 +282,9 @@ Private Function GetNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, 
         
         Case CCP_LittleCMS
             dstStringStack.AddString "lcms2-LICENSE.txt"
+            
+        Case CCP_lz4
+            dstStringStack.AddString "liblz4-LICENSE.txt"
         
         Case CCP_OptiPNG
             dstStringStack.AddString "optipng-LICENSE.txt"
@@ -315,6 +328,8 @@ Public Function IsPluginCurrentlyEnabled(ByVal pluginEnumID As CORE_PLUGINS) As 
             IsPluginCurrentlyEnabled = g_ImageFormats.FreeImageEnabled
         Case CCP_LittleCMS
             IsPluginCurrentlyEnabled = g_LCMSEnabled
+        Case CCP_lz4
+            IsPluginCurrentlyEnabled = g_Lz4Enabled
         Case CCP_OptiPNG
             IsPluginCurrentlyEnabled = g_OptiPNGEnabled
         Case CCP_PNGQuant
@@ -339,6 +354,8 @@ Public Sub SetPluginEnablement(ByVal pluginEnumID As CORE_PLUGINS, ByVal newEnab
             g_ImageFormats.FreeImageEnabled = newEnabledState
         Case CCP_LittleCMS
             g_LCMSEnabled = newEnabledState
+        Case CCP_lz4
+            g_Lz4Enabled = newEnabledState
         Case CCP_OptiPNG
             g_OptiPNGEnabled = newEnabledState
         Case CCP_PNGQuant
@@ -370,6 +387,8 @@ Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As Str
             ExpectedPluginVersion = EXPECTED_FREEIMAGE_VERSION
         Case CCP_LittleCMS
             ExpectedPluginVersion = EXPECTED_LITTLECMS_VERSION
+        Case CCP_lz4
+            ExpectedPluginVersion = EXPECTED_LZ4_VERSION
         Case CCP_OptiPNG
             ExpectedPluginVersion = EXPECTED_OPTIPNG_VERSION
         Case CCP_PNGQuant
@@ -391,13 +410,15 @@ Public Function GetPluginHomepage(ByVal pluginEnumID As CORE_PLUGINS) As String
         Case CCP_FreeImage
             GetPluginHomepage = "http://freeimage.sourceforge.net/"
         Case CCP_LittleCMS
-            GetPluginHomepage = "http://www.littlecms.com/"
+            GetPluginHomepage = "http://www.littlecms.com"
+        Case CCP_lz4
+            GetPluginHomepage = "http://www.lz4.org"
         Case CCP_OptiPNG
             GetPluginHomepage = "http://optipng.sourceforge.net/"
         Case CCP_PNGQuant
-            GetPluginHomepage = "https://pngquant.org/"
+            GetPluginHomepage = "https://pngquant.org"
         Case CCP_zLib
-            GetPluginHomepage = "http://zlib.net/"
+            GetPluginHomepage = "http://zlib.net"
         Case CCP_zstd
             GetPluginHomepage = "http://www.zstd.net"
     End Select
@@ -414,6 +435,8 @@ Public Function GetPluginLicenseName(ByVal pluginEnumID As CORE_PLUGINS) As Stri
             GetPluginLicenseName = g_Language.TranslateMessage("FreeImage public license")
         Case CCP_LittleCMS
             GetPluginLicenseName = g_Language.TranslateMessage("MIT license")
+        Case CCP_lz4
+            GetPluginLicenseName = g_Language.TranslateMessage("BSD license")
         Case CCP_OptiPNG
             GetPluginLicenseName = g_Language.TranslateMessage("zLib license")
         Case CCP_PNGQuant
@@ -436,6 +459,8 @@ Public Function GetPluginLicenseURL(ByVal pluginEnumID As CORE_PLUGINS) As Strin
             GetPluginLicenseURL = "http://freeimage.sourceforge.net/freeimage-license.txt"
         Case CCP_LittleCMS
             GetPluginLicenseURL = "http://www.opensource.org/licenses/mit-license.php"
+        Case CCP_lz4
+            GetPluginLicenseURL = "https://github.com/lz4/lz4/blob/dev/lib/LICENSE"
         Case CCP_OptiPNG
             GetPluginLicenseURL = "http://optipng.sourceforge.net/license.txt"
         Case CCP_PNGQuant
@@ -490,6 +515,10 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_LittleCMS
             initializationSuccessful = LittleCMS.InitializeLCMS()
         
+        'LZ4 maintains a program-wide handle for the life of the program, which we attempt to generate now.
+        Case CCP_lz4
+            initializationSuccessful = Plugin_lz4.InitializeLz4()
+            
         'OptiPNG and PNGQuant are loaded on-demand, as they may not be used in every session
         Case CCP_OptiPNG
             initializationSuccessful = True
@@ -497,12 +526,12 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         Case CCP_PNGQuant
             initializationSuccessful = True
         
+        'zLib maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_zLib
-            'zLib maintains a program-wide handle for the life of the program, which we attempt to generate now.
             initializationSuccessful = Plugin_zLib.InitializeZLib()
-            
+        
+        'zstd maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_zstd
-            'zstd maintains a program-wide handle for the life of the program, which we attempt to generate now.
             initializationSuccessful = Plugin_zstd.InitializeZStd()
             
     End Select
@@ -529,7 +558,10 @@ Private Sub SetGlobalPluginFlags(ByVal pluginEnumID As CORE_PLUGINS, ByVal plugi
         
         Case CCP_LittleCMS
             g_LCMSEnabled = pluginState
-            
+        
+        Case CCP_lz4
+            g_Lz4Enabled = pluginState
+        
         Case CCP_OptiPNG
             g_OptiPNGEnabled = pluginState
         
@@ -651,6 +683,57 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     End If
     
 End Function
+
+'Convenience wrapper for mass plugin termination.  This function *will* release each plugin's handle, making them unavailable
+' for further use.  As such, do not call this until PD is shutting down (and even then, be careful about timing).
+'
+'Note also that some plugins don't need to be released this way; for example, pngquant and OptiPNG are initialized
+' conditionally, if the user needs them, and they are immediately freed after use.
+Public Sub TerminateAllPlugins()
+    
+    'Plugins are released in the order of "how much do we use them", with the most-used plugins being saved for last.
+    ' (There's not really a reason for this, except as a failsafe against asynchronous actions happening in the background.)
+    Plugin_EZTwain.ReleaseEZTwain
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "EZTwain released"
+    #End If
+    
+    If (g_FreeImageHandle <> 0) Then
+        FreeLibrary g_FreeImageHandle
+        g_FreeImageHandle = 0
+        g_ImageFormats.FreeImageEnabled = False
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "FreeImage released"
+        #End If
+    End If
+    
+    LittleCMS.ReleaseLCMS
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "LittleCMS released"
+    #End If
+    
+    If g_ZLibEnabled Then
+        Plugin_zLib.ReleaseZLib
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "zLib released"
+        #End If
+    End If
+    
+    If g_ZstdEnabled Then
+        Plugin_zstd.ReleaseZstd
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "zstd released"
+        #End If
+    End If
+    
+    If g_Lz4Enabled Then
+        Plugin_lz4.ReleaseLz4
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "lz4 released"
+        #End If
+    End If
+    
+End Sub
 
 'Given an arbitrary filename, return a string with that file's version (as retrieved from file metadata).
 Private Function RetrieveGenericVersionString(ByVal FullFileName As String) As String

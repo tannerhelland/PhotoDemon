@@ -393,14 +393,11 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         
         Case PDIF_JXR
             ExportToSpecificFormat = ImageExporter.ExportJXR(srcImage, dstPath, saveParameters, metadataParameters)
-            
-        Case PDIF_PDI
-            If g_ZLibEnabled Then
-                ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, , , , False, , True)
-            Else
-                ExportToSpecificFormat = False
-            End If
         
+        'Note: if one or more compression libraries are missing, PDI export is not guaranteed to work.
+        Case PDIF_PDI
+            ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, , PD_CE_Zstd, PD_CE_Zstd, False, , 5)
+            
         Case PDIF_PNG
             ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
         
@@ -463,7 +460,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     '       nightly builds still write v1 PDI files for the time being.
     Dim pdiWriter As pdPackager2
     Set pdiWriter = New pdPackager2
-    pdiWriter.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
+    pdiWriter.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
@@ -579,7 +576,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
     Dim pdiWriter As pdPackager2
     Set pdiWriter = New pdPackager2
-    pdiWriter.Init_CompressionEngines , , True, True, g_ZLibEnabled, g_ZstdEnabled
+    pdiWriter.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
@@ -773,29 +770,50 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         VB_Hacks.GetHighResTime timeAtUndoStart
     #End If
     
+    'As of v7.0, PD has multiple compression engines available.  These engines are not exposed to the user.  We use LZ4 by default,
+    ' as it is far and away the fastest at both compression and decompression (while compressing at marginally worse ratios).
+    ' Note that if the user selects increasingly better compression results, we will silently switch to zstd instead.
+    Dim undoCmpEngine As PD_COMPRESSION_ENGINES, undoCmpLevel As Long
+    If (g_UndoCompressionLevel = 0) Then
+        undoCmpEngine = PD_CE_NoCompression
+        undoCmpLevel = 0
+    
+    'At level 1 (the current PD default), use LZ4 compression at default strength.  (Remember that LZ4's compression level do not
+    ' improve as the level goes up - the algorithm's *performance* improves as the level goes up.)
+    ElseIf (g_UndoCompressionLevel = 1) Then
+        undoCmpEngine = PD_CE_Lz4
+        undoCmpLevel = -1
+    
+    'For all higher levels, use zstd, and reset the compression level to start at 1 (so a g_UndoCompressionLevel of 2 uses zstd at
+    ' its default compression strength of level 1).
+    Else
+        undoCmpEngine = PD_CE_Zstd
+        undoCmpLevel = g_UndoCompressionLevel - 1
+    End If
+    
     'What kind of Undo data we save is determined by the current processType.
     Select Case processType
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True
             srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_IMAGEHEADER
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), PD_CE_NoCompression, True, , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, undoCmpEngine, PD_CE_NoCompression, True, , undoCmpLevel, , True
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel), True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PD_CE_Lz4, undoCmpEngine, False, undoCmpLevel, True
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LAYERHEADER
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), PD_CE_NoCompression, True, , True
+            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, undoCmpEngine, PD_CE_NoCompression, True, undoCmpLevel, True
             
         'Selection data only
         Case UNDO_SELECTION
@@ -804,7 +822,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
             Debug.Print "Unknown Undo data write requested - is it possible to avoid this request entirely??"
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_NoCompression, IIf(g_UndoCompressionLevel = 0, PD_CE_NoCompression, PD_CE_Zstd), False, , , , True
+            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, , undoCmpLevel, , True
         
     End Select
     
