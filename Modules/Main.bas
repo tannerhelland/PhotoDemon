@@ -702,7 +702,7 @@ Public Sub FinalShutdown()
     #End If
     
     If g_ZLibEnabled Then
-        Plugin_zLib_Interface.ReleaseZLib
+        Plugin_zLib.ReleaseZLib
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "zLib released"
         #End If

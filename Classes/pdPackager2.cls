@@ -183,17 +183,6 @@ End Enum
     Private Const PDP_F2_ZlibRequired = 0, PDP_F2_FileNode = 1, PDP_F2_ZstdRequired = 2
 #End If
 
-'When initializing the compression engine, you can specify various compression engine options
-Public Enum PDP_COMPRESSION_ENGINES
-    PDP_CE_NoCompression = 0
-    PDP_CE_ZLib = 1
-    PDP_CE_Zstd = 2
-End Enum
-
-#If False Then
-    Private Const PDP_CE_NoCompression = 0, PDP_CE_ZLib = 1, PDP_CE_Zstd = 2
-#End If
-
 'Immediately following the PDP_HEADER is the data chunk, and following the data chunk is the data directory.  The directory
 ' is comprised of FileHeader.NodeCount individual PDP_NODE structs.  These structs are small and flexible, and *they have a
 ' fixed size*, meaning they can be read into a fixed-width array in a single pass.
@@ -223,13 +212,7 @@ Private Type PDP_NODE
     
 End Type
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-
-'zLib compression and checksum validation
-Private Declare Function compress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
-Private Declare Function compress2 Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
-Private Declare Function uncompress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
-Private Declare Function uncompress_safe Lib "zlibwapi.dll" Alias "uncompress" (ByVal dstBufferPointer As Long, ByVal dstLenPointer As Long, ByVal srcBufferPointer As Long, ByVal srcLenNotAPointer As Long) As Long
+Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 
 'API calls for explicitly calling dlls.  This allows us to build DLL paths at runtime, and it also allows
 ' us to call any DLL we like without first passing them through regsvr32.
@@ -386,7 +369,7 @@ End Function
 '    0 (uncompressed) to 9 (best possible compression).  zstd allows a value from 1 (fast, leaner compression) to 22 (slow,
 '    very intense compression).  The default value of -1 means "use default compression", and PD will choose an appropriate
 '    value for the given library.
-Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_NumOfNodes - 1) Then
@@ -396,15 +379,15 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     End If
     
     'If compression is requested, make sure a matching compression engine is available
-    If ((compressData = PDP_CE_ZLib) And (Not m_ZLibAvailable)) Then compressData = PDP_CE_NoCompression
-    If ((compressData = PDP_CE_Zstd) And (Not m_ZstdAvailable)) Then compressData = PDP_CE_NoCompression
+    If ((compressData = PD_CE_ZLib) And (Not m_ZLibAvailable)) Then compressData = PD_CE_NoCompression
+    If ((compressData = PD_CE_Zstd) And (Not m_ZstdAvailable)) Then compressData = PD_CE_NoCompression
     
     'If compression is requested, update the "zLib required" flag for both the file as a whole, and this specific node.
-    If (compressData <> PDP_CE_NoCompression) Then
-        If (compressData = PDP_CE_Zstd) Then
+    If (compressData <> PD_CE_NoCompression) Then
+        If (compressData = PD_CE_Zstd) Then
             SetBitFlag PDP_F2_ZstdRequired, True, m_FileHeader.DataFlags(0)
             SetBitFlag PDP_F2_ZstdRequired, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-        ElseIf (compressData = PDP_CE_ZLib) Then
+        ElseIf (compressData = PD_CE_ZLib) Then
             SetBitFlag PDP_F2_ZlibRequired, True, m_FileHeader.DataFlags(0)
             SetBitFlag PDP_F2_ZlibRequired, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
         End If
@@ -426,7 +409,7 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     
     'If we are not using compression, we can write the node data as-is.  Note that header or data doesn't matter here,
     ' because the data is simply added to the pdPackages data chunk.  Order of writing is irrelevant.
-    If (compressData = PDP_CE_NoCompression) Then
+    If (compressData = PD_CE_NoCompression) Then
     
         m_DataBuffer.WriteBytesFromPointer dataPointer, dataLength
         
@@ -473,12 +456,12 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
 End Function
 
 'Thin wrapper to addNodeDataFromPointer, above; if possible, use that function directly to avoid any unnecessary copying of arrays
-Public Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Public Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
     AddNodeDataFromByteArray = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(DataBytes(0)), UBound(DataBytes) + 1, compressData, compressionLevel)
 End Function
 
 'Thin wrapper for addNodeDataFromPointer, above, but allows the user to supply a string.
-Public Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Public Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
     If (Len(srcDataString) <> 0) Then
         AddNodeDataFromString = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel)
     End If
@@ -725,7 +708,7 @@ End Function
 ' - secondPassDirectoryCompression: compress the directory chunk before writing it out to file.
 ' - thisIsATempFile: special WAPI flags related to temp files will be set.  Note that this flag does not affect file correctness in
 '                    any way; it simply specifies hints related to file caching.
-Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PDP_COMPRESSION_ENGINES = PDP_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False) As Boolean
+Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False) As Boolean
     
     'Start by updating the file header.  Most of this will have been done when the class was initialized, but some values
     ' can't be set until all nodes have been added.
@@ -757,9 +740,9 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     If CopyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, , True) Then
         m_FileHeader.DirectoryChunkSizePacked = compressedSize
         
-        If ((secondPassDirectoryCompression = PDP_CE_Zstd) And (originalSize <> compressedSize)) Then
+        If ((secondPassDirectoryCompression = PD_CE_Zstd) And (originalSize <> compressedSize)) Then
             SetBitFlag PDP_F2_ZstdRequired, True, m_FileHeader.DirectoryFlags(0)
-        ElseIf ((secondPassDirectoryCompression = PDP_CE_ZLib) And (originalSize <> compressedSize)) Then
+        ElseIf ((secondPassDirectoryCompression = PD_CE_ZLib) And (originalSize <> compressedSize)) Then
             SetBitFlag PDP_F2_ZlibRequired, True, m_FileHeader.DirectoryFlags(0)
         End If
     Else
@@ -796,18 +779,18 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         
         If m_File.ConvertFileHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize) Then
 
-            'Write out the file data using good ol' CopyMemory!
+            'Write out the file data using good ol' CopyMemory_Strict!
             Dim mmapOffset As Long
             mmapOffset = LenB(m_FileHeader)
             
             'File header...
-            CopyMemory mmapPtr, VarPtr(m_FileHeader), mmapOffset
+            CopyMemory_Strict mmapPtr, VarPtr(m_FileHeader), mmapOffset
             
             'Data buffer...
-            CopyMemory mmapPtr + mmapOffset, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSizePacked
+            CopyMemory_Strict mmapPtr + mmapOffset, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSizePacked
             
             'Directory at the end...
-            CopyMemory mmapPtr + mmapOffset + m_FileHeader.DataChunkSizePacked, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+            CopyMemory_Strict mmapPtr + mmapOffset + m_FileHeader.DataChunkSizePacked, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
             
             'Release the mapped view and allow the system to write the file at its leisure
             m_File.ReleaseMMHandle mmapHandle, mmapPtr
@@ -844,7 +827,7 @@ End Function
 
 'Copy one array into another, with variable compression.  This is used in many places throughout this class; basically any action that
 ' potentially supports compression should use this function to transfer data between arrays, even when compression is not in use.
-' (This function abstracts away all the messy CopyMemory bits, keeping the rest of the class clean.)
+' (This function abstracts away all the messy CopyMemory_Strict bits, keeping the rest of the class clean.)
 '
 'If compression *is* in use, this function will use the requested engine to compress the array accordingly, and it will fill the passed
 ' dstSize Long with the size (1-based) of the compressed array.  Explicit size values are required for both source and destination arrays,
@@ -856,76 +839,12 @@ End Function
 ' uncompressed copy of the data.  The returned BOOLEAN reports whether or not compression was actually used, NOT whether or not the
 ' function was successful.  (It is assumed the function is always successful, because if compression fails, the default uncompressed
 ' array will still be returned, and the caller can proceed normally with that data.)
-Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PDP_COMPRESSION_ENGINES = PDP_CE_NoCompression, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
-    
-    Dim compressionSuccess As Boolean: compressionSuccess = False
-    
-    'If compression is active, extra steps are (obviously) required.
-    If (useCompression <> PDP_CE_NoCompression) Then
-        
-        If (useCompression = PDP_CE_Zstd) Then
-        
-            'zstd uses different compression level values than zLib.  Valid values start at 1.
-            'If (compressionLevel <= 0) Then compressionLevel = 1
-        
-            dstSize = Plugin_zstd.ZstdGetMaxCompressedSize(srcSize)
-            If (dstSize <> 0) Then
-                
-                ReDim dstArray(0 To dstSize - 1) As Byte
-                
-                Dim finalSize As Long
-                finalSize = Plugin_zstd.ZstdCompressArray(dstArray, srcPointer, srcSize, True, dstSize, compressionLevel)
-                
-                'Make sure compression was successful
-                If (finalSize <> 0) Then
-                    dstSize = finalSize
-                    compressionSuccess = True
-                End If
-            
-            End If
-        
-        Else
-        
-            'Start by preparing the destination array to receive the zLib-compressed data.  The zLib creators recommend a buffer 1% larger than
-            ' the input buffer, plus 12 extra bytes for a header.  This is the "worst possible scenario" for zLib compression (e.g. if the
-            ' input buffer is 100% uncompressable.)
-            dstSize = srcSize + (CDbl(srcSize) * 0.01) + 12
-            ReDim dstArray(0 To dstSize - 1) As Byte
-            
-            'Request compression from zLib.
-            Dim zLibResult As Long
-            If (compressionLevel >= 0) Then
-                zLibResult = compress2(dstArray(0), dstSize, ByVal srcPointer, srcSize, compressionLevel)
-            Else
-                zLibResult = compress(dstArray(0), dstSize, ByVal srcPointer, srcSize)
-            End If
-            
-            'Make sure zLib compressed the data successfully.
-            If (zLibResult = 0) Then compressionSuccess = True
-            
-        End If
-        
-    End If
-    
-    'If compression was successful, trim the destination array as necessary
-    If compressionSuccess Then
-        If trimDestinationArray Then ReDim Preserve dstArray(0 To dstSize - 1) As Byte
-    End If
-    
-    'If compression failed for any reason (including the caller explicitly *not* requesting compression), write an uncompressed
-    ' copy of the source data into the destination
-    If (Not compressionSuccess) Then
-        dstSize = srcSize
-        ReDim dstArray(0 To dstSize - 1) As Byte
-        CopyMemory VarPtr(dstArray(0)), srcPointer, srcSize
-    End If
-    
-    CopyPtrToArray = compressionSuccess
-    
+Private Function CopyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
+    CopyPtrToArray = Compression.CompressPtrToDstArray(dstArray, dstSize, srcPointer, srcSize, useCompression, compressionLevel, , trimDestinationArray)
 End Function
 
 'This wrapper for CopyPtrToArray, above, that allows the user to specify an array reference instead of a pointer
-Private Function CopyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PDP_COMPRESSION_ENGINES = PDP_CE_Zstd, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
+Private Function CopyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRef dstArray() As Byte, ByRef dstSize As Long, Optional ByVal useCompression As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1, Optional ByVal trimDestinationArray As Boolean = False) As Boolean
     CopyArray = CopyPtrToArray(VarPtr(srcArray(0)), srcSize, dstArray, dstSize, useCompression, compressionLevel, trimDestinationArray)
 End Function
 
@@ -992,86 +911,48 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 GoTo StopPackageFileRead
             End If
             
-            'Next, it's time to retrieve the directory.  The size of the directory varies, based on whether it received second-pass compression.
-            If (m_FileHeader.DirectoryChunkSizePacked = m_FileHeader.DirectoryChunkSizeOriginal) Then
+            'Next, it's time to retrieve the directory.  The size of the directory varies, based on whether it received
+            ' second-pass compression, but the uncompressed result will *always* end up inside this rawBuffer() array/
+            ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
             
-                'No compression applied, so we can retrieve the node directory as-is.
-                ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
+            'If no compression was applied, read the bytes directly into our buffer
+            If (m_FileHeader.DirectoryChunkSizePacked = m_FileHeader.DirectoryChunkSizeOriginal) Then
                 m_File.MoveFilePointer hFile, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
                 m_File.ReadDataFromFile hFile, VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
-                
+            
+            'If the packed and original sizes do *not* match, the directory is compressed.  Attempt to decompress it now.
             Else
                 
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
                 #End If
                 
-                'Second-pass compression was applied.  Figure out which decompression library is required.
+                'Regardless of compression method, pull the raw bytes from file
+                ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizePacked - 1) As Byte
+                m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
+                
+                Dim decompressionResult As Boolean: decompressionResult = False
+                
+                'Figure out which decompression library was used for the original compression.
                 ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
                 If GetBitFlag(PDP_F2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
-                
-                    If m_ZstdAvailable Then
-                    
-                        'Resize the destination buffer to the original size of the data
-                        ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
-                        
-                        'Resize the source buffer to the compressed directory size, and retrieve the compressed directory.
-                        ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizePacked - 1) As Byte
-                        m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
-                        
-                        'Use zstd to decompress the data
-                        zstdResult = Plugin_zstd.ZstdDecompressArray(rawBuffer, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, m_FileHeader.DirectoryChunkSizeOriginal, True)
-                        
-                        'Make sure the decompression size is what we expected
-                        If (zstdResult <> m_FileHeader.DirectoryChunkSizeOriginal) Then
-                            InternalErrorMsg "WARNING!  Decompressed directory chunk size shows possible size calculation error (" & CStr(zstdResult) & " vs " & CStr(m_FileHeader.DirectoryChunkSizeOriginal) & ")"
-                        End If
-                        
-                    'If the directory is compressed but zLib is unavailable, we're effectively screwed
-                    Else
-                        InternalErrorMsg "Directory chunk is compressed, but zstd is missing.  Decompression impossible; abandoning load."
-                        GoTo StopPackageFileRead
-                    End If
-                    
+                    If m_ZstdAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, PD_CE_Zstd)
                 ElseIf GetBitFlag(PDP_F2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
-                
-                    If m_ZLibAvailable Then
-                    
-                        'Resize the destination buffer to the original size of the data
-                        ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
-                        
-                        'Resize the source buffer to the compressed directory size, and retrieve the compressed directory.
-                        ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizePacked - 1) As Byte
-                        m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, m_FileHeader.DirectoryChunkPosition, FILE_BEGIN
-                        
-                        'Use zLib to decompress the data
-                        tmpLength = m_FileHeader.DirectoryChunkSizeOriginal
-                        zLibResult = uncompress_safe(VarPtr(rawBuffer(0)), VarPtr(tmpLength), VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked)
-                        
-                        'Make sure the decompression size is what we expected
-                        If (tmpLength <> m_FileHeader.DirectoryChunkSizeOriginal) Then
-                            InternalErrorMsg "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSizeOriginal) & ")"
-                        End If
-                        
-                        If (zLibResult <> 0) Then
-                            InternalErrorMsg "Directory is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
-                            GoTo StopPackageFileRead
-                        End If
-                        
-                    'If the directory is compressed but zLib is unavailable, we're effectively screwed
-                    Else
-                        InternalErrorMsg "Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load."
-                        GoTo StopPackageFileRead
-                    End If
-                    
+                    If m_ZLibAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, PD_CE_ZLib)
                 End If
-            
+                
+                'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
+                If (Not decompressionResult) Then
+                    InternalErrorMsg "WARNING!  Could not decompress pdPackage directory.  Possible explanations include missing decompression library or file corruption."
+                    GoTo StopPackageFileRead
+                End If
+                    
             End If
             
             'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
             m_NumOfNodes = m_FileHeader.NodeCount
             ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
-            CopyMemory VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
+            CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
             
             'Now, retrieve the data chunk
             Set m_DataBuffer = New clsBasicBuffer
@@ -1189,7 +1070,7 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     'Cast the source filename to an array.  This allows us to make direct byte array comparisons without coercing the byte arrays into strings.
     Dim filenameArray() As Byte
     ReDim filenameArray(0 To Len(srcFilename) * 2 - 1) As Byte
-    CopyMemory VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
+    CopyMemory_Strict VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
     
     'Start searching the node array for matches
     Dim retBytes() As Byte, retString As String
@@ -1410,7 +1291,7 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         
                         'Cast the returned bytes directly into a string; this preserves Unicode characters.
                         strFilename = Space$((UBound(retBytes) + 1) \ 2)
-                        CopyMemory StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
+                        CopyMemory_Strict StrPtr(strFilename), VarPtr(retBytes(0)), UBound(retBytes) + 1
                         
                         'Now we need to construct a full destination path + filename.  This can vary by several criteria.
                         Dim fullDestinationPath As String
@@ -1626,55 +1507,24 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     'If the original size and packed size are different, assume the data is compressed.
     If (dataPackedSize <> dataOriginalSize) Then
         
-        'Figure out which algorithm is required
+        'Resize the destination buffer to the original size of the data
+        ReDim dstArray(0 To dataOriginalSize - 1) As Byte
+        
+        Dim decompressionResult As Boolean: decompressionResult = False
+        
+        'Figure out which decompression library was used for the original compression.
+        ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
         If GetBitFlag(PDP_F2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-        
-            'Make sure zstd is available.  If it isn't, the user is screwed.
-            If m_ZstdAvailable Then
-            
-                'Resize the destination buffer to the original size of the data
-                ReDim dstArray(0 To dataOriginalSize - 1) As Byte
-                
-                'Use zstd to decompress the data
-                Dim zstdResult As Long
-                zstdResult = Plugin_zstd.ZstdDecompressArray(dstArray, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, dataOriginalSize, True)
-                
-                If (zstdResult <> dataOriginalSize) Then
-                    InternalErrorMsg "File node is compressed, but zstd failed to decompress it (size mismatch post-compression)."
-                    GetNodeDataByIndex = False
-                    Exit Function
-                End If
-                
-            Else
-                InternalErrorMsg "File node is compressed, but zstd is missing.  Decompression impossible; abandoning load."
-                GetNodeDataByIndex = False
-                Exit Function
-            End If
-        
+            If m_ZstdAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_Zstd)
         ElseIf GetBitFlag(PDP_F2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
+            If m_ZLibAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_ZLib)
+        End If
         
-            'Make sure zLib is available.  If it isn't, the user is screwed.
-            If m_ZLibAvailable Then
-            
-                'Resize the destination buffer to the original size of the data
-                ReDim dstArray(0 To dataOriginalSize - 1) As Byte
-                
-                'Use zLib to decompress the data
-                Dim zLibResult As Long
-                zLibResult = uncompress_safe(VarPtr(dstArray(0)), VarPtr(dataOriginalSize), m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
-                
-                If (zLibResult <> 0) Then
-                    InternalErrorMsg "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
-                    GetNodeDataByIndex = False
-                    Exit Function
-                End If
-                
-            Else
-                InternalErrorMsg "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
-                GetNodeDataByIndex = False
-                Exit Function
-            End If
-            
+        'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
+        If (Not decompressionResult) Then
+            InternalErrorMsg "WARNING!  Could not decompress pdPackage node #" & nodeIndex & ".  Possible explanations include missing decompression library or file corruption."
+            GetNodeDataByIndex = False
+            Exit Function
         End If
         
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
@@ -1729,54 +1579,26 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
     'If the original size and packed size are different, assume the data is compressed.
     If (dataPackedSize <> dataOriginalSize) Then
         
-        'Figure out which algorithm is required
+        Dim decompressionResult As Boolean: decompressionResult = False
+        
+        'Figure out which decompression library was used for the original compression.
+        ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
         If GetBitFlag(PDP_F2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-        
-            'Make sure zstd is available.  If it isn't, the user is screwed.
-            If m_ZstdAvailable Then
-                
-                'Use zstd to decompress the data
-                Dim zstdResult As Long
-                zstdResult = Plugin_zstd.ZstdDecompress_UnsafePtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
-                
-                If (zstdResult <> dataOriginalSize) Then
-                    InternalErrorMsg "File node is compressed, but zstd failed to decompress it (size mismatch post-compression)."
-                    GetNodeDataByIndex_UnsafeDstPointer = False
-                    Exit Function
-                End If
-                
-            Else
-                InternalErrorMsg "File node is compressed, but zstd is missing.  Decompression impossible; abandoning load."
-                GetNodeDataByIndex_UnsafeDstPointer = False
-                Exit Function
-            End If
-        
+            If m_ZstdAvailable Then decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_Zstd)
         ElseIf GetBitFlag(PDP_F2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            
-            'Make sure zLib is available.  If it isn't, the user is screwed.
-            If m_ZLibAvailable Then
-                
-                'Use zLib to decompress the data directly into the pointer we've been given
-                Dim zLibResult As Long
-                zLibResult = uncompress_safe(dstPointer, VarPtr(dataOriginalSize), m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
-                
-                If (zLibResult <> 0) Then
-                    InternalErrorMsg "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
-                    GetNodeDataByIndex_UnsafeDstPointer = False
-                    Exit Function
-                End If
-                
-            Else
-                InternalErrorMsg "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
-                GetNodeDataByIndex_UnsafeDstPointer = False
-                Exit Function
-            End If
-            
+            If m_ZLibAvailable Then decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_ZLib)
+        End If
+        
+        'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
+        If (Not decompressionResult) Then
+            InternalErrorMsg "WARNING!  Could not decompress pdPackage node #" & nodeIndex & ".  Possible explanations include missing decompression library or file corruption."
+            GetNodeDataByIndex_UnsafeDstPointer = False
+            Exit Function
         End If
         
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
-        CopyMemory dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
+        CopyMemory_Strict dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
     End If
     
     'If we made it all the way here, the node has been successfully loaded!
