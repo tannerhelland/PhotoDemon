@@ -1,10 +1,10 @@
 Attribute VB_Name = "Plugin_zstd"
 '***************************************************************************
-'File Compression Interface (via zstd)
+'Zstd Compression Library Interface
 'Copyright 2016-2016 by Tanner Helland
 'Created: 01/December/16
-'Last updated: 01/December/16
-'Last update: initial build
+'Last updated: 04/December/16
+'Last update: wrap up initial build
 '
 'Per its documentation (available at https://github.com/facebook/zstd), zstd is...
 '
@@ -33,8 +33,10 @@ Private Declare Function ZSTD_compressBound Lib "libzstd" Alias "_ZSTD_compressB
 Private Declare Function ZSTD_isError Lib "libzstd" Alias "_ZSTD_isError@4" (ByVal returnCode As Long) As Long 'Tells you if a function result is an error code or a valid size return
 Private Declare Function ZSTD_getErrorName Lib "libzstd" Alias "_ZSTD_getErrorName@4" (ByVal returnCode As Long) As Long 'Returns a pointer to a const char string, with a human-readable string describing the given error code
 
-'If you want, you can ask zstd to tell you how much size is require to decompress a given compression array.
-' PD doesn't need this (as we track compression sizes manually), but it's here if you need it.
+'If you want, you can ask zstd to tell you how much size is require to decompress a given compression array.  PD doesn't need this
+' (as we track compression sizes manually), but it's here if you need it.  Note that automatic calculations like this are generally
+' discouraged, as a malicious user can send malformed streams with faulty compression sizes embedded, leading to buffer overflow
+' exploits.  Be good, and always manually supply known buffer sizes to external libraries!
 'unsigned long long ZSTD_getDecompressedSize(const void* src, size_t srcSize);
 
 'A single zstd handle is maintained for the life of a PD instance; see InitializeZstd and ReleaseZstd, below.

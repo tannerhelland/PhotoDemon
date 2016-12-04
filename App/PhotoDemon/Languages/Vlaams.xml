@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.218</langversion>
+<langversion>6.7.219</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1575,6 +1575,11 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>zLib license</original>
 <translation>zlib licentie</translation>
 </phrase>
@@ -1584,12 +1589,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>BSD license</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -2182,7 +2182,7 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 <translation>Opslaan miniatuur mislukt (onverwachte GDI+ fout)</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2670,22 +2670,7 @@ Geef een numerieke waarde.</translation>
 <translation>Ingesloten afbeelding laden mislukt; ongeldige header gevonden.</translation>
 </phrase>
 
-<phrase>
-<original>DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue.</original>
-<translation>DIB gegevens moeten worden uitgepakt, maar Zlib is uitgeschakeld of ontbreekt. Installeer de zlib insteekmodule om verder te gaan.</translation>
-</phrase>
-
-<phrase>
-<original>Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned.</original>
-<translation>Decompressie was niet succesvol (niet gespecificeerde ZLIB insteekmodule fout). DIB verwerking verlaten.</translation>
-</phrase>
-
-<phrase>
-<original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
-<translation>Compressie is mislukt (niet gespecificeerd Zlib insteekmodule fout). Ongecomprimeerde data in plaats waggeschreven.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -14974,12 +14959,24 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Compression.bas -->
+
+<!-- Compression.bas contains 0 phrases. -->
+
+<!-- END text for Compression.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2539</phrasecount>
+<phrasecount>2536</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1939 are duplicates, so only 2539 unique phrases have been written to file. -->
-<!-- These 2539 phrases contain approximately 12766 total words. -->
+<!-- As of this build, PhotoDemon contains 4476 phrases. -->
+<!-- 1940 are duplicates, so only 2536 unique phrases have been written to file. -->
+<!-- These 2536 phrases contain approximately 12724 total words. -->
 
 </pdData>

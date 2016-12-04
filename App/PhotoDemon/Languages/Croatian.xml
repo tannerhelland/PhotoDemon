@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2035</langversion>
+<langversion>6.8.2036</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1583,6 +1583,11 @@ In verzije 6.0 podržava, PhotoDemon makro datoteke su redizajnirani kako bi pod
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>zLib license</original>
 <translation>žlibama licence</translation>
 </phrase>
@@ -1592,12 +1597,7 @@ In verzije 6.0 podržava, PhotoDemon makro datoteke su redizajnirani kako bi pod
 <translation>GNU GPLv3</translation>
 </phrase>
 
-<phrase>
-<original>BSD license</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -2191,7 +2191,7 @@ In međuvremenu, pokušajte spremanja slike u izmijenjenom formatu. Također mo�
 <translation>Thumbnail Spremanje nije uspjelo (nespecificiran GDI pogrešku).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2679,22 +2679,7 @@ Please enter a numeric value.</original>
 <translation>Nije uspjelo učitavanje ugrađen slike; Nevažeće zaglavlje pronađen.</translation>
 </phrase>
 
-<phrase>
-<original>DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue.</original>
-<translation>Dib podaci moraju biti otpakirati, ali žlibama je onemogućen ili nedostaje. Instalirajte dodatak za žlibama za nastavak.</translation>
-</phrase>
-
-<phrase>
-<original>Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned.</original>
-<translation>Dekompresija nije bilo uspješno (nespecificirane žlibama plugin error). U obradi napušten.</translation>
-</phrase>
-
-<phrase>
-<original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
-<translation>Kompresija nije uspjelo (nespecificiran žlibama dodatka pogrešku). napisano nekomprimirani podatke umjesto.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -14985,12 +14970,24 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Compression.bas -->
+
+<!-- Compression.bas contains 0 phrases. -->
+
+<!-- END text for Compression.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2539</phrasecount>
+<phrasecount>2536</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1939 are duplicates, so only 2539 unique phrases have been written to file. -->
-<!-- These 2539 phrases contain approximately 12766 total words. -->
+<!-- As of this build, PhotoDemon contains 4476 phrases. -->
+<!-- 1940 are duplicates, so only 2536 unique phrases have been written to file. -->
+<!-- These 2536 phrases contain approximately 12724 total words. -->
 
 </pdData>

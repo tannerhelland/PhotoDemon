@@ -15,8 +15,11 @@ Attribute VB_Exposed = False
 'Undo/Redo Handler
 'Copyright 2001-2016 by Tanner Helland
 'Created: 2/April/01
-'Last updated: 15/October/14
-'Last update: add new forceLastUndoDataToIncludeEverything() to work around some Crop tool issues.
+'Last updated: 04/December/16
+'Last update: use lz4 for all Undo/Redo compression needs; this is significantly faster than zlib, with only a minor
+'             hit to compression ratio for large BMP data.  (Note that by default, PD used to write uncompressed data
+'             only, and most users would never visit the Options dialog to change this.  Thanks to LZ4, however, we can
+'             now default to compressed Undo/Redo data without worrying about performance issues.)
 '
 'PhotoDemon has had Undo/Redo capabilities for a long time.  The first incarnation (way back in 2001) stored a single
 ' byte-array copy of the image in RAM, allowing for a lone Undo step if necessary.  Eventually this was converted

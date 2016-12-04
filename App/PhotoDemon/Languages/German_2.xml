@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2035</langversion>
+<langversion>6.8.2066</langversion>
 <langstatus>Abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1584,6 +1584,11 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen 
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation>BSD License</translation>
+</phrase>
+
+<phrase>
 <original>zLib license</original>
 <translation>zLib License</translation>
 </phrase>
@@ -1593,12 +1598,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen 
 <translation>GNU GPLv3</translation>
 </phrase>
 
-<phrase>
-<original>BSD license</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -2192,7 +2192,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 <translation>Speichern von Thumbnail fehlgeschlagen (nicht spezifizierter GDI+ Fehler).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2680,22 +2680,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Fehler beim Laden des eingebetteten Bildes; ungültigen Header gefunden.</translation>
 </phrase>
 
-<phrase>
-<original>DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue.</original>
-<translation>DIB-Daten müssen dekomprimiert werden, aber zLib-Plugin ist deaktiviert oder fehlt. Installieren Sie bitte das zLib-Plugin, um fortzufahren.</translation>
-</phrase>
-
-<phrase>
-<original>Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned.</original>
-<translation>Dekompression war nicht erfolgreich (nicht spezifizierter zLib-Pluginfehler). DIB-Verarbeitung abgebrochen.</translation>
-</phrase>
-
-<phrase>
-<original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
-<translation>Kompression fehlgeschlagen (nicht spezifizierter zLib-Pluginfehler). Unkomprimierte Daten stattdessen geschrieben.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -5865,7 +5850,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Read PhotoDemon's license and terms of use</original>
-<translation>Lizenzen und Nutzungsbedingungen von PhotoDemon lesen</translation>
+<translation>Lizenz und Nutzungsbedingungen von PhotoDemon lesen</translation>
 </phrase>
 
 <phrase>
@@ -11165,7 +11150,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Respektieren Sie beim Herunterladen von Bildern bitte die Copyrights. Auch wenn ein Bild online verfügbar ist, kann die Verwendung außerhalb einer spezifischen Website nicht lizensiert sein. Danke!</translation>
+<translation>Respektieren Sie beim Herunterladen von Bildern bitte die Copyrights. Auch wenn ein Bild online verfügbar ist, kann die Verwendung außerhalb einer spezifischen Website nicht lizenziert sein. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -14984,12 +14969,24 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Compression.bas -->
+
+<!-- Compression.bas contains 0 phrases. -->
+
+<!-- END text for Compression.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2539</phrasecount>
+<phrasecount>2536</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1939 are duplicates, so only 2539 unique phrases have been written to file. -->
-<!-- These 2539 phrases contain approximately 12766 total words. -->
+<!-- As of this build, PhotoDemon contains 4476 phrases. -->
+<!-- 1940 are duplicates, so only 2536 unique phrases have been written to file. -->
+<!-- These 2536 phrases contain approximately 12724 total words. -->
 
 </pdData>

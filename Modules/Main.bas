@@ -683,37 +683,7 @@ Public Sub FinalShutdown()
     FileSystem.DeleteTempFiles
     
     'Release each potentially active plugin in turn
-    Plugin_EZTwain.ReleaseEZTwain
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "EZTwain released"
-    #End If
-    
-    If (g_FreeImageHandle <> 0) Then
-        FreeLibrary g_FreeImageHandle
-        g_ImageFormats.FreeImageEnabled = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FreeImage released"
-        #End If
-    End If
-    
-    LittleCMS.ReleaseLCMS
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "LittleCMS released"
-    #End If
-    
-    If g_ZLibEnabled Then
-        Plugin_zLib.ReleaseZLib
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "zLib released"
-        #End If
-    End If
-    
-    If g_ZstdEnabled Then
-        Plugin_zstd.ReleaseZstd
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "zstd released"
-        #End If
-    End If
+    PluginManager.TerminateAllPlugins
     
     'Release any active drawing backends
     Drawing.ReleaseUIPensAndBrushes

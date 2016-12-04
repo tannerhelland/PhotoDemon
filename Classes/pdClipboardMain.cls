@@ -1613,7 +1613,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     #End If
     
     'Dump the temporary DIB to file
-    m_ClipboardDIB.WriteToFile m_StashFile, PD_CE_Zstd
+    m_ClipboardDIB.WriteToFile m_StashFile, PD_CE_Lz4
     
     'Erase the temporary DIB
     m_ClipboardDIB.EraseDIB

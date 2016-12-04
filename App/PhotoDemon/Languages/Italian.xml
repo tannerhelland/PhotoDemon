@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.218</langversion>
+<langversion>6.7.219</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -1574,6 +1574,11 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 </phrase>
 
 <phrase>
+<original>BSD license</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>zLib license</original>
 <translation>licenza di zLib</translation>
 </phrase>
@@ -1583,12 +1588,7 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>BSD license</original>
-<translation></translation>
-</phrase>
-
-<!-- Plugin_Management.bas contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Plugin_Management.bas contains 18 phrases. 11 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Plugin_Management.bas-->
 
@@ -2181,7 +2181,7 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Salvataggio della miniatura fallito (errore non specificato di GDI+).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -2669,22 +2669,7 @@ Per favore inserisci un valore numerico.</translation>
 <translation>Impossibile caricare l'immagine incorporata; trovata intestazione non valida.</translation>
 </phrase>
 
-<phrase>
-<original>DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue.</original>
-<translation>I dati DIB devono essere decompressi, ma zlib è disattivata o mancante.  Si prega di installare il plugin zlib per continuare.</translation>
-</phrase>
-
-<phrase>
-<original>Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned.</original>
-<translation>La decompressione non ha avuto successo (errore non specificato del plug-zlib).  Elaborazione DIB abbandonata.</translation>
-</phrase>
-
-<phrase>
-<original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
-<translation>La compressione non è riuscita (errore non specificato nel plugin zLib).  Dati non compressi saranno scritti.</translation>
-</phrase>
-
-<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- pdDIB.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -14973,12 +14958,24 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Compression.bas -->
+
+<!-- Compression.bas contains 0 phrases. -->
+
+<!-- END text for Compression.bas-->
+
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2539</phrasecount>
+<phrasecount>2536</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4478 phrases. -->
-<!-- 1939 are duplicates, so only 2539 unique phrases have been written to file. -->
-<!-- These 2539 phrases contain approximately 12766 total words. -->
+<!-- As of this build, PhotoDemon contains 4476 phrases. -->
+<!-- 1940 are duplicates, so only 2536 unique phrases have been written to file. -->
+<!-- These 2536 phrases contain approximately 12724 total words. -->
 
 </pdData>
