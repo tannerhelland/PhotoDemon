@@ -1613,7 +1613,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     #End If
     
     'Dump the temporary DIB to file
-    m_ClipboardDIB.WriteToFile m_StashFile, True
+    m_ClipboardDIB.WriteToFile m_StashFile, PD_CE_Zstd
     
     'Erase the temporary DIB
     m_ClipboardDIB.EraseDIB
@@ -1818,10 +1818,10 @@ Private Sub RenderClipboard_PNG()
         
         'Convert our current DIB to a FreeImage-type DIB
         Dim fi_DIB As Long
-        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(m_ClipboardDIB)
+        fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(m_ClipboardDIB, True)
         
         'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
-        If fi_DIB <> 0 Then
+        If (fi_DIB <> 0) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Clipboard copy update: saving PNG to byte array..."
@@ -1845,6 +1845,9 @@ Private Sub RenderClipboard_PNG()
                 End If
                 
             End If
+            
+            'Before exiting, restore the original scanline order
+            Outside_FreeImageV3.FreeImage_FlipVertically fi_DIB
             
             'Release FreeImage's copy of the image
             FreeImage_Unload fi_DIB
