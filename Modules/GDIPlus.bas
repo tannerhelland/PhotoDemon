@@ -2095,28 +2095,29 @@ Public Function GDIPlusFillDIBRectF(ByRef dstDIB As pdDIB, ByRef srcRectF As REC
 End Function
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
-' Note that - by design - this function assumes a COPY operation, not a traditional PAINT operation.  Copying is much faster,
-' and there should never be a need to alpha-blend the checkerboard pattern.
+' Note that - by design - this function assumes a COPY operation, not a traditional PAINT operation.  Copying is faster,
+' and there should never be a need to alpha-blend the checkerboard pattern atop something.
 Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal fixBoundaryPainting As Boolean = False) As Boolean
     
     'Create a GDI+ copy of the image and request AA
-    Dim iGraphics As Long
+    Dim hGraphics As Long
     
     If (useThisDCInstead <> 0) Then
-        GdipCreateFromHDC useThisDCInstead, iGraphics
+        GdipCreateFromHDC useThisDCInstead, hGraphics
     Else
-        GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
+        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
     End If
     
-    GdipSetSmoothingMode iGraphics, GP_SM_Antialias
-    GdipSetCompositingQuality iGraphics, GP_CQ_AssumeLinear
-    GdipSetPixelOffsetMode iGraphics, GP_POM_HighSpeed
-    GdipSetCompositingMode iGraphics, GP_CM_SourceCopy
-        
+    GdipSetSmoothingMode hGraphics, GP_SM_Antialias
+    GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
+    GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
+    GdipSetCompositingMode hGraphics, GP_CM_SourceCopy
+    GdipSetClipRect hGraphics, x1, y1, bltWidth, bltHeight, GP_CM_Replace
+    
     'Create a texture fill brush from the source image
-    Dim srcBitmap As Long, iBrush As Long
+    Dim srcBitmap As Long, hBrush As Long
     GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
-    GdipCreateTexture srcBitmap, GP_WM_Tile, iBrush
+    GdipCreateTexture srcBitmap, GP_WM_Tile, hBrush
     
     'Because pattern fills are prone to boundary overflow when used with transparent overlays, the caller can
     ' have us restrict painting to the interior integer region only.)
@@ -2131,12 +2132,12 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     End If
     
     'Apply the brush
-    GdipFillRectangle iGraphics, iBrush, x1, y1, bltWidth, bltHeight
+    GdipFillRectangle hGraphics, hBrush, x1, y1, bltWidth, bltHeight
     
     'Release all created objects
-    ReleaseGDIPlusBrush iBrush
+    ReleaseGDIPlusBrush hBrush
     GdipDisposeImage srcBitmap
-    GdipDeleteGraphics iGraphics
+    GdipDeleteGraphics hGraphics
     
     GDIPlusFillDIBRect_Pattern = True
     
