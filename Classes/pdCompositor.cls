@@ -1114,7 +1114,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     
                     'When zoomed in, nearest neighbor is preferred.  This is fast enough that we don't need to use a temporary DIB cache.
                     If srcImageRect.Width < dstViewportRect.Width Then
-                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor, , , True
+                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor
                     
                     'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
                     ' performance settings.
