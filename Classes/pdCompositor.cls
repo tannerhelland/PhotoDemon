@@ -284,7 +284,10 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
 End Sub
 
 'Merge two layers together using paintbrush rules.  In paintbrush rules, the bottom layer retains all of its properties (blend mode,
-' opacity, etc), with the exception of non-destructive transforms (which are made permanent).
+' opacity, etc), with the exception of non-destructive transforms (which are made permanent).  Paint merges are also unique because
+' we don't look at the top layer's boundaries for the intersection rect - instead, we use the rect supplied by the paintbrush engine,
+' which is the region of the paint layer where painting has occurred.  (In most cases, this will be significantly smaller than the
+' full layer rect.)
 '
 'Just like a regular merge operation, the optional parameter "bottomLayerIsFullSize" can be set to TRUE if the bottom layer is the
 ' same size as the current image.  This saves processing time as we can skip certain rect intersection tests.
@@ -744,15 +747,11 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
             '
             'Note that we only do this if the current layer is a raster layer.  If it is a vector layer, the paint stroke will simply
             ' be added as a new layer, so we don't need to pre-merge anything.
-            If (paintScratchLayerIndex = i) Then
-            
-                If srcImage.GetLayerByIndex(i).IsLayerRaster Then
+            If ((paintScratchLayerIndex = i) And srcImage.GetLayerByIndex(i).IsLayerRaster) Then
                     
-                    'We are now going to pass off the current paint layer to a dedicated renderer.  This isn't really ideal, but it's specially
-                    ' optimized for real-time performance, so different trade-offs are made from the standard renderer.
-                    GetCompositedRect_PaintOp m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless
-                    
-                End If
+                'We are now going to pass off the current paint layer to a dedicated renderer.  This isn't really ideal, but it's specially
+                ' optimized for real-time performance, so different trade-offs are made from the standard renderer.
+                GetCompositedRect_PaintOp m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless
                 
             'Painting is not active; apply a standard composite op
             Else
