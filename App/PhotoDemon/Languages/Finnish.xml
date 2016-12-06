@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2036</langversion>
+<langversion>6.8.2037</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -176,6 +176,12 @@
 <!-- Colors.bas contains 0 phrases. -->
 
 <!-- END text for Colors.bas-->
+
+<!-- BEGIN text for Compression.bas -->
+
+<!-- Compression.bas contains 0 phrases. -->
+
+<!-- END text for Compression.bas-->
 
 <!-- BEGIN text for VBP_DIBHandler.bas -->
 
@@ -1717,6 +1723,12 @@ To mahdollistaa skannerin tuki, kopioi EZTW32.dll tiedosto (ladattavissa osoitte
 
 <!-- END text for Plugin_FreeImage.bas-->
 
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -2499,12 +2511,6 @@ Please enter a numeric value.</original>
 <!-- cFileDialogVista.cls contains 0 phrases. -->
 
 <!-- END text for cFileDialogVista.cls-->
-
-<!-- BEGIN text for cBasicBuffer.cls -->
-
-<!-- cBasicBuffer.cls contains 0 phrases. -->
-
-<!-- END text for cBasicBuffer.cls-->
 
 <!-- BEGIN text for cGoogleTranslate.cls -->
 
@@ -3335,6 +3341,12 @@ Please enter a numeric value.</original>
 <!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdStream.cls -->
+
+<!-- pdStream.cls contains 0 phrases. -->
+
+<!-- END text for pdStream.cls-->
 
 <!-- BEGIN text for pdStringStack.cls -->
 
@@ -14963,18 +14975,6 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Compression.bas -->
-
-<!-- Compression.bas contains 0 phrases. -->
-
-<!-- END text for Compression.bas-->
-
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
 
 <!-- Automatic text extraction complete. -->
 
