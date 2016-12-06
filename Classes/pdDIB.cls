@@ -109,6 +109,7 @@ Private Const STRETCHBLT_HALFTONE As Long = 4
 
 'SafeArray API functions
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
@@ -1733,7 +1734,9 @@ End Sub
 
 'DIBs created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
 ' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
-Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False)
+'
+'Optionally, you can also supply a pointer to a valid RectF struct; if present, only this region will be updated.
+Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False, Optional ByVal ptrToRectF As Long = 0)
 
     'This function doesn't matter if the image isn't 32bpp
     If (m_dibColorDepth <> 32) Then Exit Sub
@@ -1744,122 +1747,158 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         Exit Sub
     End If
     
+    Dim allowedToProceed As Boolean: allowedToProceed = True
+    
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    Dim finalX As Long, finalY As Long
-    finalX = (m_dibWidth - 1) * 4
-    finalY = (m_dibHeight - 1)
-    
-    'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
-    ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
-    Dim i As Long
-    For i = 0 To 255
-        If applyPremultiplication Then
-            intToFloat(i) = i / 255
-        Else
-            If i <> 0 Then intToFloat(i) = 255 / i
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    If (ptrToRectF = 0) Then
+        initX = 0
+        initY = 0
+        finalX = (m_dibWidth - 1) * 4
+        finalY = (m_dibHeight - 1)
+    Else
+        
+        Dim tmpRectF As RECTF
+        CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
+        Math_Functions.GetIntClampedRectF tmpRectF
+        initX = tmpRectF.Left
+        initY = tmpRectF.Top
+        finalX = initX + tmpRectF.Width
+        finalY = initY + tmpRectF.Height
+        
+        'Perform a bunch of failsafe checks on boundaries
+        If (initX > (m_dibWidth - 1)) Then allowedToProceed = False
+        If (initY > (m_dibHeight - 1)) Then allowedToProceed = False
+        If (finalX < initX) Then allowedToProceed = False
+        If (finalY < initY) Then allowedToProceed = False
+        
+        If allowedToProceed Then
+            If (initX < 0) Then initX = 0
+            If (initY < 0) Then initY = 0
+            If (finalX > (m_dibWidth - 1)) Then finalX = m_dibWidth - 1
+            If (finalY > (m_dibHeight - 1)) Then finalY = m_dibHeight - 1
         End If
-    Next i
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
-    ' 1D array, which we reset between scanlines.
-    Dim scanlineSize As Long, dibPointer As Long
-    scanlineSize = Me.GetDIBStride
-    dibPointer = Me.GetDIBPointer
-    
-    Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
-    PrepInternalSafeArray1D dibSA
-    
-    Dim x As Long, y As Long, quickX As Long
-    Dim r As Long, g As Long, b As Long
-    Dim tmpAlpha As Byte, tmpAlphaModifier As Double
-    
-    'Loop through the image, converting alpha as we go
-    For y = 0 To finalY
         
-        'Point our 1D pixel array at the proper scanline
-        dibSA.pvData = dibPointer + scanlineSize * y
-        CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
-        
-    For x = 0 To finalX Step 4
-        
-        'Retrieve alpha for the current pixel
-        tmpAlpha = dibPixels(x + 3)
-        
-        'Branch according to applying or removing premultiplication
-        If applyPremultiplication Then
-        
-            'When applying premultiplication, we can ignore fully opaque pixels
-            If tmpAlpha <> 255 Then
-            
-                'We can shortcut the calculation of full transparent pixels (they are made black)
-                If tmpAlpha = 0 Then
-                    dibPixels(x) = 0
-                    dibPixels(x + 1) = 0
-                    dibPixels(x + 2) = 0
-                Else
-            
-                    b = dibPixels(x)
-                    g = dibPixels(x + 1)
-                    r = dibPixels(x + 2)
-                    
-                    tmpAlphaModifier = intToFloat(tmpAlpha)
-                    
-                    'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                    r = (r * tmpAlphaModifier)
-                    g = (g * tmpAlphaModifier)
-                    b = (b * tmpAlphaModifier)
-                    
-                    dibPixels(x) = b
-                    dibPixels(x + 1) = g
-                    dibPixels(x + 2) = r
-                    
-                End If
-            
-            End If
-        
-        Else
-            
-            'When removing premultiplication, we can ignore fully opaque and fully transparent pixels.
-            ' (Note that VB doesn't short-circuit AND statements, so we manually nest the IFs.)
-            If (tmpAlpha <> 255) Then
-                If (tmpAlpha <> 0) Then
+        initX = initX * 4
+        finalX = finalX * 4
                 
-                    b = dibPixels(x)
-                    g = dibPixels(x + 1)
-                    r = dibPixels(x + 2)
-                    
-                    tmpAlphaModifier = intToFloat(tmpAlpha)
-                    
-                    'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
-                    r = (r * tmpAlphaModifier)
-                    g = (g * tmpAlphaModifier)
-                    b = (b * tmpAlphaModifier)
-                    
-                    'Unfortunately, OOB checks are necessary for malformed DIBs
-                    If (r > 255) Then r = 255
-                    If (g > 255) Then g = 255
-                    If (b > 255) Then b = 255
-                                    
-                    dibPixels(x) = b
-                    dibPixels(x + 1) = g
-                    dibPixels(x + 2) = r
-                    
-                End If
+    End If
+    
+    If allowedToProceed Then
+    
+        'Premultiplication requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table
+        ' for converting single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+        Dim intToFloat() As Single
+        ReDim intToFloat(0 To 255) As Single
+        Dim i As Long
+        For i = 0 To 255
+            If applyPremultiplication Then
+                intToFloat(i) = i / 255
+            Else
+                If i <> 0 Then intToFloat(i) = 255 / i
             End If
+        Next i
         
-        End If
+        '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use a
+        ' 1D array, which we reset between scanlines.
+        Dim scanlineSize As Long, dibPointer As Long
+        scanlineSize = Me.GetDIBStride
+        dibPointer = Me.GetDIBPointer
         
-    Next x
-    Next y
-    
-    'With our alpha channel complete, point dibPixels() away from the DIB
-    CopyMemory ByVal VarPtrArray(dibPixels), 0&, 4
-    
-    'Mark the new premultiplication state
-    m_IsAlphaPremultiplied = applyPremultiplication
+        Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
+        PrepInternalSafeArray1D dibSA
+        
+        Dim x As Long, y As Long, quickX As Long
+        Dim r As Long, g As Long, b As Long
+        Dim tmpAlpha As Byte, tmpAlphaModifier As Double
+        
+        'Loop through the image, converting alpha as we go
+        For y = initY To finalY
+            
+            'Point our 1D pixel array at the proper scanline
+            dibSA.pvData = dibPointer + scanlineSize * y
+            CopyMemory ByVal VarPtrArray(dibPixels()), VarPtr(dibSA), 4
+            
+        For x = initX To finalX Step 4
+            
+            'Retrieve alpha for the current pixel
+            tmpAlpha = dibPixels(x + 3)
+            
+            'Branch according to applying or removing premultiplication
+            If applyPremultiplication Then
+            
+                'When applying premultiplication, we can ignore fully opaque pixels
+                If (tmpAlpha <> 255) Then
+                
+                    'We can shortcut the calculation of full transparent pixels (they are made black)
+                    If tmpAlpha = 0 Then
+                        dibPixels(x) = 0
+                        dibPixels(x + 1) = 0
+                        dibPixels(x + 2) = 0
+                    Else
+                
+                        b = dibPixels(x)
+                        g = dibPixels(x + 1)
+                        r = dibPixels(x + 2)
+                        
+                        tmpAlphaModifier = intToFloat(tmpAlpha)
+                        
+                        'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
+                        r = (r * tmpAlphaModifier)
+                        g = (g * tmpAlphaModifier)
+                        b = (b * tmpAlphaModifier)
+                        
+                        dibPixels(x) = b
+                        dibPixels(x + 1) = g
+                        dibPixels(x + 2) = r
+                        
+                    End If
+                
+                End If
+            
+            Else
+                
+                'When removing premultiplication, we can ignore fully opaque and fully transparent pixels.
+                ' (Note that VB doesn't short-circuit AND statements, so we manually nest the IFs.)
+                If (tmpAlpha <> 255) Then
+                    If (tmpAlpha <> 0) Then
+                    
+                        b = dibPixels(x)
+                        g = dibPixels(x + 1)
+                        r = dibPixels(x + 2)
+                        
+                        tmpAlphaModifier = intToFloat(tmpAlpha)
+                        
+                        'Remove premultiplied values by redistributing the colors based on this pixel's alpha value
+                        r = (r * tmpAlphaModifier)
+                        g = (g * tmpAlphaModifier)
+                        b = (b * tmpAlphaModifier)
+                        
+                        'Unfortunately, OOB checks are necessary for malformed DIBs
+                        If (r > 255) Then r = 255
+                        If (g > 255) Then g = 255
+                        If (b > 255) Then b = 255
+                                        
+                        dibPixels(x) = b
+                        dibPixels(x + 1) = g
+                        dibPixels(x + 2) = r
+                        
+                    End If
+                End If
+            
+            End If
+            
+        Next x
+        Next y
+        
+        'With our alpha channel complete, point dibPixels() away from the DIB
+        CopyMemory ByVal VarPtrArray(dibPixels), 0&, 4
+        
+        'Mark the new premultiplication state
+        m_IsAlphaPremultiplied = applyPremultiplication
+        
+    End If
     
 End Sub
 

@@ -729,6 +729,16 @@ Public Function DegreesToRadians(ByVal srcDegrees As Double) As Double
     DegreesToRadians = (srcDegrees * PI) / 180
 End Function
 
+Public Sub GetIntClampedRectF(ByRef srcRectF As RECTF)
+    Dim xOffset As Single, yOffset As Single
+    xOffset = srcRectF.Left - Int(srcRectF.Left)
+    yOffset = srcRectF.Top - Int(srcRectF.Top)
+    srcRectF.Left = Int(srcRectF.Left)
+    srcRectF.Top = Int(srcRectF.Top)
+    srcRectF.Width = Int(srcRectF.Width + xOffset + 0.9999)
+    srcRectF.Height = Int(srcRectF.Height + yOffset + 0.9999)
+End Sub
+
 Public Function ClampL(ByVal srcL As Long, ByVal minL As Long, ByVal maxL As Long) As Long
     If srcL < minL Then
         ClampL = minL
