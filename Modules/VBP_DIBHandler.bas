@@ -18,6 +18,7 @@ Attribute VB_Name = "DIB_Support"
 Option Explicit
 
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'Does a given DIB have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
 '
@@ -579,36 +580,73 @@ Public Function MakeColorTransparent_Ex(ByRef srcDIB As pdDIB, ByRef dstTranspar
 End Function
 
 'This function will return the alpha channel of a 32bpp image.  An input byte array is required; it will be initialized
-' to the size of the image and filled with a copy of the image's alpha values.
+' to the size of the image and filled with a copy of the image's alpha values.  Optionally, you can pass a pointer to a
+' RectF struct that defines the target region; if non-null, only that region will be stored - IMPORTANTLY, if you use this
+' functionality, you must also supply an identical RectF structure to the ApplyTransparencyTable function.  If you don't,
+' the results will be incorrect.
 '
 'Note that - by design - the DIB is not actually modified by this function.
-Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransparencyTable() As Byte) As Boolean
+Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransparencyTable() As Byte, Optional ByVal ptrToRectF As Long = 0) As Boolean
 
     If (srcDIB Is Nothing) Then Exit Function
     
     If (srcDIB.GetDIBColorDepth = 32) Then
         If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
             
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (srcDIB.GetDIBWidth - 1)
-            finalY = (srcDIB.GetDIBHeight - 1)
+            Dim x As Long, y As Long
+            Dim allowedToProceed As Boolean: allowedToProceed = True
             
-            ReDim dstTransparencyTable(0 To finalX, 0 To finalY) As Byte
+            Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+            If (ptrToRectF = 0) Then
+                initX = 0
+                initY = 0
+                finalX = (srcDIB.GetDIBWidth - 1)
+                finalY = (srcDIB.GetDIBHeight - 1)
+            Else
             
-            Dim iData() As Byte, tmpSA As SAFEARRAY2D
-            srcDIB.WrapArrayAroundDIB iData, tmpSA
+                Dim tmpRectF As RECTF
+                CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
+                Math_Functions.GetIntClampedRectF tmpRectF
+                initX = tmpRectF.Left
+                initY = tmpRectF.Top
+                finalX = initX + tmpRectF.Width
+                finalY = initY + tmpRectF.Height
                 
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX
-                dstTransparencyTable(x, y) = iData(x * 4 + 3, y)
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            srcDIB.UnwrapArrayFromDIB iData
+                'Perform a bunch of failsafe checks on boundaries
+                If (initX > (srcDIB.GetDIBWidth - 1)) Then allowedToProceed = False
+                If (initY > (srcDIB.GetDIBHeight - 1)) Then allowedToProceed = False
+                If (finalX < initX) Then allowedToProceed = False
+                If (finalY < initY) Then allowedToProceed = False
+                
+                If allowedToProceed Then
+                    If (initX < 0) Then initX = 0
+                    If (initY < 0) Then initY = 0
+                    If (finalX > (srcDIB.GetDIBWidth - 1)) Then finalX = srcDIB.GetDIBWidth - 1
+                    If (finalY > (srcDIB.GetDIBHeight - 1)) Then finalY = srcDIB.GetDIBHeight - 1
+                End If
+                
+            End If
             
-            RetrieveTransparencyTable = True
+            If allowedToProceed Then
+            
+                ReDim dstTransparencyTable(initX To finalX, initY To finalY) As Byte
+                
+                Dim iData() As Byte, tmpSA As SAFEARRAY2D
+                srcDIB.WrapArrayAroundDIB iData, tmpSA
+                    
+                'Loop through the image, checking alphas as we go
+                For y = initY To finalY
+                For x = initX To finalX
+                    dstTransparencyTable(x, y) = iData(x * 4 + 3, y)
+                Next x
+                Next y
+        
+                'With our alpha channel complete, point iData() away from the DIB and deallocate it
+                srcDIB.UnwrapArrayFromDIB iData
+                
+            End If
+            
+            RetrieveTransparencyTable = allowedToProceed
             
         End If
     End If
@@ -616,39 +654,76 @@ Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransp
 End Function
 
 'Given a binary table (e.g. a byte array at the same dimensions as the image, containing the desired per-pixel alpha values),
-' apply said transparency table to the current DIB.
-Public Function ApplyTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTransparencyTable() As Byte) As Boolean
+' apply said transparency table to the current DIB.  Optionally, you can pass a pointer to a RectF struct that defines the
+' target region; if non-null, only that region will be updated - IMPORTANTLY, if you use this functionality, you must also
+' supply an identical RectF structure to the RetrieveTransparencyTable function.  If you don't, the results will be incorrect.
+Public Function ApplyTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTransparencyTable() As Byte, Optional ByVal ptrToRectF As Long = 0) As Boolean
 
     If (srcDIB Is Nothing) Then Exit Function
     
     If (srcDIB.GetDIBColorDepth = 32) Then
         If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
             
-            Dim x As Long, y As Long, finalX As Long, finalY As Long
-            finalX = (srcDIB.GetDIBWidth - 1)
-            finalY = (srcDIB.GetDIBHeight - 1)
+            Dim x As Long, y As Long
+            Dim allowedToProceed As Boolean: allowedToProceed = True
             
-            Dim iData() As Byte, tmpSA As SAFEARRAY2D
-            srcDIB.WrapArrayAroundDIB iData, tmpSA
+            Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+            If (ptrToRectF = 0) Then
+                initX = 0
+                initY = 0
+                finalX = (srcDIB.GetDIBWidth - 1)
+                finalY = (srcDIB.GetDIBHeight - 1)
+            Else
             
-            Dim restorePremultiplication As Boolean: restorePremultiplication = False
-            If srcDIB.GetAlphaPremultiplication Then
-                srcDIB.SetAlphaPremultiplication False
-                restorePremultiplication = True
-            End If
+                Dim tmpRectF As RECTF
+                CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
+                Math_Functions.GetIntClampedRectF tmpRectF
+                initX = tmpRectF.Left
+                initY = tmpRectF.Top
+                finalX = initX + tmpRectF.Width
+                finalY = initY + tmpRectF.Height
                 
-            'Loop through the image, checking alphas as we go
-            For y = 0 To finalY
-            For x = 0 To finalX
-                iData(x * 4 + 3, y) = srcTransparencyTable(x, y)
-            Next x
-            Next y
-    
-            'With our alpha channel complete, point iData() away from the DIB and deallocate it
-            srcDIB.UnwrapArrayFromDIB iData
+                'Perform a bunch of failsafe checks on boundaries
+                If (initX > (srcDIB.GetDIBWidth - 1)) Then allowedToProceed = False
+                If (initY > (srcDIB.GetDIBHeight - 1)) Then allowedToProceed = False
+                If (finalX < initX) Then allowedToProceed = False
+                If (finalY < initY) Then allowedToProceed = False
+                
+                If allowedToProceed Then
+                    If (initX < 0) Then initX = 0
+                    If (initY < 0) Then initY = 0
+                    If (finalX > (srcDIB.GetDIBWidth - 1)) Then finalX = srcDIB.GetDIBWidth - 1
+                    If (finalY > (srcDIB.GetDIBHeight - 1)) Then finalY = srcDIB.GetDIBHeight - 1
+                End If
+                
+            End If
             
-            If restorePremultiplication Then srcDIB.SetAlphaPremultiplication True
-            ApplyTransparencyTable = True
+            If allowedToProceed Then
+                
+                Dim iData() As Byte, tmpSA As SAFEARRAY2D
+                srcDIB.WrapArrayAroundDIB iData, tmpSA
+                
+                Dim restorePremultiplication As Boolean: restorePremultiplication = False
+                If srcDIB.GetAlphaPremultiplication Then
+                    srcDIB.SetAlphaPremultiplication False, , ptrToRectF
+                    restorePremultiplication = True
+                End If
+                    
+                'Loop through the image, checking alphas as we go
+                For y = initY To finalY
+                For x = initX To finalX
+                    iData(x * 4 + 3, y) = srcTransparencyTable(x, y)
+                Next x
+                Next y
+                
+                'With our alpha channel complete, point iData() away from the DIB and deallocate it
+                srcDIB.UnwrapArrayFromDIB iData
+                
+                If restorePremultiplication Then srcDIB.SetAlphaPremultiplication True, , ptrToRectF
+                
+            End If
+            
+            ApplyTransparencyTable = allowedToProceed
             
         End If
     Else

@@ -198,7 +198,7 @@ Private Sub sltBrushSetting_Change(Index As Integer)
     
         'Radius
         Case 0
-            Paintbrush.SetBrushRadius sltBrushSetting(Index).Value
+            Paintbrush.SetBrushSize sltBrushSetting(Index).Value
         
         'Opacity
         Case 1
@@ -210,7 +210,7 @@ End Sub
 
 'If you want to set all paintbrush settings at once, use this function
 Public Sub SyncAllPaintbrushSettingsToUI()
-    Paintbrush.SetBrushRadius sltBrushSetting(0).Value
+    Paintbrush.SetBrushSize sltBrushSetting(0).Value
     Paintbrush.SetBrushOpacity sltBrushSetting(1).Value
     Paintbrush.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Paintbrush.SetBrushBlendMode cboBrushSetting(0).ListIndex
@@ -220,7 +220,7 @@ End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
 Public Sub SyncUIToAllPaintbrushSettings()
-    sltBrushSetting(0).Value = Paintbrush.GetBrushRadius
+    sltBrushSetting(0).Value = Paintbrush.GetBrushSize
     sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity
     cboBrushSetting(0).ListIndex = Paintbrush.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Paintbrush.GetBrushAlphaMode()

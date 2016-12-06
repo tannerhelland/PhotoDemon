@@ -37,7 +37,7 @@ End Enum
 
 Public Enum BRUSH_ATTRIBUTES
     BA_Source = 0
-    BA_Radius = 1
+    BA_Size = 1
     BA_Opacity = 2
     BA_BlendMode = 3
     BA_AlphaMode = 4
@@ -47,7 +47,7 @@ Public Enum BRUSH_ATTRIBUTES
 End Enum
 
 #If False Then
-    Private Const BA_Source = 0, BA_Radius = 1, BA_Opacity = 2, BA_BlendMode = 3, BA_AlphaMode = 4
+    Private Const BA_Source = 0, BA_Size = 1, BA_Opacity = 2, BA_BlendMode = 3, BA_AlphaMode = 4
     Private Const BA_SourceColor = 1000
 #End If
 
@@ -66,7 +66,7 @@ Private m_GDIPPen As pd2DPen
 
 'Brush attributes are stored in these variables
 Private m_BrushSource As BRUSH_SOURCES
-Private m_BrushRadius As Single
+Private m_BrushSize As Single
 Private m_BrushOpacity As Single
 Private m_BrushBlendmode As LAYER_BLENDMODE
 Private m_BrushAlphamode As LAYER_ALPHAMODE
@@ -86,9 +86,13 @@ Private m_MouseX As Single, m_MouseY As Single
 
 'As brush movements are relayed to us, we keep a running note of the modified area of the scratch layer.
 ' The compositor can use this information to only regenerate the compositor cache area that's changed since the
-' last repaint event.
+' last repaint event.  Note that the m_ModifiedRectF may be cleared between accesses, by design - you'll need to
+' keep an eye on your usage of parameters in the GetModifiedUpdateRectF function.
+'
+'If you want the absolute modified area since the stroke began, you can use m_TotalModifiedRectF, which is not
+' cleared until the current stroke is released.
 Private m_UnionRectRequired As Boolean
-Private m_ModifiedRectF As RECTF
+Private m_ModifiedRectF As RECTF, m_TotalModifiedRectF As RECTF
 
 'The number of mouse events in the *current* brush stroke.  This value is reset after every mouse release.
 ' The compositor uses this to know when to fully regenerate the paint cache from scratch.
@@ -113,8 +117,8 @@ Public Function GetBrushPreviewQuality_GDIPlus() As GP_InterpolationMode
 End Function
 
 'Universal brush settings, applicable for all sources
-Public Function GetBrushRadius() As Single
-    GetBrushRadius = m_BrushRadius
+Public Function GetBrushSize() As Single
+    GetBrushSize = m_BrushSize
 End Function
 
 Public Function GetBrushOpacity() As Single
@@ -148,9 +152,9 @@ Public Sub SetBrushPreviewQuality(ByVal newQuality As PD_PERFORMANCE_SETTING)
     End If
 End Sub
 
-Public Sub SetBrushRadius(ByVal newRadius As Single)
-    If (newRadius <> m_BrushRadius) Then
-        m_BrushRadius = newRadius
+Public Sub SetBrushSize(ByVal newSize As Single)
+    If (newSize <> m_BrushSize) Then
+        m_BrushSize = newSize
         m_BrushIsReady = False
     End If
 End Sub
@@ -188,8 +192,8 @@ Public Function GetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES) As Variant
     Select Case bProperty
         Case BA_Source
             GetBrushProperty = GetBrushSource()
-        Case BA_Radius
-            GetBrushProperty = GetBrushRadius()
+        Case BA_Size
+            GetBrushProperty = GetBrushSize()
         Case BA_Opacity
             GetBrushProperty = GetBrushOpacity()
         Case BA_BlendMode
@@ -207,8 +211,8 @@ Public Sub SetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES, ByVal newPropVa
     Select Case bProperty
         Case BA_Source
             SetBrushSource newPropValue
-        Case BA_Radius
-            SetBrushRadius newPropValue
+        Case BA_Size
+            SetBrushSize newPropValue
         Case BA_Opacity
             SetBrushOpacity newPropValue
         Case BA_BlendMode
@@ -232,7 +236,7 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         Select Case m_BrushEngine
             
             Case BE_GDIPlus
-                'For now, create a circular pen at the current radius
+                'For now, create a circular pen at the current size
                 If (m_GDIPPen Is Nothing) Then Set m_GDIPPen = New pd2DPen
                 Drawing2D.QuickCreateSolidPen m_GDIPPen
         
@@ -255,11 +259,12 @@ Public Sub CreateCurrentBrushOutline()
     Select Case m_BrushEngine
     
         'If this is a GDI+ brush, outline creation is pretty easy.  Assume a circular brush and simply
-        ' create a path at that same radius.
+        ' create a path at that same size.  (Note that circles are defined by radius, while brushes are
+        ' defined by diameter - hence the "/ 2".)
         Case BE_GDIPlus
         
             Set m_BrushOutlinePath = New pd2DPath
-            If (m_BrushRadius > 0#) Then m_BrushOutlinePath.AddCircle 0, 0, m_BrushRadius / 2 + 1#
+            If (m_BrushSize > 0#) Then m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2 + 1#
     
     End Select
 
@@ -303,7 +308,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         VB_Hacks.GetHighResTime startTime
         
         'Calculate new modification rects (which the compositor requires)
-        UpdateModifiedRect srcX, srcY
+        UpdateModifiedRect srcX, srcY, isFirstStroke
         
         'Create required pd2D drawing tools (a painter and surface)
         Dim cPainter As pd2DPainter
@@ -313,7 +318,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         Drawing2D.QuickCreateSurfaceFromDC cSurface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, True
         
         Dim cPen As pd2DPen
-        Drawing2D.QuickCreateSolidPen cPen, m_BrushRadius, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
+        Drawing2D.QuickCreateSolidPen cPen, m_BrushSize, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
         
         'Render the line
         If isFirstStroke Then
@@ -341,7 +346,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
 End Sub
 
 'Whenever we receive notifications of a new mouse (x, y) pair, you need to call this sub to calculate a new "affected area" rect.
-Private Sub UpdateModifiedRect(ByVal newX As Single, newY As Single)
+Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal isFirstStroke As Boolean)
 
     'Start by calculating the affected rect for just this stroke.
     Dim tmpRectF As RECTF
@@ -361,15 +366,16 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, newY As Single)
         tmpRectF.Height = newY - m_MouseY
     End If
     
-    'Inflate the rect calculation by the radius of the current brush
-    tmpRectF.Left = tmpRectF.Left - m_BrushRadius
-    tmpRectF.Top = tmpRectF.Top - m_BrushRadius
-    tmpRectF.Width = tmpRectF.Width + m_BrushRadius * 2
-    tmpRectF.Height = tmpRectF.Height + m_BrushRadius * 2
+    'Inflate the rect calculation by the size of the current brush
+    tmpRectF.Left = tmpRectF.Left - m_BrushSize / 2
+    tmpRectF.Top = tmpRectF.Top - m_BrushSize / 2
+    tmpRectF.Width = tmpRectF.Width + m_BrushSize
+    tmpRectF.Height = tmpRectF.Height + m_BrushSize
+    
+    Dim tmpOldRectF As RECTF
     
     'If this is *not* the first modified rect calculation, union this rect with our previous update rect
-    If m_UnionRectRequired Then
-        Dim tmpOldRectF As RECTF
+    If m_UnionRectRequired And (Not isFirstStroke) Then
         tmpOldRectF = m_ModifiedRectF
         Math_Functions.UnionRectF m_ModifiedRectF, tmpRectF, tmpOldRectF
     Else
@@ -377,11 +383,27 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, newY As Single)
         m_ModifiedRectF = tmpRectF
     End If
     
+    'Always calculate a total combined RectF, for use in the final merge step
+    If isFirstStroke Then
+        m_TotalModifiedRectF = tmpRectF
+    Else
+        tmpOldRectF = m_TotalModifiedRectF
+        Math_Functions.UnionRectF m_TotalModifiedRectF, tmpRectF, tmpOldRectF
+    End If
+    
 End Sub
 
-Public Function GetModifiedUpdateRectF(Optional ByVal resetRectAfter As Boolean = True) As RECTF
-    GetModifiedUpdateRectF = m_ModifiedRectF
-    If resetRectAfter Then m_UnionRectRequired = False
+'Return the area of the image modified by the current stroke.  By default, the running modified rect is erased after a call to
+' this function, but this behavior can be toggled by resetRectAfter.  Also, if you want to get the full modified rect since this
+' paint stroke began, you can set the GetModifiedRectSinceStrokeBegan parameter to TRUE.  Note that when
+' GetModifiedRectSinceStrokeBegan is TRUE, the resetRectAfter parameter is ignored.
+Public Function GetModifiedUpdateRectF(Optional ByVal resetRectAfter As Boolean = True, Optional ByVal GetModifiedRectSinceStrokeBegan As Boolean = False) As RECTF
+    If GetModifiedRectSinceStrokeBegan Then
+        GetModifiedUpdateRectF = m_TotalModifiedRectF
+    Else
+        GetModifiedUpdateRectF = m_ModifiedRectF
+        If resetRectAfter Then m_UnionRectRequired = False
+    End If
 End Function
 
 Public Function GetNumOfStrokes() As Long
@@ -399,7 +421,24 @@ Public Sub CommitBrushResults()
     'First, if the layer beneath the paint stroke is a raster layer, we simply want to merge the scratch
     ' layer onto it.
     If pdImages(g_CurrentImage).GetActiveLayer.IsLayerRaster Then
-        pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, False, True
+        
+        Dim tmpRectF As RECTF
+        tmpRectF = m_TotalModifiedRectF
+        
+        'Clip the modified rect to the paint layer's bounds, as necessary
+        With tmpRectF
+            If (.Left < 0) Then .Left = 0
+            If (.Top < 0) Then .Top = 0
+            If (.Width > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth) Then .Width = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBWidth
+            If (.Height > pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight) Then .Height = pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBHeight
+        End With
+        
+        Dim bottomLayerFullSize As Boolean
+        With pdImages(g_CurrentImage).GetActiveLayer
+            bottomLayerFullSize = (.GetLayerOffsetX = 0) And (.GetLayerOffsetY = 0) And (.layerDIB.GetDIBWidth = pdImages(g_CurrentImage).Width) And (.layerDIB.GetDIBHeight = pdImages(g_CurrentImage).Height)
+        End With
+        
+        pdImages(g_CurrentImage).MergeTwoLayers pdImages(g_CurrentImage).ScratchLayer, pdImages(g_CurrentImage).GetActiveLayer, bottomLayerFullSize, True, VarPtr(tmpRectF)
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Ask the central processor to create Undo/Redo data for us
@@ -430,9 +469,6 @@ Public Sub CommitBrushResults()
         
     End If
     
-    'Redraw the main viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
 End Sub
 
 'Render the current brush outline to the canvas, using the stored mouse coordinates as the brush's position
@@ -452,7 +488,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     'If the on-screen brush size is above a certain threshold, we'll paint a full brush outline.
     ' If it's too small, we'll only paint a cross in the current brush position.
     Dim onScreenSize As Double
-    onScreenSize = Drawing.ConvertImageSizeToCanvasSize(m_BrushRadius, pdImages(g_CurrentImage))
+    onScreenSize = Drawing.ConvertImageSizeToCanvasSize(m_BrushSize, pdImages(g_CurrentImage))
     
     Dim brushTooSmall As Boolean
     If (onScreenSize < 5) Then brushTooSmall = True

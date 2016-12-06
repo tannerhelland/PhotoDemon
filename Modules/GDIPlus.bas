@@ -4250,7 +4250,7 @@ Public Function SetGDIPlusPenProperty(ByVal hPen As Long, ByVal propID As PD_2D_
                 SetGDIPlusPenProperty = CBool(GdipSetPenColor(hPen, FillQuadWithVBRGB(tmpColor, CSng(newSetting) * 2.55)) = GP_OK)
                 
             Case P2_PenWidth
-                SetGDIPlusPenProperty = CBool(GdipSetPenDashStyle(hPen, CSng(newSetting)) = GP_OK)
+                SetGDIPlusPenProperty = CBool(GdipSetPenWidth(hPen, CSng(newSetting)) = GP_OK)
                 
             Case P2_PenLineJoin
                 SetGDIPlusPenProperty = CBool(GdipSetPenLineJoin(hPen, CLng(newSetting)) = GP_OK)

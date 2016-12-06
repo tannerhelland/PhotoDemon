@@ -51,13 +51,13 @@ Private m_AlphaCopy() As Byte
 ' - A full blend (including alpha handling) will be applied.
 ' - The bottom DIB must already be large enough to hold the result of the composition.
 ' - The two DIBs should overlap at least partially.  If they don't, correctness of the function is not guaranteed.
-Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True)
+Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
     
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long, xOffsetBottom As Long, yOffsetBottom As Long
     
     'Calculate the overlap between the top and bottom DIBs.  The overlap function will automatically determine loop bounds for us,
     ' including safely rounding all floating-point coordinates to loop-friendly integers.
-    If CalculateDIBOverlap(topDIB, bottomDIB, dstX, dstY, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom) Then
+    If CalculateDIBOverlap(topDIB, bottomDIB, dstX, dstY, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, ptrToTopLayerAlternateRectF) Then
         
         'With loop bounds safely calculated, we can now proceed with blending.
         
@@ -76,7 +76,7 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         'Note that we can skip these steps if none of these special alpha modes are active for the top DIB.
         
         If (topAlphaMode <> LA_NORMAL) Or (bottomAlphaMode <> LA_NORMAL) Then
-            PreProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False
+            PreProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF
         End If
         
         'With alpha inheritance successfully applied to non-overlapping regions of the bottom layer, we can now forward further handling to
@@ -131,10 +131,11 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         If applyFinalBlend Then
             
             'Some blend modes ignore this step (Erase, at present)
-            If (blendMode <> BL_ERASE) Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom, yOffsetBottom, finalX - initX + 1, finalY - initY + 1, 0, 0, finalX - initX + 1, finalY - initY + 1, alphaModifier * 255
+            If (blendMode <> BL_ERASE) Then m_topDIBCopy.AlphaBlendToDCEx bottomDIB.GetDIBDC, xOffsetBottom + initX, yOffsetBottom + initY, finalX - initX + 1, finalY - initY + 1, initX, initY, finalX - initX + 1, finalY - initY + 1, alphaModifier * 255
+            'Debug.Print "Blending this many pixels: " & CStr((finalX - initX + 1) * (finalY - initY + 1))
             
             'Also, locked alpha requires us to restore the original bottom layer alpha values now
-            If (bottomAlphaMode = LA_LOCKED) Then PostProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False
+            If (bottomAlphaMode = LA_LOCKED) Then PostProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF
             
         End If
         
@@ -150,7 +151,7 @@ End Sub
 'Besides top and bottom DIB references, the destination (x, y) of the top DIB (relative to the bottom DIB) must be supplied.
 '
 'Returns: TRUE and filled destination coordinates if overlap occurs; FALSE otherwise.
-Private Function CalculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByRef initX As Long, ByRef initY As Long, ByRef finalX As Long, ByRef finalY As Long, ByRef xOffsetBottom As Long, ByRef yOffsetBottom As Long) As Boolean
+Private Function CalculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByRef initX As Long, ByRef initY As Long, ByRef finalX As Long, ByRef finalY As Long, ByRef xOffsetBottom As Long, ByRef yOffsetBottom As Long, Optional ByVal ptrToTopRectF As Long = 0) As Boolean
     
     'Start by calculating bounds for the main per-pixel compositor loop.  These bounds are relative to the *top layer*, as we do
     ' not perform compositing on areas of the bottom layer that *are not overlapped* by the top layer.  (We just treat them as if
@@ -159,16 +160,26 @@ Private Function CalculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     'Start by finding the intersection between the top DIB rect and the bottom DIB rect.  To ensure edges of subpixel positioning aren't missed,
     ' we use RECTFs for the check.
     Dim topRect As RECTF, bottomRect As RECTF, IntersectRect As RECTF
-    With topRect
-        .Left = 0
-        .Top = 0
-        .Width = topDIB.GetDIBWidth
-        .Height = topDIB.GetDIBHeight
-    End With
+    
+    If (ptrToTopRectF = 0) Then
+        With topRect
+            .Left = 0
+            .Top = 0
+            .Width = topDIB.GetDIBWidth
+            .Height = topDIB.GetDIBHeight
+        End With
+    Else
+        CopyMemory ByVal VarPtr(topRect), ByVal ptrToTopRectF, LenB(topRect)
+    End If
     
     With bottomRect
-        .Left = -dstX
-        .Top = -dstY
+        If (ptrToTopRectF = 0) Then
+            .Left = -dstX
+            .Top = -dstY
+        Else
+            .Left = topRect.Left - dstX
+            .Top = topRect.Top - dstY
+        End If
         .Width = bottomDIB.GetDIBWidth
         .Height = bottomDIB.GetDIBHeight
     End With
@@ -185,12 +196,12 @@ Private Function CalculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         initY = Int(IntersectRect.Top)
         finalX = Int(IntersectRect.Left + IntersectRect.Width + 0.9999)
         finalY = Int(IntersectRect.Top + IntersectRect.Height + 0.9999)
-        If finalX > (topDIB.GetDIBWidth - 1) Then finalX = topDIB.GetDIBWidth - 1
-        If finalY > (topDIB.GetDIBHeight - 1) Then finalY = topDIB.GetDIBHeight - 1
+        If (finalX > (topDIB.GetDIBWidth - 1)) Then finalX = topDIB.GetDIBWidth - 1
+        If (finalY > (topDIB.GetDIBHeight - 1)) Then finalY = topDIB.GetDIBHeight - 1
         
         'Individual blend functions need to know where the offset into the bottom DIB is, so calculate those last.
-        xOffsetBottom = Fix(dstX)
-        yOffsetBottom = Fix(dstY)
+        xOffsetBottom = Fix(dstX - topRect.Left)
+        yOffsetBottom = Fix(dstY - topRect.Top)
         
         'As a final failsafe, make sure the loop bounds never travel outside the *bottom* DIB's boundaries.
         If (xOffsetBottom + finalX) > (bottomDIB.GetDIBWidth - 1) Then finalX = (bottomDIB.GetDIBWidth - 1) - xOffsetBottom
@@ -204,7 +215,7 @@ End Function
 
 'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
 ' the actual blending code inside each blend function, because special alpha handling is never required.
-Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False)
+Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
     
     'Only some settings require us to use this function.
     Dim needToStay As Boolean
@@ -214,7 +225,22 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
         'Some alpha modes can be completely shortcutted via helper functions
         If (bottomAlphaMode = LA_LOCKED) Then
-            DIB_Support.RetrieveTransparencyTable bottomDIB, m_AlphaCopy
+            
+            'Locked alpha is a little weird, because we're copying out the alpha values of the *bottom* layer.  Because the rect
+            ' we've been passed is relative to the *top* layer, we need to calculate a transform now.
+            If (ptrToTopLayerAlternateRectF <> 0) Then
+                Dim tmpRectF As RECTF, tmpRectFSrc As RECTF
+                CopyMemory ByVal VarPtr(tmpRectFSrc), ByVal ptrToTopLayerAlternateRectF, LenB(tmpRectF)
+                With tmpRectF
+                    .Left = tmpRectFSrc.Left + xOffset
+                    .Top = tmpRectFSrc.Top + yOffset
+                    .Width = tmpRectFSrc.Width
+                    .Height = tmpRectFSrc.Height
+                End With
+                ptrToTopLayerAlternateRectF = VarPtr(tmpRectF)
+            End If
+            
+            DIB_Support.RetrieveTransparencyTable bottomDIB, m_AlphaCopy, ptrToTopLayerAlternateRectF
             Exit Sub
         End If
     
@@ -338,10 +364,25 @@ End Sub
 
 'After blending two DIBs, call this function to postprocess any alpha-specific effects (masks, inheritance, etc).  Note that
 ' not all alpha modes require this, but there is no harm in calling it regardless.
-Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False)
+Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
     
     If (bottomAlphaMode = LA_LOCKED) Then
-        DIB_Support.ApplyTransparencyTable bottomDIB, m_AlphaCopy
+        
+        'Locked alpha is a little weird, because we're copying in the alpha values of the *bottom* layer.  Because the rect
+        ' we've been passed is relative to the *top* layer, we need to calculate a transform now.
+        If (ptrToTopLayerAlternateRectF <> 0) Then
+            Dim tmpRectF As RECTF, tmpRectFSrc As RECTF
+            CopyMemory ByVal VarPtr(tmpRectFSrc), ByVal ptrToTopLayerAlternateRectF, LenB(tmpRectF)
+            With tmpRectF
+                .Left = tmpRectFSrc.Left + xOffset
+                .Top = tmpRectFSrc.Top + yOffset
+                .Width = tmpRectFSrc.Width
+                .Height = tmpRectFSrc.Height
+            End With
+            ptrToTopLayerAlternateRectF = VarPtr(tmpRectF)
+        End If
+            
+        DIB_Support.ApplyTransparencyTable bottomDIB, m_AlphaCopy, ptrToTopLayerAlternateRectF
     End If
     
 End Sub
@@ -1153,7 +1194,7 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
+                If (bottomA <> 1) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
