@@ -67,17 +67,17 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String
+        Dim retBytes() As Byte, retString As String, retSize As Long
         
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes) Then
+        If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
             #End If
             
             'Copy the received bytes into a string
-            retString = Space$((UBound(retBytes) + 1) \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            retString = Space$(retSize \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
             dstImage.ReadExternalData retString, True, sourceIsUndoFile
@@ -105,11 +105,11 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             #End If
         
             'First, retrieve the layer's header
-            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes) Then
+            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, False, retSize) Then
             
                 'Copy the received bytes into a string
-                retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                retString = Space$(retSize \ 2)
+                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                 
                 'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                 If Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(retString) Then
@@ -151,12 +151,12 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                     pdDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
                 #End If
                 
-                If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes) Then
+                If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes, False, retSize) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager gained full Unicode compatibility.
-                    retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    retString = Space$(retSize \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                     If dstImage.GetLayerByIndex(i).CreateVectorDataFromXML(retString) Then
@@ -189,15 +189,15 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         #End If
         
         'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
-        If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes) Then
+        If pdiReader.GetNodeDataByName("pdMetadata_Raw", True, retBytes, False, retSize) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
             #End If
         
             'Copy the received bytes into a string
-            retString = Space$((UBound(retBytes) + 1) \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            retString = Space$(retSize \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
@@ -212,15 +212,15 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         '(As of v7.0, a serialized copy of the image's metadata is also stored.  This copy contains all user edits
         ' and other changes.)
-        If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes) Then
+        If pdiReader.GetNodeDataByName("pdMetadata_Raw", False, retBytes, False, retSize) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Serialized metadata chunk found.  Retrieving now..."
             #End If
         
             'Copy the received bytes into a string
-            retString = Space$((UBound(retBytes) + 1) \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            retString = Space$(retSize \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
@@ -299,13 +299,13 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
     
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String
+        Dim retBytes() As Byte, retString As String, retSize As Long
         
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes) Then
+        If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
         
             'Copy the received bytes into a string
-            retString = Space$((UBound(retBytes) + 1) \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            retString = Space$(retSize \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the target pdImage, which will read the XML data and initialize itself accordingly
             dstImage.ReadExternalData retString, True, True, True
@@ -338,11 +338,11 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
             If (dstImage.GetLayerIndexFromID(layerNodeID) <> i) Then dstImage.SwapTwoLayers dstImage.GetLayerIndexFromID(layerNodeID), i
             
             'Now that the node is in place, we can retrieve its header.
-            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes) Then
+            If pdiReader.GetNodeDataByIndex(i + 1, True, retBytes, False, retSize) Then
             
                 'Copy the received bytes into a string
-                retString = Space$((UBound(retBytes) + 1) \ 2)
-                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                retString = Space$(retSize \ 2)
+                CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                 
                 'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                 If Not dstImage.GetLayerByIndex(i).CreateNewLayerFromXML(retString, , True) Then
@@ -417,13 +417,13 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
         ' since the time this pdImage file was created.  To work around that, we must located the layer using its cardinal
         ' ID value, which is helpfully stored as the node ID parameter for a given layer node.
         
-        Dim retBytes() As Byte, retString As String
+        Dim retBytes() As Byte, retString As String, retSize As Long
         
-        If pdiReader.GetNodeDataByID(targetLayerID, True, retBytes) Then
+        If pdiReader.GetNodeDataByID(targetLayerID, True, retBytes, False, retSize) Then
         
             'Copy the received bytes into a string
-            retString = Space$((UBound(retBytes) + 1) \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            retString = Space$(retSize \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
             ' Note that we also pass along the loadHeaderOnly flag, which will instruct the layer to erase its current
@@ -461,12 +461,12 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             'Text and other vector layers
             ElseIf dstLayer.IsLayerVector Then
                 
-                If pdiReader.GetNodeDataByID(targetLayerID, False, retBytes) Then
+                If pdiReader.GetNodeDataByID(targetLayerID, False, retBytes, False, retSize) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager was given Unicode compatibility.
-                    retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    retString = Space$(retSize \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                     If dstLayer.CreateVectorDataFromXML(retString) Then
@@ -551,13 +551,13 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
         ' (in XML format, as expected).  The layer's DIB data is stored to the node's data chunk (in binary format, as expected).
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
-        Dim retBytes() As Byte, retString As String
+        Dim retBytes() As Byte, retString As String, retSize As Long
         
-        If pdiReader.GetNodeDataByIndex(0, True, retBytes) Then
+        If pdiReader.GetNodeDataByIndex(0, True, retBytes, False, retSize) Then
         
             'Copy the received bytes into a string
-            retString = Space$((UBound(retBytes) + 1) \ 2)
-            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+            retString = Space$(retSize \ 2)
+            CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
             
             'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
             ' Note that we pass the loadHeaderOnly request to this function; if this is a header-only load, the target
@@ -572,7 +572,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
         
         'Unless a header-only load was requested, we will now repeat the steps above, but for layer-specific data
         ' (a raw DIB stream for raster layers, or an XML string for vector/text layers)
-        If Not loadHeaderOnly Then
+        If (Not loadHeaderOnly) Then
         
             'How we extract this data varies by layer type.  Raster layers can skip the need for a temporary buffer, because we've
             ' already created a DIB with a built-in buffer for the pixel data.
@@ -595,12 +595,12 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             'Text and other vector layers
             ElseIf dstLayer.IsLayerVector Then
                 
-                If pdiReader.GetNodeDataByIndex(0, False, retBytes) Then
+                If pdiReader.GetNodeDataByIndex(0, False, retBytes, False, retSize) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager was given Unicode compatibility.
-                    retString = Space$((UBound(retBytes) + 1) \ 2)
-                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    retString = Space$(retSize \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
                     If dstLayer.CreateVectorDataFromXML(retString) Then

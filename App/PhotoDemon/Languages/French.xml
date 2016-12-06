@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.219</langversion>
+<langversion>6.7.220</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -176,6 +176,12 @@
 <!-- Colors.bas contains 0 phrases. -->
 
 <!-- END text for Colors.bas-->
+
+<!-- BEGIN text for Compression.bas -->
+
+<!-- Compression.bas contains 0 phrases. -->
+
+<!-- END text for Compression.bas-->
 
 <!-- BEGIN text for VBP_DIBHandler.bas -->
 
@@ -1713,6 +1719,12 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <!-- END text for Plugin_FreeImage.bas-->
 
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -2496,12 +2508,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- cFileDialogVista.cls contains 0 phrases. -->
 
 <!-- END text for cFileDialogVista.cls-->
-
-<!-- BEGIN text for cBasicBuffer.cls -->
-
-<!-- cBasicBuffer.cls contains 0 phrases. -->
-
-<!-- END text for cBasicBuffer.cls-->
 
 <!-- BEGIN text for cGoogleTranslate.cls -->
 
@@ -3332,6 +3338,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdStream.cls -->
+
+<!-- pdStream.cls contains 0 phrases. -->
+
+<!-- END text for pdStream.cls-->
 
 <!-- BEGIN text for pdStringStack.cls -->
 
@@ -14959,18 +14971,6 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Compression.bas -->
-
-<!-- Compression.bas contains 0 phrases. -->
-
-<!-- END text for Compression.bas-->
-
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
 
 <!-- Automatic text extraction complete. -->
 

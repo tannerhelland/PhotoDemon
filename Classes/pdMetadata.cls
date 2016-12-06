@@ -316,7 +316,7 @@ End Function
 'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
 ' (The parent image's ID format is also passed to this function, because a custom "ready" tag with the image's ID must be manually
 '  removed from the XML string.)
-Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As Long) As Boolean
+Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As Long) As Boolean
 
     'If the ExifTool plugin can't be found, abandon all metadata loading attempts
     If (Not g_ExifToolEnabled) Then
@@ -326,7 +326,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     End If
     
     'If no metadata was returned, we can also abandon this function
-    If Len(mdString) = 0 Then
+    If (Len(mdString) = 0) Then
         LoadAllMetadata = False
         Exit Function
     End If
@@ -344,7 +344,7 @@ Public Function LoadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     'Because PD intercepts metadata asynchronously, the returned string will contain trailing text similar to {ready123},
     ' where 123 is the ID number of this image.  Because we don't actually want to store that text, use the supplied
     ' parentImageID to find and remove the trailing synchronizer bit.
-    If InStrRev(mdString, "{ready", , vbBinaryCompare) <> 0 Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", "")
+    If (InStrRev(mdString, "{ready", , vbBinaryCompare) <> 0) Then mdString = Replace$(mdString, "{ready" & parentImageID & "}", "")
     
     'We now have a (potentially very large) string of XML-formatted metadata.  Before doing anything else, make a backup copy of
     ' that string.  We need this backup when it comes time to write the metadata back out to file.

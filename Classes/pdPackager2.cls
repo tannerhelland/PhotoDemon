@@ -17,11 +17,12 @@ Attribute VB_Exposed = False
 'Created: 05/April/14
 'Last updated: 04/December/16
 'Last update: add lz4 as a valid compression engine option
-'Dependencies: - clsBasicBuffer class by dilettante (used to read/write byte array buffers more easily)
+'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
-'              - the VB_Hacks module, which provides highly optimized workarounds for some lacking VB functionality
-'              - the Compression module and any attached plugin modules (e.g. Plugin_zlib, Plugin_lz4) if you want compression support
+'              - VB_Hacks module from photodemon.org (optimized workarounds for lacking VB functionality)
+'              - Compression module and any attached plugin modules (e.g. Plugin_zlib, Plugin_lz4) from photodemon.org
+'                 (if you want compression support)
 '
 'This class provides an interface for creating and reading "pdPackage" files.  pdPackages are zip-like archive files
 ' that contain one or more "nodes" (e.g. pieces of data), compressed or uncompressed, in a VB-friendly structure.
@@ -74,10 +75,6 @@ Attribute VB_Exposed = False
 '     implement this.  Sorry.
 ' 4) When reading pdPackage files, relevant file bits will only be loaded as-necessary.  As such, you cannot delete the
 '     original file until all interactions are complete.
-' 5) This class has clsBasicBuffer as a dependency.  Thank you to dilettante for this minimal buffer class, which greatly
-'     simplifies the process of reading/writing byte streams.  Note that I have modified the required clsBasicBuffer class
-'     to operate directly on pointers (as it's much faster when working with large data chunks), so you cannot drop in
-'     dilettante's original class and expect it to work.  You *must* use the modified version that comes with PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -230,9 +227,9 @@ Private m_FileHeader As PDP_HEADER
 Private m_NodeDirectory() As PDP_NODE
 Private m_NumOfNodes As Long
 
-'The actual data chunk of the pdPackage is assembled using a clsBasicBuffer instance.  It greatly simplifies the process of
+'The actual data chunk of the pdPackage is assembled using a pdStream instance.  It greatly simplifies the process of
 ' assembling a 1D byte array from discrete individual chunks.
-Private m_DataBuffer As clsBasicBuffer
+Private m_DataBuffer As pdStream
 
 'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
 Private m_File As pdFSO
@@ -305,9 +302,8 @@ Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional
     ' the size of the default chunk size, the buffer class is smart enough to extend the buffer by the size of that byte array.
     ' If writing a lot of small data, however, the chunk size becomes important; try to make it large enough that you will only
     ' require a handful of ReDim Preserve statements throughout the pdPackage assembly process.
-    Set m_DataBuffer = New clsBasicBuffer
-    m_DataBuffer.ChunkSize = 32768
-    m_DataBuffer.OpenBuf estimatedDataChunkSize
+    Set m_DataBuffer = New pdStream
+    m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , estimatedDataChunkSize
 
 End Sub
 
@@ -406,9 +402,9 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     
     'Mark the offset for this data chunk.
     If useHeaderBuffer Then
-        m_NodeDirectory(nodeIndex).NodeHeaderOffset = m_DataBuffer.Position
+        m_NodeDirectory(nodeIndex).NodeHeaderOffset = m_DataBuffer.GetPosition
     Else
-        m_NodeDirectory(nodeIndex).NodeDataOffset = m_DataBuffer.Position
+        m_NodeDirectory(nodeIndex).NodeDataOffset = m_DataBuffer.GetPosition
     End If
     
     'If we are not using compression, we can write the node data as-is.  Note that header or data doesn't matter here,
@@ -724,9 +720,9 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         'Update the size of the directory chunk
         .DirectoryChunkSizeOriginal = .NodeStructSize * m_NumOfNodes
         
-        'Trim the data buffer, and update the size of the data chunk using the exact size of the final buffer.
-        m_DataBuffer.ShrinkBuf
-        .DataChunkSizeOriginal = m_DataBuffer.Size + 1
+        'We could trim the data buffer here, but it hurts performance and doesn't gain us anything - so instead, just read the
+        ' current stream size and write it into the file header.
+        .DataChunkSizeOriginal = m_DataBuffer.GetStreamSize
         
     End With
     
@@ -794,7 +790,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             CopyMemory_Strict mmapPtr, VarPtr(m_FileHeader), mmapOffset
             
             'Data buffer...
-            CopyMemory_Strict mmapPtr + mmapOffset, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSizePacked
+            CopyMemory_Strict mmapPtr + mmapOffset, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
             
             'Directory at the end...
             CopyMemory_Strict mmapPtr + mmapOffset + m_FileHeader.DataChunkSizePacked, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
@@ -808,7 +804,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             'Writing out the three crucial pieces of data: the header, the data, the directory
             With m_File
                 .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
-                .WriteDataToFile hFile, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSizePacked
+                .WriteDataToFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
                 .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
             End With
             
@@ -964,16 +960,18 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
             
             'Now, retrieve the data chunk
-            Set m_DataBuffer = New clsBasicBuffer
+            Set m_DataBuffer = New pdStream
+            m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
             If (m_FileHeader.DataChunkSizePacked = m_FileHeader.DataChunkSizeOriginal) Then
             
                 'No compression applied, so we can retrieve the data chunk as-is.  (Note that we entirely skip the use of a
                 ' temporary array, and instead read the data directly into our buffer object.)
-                m_DataBuffer.EnsureBufferSizeAvailable m_FileHeader.DataChunkSizeOriginal
-                m_File.ReadDataFromFile hFile, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSizeOriginal, m_FileHeader.DataChunkPosition, FILE_BEGIN
+                m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSizeOriginal, True
+                m_File.ReadDataFromFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizeOriginal, m_FileHeader.DataChunkPosition, FILE_BEGIN
                 
                 'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
-                m_DataBuffer.Position = 0
+                m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSizeOriginal
+                m_DataBuffer.SetPosition 0
                 
             Else
                 InternalErrorMsg "Data chunk sizes don't match.  Package cannot be read."
@@ -1405,9 +1403,11 @@ End Function
 ' (FALSE generally only occurs if the requested node cannot be found in the source data.)
 '
 'If useHeaderBuffer is TRUE, the node's header buffer will be retrieved.  Otherwise, the node's data buffer will be used.
+' Also note that decompression is handled automatically, depending on the contents of the source file.
 '
-' Decompression is handled automatically, depending on the contents of the source file.
-Public Function GetNodeDataByName(ByVal targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte) As Boolean
+'For an explanation of the trimDstArray and dstFinalSize parameters, please see GetNodeDataByIndex(), below (which this function
+' merely wraps).
+Public Function GetNodeDataByName(ByVal targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
 
     'Node headers use a fixed-length 32 character string for storing names.  As such, pad the supplied node name to
     ' 32 chars as necessary.
@@ -1427,14 +1427,14 @@ Public Function GetNodeDataByName(ByVal targetNodeName As String, ByVal useHeade
     
     'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
     If (nodeIndex >= 0) Then
-        GetNodeDataByName = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray())
+        GetNodeDataByName = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), trimDstArray, dstFinalSize)
     Else
         GetNodeDataByName = False
     End If
 
 End Function
 
-Public Function GetNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte) As Boolean
+Public Function GetNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
 
     'Search the node array for a matching ID
     Dim i As Long, nodeIndex As Long
@@ -1451,7 +1451,7 @@ Public Function GetNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffe
         
         'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
         If (nodeIndex >= 0) Then
-            GetNodeDataByID = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray())
+            GetNodeDataByID = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), trimDstArray, dstFinalSize)
         Else
             GetNodeDataByID = False
         End If
@@ -1490,12 +1490,18 @@ Public Function GetNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByV
         
 End Function
 
-'GetNodeHeaderByName and GetNodeHeaderByID both wrap this function.  (Those functions are simply used
-' to retrieve the relevant index for a node.)
+'GetNodeHeaderByName and GetNodeHeaderByID both wrap this function.  (Those functions simply calculate the relevant index for
+' their requested node, then return the results of this function.)
 '
 'Given a node index, and a target location (header buffer or data buffer), fill a destination array with the contents of that
-' data buffer.  Decompression and checksum validation is handled automatically, depending on the contents of the node.
-Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte) As Boolean
+' data buffer.  Decompression is handled automatically, depending on the contents of the node.
+'
+'By default, trimDstArray is TRUE, which tells this function to size the destination array to *exactly* match the size of the
+' read data.  This is not a great solution for performance, as it means a unique destination array will likely be allocated
+' on each call to this function.  Instead, it is suggested that you set trimDstArray to FALSE, then read the final size
+' actually returned by checking the optional dstFinalSize parameter.  This allows you to reuse destination arrays wherever
+' possible, reducing allocations and greatly improving read performance.
+Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
 
     'Retrieve the offset, packed size, and original (unpacked) size of the target data
     Dim dataOffset As Long, dataPackedSize As Long, dataOriginalSize As Long
@@ -1511,13 +1517,35 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     End If
     
     'Move the data buffer position to the relevant offset for the requested chunk
-    m_DataBuffer.Position = dataOffset
+    m_DataBuffer.SetPosition dataOffset
     
     'If the original size and packed size are different, assume the data is compressed.
     If (dataPackedSize <> dataOriginalSize) Then
         
-        'Resize the destination buffer to the original size of the data
-        ReDim dstArray(0 To dataOriginalSize - 1) As Byte
+        'Resize the destination buffer to the original size of the data as necessary
+        Dim needToSizeArray As Boolean: needToSizeArray = False
+        
+        'If the user doesn't want the destination array trimmed, we can still check to see if it's already the
+        ' perfect size; while the odds of this are low, the potential performance gains are large, so it's
+        ' worth the trouble.
+        If trimDstArray Then
+            If VB_Hacks.IsArrayInitialized(dstArray) Then
+                If ((UBound(dstArray) - LBound(dstArray) + 1) <> dataOriginalSize) Then needToSizeArray = True
+            Else
+                needToSizeArray = True
+            End If
+        
+        'If the user doesn't want the destination array trimmed, we only need to resize it if it's too small for
+        ' this read (or if it's uninitialized, obviously).
+        Else
+            If VB_Hacks.IsArrayInitialized(dstArray) Then
+                If ((UBound(dstArray) - LBound(dstArray) + 1) < dataOriginalSize) Then needToSizeArray = True
+            Else
+                needToSizeArray = True
+            End If
+        End If
+        
+        If needToSizeArray Then ReDim dstArray(0 To dataOriginalSize - 1) As Byte
         
         Dim decompressionResult As Boolean: decompressionResult = False
         
@@ -1531,8 +1559,13 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             If m_Lz4Available Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_Lz4)
         End If
         
+        'If decompression was successful, return the data's size (which the caller can use if the array is not being
+        ' trimmed to exactly fit the returned data).
+        If decompressionResult Then
+            dstFinalSize = dataOriginalSize
+            
         'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
-        If (Not decompressionResult) Then
+        Else
             InternalErrorMsg "WARNING!  Could not decompress pdPackage node #" & nodeIndex & ".  Possible explanations include missing decompression library or file corruption."
             GetNodeDataByIndex = False
             Exit Function
@@ -1541,7 +1574,8 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
         If (dataPackedSize <> 0) Then
-            dstArray = m_DataBuffer.ReadBytes(dataPackedSize)
+            m_DataBuffer.ReadBytes dstArray, dataPackedSize, trimDstArray
+            dstFinalSize = dataOriginalSize
         Else
             InternalErrorMsg "File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt."
             GetNodeDataByIndex = False
@@ -1585,7 +1619,7 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
     End If
     
     'Move the data buffer position to the relevant offset for the requested chunk
-    m_DataBuffer.Position = dataOffset
+    m_DataBuffer.SetPosition dataOffset
     
     'If the original size and packed size are different, assume the data is compressed.
     If (dataPackedSize <> dataOriginalSize) Then
@@ -1808,7 +1842,7 @@ Private Sub Class_Terminate()
     
     'Release our data stream buffer
     If Not (m_DataBuffer Is Nothing) Then
-        m_DataBuffer.CloseBuf
+        m_DataBuffer.StopStream
         Set m_DataBuffer = Nothing
     End If
     

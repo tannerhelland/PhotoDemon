@@ -17,7 +17,7 @@ Attribute VB_Exposed = False
 'Created: 05/April/14
 'Last updated: 06/February/15
 'Last update: expand zip-like interface, with help from the new pdFSO class
-'Dependencies: clsBasicBuffer class by dilettante (used to read/write byte array buffers more easily)
+'Dependencies: pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              pdStringStack class from photodemon.org (optimized handling of large string collections)
 '
@@ -71,11 +71,6 @@ Attribute VB_Exposed = False
 ' 4) When reading pdPackage files, the full original file contents will be cached in memory.  This allows you to load an
 '     archive, then delete the original file without penalty.  Similarly, if you need access to an archive for an extended
 '     period of time, this allows you to load it just once, then perform any operations from the in-memory copy alone.
-'
-' 5) This class has clsBasicBuffer as a dependency.  Thank you to dilettante for this minimal buffer class, which greatly
-'     simplifies the process of reading/writing byte streams.  Note that I have modified the required clsBasicBuffer class
-'     to operate directly on pointers (as it's much faster when working with large data chunks), so you cannot drop in
-'     dilettante's original class and expect it to work.  You *must* use the modified version that comes with PhotoDemon.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -224,9 +219,9 @@ Private m_FileHeader As PDP_HEADER
 Private m_NodeDirectory() As PDP_NODE
 Private m_NumOfNodes As Long
 
-'The actual data chunk of the pdPackage will be assembled using a clsBasicBuffer instance.  It greatly simplifies the process of
+'The actual data chunk of the pdPackage will be assembled using a pdStream instance.  It greatly simplifies the process of
 ' assembling a 1D byte array from discrete individual chunks.
-Private m_DataBuffer As clsBasicBuffer
+Private m_DataBuffer As pdStream
 
 'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
 Private m_File As pdFSO
@@ -299,9 +294,8 @@ Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional
     ' the size of the default chunk size, the buffer class is smart enough to extend the buffer by the size of that byte array.
     ' If writing a lot of small data, however, the chunk size becomes important; try to make it large enough that you will only
     ' require a handful of ReDim Preserve statements throughout the pdPackage assembly process.
-    Set m_DataBuffer = New clsBasicBuffer
-    m_DataBuffer.ChunkSize = 32768
-    m_DataBuffer.OpenBuf estimatedDataChunkSize
+    Set m_DataBuffer = New pdStream
+    m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , estimatedDataChunkSize
 
 End Sub
 
@@ -394,9 +388,9 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     
     'Mark the offset for this data chunk.
     If useHeaderBuffer Then
-        m_NodeDirectory(nodeIndex).NodeHeaderOffset = m_DataBuffer.Position
+        m_NodeDirectory(nodeIndex).NodeHeaderOffset = m_DataBuffer.GetPosition
     Else
-        m_NodeDirectory(nodeIndex).NodeDataOffset = m_DataBuffer.Position
+        m_NodeDirectory(nodeIndex).NodeDataOffset = m_DataBuffer.GetPosition
     End If
     
     'If we are not using compression, we can write the node data as-is.  Note that header or data doesn't matter here,
@@ -729,8 +723,8 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         .DirectoryChunkSize = .NodeStructSize * m_NumOfNodes
         
         'Trim the data buffer, and update the size of the data chunk using the exact size of the final buffer.
-        m_DataBuffer.ShrinkBuf
-        .DataChunkSize = m_DataBuffer.Size + 1
+        m_DataBuffer.TrimStream
+        .DataChunkSize = m_DataBuffer.GetStreamSize + 1
         
     End With
     
@@ -757,7 +751,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     ' the data chunk from where it currently exists in-memory.  This is faster than making a copy of the data, which may be quite large.
     originalSize = m_FileHeader.DataChunkSize
     If secondPassDataCompression Then
-        If CopyPtrToArray(m_DataBuffer.CurrentBytesPointer, originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
+        If CopyPtrToArray(m_DataBuffer.Peek_PointerOnly(0), originalSize, rawDataBuffer, compressedSize, secondPassDataCompression, , True) Then
             m_FileHeader.DataChunkSizeCompressed = compressedSize
             SetBitFlag PDP_FLAG_ZLIB_REQUIRED, True, m_FileHeader.DataFlags(0)
         Else
@@ -804,7 +798,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             If secondPassDataCompression Then
                 CopyMemory mmapPtr + mmapOffset + netDirectorySize, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
             Else
-                CopyMemory mmapPtr + mmapOffset + netDirectorySize, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSize
+                CopyMemory mmapPtr + mmapOffset + netDirectorySize, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSize
             End If
 
             'Release the mapped view and allow the system to write the file at its leisure
@@ -822,7 +816,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
                 If secondPassDataCompression Then
                     .WriteDataToFile hFile, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
                 Else
-                    .WriteDataToFile hFile, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSize
+                    .WriteDataToFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSize
                 End If
                 
             End With
@@ -1034,16 +1028,18 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             CopyMemory VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
             
             'Now, retrieve the data chunk, and apply the same decompression test that we did for the directory chunk.
-            Set m_DataBuffer = New clsBasicBuffer
+            Set m_DataBuffer = New pdStream
+            m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
             If (m_FileHeader.DataChunkSizeCompressed = 0) Then
             
                 'No compression applied, so we can retrieve the data chunk as-is.  (Note that we entirely skip the use of a
                 ' temporary array, and instead read the data directly into our buffer object.)
-                m_DataBuffer.EnsureBufferSizeAvailable m_FileHeader.DataChunkSize
-                m_File.ReadDataFromFile hFile, m_DataBuffer.CurrentBytesPointer, m_FileHeader.DataChunkSize
+                m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSize
+                m_File.ReadDataFromFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSize
                 
                 'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
-                m_DataBuffer.Position = 0
+                m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSize
+                m_DataBuffer.SetPosition 0
                 
             Else
                 
@@ -1082,8 +1078,8 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
                 'Pass the data chunk to the m_DataBuffer class (which we'll use for further parsing).  Note that we deliberately reset
                 ' the data pointer after the write, instead of letting it auto-position itself at the end of the buffer.
-                m_DataBuffer.WriteBytes rawBuffer, UBound(rawBuffer) + 1
-                m_DataBuffer.Position = 0
+                m_DataBuffer.WriteByteArray rawBuffer, UBound(rawBuffer) + 1
+                m_DataBuffer.SetPosition 0
             
             End If
             
@@ -1153,9 +1149,9 @@ Private Function LoadLegacyPDPackage(ByRef srcFile As String) As Boolean
                     ReDim rawDataBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
                     Get #fileNum, , rawDataBuffer
                     
-                    Set m_DataBuffer = New clsBasicBuffer
-                    m_DataBuffer.OpenBuf
-                    m_DataBuffer.WriteBytes rawDataBuffer
+                    Set m_DataBuffer = New pdStream
+                    m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadOnly
+                    m_DataBuffer.WriteByteArray rawDataBuffer
                     
                     'Mark the load as successful
                     LoadLegacyPDPackage = True
@@ -1738,7 +1734,7 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     End If
     
     'Move the data buffer position to the relevant offset for the requested chunk
-    m_DataBuffer.Position = dataOffset
+    m_DataBuffer.SetPosition dataOffset
     
     'If the original size and packed size are different, assume the data is compressed.
     If (dataPackedSize <> dataOriginalSize) Then
@@ -1770,7 +1766,7 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
         If (dataPackedSize <> 0) Then
-            dstArray = m_DataBuffer.ReadBytes(dataPackedSize)
+            m_DataBuffer.ReadBytes dstArray, dataPackedSize
         Else
             RaiseInternalMessage "File node is uncompressed, but size is listed as zero.  Load impossible; abandoning attempt."
             GetNodeDataByIndex = False
@@ -1851,7 +1847,7 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
     End If
     
     'Move the data buffer position to the relevant offset for the requested chunk
-    m_DataBuffer.Position = dataOffset
+    m_DataBuffer.SetPosition dataOffset
     
     'If the original size and packed size are different, assume the data is compressed.
     If (dataPackedSize <> dataOriginalSize) Then
@@ -2116,7 +2112,7 @@ Private Sub Class_Terminate()
     
     'Release our data stream buffer
     If Not (m_DataBuffer Is Nothing) Then
-        m_DataBuffer.CloseBuf
+        m_DataBuffer.StopStream
         Set m_DataBuffer = Nothing
     End If
     

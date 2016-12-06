@@ -6,8 +6,8 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2066</langversion>
-<langstatus>Abgeschlossen</langstatus>
+<langversion>6.8.2074</langversion>
+<langstatus>Vollständig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
 
@@ -176,6 +176,12 @@
 <!-- Colors.bas contains 0 phrases. -->
 
 <!-- END text for Colors.bas-->
+
+<!-- BEGIN text for Compression.bas -->
+
+<!-- Compression.bas contains 0 phrases. -->
+
+<!-- END text for Compression.bas-->
 
 <!-- BEGIN text for VBP_DIBHandler.bas -->
 
@@ -1722,6 +1728,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <!-- END text for Plugin_FreeImage.bas-->
 
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -2506,12 +2518,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- cFileDialogVista.cls contains 0 phrases. -->
 
 <!-- END text for cFileDialogVista.cls-->
-
-<!-- BEGIN text for cBasicBuffer.cls -->
-
-<!-- cBasicBuffer.cls contains 0 phrases. -->
-
-<!-- END text for cBasicBuffer.cls-->
 
 <!-- BEGIN text for cGoogleTranslate.cls -->
 
@@ -3342,6 +3348,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for pdSelection.cls-->
+
+<!-- BEGIN text for pdStream.cls -->
+
+<!-- pdStream.cls contains 0 phrases. -->
+
+<!-- END text for pdStream.cls-->
 
 <!-- BEGIN text for pdStringStack.cls -->
 
@@ -6393,7 +6405,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Monochrome Conversion</original>
-<translation>Monochrome Konversion</translation>
+<translation>Monochrome Konvertierung</translation>
 </phrase>
 
 <phrase>
@@ -13736,27 +13748,27 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
-<translation>z. B. "1.0.0". Verwenden Sie bitte das Format "Hauptversion.Unterversion.Änderung".</translation>
+<translation>Bspw. "1.0.0". Verwenden Sie bitte das Format "Hauptversion.Unterversion.Revision".</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
-<translation>z. B. "vollständig", "unfertig", etc. Jeder deskriptive Text ist akzeptabel.</translation>
+<translation>Bspw. "Vollständig", "Unfertig" etc. Jeder deskriptive Text ist akzeptabel.</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
-<translation>z. B. "Deutsch" oder "Deutsch (Schweiz)". Dieser Text wird im Sprachmenü von PhotoDemon angezeigt.</translation>
+<translation>Bspw. "Deutsch" oder "Deutsch (DE)". Dieser Text wird im Sprachmenü von PhotoDemon angezeigt.</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
-<translation>z. B. "DE" für "Deutschland". Verwenden Sie bitte das offizielle 2-stellige ISO-3166-1-Format.</translation>
+<translation>Bspw. "DE" für "Deutschland". Verwenden Sie bitte das offizielle 2-stellige ISO-3166-1-Format.</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
-<translation>z. B. "de" für "Deutsch". Verwenden Sie bitte das offizielle 2-stellige ISO-639-1-Format.</translation>
+<translation>Bspw. "de" für "Deutsch". Verwenden Sie bitte das offizielle 2-stellige ISO-639-1-Format.</translation>
 </phrase>
 
 <phrase>
@@ -14968,18 +14980,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Compression.bas -->
-
-<!-- Compression.bas contains 0 phrases. -->
-
-<!-- END text for Compression.bas-->
-
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
 
 <!-- Automatic text extraction complete. -->
 
