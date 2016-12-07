@@ -32,7 +32,7 @@ Attribute VB_Exposed = False
 '
 'Though I have created pdPackages specifically for use with PhotoDemon, this class should be easily usable by others
 ' with only minor modifications.  Note that compression support requires an explicit path to an STDCALL (sometimes
-' called WAPI) variant of either zlib, zstandard (zstd), or lz4, with the expected filename of "zlibwapi.dll",
+' called WAPI) variant of either zlib, zstandard (zstd), or lz4/lz4-hc, with the expected filename of "zlibwapi.dll",
 ' "libzstd.dll", or "liblz4.dll", respectively.  pdPackage can also be used without compression, though its benefits
 ' are greatly reduced.  (And obviously, you will not be able to open compressed archives from other sources.)
 '
@@ -64,12 +64,12 @@ Attribute VB_Exposed = False
 ' 1) At present, pdPackage files are not easily editable.  Once created, there is no interface for adding new nodes,
 '     erasing existing nodes, or modifying any of the pdPackage settings (compression, etc).  There's nothing in the format
 '     design that prevents these actions, but I haven't written edit functions because I have no reason to do so in PhotoDemon.
-' 2) As noted above, external libraries (zLib, zstd, and/or lz4) are required for compression.  pdPackages are designed in a way
-'     that makes it easy to use any compression functions (or other modification functions, e.g. encryption) of your choosing,
-'     or to ignore compression entirely if you don't require it.  That said, if you want to use the class without a compression
-'     library, but you intend to work with pdPackage files from other sources (which may use compression), you need to make use
-'     of the GetPackageFlag() function and the accompanying PDPF2_(library-name)_REQUIRED flags.  These will identify files your
-'     software cannot process without compression libraries.
+' 2) As noted above, external libraries (zLib, zstd, and/or lz4/lz4-hc) are required for compression.  pdPackages are designed
+'     in a way that makes it easy to use any compression functions (or other modification functions, e.g. encryption) of your
+'     choosing, or to ignore compression entirely if you don't require it.  That said, if you want to use the class without a
+'     compression library, but you intend to work with pdPackage files from other sources (which may use compression), you need
+'     to make use of the GetPackageFlag() function and the accompanying PDPF2_(library-name)_REQUIRED flags.  These will
+'     identify files your software cannot process without compression libraries.
 ' 3) Up to 2GB of data is theoretically supported, but you won't be able to reach that amount from within VB.  The
 '     rear-loaded directory format makes it possible to support larger file sizes, but I have not yet done the work to
 '     implement this.  Sorry.
@@ -171,7 +171,7 @@ Public Enum PDP_FLAGS_V2
     PDP_F2_ZlibRequired = 0   'There are one or more compressed entries in this chunk, so zLib will be required to read it
     PDP_F2_FileNode = 1       'This node contains a file added via the shortcut AutoAddNodeFromFile() function.
     PDP_F2_ZstdRequired = 2   'There are one or more zstd-compressed entries in this chunk
-    PDP_F2_Lz4Required = 3    'There are one or more lz4-compressed entries in this chunk
+    PDP_F2_Lz4Required = 3    'There are one or more lz4-compressed entries in this chunk.  Note that this flag doubles for both LZ4 and LZ4-HC, as they use identical decompressors.
 End Enum
 
 #If False Then
@@ -377,7 +377,7 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     'If compression is requested, make sure a matching compression engine is available
     If ((compressData = PD_CE_ZLib) And (Not m_ZLibAvailable)) Then compressData = PD_CE_NoCompression
     If ((compressData = PD_CE_Zstd) And (Not m_ZstdAvailable)) Then compressData = PD_CE_NoCompression
-    If ((compressData = PD_CE_Lz4) And (Not m_Lz4Available)) Then compressData = PD_CE_NoCompression
+    If (((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) And (Not m_Lz4Available)) Then compressData = PD_CE_NoCompression
     
     'If compression is requested, update the "zLib required" flag for both the file as a whole, and this specific node.
     If (compressData <> PD_CE_NoCompression) Then
@@ -387,7 +387,7 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         ElseIf (compressData = PD_CE_ZLib) Then
             SetBitFlag PDP_F2_ZlibRequired, True, m_FileHeader.DataFlags(0)
             SetBitFlag PDP_F2_ZlibRequired, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
-        ElseIf (compressData = PD_CE_Lz4) Then
+        ElseIf ((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) Then
             SetBitFlag PDP_F2_Lz4Required, True, m_FileHeader.DataFlags(0)
             SetBitFlag PDP_F2_Lz4Required, True, m_NodeDirectory(nodeIndex).NodeFlags(0)
         End If
@@ -744,7 +744,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
             SetBitFlag PDP_F2_ZstdRequired, True, m_FileHeader.DirectoryFlags(0)
         ElseIf ((secondPassDirectoryCompression = PD_CE_ZLib) And (originalSize <> compressedSize)) Then
             SetBitFlag PDP_F2_ZlibRequired, True, m_FileHeader.DirectoryFlags(0)
-        ElseIf ((secondPassDirectoryCompression = PD_CE_Lz4) And (originalSize <> compressedSize)) Then
+        ElseIf (((secondPassDirectoryCompression = PD_CE_Lz4) Or (secondPassDirectoryCompression = PD_CE_Lz4HC)) And (originalSize <> compressedSize)) Then
             SetBitFlag PDP_F2_Lz4Required, True, m_FileHeader.DirectoryFlags(0)
         End If
         

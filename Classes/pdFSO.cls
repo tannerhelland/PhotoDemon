@@ -1678,7 +1678,7 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
     If useUTF8 Then useUTF8 = m_Unicode.StringToUTF8Bytes(srcString, fileBytes)
     
     'Kill the output file as necessary
-    KillFile dstFilename
+    Me.KillFile dstFilename
     
     If useUTF8 Then
         
