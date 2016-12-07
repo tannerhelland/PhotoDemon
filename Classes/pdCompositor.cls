@@ -307,6 +307,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     Dim tmpDIB As pdDIB
     
     'Start by finding the union rect of the two layers.  This is the smallest rectangle that holds both layers.
+    ' (Note that this calculation occurs in the *image's* coordinate space.)
     Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
     Layer_Handler.FillRectForLayerF bottomLayer, bottomRect, True, True
     
@@ -352,8 +353,8 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
         If paintStrokesInside Then
             
             'Calculate new offsets for the top layer, then carry on with business as usual!
-            xOffset = topRect.Left
-            yOffset = topRect.Top
+            xOffset = topRect.Left - bottomRect.Left
+            yOffset = topRect.Top - bottomRect.Top
             
         'If the paint strokes do not lie inside the target layer, we have no choice but to create a new layer large
         ' enough to hold the results of the merge.
@@ -457,7 +458,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     'The paintbrush layer has been merged successfully!  Any further actions (like resetting the paint layer) must be handled by the caller.
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Merged two layers paint-style.  Time taken: " & Format$(CStr(VB_Hacks.GetTimerDifferenceNow(startTime)) * 1000, "###0.00") & " seconds."
+        pdDebug.LogAction "Merged two layers paint-style.  Time taken: " & Format$(CStr(VB_Hacks.GetTimerDifferenceNow(startTime)) * 1000, "###0.00") & " ms."
     #End If
     
 End Sub
