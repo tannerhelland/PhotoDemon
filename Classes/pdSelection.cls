@@ -2904,7 +2904,7 @@ End Function
 'External functions can use this function to request a thumbnail version of the selection mask.
 Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
-    If selMask Is Nothing Then
+    If (selMask Is Nothing) Then
         RequestThumbnail = False
         Exit Function
     End If
@@ -2934,15 +2934,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
     
     'Note that the user's thumbnail performance setting affects the quality used here.
-    If g_ThumbnailPerformance = PD_PERF_FASTEST Then
-        If g_ImageFormats.FreeImageEnabled Then
-            RequestThumbnail = FreeImageResizeDIBFast(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, FILTER_BILINEAR, True)
-        Else
-            RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, GP_IM_NearestNeighbor)
-        End If
-    Else
-        RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, GP_IM_HighQualityBicubic)
-    End If
+    RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, g_UserPreferences.GetThumbnailInterpolationPref())
     
     'NOTE: now that selection masks are 32-bpp, the destination thumbnail DIB is going to have wonky alpha values in the selection
     ' mask region.  Premultiply alpha manually to compensate.

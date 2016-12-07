@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2038</langversion>
+<langversion>6.8.2039</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -779,16 +779,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
-<original>Releasing all temporary image copies</original>
-<translation>释放所有临时图像副本</translation>
-</phrase>
-
-<phrase>
 <original>Save complete.</original>
 <translation>保存成功</translation>
 </phrase>
 
-<!-- GDIPlus.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- GDIPlus.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
 
 <!-- END text for GDIPlus.bas-->
 
@@ -14970,10 +14965,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4476 phrases. -->
-<!-- 1940 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12724 total words. -->
+<!-- As of this build, PhotoDemon contains 4475 phrases. -->
+<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12719 total words. -->
 
 </pdData>

@@ -2819,8 +2819,6 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         Exit Function
     End If
     
-    Message "Releasing all temporary image copies..."
-    
     'Release the GDI+ copy of the image
     GDIPlusReturn = GdipDisposeImage(hImage)
     
@@ -2843,47 +2841,47 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     'Use GDI+ to create a GDI+-compatible bitmap
     Dim GDIPlusReturn As Long
     Dim hGdipBitmap As Long
-    GetGdipBitmapHandleFromDIB hGdipBitmap, srcDIB
+    If GetGdipBitmapHandleFromDIB(hGdipBitmap, srcDIB) Then
+    
+        'Request a PNG encoder from GDI+
+        Dim uEncCLSID As clsid
+        Dim uEncParams As EncoderParameters
+        Dim aEncParams() As Byte
+            
+        pvGetEncoderClsID "image/png", uEncCLSID
+        uEncParams.Count = 1
+        ReDim aEncParams(1 To Len(uEncParams))
         
-    'Request a PNG encoder from GDI+
-    Dim uEncCLSID As clsid
-    Dim uEncParams As EncoderParameters
-    Dim aEncParams() As Byte
+        Dim gdipColorDepth As Long
+        gdipColorDepth = srcDIB.GetDIBColorDepth
         
-    pvGetEncoderClsID "image/png", uEncCLSID
-    uEncParams.Count = 1
-    ReDim aEncParams(1 To Len(uEncParams))
-    
-    Dim gdipColorDepth As Long
-    gdipColorDepth = srcDIB.GetDIBColorDepth
-    
-    With uEncParams.Parameter
-        .NumberOfValues = 1
-        .encType = EncoderParameterValueTypeLong
-        .Guid = pvDEFINE_GUID(EncoderColorDepth)
-        .Value = VarPtr(gdipColorDepth)
-    End With
-    
-    CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
-    
-    'Check to see if a file already exists at this location
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
-    
-    'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncCLSID), aEncParams(1))
-    
-    If (GDIPlusReturn <> 0) Then
-        GdipDisposeImage hGdipBitmap
-        GDIPlusQuickSavePNG = False
-        Exit Function
+        With uEncParams.Parameter
+            .NumberOfValues = 1
+            .encType = EncoderParameterValueTypeLong
+            .Guid = pvDEFINE_GUID(EncoderColorDepth)
+            .Value = VarPtr(gdipColorDepth)
+        End With
+        
+        CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
+        
+        'Check to see if a file already exists at this location
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
+        
+        'Perform the encode and save
+        GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncCLSID), aEncParams(1))
+        GDIPlusQuickSavePNG = CBool(GDIPlusReturn = GP_OK)
+        
+        'Release the GDI+ copy of the image
+        GDIPlusReturn = GdipDisposeImage(hGdipBitmap)
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  GDI+ QuickSavePNG failed to create a valid gdipBitmap handle."
+        #End If
     End If
     
-    'Release the GDI+ copy of the image
-    GDIPlusReturn = GdipDisposeImage(hGdipBitmap)
-    
-    GDIPlusQuickSavePNG = True
     Exit Function
     
 GDIPlusQuickSaveError:

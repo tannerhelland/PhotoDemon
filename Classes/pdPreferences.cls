@@ -15,11 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright 2012-2016 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 06/February/14
-'Last update: added new failsafes against the possibility of settings corruption.  If the program feels compelled to rewrite the
-'              settings file from scratch (for example, after a series of unsafe shutdowns), certain key settings-related
-'              preset files will also be rewritten.  This should protect against the random bug where the image tabstrip
-'              renders as if top-aligned but is clearly positioned as left-aligned.
+'Last updated: 07/December/16
+'Last update: migrate some global preference values into this module, which can better handle caching
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
 ' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
@@ -62,8 +59,6 @@ Private Const SHGFP_TYPE_CURRENT = &H0 'current value for user, verify it exists
 Private Const MAX_LENGTH = 260
 Private Const S_OK = 0
 
-'***
-
 'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
 '  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
 '  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user prefs, saved macros)
@@ -94,6 +89,30 @@ Private xmlEngine As pdXML
 ' "batch preference mode".  While active, a single XML class instance will be persistently used to handle all preference updates, and
 ' when the mode is released, all updates will be dumped to file.
 Private m_BatchModeActive As Boolean
+
+'Some preferences are used in performance-sensitive areas.  These preferences are cached internally to improve responsiveness.
+' Outside callers can retrieve them via their dedicated functions.
+Private m_ThumbnailPerformance As PD_PERFORMANCE_SETTING, m_ThumbnailInterpolation As GP_InterpolationMode
+
+'Helper functions for performance-sensitive preferences.
+Friend Function GetThumbnailInterpolationPref() As GP_InterpolationMode
+    GetThumbnailInterpolationPref = m_ThumbnailInterpolation
+End Function
+
+Friend Function GetThumbnailPerformancePref() As PD_PERFORMANCE_SETTING
+    GetThumbnailPerformancePref = m_ThumbnailPerformance
+End Function
+
+Friend Sub SetThumbnailPerformancePref(ByVal newSetting As PD_PERFORMANCE_SETTING)
+    m_ThumbnailPerformance = newSetting
+    If (newSetting = PD_PERF_BESTQUALITY) Then
+        m_ThumbnailInterpolation = GP_IM_HighQualityBicubic
+    ElseIf (newSetting = PD_PERF_BALANCED) Then
+        m_ThumbnailInterpolation = GP_IM_Bilinear
+    ElseIf (newSetting = PD_PERF_FASTEST) Then
+        m_ThumbnailInterpolation = GP_IM_NearestNeighbor
+    End If
+End Sub
 
 'Initialize batch preference mode.  This is used by the preferences dialog to allow us to write a whole swath of preferences in one fell swoop,
 ' without writing the updates out to file after each updated.
@@ -355,7 +374,7 @@ Public Sub LoadUserSettings()
     ' every time they're needed.)
     g_ColorPerformance = g_UserPreferences.GetPref_Long("Performance", "ColorPerformance", PD_PERF_BALANCED)
     g_InterfacePerformance = g_UserPreferences.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
-    g_ThumbnailPerformance = g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
+    Me.SetThumbnailPerformancePref g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 1)
     g_HighResolutionInput = g_UserPreferences.GetPref_Boolean("Interface", "HighResolutionInput", False)

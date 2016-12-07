@@ -642,14 +642,23 @@ AddIconFromHandle_Error:
     
 End Function
 
-
+'Add a menu image from a source file.  All GDI+ formats are supported (PNG, JPEG, etc).
+' MODIFIED BY TANNER: PhotoDemon's internal formats are preferentially tested before rolling over to GDI+.
 Public Function AddImageFromFile(ByVal srcFilename As String, Optional bGhosted As Boolean) As Boolean
 
     On Local Error GoTo AddImageFromFile_Error
     
     Dim hImage As Long
-    Call GdipLoadImageFromFile(StrPtr(srcFilename), hImage)
-    AddImageFromFile = pvAddImagen(hImage, bGhosted)
+    
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    If tmpDIB.CreateFromFile(srcFilename) Then
+        GDI_Plus.GetGdipBitmapHandleFromDIB hImage, tmpDIB
+    Else
+        GdipLoadImageFromFile StrPtr(srcFilename), hImage
+    End If
+    
+    If (hImage <> 0) Then AddImageFromFile = pvAddImagen(hImage, bGhosted)
     
 AddImageFromFile_Error:
 
@@ -702,7 +711,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
     Dim OldhDib As Long
 
     
-    If hImage <> 0 Then
+    If (hImage <> 0) Then
     
         Index = CreateNewDib()
         
@@ -741,7 +750,6 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
             If hAttributes Then Call GdipDisposeImageAttributes(hAttributes)
     
             GdipDisposeImage hImage
-    
             GdipDeleteGraphics hGraphics
             
             Call SelectObject(tmpDC, OldhDib)

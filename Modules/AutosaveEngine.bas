@@ -84,17 +84,17 @@ Public Function WasLastShutdownClean() As Boolean
         Dim xmlEngine As pdXML
         Set xmlEngine = New pdXML
         
-        xmlEngine.prepareNewXML "Safe shutdown"
+        xmlEngine.PrepareNewXML "Safe shutdown"
         
-        xmlEngine.writeBlankLine
-        xmlEngine.writeComment "This file is used to detect unsafe shutdowns from previous PhotoDemon sessions."
-        xmlEngine.writeBlankLine
-        xmlEngine.writeTag "SessionDate", Format$(Now, "Long Date")
-        xmlEngine.writeTag "SessionTime", Format$(Now, "h:mm AMPM")
-        xmlEngine.writeTag "SessionID", g_SessionID
-        xmlEngine.writeBlankLine
+        xmlEngine.WriteBlankLine
+        xmlEngine.WriteComment "This file is used to detect unsafe shutdowns from previous PhotoDemon sessions."
+        xmlEngine.WriteBlankLine
+        xmlEngine.WriteTag "SessionDate", Format$(Now, "Long Date")
+        xmlEngine.WriteTag "SessionTime", Format$(Now, "h:mm AMPM")
+        xmlEngine.WriteTag "SessionID", g_SessionID
+        xmlEngine.WriteBlankLine
         
-        xmlEngine.writeXMLToFile safeShutdownPath
+        xmlEngine.WriteXMLToFile safeShutdownPath
         
         WasLastShutdownClean = True
     
@@ -147,19 +147,19 @@ Public Function SaveableImagesPresent() As Long
         If xmlEngine.LoadXMLFile(g_UserPreferences.GetTempPath & chkFile) Then
         
             'If it does, make sure the XML data is valid, and that at least one Undo entry is listed in the file
-            If xmlEngine.isPDDataType("Undo stack") And xmlEngine.validateLoadedXMLData("pdUndoVersion") Then
+            If xmlEngine.IsPDDataType("Undo stack") And xmlEngine.ValidateLoadedXMLData("pdUndoVersion") Then
             
                 'The file checks out!  Add it to our XML entries array
                 With m_XmlEntries(m_numOfXMLFound)
                     .xmlPath = g_UserPreferences.GetTempPath & chkFile
-                    .friendlyName = xmlEngine.getUniqueTag_String("friendlyName")
-                    .originalPath = xmlEngine.getUniqueTag_String("originalPath")
-                    .originalSessionID = xmlEngine.getUniqueTag_String("OriginalSessionID")
-                    .parentImageID = xmlEngine.getUniqueTag_Long("imageID", -1)
-                    .undoNumAtLastSave = xmlEngine.getUniqueTag_Long("UndoNumAtLastSave", 0)
-                    .undoStackAbsoluteMaximum = xmlEngine.getUniqueTag_Long("StackAbsoluteMaximum", 0)
-                    .undoStackHeight = xmlEngine.getUniqueTag_Long("StackHeight", 1)
-                    .undoStackPointer = xmlEngine.getUniqueTag_Long("CurrentStackPointer", 0)
+                    .friendlyName = xmlEngine.GetUniqueTag_String("friendlyName")
+                    .originalPath = xmlEngine.GetUniqueTag_String("originalPath")
+                    .originalSessionID = xmlEngine.GetUniqueTag_String("OriginalSessionID")
+                    .parentImageID = xmlEngine.GetUniqueTag_Long("imageID", -1)
+                    .undoNumAtLastSave = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave", 0)
+                    .undoStackAbsoluteMaximum = xmlEngine.GetUniqueTag_Long("StackAbsoluteMaximum", 0)
+                    .undoStackHeight = xmlEngine.GetUniqueTag_Long("StackHeight", 1)
+                    .undoStackPointer = xmlEngine.GetUniqueTag_Long("CurrentStackPointer", 0)
                 End With
                 
                 'Increment the "number found" counter and resize the array as necessary
@@ -267,7 +267,7 @@ Public Sub PurgeOldAutosaveData()
             
             'Finally, kill the Autosave XML file and preview image associated with this entry
             If cFile.FileExist(m_XmlEntries(i).xmlPath) Then cFile.KillFile m_XmlEntries(i).xmlPath
-            If cFile.FileExist(m_XmlEntries(i).xmlPath & ".asp") Then cFile.KillFile m_XmlEntries(i).xmlPath & ".asp"
+            If cFile.FileExist(m_XmlEntries(i).xmlPath & ".pdasi") Then cFile.KillFile m_XmlEntries(i).xmlPath & ".pdasi"
         
         Next i
         
@@ -387,11 +387,11 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
             
             'It is now time to artificially reconstruct the image's Undo/Redo stack, using the data from the autosave file.
             ' The Undo engine itself handles this step.
-            If pdImages(g_CurrentImage).undoManager.reconstructStackFromExternalSource(xmlEngine.returnCurrentXMLString) Then
+            If pdImages(g_CurrentImage).undoManager.ReconstructStackFromExternalSource(xmlEngine.ReturnCurrentXMLString) Then
             
                 'The Undo stack was reconstructed successfully.  Ask it to advance the stack pointer to its location from
                 ' the last session.
-                pdImages(g_CurrentImage).undoManager.moveToSpecificUndoPoint fullXMLList(i).undoStackPointer
+                pdImages(g_CurrentImage).undoManager.MoveToSpecificUndoPoint fullXMLList(i).undoStackPointer
                 Message "Autosave reconstruction complete for %1", fullXMLList(i).friendlyName
             
             Else

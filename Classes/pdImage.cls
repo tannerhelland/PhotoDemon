@@ -848,9 +848,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
     'Note that the user's thumbnail performance setting affects the quality used here.
-    Dim intMode As GP_InterpolationMode
-    If (g_ThumbnailPerformance = PD_PERF_FASTEST) Then intMode = GP_IM_NearestNeighbor Else intMode = GP_IM_HighQualityBicubic
-    Me.GetCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, intMode, , CLC_Thumbnail
+    Me.GetCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, g_UserPreferences.GetThumbnailInterpolationPref(), , CLC_Thumbnail
     
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for image thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"

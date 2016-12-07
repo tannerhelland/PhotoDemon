@@ -2144,7 +2144,7 @@ Private Sub UpdateInternalThumbnail()
     ConvertAspectRatio layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, LAYER_THUMB_SIZE, LAYER_THUMB_SIZE, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
-    If tIcoWidth > tIcoHeight Then
+    If (tIcoWidth > tIcoHeight) Then
         tX = 0
         tY = (LAYER_THUMB_SIZE - tIcoHeight) / 2
     
@@ -2162,7 +2162,7 @@ Private Sub UpdateInternalThumbnail()
     End If
     
     'Use GDI+ to perform a fast resize
-    GDI_Plus.GDIPlusResizeDIB layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, GP_IM_NearestNeighbor, GP_IM_HighQualityBicubic)
+    GDI_Plus.GDIPlus_StretchBlt layerThumbnail, tX, tY, tIcoWidth, tIcoHeight, layerDIB, 0, 0, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, 1#, g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
     
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for layer thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"
@@ -2181,20 +2181,22 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'Clear the destination thumbnail
     If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
     
+    'If the requested thumbnail size is identical to our cached version, simply copy it out as-is
+    If (thumbnailSize = LAYER_THUMB_SIZE) Then
+        dstThumbnailDIB.CreateFromExistingDIB layerThumbnail
+    
     'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along
-    If (thumbnailSize <> LAYER_THUMB_SIZE) Then
-        
+    Else
+    
         If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
             dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
         Else
             dstThumbnailDIB.ResetDIB 0
         End If
         
-        GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.GetDIBWidth, layerThumbnail.GetDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, GP_IM_NearestNeighbor, GP_IM_HighQualityBicubic)
+        GDIPlus_StretchBlt dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.GetDIBWidth, layerThumbnail.GetDIBHeight, 1#, g_UserPreferences.GetThumbnailInterpolationPref(), , , , True
         dstThumbnailDIB.SetInitialAlphaPremultiplicationState True
         
-    Else
-        dstThumbnailDIB.CreateFromExistingDIB layerThumbnail
     End If
     
     RequestThumbnail = True

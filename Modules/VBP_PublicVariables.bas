@@ -189,7 +189,6 @@ Public g_SessionID As String
 ' affect performance-sensitive parts of the program, these preferences are cached to global variables (rather than
 ' constantly pulled on-demand from file, which is unacceptably slow for performance-sensitive pipelines).
 Public g_ViewportPerformance As PD_PERFORMANCE_SETTING
-Public g_ThumbnailPerformance As PD_PERFORMANCE_SETTING
 Public g_InterfacePerformance As PD_PERFORMANCE_SETTING
 Public g_ColorPerformance As PD_PERFORMANCE_SETTING
 

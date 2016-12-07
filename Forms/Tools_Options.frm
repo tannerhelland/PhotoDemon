@@ -1229,7 +1229,7 @@ Private Sub cmdBarMini_OKClick()
         
         'START/END thumbnail render performance
             g_UserPreferences.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(2).ListIndex
-            g_ThumbnailPerformance = cboPerformance(2).ListIndex
+            g_UserPreferences.SetThumbnailPerformancePref cboPerformance(2).ListIndex
         
         'START/END viewport render performance
             g_UserPreferences.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(3).ListIndex
@@ -1597,7 +1597,7 @@ Private Sub LoadAllPreferences()
         'END Interface decorations performance
         
         'START Thumbnail rendering performance
-            cboPerformance(2).ListIndex = g_ThumbnailPerformance
+            cboPerformance(2).ListIndex = g_UserPreferences.GetThumbnailPerformancePref()
             cboPerformance(2).AssignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
         'END Thumbnail rendering performance
         

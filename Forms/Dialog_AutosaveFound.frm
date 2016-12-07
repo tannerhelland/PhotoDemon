@@ -270,19 +270,11 @@ End Sub
 Private Sub UpdatePreview(ByVal srcImagePath As String)
     
     'Display a preview of the selected image
-    Dim tmpDIBExists As Boolean
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    QuickLoadImageToDIB srcImagePath, tmpDIB
-    
-    If Not (tmpDIB Is Nothing) Then
-      If (tmpDIB.GetDIBWidth > 0) And (tmpDIB.GetDIBHeight > 0) Then
-        tmpDIBExists = True
+    If tmpDIB.CreateFromFile(srcImagePath) Then
         tmpDIB.RenderToPictureBox picPreview
-      End If
-    End If
-
-    If Not tmpDIBExists Then
+    Else
         picPreview.Picture = LoadPicture("")
         Dim strToPrint As String
         strToPrint = g_Language.TranslateMessage("Preview not available")
@@ -321,14 +313,11 @@ Private Function displayAutosaveEntries() As Boolean
 End Function
 
 Private Sub lstAutosaves_Click()
-
-    'It's a bit ridiculous, but PD always saves a thumbnail of the latest image state to the same Undo path
-    ' as the XML file, but with an "asp" extension.  I know what "asp" is usually used for, but in this case,
-    ' it means "autosave preview".  The confusing extension also provides a bit of obfuscation about the file's
-    ' true contents (PNG data), which never hurts when sticking stuff in the temp folder.
-    Dim previewPath As String
-    previewPath = m_XmlEntries(lstAutosaves.itemData(lstAutosaves.ListIndex)).xmlPath & ".asp"
     
+    'PD always saves a thumbnail of the latest image state to the same Undo path as the XML file, but with
+    ' the rather wordy "pdasi" extension, which in this case means "PD autosave image."
+    Dim previewPath As String
+    previewPath = m_XmlEntries(lstAutosaves.itemData(lstAutosaves.ListIndex)).xmlPath & ".pdasi"
     UpdatePreview previewPath
     
 End Sub

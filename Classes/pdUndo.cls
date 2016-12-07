@@ -171,6 +171,11 @@ End Function
 '     non-destructive changes to a layer, if the non-destructive type doesn't change between Undo requests.)
 Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
     
+    #If DEBUGMODE = 1 Then
+        Dim timeAtUndoStart As Currency
+        VB_Hacks.GetHighResTime timeAtUndoStart
+    #End If
+    
     'If the caller is okay with us coalescing this into the previous entry, test for coalescence acceptability
     If coalescenceAllowed And (undoNum > 0) Then
         
@@ -213,6 +218,11 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'Next, we will store a copy of the current image thumbnail in two sizes: 256x256, and 48x48
     
+    #If DEBUGMODE = 1 Then
+        Dim startTime As Currency
+        VB_Hacks.GetHighResTime startTime
+    #End If
+    
     'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
     Dim largeThumbSize As Long: largeThumbSize = FixDPI(UNDO_THUMB_LARGE)
     If (undoStack(undoNum).thumbnailLarge Is Nothing) Then Set undoStack(undoNum).thumbnailLarge = New pdDIB
@@ -242,16 +252,20 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
             
     End Select
     
+    #If DEBUGMODE = 1 Then
+        Debug.Print "Undo thumbnail request took: " & Format$(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
+    #End If
+    
     'Increase our Undo count
     undoNum = undoNum + 1
     undoMax = undoMax + 1
     
     'If the present image is *truly* the last one in the Undo train, note that we have more Undo files to delete
     ' when our parent is unloaded.
-    If undoMax > undoTotal Then undoTotal = undoMax
+    If (undoMax > undoTotal) Then undoTotal = undoMax
     
     'If this is not the first Undo entry, make a note that the user is now allowed to initiate Undo actions.
-    If undoNum > 1 Then undoState = True
+    If (undoNum > 1) Then undoState = True
     
     'Because we have just created Undo data, the user is not allowed to initiate Redo actions.
     redoState = False
@@ -268,6 +282,10 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     If UNDO_DEBUG_MODE Then DebugUndo "new Undo entry created"
+    
+    #If DEBUGMODE = 1 Then
+        Debug.Print "Time taken for total Undo process: " & Format$(VB_Hacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
+    #End If
     
 End Sub
 
@@ -852,13 +870,11 @@ End Function
 'Erase all undo files that this class has created
 Public Sub ClearUndos()
     
-    On Error Resume Next
-    
     'Remember that we have no Undo files for this image
     undoState = False
     
     'If Undo data has already been cleared, exit
-    If undoTotal = 0 Then Exit Sub
+    If (undoTotal = 0) Then Exit Sub
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -880,7 +896,7 @@ Public Sub ClearUndos()
     
     'Destroy the header file and preview image, if any
     If cFile.FileExist(GenerateUndoHeaderFilename()) Then cFile.KillFile GenerateUndoHeaderFilename()
-    If cFile.FileExist(GenerateUndoHeaderFilename() & ".asp") Then cFile.KillFile GenerateUndoHeaderFilename() & ".asp"
+    If cFile.FileExist(GenerateUndoHeaderFilename() & ".pdasi") Then cFile.KillFile GenerateUndoHeaderFilename() & ".pdasi"
     
     'Set the current and maximum Undo number to 0
     undoNum = 0
@@ -891,7 +907,7 @@ End Sub
 
 'Return the tool associated with the current Undo state
 Public Function GetUndoTool() As Long
-    If undoNum > 0 Then GetUndoTool = undoStack(undoNum - 1).relevantTool
+    If (undoNum > 0) Then GetUndoTool = undoStack(undoNum - 1).relevantTool
 End Function
 
 'Return the process type associated with the current Undo state
@@ -994,9 +1010,16 @@ Private Sub Class_Terminate()
     ClearUndos
 End Sub
 
-'Write the Undo stack out to file, in XML format
+'Write the Undo stack out to file, in XML format, with an attached thumbnail image as well (for AutoSave purposes)
 Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
-
+    
+    'The undo/redo engine is the source of a lot of processing time, particularly when painting.  In an attempt to
+    ' better profile it, detailed timing measurements are currently reported in nightly builds.
+    #If DEBUGMODE = 1 Then
+        Dim startTime As Currency
+        VB_Hacks.GetHighResTime startTime
+    #End If
+    
     'Create a pdXML class, which will help us assemble the XML file
     Dim xmlEngine As pdXML
     Set xmlEngine = New pdXML
@@ -1049,14 +1072,28 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     Next i
     
+    #If DEBUGMODE = 1 Then
+        Debug.Print "Undo engine XML generation took " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        VB_Hacks.GetHighResTime startTime
+    #End If
+    
     'With all Undo data successfully written, close the XML data and write it out to file.
-    xmlEngine.WriteXMLToFile dstFilename, False
+    xmlEngine.WriteXMLToFile dstFilename, True
+    
+    #If DEBUGMODE = 1 Then
+        Debug.Print "Undo engine XML file write took " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        VB_Hacks.GetHighResTime startTime
+    #End If
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
     If (undoNum > 0) Then
-        If (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then Saving.QuickSaveDIBAsPNG GenerateUndoHeaderFilename & ".asp", undoStack(undoNum - 1).thumbnailLarge
+        If (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then undoStack(undoNum - 1).thumbnailLarge.WriteToFile GenerateUndoHeaderFilename & ".pdasi"
     End If
+    
+    #If DEBUGMODE = 1 Then
+        Debug.Print "Undo engine thumbnail write took " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+    #End If
     
 End Sub
 
