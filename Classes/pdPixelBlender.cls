@@ -88,20 +88,56 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
             Case BL_NORMAL
             
             'Blend modes with already-optimized functions are listed here
+            Case BL_COLOR
+                ApplyBlendMode_Color m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_COLORBURN
+                ApplyBlendMode_ColorBurn m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_COLORDODGE
+                ApplyBlendMode_ColorDodge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
             Case BL_DARKEN
                 ApplyBlendMode_Darken m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
             Case BL_DIFFERENCE
                 ApplyBlendMode_Difference m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
+            Case BL_DIVIDE
+                ApplyBlendMode_Divide m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
+            Case BL_EXCLUSION
+                ApplyBlendMode_Exclusion m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_GRAINEXTRACT
+                ApplyBlendMode_GrainExtract m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_GRAINMERGE
+                ApplyBlendMode_GrainMerge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
+            Case BL_HUE
+                ApplyBlendMode_Hue m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
             Case BL_HARDLIGHT
                 ApplyBlendMode_HardLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
+            Case BL_HARDMIX
+                ApplyBlendMode_HardMix m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
             Case BL_LIGHTEN
                 ApplyBlendMode_Lighten m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
+            Case BL_LINEARBURN
+                ApplyBlendMode_LinearBurn m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
             Case BL_LINEARDODGE
                 ApplyBlendMode_LinearDodge m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+            
+            Case BL_LINEARLIGHT
+                ApplyBlendMode_LinearLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
+            Case BL_LUMINOSITY
+                ApplyBlendMode_Luminosity m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
                 
             Case BL_MULTIPLY
                 ApplyBlendMode_Multiply m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
@@ -109,12 +145,24 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
             Case BL_OVERLAY
                 ApplyBlendMode_Overlay m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
+            Case BL_PINLIGHT
+                ApplyBlendMode_PinLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
+            Case BL_SATURATION
+                ApplyBlendMode_Saturation m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
             Case BL_SCREEN
                 ApplyBlendMode_Screen m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
             Case BL_SOFTLIGHT
                 ApplyBlendMode_SoftLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
+            Case BL_SUBTRACT
+                ApplyBlendMode_Subtract m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
+            Case BL_VIVIDLIGHT
+                ApplyBlendMode_VividLight m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                
             Case BL_ERASE
                 'Erase mode is totally pointless if alpha is locked, so just skip it entirely
                 If (bottomAlphaMode <> LA_LOCKED) Then
@@ -123,7 +171,9 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
             
             'Some blendmodes don't have dedicated, optimized subs just yet.  This catch-all function handles their code for now.
             Case Else
-                ApplyBlendMode_Generic m_topDIBCopy, bottomDIB, blendMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING: UNKNOWN BLEND MODE REQUESTED IN pdPixelBlender.BlendDIBs!"
+                #End If
         
         End Select
         
@@ -387,11 +437,19 @@ Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
 End Sub
 
-'Current catch-all for unoptimized blend mode calculations.  The goal is to move as many of these as possible to dedicated subs, where we can make
-' things like dedicated lookup tables, contingent on the actual blend mode being applied.
-Private Sub ApplyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-
-    'In this generic blend sub, we will potentially be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
+'Optimized "color" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
     Dim intToFloat() As Single
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
@@ -399,298 +457,416 @@ Private Sub ApplyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         intToFloat(i) = i / 255
     Next i
     
-    'In the inner loop, we'll be doing a bunch of compositing relative to newly calculated alpha value.  Storing some intermediate terms
-    ' allows this to go much faster.
-    Dim bottomAlphaIntermediate As Double
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
     
-    'Next, we need to point VB arrays at both the top and bottom DIBs.  Note that the top DIB is treated as
-    ' the "destination", because it will receive the full composite results.
-    Dim bImageData() As Byte
-    Dim bottomSA As SAFEARRAY2D
-    PrepSafeArray bottomSA, bottomDIB
-    CopyMemory ByVal VarPtrArray(bImageData()), VarPtr(bottomSA), 4
-
-    Dim tImageData() As Byte
-    Dim topSA As SAFEARRAY2D
-    PrepSafeArray topSA, topDIB
-    CopyMemory ByVal VarPtrArray(tImageData()), VarPtr(topSA), 4
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, quickX As Long, quickBottomX As Long, quickBottomY As Long
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
     
     'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
     Dim newR As Single, newG As Single, newB As Single, newA As Single
     
-    'Extra variables for transforms that require HSL conversions.
-    Dim topH As Single, topS As Single, topV As Single
-    Dim bottomH As Single, bottomS As Single, bottomV As Single
-    
-    For x = initX To finalX
-        quickX = x * 4
-        quickBottomX = (xOffset + x) * 4
     For y = initY To finalY
-    
-        quickBottomY = yOffset + y
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
         
         'Retrieve top layer RGBA values
-        topA = tImageData(quickX + 3, y)
+        topAInt = topPixels(x + 3)
         
-        'Ignore transparent pixels
-        If topA <> 0 Then
-        
-            topR = tImageData(quickX + 2, y)
-            topG = tImageData(quickX + 1, y)
-            topB = tImageData(quickX, y)
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
             
             'Retrieve bottom layer alpha
-            bottomA = bImageData(quickBottomX + 3, quickBottomY)
+            bottomAInt = bottomPixels(bottomX + 3)
             
-            'If the bottom layer is transparent, we can simply copy over the top layer as-is
-            If bottomA = 0 Then
-                bImageData(quickBottomX, quickBottomY) = topB
-                bImageData(quickBottomX + 1, quickBottomY) = topG
-                bImageData(quickBottomX + 2, quickBottomY) = topR
-                bImageData(quickBottomX + 3, quickBottomY) = topA
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
             Else
                 
-                'Convert to floating-point
-                topR = intToFloat(topR)
-                topG = intToFloat(topG)
-                topB = intToFloat(topB)
-                topA = intToFloat(topA)
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
                 
-                'Retrieve bottom layer values
-                bottomA = intToFloat(bottomA)
-                bottomR = intToFloat(bImageData(quickBottomX + 2, quickBottomY))
-                bottomG = intToFloat(bImageData(quickBottomX + 1, quickBottomY))
-                bottomB = intToFloat(bImageData(quickBottomX, quickBottomY))
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
                 
-                'Un-premultiply all RGB values
-                If topA <> 1 Then
-                    topR = topR / topA
-                    topG = topG / topA
-                    topB = topB / topA
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If bottomA <> 1 Then
-                    bottomR = bottomR / bottomA
-                    bottomG = bottomG / bottomA
-                    bottomB = bottomB / bottomA
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
-                'Apply the requested blend mode
-                Select Case blendMode
-                
-                    'PD's rendering pipeline will not generally pass normal-mode layers to this function, as we can simply composite them
-                    ' as-is using WAPI and/or GDI+.  But in the future, specialty features like alpha inheritance *will* require normal layers
-                    ' to pass through this function, so I've added this branch now in preparation.
-                    Case BL_NORMAL
-                        newR = topR
-                        newG = topG
-                        newB = topB
-                        
-                    Case BL_COLORBURN
-                        If topR = 0 Then newR = 0 Else newR = 1 - (1 - bottomR) / topR
-                        If topG = 0 Then newG = 0 Else newG = 1 - (1 - bottomG) / topG
-                        If topB = 0 Then newB = 0 Else newB = 1 - (1 - bottomB) / topB
-                        If newR < 0 Then newR = 0
-                        If newG < 0 Then newG = 0
-                        If newB < 0 Then newB = 0
+                'The actual blend step is very simple
+                FastRGBtoHSV topR, topG, topB, topH, topS, topV
+                'bottomV = fMax3(bottomR, bottomG, bottomB)
+                bottomV = 0.3 * bottomR + 0.59 * bottomG + 0.11 * bottomB
+                fHSVtoRGB topH, topS, bottomV, newR, newG, newB
                     
-                    Case BL_LINEARBURN
-                        newR = topR + bottomR - 1
-                        newG = topG + bottomG - 1
-                        newB = topB + bottomB - 1
-                        If newR < 0 Then newR = 0
-                        If newG < 0 Then newG = 0
-                        If newB < 0 Then newB = 0
-                        
-                    Case BL_COLORDODGE
-                        If topR = 1 Then newR = 1 Else newR = bottomR / (1 - topR)
-                        If topG = 1 Then newG = 1 Else newG = bottomG / (1 - topG)
-                        If topB = 1 Then newB = 1 Else newB = bottomB / (1 - topB)
-                        If newR > 1 Then newR = 1
-                        If newG > 1 Then newG = 1
-                        If newB > 1 Then newB = 1
-                    
-                    Case BL_VIVIDLIGHT
-                        If topR > 0.5 Then newR = bottomR + 2 * (topR - 0.5) Else newR = bottomR + 2 * topR - 1
-                        If topB > 0.5 Then newG = bottomG + 2 * (topG - 0.5) Else newG = bottomG + 2 * topG - 1
-                        If topG > 0.5 Then newB = bottomB + 2 * (topB - 0.5) Else newB = bottomB + 2 * topB - 1
-                        If newR > 1 Then newR = 1
-                        If newG > 1 Then newG = 1
-                        If newB > 1 Then newB = 1
-                        If newR < 0 Then newR = 0
-                        If newG < 0 Then newG = 0
-                        If newB < 0 Then newB = 0
-                    
-                    Case BL_LINEARLIGHT
-                        newR = bottomR + (2 * topR) - 1
-                        newG = bottomG + (2 * topG) - 1
-                        newB = bottomB + (2 * topB) - 1
-                        If newR > 1 Then newR = 1
-                        If newG > 1 Then newG = 1
-                        If newB > 1 Then newB = 1
-                        If newR < 0 Then newR = 0
-                        If newG < 0 Then newG = 0
-                        If newB < 0 Then newB = 0
-                        
-                    Case BL_PINLIGHT
-                        If topR > 0.5 Then newR = fMax(bottomR, 2 * (topR - 0.5)) Else newR = fMin(bottomR, 2 * topR)
-                        If topG > 0.5 Then newG = fMax(bottomG, 2 * (topG - 0.5)) Else newG = fMin(bottomG, 2 * topG)
-                        If topB > 0.5 Then newB = fMax(bottomB, 2 * (topB - 0.5)) Else newB = fMin(bottomB, 2 * topB)
-                        
-                    Case BL_HARDMIX
-                        If topR < 1 - bottomR Then newR = 0 Else newR = 1
-                        If topG < 1 - bottomG Then newG = 0 Else newG = 1
-                        If topB < 1 - bottomB Then newB = 0 Else newB = 1
-                        
-                    Case BL_EXCLUSION
-                        newR = bottomR + topR - 2 * (bottomR * topR)
-                        newG = bottomG + topG - 2 * (bottomG * topG)
-                        newB = bottomB + topB - 2 * (bottomB * topB)
-                        
-                    Case BL_SUBTRACT
-                        newR = bottomR - topR
-                        newG = bottomG - topG
-                        newB = bottomB - topB
-                        If newR < 0 Then newR = 0
-                        If newG < 0 Then newG = 0
-                        If newB < 0 Then newB = 0
-                    
-                    Case BL_DIVIDE
-                        If topR = 0 Then newR = 1 Else newR = bottomR / topR
-                        If topG = 0 Then newG = 1 Else newG = bottomG / topG
-                        If topB = 0 Then newB = 1 Else newB = bottomB / topB
-                        If newR > 1 Then newR = 1
-                        If newG > 1 Then newG = 1
-                        If newB > 1 Then newB = 1
-                        
-                    Case BL_HUE
-                        FastRGBtoHSV topR, topG, topB, topH, topS, topV
-                        FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
-                        fHSVtoRGB topH, bottomS, bottomV, newR, newG, newB
-                    
-                    Case BL_SATURATION
-                        FastRGBtoHSV topR, topG, topB, topH, topS, topV
-                        FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
-                        fHSVtoRGB bottomH, topS, bottomV, newR, newG, newB
-                    
-                    Case BL_COLOR
-                        FastRGBtoHSV topR, topG, topB, topH, topS, topV
-                        bottomV = fMax3(bottomR, bottomG, bottomB)
-                        fHSVtoRGB topH, topS, bottomV, newR, newG, newB
-                    
-                    Case BL_LUMINOSITY
-                        topV = fMax3(topR, topG, topB)
-                        FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
-                        fHSVtoRGB bottomH, bottomS, topV, newR, newG, newB
-                        
-                    Case BL_GRAINEXTRACT
-                        newR = bottomR - topR + 0.5
-                        newG = bottomG - topG + 0.5
-                        newB = bottomB - topB + 0.5
-                        If newR > 1 Then newR = 1
-                        If newG > 1 Then newG = 1
-                        If newB > 1 Then newB = 1
-                        If newR < 0 Then newR = 0
-                        If newG < 0 Then newG = 0
-                        If newB < 0 Then newB = 0
-                    
-                    Case BL_GRAINMERGE
-                        newR = bottomR + topR - 0.5
-                        newG = bottomG + topG - 0.5
-                        newB = bottomB + topB - 0.5
-                        If newR > 1 Then newR = 1
-                        If newG > 1 Then newG = 1
-                        If newB > 1 Then newB = 1
-                        If newR < 0 Then newR = 0
-                        If newG < 0 Then newG = 0
-                        If newB < 0 Then newB = 0
-                    
-                    '****************************************************************************************************
-                    ' IMPORTANT NOTE!
-                    '
-                    ' Blend modes that have already been optimized are included beneath this comment as a temporary
-                    ' measure only.  They should not actually be applied via this function.  Use their dedicated functions,
-                    ' as they are significantly faster.
-                    '****************************************************************************************************
-                    
-                    Case BL_DARKEN
-                        If bottomR < topR Then newR = bottomR Else newR = topR
-                        If bottomG < topG Then newG = bottomG Else newG = topG
-                        If bottomB < topB Then newB = bottomB Else newB = topB
-                    
-                    Case BL_HARDLIGHT
-                        If topR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
-                        If topG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
-                        If topB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
-                        
-                    Case BL_LIGHTEN
-                        If bottomR > topR Then newR = bottomR Else newR = topR
-                        If bottomG > topG Then newG = bottomG Else newG = topG
-                        If bottomB > topB Then newB = bottomB Else newB = topB
-                    
-                    Case BL_LINEARDODGE
-                        newR = topR + bottomR
-                        newG = topG + bottomG
-                        newB = topB + bottomB
-                        If newR > 1 Then newR = 1
-                        If newG > 1 Then newG = 1
-                        If newB > 1 Then newB = 1
-                    
-                    Case BL_MULTIPLY
-                        newR = topR * bottomR
-                        newG = topG * bottomG
-                        newB = topB * bottomB
-                    
-                    Case BL_SCREEN
-                        newR = 1 - (1 - bottomR) * (1 - topR)
-                        newG = 1 - (1 - bottomG) * (1 - topG)
-                        newB = 1 - (1 - bottomB) * (1 - topB)
-                    
-                    Case Else
-                        newR = topR
-                        newG = topG
-                        newB = topB
-                
-                End Select
-                
-                'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
-                ' if the bottom image is transparent, the top image is unchanged, regardless of blend mode.)
-                '
-                'Note that GIMP actually factors alpha into its compositing order, which I find odd and unintuitive.  However, it might be
-                ' nice to someday provide a toggle for that behavior; I'm waiting to see if anyone actually requests it before
-                ' embarking, however.
-                If bottomA <> 1 Then
-                    newR = (newR * bottomA) + (topR * (1 - bottomA))
-                    newG = (newG * bottomA) + (topG * (1 - bottomA))
-                    newB = (newB * bottomA) + (topB * (1 - bottomA))
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
                 End If
                 
-                'Copy the final values into the top layer, and premultiply them.  Note that alpha remains unchanged; the final blend
-                ' is handled by a separate function.
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
                 topA = topA * 255
-                tImageData(quickX + 2, y) = newR * topA
-                tImageData(quickX + 1, y) = newG * topA
-                tImageData(quickX, y) = newB * topA
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
             
         End If
     
-    Next y
     Next x
+    Next y
     
-    'Clear all array references
-    CopyMemory ByVal VarPtrArray(bImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(tImageData), 0&, 4
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
-    'DIBs must be premultiplied for this function to work, and they'll always leave the function in a premultiplied state.
+    'All blend mode functions return premultiplied DIBs, by design.
     topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
 
+'Optimized "color burn" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                If (topR <> 0) Then
+                    newR = 1 - (1 - bottomR) / topR
+                    If (newR < 0) Then newR = 0
+                Else
+                    newR = 0
+                End If
+                
+                If (topG <> 0) Then
+                    newG = 1 - (1 - bottomG) / topG
+                    If (newG < 0) Then newG = 0
+                Else
+                    newG = 0
+                End If
+                    
+                If (topB <> 0) Then
+                    newB = 1 - (1 - bottomB) / topB
+                    If (newB < 0) Then newB = 0
+                Else
+                    newB = 0
+                End If
+                
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "color dodge" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                If (topR <> 1) Then
+                    newR = bottomR / (1 - topR)
+                    If (newR > 1) Then newR = 1
+                Else
+                    newR = 1
+                End If
+                
+                If (topG <> 1) Then
+                    newG = bottomG / (1 - topG)
+                    If (newG > 1) Then newG = 1
+                Else
+                    newG = 1
+                End If
+                
+                If (topB <> 1) Then
+                    newB = bottomB / (1 - topB)
+                    If (newB > 1) Then newB = 1
+                Else
+                    newB = 1
+                End If
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
 End Sub
 
 'Optimized "darken" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
@@ -758,13 +934,13 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If topAInt <> 0 Then
+        If (topAInt <> 0) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
             
             'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
+            If (bottomAInt = 0) Then
                 bottomPixels(bottomX) = topPixels(x)
                 bottomPixels(bottomX + 1) = topPixels(x + 1)
                 bottomPixels(bottomX + 2) = topPixels(x + 2)
@@ -783,22 +959,22 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
+                If (topA <> 1) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If bottomA <> 1 Then
+                If (bottomA <> 1) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 '"Darken" blend mode is very simple
-                If bottomR < topR Then newR = bottomR Else newR = topR
-                If bottomG < topG Then newG = bottomG Else newG = topG
-                If bottomB < topB Then newB = bottomB Else newB = topB
+                If (bottomR < topR) Then newR = bottomR Else newR = topR
+                If (bottomG < topG) Then newG = bottomG Else newG = topG
+                If (bottomB < topB) Then newB = bottomB Else newB = topB
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
+                If (bottomA <> 1) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -890,13 +1066,13 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If topAInt <> 0 Then
+        If (topAInt <> 0) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
             
             'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
+            If (bottomAInt = 0) Then
                 bottomPixels(bottomX) = topPixels(x)
                 bottomPixels(bottomX + 1) = topPixels(x + 1)
                 bottomPixels(bottomX + 2) = topPixels(x + 2)
@@ -915,282 +1091,21 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
+                If (topA <> 1) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If bottomA <> 1 Then
+                If (bottomA <> 1) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
                 '"Difference" blend mode is very simple
-                newR = Abs(bottomR - topR)
-                newG = Abs(bottomG - topG)
-                newB = Abs(bottomB - topB)
-                    
-                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
-                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
-                    newR = topR + bottomA * (newR - topR)
-                    newG = topG + bottomA * (newG - topG)
-                    newB = topB + bottomA * (newB - topB)
-                End If
-                
-                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
-                ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
-                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
-                    
-            End If
-            
-        End If
-    
-    Next x
-    Next y
-    
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
-    
-    'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.SetInitialAlphaPremultiplicationState True
-    
-End Sub
-
-'Optimized "lighten" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
-' blendmode calculations, which should then be alpha-blended onto the target via some other function.
-' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-    
-    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
-    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    initX = initX * 4
-    finalX = finalX * 4
-    xOffset = xOffset * 4
-    
-    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
-    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
-    Dim i As Long
-    For i = 0 To 255
-        intToFloat(i) = i / 255
-    Next i
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-    ' which we reset between scanlines.
-    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
-    
-    Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
-    
-    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    
-    Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    PrepInternalSafeArray1D topSA, topDIB
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
-    
-    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
-    
-    'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
-    
-    For y = initY To finalY
-        
-        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
-        ' into the bottom DIB's coordinate space.
-        bottomY = yOffset + y
-        
-        'Point each 1D pixel array at the proper scanline
-        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
-        topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-        
-    For x = initX To finalX Step 4
-        
-        bottomX = (xOffset + x)
-        
-        'Retrieve top layer RGBA values
-        topAInt = topPixels(x + 3)
-        
-        'Ignore transparent pixels completely
-        If topAInt <> 0 Then
-            
-            'Retrieve bottom layer alpha
-            bottomAInt = bottomPixels(bottomX + 3)
-            
-            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
-                bottomPixels(bottomX) = topPixels(x)
-                bottomPixels(bottomX + 1) = topPixels(x + 1)
-                bottomPixels(bottomX + 2) = topPixels(x + 2)
-                bottomPixels(bottomX + 3) = topAInt
-                
-            'If the bottom pixel is *not* transparent, our work is more involved
-            Else
-                
-                'Retrieve the top-layer values and convert them to floating-point
-                topA = intToFloat(topAInt)
-                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
-                
-                'Do the same for the bottom layer values
-                bottomA = intToFloat(bottomAInt)
-                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
-                
-                'Un-premultiply both top and bottom RGB values.
-                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
-                    topR = topR / topA: topG = topG / topA: topB = topB / topA
-                End If
-                
-                If bottomA <> 1 Then
-                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
-                End If
-                
-                '"Lighten" blend mode is very simple
-                If bottomR > topR Then newR = bottomR Else newR = topR
-                If bottomG > topG Then newG = bottomG Else newG = topG
-                If bottomB > topB Then newB = bottomB Else newB = topB
-                    
-                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
-                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
-                    newR = topR + bottomA * (newR - topR)
-                    newG = topG + bottomA * (newG - topG)
-                    newB = topB + bottomA * (newB - topB)
-                End If
-                
-                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
-                ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
-                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
-                    
-            End If
-            
-        End If
-    
-    Next x
-    Next y
-    
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
-    
-    'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.SetInitialAlphaPremultiplicationState True
-    
-End Sub
-
-'Optimized "multiply" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
-' blendmode calculations, which should then be alpha-blended onto the target via some other function.
-' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-    
-    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
-    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    initX = initX * 4
-    finalX = finalX * 4
-    xOffset = xOffset * 4
-    
-    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
-    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
-    Dim i As Long
-    For i = 0 To 255
-        intToFloat(i) = i / 255
-    Next i
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-    ' which we reset between scanlines.
-    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
-    
-    Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
-    
-    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    
-    Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    PrepInternalSafeArray1D topSA, topDIB
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
-    
-    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
-    
-    'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
-    
-    For y = initY To finalY
-        
-        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
-        ' into the bottom DIB's coordinate space.
-        bottomY = yOffset + y
-        
-        'Point each 1D pixel array at the proper scanline
-        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
-        topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-        
-    For x = initX To finalX Step 4
-        
-        bottomX = (xOffset + x)
-        
-        'Retrieve top layer RGBA values
-        topAInt = topPixels(x + 3)
-        
-        'Ignore transparent pixels completely
-        If topAInt <> 0 Then
-            
-            'Retrieve bottom layer alpha
-            bottomAInt = bottomPixels(bottomX + 3)
-            
-            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
-                bottomPixels(bottomX) = topPixels(x)
-                bottomPixels(bottomX + 1) = topPixels(x + 1)
-                bottomPixels(bottomX + 2) = topPixels(x + 2)
-                bottomPixels(bottomX + 3) = topAInt
-                
-            'If the bottom pixel is *not* transparent, our work is more involved
-            Else
-                
-                'Retrieve the top-layer values and convert them to floating-point
-                topA = intToFloat(topAInt)
-                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
-                
-                'Do the same for the bottom layer values
-                bottomA = intToFloat(bottomAInt)
-                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
-                
-                'Un-premultiply both top and bottom RGB values.
-                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
-                    topR = topR / topA: topG = topG / topA: topB = topB / topA
-                End If
-                
-                If bottomA <> 1 Then
-                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
-                End If
-                
-                '"Multiply" blend mode is very simple
-                newR = topR * bottomR
-                newG = topG * bottomG
-                newB = topB * bottomB
+                newR = (bottomR - topR)
+                If (newR < 0) Then newR = -newR
+                newG = (bottomG - topG)
+                If (newG < 0) Then newG = -newG
+                newB = (bottomB - topB)
+                If (newB < 0) Then newB = -newB
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
@@ -1221,10 +1136,10 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
 End Sub
 
-'Optimized "linear dodge" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
-' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+'Optimized "divide" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results
+' of the blendmode calculations, which should then be alpha-blended onto the target via some other function.
 ' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
@@ -1286,13 +1201,13 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
         topAInt = topPixels(x + 3)
         
         'Ignore transparent pixels completely
-        If topAInt <> 0 Then
+        If (topAInt <> 0) Then
             
             'Retrieve bottom layer alpha
             bottomAInt = bottomPixels(bottomX + 3)
             
             'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
+            If (bottomAInt = 0) Then
                 bottomPixels(bottomX) = topPixels(x)
                 bottomPixels(bottomX + 1) = topPixels(x + 1)
                 bottomPixels(bottomX + 2) = topPixels(x + 2)
@@ -1311,553 +1226,37 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
+                If (topA <> 1) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If bottomA <> 1 Then
+                If (bottomA <> 1) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
-                '"Linear dodge" blend mode is very simple
-                newR = topR + bottomR
-                newG = topG + bottomG
-                newB = topB + bottomB
-                If newR > 1 Then newR = 1
-                If newG > 1 Then newG = 1
-                If newB > 1 Then newB = 1
+                'The actual blend is very simple
+                If (topR <> 0) Then
+                    newR = bottomR / topR
+                    If (newR > 1) Then newR = 1
+                Else
+                    newR = 1
+                End If
+                If (topG <> 0) Then
+                    newG = bottomG / topG
+                    If (newG > 1) Then newG = 1
+                Else
+                    newG = 1
+                End If
+                If (topB <> 0) Then
+                    newB = bottomB / topB
+                    If (newB > 1) Then newB = 1
+                Else
+                    newB = 1
+                End If
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
-                    newR = topR + bottomA * (newR - topR)
-                    newG = topG + bottomA * (newG - topG)
-                    newB = topB + bottomA * (newB - topB)
-                End If
-                
-                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
-                ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
-                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
-                    
-            End If
-            
-        End If
-    
-    Next x
-    Next y
-    
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
-    
-    'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.SetInitialAlphaPremultiplicationState True
-    
-End Sub
-
-'Optimized "hard light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
-' blend mode calculations, which should then be alpha-blended onto the target via some other function.
-' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-    
-    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
-    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    initX = initX * 4
-    finalX = finalX * 4
-    xOffset = xOffset * 4
-    
-    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
-    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
-    Dim i As Long
-    For i = 0 To 255
-        intToFloat(i) = i / 255
-    Next i
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-    ' which we reset between scanlines.
-    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
-    
-    Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
-    
-    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    
-    Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    PrepInternalSafeArray1D topSA, topDIB
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
-    
-    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
-    
-    'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
-    
-    For y = initY To finalY
-        
-        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
-        ' into the bottom DIB's coordinate space.
-        bottomY = yOffset + y
-        
-        'Point each 1D pixel array at the proper scanline
-        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
-        topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-        
-    For x = initX To finalX Step 4
-        
-        bottomX = (xOffset + x)
-        
-        'Retrieve top layer RGBA values
-        topAInt = topPixels(x + 3)
-        
-        'Ignore transparent pixels completely
-        If topAInt <> 0 Then
-            
-            'Retrieve bottom layer alpha
-            bottomAInt = bottomPixels(bottomX + 3)
-            
-            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
-                bottomPixels(bottomX) = topPixels(x)
-                bottomPixels(bottomX + 1) = topPixels(x + 1)
-                bottomPixels(bottomX + 2) = topPixels(x + 2)
-                bottomPixels(bottomX + 3) = topAInt
-                
-            'If the bottom pixel is *not* transparent, our work is more involved
-            Else
-                
-                'Retrieve the top-layer values and convert them to floating-point
-                topA = intToFloat(topAInt)
-                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
-                
-                'Do the same for the bottom layer values
-                bottomA = intToFloat(bottomAInt)
-                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
-                
-                'Un-premultiply both top and bottom RGB values.
-                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
-                    topR = topR / topA: topG = topG / topA: topB = topB / topA
-                End If
-                
-                If bottomA <> 1 Then
-                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
-                End If
-                
-                '"Hard light" blend mode is very simple
-                If topR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
-                If topG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
-                If topB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
-                    
-                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
-                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
-                    newR = topR + bottomA * (newR - topR)
-                    newG = topG + bottomA * (newG - topG)
-                    newB = topB + bottomA * (newB - topB)
-                End If
-                
-                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
-                ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
-                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
-                    
-            End If
-            
-        End If
-    
-    Next x
-    Next y
-    
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
-    
-    'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.SetInitialAlphaPremultiplicationState True
-    
-End Sub
-
-'Optimized "screen" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
-' blendmode calculations, which should then be alpha-blended onto the target via some other function.
-' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-    
-    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
-    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    initX = initX * 4
-    finalX = finalX * 4
-    xOffset = xOffset * 4
-    
-    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
-    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
-    Dim i As Long
-    For i = 0 To 255
-        intToFloat(i) = i / 255
-    Next i
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-    ' which we reset between scanlines.
-    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
-    
-    Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
-    
-    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    
-    Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    PrepInternalSafeArray1D topSA, topDIB
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
-    
-    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
-    
-    'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
-    
-    For y = initY To finalY
-        
-        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
-        ' into the bottom DIB's coordinate space.
-        bottomY = yOffset + y
-        
-        'Point each 1D pixel array at the proper scanline
-        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
-        topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-        
-    For x = initX To finalX Step 4
-        
-        bottomX = (xOffset + x)
-        
-        'Retrieve top layer RGBA values
-        topAInt = topPixels(x + 3)
-        
-        'Ignore transparent pixels completely
-        If topAInt <> 0 Then
-            
-            'Retrieve bottom layer alpha
-            bottomAInt = bottomPixels(bottomX + 3)
-            
-            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
-                bottomPixels(bottomX) = topPixels(x)
-                bottomPixels(bottomX + 1) = topPixels(x + 1)
-                bottomPixels(bottomX + 2) = topPixels(x + 2)
-                bottomPixels(bottomX + 3) = topAInt
-                
-            'If the bottom pixel is *not* transparent, our work is more involved
-            Else
-                
-                'Retrieve the top-layer values and convert them to floating-point
-                topA = intToFloat(topAInt)
-                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
-                
-                'Do the same for the bottom layer values
-                bottomA = intToFloat(bottomAInt)
-                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
-                
-                'Un-premultiply both top and bottom RGB values.
-                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
-                    topR = topR / topA: topG = topG / topA: topB = topB / topA
-                End If
-                
-                If bottomA <> 1 Then
-                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
-                End If
-                
-                '"Screen" blend mode is very simple
-                newR = 1 - (1 - bottomR) * (1 - topR)
-                newG = 1 - (1 - bottomG) * (1 - topG)
-                newB = 1 - (1 - bottomB) * (1 - topB)
-                    
-                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
-                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
-                    newR = topR + bottomA * (newR - topR)
-                    newG = topG + bottomA * (newG - topG)
-                    newB = topB + bottomA * (newB - topB)
-                End If
-                
-                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
-                ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
-                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
-                    
-            End If
-            
-        End If
-    
-    Next x
-    Next y
-    
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
-    
-    'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.SetInitialAlphaPremultiplicationState True
-    
-End Sub
-
-'Optimized "overlay" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
-' blendmode calculations, which should then be alpha-blended onto the target via some other function.
-' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-    
-    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
-    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    initX = initX * 4
-    finalX = finalX * 4
-    xOffset = xOffset * 4
-    
-    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
-    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
-    Dim i As Long
-    For i = 0 To 255
-        intToFloat(i) = i / 255
-    Next i
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-    ' which we reset between scanlines.
-    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
-    
-    Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
-    
-    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    
-    Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    PrepInternalSafeArray1D topSA, topDIB
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
-    
-    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
-    
-    'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
-    
-    For y = initY To finalY
-        
-        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
-        ' into the bottom DIB's coordinate space.
-        bottomY = yOffset + y
-        
-        'Point each 1D pixel array at the proper scanline
-        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
-        topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-        
-    For x = initX To finalX Step 4
-        
-        bottomX = (xOffset + x)
-        
-        'Retrieve top layer RGBA values
-        topAInt = topPixels(x + 3)
-        
-        'Ignore transparent pixels completely
-        If topAInt <> 0 Then
-            
-            'Retrieve bottom layer alpha
-            bottomAInt = bottomPixels(bottomX + 3)
-            
-            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
-                bottomPixels(bottomX) = topPixels(x)
-                bottomPixels(bottomX + 1) = topPixels(x + 1)
-                bottomPixels(bottomX + 2) = topPixels(x + 2)
-                bottomPixels(bottomX + 3) = topAInt
-                
-            'If the bottom pixel is *not* transparent, our work is more involved
-            Else
-                
-                'Retrieve the top-layer values and convert them to floating-point
-                topA = intToFloat(topAInt)
-                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
-                
-                'Do the same for the bottom layer values
-                bottomA = intToFloat(bottomAInt)
-                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
-                
-                'Un-premultiply both top and bottom RGB values.
-                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
-                    topR = topR / topA: topG = topG / topA: topB = topB / topA
-                End If
-                
-                If bottomA <> 1 Then
-                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
-                End If
-                
-                '"Overlay" blend mode is very simple
-                If bottomR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
-                If bottomG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
-                If bottomB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
-                    
-                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
-                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
-                    newR = topR + bottomA * (newR - topR)
-                    newG = topG + bottomA * (newG - topG)
-                    newB = topB + bottomA * (newB - topB)
-                End If
-                
-                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
-                ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
-                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
-                    
-            End If
-            
-        End If
-    
-    Next x
-    Next y
-    
-    'Clear all temporary array references
-    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
-    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
-    
-    'All blend mode functions return premultiplied DIBs, by design.
-    topDIB.SetInitialAlphaPremultiplicationState True
-    
-End Sub
-
-'Optimized "soft light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
-' blendmode calculations, which should then be alpha-blended onto the target via some other function.
-' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
-Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-    
-    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
-    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
-    initX = initX * 4
-    finalX = finalX * 4
-    xOffset = xOffset * 4
-    
-    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
-    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-    Dim intToFloat() As Single
-    ReDim intToFloat(0 To 255) As Single
-    Dim i As Long
-    For i = 0 To 255
-        intToFloat(i) = i / 255
-    Next i
-    
-    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
-    ' which we reset between scanlines.
-    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
-    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
-    
-    Dim topScanlineSize As Long, topDIBPointer As Long
-    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
-    
-    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
-    PrepInternalSafeArray1D bottomSA, bottomDIB
-    
-    Dim topPixels() As Byte, topSA As SAFEARRAY1D
-    PrepInternalSafeArray1D topSA, topDIB
-    
-    'Note: we don't actually copy the SafeArray structs into place until the loops start.
-    
-    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
-    
-    'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
-    
-    For y = initY To finalY
-        
-        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
-        ' into the bottom DIB's coordinate space.
-        bottomY = yOffset + y
-        
-        'Point each 1D pixel array at the proper scanline
-        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
-        topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-        
-    For x = initX To finalX Step 4
-        
-        bottomX = (xOffset + x)
-        
-        'Retrieve top layer RGBA values
-        topAInt = topPixels(x + 3)
-        
-        'Ignore transparent pixels completely
-        If topAInt <> 0 Then
-            
-            'Retrieve bottom layer alpha
-            bottomAInt = bottomPixels(bottomX + 3)
-            
-            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
-            If bottomAInt = 0 Then
-                bottomPixels(bottomX) = topPixels(x)
-                bottomPixels(bottomX + 1) = topPixels(x + 1)
-                bottomPixels(bottomX + 2) = topPixels(x + 2)
-                bottomPixels(bottomX + 3) = topAInt
-                
-            'If the bottom pixel is *not* transparent, our work is more involved
-            Else
-                
-                'Retrieve the top-layer values and convert them to floating-point
-                topA = intToFloat(topAInt)
-                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
-                
-                'Do the same for the bottom layer values
-                bottomA = intToFloat(bottomAInt)
-                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
-                
-                'Un-premultiply both top and bottom RGB values.
-                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If topA <> 1 Then
-                    topR = topR / topA: topG = topG / topA: topB = topB / topA
-                End If
-                
-                If bottomA <> 1 Then
-                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
-                End If
-                
-                '"Soft light" blend mode is very simple
-                newR = (1 - 2 * topR) * bottomR * bottomR + 2 * bottomR * topR
-                newG = (1 - 2 * topG) * bottomG * bottomG + 2 * bottomG * topG
-                newB = (1 - 2 * topB) * bottomB * bottomB + 2 * bottomB * topB
-                    
-                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
-                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If bottomA <> 1 Then
+                If (bottomA <> 1) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -1991,6 +1390,2592 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     
 End Sub
 
+'Optimized "exclusion" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results
+' of the blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                newR = bottomR + topR - 2 * (bottomR * topR)
+                newG = bottomG + topG - 2 * (bottomG * topG)
+                newB = bottomB + topB - 2 * (bottomB * topB)
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "grain extract" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                newR = bottomR - topR + 0.5
+                newG = bottomG - topG + 0.5
+                newB = bottomB - topB + 0.5
+                If (newR > 1) Then
+                    newR = 1
+                ElseIf (newR < 0) Then
+                    newR = 0
+                End If
+                If (newG > 1) Then
+                    newG = 1
+                ElseIf (newG < 0) Then
+                    newG = 0
+                End If
+                If (newB > 1) Then
+                    newB = 1
+                ElseIf (newB < 0) Then
+                    newB = 0
+                End If
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "grain merge" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                newR = bottomR + topR - 0.5
+                newG = bottomG + topG - 0.5
+                newB = bottomB + topB - 0.5
+                If (newR > 1) Then
+                    newR = 1
+                ElseIf (newR < 0) Then
+                    newR = 0
+                End If
+                If (newG > 1) Then
+                    newG = 1
+                ElseIf (newG < 0) Then
+                    newG = 0
+                End If
+                If (newB > 1) Then
+                    newB = 1
+                ElseIf (newB < 0) Then
+                    newB = 0
+                End If
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "hard light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Hard light" blend mode is very simple
+                If (topR < 0.5) Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
+                If (topG < 0.5) Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
+                If (topB < 0.5) Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "hard mix" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                If (topR < 1 - bottomR) Then newR = 0 Else newR = 1
+                If (topG < 1 - bottomG) Then newG = 0 Else newG = 1
+                If (topB < 1 - bottomB) Then newB = 0 Else newB = 1
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "hue" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend step is very simple
+                FastRGBtoHOnly topR, topG, topB, topH
+                FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                fHSVtoRGB topH, bottomS, bottomV, newR, newG, newB
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "lighten" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Lighten" blend mode is very simple
+                If bottomR > topR Then newR = bottomR Else newR = topR
+                If bottomG > topG Then newG = bottomG Else newG = topG
+                If bottomB > topB Then newB = bottomB Else newB = topB
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "linear burn" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                newR = topR + bottomR - 1
+                If (newR < 0) Then newR = 0
+                newG = topG + bottomG - 1
+                If (newG < 0) Then newG = 0
+                newB = topB + bottomB - 1
+                If (newB < 0) Then newB = 0
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "linear dodge" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Linear dodge" blend mode is very simple
+                newR = topR + bottomR
+                newG = topG + bottomG
+                newB = topB + bottomB
+                If newR > 1 Then newR = 1
+                If newG > 1 Then newG = 1
+                If newB > 1 Then newB = 1
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "linear light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                newR = bottomR + (2 * topR) - 1
+                If (newR > 1) Then
+                    newR = 1
+                ElseIf (newR < 0) Then
+                    newR = 0
+                End If
+                
+                newG = bottomG + (2 * topG) - 1
+                If (newG > 1) Then
+                    newG = 1
+                ElseIf (newG < 0) Then
+                    newG = 0
+                End If
+                
+                newB = bottomB + (2 * topB) - 1
+                If (newB > 1) Then
+                    newB = 1
+                ElseIf (newB < 0) Then
+                    newB = 0
+                End If
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+
+'Optimized "luminosity" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend step is very simple
+                'topV = fMax3(topR, topG, topB)
+                topV = 0.3 * topR + 0.59 * topB + 0.11 * topG
+                FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                fHSVtoRGB bottomH, bottomS, topV, newR, newG, newB
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "multiply" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Multiply" blend mode is very simple
+                newR = topR * bottomR
+                newG = topG * bottomG
+                newB = topB * bottomB
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "overlay" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Overlay" blend mode is very simple
+                If bottomR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
+                If bottomG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
+                If bottomB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "pin light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                If (topR > 0.5) Then newR = fMax(bottomR, 2 * (topR - 0.5)) Else newR = fMin(bottomR, 2 * topR)
+                If (topG > 0.5) Then newG = fMax(bottomG, 2 * (topG - 0.5)) Else newG = fMin(bottomG, 2 * topG)
+                If (topB > 0.5) Then newB = fMax(bottomB, 2 * (topB - 0.5)) Else newB = fMin(bottomB, 2 * topB)
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "saturation" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blend mode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend step is very simple
+                FastRGBtoSOnly topR, topG, topB, topS
+                FastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                fHSVtoRGB bottomH, topS, bottomV, newR, newG, newB
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "screen" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Screen" blend mode is very simple
+                newR = 1 - (1 - bottomR) * (1 - topR)
+                newG = 1 - (1 - bottomG) * (1 - topG)
+                newB = 1 - (1 - bottomB) * (1 - topB)
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "soft light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                '"Soft light" blend mode is very simple
+                newR = (1 - 2 * topR) * bottomR * bottomR + 2 * bottomR * topR
+                newG = (1 - 2 * topG) * bottomG * bottomG + 2 * bottomG * topG
+                newB = (1 - 2 * topB) * bottomB * bottomB + 2 * bottomB * topB
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "subtract" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                newR = bottomR - topR
+                If (newR < 0) Then newR = 0
+                newG = bottomG - topG
+                If (newG < 0) Then newG = 0
+                newB = bottomB - topB
+                If (newB < 0) Then newB = 0
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
+'Optimized "vivid light" blend mode function.  The bottom DIB will be returned unchanged.  The top DIB will contain the results of the
+' blendmode calculations, which should then be alpha-blended onto the target via some other function.
+' Note that 32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, bottomDIB
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, topDIB
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topAInt = topPixels(x + 3)
+        
+        'Ignore transparent pixels completely
+        If (topAInt <> 0) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
+            If (bottomAInt = 0) Then
+                bottomPixels(bottomX) = topPixels(x)
+                bottomPixels(bottomX + 1) = topPixels(x + 1)
+                bottomPixels(bottomX + 2) = topPixels(x + 2)
+                bottomPixels(bottomX + 3) = topAInt
+                
+            'If the bottom pixel is *not* transparent, our work is more involved
+            Else
+                
+                'Retrieve the top-layer values and convert them to floating-point
+                topA = intToFloat(topAInt)
+                topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                
+                'Do the same for the bottom layer values
+                bottomA = intToFloat(bottomAInt)
+                bottomB = intToFloat(bottomPixels(bottomX)): bottomG = intToFloat(bottomPixels(bottomX + 1)): bottomR = intToFloat(bottomPixels(bottomX + 2))
+                
+                'Un-premultiply both top and bottom RGB values.
+                ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
+                If (topA <> 1) Then
+                    topR = topR / topA: topG = topG / topA: topB = topB / topA
+                End If
+                
+                If (bottomA <> 1) Then
+                    bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
+                End If
+                
+                'The actual blend is very simple
+                If (topR > 0.5) Then newR = bottomR + 2 * (topR - 0.5) Else newR = bottomR + 2 * topR - 1
+                If (newR > 1) Then
+                    newR = 1
+                ElseIf (newR < 0) Then
+                    newR = 0
+                End If
+                
+                If (topG > 0.5) Then newG = bottomG + 2 * (topG - 0.5) Else newG = bottomG + 2 * topG - 1
+                If (newG > 1) Then
+                    newG = 1
+                ElseIf (newG < 0) Then
+                    newG = 0
+                End If
+                
+                If (topB > 0.5) Then newB = bottomB + 2 * (topB - 0.5) Else newB = bottomB + 2 * topB - 1
+                If (newB > 1) Then
+                    newB = 1
+                ElseIf (newB < 0) Then
+                    newB = 0
+                End If
+                    
+                'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                If (bottomA <> 1) Then
+                    newR = topR + bottomA * (newR - topR)
+                    newG = topG + bottomA * (newG - topG)
+                    newB = topB + bottomA * (newB - topB)
+                End If
+                
+                'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
+                ' (A final, blended alpha value will be handled by a subsequent function.)
+                topA = topA * 255
+                topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
+                    
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
 'Given a 1D SafeArray struct and a target DIB, point the 1D array at the first scanline of the DIB, and initialize all relevant
 ' SafeArray parameters to match.
 Private Sub PrepInternalSafeArray1D(ByRef dstSafeArray As SAFEARRAY1D, ByRef srcDIB As pdDIB)
@@ -2026,9 +4011,55 @@ Private Sub FastRGBtoHSV(ByVal r As Single, ByVal g As Single, ByVal b As Single
     End If
     
     chroma = r - fMin(g, b)
-    h = Abs(k + (g - b) / (6 * chroma + 0.0000001))
+    h = k + (g - b) / (6 * chroma + 0.0000001)
+    If (h < 0) Then h = -h
     s = chroma / (r + 0.00000001)
     v = r
+    
+End Sub
+
+Private Sub FastRGBtoHOnly(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef h As Single)
+
+    Dim k As Single, tmpSwap As Single
+    
+    If (g < b) Then
+        tmpSwap = b
+        b = g
+        g = tmpSwap
+        k = -1
+    End If
+    
+    If (r < g) Then
+        tmpSwap = g
+        g = r
+        r = tmpSwap
+        k = -(2 / 6) - k
+    End If
+    
+    h = k + (g - b) / (6 * (r - fMin(g, b)) + 0.0000001)
+    If (h < 0) Then h = -h
+    
+End Sub
+
+Private Sub FastRGBtoSOnly(ByVal r As Single, ByVal g As Single, ByVal b As Single, ByRef s As Single)
+
+    Dim k As Single, tmpSwap As Single
+    
+    If (g < b) Then
+        tmpSwap = b
+        b = g
+        g = tmpSwap
+        k = -1
+    End If
+    
+    If (r < g) Then
+        tmpSwap = g
+        g = r
+        r = tmpSwap
+        k = -(2 / 6) - k
+    End If
+    
+    s = (r - fMin(g, b)) / (r + 0.00000001)
     
 End Sub
 
