@@ -3,8 +3,9 @@ Attribute VB_Name = "Plugin_lz4"
 'Lz4 Compression Library Interface
 'Copyright 2016-2016 by Tanner Helland
 'Created: 04/December/16
-'Last updated: 04/December/16
-'Last update: initial build
+'Last updated: 07/December/16
+'Last update: add LZ4_HC compression algorithm.  (LZ4_HC has no special decompression algorithm;
+'             it uses an identical LZ4 frame and block format, so standard LZ4 decompression can be used.)
 '
 'Per its documentation (available at https://github.com/lz4/lz4), lz4 is...
 '
@@ -17,7 +18,13 @@ Attribute VB_Name = "Plugin_lz4"
 ' compression libraries.  As PD writes a ton of huge files, improved compression performance is a big win
 ' for us, particularly on old systems with 5400 RPM HDDs.
 '
-'As of v7.0, most internal PD temp files and caches are written using Lz4.
+'lz4-hc support is also provided.  lz4-hc is a high-compression variant of lz4.  It is much slower
+' (6-10x depending on workload), but provides compression levels close to zlib.  Decompression speed is
+' identical to regular lz4, so it is a good fit for things like run-time resources, where you have ample
+' time available during compression stages, but you still want decompression to be as fast as possible.
+'
+'As of v7.0, most internal PD temp files and caches are written using Lz4, so this library sees heavy usage
+' during a typical session.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -28,6 +35,7 @@ Option Explicit
 
 Private Declare Function LZ4_versionNumber Lib "liblz4" Alias "_LZ4_versionNumber@0" () As Long
 Private Declare Function LZ4_compress_fast Lib "liblz4" Alias "_LZ4_compress_fast@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cAccelerationLevel As Long) As Long
+Private Declare Function LZ4_compress_HC Lib "liblz4" Alias "_LZ4_compress_HC@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cCompressionLevel As Long) As Long
 Private Declare Function LZ4_decompress_safe Lib "liblz4" Alias "_LZ4_decompress_safe@16" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long) As Long
 Private Declare Function LZ4_compressBound Lib "liblz4" Alias "_LZ4_compressBound@4" (ByVal inputSizeInBytes As Long) As Long 'Maximum compressed size in worst case scenario; use this to size your input array
 
@@ -46,7 +54,7 @@ Public Function InitializeLz4() As Boolean
     'If we initialized the library successfully, cache some lz4-specific data
     If InitializeLz4 Then
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "lz4 compression engine is ready."
+            pdDebug.LogAction "lz4 and lz4hc compression engines are ready."
         #End If
     End If
     
@@ -82,11 +90,11 @@ Public Function Lz4GetMaxCompressedSize(ByVal srcSize As Long) As Long
 End Function
 
 'Compress some arbitrary source pointer + length into a destination array.  Pass the optional "dstArrayIsReady" as TRUE
-' (with a matching size descriptor) if you don't want us to auto-size the destination for you.
+' (with a matching size descriptor) if you don't want us to auto-create the destination buffer for you.
 '
 'RETURNS: final size of the compressed data, in bytes.  0 on failure.
 '
-'IMPORTANT!  The destination array is *not* resized to match the final compressed size.  The caller is responsible
+'IMPORTANT!  The destination array is *not* trimmed to match the final compressed size.  The caller is responsible
 ' for this, if they want it.
 Public Function Lz4CompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long, Optional ByVal dstArrayIsReady As Boolean = False, Optional ByVal dstArraySizeInBytes As Long = 0, Optional ByVal compressionAcceleration As Long = -1) As Long
     
@@ -123,6 +131,47 @@ Public Function Lz4CompressNakedPointers(ByVal dstPointer As Long, ByRef dstSize
         dstSizeInBytes = finalSize
     Else
         InternalError "lz4_compress failed", finalSize
+        finalSize = 0
+    End If
+    
+End Function
+
+'High-compression variant.  Note that compression level has different meaning here - higher values result in SLOWER but BETTER compression
+' (vs normal LZ4, where higher values result in FASTER but WORSE compression).
+Public Function Lz4HCCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long, Optional ByVal dstArrayIsReady As Boolean = False, Optional ByVal dstArraySizeInBytes As Long = 0, Optional ByVal compressionLevel As Long = -1) As Long
+    
+    'LZ4_HC provides its own validation of compression levels, but for the record...
+    ' 4 is the recommended minimum (though levels as low as 1 are supported, but compression will be poor)
+    ' 9 is the default, and any value < 1 resolves to this
+    ' 16 is the current maximum level
+    
+    'Prep the destination array, as necessary
+    If (Not dstArrayIsReady) Or (dstArraySizeInBytes = 0) Then
+        dstArraySizeInBytes = Lz4GetMaxCompressedSize(srcDataSize)
+        ReDim dstArray(0 To dstArraySizeInBytes - 1) As Byte
+    End If
+    
+    'Perform the compression
+    Dim finalSize As Long
+    finalSize = LZ4_compress_HC(ptrToSrcData, VarPtr(dstArray(0)), srcDataSize, dstArraySizeInBytes, compressionLevel)
+    
+    Lz4HCCompressArray = finalSize
+
+End Function
+
+'High-compression variant of the normal LZ4 compression function.
+Public Function Lz4HCCompressNakedPointers(ByVal dstPointer As Long, ByRef dstSizeInBytes As Long, ByVal srcPointer As Long, ByVal srcSizeInBytes As Long, Optional ByVal compressionLevel As Long = -1) As Boolean
+    
+    Dim finalSize As Long
+    finalSize = LZ4_compress_HC(srcPointer, dstPointer, srcSizeInBytes, dstSizeInBytes, compressionLevel)
+    
+    'Check for error returns
+    Lz4HCCompressNakedPointers = CBool(finalSize <> 0)
+    
+    If Lz4HCCompressNakedPointers Then
+        dstSizeInBytes = finalSize
+    Else
+        InternalError "lz4_compress_HC failed", finalSize
         finalSize = 0
     End If
     

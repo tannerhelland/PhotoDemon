@@ -3,11 +3,11 @@ Attribute VB_Name = "Compression"
 'Unified Compression Interface for PhotoDemon
 'Copyright 2016-2016 by Tanner Helland
 'Created: 02/December/16
-'Last updated: 04/December/16
-'Last update: add support for lz4 compression
+'Last updated: 07/December/16
+'Last update: add support for lz4-hc compression
 'Dependencies: standalone plugin modules for whatever compression engines you want to use (e.g. the
 '              Plugin_ZLib module for zlib compression).  This module simply wraps those dedicated functions,
-'              and it performs no library initialization (or termination) of its own.
+'              and it performs no library initialization or termination of its own.
 '
 'As of v7.0, PhotoDemon performs a *lot* of custom compression work.  There are a lot of different needs in
 ' image processing - for example, when the user saves a large, multi-layer image, it's okay to take plenty of time
@@ -26,13 +26,16 @@ Attribute VB_Name = "Compression"
 ' significantly faster than zLib (~4-5x) with only marginally worse compression ratios, while at comparable
 ' speed settings, it compresses better than zLib across every workload.  Can't argue with that!
 '
-'Also under active investigation is lz4 (http://lz4.github.io/lz4/), developed by the same mad genius as zstd.
+'Also supported is the lz4 library (http://lz4.github.io/lz4/), developed by the same mad genius as zstd.
 ' lz4 emphasis real-time compression and decompression speeds, and while its compression ratios are worse
 ' than both zLib and zstd, it is a full order of magnitude faster.  Its decompression speeds rank among the best
 ' of any active compression library, making it a useful and unique addition to the corpus.  (It is also the only
 ' VB-friendly compression library I know of where its performance is good enough to provide concrete benefits
 ' when reading/writing temp files, because its compression-speed-to-compressed-size ratio is high enough to
 ' outperform typical disk I/O on a 7200 RPM HDD.)
+'
+'lz4-hc is also supported.  It is a high-compression variant of lz4, with compression times closer to zLib,
+' but the same blazing decompression speeds as stock lz4.  Its support is provided by the stock lz4 library.
 '
 'Anyway, the purpose of this module is to simplify code across PD by using standardized compression functions.
 ' Simply specify the compressor you desire, and this module will silently plug in the right compression or
@@ -47,7 +50,7 @@ Attribute VB_Name = "Compression"
 'Licenses for wrapped libraries include:
 ' zLib: BSD-style license (http://zlib.net/zlib_license.html)
 ' zstd: BSD 3-clause license (https://github.com/facebook/zstd/blob/dev/LICENSE)
-' lz4: BSD 2-clause license (https://github.com/lz4/lz4/blob/dev/LICENSE)
+' lz4/lz4-hc: BSD 2-clause license (https://github.com/lz4/lz4/blob/dev/LICENSE)
 '
 'Copies of these libraries are all custom-built by me as stdcall variants to simplify interop with VB.  Feel free
 ' to drop-in your own compiled copies, but note that the usual caveats apply if you go with the stock cdecl
@@ -69,10 +72,11 @@ Public Enum PD_COMPRESSION_ENGINES
     PD_CE_ZLib = 1
     PD_CE_Zstd = 2
     PD_CE_Lz4 = 3
+    PD_CE_Lz4HC = 4
 End Enum
 
 #If False Then
-    Private Const PD_CE_NoCompression = 0, PD_CE_ZLib = 1, PD_CE_Zstd = 2, PD_CE_Lz4 = 3
+    Private Const PD_CE_NoCompression = 0, PD_CE_ZLib = 1, PD_CE_Zstd = 2, PD_CE_Lz4 = 3, PD_CE_Lz4HC = 4
 #End If
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
@@ -135,6 +139,8 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
         CompressPtrToPtr = Plugin_zstd.ZstdCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     ElseIf (compressionEngine = PD_CE_Lz4) Then
         CompressPtrToPtr = Plugin_lz4.Lz4CompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
+    ElseIf (compressionEngine = PD_CE_Lz4HC) Then
+        CompressPtrToPtr = Plugin_lz4.Lz4HCCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     End If
     
     'If compression failed, perform a direct source-to-dst copy
@@ -190,7 +196,7 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
         DecompressPtrToPtr = Plugin_zLib.DecompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         DecompressPtrToPtr = CBool(Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
-    ElseIf (compressionEngine = PD_CE_Lz4) Then
+    ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4)) Then
         DecompressPtrToPtr = CBool(Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
     End If
     
@@ -216,7 +222,7 @@ Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compr
         GetWorstCaseSize = srcBufferSizeInBytes + (CDbl(srcBufferSizeInBytes) * 0.01) + 12
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         GetWorstCaseSize = Plugin_zstd.ZstdGetMaxCompressedSize(srcBufferSizeInBytes)
-    ElseIf (compressionEngine = PD_CE_Lz4) Then
+    ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4HC)) Then
         GetWorstCaseSize = Plugin_lz4.Lz4GetMaxCompressedSize(srcBufferSizeInBytes)
     End If
 

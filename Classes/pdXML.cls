@@ -667,10 +667,10 @@ Public Function WriteXMLToFile(ByVal dstFile As String, Optional ByVal suppressI
     Dim fileContents As String
     fileContents = m_xmlContents
     
-    If Not suppressIndentation Then ApplyIndentation fileContents
+    If (Not suppressIndentation) Then ApplyIndentation fileContents
     
     'If the file contains an old-style windows-1252 encoding declaration, replace it with UTF-8
-    If InStr(1, fileContents, "windows-1252", vbBinaryCompare) Then fileContents = Replace$(fileContents, "windows-1252", "UTF-8")
+    If (InStr(1, fileContents, "windows-1252", vbBinaryCompare) <> 0) Then fileContents = Replace$(fileContents, "windows-1252", "UTF-8")
     
     'Allow pdFSO to handle the file write for us
     WriteXMLToFile = m_File.SaveStringToTextFile(fileContents, dstFile)
