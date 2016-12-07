@@ -115,11 +115,11 @@ End Function
 
 'Given a file path, return the matching thumbnail path.  (PD stores all thumbnails to the same subfolder, currently /Data/Icons.)
 Private Function GetMRUThumbnailPath(ByVal imagePath As String) As String
-    GetMRUThumbnailPath = g_UserPreferences.GetIconPath & GetMRUHash(imagePath) & ".png"
+    GetMRUThumbnailPath = g_UserPreferences.GetIconPath & GetMRUHash(imagePath) & ".pdtmp"
 End Function
 
 'Saves a thumbnail PNG of a pdImage object.  The thumbnail is saved to the /Data/Icons directory
-Private Sub SaveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
+Private Sub SaveMRUThumbnail(ByRef imagePath As String, ByRef srcImage As pdImage)
 
     'During debug builds, it is sometimes nice to know how frequently this function is called
     '#If DEBUGMODE = 1 Then
@@ -135,18 +135,14 @@ Private Sub SaveMRUThumbnail(ByRef imagePath As String, ByRef tImage As pdImage)
     Dim mruThumb As pdDIB
     Set mruThumb = New pdDIB
     If g_IsVistaOrLater Then
-        tImage.RequestThumbnail mruThumb, 64
+        srcImage.RequestThumbnail mruThumb, 64
     Else
-        tImage.RequestThumbnail mruThumb, 16
+        srcImage.RequestThumbnail mruThumb, 16
     End If
     
-    'Write the PNG file.  (FreeImage and GDI+ are both supported by this function, FYI)
-    Saving.QuickSaveDIBAsPNG sFilename, mruThumb
+    'Write the thumbnail out to file using our own internal image format (which is significantly faster than PNG)
+    mruThumb.WriteToFile sFilename
     
-    'Regardless of how our thumbnail was saved, we can now delete the temporary thumbnail DIB
-    mruThumb.EraseDIB
-    Set mruThumb = Nothing
-
 End Sub
 
 Private Sub Class_Initialize()
@@ -172,7 +168,7 @@ End Sub
 Private Sub IMRUList_AfterListCleared()
 
     'Unload all recent file menu entries
-    If FormMain.mnuRecDocs.Count > 1 Then
+    If (FormMain.mnuRecDocs.Count > 1) Then
         
         Dim i As Long
         For i = FormMain.mnuRecDocs.Count - 1 To 1 Step -1
@@ -208,7 +204,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
                 For i = 0 To numEntries - 1
                     
                     'If this hash matches one on file, mark it as OK.
-                    If StrComp(chkFile, mruManager.GetMRUThumbnailPath(i), vbTextCompare) = 0 Then
+                    If (StrComp(chkFile, mruManager.GetMRUThumbnailPath(i), vbTextCompare) = 0) Then
                         fileOK = True
                         Exit For
                     End If

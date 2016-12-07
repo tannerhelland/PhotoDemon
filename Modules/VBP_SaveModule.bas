@@ -828,7 +828,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     
     #If DEBUGMODE = 1 Then
         'Want to test undo timing?  Uncomment the line below
-        Debug.Print "Time taken for Undo file creation: " & Format$(VB_Hacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
+        Debug.Print "Undo file creation took: " & Format$(VB_Hacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
     #End If
     
 End Function
@@ -887,9 +887,9 @@ Public Function QuickSaveDIBAsPNG(ByVal dstFilename As String, ByRef srcDIB As p
         
     'FreeImage is not available; try to use GDI+ to save a PNG thumbnail
     Else
-        
-        If Not GDIPlusQuickSavePNG(dstFilename, srcDIB) Then Message "Thumbnail save failed (unspecified GDI+ error)."
-        
+        Debug.Print "attempting GDI+ save..."
+        If (Not GDIPlusQuickSavePNG(dstFilename, srcDIB)) Then Message "Thumbnail save failed (unspecified GDI+ error)."
+        Debug.Print "post-gdI+ quick save."
     End If
 
 End Function

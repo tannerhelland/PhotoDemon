@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.220</langversion>
+<langversion>6.7.221</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -780,16 +780,11 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 </phrase>
 
 <phrase>
-<original>Releasing all temporary image copies</original>
-<translation>Alle temporären Dateikopien verwerfen</translation>
-</phrase>
-
-<phrase>
 <original>Save complete.</original>
 <translation>Speichern abgeschlossen.</translation>
 </phrase>
 
-<!-- GDIPlus.bas contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
+<!-- GDIPlus.bas contains 7 phrases.  All 7 were unique, so 7 new phrases were written to file. -->
 
 <!-- END text for GDIPlus.bas-->
 
@@ -14972,10 +14967,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2536</phrasecount>
+<phrasecount>2535</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4476 phrases. -->
-<!-- 1940 are duplicates, so only 2536 unique phrases have been written to file. -->
-<!-- These 2536 phrases contain approximately 12724 total words. -->
+<!-- As of this build, PhotoDemon contains 4475 phrases. -->
+<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
+<!-- These 2535 phrases contain approximately 12719 total words. -->
 
 </pdData>

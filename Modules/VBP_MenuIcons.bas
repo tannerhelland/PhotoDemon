@@ -644,7 +644,7 @@ Public Sub ResetMenuIcons()
     ' (Note added 01 Jan 2014 - RR has reported an IDE error on the following line, which means this function is somehow being
     '  triggered before loadMenuIcons above.  I cannot reproduce this behavior, so instead, we now perform a single initialization
     '  check before attempting to load MRU icons.)
-    If Not (cMRUIcons Is Nothing) Then
+    If (Not cMRUIcons Is Nothing) Then
         
         cMRUIcons.Clear
         Dim tmpFilename As String

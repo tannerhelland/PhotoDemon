@@ -1174,7 +1174,7 @@ Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEm
         #End If
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdDIB.CreateFromFile() detected an incoming buffer with measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
+            'pdDebug.LogAction "pdDIB.CreateFromFile() detected an incoming buffer with measurements (" & fWidth & "x" & fHeight & ", scanline width: " & fArrayWidth & ")"
         #End If
     End If
     
@@ -1325,7 +1325,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal useCompr
             cFile.WriteDataToFile hFile, VarPtr(compressedImageData(0)), compressedSize
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "pdDIB.WriteToFile: (" & CStr(Me.GetDIBWidth) & "x" & CStr(Me.GetDIBHeight) & "x" & CStr(Me.GetDIBColorDepth) & "): " & CStr(compressedSize) & " bytes of pixel data (compressed; original was " & CStr(tmpDIBLength) & " bytes)"
+                'pdDebug.LogAction "pdDIB.WriteToFile: (" & CStr(Me.GetDIBWidth) & "x" & CStr(Me.GetDIBHeight) & "x" & CStr(Me.GetDIBColorDepth) & "): " & CStr(compressedSize) & " bytes of pixel data (compressed; original was " & CStr(tmpDIBLength) & " bytes)"
             #End If
                 
         'On failure, we'll simply write out uncompressed bytes
