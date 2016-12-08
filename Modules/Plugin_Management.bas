@@ -517,7 +517,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         'LZ4 maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_lz4
-            initializationSuccessful = Plugin_lz4.InitializeLz4()
+            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_Lz4, g_PluginPath)
             
         'OptiPNG and PNGQuant are loaded on-demand, as they may not be used in every session
         Case CCP_OptiPNG
@@ -528,11 +528,11 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         'zLib maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_zLib
-            initializationSuccessful = Plugin_zLib.InitializeZLib()
+            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_ZLib, g_PluginPath)
         
         'zstd maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_zstd
-            initializationSuccessful = Plugin_zstd.InitializeZStd()
+            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_Zstd, g_PluginPath)
             
     End Select
 
@@ -713,21 +713,24 @@ Public Sub TerminateAllPlugins()
     #End If
     
     If g_ZLibEnabled Then
-        Plugin_zLib.ReleaseZLib
+        Compression.ShutDownCompressionEngine PD_CE_ZLib
+        g_ZLibEnabled = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "zLib released"
         #End If
     End If
     
     If g_ZstdEnabled Then
-        Plugin_zstd.ReleaseZstd
+        Compression.ShutDownCompressionEngine PD_CE_Zstd
+        g_ZstdEnabled = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "zstd released"
         #End If
     End If
     
     If g_Lz4Enabled Then
-        Plugin_lz4.ReleaseLz4
+        Compression.ShutDownCompressionEngine PD_CE_Lz4
+        g_Lz4Enabled = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "lz4 released"
         #End If

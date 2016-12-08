@@ -460,7 +460,6 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     '       nightly builds still write v1 PDI files for the time being.
     Dim pdiWriter As pdPackager2
     Set pdiWriter = New pdPackager2
-    pdiWriter.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
@@ -576,7 +575,6 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
     Dim pdiWriter As pdPackager2
     Set pdiWriter = New pdPackager2
-    pdiWriter.Init_CompressionEngines , , , True, True, True, g_ZLibEnabled, g_ZstdEnabled, g_Lz4Enabled
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.

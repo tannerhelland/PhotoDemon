@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" v2.0 Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2016 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 04/December/16
-'Last update: add lz4 as a valid compression engine option
+'Last updated: 08/December/16
+'Last update: offload all compression duties to the Compression module
 'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
@@ -209,18 +209,6 @@ End Type
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 
-'API calls for explicitly calling dlls.  This allows us to build DLL paths at runtime, and it also allows
-' us to call any DLL we like without first passing them through regsvr32.
-Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
-Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
-
-'If a given compression library has been successfully initialized, these will be set to TRUE.  If we initialized the
-' accompanying DLL within this class, we will also have a non-zero token; this value must be used at termination time
-' to free the cached library handle.
-Private m_ZLibAvailable As Boolean, m_ZLibToken As Long
-Private m_ZstdAvailable As Boolean, m_ZstdToken As Long
-Private m_Lz4Available As Boolean, m_Lz4Token As Long
-
 'When writing new pdPackage files, these variables hold the package's contents as they are being assembled.  When loading a pdPackage file,
 ' these structs will be filled after the file header is successfully verified.
 Private m_FileHeader As PDP_HEADER
@@ -375,9 +363,9 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     End If
     
     'If compression is requested, make sure a matching compression engine is available
-    If ((compressData = PD_CE_ZLib) And (Not m_ZLibAvailable)) Then compressData = PD_CE_NoCompression
-    If ((compressData = PD_CE_Zstd) And (Not m_ZstdAvailable)) Then compressData = PD_CE_NoCompression
-    If (((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) And (Not m_Lz4Available)) Then compressData = PD_CE_NoCompression
+    If ((compressData = PD_CE_ZLib) And (Not Compression.IsCompressionEngineAvailable(PD_CE_ZLib))) Then compressData = PD_CE_NoCompression
+    If ((compressData = PD_CE_Zstd) And (Not Compression.IsCompressionEngineAvailable(PD_CE_Zstd))) Then compressData = PD_CE_NoCompression
+    If (((compressData = PD_CE_Lz4) Or (compressData = PD_CE_Lz4HC)) And (Not Compression.IsCompressionEngineAvailable(PD_CE_Lz4))) Then compressData = PD_CE_NoCompression
     
     'If compression is requested, update the "zLib required" flag for both the file as a whole, and this specific node.
     If (compressData <> PD_CE_NoCompression) Then
@@ -935,13 +923,16 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 
                 'Figure out which decompression library was used for the original compression.
                 ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
+                Dim cmpEngine As PD_COMPRESSION_ENGINES
                 If GetBitFlag(PDP_F2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
-                    If m_ZstdAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, PD_CE_Zstd)
+                    cmpEngine = PD_CE_Zstd
                 ElseIf GetBitFlag(PDP_F2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
-                    If m_ZLibAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, PD_CE_ZLib)
+                    cmpEngine = PD_CE_ZLib
                 ElseIf GetBitFlag(PDP_F2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
-                    If m_Lz4Available Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, PD_CE_Lz4)
+                    cmpEngine = PD_CE_Lz4
                 End If
+                
+                If Compression.IsCompressionEngineAvailable(cmpEngine) Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpEngine)
                 
                 'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
                 If (Not decompressionResult) Then
@@ -1548,13 +1539,16 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         
         'Figure out which decompression library was used for the original compression.
         ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
+        Dim cmpEngine As PD_COMPRESSION_ENGINES
         If GetBitFlag(PDP_F2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            If m_ZstdAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_Zstd)
+            cmpEngine = PD_CE_Zstd
         ElseIf GetBitFlag(PDP_F2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            If m_ZLibAvailable Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_ZLib)
+            cmpEngine = PD_CE_ZLib
         ElseIf GetBitFlag(PDP_F2_Lz4Required, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            If m_Lz4Available Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_Lz4)
+            cmpEngine = PD_CE_Lz4
         End If
+        
+        If Compression.IsCompressionEngineAvailable(cmpEngine) Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cmpEngine)
         
         'If decompression was successful, return the data's size (which the caller can use if the array is not being
         ' trimmed to exactly fit the returned data).
@@ -1625,13 +1619,16 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
         'Figure out which decompression library was used for the original compression.
         ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
+        Dim cmpEngine As PD_COMPRESSION_ENGINES
         If GetBitFlag(PDP_F2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            If m_ZstdAvailable Then decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_Zstd)
+            cmpEngine = PD_CE_Zstd
         ElseIf GetBitFlag(PDP_F2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            If m_ZLibAvailable Then decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_ZLib)
+            cmpEngine = PD_CE_ZLib
         ElseIf GetBitFlag(PDP_F2_Lz4Required, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            If m_Lz4Available Then decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, PD_CE_Lz4)
+            cmpEngine = PD_CE_Lz4
         End If
+        
+        If Compression.IsCompressionEngineAvailable(cmpEngine) Then decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cmpEngine)
         
         'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
         If (Not decompressionResult) Then
@@ -1647,71 +1644,6 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
     
     'If we made it all the way here, the node has been successfully loaded!
     GetNodeDataByIndex_UnsafeDstPointer = True
-
-End Function
-
-'If you want to use compression functions, you must provide the class with a path to a STDCALL (WAPI) copy of zLib or zstd
-' (or both).  The paths must include the DLL filename, e.g. "c:\various paths\zlibwapi.dll".  This class assumes zlib and
-' zstd filenames of "zlibwapi.dll" and "libzstd.dll", respectively; if you use different filenames, you must rewrite the
-' API function declarations at the top of this class to match.
-'
-'Optionally, if you want to handle LoadLibrary/FreeLibrary by yourself, you are welcome to do so.  (If you plan on using
-' multiple pdPackage instances within a single application, it makes more sense for you to do this, instead of loading/
-' unloading the libraries on every pdPackage invocation.  To enable this behavior, simply pass TRUE for the "leaveInitToCaller"
-' parameter(s) and this class will assume you've already used LoadLibrary successfully.
-'
-'Additionally, the "callerInitiationSuccess" parameter(s) can be set to FALSE to notify this class that the caller tried to
-' initiate one of the compression libraries, but failed to do so successfully.  This class will then skip any initialization
-' steps, on the assumption that they will also fail.
-Public Function Init_CompressionEngines(Optional ByVal pathToZLibDLL As String = vbNullString, Optional ByVal pathToZstdDLL As String = vbNullString, Optional ByVal pathToLz4DLL As String = vbNullString, Optional ByVal leaveZlibInitToCaller As Boolean = True, Optional ByVal leaveZstdInitToCaller As Boolean = True, Optional ByVal leaveLz4InitToCaller As Boolean = True, Optional zLibCallerInitiationSuccess As Boolean = True, Optional zstdCallerInitiationSuccess As Boolean = True, Optional lz4CallerInitiationSuccess As Boolean = True) As Boolean
-    
-    'Initialization is handled in two chunks; one each for zlib and zstd.  Note also that there is no penalty for enabling
-    ' compression support but not using it; this is common when loading pdPackage files, for example, as you want decompression
-    ' to be available if needed, but if the source pdPackage file doesn't use it, no problem.
-    
-    'zLib comes first
-    If leaveZlibInitToCaller Then
-        m_ZLibAvailable = zLibCallerInitiationSuccess
-        m_ZLibToken = 0
-        
-    'The caller wants us to handle zLib initialization.  Attempt to load the zLib library path we were passed.
-    Else
-        If (Len(pathToZLibDLL) <> 0) Then
-            m_ZLibToken = LoadLibrary(StrPtr(pathToZLibDLL))
-            m_ZLibAvailable = CBool(m_ZLibToken <> 0)
-        Else
-            m_ZLibAvailable = False
-        End If
-    End If
-    
-    'zstd next
-    If leaveZstdInitToCaller Then
-        m_ZstdAvailable = zstdCallerInitiationSuccess
-        m_ZstdToken = 0
-    Else
-        If (Len(pathToZstdDLL) <> 0) Then
-            m_ZstdToken = LoadLibrary(StrPtr(pathToZstdDLL))
-            m_ZstdAvailable = CBool(m_ZstdToken <> 0)
-        Else
-            m_ZstdAvailable = False
-        End If
-    End If
-    
-    'lz4 last
-    If leaveLz4InitToCaller Then
-        m_Lz4Available = lz4CallerInitiationSuccess
-        m_Lz4Token = 0
-    Else
-        If (Len(pathToLz4DLL) <> 0) Then
-            m_Lz4Token = LoadLibrary(StrPtr(pathToLz4DLL))
-            m_Lz4Available = CBool(m_Lz4Token <> 0)
-        Else
-            m_Lz4Available = False
-        End If
-    End If
-    
-    'This function will return TRUE if it considers at least one compression engine to be available; FALSE if no compression is available
-    Init_CompressionEngines = (m_ZLibAvailable Or m_ZstdAvailable Or m_Lz4Available)
 
 End Function
 
@@ -1808,13 +1740,6 @@ Public Function GetPackageFlag(ByVal flagToCheck As PDP_FLAGS_V2, Optional ByVal
 End Function
 
 Private Sub Class_Initialize()
-
-    m_ZLibAvailable = False
-    m_ZLibToken = 0
-    m_ZstdAvailable = False
-    m_ZstdToken = 0
-    m_Lz4Available = False
-    m_Lz4Token = 0
     
     'Prepare a module-level pdFSO instance, which makes file operations much easier
     Set m_File = New pdFSO
@@ -1822,20 +1747,6 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-
-    'If we loaded any compression libraries, free them now
-    If (m_ZLibToken <> 0) Then
-        FreeLibrary m_ZLibToken
-        m_ZLibToken = 0
-    End If
-    If (m_ZstdToken <> 0) Then
-        FreeLibrary m_ZstdToken
-        m_ZstdToken = 0
-    End If
-    If (m_Lz4Token <> 0) Then
-        FreeLibrary m_Lz4Token
-        m_Lz4Token = 0
-    End If
     
     'Release our data stream buffer
     If Not (m_DataBuffer Is Nothing) Then
