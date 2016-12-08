@@ -46,11 +46,11 @@ Private m_ZstdHandle As Long
 Private m_ZstdCompressLevelMax As Long
 
 'Initialize zstd.  Do not call this until you have verified zstd's existence (typically via the PluginManager module)
-Public Function InitializeZStd() As Boolean
+Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
 
     'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
     Dim zstdPath As String
-    zstdPath = g_PluginPath & "libzstd.dll"
+    zstdPath = pathToDLLFolder & "libzstd.dll"
     m_ZstdHandle = LoadLibrary(StrPtr(zstdPath))
     InitializeZStd = CBool(m_ZstdHandle <> 0)
     
@@ -73,8 +73,10 @@ End Function
 
 'When PD closes, make sure to release our open zstd handle
 Public Sub ReleaseZstd()
-    If (m_ZstdHandle <> 0) Then FreeLibrary m_ZstdHandle
-    g_ZstdEnabled = False
+    If (m_ZstdHandle <> 0) Then
+        FreeLibrary m_ZstdHandle
+        m_ZstdHandle = 0
+    End If
 End Sub
 
 Public Function GetZstdVersion() As Long

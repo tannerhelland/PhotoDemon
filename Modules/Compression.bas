@@ -79,7 +79,72 @@ End Enum
     Private Const PD_CE_NoCompression = 0, PD_CE_ZLib = 1, PD_CE_Zstd = 2, PD_CE_Lz4 = 3, PD_CE_Lz4HC = 4
 #End If
 
+Private Const NUM_OF_COMPRESSION_ENGINES = 5
+
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+
+'When a compression engine is initialized successfully, the matching value in this array will be set to TRUE.
+Private m_CompressorAvailable() As Boolean
+
+'Initialize a given compression engine.  The path to the DLL folder *must* include a trailing slash.
+'Returns: TRUE if initialization is successful; FALSE otherwise.  FALSE typically means the path to the DLL folder
+'         is malformed, or it's correct but the program doesn't have access rights to it.
+Public Function InitializeCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES, ByRef pathToDLLFolder As String) As Boolean
+    
+    'Keep track of which compression engines have been initialized
+    If (Not VB_Hacks.IsArrayInitialized(m_CompressorAvailable)) Then
+        ReDim m_CompressorAvailable(0 To NUM_OF_COMPRESSION_ENGINES - 1) As Boolean
+        m_CompressorAvailable(PD_CE_NoCompression) = True
+    End If
+    
+    'Skip initialization if the compressor has already been initialized
+    If (Not m_CompressorAvailable(whichEngine)) Then
+        If (whichEngine = PD_CE_ZLib) Then
+            m_CompressorAvailable(whichEngine) = Plugin_zLib.InitializeZLib(pathToDLLFolder)
+        ElseIf (whichEngine = PD_CE_Zstd) Then
+            m_CompressorAvailable(whichEngine) = Plugin_zstd.InitializeZStd(pathToDLLFolder)
+        ElseIf ((whichEngine = PD_CE_Lz4) Or (whichEngine = PD_CE_Lz4HC)) Then
+            m_CompressorAvailable(PD_CE_Lz4) = Plugin_lz4.InitializeLz4(pathToDLLFolder)
+            m_CompressorAvailable(PD_CE_Lz4HC) = m_CompressorAvailable(PD_CE_Lz4)
+        End If
+    End If
+    
+    InitializeCompressionEngine = m_CompressorAvailable(whichEngine)
+    
+End Function
+
+'Shut down a compression engine.  You (obviously) cannot use a compression engine once it has been shut down.
+' You *must* call this function before your program terminates, and you must call it once for each engine that
+' you started this session.
+Public Sub ShutDownCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES)
+
+    'Keep track of which compression engines have been initialized
+    If VB_Hacks.IsArrayInitialized(m_CompressorAvailable) Then
+        
+        'Skip termination if the compressor has already been shut down
+        If m_CompressorAvailable(whichEngine) Then
+            If (whichEngine = PD_CE_ZLib) Then
+                Plugin_zLib.ReleaseZLib
+                m_CompressorAvailable(PD_CE_ZLib) = False
+            ElseIf (whichEngine = PD_CE_Zstd) Then
+                Plugin_zstd.ReleaseZstd
+                m_CompressorAvailable(PD_CE_Zstd) = False
+            ElseIf ((whichEngine = PD_CE_Lz4) Or (whichEngine = PD_CE_Lz4HC)) Then
+                Plugin_lz4.ReleaseLz4
+                m_CompressorAvailable(PD_CE_Lz4) = False
+                m_CompressorAvailable(PD_CE_Lz4HC) = False
+            End If
+        End If
+        
+    End If
+    
+End Sub
+
+'Want to know if a given compression engine is available?  Call this function.  It will (obviously) return FALSE for
+' any engines that weren't initialized properly.
+Public Function IsCompressionEngineAvailable(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Boolean
+    IsCompressionEngineAvailable = m_CompressorAvailable(whichEngine)
+End Function
 
 'Compress some arbitrary pointer to a destination array.
 '
@@ -134,7 +199,7 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
     CompressPtrToPtr = False
     
     If (compressionEngine = PD_CE_ZLib) Then
-        CompressPtrToPtr = Plugin_zLib.CompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
+        CompressPtrToPtr = Plugin_zLib.ZlibCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         CompressPtrToPtr = Plugin_zstd.ZstdCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     ElseIf (compressionEngine = PD_CE_Lz4) Then
@@ -193,7 +258,7 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
     DecompressPtrToPtr = False
     
     If (compressionEngine = PD_CE_ZLib) Then
-        DecompressPtrToPtr = Plugin_zLib.DecompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
+        DecompressPtrToPtr = Plugin_zLib.ZlibDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         DecompressPtrToPtr = CBool(Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
     ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4)) Then
@@ -219,7 +284,7 @@ Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compr
     If (compressionEngine = PD_CE_NoCompression) Then
         GetWorstCaseSize = srcBufferSizeInBytes
     ElseIf (compressionEngine = PD_CE_ZLib) Then
-        GetWorstCaseSize = srcBufferSizeInBytes + (CDbl(srcBufferSizeInBytes) * 0.01) + 12
+        GetWorstCaseSize = Plugin_zLib.ZlibGetMaxCompressedSize(srcBufferSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         GetWorstCaseSize = Plugin_zstd.ZstdGetMaxCompressedSize(srcBufferSizeInBytes)
     ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4HC)) Then

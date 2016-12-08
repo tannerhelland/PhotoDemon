@@ -43,11 +43,11 @@ Private Declare Function LZ4_compressBound Lib "liblz4" Alias "_LZ4_compressBoun
 Private m_Lz4Handle As Long
 
 'Initialize lz4.  Do not call this until you have verified its existence (typically via the PluginManager module)
-Public Function InitializeLz4() As Boolean
+Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
 
     'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
     Dim lz4Path As String
-    lz4Path = g_PluginPath & "liblz4.dll"
+    lz4Path = pathToDLLFolder & "liblz4.dll"
     m_Lz4Handle = LoadLibrary(StrPtr(lz4Path))
     InitializeLz4 = CBool(m_Lz4Handle <> 0)
     
@@ -69,8 +69,10 @@ End Function
 
 'When PD closes, make sure to release our open Lz4 handle
 Public Sub ReleaseLz4()
-    If (m_Lz4Handle <> 0) Then FreeLibrary m_Lz4Handle
-    g_Lz4Enabled = False
+    If (m_Lz4Handle <> 0) Then
+        FreeLibrary m_Lz4Handle
+        m_Lz4Handle = 0
+    End If
 End Sub
 
 Public Function GetLz4Version() As String
