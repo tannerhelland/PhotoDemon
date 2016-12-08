@@ -323,8 +323,6 @@ End Function
 ' test string is comprised only of characters from the valid character list.
 Public Function ValidateCharacters(ByVal srcText As String, ByVal listOfValidChars As String, Optional ByVal compareCaseInsensitive As Boolean = True) As Boolean
     
-    Dim invLoc As Long, testChar As String
-    
     ValidateCharacters = True
     
     'For case-insensitive comparisons, lcase both strings in advance
@@ -340,7 +338,7 @@ Public Function ValidateCharacters(ByVal srcText As String, ByVal listOfValidCha
     For i = 1 To Len(srcText)
         
         'If this invalid character exists in the target string, replace it with whatever the user specified
-        If InStr(1, listOfValidChars, Mid$(srcText, i, 1), vbBinaryCompare) = 0 Then
+        If (InStr(1, listOfValidChars, Mid$(srcText, i, 1), vbBinaryCompare) = 0) Then
             ValidateCharacters = False
             Exit For
         End If

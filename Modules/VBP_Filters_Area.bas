@@ -382,7 +382,7 @@ End Sub
 ' rotated grid approach (see http://en.wikipedia.org/wiki/Spatial_anti-aliasing), with hard-coded offset tables based on the passed
 ' quality param.  At present, a maximum of 12 supersamples (plus the original sample) are used at maximum quality.  Beyond this level,
 ' performance takes a huge hit, but output results are not significantly improved.
-Public Sub getSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples As Long, ByRef ssOffsetsX() As Single, ByRef ssOffsetsY() As Single)
+Public Sub GetSupersamplingTable(ByVal userQuality As Long, ByRef numAASamples As Long, ByRef ssOffsetsX() As Single, ByRef ssOffsetsY() As Single)
     
     'Old PD versions used a Boolean value for quality.  As such, if the user enabled interpolation, and saved it as part of a preset,
     ' this function may get passed a "-1" for userQuality.  In that case, activate an identical method in the new supersampler.
@@ -496,7 +496,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
+    Dim quickX As Long, quickX2 As Long, QuickY As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
@@ -517,7 +517,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     'Prep some IIR-specific values next
     Dim lambda As Double, dnu As Double
     Dim nu As Double, boundaryScale As Double, postScale As Double
-    Dim i As Long, step As Long
+    Dim step As Long
     
     'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
     Dim sigma As Double
@@ -527,8 +527,8 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     'sigma = (radius + 1) / Sqr(2 * (Log(255) / Log(10)))
     
     'Make sure sigma and steps are valid
-    If sigma <= 0 Then sigma = 0.01
-    If numSteps <= 0 Then numSteps = 1
+    If (sigma <= 0) Then sigma = 0.01
+    If (numSteps <= 0) Then numSteps = 1
     
     'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
     ' is proposed.  This adjustment doesn't affect running time at all, and should reduce errors relative to a pure Gaussian.
@@ -590,10 +590,10 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             
             'Filter right
             For x = initX + 1 To finalX
-                QuickX2 = (x - 1)
-                rFloat(x, y) = rFloat(x, y) + nu * rFloat(QuickX2, y)
-                gFloat(x, y) = gFloat(x, y) + nu * gFloat(QuickX2, y)
-                bFloat(x, y) = bFloat(x, y) + nu * bFloat(QuickX2, y)
+                quickX2 = (x - 1)
+                rFloat(x, y) = rFloat(x, y) + nu * rFloat(quickX2, y)
+                gFloat(x, y) = gFloat(x, y) + nu * gFloat(quickX2, y)
+                bFloat(x, y) = bFloat(x, y) + nu * bFloat(quickX2, y)
             Next x
             
             'Fix closing row
@@ -767,7 +767,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
+    Dim quickX As Long, quickX2 As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
@@ -788,7 +788,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     'Prep some IIR-specific values next
     Dim lambda As Double, dnu As Double
     Dim nu As Double, boundaryScale As Double, postScale As Double
-    Dim i As Long, step As Long
+    Dim step As Long
     
     'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
     Dim sigma As Double
@@ -798,8 +798,8 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     'sigma = (radius + 1) / Sqr(2 * (Log(255) / Log(10)))
     
     'Make sure sigma and steps are valid
-    If sigma <= 0 Then sigma = 0.01
-    If numSteps <= 0 Then numSteps = 1
+    If (sigma <= 0) Then sigma = 0.01
+    If (numSteps <= 0) Then numSteps = 1
     
     'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
     ' is proposed.  This adjustment doesn't affect running time at all, and should reduce errors relative to a pure Gaussian.
@@ -865,10 +865,10 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             
             'Filter right
             For x = initX + 1 To finalX
-                QuickX2 = (x - 1)
-                rFloat(x, y) = rFloat(x, y) + nu * rFloat(QuickX2, y)
-                gFloat(x, y) = gFloat(x, y) + nu * gFloat(QuickX2, y)
-                bFloat(x, y) = bFloat(x, y) + nu * bFloat(QuickX2, y)
+                quickX2 = (x - 1)
+                rFloat(x, y) = rFloat(x, y) + nu * rFloat(quickX2, y)
+                gFloat(x, y) = gFloat(x, y) + nu * gFloat(quickX2, y)
+                bFloat(x, y) = bFloat(x, y) + nu * bFloat(quickX2, y)
             Next x
             
             'Filter left only if symmetric

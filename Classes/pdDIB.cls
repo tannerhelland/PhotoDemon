@@ -1809,7 +1809,7 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
         PrepInternalSafeArray1D dibSA
         
-        Dim x As Long, y As Long, quickX As Long
+        Dim x As Long, y As Long
         Dim r As Long, g As Long, b As Long
         Dim tmpAlpha As Byte, tmpAlphaModifier As Double
         

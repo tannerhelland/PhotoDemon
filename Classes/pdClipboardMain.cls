@@ -1073,9 +1073,6 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     Dim dragWasSuccessful As Boolean
     dragWasSuccessful = False
     
-    Dim sFile() As String
-    Dim tmpString As String
-    
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
@@ -1454,7 +1451,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     'We can now use PD's standard image load routine to import the temporary file.  Because we don't want the
     ' load function to use the temporary file name as the image name, we manually supply a filename to suggest
     ' if the user eventually tries to save the file.
-    Dim sTitle As String, sFilename As String
+    Dim sTitle As String
     sTitle = g_Language.TranslateMessage("Imported Image")
     sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
     

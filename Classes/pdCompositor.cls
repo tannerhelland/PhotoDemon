@@ -547,7 +547,6 @@ Private Sub GetCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     'Hypothetically, we could write special handling for 24-bpp DIBs in the future.  But at present, PD only operates on 32-bpp DIBs.
     
     'Some variables are potentially used in multiple branches of this function
-    Dim layerRect As RECTF
     Dim intLayerOffsetX As Long, intLayerOffsetY As Long
     Dim layerBoundariesOkay As Boolean
     

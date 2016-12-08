@@ -64,7 +64,6 @@ Private m_Painter As pd2DPainter
 ' that effort, it fills a matching rect where various bits of the tooltip need to be rendered (like the border, title,
 ' caption, and others, as necessary).
 Private m_Caption As String, m_Title As String
-Private m_BorderRect As RECTF
 Private m_InternalPadding As Long, m_TitlePadding As Long
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,

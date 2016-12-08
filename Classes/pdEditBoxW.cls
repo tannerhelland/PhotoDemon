@@ -203,7 +203,6 @@ End Type
 ' return values, we simply declare one array at a module level, and re-use it as necessary.
 Private Declare Function GetKeyboardState Lib "user32" (ByRef pbKeyState As Byte) As Long
 Private m_keyStateData(0 To 255) As Byte
-Private m_OverrideDoubleCheck As Boolean
 
 Private Declare Function ToUnicode Lib "user32" (ByVal uVirtKey As Long, ByVal uScanCode As Long, lpKeyState As Byte, ByVal pwszBuff As Long, ByVal cchBuff As Long, ByVal wFlags As Long) As Long
 

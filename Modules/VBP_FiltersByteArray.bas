@@ -55,7 +55,7 @@ Public Function GaussianBlur_IIR_ByteArray(ByRef srcArray() As Byte, ByVal array
     Dim g As Long
     Dim lambda As Double, dnu As Double
     Dim nu As Double, boundaryScale As Double, postScale As Double
-    Dim i As Long, step As Long
+    Dim step As Long
     
     'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
     Dim sigma As Double
@@ -193,8 +193,8 @@ Public Function HorizontalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWi
     If rRadius > xRadius Then rRadius = xRadius
         
     'The number of pixels in the current horizontal line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbX As Long, ubX As Long
@@ -215,7 +215,7 @@ Public Function HorizontalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWi
         Next y
             
             'Increase the pixel tally on a per-column basis
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         Next x
         
@@ -243,7 +243,7 @@ Public Function HorizontalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWi
                 gTotals(y) = gTotals(y) - srcArrayCopy(lbX - 1, y)
             Next y
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -254,13 +254,13 @@ Public Function HorizontalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWi
                 gTotals(y) = gTotals(y) + srcArrayCopy(ubX, y)
             Next y
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
         'Process the current column.  This simply involves calculating blur values, and applying them to the destination array
         For y = initY To finalY
-            srcArray(x, y) = gTotals(y) \ NumOfPixels
+            srcArray(x, y) = gTotals(y) \ numOfPixels
         Next y
         
     Next x
@@ -293,8 +293,8 @@ Public Function VerticalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidt
     If dRadius > yRadius Then dRadius = yRadius
         
     'The number of pixels in the current vertical line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbY As Long, ubY As Long
@@ -315,7 +315,7 @@ Public Function VerticalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidt
         Next x
         
             'Increase the pixel tally on a per-column basis
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         Next y
         
@@ -343,7 +343,7 @@ Public Function VerticalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidt
                 gTotals(x) = gTotals(x) - srcArrayCopy(x, lbY - 1)
             Next x
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -354,13 +354,13 @@ Public Function VerticalBlur_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidt
                 gTotals(x) = gTotals(x) + srcArrayCopy(x, ubY)
             Next x
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
         'Process the current row.  This simply involves calculating blur values, and applying them to the destination image.
         For x = initX To finalX
-            srcArray(x, y) = gTotals(x) \ NumOfPixels
+            srcArray(x, y) = gTotals(x) \ numOfPixels
         Next x
         
     Next y
@@ -835,11 +835,11 @@ Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = arrayWidth * arrayHeight
+    Dim numOfPixels As Long
+    numOfPixels = arrayWidth * arrayHeight
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     g = 0
     

@@ -193,18 +193,18 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
 End Function
 
 'Free any/all previously allocated cache structures
-Public Function freeUniscribeCaches()
+Public Function FreeUniscribeCaches()
     If m_ScriptCache.p <> 0 Then ScriptFreeCache m_ScriptCache
 End Function
 
 'Uniscribe caches a number of font-specific values (https://msdn.microsoft.com/en-us/library/windows/desktop/dd317726%28v=vs.85%29.aspx),
 ' which can greatly improve performance during glyph retrieval and placement.  It maintains its own reference counts, but we can improve
 ' cache behavior by manually freeing our style cache whenever the associated font object is modified.
-Public Sub updateFont()
+Public Sub UpdateFont()
 
     'Free our current cache copy.  Uniscribe will automatically generate a new cache when a DC with the new font is passed to
     ' step 3 or 4, below.
-    freeUniscribeCaches
+    FreeUniscribeCaches
     
     'Reset our script property tracker, so it can be refreshed on the next call
     m_ScriptFontProperties.cBytes = 0
@@ -534,7 +534,7 @@ End Function
 Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
     
     'If a SCRIPT_ITEM cache does not exist, exit now
-    If Not m_ScriptItemCacheOK Then
+    If (Not m_ScriptItemCacheOK) Then
         Debug.Print "WARNING!  Step 1 or 2 failed, so Step 3 cannot proceed!"
         Step3_ScriptShape = False
         Exit Function
@@ -571,7 +571,7 @@ Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
     Dim unsReturn As HRESULT
     
     'Start iterating through our item collection
-    Dim i As Long, j As Long
+    Dim i As Long
     For i = 0 To m_NumOfItems - 1
     
         'A number of calculations are relative to the length of this item's substring.  Cache that value now.
@@ -853,7 +853,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
     End If
     
     'Next, iterate all items and copy the relevant glyph information from each item into the destination array
-    Dim netGlyphOffset As Long, numOfGlyphsAtStartOfLine As Long
+    Dim netGlyphOffset As Long
     netGlyphOffset = 0
     
     Dim tmpInteger As Integer
@@ -884,7 +884,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                 If m_StringHasLinebreaks Then
                     
                     'See if the character position associated with this glyph was marked as a line-break character.
-                    If isCharPositionLinebreak(m_Items(i).getCorrespondingCharIndex(j)) Then
+                    If IsCharPositionLinebreak(m_Items(i).getCorrespondingCharIndex(j)) Then
                         
                         'Fill this glyph with dummy information, while taking care to manually mark it as a hard line break
                         With dstGlyphArray(netGlyphOffset)
@@ -953,7 +953,7 @@ Friend Function GetCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
 End Function
 
 'Sometimes it's helpful to take a close look at the current glyph cache.  This function will provide basic per-glyph info for the base run.
-Public Sub printUniscribeDebugInfo()
+Public Sub PrintUniscribeDebugInfo()
     
     Dim tmpGlyphCache() As pdGlyphUniscribe
     Dim numOfGlyphs As Long
@@ -977,14 +977,14 @@ Public Sub printUniscribeDebugInfo()
 End Sub
 
 'See if a given character position was marked as a hard linebreak prior to processing
-Private Function isCharPositionLinebreak(ByVal charPos As Long) As Boolean
+Private Function IsCharPositionLinebreak(ByVal charPos As Long) As Boolean
     
-    isCharPositionLinebreak = False
+    IsCharPositionLinebreak = False
     
     Dim i As Long
     For i = 0 To m_NumOfLineBreaks - 1
         If charPos = m_LineBreakPositions(i) Then
-            isCharPositionLinebreak = True
+            IsCharPositionLinebreak = True
             Exit For
         End If
     Next i
@@ -1010,6 +1010,6 @@ End Sub
 Private Sub Class_Terminate()
     
     'Free any Uniscribe-specific caches we have created
-    freeUniscribeCaches
+    FreeUniscribeCaches
     
 End Sub

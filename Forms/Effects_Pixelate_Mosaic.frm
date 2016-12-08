@@ -207,7 +207,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     Dim i As Long, j As Long
     
     'We also need to count how many pixels must be averaged in each mosaic tile
-    Dim NumOfPixels As Long
+    Dim numOfPixels As Long
     
     'Finally, individual colors also need to be tracked
     Dim r As Long, g As Long, b As Long, a As Long
@@ -238,7 +238,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
             If qvDepth = 4 Then a = a + srcImageData(QuickVal + 3, j)
             
             'Count this as a valid pixel
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
 NextPixelatePixel1:
         
@@ -246,13 +246,13 @@ NextPixelatePixel1:
         Next i
         
         'If this tile is completely off of the image, don't worry about it and go to the next one
-        If NumOfPixels = 0 Then GoTo NextPixelatePixel3
+        If numOfPixels = 0 Then GoTo NextPixelatePixel3
         
         'Take the average red, green, and blue values of all the pixels within this tile
-        r = r \ NumOfPixels
-        g = g \ NumOfPixels
-        b = b \ NumOfPixels
-        If qvDepth = 4 Then a = a \ NumOfPixels
+        r = r \ numOfPixels
+        g = g \ numOfPixels
+        b = b \ numOfPixels
+        If qvDepth = 4 Then a = a \ numOfPixels
         
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
@@ -281,7 +281,7 @@ NextPixelatePixel3:
         g = 0
         b = 0
         a = 0
-        NumOfPixels = 0
+        numOfPixels = 0
         
     Next y
         If Not toPreview Then

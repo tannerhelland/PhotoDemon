@@ -242,7 +242,7 @@ Private m_XMLEngine As pdXML
 Private m_XMLFilename As String
 
 'Gradient preview DIB (required for color management) and interaction DIB (where all the gradient nodes are rendered)
-Private m_MainPreviewDIB As pdDIB, m_NodePreviewDIB As pdDIB, m_InteractiveDIB As pdDIB
+Private m_NodePreviewDIB As pdDIB, m_InteractiveDIB As pdDIB
 
 'To prevent recursive setting changes, this value can be set to TRUE to prevent automatic UI synchronization
 Private m_SuspendUI As Boolean
@@ -591,7 +591,7 @@ Private Sub UpdatePreview()
         UpdateGradientObjects
         
         'Next, use the current gradient nodes to paint a matching preview across the node editor window
-        Dim boundsRect As RECTF, gdipBrushNodes As Long
+        Dim boundsRect As RECTF
         
         With boundsRect
             .Left = 0

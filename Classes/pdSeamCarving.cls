@@ -71,17 +71,17 @@ End Enum
 #End If
 
 'For performance reasons, the seam carver class maintains its own copy of the source image.
-Public Sub setSourceImage(ByRef srcDIB As pdDIB)
+Public Sub SetSourceImage(ByRef srcDIB As pdDIB)
     Set m_SourceImage = New pdDIB
     m_SourceImage.CreateFromExistingDIB srcDIB
 End Sub
 
 'Retrieve the carved image into a DIB of the calling function's choosing
-Public Function getCarvedImage() As pdDIB
-    Set getCarvedImage = m_DestinationImage
+Public Function GetCarvedImage() As pdDIB
+    Set GetCarvedImage = m_DestinationImage
 End Function
 
-Public Sub setEnergyImage(ByRef srcDIB As pdDIB)
+Public Sub SetEnergyImage(ByRef srcDIB As pdDIB)
     
     'Create a copy of the energy image
     Set m_EnergyImage = New pdDIB
@@ -130,7 +130,7 @@ End Sub
 'Generate a vertical seam map for the current energy image.  Because those images may have been shrunk in one (or more)
 ' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
 ' re-scanned while ignoring irrelevant pixels.
-Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minRow As Long, Optional ByVal scanDirectionNormal As Boolean = True)
+Public Sub GetVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minRow As Long, Optional ByVal scanDirectionNormal As Boolean = True)
 
     'Resize the seam map to the requested dimensions
     ReDim seamMap(0 To finalX, 0 To finalY) As Long
@@ -240,7 +240,7 @@ Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByV
 End Sub
 
 'Given a valid seam map, remove one horizontal seam (which will result in a 1px smaller vertical image)
-Private Function shrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long)
+Private Function ShrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long)
 
     'Start by finding the smallest energy value in the final column of the seam map
     Dim x As Long, y As Long
@@ -328,7 +328,7 @@ Private Function shrinkVertically(ByRef seamMap() As Long, ByVal finalX As Long,
 End Function
 
 'Given a valid seam map, add n horizontal seams (which will result in an n-px larger vertical image)
-Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long, ByRef progBarOffset As Long)
+Private Function GrowVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef rowIndex As Long, ByRef progBarOffset As Long)
 
     'Due to limitations of the seam carving algorithm, this function can only add [imageheight] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
@@ -512,7 +512,7 @@ End Function
 'Generate a horizontal seam map for the current energy image.  Because those images may have been shrunk in one (or more)
 ' directions by previous seam map operations, a final X and Y value are also explicitly supplied, so the array can be
 ' re-scanned while ignoring irrelevant pixels.
-Public Sub getHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minColumn As Long, Optional ByVal scanDirectionNormal As Boolean = True)
+Public Sub GetHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef minColumn As Long, Optional ByVal scanDirectionNormal As Boolean = True)
 
     'Resize the seam map to the requested dimensions
     ReDim seamMap(0 To finalX, 0 To finalY) As Long
@@ -621,10 +621,10 @@ Public Sub getHorizontalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, B
 End Sub
 
 'Given a valid seam map, remove one vertical seam (which will result in a 1px smaller horizontal image)
-Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
+Private Function ShrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
 
     'Start by finding the smallest energy value in the final row of the seam map
-    Dim x As Long, y As Long
+    Dim y As Long
     
     Dim yCheck As Long
     Dim topLeft As Long, topMiddle As Long, topRight As Long
@@ -710,7 +710,7 @@ Private Function shrinkHorizontally(ByRef seamMap() As Long, ByVal finalX As Lon
 End Function
 
 'Given a valid seam map, add n vertical seams (which will result in an n-px larger horizontal image)
-Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
+Private Function GrowHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams As Long, ByVal finalX As Long, ByVal finalY As Long, ByRef maxVal As Long, ByRef minVal As Long, ByRef columnIndex As Long)
 
     'Due to limitations of the seam carving algorithm, this function can only add [imagewidth] number of seams at a time.
     ' If the user has selected a larger resize than that, this function must be called again.
@@ -891,7 +891,7 @@ Private Function growHorizontally(ByRef seamMap() As Long, ByVal numOfAddedSeams
 End Function
 
 'Though they share some similar elements, shrinking and enlarging an image in either direction are handled separately.
-Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) As Boolean
+Public Function StartSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) As Boolean
 
     'We will be referencing image size frequently in this function, so cache these values in advance
     Dim srcWidth As Long, srcHeight As Long
@@ -948,10 +948,10 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             For i = 1 To srcWidth - newWidth
             
                 'Retrieve an updated horizontal seam map of the image
-                getHorizontalSeamMap seamData, srcWidth - i, srcHeight - 1, seamMax, seamMin, seamIndex, (i And 1) = 0
+                GetHorizontalSeamMap seamData, srcWidth - i, srcHeight - 1, seamMax, seamMin, seamIndex, (i And 1) = 0
                 
                 'Shrink the image by a single pixel in the horizontal direction
-                shrinkHorizontally seamData, srcWidth - i, srcHeight - 1, seamMax, seamMin, seamIndex
+                ShrinkHorizontally seamData, srcWidth - i, srcHeight - 1, seamMax, seamMin, seamIndex
                 
                 If (i And 8) = 0 Then
                     SetProgBarVal i
@@ -978,10 +978,10 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             Do
             
                 'Retrieve an updated horizontal seam map of the image
-                getHorizontalSeamMap seamData, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, (i And 1) = 0
+                GetHorizontalSeamMap seamData, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, (i And 1) = 0
                 
                 'Grow the image horizontally, using the newly generated seam map as our guide
-                growHorizontally seamData, newWidth - srcWidth, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
+                GrowHorizontally seamData, newWidth - srcWidth, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex
                 
                 'Update the source width, in case this function must be called again
                 srcWidth = m_SourceImage.GetDIBWidth
@@ -1007,10 +1007,10 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             For i = 1 To srcHeight - newHeight
             
                 'Retrieve an updated vertical seam map of the image
-                getVerticalSeamMap seamData, srcWidth - 1, srcHeight - i, seamMax, seamMin, seamIndex, (i And 1) = 0
+                GetVerticalSeamMap seamData, srcWidth - 1, srcHeight - i, seamMax, seamMin, seamIndex, (i And 1) = 0
                 
                 'Shrink the image by a single pixel in the vertical direction
-                shrinkVertically seamData, srcWidth - 1, srcHeight - i, seamMax, seamMin, seamIndex
+                ShrinkVertically seamData, srcWidth - 1, srcHeight - i, seamMax, seamMin, seamIndex
                 
                 If (i And 8) = 0 Then
                     SetProgBarVal hDiff + i
@@ -1035,10 +1035,10 @@ Public Function startSeamCarve(ByVal newWidth As Long, ByVal newHeight As Long) 
             Do
             
                 'Retrieve an updated vertical seam map of the image
-                getVerticalSeamMap seamData, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, (i And 1) = 0
+                GetVerticalSeamMap seamData, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, (i And 1) = 0
                 
                 'Grow the image vertically, using the newly generated seam map as our guide
-                growVertically seamData, newHeight - srcHeight, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, hDiff
+                GrowVertically seamData, newHeight - srcHeight, srcWidth - 1, srcHeight - 1, seamMax, seamMin, seamIndex, hDiff
                 
                 'Update the source height, in case this function must be called again
                 srcHeight = m_SourceImage.GetDIBHeight

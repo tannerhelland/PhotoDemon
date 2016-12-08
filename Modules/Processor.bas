@@ -56,10 +56,6 @@ Private m_ProcessingTime As Currency
 ' Tracking nested states also helps us avoid repeating unnecessary synchronization tasks.
 Private m_NestedProcessingCount As Long
 
-'Most UI control functions will check this central processor prior to redrawing their contents.  This is a nice
-' optimization, as excessive redraws will be stacked into a single redraw after the processor finishes its work.
-Private m_AllowInterfaceOverrides As Boolean
-
 'Prior to initiating a (potentially) lengthy process, PD notes the window with keyboard input, then forcibly locks
 ' down input.  After the action completes, keyboard focus is restored to its proper place.
 Private m_FocusHWnd As Long
@@ -695,7 +691,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             ' non-destructive crop is possible.  Depending on what it finds, it will submit a second "Crop" requests with showDialog
             ' set to FALSE.  This tells us to actually apply the crop instead of just running diagnostics.
             If ShowDialog Then
-                Filters_Transform.seeIfCropCanBeAppliedNonDestructively
+                Filters_Transform.SeeIfCropCanBeAppliedNonDestructively
             Else
                 MenuCropToSelection cParams.GetBool(1, False)
             End If

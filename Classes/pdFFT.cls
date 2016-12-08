@@ -209,7 +209,7 @@ Public Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single,
     If (n = UBound(srcReal) + 1) And (n = UBound(srcImag) + 1) And (n = m_N) Then
     
         'A lot of ints and floats are required for FFTs
-        Dim i As Long, i1 As Long, i2 As Long, j As Long, k As Long, l As Long, l1 As Long, l2 As Long
+        Dim i As Long, i1 As Long, j As Long, l As Long, l1 As Long, l2 As Long
         Dim m As Long, n1 As Long, n2 As Long
         
         m = m_M
@@ -275,9 +275,9 @@ Public Function FFT_1D_Radix2_NoTrig(ByVal n As Long, ByRef srcReal() As Single,
            
            Next j
            
-           c2 = Sqr((1# - c1) / 2#)
+           c2 = Sqr((1# - c1) * 0.5)
            If forwardTransform Then c2 = -c2
-           c1 = Sqr((1# + c1) / 2#)
+           c1 = Sqr((1# + c1) * 0.5)
            
         Next l
         

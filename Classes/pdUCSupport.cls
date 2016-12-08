@@ -101,7 +101,7 @@ Attribute m_MoveSize.VB_VarHelpID = -1
 Private m_Caption As pdCaption
 
 'Persistent copy of the associated user control's hWnd and DC.  (If tooltips are activated, we also cache the parent hWnd.)
-Private m_hWnd As Long, m_hDC As Long, m_hWndParent As Long
+Private m_hWnd As Long, m_hDC As Long
 
 'Size of the underlying usercontrol.  These values are retrieved via API, because VB has DPI-awareness issues.
 Private m_Width As Long, m_Height As Long

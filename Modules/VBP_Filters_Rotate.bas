@@ -27,7 +27,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     'The image will be cropped in four steps.  Each edge will be cropped separately, starting with the top.
@@ -42,7 +42,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Point an array at the DIB data
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, tmpDIB
+    PrepSafeArray srcSA, tmpDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -220,11 +220,11 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         'BitBlt pdImages(g_CurrentImage).mainDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainDIB.getDIBWidth, pdImages(g_CurrentImage).mainDIB.getDIBHeight, tmpDIB.getDIBDC, newLeft, newTop, vbSrcCopy
     
         'Erase the temporary DIB
-        tmpDIB.eraseDIB
+        tmpDIB.EraseDIB
         Set tmpDIB = Nothing
     
         'Update the current image size
-        pdImages(g_CurrentImage).updateSize
+        pdImages(g_CurrentImage).UpdateSize
         DisplaySize pdImages(g_CurrentImage)
         
         Message "Finished. "
@@ -240,7 +240,7 @@ End Sub
 
 'Determine if a non-destructive crop is possible.  Pure rectangular selections allow this, because we can simply modify canvas
 ' boundaries and layer offsets to arrive at the crop shape.
-Public Sub seeIfCropCanBeAppliedNonDestructively()
+Public Sub SeeIfCropCanBeAppliedNonDestructively()
     
     'First, make sure there is an active selection
     If Not pdImages(g_CurrentImage).selectionActive Then
@@ -255,7 +255,7 @@ Public Sub seeIfCropCanBeAppliedNonDestructively()
         'Start by seeing if we're even working with a rectangle.  If we are, we can check a few extra criteria as well; if we aren't,
         ' only a destructive crop is possible.
         Dim selectionIsPureRectangle As Boolean
-        selectionIsPureRectangle = CBool(.getSelectionShape = sRectangle)
+        selectionIsPureRectangle = CBool(.GetSelectionShape = sRectangle)
         
         If selectionIsPureRectangle Then
             selectionIsPureRectangle = selectionIsPureRectangle And CBool(.getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) = 0)
@@ -267,12 +267,12 @@ Public Sub seeIfCropCanBeAppliedNonDestructively()
         If selectionIsPureRectangle Then
         
             'A pure rectangle is in use!  Request a non-destructive crop operation.
-            Process "Crop", False, buildParams(selectionIsPureRectangle), UNDO_IMAGEHEADER
+            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_IMAGEHEADER
             
         Else
         
             'A complex shape is in use.  Request a destructive crop operation.
-            Process "Crop", False, buildParams(selectionIsPureRectangle), UNDO_IMAGE
+            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_IMAGE
         
         End If
         
@@ -308,18 +308,18 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
     ' seeIfCropCanBeAppliedNonDestructively() function, above.
     If applyNonDestructively Then
     
-        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers
+        SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
         
         'Non-destructive crops are very easy to handle.  In PhotoDemon, there is no such thing as "image data"; an image is just an
         ' imaginary bounding box around the layer collection.  Because of this, we don't actually need to resize any pixel data -
         ' we just need to modify all layer offsets to account for a new top-left corner!
-        For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+        For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
         
             SetProgBarVal i
             
-            With pdImages(g_CurrentImage).getLayerByIndex(i)
-                .setLayerOffsetX .getLayerOffsetX - pdImages(g_CurrentImage).mainSelection.boundLeft
-                .setLayerOffsetY .getLayerOffsetY - pdImages(g_CurrentImage).mainSelection.boundTop
+            With pdImages(g_CurrentImage).GetLayerByIndex(i)
+                .SetLayerOffsetX .GetLayerOffsetX - pdImages(g_CurrentImage).mainSelection.boundLeft
+                .SetLayerOffsetY .GetLayerOffsetY - pdImages(g_CurrentImage).mainSelection.boundTop
             End With
         
         Next i
@@ -345,7 +345,7 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
         'Point our selection array at the selection mask in advance; this only needs to be done once, as the same mask is used for all layers.
         Dim selData() As Byte
         Dim selSA As SAFEARRAY2D
-        prepSafeArray selSA, pdImages(g_CurrentImage).mainSelection.selMask
+        PrepSafeArray selSA, pdImages(g_CurrentImage).mainSelection.selMask
         CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
         
         'Lots of helper variables for a function like this
@@ -364,28 +364,28 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
-        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers * imgWidth
+        SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers * imgWidth
         progBarCheck = FindBestProgBarValue()
         
         'Iterate through each layer, cropping them in turn
-        For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+        For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
         
             'Update the progress bar counter for this layer
             progBarOffsetX = i * imgWidth
         
             'Retrieve a pointer to the layer of interest
-            Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+            Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
             
             'Null-pad the layer
-            tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+            tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
             'Create a temporary layer at the relevant size of the selection, and retrieve a pointer to its pixel data
-            tmpDIB.createBlank selectionWidth, selectionHeight, 32, 0
-            prepSafeArray dstSA, tmpDIB
+            tmpDIB.CreateBlank selectionWidth, selectionHeight, 32, 0
+            PrepSafeArray dstSA, tmpDIB
             CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
             
             'Point another array at the original image layer
-            prepSafeArray srcSA, tmpLayerRef.layerDIB
+            PrepSafeArray srcSA, tmpLayerRef.layerDIB
             CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
             
             'Iterate through all relevant pixels in this layer (e.g. only those that actually lie within the interesting region
@@ -439,16 +439,16 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
             Erase dstImageData
             
             'Replace the current layer DIB with our destination one
-            tmpLayerRef.layerDIB.createFromExistingDIB tmpDIB
+            tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
                     
             'Release our temporary DIB
-            tmpDIB.eraseDIB
+            tmpDIB.EraseDIB
             
             'Remove any null-padding from the layer
-            tmpLayerRef.cropNullPaddedLayer
+            tmpLayerRef.CropNullPaddedLayer
             
             'Notify the parent of the change
-            pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+            pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
             
         Next i
         
@@ -461,13 +461,13 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
     'From here, we do some generic clean-up that's identical for both destructive and non-destructive modes.
     
     'The selection is now going to be out of sync with the image.  Forcibly clear it.
-    pdImages(g_CurrentImage).mainSelection.lockRelease
+    pdImages(g_CurrentImage).mainSelection.LockRelease
     pdImages(g_CurrentImage).selectionActive = False
-    pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
+    pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
     syncTextToCurrentSelection g_CurrentImage
     
     'Update the viewport
-    pdImages(g_CurrentImage).updateSize False, selectionWidth, selectionHeight
+    pdImages(g_CurrentImage).UpdateSize False, selectionWidth, selectionHeight
     DisplaySize pdImages(g_CurrentImage)
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     Image_Canvas_Handler.CenterOnScreen
@@ -487,7 +487,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
     Message "Flipping image..."
@@ -501,7 +501,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
     ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
     If flipAllLayers Then
         lStart = 0
-        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+        lEnd = pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
         lStart = targetLayerIndex
         lEnd = targetLayerIndex
@@ -511,24 +511,24 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
     For i = lStart To lEnd
     
         'Retrieve a pointer to the layer of interest
-        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
         
         'Null-pad the layer
-        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Flip it
-        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), tmpLayerRef.layerDIB.getDIBDC, 0, tmpLayerRef.getLayerHeight(False) - 1, tmpLayerRef.getLayerWidth(False), -tmpLayerRef.getLayerHeight(False), vbSrcCopy
+        StretchBlt tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, 0, tmpLayerRef.GetLayerHeight(False) - 1, tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
-        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
         
     Next i
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
     
     Message "Finished. "
     
@@ -546,7 +546,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     Message "Mirroring image..."
@@ -560,7 +560,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
     If flipAllLayers Then
         lStart = 0
-        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+        lEnd = pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
         lStart = targetLayerIndex
         lEnd = targetLayerIndex
@@ -570,24 +570,24 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     For i = lStart To lEnd
     
         'Retrieve a pointer to the layer of interest
-        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
         
         'Null-pad the layer
-        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Mirror it
-        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.getLayerWidth(False) - 1, 0, -tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), vbSrcCopy
+        StretchBlt tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, 0, -tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
-        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
         
     Next i
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
     
     Message "Finished."
     
@@ -606,7 +606,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     Message "Rotating image clockwise..."
@@ -623,7 +623,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     If flipAllLayers Then
-        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers - 1
+        SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
         SetProgBarMax targetLayerIndex
     End If
@@ -637,7 +637,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
     If flipAllLayers Then
         lStart = 0
-        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+        lEnd = pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
         lStart = targetLayerIndex
         lEnd = targetLayerIndex
@@ -647,16 +647,16 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     For i = lStart To lEnd
         
         'Retrieve a pointer to the layer of interest
-        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
         
         'Null-pad the layer
-        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Make a copy of the layer, which we will use as our source during the transform
-        copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
+        copyDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.createBlank tmpLayerRef.getLayerHeight(False), tmpLayerRef.getLayerWidth(False), 32
+        tmpLayerRef.layerDIB.CreateBlank tmpLayerRef.GetLayerHeight(False), tmpLayerRef.GetLayerWidth(False), 32
         
         'Use GDI+ to apply the rotation
         
@@ -667,10 +667,10 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate90FlipNone
         
         'Remove any null-padding
-        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
     
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
@@ -679,7 +679,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'Update the current image size, if necessary
     If flipAllLayers Then
-        pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
+        pdImages(g_CurrentImage).UpdateSize False, imgHeight, imgWidth
         DisplaySize pdImages(g_CurrentImage)
     End If
     
@@ -702,7 +702,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
@@ -717,7 +717,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
     If flipAllLayers Then
         lStart = 0
-        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+        lEnd = pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
         lStart = targetLayerIndex
         lEnd = targetLayerIndex
@@ -727,24 +727,24 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     For i = lStart To lEnd
     
         'Retrieve a pointer to the layer of interest
-        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
         
         'Null-pad the layer
-        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Rotate it by inverting both directions of a StretchBlt call
-        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.getLayerWidth(False) - 1, tmpLayerRef.getLayerHeight(False) - 1, -tmpLayerRef.getLayerWidth(False), -tmpLayerRef.getLayerHeight(False), vbSrcCopy
+        StretchBlt tmpLayerRef.layerDIB.GetDIBDC, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), tmpLayerRef.layerDIB.GetDIBDC, tmpLayerRef.GetLayerWidth(False) - 1, tmpLayerRef.GetLayerHeight(False) - 1, -tmpLayerRef.GetLayerWidth(False), -tmpLayerRef.GetLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
-        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
         
     Next i
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE
             
     Message "Finished. "
     
@@ -762,7 +762,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     Message "Rotating image counter-clockwise..."
@@ -779,7 +779,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     If flipAllLayers Then
-        SetProgBarMax pdImages(g_CurrentImage).getNumOfLayers - 1
+        SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
         SetProgBarMax targetLayerIndex
     End If
@@ -793,7 +793,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     ' Otherwise, we will only transform the specified layer.  To cut down on code duplication, we simply modify the endpoints of the loop.
     If flipAllLayers Then
         lStart = 0
-        lEnd = pdImages(g_CurrentImage).getNumOfLayers - 1
+        lEnd = pdImages(g_CurrentImage).GetNumOfLayers - 1
     Else
         lStart = targetLayerIndex
         lEnd = targetLayerIndex
@@ -803,16 +803,16 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     For i = lStart To lEnd
         
         'Retrieve a pointer to the layer of interest
-        Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
+        Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
         
         'Null-pad the layer
-        If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
+        If flipAllLayers Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Make a copy of the layer, which we will use as our source during the transform
-        copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
+        copyDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.createBlank tmpLayerRef.getLayerHeight(False), tmpLayerRef.getLayerWidth(False), 32
+        tmpLayerRef.layerDIB.CreateBlank tmpLayerRef.GetLayerHeight(False), tmpLayerRef.GetLayerWidth(False), 32
         
         'Use GDI+ to apply the rotation
         
@@ -823,10 +823,10 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate270FlipNone
         
         'Remove any null-padding
-        If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
+        If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
-        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
         
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
@@ -835,7 +835,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     'Update the current image size, if necessary
     If flipAllLayers Then
-        pdImages(g_CurrentImage).updateSize False, imgHeight, imgWidth
+        pdImages(g_CurrentImage).UpdateSize False, imgHeight, imgWidth
         DisplaySize pdImages(g_CurrentImage)
     End If
     
@@ -851,7 +851,7 @@ End Sub
 
 'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
 ' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
-Public Function getInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
+Public Function GetInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
         
     'Retrieve the four surrounding pixel values
     Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
@@ -873,13 +873,13 @@ Public Function getInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
     'Blend in the y-direction
-    getInterpolatedVal = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
+    GetInterpolatedVal = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
 
 End Function
 
 'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
 ' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
-Public Function getInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, ByVal xMax As Long, yMax As Long, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
+Public Function GetInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, ByVal xMax As Long, yMax As Long, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
         
     'Retrieve the four surrounding pixel values
     Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
@@ -922,7 +922,7 @@ Public Function getInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, B
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
     'Blend in the y-direction
-    getInterpolatedValWrap = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
+    GetInterpolatedValWrap = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
 
 End Function
 
@@ -934,12 +934,12 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
     'Start by calculating a new offset, based on the current layer's offsets.
     Dim curLayerBounds As RECTF
-    pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerBoundaryRect curLayerBounds
+    pdImages(g_CurrentImage).GetLayerByIndex(dstLayerIndex).GetLayerBoundaryRect curLayerBounds
     
     Dim dstX As Long, dstY As Long
     dstX = curLayerBounds.Left
@@ -950,17 +950,17 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
     ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
     Dim i As Long
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
     
-        With pdImages(g_CurrentImage).getLayerByIndex(i)
-            .setLayerOffsetX .getLayerOffsetX - dstX
-            .setLayerOffsetY .getLayerOffsetY - dstY
+        With pdImages(g_CurrentImage).GetLayerByIndex(i)
+            .SetLayerOffsetX .GetLayerOffsetX - dstX
+            .SetLayerOffsetY .GetLayerOffsetY - dstY
         End With
     
     Next i
     
     'Finally, update the parent image's size and DPI values
-    pdImages(g_CurrentImage).updateSize False, curLayerBounds.Width, curLayerBounds.Height
+    pdImages(g_CurrentImage).UpdateSize False, curLayerBounds.Width, curLayerBounds.Height
     DisplaySize pdImages(g_CurrentImage)
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
@@ -981,7 +981,7 @@ Public Sub MenuFitCanvasToAllLayers()
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
     'Start by finding two things:
@@ -996,10 +996,10 @@ Public Sub MenuFitCanvasToAllLayers()
     Dim curLayerBounds As RECTF
     Dim i As Long
     
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
         
         'Get a new boundary rect, with all affine transforms accounted for
-        pdImages(g_CurrentImage).getLayerByIndex(i).getLayerBoundaryRect curLayerBounds
+        pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerBoundaryRect curLayerBounds
         
         With curLayerBounds
         
@@ -1019,17 +1019,17 @@ Public Sub MenuFitCanvasToAllLayers()
     ' is actually very easy.  In PhotoDemon, there is no such thing as "image data"; an image is just an
     ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
     ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
-    For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+    For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
     
-        With pdImages(g_CurrentImage).getLayerByIndex(i)
-            .setLayerOffsetX .getLayerOffsetX - dstLeft
-            .setLayerOffsetY .getLayerOffsetY - dstTop
+        With pdImages(g_CurrentImage).GetLayerByIndex(i)
+            .SetLayerOffsetX .GetLayerOffsetX - dstLeft
+            .SetLayerOffsetY .GetLayerOffsetY - dstTop
         End With
     
     Next i
     
     'Finally, update the parent image's size
-    pdImages(g_CurrentImage).updateSize False, (dstRight - dstLeft), (dstBottom - dstTop)
+    pdImages(g_CurrentImage).UpdateSize False, (dstRight - dstLeft), (dstBottom - dstTop)
     DisplaySize pdImages(g_CurrentImage)
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
@@ -1048,7 +1048,7 @@ Public Sub TrimImage()
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     'The image will be trimmed in four steps.  Each edge will be trimmed separately, starting with the top.
@@ -1058,12 +1058,12 @@ Public Sub TrimImage()
     'Retrieve a copy of the composited image
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).getCompositedImage tmpDIB
+    pdImages(g_CurrentImage).GetCompositedImage tmpDIB
     
     'Point an array at the DIB data
     Dim srcImageData() As Byte
     Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, tmpDIB
+    PrepSafeArray srcSA, tmpDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -1204,17 +1204,17 @@ Public Sub TrimImage()
         ' imaginary bounding box around the layers collection.  Because of this, we don't actually need to
         ' resize any pixel data - we just need to modify all layer offsets to account for the new top-left corner!
         Dim i As Long
-        For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+        For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
         
-            With pdImages(g_CurrentImage).getLayerByIndex(i)
-                .setLayerOffsetX .getLayerOffsetX - newLeft
-                .setLayerOffsetY .getLayerOffsetY - newTop
+            With pdImages(g_CurrentImage).GetLayerByIndex(i)
+                .SetLayerOffsetX .GetLayerOffsetX - newLeft
+                .SetLayerOffsetY .GetLayerOffsetY - newTop
             End With
         
         Next i
     
         'Finally, update the parent image's size
-        pdImages(g_CurrentImage).updateSize False, (newRight - newLeft), (newBottom - newTop)
+        pdImages(g_CurrentImage).UpdateSize False, (newRight - newLeft), (newBottom - newTop)
         DisplaySize pdImages(g_CurrentImage)
     
         'In other functions, we would refresh the layer box here; however, because we haven't actually changed the

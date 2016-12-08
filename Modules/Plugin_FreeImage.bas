@@ -238,7 +238,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     Dim dstDIBFinished As Boolean: dstDIBFinished = False
     
     'Intermediate FreeImage objects may also be required during the transform process
-    Dim new_hDIB As Long, fi_hasTransparency As Boolean, fi_transparentEntries As Long
+    Dim new_hDIB As Long, fi_hasTransparency As Boolean
     
     
     '****************************************************************************
@@ -2867,7 +2867,7 @@ End Function
 ' relevant color depth, shaving previous ms off the actual export+import step.)
 Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdDIB, ByVal dstFormat As PHOTODEMON_IMAGE_FORMAT, Optional ByVal fi_SaveFlags As Long = 0, Optional ByVal fi_LoadFlags As Long = 0)
     
-    Dim fi_Check As Long, fi_Size As Long
+    Dim fi_Size As Long
     If FreeImage_SaveToMemoryEx(dstFormat, srcFI_Handle, m_ExportPreviewBytes, fi_SaveFlags, False, fi_Size) Then
         
         Dim fi_DIB As Long

@@ -37,10 +37,6 @@ Option Explicit
 ' CheckParentMonitor() function, below.
 Private m_CurrentMonitor As Long
 
-'When the main form's monitor changes, this string will automatically be updated with the corresponding ICC
-' profile path of that monitor (if the user has selected a custom one)
-Private m_CurrentDisplayProfile As String
-
 'ICC Profile header; this stores basic information about a given profile, and is use to interact with various
 ' ICC-related API functions.
 Private Type ICC_PROFILE
@@ -857,62 +853,6 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
     End With
 
 End Sub
-
-''Shorthand way to activate color management for anything with a DC
-'' NOTE: now that GDI is no longer used for color management, this function is obsolete
-'Public Sub TurnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHwnd As Long)
-'
-'    'Perform a quick check to see if the target DC is requesting sRGB management.  If it is, we can skip
-'    ' color management entirely, because PD stores all RGB data in sRGB anyway.
-'    'TODO: fix this
-'    'If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
-'    If (Not g_IsSystemColorProfileSRGB) Then
-'        AssignDefaultColorProfileToObject targetHwnd, targetDC
-'        TurnOnColorManagementForDC targetDC
-'    End If
-'
-'End Sub
-
-''Assign the default color profile (whether the system profile or the user profile) to any arbitrary object.  Note that the object
-'' MUST have an hWnd and an hDC property for this to work.
-'' NOTE: now that GDI is no longer used for color management, this function is obsolete
-'Public Sub AssignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
-'
-'    'If the current user setting is "use system color profile", our job is easy.
-'    'TODO: fix this; g_UseSystemColorProfile is no longer used
-'
-'    'If g_UseSystemColorProfile Then
-'    '    SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
-'    'Else
-'
-'        'Use the form's containing monitor to retrieve a matching profile from the preferences file
-'        If Len(m_CurrentDisplayProfile) <> 0 Then
-'            SetICMProfile objectHDC, StrPtr(m_CurrentDisplayProfile)
-'        Else
-'            SetICMProfile objectHDC, StrPtr(m_currentSystemColorProfile)
-'        End If
-'
-'    'End If
-'
-'    'If you would like to test this function on a standalone ICC profile (generally something bizarre, to help you know
-'    ' that the function is working), use something similar to the code below.
-'    'Dim TEST_ICM As String
-'    'TEST_ICM = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\jpegs\ICC\WhackedRGB.icc"
-'    'SetICMProfile targetDC, StrPtr(TEST_ICM)
-'
-'End Sub
-'
-''Turn on color management for a specified device context
-'' NOTE: now that GDI is no longer used for color management, this function is obsolete
-'Public Sub TurnOnColorManagementForDC(ByVal dstDC As Long)
-'    SetICMMode dstDC, ICM_ON
-'End Sub
-'
-''Turn off color management for a specified device context
-'' NOTE: now that GDI is no longer used for color management, this function is obsolete
-'Public Sub TurnOffColorManagementForDC(ByVal dstDC As Long)
-'    SetICMMode dstDC, ICM_OFF
-'End Sub
 
 'RGB to XYZ conversion using custom endpoints requires a special transform.  We cannot use Microsoft's built-in transform methods as they do
 ' not support variable white space endpoints (WTF, MICROSOFT).

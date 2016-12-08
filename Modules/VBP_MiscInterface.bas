@@ -158,8 +158,6 @@ End Function
 'TODO: look at having an optional "layerID" parameter, so we can skip certain steps if only a single layer is affected by a change.
 Public Sub SyncInterfaceToCurrentImage()
     
-    Dim i As Long
-    
     'Interface dis/enabling falls into two rough categories: stuff that changes based on the current image (e.g. Undo), and stuff that changes
     ' based on the *total* number of available images (e.g. visibility of the Effects menu).
     

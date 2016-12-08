@@ -2945,7 +2945,7 @@ End Function
 Public Function GetGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GP_FillMode = GP_FM_Alternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLineCap As GP_LineCap = GP_LC_Flat) As RECTF
 
     'Start by creating a blank GDI+ path object.
-    Dim gdipRegionHandle As Long, gdipPathHandle As Long
+    Dim gdipPathHandle As Long
     GdipCreatePath useFillMode, gdipPathHandle
     
     'Populate the region with the polygon point array we were passed.
@@ -2957,18 +2957,18 @@ Public Function GetGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVa
     
     'Create a pen object with width and linecaps matching the passed params; these are important in the bounds calculation, as a wider pen
     ' means a wider region.
-    Dim iPen As Long
-    GdipCreatePen1 FillQuadWithVBRGB(0, 255), penWidth, GP_U_Pixel, iPen
+    Dim hPen As Long
+    GdipCreatePen1 FillQuadWithVBRGB(0, 255), penWidth, GP_U_Pixel, hPen
     
     'If a custom line cap was specified, apply it now
-    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
+    If (customLineCap > 0) Then GdipSetPenLineCap hPen, customLineCap, customLineCap, 0&
     
     'Using the generated pen, calculate a bounding rect for the path as drawn with that pen
-    GdipGetPathWorldBounds gdipPathHandle, GetGDIPlusBoundingRectFromPoints, 0, 0& 'iPen
+    GdipGetPathWorldBounds gdipPathHandle, GetGDIPlusBoundingRectFromPoints, 0, hPen
     
     'Release the path and pen before exiting
     GdipDeletePath gdipPathHandle
-    GdipDeletePen iPen
+    GdipDeletePen hPen
     
 End Function
 
@@ -3940,7 +3940,7 @@ Public Function GetGDIPlusBrushProperty(ByVal hBrush As Long, ByVal propID As PD
     If (hBrush <> 0) Then
         
         Dim gResult As GP_Result
-        Dim tmpLong As Long, tmpSingle As Single
+        Dim tmpLong As Long
         
         Select Case propID
             
@@ -4826,7 +4826,6 @@ Public Function GDIPlus_ImageSaveToArray(ByVal hImage As Long, ByRef dstArray() 
         'Look at PhotoDemon's source code for an example of how to do this.
         Dim paramsInUse As Boolean: paramsInUse = False
         Dim tmpEncoderParams As GP_EncoderParameters, tmpConstString As String
-        Dim fullEncoderParams() As Byte
         
         If (dstFileFormat = P2_FFE_JPEG) Then
             
@@ -4914,7 +4913,6 @@ Public Function GDIPlus_ImageSaveToFile(ByVal hImage As Long, ByVal dstFilename 
         'Look at PhotoDemon's source code for an example of how to do this.
         Dim paramsInUse As Boolean: paramsInUse = False
         Dim tmpEncoderParams As GP_EncoderParameters, tmpConstString As String
-        Dim fullEncoderParams() As Byte
         
         If (dstFileFormat = P2_FFE_JPEG) Then
             

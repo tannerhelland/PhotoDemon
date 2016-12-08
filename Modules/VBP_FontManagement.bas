@@ -538,8 +538,6 @@ Public Sub BuildFontCacheProperties()
         'Sync the font property cache size to the font cache size
         ReDim g_PDFontProperties(0 To m_PDFontCache.GetNumOfStrings - 1) As PD_FONT_PROPERTY
         
-        Dim i As Long
-        
         'Font properties can only be gathered on Vista or later
         If g_IsVistaOrLater Then
         

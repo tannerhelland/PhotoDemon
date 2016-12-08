@@ -347,7 +347,7 @@ Private Sub UpdateControlLayout()
     tmpFont.SetTextAlignment vbLeftJustify
     
     'Retrieve the height of the current caption, or if no caption exists, a placeholder
-    Dim captionWidth As Long, captionHeight As Long
+    Dim captionHeight As Long
     If ucSupport.IsCaptionActive Then
         captionHeight = tmpFont.GetHeightOfString(ucSupport.GetCaptionTextTranslated)
     Else

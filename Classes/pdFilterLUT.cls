@@ -50,7 +50,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with its corresponding default LUT value.
-Public Sub fillLUT_Default(ByRef srcArray() As Byte)
+Public Sub FillLUT_Default(ByRef srcArray() As Byte)
 
     ReDim srcArray(0 To 255) As Byte
     
@@ -66,7 +66,7 @@ End Sub
 '
 'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
 ' You should pass an actual value if you want this function to do anything useful!
-Public Sub fillLUT_Brightness(ByRef srcArray() As Byte, Optional ByVal brightnessAdjustment As Long = 0)
+Public Sub FillLUT_Brightness(ByRef srcArray() As Byte, Optional ByVal brightnessAdjustment As Long = 0)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
@@ -103,7 +103,7 @@ End Sub
 '
 'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
 ' You should pass an actual value if you want this function to do anything useful!
-Public Sub fillLUT_BrightnessMultiplicative(ByRef srcArray() As Byte, Optional ByVal brightnessScale As Double = 1#)
+Public Sub FillLUT_BrightnessMultiplicative(ByRef srcArray() As Byte, Optional ByVal brightnessScale As Double = 1#)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
@@ -139,7 +139,7 @@ End Sub
 '
 'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
 ' You should pass an actual value if you want this function to do anything useful!
-Public Sub fillLUT_Contrast(ByRef srcArray() As Byte, Optional ByVal contrastAdjustment As Long = 0)
+Public Sub FillLUT_Contrast(ByRef srcArray() As Byte, Optional ByVal contrastAdjustment As Long = 0)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
@@ -177,7 +177,7 @@ End Sub
 '
 'The Optional keyword is only used to demonstrate the default value (e.g. the value that returns the Identity LUT).
 ' You should pass an actual value if you want this function to do anything useful!
-Public Sub fillLUT_Gamma(ByRef srcArray() As Byte, Optional ByVal gammaAdjustment As Double = 1#)
+Public Sub FillLUT_Gamma(ByRef srcArray() As Byte, Optional ByVal gammaAdjustment As Double = 1#)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
@@ -225,10 +225,10 @@ End Sub
 '     before exiting, but I mention this because it will cause any cached unsafe array pointers (e.g. VarPtr) to be invalid.
 '
 ' 3) srcArray doesn't have to be initialized.  This function will do it for you.
-Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTFLOAT)
+Friend Sub FillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTFLOAT)
 
     'Start by setting up default parameters for the source array
-    fillLUT_Default srcArray
+    FillLUT_Default srcArray
     
     'Next, prepare some basic analysis values for the curve function
     Dim cResults() As Double
@@ -290,7 +290,7 @@ Friend Sub fillLUT_Curve(ByRef srcArray() As Byte, ByRef curvePoints() As POINTF
 End Sub
 
 'Given an arbitrary byte array, ReDim it to [0, 255] and fill each index with a corresponding inverted LUT value.
-Public Sub fillLUT_Invert(ByRef srcArray() As Byte)
+Public Sub FillLUT_Invert(ByRef srcArray() As Byte)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
@@ -309,7 +309,7 @@ End Sub
 '
 'The Optional keyword is only used to demonstrate default values (e.g. the values that return the Identity LUT).
 ' You should pass actual values if you want this function to do anything useful!
-Public Sub fillLUT_RemappedRange(ByRef srcArray() As Byte, Optional ByVal inputMin As Long = 0, Optional ByVal inputMax As Long = 255, Optional ByVal outputMin As Long = 0, Optional ByVal outputMax As Long = 255)
+Public Sub FillLUT_RemappedRange(ByRef srcArray() As Byte, Optional ByVal inputMin As Long = 0, Optional ByVal inputMax As Long = 255, Optional ByVal outputMin As Long = 0, Optional ByVal outputMax As Long = 255)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
@@ -360,7 +360,7 @@ End Sub
 ' The passed adjustment value should be on the range [0, 256], but this function will actually accept any input.
 '
 'The Optional keyword is only used to demonstrate the default value (which in this case, does NOT return an Identity LUT).
-Public Sub fillLUT_Threshold(ByRef srcArray() As Byte, Optional ByVal thresholdCutoff As Long = 127)
+Public Sub FillLUT_Threshold(ByRef srcArray() As Byte, Optional ByVal thresholdCutoff As Long = 127)
     
     'Prep the source array
     ReDim srcArray(0 To 255) As Byte
@@ -443,7 +443,7 @@ End Function
 'Sample usage would be something like this, for a dramatic S-curve:
 ' Dim curvePoints() As POINTFLOAT
 ' pdFilterLUTInstance.helper_QuickCreateCurveArray curvePoints, 0, 0, 96, 72, 192, 160, 255, 255
-Friend Sub helper_QuickCreateCurveArray(ByRef curvePoints() As POINTFLOAT, ParamArray listOfPoints() As Variant)
+Friend Sub Helper_QuickCreateCurveArray(ByRef curvePoints() As POINTFLOAT, ParamArray listOfPoints() As Variant)
 
     If UBound(listOfPoints) >= LBound(listOfPoints) Then
                     
@@ -478,12 +478,10 @@ End Sub
 ' and filled appropriately.
 Public Sub MergeLUTs(ByRef firstSourceLUT() As Byte, ByRef secondSourceLUT() As Byte, ByRef dstLUT() As Byte)
     
-    'Prep the source array
     ReDim dstLUT(0 To 255) As Byte
     
-    Dim i As Long, newVal As Long
-    
     'Fill the destination LUT with the values of firstSourceLUT, as passed through secondSourceLUT
+    Dim i As Long
     For i = 0 To 255
         dstLUT(i) = secondSourceLUT(firstSourceLUT(i))
     Next i
@@ -497,7 +495,7 @@ End Sub
 ' TODO: try wrapping GDI+ on Vista and later, and do some performance profiling to compare results.
 '
 ' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRef gLUT() As Byte, ByRef bLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRef gLUT() As Byte, ByRef bLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
@@ -572,14 +570,14 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
-    If g_cancelCurrentAction Then applyLUTsToDIB_Color = 0 Else applyLUTsToDIB_Color = 1
+    If g_cancelCurrentAction Then ApplyLUTsToDIB_Color = 0 Else ApplyLUTsToDIB_Color = 1
     
 End Function
 
 'Given one LUT, apply it to each pixel in the image, using the pixel's calculated GRAY VALUE as the LUT lookup parameter.
 '
 ' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
@@ -659,7 +657,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
-    If g_cancelCurrentAction Then applyLUTsToDIB_Gray = 0 Else applyLUTsToDIB_Gray = 1
+    If g_cancelCurrentAction Then ApplyLUTsToDIB_Gray = 0 Else ApplyLUTsToDIB_Gray = 1
     
 End Function
 
@@ -668,7 +666,7 @@ End Function
 ' TODO: try wrapping GDI+ on Vista and later, and do some performance profiling to compare results.
 '
 ' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
@@ -743,6 +741,6 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     'Reset alpha premultiplication, as necessary
     If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
-    If g_cancelCurrentAction Then applyLUTToAllColorChannels = 0 Else applyLUTToAllColorChannels = 1
+    If g_cancelCurrentAction Then ApplyLUTToAllColorChannels = 0 Else ApplyLUTToAllColorChannels = 1
     
 End Function

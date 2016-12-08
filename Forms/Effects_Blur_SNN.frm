@@ -182,7 +182,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     Dim yInner As Long, yInnerStart As Long, yInnerFinal As Long
     Dim xInnerSym As Long, yInnerSym As Long
     Dim snnDist1 As Long, snnDist2 As Long
-    Dim NumOfPixels As Long
+    Dim numOfPixels As Long
     
     If Not toPreview Then Message "Generating symmetric pixel pairs..."
         
@@ -203,7 +203,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
         gSum = 0
         bSum = 0
         aSum = 0
-        NumOfPixels = 0
+        numOfPixels = 0
         
         'Calculate inner loop bounds
         xInnerStart = x - snnRadius
@@ -262,7 +262,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
                 aSum = aSum + aSrc2
             End If
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         Next xInner
         
@@ -306,16 +306,16 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
                 aSum = aSum + aSrc2
             End If
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         Next xInner
         Next yInner
         
         'We have now calculated full SNN sums for each color channel.  Take the average of each channel.
-        rNew = rSum \ NumOfPixels
-        gNew = gSum \ NumOfPixels
-        bNew = bSum \ NumOfPixels
-        aNew = aSum \ NumOfPixels
+        rNew = rSum \ numOfPixels
+        gNew = gSum \ numOfPixels
+        bNew = bSum \ numOfPixels
+        aNew = aSum \ numOfPixels
         
         'Blend pixels accordingly
         If snnStrength < 1 Then

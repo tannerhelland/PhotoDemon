@@ -978,10 +978,6 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
             'Make sure we have room in our metadata collection for the new tag
             If m_NumOfTags > UBound(m_Tags) Then ReDim Preserve m_Tags(0 To m_NumOfTags * 2 - 1) As PDMetadataItem
             
-            'We're going to be doing lots of string parsing in this function.  sPos and ePos are used to mark the start and end
-            ' of a parse operation...
-            Dim sPos As Long, ePos As Long
-            
             '...while sLine and eLine are the line indices where this tag starts and ends
             Dim sLine As Long, eLine As Long
             Dim tagFinished As Boolean
@@ -1411,7 +1407,6 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
     Set xmlEngine = New pdXML
     
     Dim newXMLString As String, tmpXMLPath As String
-    Dim fileNum As Integer
     
     'Retrieve the XML setting, if any, from the target image object, and write metadata accordingly.
     Dim metadataParams As String

@@ -185,8 +185,8 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     Dim rFloat As Double, gFloat As Double, bFloat As Double
     Dim h As Double, s As Double, v As Double, vLong As Long
     
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
     
     Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long, lValues() As Long
     ReDim rValues(0 To 255) As Long
@@ -342,9 +342,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         If cPixelIterator.InitializeIterator(srcDIB, ehRadius, ehRadius, kernelShape) Then
             
             If ehTarget = 0 Then
-                NumOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
+                numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
             Else
-                NumOfPixels = cPixelIterator.LockTargetHistograms_Luminance(lValues)
+                numOfPixels = cPixelIterator.LockTargetHistograms_Luminance(lValues)
             End If
             
             'Loop through each pixel in the image, applying the filter as we go
@@ -373,7 +373,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                     r = ImageData(x + 2, y)
                     
                     'Partially equalize each histogram
-                    scaleFactor = 255 / NumOfPixels
+                    scaleFactor = 255 / numOfPixels
                     
                     'RGB
                     If ehTarget = 0 Then
@@ -451,16 +451,16 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                     
                     'Move the iterator in the correct direction
                     If directionDown Then
-                        If y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
+                        If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
                     Else
-                        If y > initY Then NumOfPixels = cPixelIterator.MoveYUp
+                        If y > initY Then numOfPixels = cPixelIterator.MoveYUp
                     End If
                     
                 Next y
                 
                 'Reverse y-directionality on each pass
                 directionDown = Not directionDown
-                If x < finalXStride Then NumOfPixels = cPixelIterator.MoveXRight
+                If x < finalXStride Then numOfPixels = cPixelIterator.MoveXRight
                 
                 'Update the progress bar every (progBarCheck) lines
                 If Not toPreview Then

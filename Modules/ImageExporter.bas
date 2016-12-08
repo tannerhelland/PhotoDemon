@@ -285,12 +285,12 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 3
         
-        Dim UniqueColors() As Long
-        ReDim UniqueColors(0 To 255) As Long
+        Dim uniqueColors() As Long
+        ReDim uniqueColors(0 To 255) As Long
         
         Dim i As Long
         For i = 0 To 255
-            UniqueColors(i) = -1
+            uniqueColors(i) = -1
         Next i
         
         numUniqueColors = 0
@@ -313,7 +313,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             
             'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
             For i = 0 To numUniqueColors - 1
-                If UniqueColors(i) = chkValue Then
+                If uniqueColors(i) = chkValue Then
                     colorFound = True
                     Exit For
                 End If
@@ -325,7 +325,7 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
                     numUniqueColors = 257
                     Exit For
                 Else
-                    UniqueColors(numUniqueColors) = chkValue
+                    uniqueColors(numUniqueColors) = chkValue
                     numUniqueColors = numUniqueColors + 1
                 End If
             End If
@@ -349,15 +349,15 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             'Loop through all available colors
             For i = 0 To numUniqueColors - 1
             
-                r = Colors.ExtractRed(UniqueColors(i))
-                g = Colors.ExtractGreen(UniqueColors(i))
+                r = Colors.ExtractRed(uniqueColors(i))
+                g = Colors.ExtractGreen(uniqueColors(i))
                 
                 'If any of the components do not match, this is not a grayscale image
                 If (r <> g) Then
                     isGrayscale = False
                     Exit For
                 Else
-                    b = Colors.ExtractBlue(UniqueColors(i))
+                    b = Colors.ExtractBlue(uniqueColors(i))
                     If (b <> r) Or (b <> g) Then
                         isGrayscale = False
                         Exit For
@@ -370,14 +370,14 @@ Private Function AutoDetectColors_24BPPSource(ByRef srcDIB As pdDIB, ByRef numUn
             ' (where monochrome = pure black and pure white, only).
             If isGrayscale And (numUniqueColors <= 2) Then
             
-                r = Colors.ExtractRed(UniqueColors(0))
-                g = Colors.ExtractGreen(UniqueColors(0))
-                b = Colors.ExtractBlue(UniqueColors(0))
+                r = Colors.ExtractRed(uniqueColors(0))
+                g = Colors.ExtractGreen(uniqueColors(0))
+                b = Colors.ExtractBlue(uniqueColors(0))
                 
                 If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then
-                    r = Colors.ExtractRed(UniqueColors(1))
-                    g = Colors.ExtractGreen(UniqueColors(1))
-                    b = Colors.ExtractBlue(UniqueColors(1))
+                    r = Colors.ExtractRed(uniqueColors(1))
+                    g = Colors.ExtractGreen(uniqueColors(1))
+                    b = Colors.ExtractBlue(uniqueColors(1))
                     If ((r = 0) And (g = 0) And (b = 0)) Or ((r = 255) And (g = 255) And (b = 255)) Then isMonochrome = True
                 End If
             
@@ -421,15 +421,15 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         finalX = srcDIB.GetDIBWidth - 1
         finalX = finalX * 4
 
-        Dim UniqueColors() As RGBQUAD
-        ReDim UniqueColors(0 To 255) As RGBQUAD
+        Dim uniqueColors() As RGBQUAD
+        ReDim uniqueColors(0 To 255) As RGBQUAD
 
         Dim i As Long
         For i = 0 To 255
-            UniqueColors(i).Red = 1
-            UniqueColors(i).Green = 1
-            UniqueColors(i).Blue = 0
-            UniqueColors(i).alpha = 1
+            uniqueColors(i).Red = 1
+            uniqueColors(i).Green = 1
+            uniqueColors(i).Blue = 0
+            uniqueColors(i).alpha = 1
         Next i
 
         'Total number of unique colors counted so far
@@ -440,7 +440,6 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
         
         'Finally, a bunch of variables used in color calculation
         Dim r As Long, g As Long, b As Long, a As Long
-        Dim chkValue As Long
         Dim colorFound As Boolean
 
         'Apply the filter
@@ -464,10 +463,10 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
                 
                 'Now, loop through the colors we've accumulated thus far and compare this entry against each of them.
                 For i = 0 To numUniqueColors - 1
-                    If (UniqueColors(i).Red = r) Then
-                        If (UniqueColors(i).Green = g) Then
-                            If (UniqueColors(i).Blue = b) Then
-                                If (UniqueColors(i).alpha = a) Then
+                    If (uniqueColors(i).Red = r) Then
+                        If (uniqueColors(i).Green = g) Then
+                            If (uniqueColors(i).Blue = b) Then
+                                If (uniqueColors(i).alpha = a) Then
                                     colorFound = True
                                     Exit For
                                 End If
@@ -482,10 +481,10 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
                         numUniqueColors = 257
                         If nonBinaryAlpha Then Exit For
                     Else
-                        UniqueColors(numUniqueColors).Red = r
-                        UniqueColors(numUniqueColors).Green = g
-                        UniqueColors(numUniqueColors).Blue = b
-                        UniqueColors(numUniqueColors).alpha = a
+                        uniqueColors(numUniqueColors).Red = r
+                        uniqueColors(numUniqueColors).Green = g
+                        uniqueColors(numUniqueColors).Blue = b
+                        uniqueColors(numUniqueColors).alpha = a
                         numUniqueColors = numUniqueColors + 1
                     End If
                 End If
@@ -516,11 +515,11 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
                 For i = 0 To numUniqueColors - 1
                     
                     'If any of the components do not match, this is not a grayscale image
-                    If (UniqueColors(i).Red <> UniqueColors(i).Green) Then
+                    If (uniqueColors(i).Red <> uniqueColors(i).Green) Then
                         isGrayscale = False
                         Exit For
                     Else
-                        If (UniqueColors(i).Blue <> UniqueColors(i).Red) Or (UniqueColors(i).Blue <> UniqueColors(i).Green) Then
+                        If (uniqueColors(i).Blue <> uniqueColors(i).Red) Or (uniqueColors(i).Blue <> uniqueColors(i).Green) Then
                             isGrayscale = False
                             Exit For
                         End If
@@ -535,8 +534,8 @@ Private Function AutoDetectColors_32BPPSource(ByRef srcDIB As pdDIB, ByRef netCo
             ' (where monochrome = pure black and pure white, only).
             If isGrayscale And (numUniqueColors <= 2) Then
                 
-                If ((UniqueColors(0).Red = 0) And (UniqueColors(0).Green = 0) And (UniqueColors(0).Blue = 0)) Or ((UniqueColors(0).Red = 255) And (UniqueColors(0).Green = 255) And (UniqueColors(0).Blue = 255)) Then
-                    If ((UniqueColors(1).Red = 0) And (UniqueColors(1).Green = 0) And (UniqueColors(1).Blue = 0)) Or ((UniqueColors(1).Red = 255) And (UniqueColors(1).Green = 255) And (UniqueColors(1).Blue = 255)) Then isMonochrome = True
+                If ((uniqueColors(0).Red = 0) And (uniqueColors(0).Green = 0) And (uniqueColors(0).Blue = 0)) Or ((uniqueColors(0).Red = 255) And (uniqueColors(0).Green = 255) And (uniqueColors(0).Blue = 255)) Then
+                    If ((uniqueColors(1).Red = 0) And (uniqueColors(1).Green = 0) And (uniqueColors(1).Blue = 0)) Or ((uniqueColors(1).Red = 255) And (uniqueColors(1).Green = 255) And (uniqueColors(1).Blue = 255)) Then isMonochrome = True
                 End If
                 
             'End monochrome check
@@ -908,7 +907,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
     If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp jpegBackgroundColor
     
     'Retrieve the recommended output color depth of the image.
-    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
     Dim forceGrayscale As Boolean
     
     If StrComp(LCase$(cParams.GetString("JPEGColorDepth", "Auto")), "auto", vbBinaryCompare) = 0 Then
@@ -1439,7 +1438,7 @@ Public Function ExportPNM(ByRef srcPDImage As pdImage, ByRef dstFile As String, 
     If (tmpImageCopy.GetDIBColorDepth = 32) Then tmpImageCopy.ConvertTo24bpp pnmBackColor
     
     'If any "auto" parameters are present, calculate their ideal values now
-    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, desiredAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
+    Dim outputColorDepth As Long, currentAlphaStatus As PD_ALPHA_STATUS, netColorCount As Long, isTrueColor As Boolean, isGrayscale As Boolean, isMonochrome As Boolean
     Dim forceGrayscale As Boolean
     
     If ParamsEqual(pnmColorModel, "auto") Then
@@ -1787,7 +1786,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         
         Dim fi_PageHandle As Long
         Dim tmpLayerDIB As pdDIB, tmpLayer As pdLayer
-        Dim pageColorDepth As Long, pageForceGrayscale As Boolean, pageAlphaCutoff As Long
+        Dim pageColorDepth As Long, pageForceGrayscale As Boolean
         
         Dim i As Long
         For i = 0 To srcPDImage.GetNumOfLayers - 1
