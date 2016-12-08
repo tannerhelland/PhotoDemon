@@ -76,11 +76,6 @@ Private m_StreamMode As PD_STREAM_MODE
 ' really only matters for file streams, as read-only access can be accelerated thanks to memory mapping.
 Private m_StreamAccess As PD_STREAM_ACCESS
 
-'When creating a memory-only stream, PD will automatically resize the stream in chunks to improve performance.  This value is
-' not exposed to the user; it is calculated automatically, based on the current buffer size and the size(s) of incoming writes.
-' (Note that this chunk size setting has no meaning for file-backed streams.)
-Private m_MemChunkSize As Long
-
 'For in-memory streams, this array stores the actual stream data.
 Private m_MemBuffer() As Byte
 

@@ -286,9 +286,6 @@ Private m_CurrentColor As Long
 Private m_Red As Long, m_Green As Long, m_Blue As Long
 Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 
-'A temporary DIB for drawing any other elements
-Private m_tmpDIB As pdDIB
-
 'Changing the various text boxes resyncs the dialog, unless this parameter is set.  (We use it to prevent
 ' infinite resyncs.)
 Private m_suspendTextResync As Boolean, m_suspendHexInput As Boolean

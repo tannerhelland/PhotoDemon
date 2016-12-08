@@ -820,8 +820,6 @@ Public Sub ResetToolButtonStates()
     'Next, we need to display the correct tool options panel.  There is no set pattern to this; some tools share
     ' panels, but show/hide certain controls as necessary.  Other tools require their own unique panel.  I've tried
     ' to strike a balance between "as few panels as possible" without going overboard.
-    Dim activeToolPanel As Form
-    
     Select Case g_CurrentTool
         
         'Move/size tool

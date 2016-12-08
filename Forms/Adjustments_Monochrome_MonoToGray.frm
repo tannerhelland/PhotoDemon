@@ -171,8 +171,8 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     progBarCheck = FindBestProgBarValue()
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Median filtering takes a lot of variables
     Dim highValues As Long
@@ -186,7 +186,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
     
     Dim startY As Long, stopY As Long, yStep As Long
     
-    NumOfPixels = 0
+    numOfPixels = 0
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
@@ -196,7 +196,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         If srcImageData(QuickVal, y) > 127 Then highValues = highValues + 1
         
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
         
     Next y
     Next x
@@ -235,7 +235,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         
             For j = lbY To ubY
                 If srcImageData(QuickValInner, j) > 127 Then highValues = highValues - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next j
         
         End If
@@ -247,7 +247,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
             
             For j = lbY To ubY
                 If srcImageData(QuickValInner, j) > 127 Then highValues = highValues + 1
-                NumOfPixels = NumOfPixels + 1
+                numOfPixels = numOfPixels + 1
             Next j
             
         End If
@@ -259,7 +259,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
             For i = lbX To ubX
                 QuickValInner = i * qvDepth
                 If srcImageData(QuickValInner, mRadius) > 127 Then highValues = highValues - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
         
         Else
@@ -269,7 +269,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
             For i = lbX To ubX
                 QuickValInner = i * qvDepth
                 If srcImageData(QuickValInner, QuickY) > 127 Then highValues = highValues - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
         
         End If
@@ -313,7 +313,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
                 For i = lbX To ubX
                     QuickValInner = i * qvDepth
                     If srcImageData(QuickValInner, QuickY) > 127 Then highValues = highValues - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -324,7 +324,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
                 For i = lbX To ubX
                     QuickValInner = i * qvDepth
                     If srcImageData(QuickValInner, ubY) > 127 Then highValues = highValues + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -350,7 +350,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
                 For i = lbX To ubX
                     QuickValInner = i * qvDepth
                     If srcImageData(QuickValInner, QuickY) > 127 Then highValues = highValues - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -360,7 +360,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
                 For i = lbX To ubX
                     QuickValInner = i * qvDepth
                     If srcImageData(QuickValInner, lbY) > 127 Then highValues = highValues + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -368,7 +368,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         End If
                 
         'With the box successfully calculated, we can now estimate a grayscale value for this pixel
-        fGray = (highValues / NumOfPixels) * 255
+        fGray = (highValues / numOfPixels) * 255
         
         'Finally, apply the results to the image.
         dstImageData(QuickVal + 2, y) = fGray

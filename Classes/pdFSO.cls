@@ -1063,21 +1063,18 @@ End Function
 '
 'Returns TRUE if successful; FALSE otherwise.  If the function fails, DLL error info will be dumped to the debug window.
 Public Function GetFileVersion(ByVal FullFileName As String, ByRef verMajor As Long, ByRef verMinor As Long, ByRef verBuild As Long, ByRef verRevision As Long, Optional ByVal getProductVersionInstead As Boolean = True) As Boolean
-   
-    'A surprising number of variables are required to retrieve versioning info...
-    Dim StrucVer As String, FileVer As String, ProdVer As String
     
-    Dim rc As Long, lDummy As Long, sBuffer() As Byte
+    Dim lDummy As Long, sBuffer() As Byte
     Dim lBufferLen As Long, lVerPointer As Long, udtVerBuffer As VS_FIXEDFILEINFO
     Dim lVerbufferLen As Long
     
     'Start by retrieving the size of the required buffer
     lBufferLen = GetFileVersionInfoSize(FullFileName, lDummy)
-    If lBufferLen > 0 Then
+    If (lBufferLen > 0) Then
      
         'Retrieve the root versioning block, without any localization edits (https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464%28v=vs.85%29.aspx)
         ReDim sBuffer(lBufferLen) As Byte
-        If GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0)) > 0 Then
+        If (GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0)) > 0) Then
             
             If VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen) Then
                 
@@ -1238,7 +1235,7 @@ Public Function MakeValidWindowsFilename(ByVal srcFilename As String, Optional B
     Dim strInvalidChars As String
     strInvalidChars = "\/*?""<>|:"
     
-    Dim invLoc As Long, testChar As String
+    Dim testChar As String
     
     Dim i As Long
     For i = 1 To Len(strInvalidChars)

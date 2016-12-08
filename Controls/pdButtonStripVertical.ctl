@@ -75,7 +75,7 @@ Private m_FontBold As Boolean
 
 'Now that this control supports a title caption (which sits above the button itself), we separately track the region of the
 ' control corresponding to the "buttonstrip" only.
-Private m_ButtonStripRect As RECT, m_MouseInButtonStrip As Boolean
+Private m_ButtonStripRect As RECT
 
 'Current button indices
 Private m_ButtonIndex As Long
@@ -693,7 +693,6 @@ Private Sub UpdateControlLayout()
     'Each button now has its boundaries precisely calculated.  Next, we want to precalculate all text positioning inside
     ' each button.  Because text positioning varies by both caption, and the presence of images, we are also going to
     ' pre-cache these values, to further reduce the amount of work we need to do in the render loop.
-    Dim tmpPoint As POINTAPI
     Dim strWidth As Long, strHeight As Long
     
     'Rather than create and manage our own font object(s), we borrow font objects from the global PD font cache.

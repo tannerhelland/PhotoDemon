@@ -164,9 +164,6 @@ Private curFont As Long, oldFont As Long
 'Used to track the DC we are rendering to
 Private curDC As Long
 
-'When the class is initialized, this value is recorded to help us convert from points to ems
-Private curLogPixelsY As Long
-
 'Current text alignment (as an API constant, not a VB one)
 Private curTextAlignment As Long
 
@@ -174,7 +171,7 @@ Private curTextAlignment As Long
 Private fontColor As Long
 
 'This LOGFONT object stores all current settings for the font
-Private currentLogFont As LOGFONT
+Private m_currentLogFont As LOGFONT
 
 'Certain settings have to be modified before placing them inside a LOGFONT struct.  We store local copies of these values in VB-friendly formats,
 ' which simplies the process of checking these properties prior to replacing them.
@@ -405,7 +402,7 @@ Public Function CreateFontObject() As Boolean
     If curDC <> 0 Then ReleaseFromDC
     If curFont <> 0 Then DeleteCurrentFont
     
-    curFont = CreateFontIndirect(currentLogFont)
+    curFont = CreateFontIndirect(m_currentLogFont)
     
     CreateFontObject = CBool(curFont <> 0)
     
@@ -423,9 +420,9 @@ End Function
 Public Sub SetFontBold(ByVal newBold As Boolean)
     m_origFontBold = newBold
     If newBold Then
-        currentLogFont.lfWeight = FW_BOLD
+        m_currentLogFont.lfWeight = FW_BOLD
     Else
-        currentLogFont.lfWeight = FW_NORMAL
+        m_currentLogFont.lfWeight = FW_NORMAL
     End If
 End Sub
 
@@ -444,7 +441,7 @@ End Function
 
 Public Sub SetFontFace(ByVal newFace As String)
     m_origFontFace = newFace
-    currentLogFont.lfFaceName = newFace & Chr(0)
+    m_currentLogFont.lfFaceName = newFace & Chr(0)
 End Sub
 
 Public Function GetFontItalic() As Boolean
@@ -453,7 +450,7 @@ End Function
 
 Public Sub SetFontItalic(ByVal newItalic As Boolean)
     m_origFontItalic = newItalic
-    currentLogFont.lfItalic = -1 * newItalic
+    m_currentLogFont.lfItalic = -1 * newItalic
 End Sub
 
 Public Function GetFontSize() As Single
@@ -462,19 +459,19 @@ End Function
 
 Public Sub SetFontSize(ByVal newFontSize As Single)
     m_origFontSize = newFontSize
-    currentLogFont.lfHeight = Font_Management.ConvertToGDIFontSize(newFontSize)
+    m_currentLogFont.lfHeight = Font_Management.ConvertToGDIFontSize(newFontSize)
 End Sub
 
 Public Sub SetFontStrikeout(ByVal newStrikeout As Boolean)
-    currentLogFont.lfStrikeOut = -1 * newStrikeout
+    m_currentLogFont.lfStrikeOut = -1 * newStrikeout
 End Sub
 
 Public Sub SetFontUnderline(ByVal newUnderline As Boolean)
-    currentLogFont.lfUnderline = -1 * newUnderline
+    m_currentLogFont.lfUnderline = -1 * newUnderline
 End Sub
 
 Public Function GetFontUnderline() As Boolean
-    GetFontUnderline = (currentLogFont.lfUnderline * -1)
+    GetFontUnderline = (m_currentLogFont.lfUnderline * -1)
 End Function
 
 Public Sub SetTextAlignment(ByVal newAlignment As AlignmentConstants)
@@ -627,7 +624,7 @@ Private Sub Class_Initialize()
     
     'When the class is initialized, set up a default PhotoDemon font.  Face is automatically set per
     ' the current OS, so external functions do not need to set this manually.
-    With currentLogFont
+    With m_currentLogFont
     
         .lfHeight = Font_Management.ConvertToGDIFontSize(11#)
         .lfWidth = 0        'This will automatically set the width based on the height

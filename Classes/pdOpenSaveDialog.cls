@@ -287,23 +287,14 @@ Public Function GetSaveFileName(ByRef FileName As String, _
         If OverWritePrompt Then .Flags = .Flags Or OFN_OVERWRITEPROMPT
         
         'Various other obvious flags
-        If Owner <> -1 Then .hWndOwner = Owner
+        If (Owner <> -1) Then .hWndOwner = Owner
         .lpstrInitialDir = InitDir
         .lpstrDefExt = DefaultExt
         .lpstrTitle = DlgTitle
         
         'The filter string is actually null-delimited, which isn't easy for the caller to do, so we allow the old-style
         ' pipe and colon separators, which are forcibly converted now.
-        Dim Ch As String, i As Integer, s As String
-        'For i = 1 To Len(Filter)
-        '    Ch = Mid$(Filter, i, 1)
-        '    If Ch = "|" Or Ch = ":" Then
-        '        s = s & vbNullChar
-        '    Else
-        '        s = s & Ch
-        '    End If
-        'Next
-        
+        Dim s As String
         s = Filter
         If InStr(1, s, "|", vbBinaryCompare) Then s = Replace$(s, "|", vbNullChar)
         If InStr(1, s, ":", vbBinaryCompare) Then s = Replace$(s, ":", vbNullChar)
@@ -335,13 +326,13 @@ Public Function GetSaveFileName(ByRef FileName As String, _
     ' (We could technically handle buffer overflows by retrying with a larger buffer, but I don't know how to do that
     '  without re-displaying the entire effing common dialog; to that end, I've hard-coded a 1K buffer as a limit,
     '  which should allow for saving to just about anywhere!)
-    If lReturn <> 0 Then
+    If (lReturn <> 0) Then
         
         'Success!  Parse out the relevant filename string.
         Dim lLen As Long
-        If tmpOFN.nFileOffset <> 0 Then
+        If (tmpOFN.nFileOffset <> 0) Then
             lLen = InStr(tmpOFN.nFileOffset, tmpOFN.lpstrFile, vbNullChar) - 1&
-            If lLen < 1& Then lLen = Len(tmpOFN.lpstrFile)
+            If (lLen < 1&) Then lLen = Len(tmpOFN.lpstrFile)
         Else
             lLen = lstrlenW(StrPtr(tmpOFN.lpstrFile))
         End If

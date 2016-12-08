@@ -193,8 +193,8 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     End If
     
     'The number of pixels in the current box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Accumulation filters like this take a lot of variables
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
@@ -218,7 +218,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     
     If cPixelIterator.InitializeIterator(srcDIB, xRadius, yRadius, kernelShape) Then
         
-        NumOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
+        numOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
         For x = initX To finalX Step qvDepth
@@ -301,16 +301,16 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
+                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then NumOfPixels = cPixelIterator.MoveYUp
+                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then NumOfPixels = cPixelIterator.MoveXRight
+            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If Not toPreview Then

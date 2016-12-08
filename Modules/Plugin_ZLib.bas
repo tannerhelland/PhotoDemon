@@ -3,9 +3,8 @@ Attribute VB_Name = "Plugin_zLib"
 'File Compression Interface (via zLib)
 'Copyright 2002-2016 by Tanner Helland
 'Created: 3/02/02
-'Last updated: 05/August/13
-'Last update: standalone functions for compressing and decompressing arrays.  I still need to tie the compress/decompress file
-'              routines into these, to avoid duplicating code unnecessarily.
+'Last updated: 08/December/16
+'Last update: general code clean-up to better integrate with the new Compression wrapper module
 '
 'Module to handle file compression and decompression to a custom file format via the zLib compression library.
 '
@@ -22,8 +21,6 @@ Private Const Z_MIN_LEVEL = 0
 Private Const Z_DEFAULT_LEVEL = 3
 Private Const Z_MAX_LEVEL = 9
 
-'API Declarations
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function compress Lib "zlibwapi" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
 Private Declare Function compress2 Lib "zlibwapi" (ByVal ptrDstBuffer As Long, ByRef dstLen As Long, ByVal ptrSrcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
 Private Declare Function uncompress Lib "zlibwapi" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
@@ -88,16 +85,10 @@ Public Function CompressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte
     ReDim dstArray(0 To bufferSize) As Byte
 
     'Compress the data using zLib
-    Dim zResult As Long
-    zResult = compress(dstArray(0), bufferSize, srcArray(0), origSize)
-    
-    'Let VB repopulate its SafeArray structure by redimming the array.
-    ReDim Preserve dstArray(0 To bufferSize - 1) As Byte
-    
-    'Return success or failure (zLib returns 0 upon a successful compression)
-    If zResult = 0 Then
+    If (compress(dstArray(0), bufferSize, srcArray(0), origSize) = ZLIB_OK) Then
         compressSize = bufferSize
         CompressArray = True
+        ReDim Preserve dstArray(0 To bufferSize - 1) As Byte
     Else
         compressSize = 0
         CompressArray = False
@@ -123,13 +114,11 @@ Public Function CompressNakedPointerToArray(ByVal srcPointer As Long, ByVal srcL
     ReDim dstArray(0 To bufferSize) As Byte
 
     'Compress the data.  (Note that zLib returns 0 upon a successful compression.)
-    Dim zResult As Long
-    If compress(dstArray(0), bufferSize, ByVal srcPointer, srcLength) = 0 Then
+    CompressNakedPointerToArray = CBool(compress(dstArray(0), bufferSize, ByVal srcPointer, srcLength) = ZLIB_OK)
+    If CompressNakedPointerToArray Then
         finalCompressedSize = bufferSize
-        CompressNakedPointerToArray = True
     Else
         finalCompressedSize = 0
-        CompressNakedPointerToArray = False
     End If
     
 End Function
@@ -149,7 +138,7 @@ End Function
 ' has knowledge of the size required by the destination buffer (e.g. the decompressed data size was previously stored in a
 ' file or something), because this function will not modify any buffer sizes.
 Public Function DecompressNakedPointers(ByVal dstPointer As Long, ByVal dstLength As Long, ByVal srcPointer As Long, ByVal srcLength As Long) As Boolean
-    DecompressNakedPointers = CBool(uncompress(ByVal dstPointer, dstLength, ByVal srcPointer, srcLength) = 0)
+    DecompressNakedPointers = CBool(uncompress(ByVal dstPointer, dstLength, ByVal srcPointer, srcLength) = ZLIB_OK)
 End Function
 
 'Fill a destination array with the compressed version of a source array.  Also, ask for the original size,
@@ -167,13 +156,11 @@ Public Function DecompressArray(ByRef srcArray() As Byte, ByRef dstArray() As By
     ReDim dstArray(0 To bufferSize - 1) As Byte
 
     'Decompress the data using zLib
-    Dim zResult As Long
-    zResult = uncompress(dstArray(0), bufferSize, srcArray(0), compressedSize)
-    
-    'Let VB repopulate its SafeArray structure by redimming the array.
-    ReDim Preserve dstArray(0 To bufferSize - 1) As Byte
-    
-    'Return success or failure (zLib returns 0 upon a successful compression)
-    DecompressArray = CBool(zResult = 0)
+    If (uncompress(dstArray(0), bufferSize, srcArray(0), compressedSize) = ZLIB_OK) Then
+        ReDim Preserve dstArray(0 To bufferSize - 1) As Byte
+        DecompressArray = True
+    Else
+        DecompressArray = False
+    End If
     
 End Function

@@ -34,6 +34,8 @@ Begin VB.Form toolpanel_Text
       Top             =   0
       Visible         =   0   'False
       Width           =   1455
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdHyperlink lblConvertLayerConfirm 
          Height          =   240
          Left            =   120
@@ -308,9 +310,6 @@ Option Explicit
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
-
-'Current list of fonts, in pdStringStack format
-Private userFontList As pdStringStack
 
 Private Sub btnFontStyles_Click(Index As Integer)
     

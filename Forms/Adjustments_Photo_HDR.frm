@@ -190,8 +190,8 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     progBarCheck = FindBestProgBarValue()
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'CLAHE filtering RGB data takes a lot of variables
     Dim rValues() As Long, gValues() As Long, bValues() As Long
@@ -213,7 +213,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     
     Dim startY As Long, stopY As Long, yStep As Long
     
-    NumOfPixels = 0
+    numOfPixels = 0
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
@@ -228,7 +228,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         bValues(b) = bValues(b) + 1
         
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
         
     Next y
     Next x
@@ -272,7 +272,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next j
         
         End If
@@ -289,7 +289,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) + 1
                 gValues(g) = gValues(g) + 1
                 bValues(b) = bValues(b) + 1
-                NumOfPixels = NumOfPixels + 1
+                numOfPixels = numOfPixels + 1
             Next j
             
         End If
@@ -306,7 +306,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
         
         Else
@@ -321,7 +321,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
         
         End If
@@ -370,7 +370,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -386,7 +386,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -417,7 +417,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -432,7 +432,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -451,7 +451,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         'Histogram equalization applies a unique scale factor based on the number of pixels in the histogram
         ' (Because our sliding-box technique generates different pixel counts along edge regions, we can't
         '  pre-calculate this value.)
-        histFactor = 255 / NumOfPixels
+        histFactor = 255 / numOfPixels
         
         'Partially equalize each individual channel histogram
         rValuesEq(0) = rValues(0) * histFactor

@@ -666,7 +666,7 @@ Friend Function AssembleCompositePath(ByRef dstPath As pd2DPath, ByRef boundingR
         Dim additionalStylesRect As pd2DPath
         CalculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect
         
-        Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
+        Dim i As Long, curGlyph As Long, curGlyphOutline As Long
         Dim tmpGlyphOutlineCopy As pd2DPath, tmpMatrix As pd2DTransform, cRandom As pdRandomize
         Dim maxJitterX As Single, maxJitterY As Single, halfJitterX As Single, halfJitterY As Single
         Dim glyphIsRenderable As Boolean
@@ -816,9 +816,8 @@ End Function
 Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords, Optional ByRef dstStylePath As pd2DPath) As Boolean
     
     Dim i As Long, j As Long
-    Dim curGlyph As Long, curGlyphOutline As Long
-    Dim srcPathHandle As Long, glyphCheck As Long
-    Dim glyphIsRenderable As Boolean, timeToBreakLine As Boolean
+    Dim curGlyph As Long, glyphCheck As Long
+    Dim timeToBreakLine As Boolean
     
     Dim xOffset As Single, yOffset As Single
     yOffset = boundingRect.Top

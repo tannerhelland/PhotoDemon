@@ -785,9 +785,6 @@ Option Explicit
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
-'Current list of fonts, in pdStringStack format
-Private userFontList As pdStringStack
-
 Private Sub bsText_BrushChanged()
     
     'If tool changes are not allowed, exit.

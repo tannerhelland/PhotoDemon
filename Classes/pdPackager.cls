@@ -733,7 +733,6 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     'Create the node directory byte array now.  (VB writes UDTs to file in a non-standard, non-obvious way, so we need to do this
     ' regardless of second-pass directory compression.)
     Dim rawDirectoryBuffer() As Byte, rawDataBuffer() As Byte
-    Dim preCompressionBuffer() As Byte
     Dim originalSize As Long, compressedSize As Long
     originalSize = m_FileHeader.DirectoryChunkSize
     
@@ -1248,7 +1247,7 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
     CopyMemory VarPtr(filenameArray(0)), StrPtr(srcFilename), UBound(filenameArray) + 1
     
     'Start searching the node array for matches
-    Dim retBytes() As Byte, retString As String
+    Dim retBytes() As Byte
     Dim i As Long, nodeIndex As Long, nodeFound As Boolean
     nodeIndex = -1
     nodeFound = False

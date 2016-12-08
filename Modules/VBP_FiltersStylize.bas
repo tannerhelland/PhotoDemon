@@ -86,7 +86,6 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Dim srcX As Double, srcY As Double, srcXInner As Double, srcYInner As Double
     Dim dstX As Double, dstY As Double
     Dim clampX As Long, clampY As Long
-    Dim r As Long, g As Long, b As Long, a As Long
     Dim target As Long, newTarget As Long, fTarget As Double
     Dim dx As Double, dy As Double
     Dim tmpRadius As Double, f2 As Double, f3 As Double
@@ -209,7 +208,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'With a circle radius calculated for this intensity value, apply some basic antialiasing if the pixel
             ' lies along the circle edge.
-            f2 = 1 - basicAA(tmpRadius - 1, tmpRadius, densityLookup(target))
+            f2 = 1 - BasicAA(tmpRadius - 1, tmpRadius, densityLookup(target))
             
             'If this dot's calculated radius density is greater than a grid block's half-width, this "dot" extends outside
             ' its underlying grid block.  This means it overlaps a neighboring grid, which may have a *different* maximum
@@ -251,7 +250,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                     dx = x - dstX
                     dy = y - dstY
                     tmpRadius = Sqr(dx * dx + dy * dy)
-                    f3 = 1 - basicAA(tmpRadius, tmpRadius + 1, densityLookup(newTarget))
+                    f3 = 1 - BasicAA(tmpRadius, tmpRadius + 1, densityLookup(newTarget))
                     
                     'Store the *minimum* calculated value (e.g. the darkest color in this area of overlap)
                     If f3 < f2 Then
@@ -293,14 +292,14 @@ End Function
 
 'This function - courtesy of Jerry Huxtable and jhlabs.com - provides nice, cheap antialiasing along a 1px border
 ' between two double-type values.
-Private Function basicAA(ByRef a As Double, ByRef b As Double, ByRef x As Single) As Double
+Private Function BasicAA(ByRef a As Double, ByRef b As Double, ByRef x As Single) As Double
 
     If (x < a) Then
-        basicAA = 0
+        BasicAA = 0
     ElseIf (x >= b) Then
-        basicAA = 1
+        BasicAA = 1
     Else
-        basicAA = (x - a) / (b - a)
+        BasicAA = (x - a) / (b - a)
         
         'In his original code, Jerry used a more complicated AA approach, but it seems overkill for a function like this
         ' (especially where the quality trade-off is so minimal):

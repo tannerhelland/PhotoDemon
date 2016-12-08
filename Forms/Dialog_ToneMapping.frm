@@ -375,17 +375,14 @@ Private mini_FIHandle As Long
 'Param string assembler
 Private cParams As pdParamString
 
-'Current tone-mapping mode (set by clicking an option button)
-Private m_curToneMapMode As Long
-
 'The user's dialog answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
 
 'Tone-mapping settings are returned via this property
-Public Property Get toneMapSettings() As String
-    toneMapSettings = getToneMapParamString()
+Public Property Get ToneMapSettings() As String
+    ToneMapSettings = GetToneMapParamString()
 End Property
 
 'If the user wants us to auto-set these parameters in the future, without raising the dialog, this property will be
@@ -453,7 +450,7 @@ Private Sub UpdatePreview()
     
     'Retrieve a tone-mapped image, using the master tone-map function
     If mini_FIHandle <> 0 Then
-        tmp_FIHandle = Plugin_FreeImage.ApplyToneMapping(mini_FIHandle, getToneMapParamString())
+        tmp_FIHandle = Plugin_FreeImage.ApplyToneMapping(mini_FIHandle, GetToneMapParamString())
     End If
     
     'If successful, create a pdDIB copy, render it to the screen, then kill our temporary FreeImage handle
@@ -565,7 +562,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Assemble the current settings into a parameter string
-Private Function getToneMapParamString() As String
+Private Function GetToneMapParamString() As String
     
     'The param string's functions are highly variable, depending on the selected values
     Dim vParams() As Variant
@@ -608,7 +605,7 @@ Private Function getToneMapParamString() As String
         
     End Select
     
-    getToneMapParamString = BuildParams(vParams(0), vParams(1), vParams(2), vParams(3), vParams(4))
+    GetToneMapParamString = BuildParams(vParams(0), vParams(1), vParams(2), vParams(3), vParams(4))
     
 End Function
 
@@ -639,9 +636,4 @@ End Sub
 Private Sub sltWhitepoint_Change()
     UpdatePreview
 End Sub
-
-
-
-
-
 

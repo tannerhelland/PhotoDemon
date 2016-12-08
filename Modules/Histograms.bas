@@ -150,7 +150,7 @@ Public Sub GenerateHistogramImages(ByRef histogramData() As Double, ByRef channe
     ReDim dstDIBs(0 To 3) As pdDIB
     
     Dim tmpPath As pd2DPath, histogramShape() As POINTFLOAT
-    Dim tmpPen As Long, tmpBrush As Long, hColor As Long
+    Dim hColor As Long
     Dim i As Long, j As Long
     Dim yMax As Double
     

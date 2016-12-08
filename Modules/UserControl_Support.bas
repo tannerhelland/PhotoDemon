@@ -739,7 +739,6 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
     mouseScreenPos.y = mouseY
     ClientToScreen OwnerHwnd, mouseScreenPos
     
-    Dim ttDisplaySide As TT_SIDE
     Dim ttDistance(0 To 3) As Single
     ttDistance(TTS_Right) = srcControlRect.Right - mouseScreenPos.x
     ttDistance(TTS_Left) = mouseScreenPos.x - srcControlRect.Left

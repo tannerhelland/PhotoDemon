@@ -219,7 +219,6 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'A number of local variables are used to help optimize the flood function
-    Dim tmpPoint As POINTAPI
     Dim isWithinTolerance As Boolean
     Dim modifiedTolerance As Double
     
@@ -227,7 +226,7 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     Dim r As Long, g As Long, b As Long, a As Long, l As Long
     Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
     
-    Dim referenceValue As Double, thisValue As Double
+    Dim thisValue As Double
     
     quickX = m_InitPoint.x * xOffset
     y = m_InitPoint.y
@@ -384,8 +383,7 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     'Populate our reference comparison values
     Dim r As Long, g As Long, b As Long, a As Long, l As Long
     Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
-    
-    Dim referenceValue As Double, thisValue As Double
+    Dim thisValue As Double
     
     quickX = m_InitPoint.x * xOffset
     y = m_InitPoint.y

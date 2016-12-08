@@ -266,7 +266,7 @@ Private Function CalculateOptimalThreshold() As Long
     'Histogram tables
     Dim lLookup(0 To 255)
     Dim pLuminance As Long
-    Dim NumOfPixels As Long
+    Dim numOfPixels As Long
     
     'Loop through each pixel in the image, tallying values as we go
     For x = initX To finalX
@@ -284,7 +284,7 @@ Private Function CalculateOptimalThreshold() As Long
         lLookup(pLuminance) = lLookup(pLuminance) + 1
         
         'Increment the pixel count
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
         
     Next y
     Next x
@@ -296,7 +296,7 @@ Private Function CalculateOptimalThreshold() As Long
     Set workingDIB = Nothing
             
     'Divide the number of pixels by two
-    NumOfPixels = NumOfPixels \ 2
+    numOfPixels = numOfPixels \ 2
                        
     Dim pixelCount As Long
     pixelCount = 0
@@ -306,7 +306,7 @@ Private Function CalculateOptimalThreshold() As Long
     Do
         pixelCount = pixelCount + lLookup(x)
         x = x + 1
-    Loop While pixelCount < NumOfPixels
+    Loop While pixelCount < numOfPixels
     
     'Make sure our suggestion doesn't exceed the limits allowed by the tool
     If x > 254 Then x = 220

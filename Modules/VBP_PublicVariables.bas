@@ -135,10 +135,6 @@ Public g_ProgramShuttingDown As Boolean
 'The user is attempting to close all images (necessary for handling the "repeat for all images" check box)
 Public g_ClosingAllImages As Boolean
 
-'When an image has its colors counted, the image's ID is stored here.  Other functions can use this to see if the
-' current color count is relevant for a given image (e.g. if the image being worked on has just had its colors counted).
-Public g_LastImageScanned As Long
-
 'If this is the first time the user has run PhotoDemon (as determined by the lack of a preferences XML file), this
 ' variable will be set to TRUE early in the load process.  Other routines can then modify their behavior accordingly.
 Public g_IsFirstRun As Boolean

@@ -351,7 +351,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
+        Dim qvDepth As Long
         qvDepth = srcDIB.GetDIBColorDepth \ 8
         
         'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
@@ -518,13 +518,11 @@ Public Function MakeColorTransparent_Ex(ByRef srcDIB As pdDIB, ByRef dstTranspar
             
             ReDim dstTransparencyTable(0 To finalX, 0 To finalY) As Byte
             
-            Dim chkR As Long, chkG As Long, chkB As Long, chkAlpha As Byte
+            Dim chkR As Long, chkG As Long, chkB As Long
             Dim targetR As Long, targetG As Long, targetB As Long
             targetR = Colors.ExtractRed(srcColor)
             targetG = Colors.ExtractGreen(srcColor)
             targetB = Colors.ExtractBlue(srcColor)
-            
-            Dim tmpAlpha As Double
             
             'This function require unpremultiplied alpha
             Dim needToResetPremultiplication As Boolean: needToResetPremultiplication = False

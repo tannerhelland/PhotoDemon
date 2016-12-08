@@ -80,7 +80,7 @@ Public Function IsItTimeForAnUpdate() As Boolean
     ' updates are respected, if the new preference doesn't exist yet, we'll use the old preference value instead.
     Dim updateFrequency As PD_UPDATE_FREQUENCY
     updateFrequency = PDUF_EACH_SESSION
-    If g_UserPreferences.doesValueExist("Updates", "Check For Updates") Then
+    If g_UserPreferences.DoesValueExist("Updates", "Check For Updates") Then
         
         If Not g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True) Then
             
@@ -183,15 +183,15 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
     Dim langVersion As String, langID As String, langRevision As Long
     
     'Validate the XML
-    If xmlEngine.loadXMLFromString(srcXML) Then
+    If xmlEngine.LoadXMLFromString(srcXML) Then
     
         'Check for a few necessary tags, just to make sure this is actually a PhotoDemon language file
-        If xmlEngine.isPDDataType("Language versions") Then
+        If xmlEngine.IsPDDataType("Language versions") Then
         
             'We're now going to enumerate all language tags in the file.  If one needs to be updated, a couple extra
             ' steps need to be taken.
             Dim langList() As String
-            If xmlEngine.findAllAttributeValues(langList, "language", "updateID") Then
+            If xmlEngine.FindAllAttributeValues(langList, "language", "updateID") Then
                 
                 'langList() now contains a list of all the unique language listings in the update file.
                 ' We want to search this list for entries with an identical major/minor version to this PD build.
@@ -210,12 +210,12 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
                 
                     'Retrieve the major/minor version of this language file.  (String format is fine, as we're just
                     ' checking equality.)
-                    langVersion = xmlEngine.getUniqueTag_String("version", , , "language", "updateID", langList(i))
+                    langVersion = xmlEngine.GetUniqueTag_String("version", , , "language", "updateID", langList(i))
                     langVersion = RetrieveVersionMajorMinorAsString(langVersion)
                     
                     'Retrieve the language's revision as well.  This is explicitly retrieved as a LONG, because we need to perform
                     ' a >= check between it and the current language file revision.
-                    langRevision = xmlEngine.getUniqueTag_String("revision", , , "language", "updateID", langList(i))
+                    langRevision = xmlEngine.GetUniqueTag_String("revision", , , "language", "updateID", langList(i))
                     
                     'If the version matches this .exe version, this language file is a candidate for updating.
                     If StrComp(currentPDVersion, langVersion, vbBinaryCompare) = 0 Then
@@ -223,10 +223,10 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
                         'Next, we need to compare the versions of the update language file and the installed language file.
                         
                         'Retrieve the language ID, which is a unique identifier.
-                        langID = xmlEngine.getUniqueTag_String("id", , , "language", "updateID", langList(i))
+                        langID = xmlEngine.GetUniqueTag_String("id", , , "language", "updateID", langList(i))
                         
                         'Use a helper function to retrieve the language header for the currently installed copy of this language.
-                        If g_Language.getPDLanguageFileObject(tmpLanguage, langID) Then
+                        If g_Language.GetPDLanguageFileObject(tmpLanguage, langID) Then
                         
                             'A matching language file was found.  Compare version numbers.
                             If StrComp(langVersion, RetrieveVersionMajorMinorAsString(tmpLanguage.langVersion), vbBinaryCompare) = 0 Then
@@ -285,11 +285,11 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
                     
                         'Retrieve the matching checksum for this language; we'll be passing this to the downloader, so it can verify
                         ' the downloaded file prior to us unpacking it.
-                        reportedChecksum = CLng(xmlEngine.getUniqueTag_String("checksum", "0", , "language", "updateID", langList(i)))
+                        reportedChecksum = CLng(xmlEngine.GetUniqueTag_String("checksum", "0", , "language", "updateID", langList(i)))
                         
                         'Retrieve the filename and location folder for this language; we need these to construct a URL
-                        langFilename = xmlEngine.getUniqueTag_String("filename", , , "language", "updateID", langList(i))
-                        langLocation = xmlEngine.getUniqueTag_String("location", , , "language", "updateID", langList(i))
+                        langFilename = xmlEngine.GetUniqueTag_String("filename", , , "language", "updateID", langList(i))
+                        langLocation = xmlEngine.GetUniqueTag_String("location", , , "language", "updateID", langList(i))
                         
                         'Construct a matching URL
                         langURL = "http://photodemon.org/downloads/languages/"
@@ -304,7 +304,7 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
                         ' header constant; this lets us easily sort the incoming downloads as they arrive.  We also use the reported
                         ' checksum as the file's unique ID value.  Post-download and extraction, we use this value to ensure that
                         ' the extracted data matches what we originally uploaded.
-                        If FormMain.requestAsynchronousDownload(reportedChecksum, langURL, PD_LANG_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.getUpdatePath & langFilename & ".tmp") Then
+                        If FormMain.RequestAsynchronousDownload(reportedChecksum, langURL, PD_LANG_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.GetUpdatePath & langFilename & ".tmp") Then
                             Debug.Print "Download successfully initiated for language update at " & langURL
                         Else
                             Debug.Print "WARNING! FormMain.requestAsynchronousDownload refused to initiate download of " & langID & " language file update."
@@ -340,14 +340,14 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
     'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
     Dim cPackage As pdPackager
     Set cPackage = New pdPackager
-    cPackage.init_ZLib "", True, g_ZLibEnabled
+    cPackage.Init_ZLib "", True, g_ZLibEnabled
     
-    If cPackage.readPackageFromFile(savedToThisFile) Then
+    If cPackage.ReadPackageFromFile(savedToThisFile) Then
     
         'The package appears to be intact.  Attempt to retrieve the embedded language file.
         Dim rawNewFile() As Byte, newFilenameArray() As Byte, newFilename As String, newChecksum As Long
         Dim rawOldFile() As Byte
-        If cPackage.getNodeDataByIndex(0, False, rawNewFile) Then
+        If cPackage.GetNodeDataByIndex(0, False, rawNewFile) Then
         
             'If we made it here, it means the internal pdPackage checksum passed successfully, meaning the post-compression file checksum
             ' matches the original checksum calculated at creation time.  Because we are very cautious, we now apply a second checksum verification,
@@ -355,12 +355,12 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
             ' the download key.)
             newChecksum = CLng(entryKey)
             
-            If newChecksum = cPackage.checkSumArbitraryArray(rawNewFile) Then
+            If newChecksum = cPackage.ChecksumArbitraryArray(rawNewFile) Then
                 
                 'Checksums match!  We now want to overwrite the old language file with the new one.
                 
                 'Retrieve the filename of the updated language file
-                If cPackage.getNodeDataByIndex(0, True, newFilenameArray) Then
+                If cPackage.GetNodeDataByIndex(0, True, newFilenameArray) Then
                     
                     newFilename = Space$((UBound(newFilenameArray) + 1) \ 2)
                     CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
@@ -368,9 +368,9 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
                     'See if that file already exists.  Note that a modified path is required for the MASTER language file, which sits
                     ' in a dedicated subfolder.
                     If StrComp(UCase(newFilename), "MASTER.XML", vbBinaryCompare) = 0 Then
-                        newFilename = g_UserPreferences.getLanguagePath() & "MASTER\" & newFilename
+                        newFilename = g_UserPreferences.GetLanguagePath() & "MASTER\" & newFilename
                     Else
-                        newFilename = g_UserPreferences.getLanguagePath() & newFilename
+                        newFilename = g_UserPreferences.GetLanguagePath() & newFilename
                     End If
                     
                     If cFile.FileExist(newFilename) Then
@@ -385,7 +385,7 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
                     If cFile.SaveByteArrayToFile(rawNewFile, newFilename) Then
                     
                         'Perform a final failsafe checksum verification of the extracted file
-                        If (newChecksum = cPackage.checkSumArbitraryFile(newFilename)) Then
+                        If (newChecksum = cPackage.ChecksumArbitraryFile(newFilename)) Then
                             PatchLanguageFile = True
                         Else
                             'Failsafe checksum verification didn't pass.  Restore the old file.
@@ -402,7 +402,7 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
                 End If
                 
             Else
-                Debug.Print "WARNING! Secondary checksum failsafe failed (" & newChecksum & " != " & cPackage.checkSumArbitraryArray(rawNewFile) & ").  Language update abandoned."
+                Debug.Print "WARNING! Secondary checksum failsafe failed (" & newChecksum & " != " & cPackage.ChecksumArbitraryArray(rawNewFile) & ").  Language update abandoned."
                 PatchLanguageFile = False
             End If
         
@@ -440,10 +440,10 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
     Set xmlEngine = New pdXML
     
     'Validate the XML
-    If xmlEngine.loadXMLFromString(srcXML) Then
+    If xmlEngine.LoadXMLFromString(srcXML) Then
     
         'Check for a few necessary tags, just to make sure this is actually a valid update file
-        If xmlEngine.isPDDataType("Program version") Then
+        If xmlEngine.IsPDDataType("Program version") Then
             
             'Next, figure out which update track we need to check.  The user can change this at any time, so it may not necessarily correlate to
             ' the current build.  (e.g., if the user is on the stable track, they may switch to the nightly track, which necessitates a different
@@ -494,18 +494,18 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
             
                 'Find the bounding character markers for the relevant XML region (e.g. the one that corresponds to this update track)
                 Dim tagAreaStart As Long, tagAreaEnd As Long
-                If xmlEngine.getTagCharacterRange(tagAreaStart, tagAreaEnd, "update", "track", updateTagIDs(i)) Then
+                If xmlEngine.GetTagCharacterRange(tagAreaStart, tagAreaEnd, "update", "track", updateTagIDs(i)) Then
                     
                     'Find the position of the PhotoDemon.exe version
                     Dim pdTagPosition As Long
-                    pdTagPosition = xmlEngine.getLocationOfTagPlusAttribute("version", "component", "PhotoDemon.exe", tagAreaStart)
+                    pdTagPosition = xmlEngine.GetLocationOfTagPlusAttribute("version", "component", "PhotoDemon.exe", tagAreaStart)
                     
                     'Make sure the tag position is within the valid range.  (This should always be TRUE, but it doesn't hurt to check.)
                     If (pdTagPosition >= tagAreaStart) And (pdTagPosition <= tagAreaEnd) Then
                     
                         'This is the version tag we want!  Retrieve its value.
                         Dim newPDVersionString As String
-                        newPDVersionString = xmlEngine.getTagValueAtPreciseLocation(pdTagPosition)
+                        newPDVersionString = xmlEngine.GetTagValueAtPreciseLocation(pdTagPosition)
                         
                         Debug.Print "Update track " & i & " reports version " & newPDVersionString & " (our version: " & GetPhotoDemonVersionCanonical() & ")"
                         
@@ -520,7 +520,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                             m_TrackStartPosition = tagAreaStart
                             m_TrackEndPosition = tagAreaEnd
                             m_UpdateVersion = newPDVersionString
-                            m_UpdateReleaseAnnouncementURL = xmlEngine.getUniqueTag_String("raurl-" & updateTagIDs(i))
+                            m_UpdateReleaseAnnouncementURL = xmlEngine.GetUniqueTag_String("raurl-" & updateTagIDs(i))
                             
                         End If
                         
@@ -540,13 +540,13 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
             
                 'Make a backup copy of the update XML string.  We'll need to refer to it later, after the patch files have downloaded,
                 ' as it contains failsafe checksumming information.
-                m_PDPatchXML = xmlEngine.returnCurrentXMLString(True)
+                m_PDPatchXML = xmlEngine.ReturnCurrentXMLString(True)
                 
                 'We also want to cache the current update track at module-level, so we can display customized update notifications to the user
                 m_UpdateTrack = trackWithValidUpdate
                 
                 'Retrieve the manually listed beta number, just in case we need it later
-                m_BetaNumber = xmlEngine.getUniqueTag_String("releasenumber-beta", "1")
+                m_BetaNumber = xmlEngine.GetUniqueTag_String("releasenumber-beta", "1")
                 
                 'Construct a URL that matches the selected update track
                 Dim updateURL As String
@@ -571,7 +571,7 @@ Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
                 ' header constant; this lets us easily sort the incoming downloads as they arrive.  We also use the reported
                 ' checksum as the file's unique ID value.  Post-download and extraction, we use this value to ensure that
                 ' the extracted data matches what we originally uploaded.
-                If FormMain.requestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.getUpdatePath & "PDPatch.tmp") Then
+                If FormMain.RequestAsynchronousDownload("PD_UPDATE_PATCH", updateURL, PD_PATCH_IDENTIFIER, vbAsyncReadForceUpdate, True, g_UserPreferences.GetUpdatePath & "PDPatch.tmp") Then
                     
                     Debug.Print "Download successfully initiated for program patch file at " & updateURL
                     
@@ -607,14 +607,14 @@ Private Function GetFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePat
 
     'Find the position of this file's checksum
     Dim pdTagPosition As Long
-    pdTagPosition = xmlEngine.getLocationOfTagPlusAttribute("checksum", "component", relativePath, m_TrackStartPosition)
+    pdTagPosition = xmlEngine.GetLocationOfTagPlusAttribute("checksum", "component", relativePath, m_TrackStartPosition)
     
     'Make sure the tag position is within the valid range.  (This should always be TRUE, but it doesn't hurt to check.)
     If (pdTagPosition >= m_TrackStartPosition) And (pdTagPosition <= m_TrackEndPosition) Then
     
         'This is the checksum tag we want!  Retrieve its value.
         Dim thisChecksum As String
-        thisChecksum = xmlEngine.getTagValueAtPreciseLocation(pdTagPosition)
+        thisChecksum = xmlEngine.GetTagValueAtPreciseLocation(pdTagPosition)
         
         'Convert the checksum to a long and return it
         GetFailsafeChecksum = thisChecksum
@@ -643,19 +643,19 @@ Public Function PatchProgramFiles() As Boolean
     'Write the update XML file out to file, so the separate patching app can access it
     Dim tmpXML As pdXML
     Set tmpXML = New pdXML
-    tmpXML.loadXMLFromString m_PDPatchXML
-    tmpXML.writeXMLToFile g_UserPreferences.getUpdatePath & "patch.xml", True
+    tmpXML.LoadXMLFromString m_PDPatchXML
+    tmpXML.WriteXMLToFile g_UserPreferences.GetUpdatePath & "patch.xml", True
     
     'The patching .exe is embedded inside the update package.  Extract it now.
     Dim cPackage As pdPackager
     Set cPackage = New pdPackager
-    cPackage.init_ZLib "", True, g_ZLibEnabled
+    cPackage.Init_ZLib "", True, g_ZLibEnabled
     
     Dim patchFileName As String
     patchFileName = "PD_Update_Patcher.exe"
     
-    If cPackage.readPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
-        cPackage.autoExtractSingleFile g_UserPreferences.getProgramPath, patchFileName, , 99
+    If cPackage.ReadPackageFromFile(m_UpdateFilePath, PD_PATCH_IDENTIFIER) Then
+        cPackage.AutoExtractSingleFile g_UserPreferences.GetProgramPath, patchFileName, , 99
     Else
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  Patch program wasn't found inside the update package.  Patching will not proceed."
@@ -670,7 +670,7 @@ Public Function PatchProgramFiles() As Boolean
     patchParams = patchParams & " /start " & m_TrackStartPosition & " /end " & m_TrackEndPosition
     
     Dim targetPath As String
-    targetPath = g_UserPreferences.getProgramPath & patchFileName
+    targetPath = g_UserPreferences.GetProgramPath & patchFileName
     
     Dim shellReturn As Long
     shellReturn = ShellExecute(0, 0, StrPtr(targetPath), StrPtr(patchParams), 0, 0)
@@ -724,12 +724,12 @@ Public Sub CleanPreviousUpdateFiles()
     Dim tmpFile As String
         
     'First, we hard-code a few XML files that may exist due to old PD update methods
-    tmpFileList.AddString g_UserPreferences.getUpdatePath & "patch.xml"
-    tmpFileList.AddString g_UserPreferences.getUpdatePath & "pdupdate.xml"
-    tmpFileList.AddString g_UserPreferences.getUpdatePath & "updates.xml"
+    tmpFileList.AddString g_UserPreferences.GetUpdatePath & "patch.xml"
+    tmpFileList.AddString g_UserPreferences.GetUpdatePath & "pdupdate.xml"
+    tmpFileList.AddString g_UserPreferences.GetUpdatePath & "updates.xml"
     
     'Next, we auto-add any .tmp files in the update folder, which should cover all other potential use-cases
-    cFile.RetrieveAllFiles g_UserPreferences.getUpdatePath, tmpFileList, False, False, "TMP|tmp"
+    cFile.RetrieveAllFiles g_UserPreferences.GetUpdatePath, tmpFileList, False, False, "TMP|tmp"
     
     'If temp files exist, remove them now.
     Do While tmpFileList.PopString(tmpFile)
@@ -744,7 +744,7 @@ Public Sub CleanPreviousUpdateFiles()
         
     'Do the same thing for temp files in the base PD folder
     Set tmpFileList = Nothing
-    If cFile.RetrieveAllFiles(g_UserPreferences.getProgramPath, tmpFileList, False, False, "TMP|tmp") Then
+    If cFile.RetrieveAllFiles(g_UserPreferences.GetProgramPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
             
@@ -775,7 +775,7 @@ Public Sub CleanPreviousUpdateFiles()
     End If
     
     'Finally, delete the patch exe itself, which will have closed by now
-    cFile.KillFile g_UserPreferences.getProgramPath & "PD_Update_Patcher.exe"
+    cFile.KillFile g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
     
 End Sub
 
@@ -785,7 +785,7 @@ End Sub
 Public Function WasProgramStartedViaRestart() As Boolean
     
     Dim restartFile As String
-    restartFile = g_UserPreferences.getProgramPath & "PD_Update_Patcher.exe"
+    restartFile = g_UserPreferences.GetProgramPath & "PD_Update_Patcher.exe"
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -1059,7 +1059,7 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
     If InStr(1, newVersion, ",", vbBinaryCompare) Then oldVersion = Replace$(newVersion, ",", ".")
     
     'If the string representations are identical, we can exit now
-    If StrComp(oldVersion, newVersion, vbBinaryCompare) = 0 Then
+    If (StrComp(oldVersion, newVersion, vbBinaryCompare) = 0) Then
         IsNewVersionHigher = False
         
     'If the strings are not equal, a more detailed comparison is required.
@@ -1073,7 +1073,7 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
         'Fill in any missing version entries
         Dim i As Long, oldUBound As Long
         
-        If UBound(oldV) < 3 Then
+        If (UBound(oldV) < 3) Then
             
             oldUBound = UBound(oldV)
             ReDim Preserve oldV(0 To 3) As String
@@ -1084,7 +1084,7 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
             
         End If
         
-        If UBound(newV) < 3 Then
+        If (UBound(newV) < 3) Then
             
             oldUBound = UBound(newV)
             ReDim Preserve newV(0 To 3) As String
@@ -1102,7 +1102,7 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
         'For each version, we will be comparing entries in turn, starting with the major version and working
         ' our way down.  We only check subsequent values if all preceding ones are equal.  (This ensures that
         ' e.g. 6.6.0 does not update to 6.5.1.)
-        Dim majorIsEqual As Boolean, minorIsEqual As Boolean, revIsEqual As Boolean, buildIsEqual As Boolean
+        Dim majorIsEqual As Boolean, minorIsEqual As Boolean, revIsEqual As Boolean
                 
         For i = 0 To 3
             
@@ -1111,18 +1111,12 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
                 'Major version updates always trigger an update
                 Case 0
                 
-                    If CLng(newV(i)) > CLng(oldV(i)) Then
+                    If (CLng(newV(i)) > CLng(oldV(i))) Then
                         newIsNewer = True
                         Exit For
                         
                     Else
-                        
-                        If CLng(newV(i)) = CLng(oldV(i)) Then
-                            majorIsEqual = True
-                        Else
-                            majorIsEqual = False
-                        End If
-                    
+                        majorIsEqual = CBool(CLng(newV(i)) = CLng(oldV(i)))
                     End If
                 
                 'Minor version updates trigger an update only if the major version matches
@@ -1130,17 +1124,11 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
                 
                     If majorIsEqual Then
                         
-                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                        If (CLng(newV(i)) > CLng(oldV(i))) Then
                             newIsNewer = True
                             Exit For
                         Else
-                        
-                            If CLng(newV(i)) = CLng(oldV(i)) Then
-                                minorIsEqual = True
-                            Else
-                                minorIsEqual = False
-                            End If
-                        
+                            minorIsEqual = CBool(CLng(newV(i)) = CLng(oldV(i)))
                         End If
                         
                     End If
@@ -1150,17 +1138,11 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
                 
                     If minorIsEqual Then
                         
-                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                        If (CLng(newV(i)) > CLng(oldV(i))) Then
                             newIsNewer = True
                             Exit For
                         Else
-                        
-                            If CLng(newV(i)) = CLng(oldV(i)) Then
-                                revIsEqual = True
-                            Else
-                                revIsEqual = False
-                            End If
-                        
+                            revIsEqual = CBool(CLng(newV(i)) = CLng(oldV(i)))
                         End If
                         
                     End If
@@ -1168,15 +1150,8 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
                 Case Else
                 
                     If revIsEqual Then
-                        
-                        If CLng(newV(i)) > CLng(oldV(i)) Then
-                            newIsNewer = True
-                            Exit For
-                        Else
-                            newIsNewer = False
-                            Exit For
-                        End If
-                        
+                        newIsNewer = CBool(CLng(newV(i)) > CLng(oldV(i)))
+                        Exit For
                     End If
                 
             End Select
@@ -1188,5 +1163,4 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
     End If
     
 End Function
-
 

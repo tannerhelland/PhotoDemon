@@ -259,21 +259,21 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
                     gTotal = 0#
                     bTotal = 0#
                     
-                    Dim NumOfPixels As Long
-                    NumOfPixels = 0
+                    Dim numOfPixels As Long
+                    numOfPixels = 0
                     
                     For y = initY To finalY
                     For x = xStart To xStop Step pxSize
                         bTotal = bTotal + srcImageData(x, y)
                         gTotal = gTotal + srcImageData(x + 1, y)
                         rTotal = rTotal + srcImageData(x + 2, y)
-                        NumOfPixels = NumOfPixels + 1
+                        numOfPixels = numOfPixels + 1
                     Next x
                     Next y
                     
-                    rTotal = rTotal \ NumOfPixels
-                    gTotal = gTotal \ NumOfPixels
-                    bTotal = bTotal \ NumOfPixels
+                    rTotal = rTotal \ numOfPixels
+                    gTotal = gTotal \ numOfPixels
+                    bTotal = bTotal \ numOfPixels
                     
                     imgMean = (rTotal + gTotal + bTotal) \ 3
                     

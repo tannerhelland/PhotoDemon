@@ -555,12 +555,12 @@ Public Property Get ResultsCount() As Long
     End If
 End Property
 ' return a specific selection, 1-based, 1-n
-Public Property Get ResultsItem(ItemIndex As Long) As IUnknown
+Public Property Get ResultsItem(itemIndex As Long) As IUnknown
     Dim lCount As Long, pIShellItem As Long
     lCount = Me.ResultsCount
-    If Not (ItemIndex < 1& Or ItemIndex > lCount) Then
+    If Not (itemIndex < 1& Or itemIndex > lCount) Then
         If lCount > 1& Then
-            pvCallFunction_COM ObjPtr(m_Result), ifShellItemArray_GetItemAt, ItemIndex - 1&, VarPtr(pIShellItem)
+            pvCallFunction_COM ObjPtr(m_Result), ifShellItemArray_GetItemAt, itemIndex - 1&, VarPtr(pIShellItem)
             If pIShellItem Then Set ResultsItem = pvPointerToIUnknown(pIShellItem, True)
         Else
             Set ResultsItem = m_Result
@@ -958,18 +958,18 @@ Public Function Customize_AppendGroupItem(ByVal GroupKey As String, ByVal Item A
 ExitRoutine:
 End Function
 
-Public Function Customize_RemoveGroupItem(ByVal GroupKey As String, ByVal ItemIndex As Long) As Boolean
+Public Function Customize_RemoveGroupItem(ByVal GroupKey As String, ByVal itemIndex As Long) As Boolean
 ' Run-time removing of combobox items & submenu items
     If m_FDCustomize Is Nothing Then Exit Function
-    If ItemIndex < 0& Then Exit Function
+    If itemIndex < 0& Then Exit Function
     
     Dim sPath As String, pIndex As Long
     On Error GoTo ExitRoutine            ' should bad key be passed
     If VarType(m_KeyToID(GroupKey)) = vbString Then
         sPath = m_KeyToID(GroupKey)
-        If ItemIndex < Len(sPath) \ 10 Then
-            pIndex = Val(Mid$(sPath, (ItemIndex + 1&) * 10, 10))
-            sPath = Left$(sPath, (ItemIndex + 1&) * 10& - 1&) & Mid$(sPath, (ItemIndex + 2&) * 10&)
+        If itemIndex < Len(sPath) \ 10 Then
+            pIndex = Val(Mid$(sPath, (itemIndex + 1&) * 10, 10))
+            sPath = Left$(sPath, (itemIndex + 1&) * 10& - 1&) & Mid$(sPath, (itemIndex + 2&) * 10&)
             m_KeyToID.Remove GroupKey
             m_KeyToID.Add sPath, GroupKey
             pvCallFunction_COM ObjPtr(m_FDCustomize), ifFileDlgCustomize_RemoveControlItem, CLng(Val(Left$(sPath, 10))) And &HFFFFFF, pIndex
@@ -979,19 +979,19 @@ Public Function Customize_RemoveGroupItem(ByVal GroupKey As String, ByVal ItemIn
 ExitRoutine:
 End Function
 
-Public Function Customize_CreateNonGroupItem(ByVal ItemType As CustomControlTypeEnum, ByVal ItemKey As String, _
-                    Optional ByVal ItemTextOrCaption As String, Optional ByVal isChecked As Boolean) As Boolean
+Public Function Customize_CreateNonGroupItem(ByVal ItemType As CustomControlTypeEnum, ByVal itemKey As String, _
+                    Optional ByVal ItemTextOrCaption As String, Optional ByVal IsChecked As Boolean) As Boolean
     ' ItemKey is required and must not have been used for any other controls
     ' ItemType will be cmdbutton,textbox,label,checkbox,separator
     ' ItemTextOrCaption can be blank. Ignored for separators. It is the Caption or Text property value
     ' Labels can have mnemonics
     If Not m_FDlg Is Nothing Then Exit Function     ' design-time only
     If ItemType < ctlTypeOf_CheckBox Or ItemType > ctlTypeOf_Separator Then Exit Function
-    If pvValidateKey(ItemKey, ItemType, 0) = False Then Exit Function
+    If pvValidateKey(itemKey, ItemType, 0) = False Then Exit Function
     On Error GoTo ExitRoutine
     With m_CtrlSetup(m_IDtoKey.Count)
         .Text = ItemTextOrCaption
-        If ItemType = ctlTypeOf_CheckBox Then .State = Abs(isChecked)
+        If ItemType = ctlTypeOf_CheckBox Then .State = Abs(IsChecked)
     End With
     Customize_CreateNonGroupItem = True
 ExitRoutine:
@@ -1047,33 +1047,33 @@ Public Function CustomControl_SetControlCaption(ByVal Key As String, ByVal Capti
     End If
 End Function
 
-Public Function CustomControl_GetState(ByVal Key As String, Optional ByVal ItemIndex As Long = -1&) As CustomControlState
+Public Function CustomControl_GetState(ByVal Key As String, Optional ByVal itemIndex As Long = -1&) As CustomControlState
     If m_FDCustomize Is Nothing Then Exit Function
     Dim dwCtrlID As Long, lType As Long
-    dwCtrlID = pvIDfromKey(Key, ItemIndex, lType)
+    dwCtrlID = pvIDfromKey(Key, itemIndex, lType)
     If dwCtrlID <> 0& Then
-        If ItemIndex < 0& Then
+        If itemIndex < 0& Then
             pvCallFunction_COM ObjPtr(m_FDCustomize), ifFileDlgCustomize_GetControlState, dwCtrlID, VarPtr(CustomControl_GetState)
             ' call GetControlState
         Else
-            pvCallFunction_COM ObjPtr(m_FDCustomize), ifFileDlgCustomize_GetControlItemState, dwCtrlID, ItemIndex, VarPtr(CustomControl_GetState)
+            pvCallFunction_COM ObjPtr(m_FDCustomize), ifFileDlgCustomize_GetControlItemState, dwCtrlID, itemIndex, VarPtr(CustomControl_GetState)
             ' call GetControlItemState
         End If
     End If
 End Function
 Public Function CustomControl_SetState(ByVal Key As String, ByVal Enabled As Boolean, ByVal Visible As Boolean, _
-                                        Optional ByVal ItemIndex As Long = -1&) As Boolean
+                                        Optional ByVal itemIndex As Long = -1&) As Boolean
     ' Note: for setting radio buttons, function is returning E_NOTIMPL
     If m_FDCustomize Is Nothing Then Exit Function
     Dim dwCtrlID As Long, lType As Long
-    dwCtrlID = pvIDfromKey(Key, ItemIndex, lType)
+    dwCtrlID = pvIDfromKey(Key, itemIndex, lType)
     If dwCtrlID <> 0& Then
         lType = Abs(Enabled)
         If Visible Then lType = lType Or ctlState_Visible
-        If ItemIndex < 0& Then
+        If itemIndex < 0& Then
             CustomControl_SetState = (pvCallFunction_COM(ObjPtr(m_FDCustomize), ifFileDlgCustomize_SetControlState, dwCtrlID, lType) = 0&)
         Else
-            CustomControl_SetState = (pvCallFunction_COM(ObjPtr(m_FDCustomize), ifFileDlgCustomize_SetControlItemState, dwCtrlID, ItemIndex, lType) = 0&)
+            CustomControl_SetState = (pvCallFunction_COM(ObjPtr(m_FDCustomize), ifFileDlgCustomize_SetControlItemState, dwCtrlID, itemIndex, lType) = 0&)
         End If
     End If
 End Function
@@ -1105,15 +1105,15 @@ Public Function CustomControl_GetSelected(ByVal Key As String) As Long
         End If
     End If
 End Function
-Public Function CustomControl_SetSelected(ByVal Key As String, ByVal ItemIndex As Long, Optional ByVal ChkBoxSelected As Boolean) As Long
+Public Function CustomControl_SetSelected(ByVal Key As String, ByVal itemIndex As Long, Optional ByVal ChkBoxSelected As Boolean) As Long
     ' set checkbox, which combobox item, or radio button index is selected (not menus)
     ' custom menus selections must be trapped in the control events, not dialog events
     If m_FDCustomize Is Nothing Then Exit Function
     Dim dwCtrlID As Long, lType As Long
-    dwCtrlID = pvIDfromKey(Key, ItemIndex, lType)
+    dwCtrlID = pvIDfromKey(Key, itemIndex, lType)
     If Not dwCtrlID = 0& Then
         If lType = ctlTypeOf_RadioButtons Or lType = ctlTypeOf_ComboBoxes Then
-            pvCallFunction_COM ObjPtr(m_FDCustomize), ifFileDlgCustomize_SetSelectedControlItem, dwCtrlID, ItemIndex
+            pvCallFunction_COM ObjPtr(m_FDCustomize), ifFileDlgCustomize_SetSelectedControlItem, dwCtrlID, itemIndex
         ElseIf ctlTypeOf_CheckBox Then
             pvCallFunction_COM ObjPtr(m_FDCustomize), ifFileDlgCustomize_SetCheckButtonState, dwCtrlID, Abs(ChkBoxSelected)
         End If
@@ -1262,7 +1262,7 @@ Private Function pvCallFunction_COM(ByVal InterfacePointer As Long, ByVal VTable
     '// minimal sanity check for these 3 parameters:
     If VTableOffset < 0& Then Exit Function
 
-    Dim pIndex As Long, pCount As Long, bRelease As Boolean
+    Dim pIndex As Long, pCount As Long
     Dim vParamPtr() As Long, vParamType() As Integer
     Dim vRtn As Variant, vParams() As Variant
     Const CallConvention As Long = 4&                   ' STDCALL

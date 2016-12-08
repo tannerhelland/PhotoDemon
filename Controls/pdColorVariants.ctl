@@ -708,7 +708,7 @@ Private Sub RedrawBackBuffer()
         Drawing2D.QuickCreateSolidPen cPen, 1#, borderColor, 100#, P2_LJ_Miter
         
         'Draw each subregion in turn, filling it first, then tracing its borders.
-        Dim i As Long, regionBrush As Long
+        Dim i As Long
         For i = CV_Primary To CV_RedDown
             Drawing2D.QuickCreateSolidBrush cBrush, m_ColorDisplay(i)
             m_Painter.FillPath cSurface, cBrush, m_ColorRegions(i)

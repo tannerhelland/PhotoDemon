@@ -306,7 +306,6 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 'Layer rotation is different because it involves finding the angle between two lines; specifically, the angle between
                 ' a flat origin line and the current node-to-origin line of the rotation node.
                 Dim ptIntersect As POINTFLOAT, pt1 As POINTFLOAT, pt2 As POINTFLOAT
-                Dim ptIntersect_T As POINTFLOAT, pt1_T As POINTFLOAT, pt2_T As POINTFLOAT
                 
                 'The intersect point is the center of the image.  This point is the same for all rotation nodes.
                 ptIntersect.x = m_InitLayerCoords_Pure(0).x + (m_InitLayerCoords_Pure(3).x - m_InitLayerCoords_Pure(0).x) / 2
@@ -459,7 +458,7 @@ Public Sub MakeQuickFixesPermanent()
     Set tmpCompositor = New pdCompositor
     
     'Apply the quick-fix adjustments
-    tmpCompositor.applyNDFXToDIB pdImages(g_CurrentImage).GetActiveLayer, pdImages(g_CurrentImage).GetActiveDIB
+    tmpCompositor.ApplyNDFXToDIB pdImages(g_CurrentImage).GetActiveLayer, pdImages(g_CurrentImage).GetActiveDIB
     
     'Reset the quick-fix settings stored inside the pdLayer object
     Dim i As Long

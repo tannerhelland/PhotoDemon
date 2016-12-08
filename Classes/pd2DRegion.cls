@@ -35,7 +35,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This class is not yet capable of serializing itself to/from XML strings, but it may be possible in the future...
-Private cSerialize As pdParamXML
+'Private cSerialize As pdParamXML
 
 'The backend used to manage this region.  At present, this is immutable; once set, it cannot be migrated.
 Private m_RegionBackend As PD_2D_RENDERING_BACKEND

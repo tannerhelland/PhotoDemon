@@ -422,7 +422,7 @@ End Sub
 ' meant to be applied to other shapes!
 Private Function GenerateInitialWindow_Square() As Long
     
-    Dim x As Long, y As Long, quickX As Long
+    Dim x As Long, y As Long
     Dim r As Long, g As Long, b As Long, a As Long
     Dim xStart As Long, xFinal As Long
     xStart = m_InitX * m_PixelWidth
@@ -694,7 +694,7 @@ End Function
 Friend Function MoveYDown() As Long
     
     Dim xLeft As Long, xRight As Long, x As Long
-    Dim yTop As Long, yBottom As Long, y As Long
+    Dim yTop As Long, yBottom As Long
     Dim r As Long, g As Long, b As Long, a As Long
     
     'Move our target pixel coordinate down
@@ -867,7 +867,7 @@ End Function
 Friend Function MoveYUp() As Long
     
     Dim xLeft As Long, xRight As Long, x As Long
-    Dim yTop As Long, yBottom As Long, y As Long
+    Dim yTop As Long, yBottom As Long
     Dim r As Long, g As Long, b As Long, a As Long
     
     'Move our target pixel coordinate up

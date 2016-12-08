@@ -135,7 +135,7 @@ Public Function ShowBrowseForFolder(ByVal OwnerHwnd As Long, Optional ReleasePID
     '   SelectedPIDL(True), you take ownership of the PIDL and this class will not destroy it. However,
     '   you are not responsible for destroying it at some point.
     
-    Dim lLen As Long, hLib As Long
+    Dim lLen As Long
    
     Call pvInitStructure(OwnerHwnd)                 ' ensure structure is configured correctly
     If ReleasePIDL = False Then m_State = m_State Or 4& ' set flag whether to manage the returned PIDL

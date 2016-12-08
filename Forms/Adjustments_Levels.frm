@@ -338,7 +338,7 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     
     'Update the text boxes to match the values for the selected channel
 ignoreChannelRender:
-    updateTextBoxes
+    UpdateTextBoxes
     
     'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
     ' syncing the text box values with the arrow positions.)
@@ -351,7 +351,7 @@ Private Sub cmdAutoLevels_Click()
     
     'Retrieve the ideal level param string
     Dim pString As String
-    pString = getIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
+    pString = GetIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
     
     'Level value parsing is easily handled via PD's standard param string parser class
     Dim cParams As pdParamString
@@ -364,7 +364,7 @@ Private Sub cmdAutoLevels_Click()
     Next i
 
     'Update the text boxes to match the new values
-    updateTextBoxes
+    UpdateTextBoxes
     
     'Redraw the screen
     UpdatePreview
@@ -375,7 +375,7 @@ End Sub
 ' Note that PD's White Balance tool is effectively just an auto-levels function, with a variable "ignore percentage" that the
 ' user can set.  Similarly, the shadow/highlights tool allows for separate "ignore percentages" for shadows and highlights, but
 ' is otherwise effectively this same algorithm.
-Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
+Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
 
     'Create a local array and point it at the source DIB's pixel data
     Dim ImageData() As Byte
@@ -440,11 +440,11 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
+    Dim numOfPixels As Long
+    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     r = 0: g = 0: b = 0: l = 0
     
@@ -578,7 +578,7 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Erase ImageData
     
     'Return our assembled data in param-string compatible format
-    getIdealLevelParamString = BuildParams(RMin, 0.5, RMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
+    GetIdealLevelParamString = BuildParams(RMin, 0.5, RMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
 
 End Function
 
@@ -617,7 +617,7 @@ Private Sub cmdBar_RandomizeClick()
     Next i
     
     'Update the text boxes to match the new values
-    updateTextBoxes
+    UpdateTextBoxes
     
     'Redraw the screen
     UpdatePreview
@@ -645,7 +645,7 @@ Private Sub cmdBar_ReadCustomPresetData()
         Next i
     
         'Update the text boxes to match the new values
-        updateTextBoxes
+        UpdateTextBoxes
         
         'Redraw the screen
         UpdatePreview
@@ -684,7 +684,7 @@ Private Sub cmdBar_ResetClick()
     Next i
     
     'Update the text boxes to match the new values
-    updateTextBoxes
+    UpdateTextBoxes
     
     'Redraw the screen
     UpdatePreview
@@ -692,7 +692,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 'Update all text box values to match the stored values of the current channel
-Private Sub updateTextBoxes()
+Private Sub UpdateTextBoxes()
 
     cmdBar.MarkPreviewStatus False
     m_DisableMaxMinLimits = True
@@ -740,7 +740,7 @@ Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstan
 
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
     If (Button And pdLeftButton) <> 0 Then
-        m_ActiveArrow = isCursorOverArrow(x, True)
+        m_ActiveArrow = IsCursorOverArrow(x, True)
     End If
 
 End Sub
@@ -799,7 +799,7 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
     Else
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
-        If isCursorOverArrow(x, True) >= 0 Then
+        If IsCursorOverArrow(x, True) >= 0 Then
             m_MouseEventsIn.SetSystemCursor IDC_HAND
         Else
             m_MouseEventsIn.SetSystemCursor IDC_ARROW
@@ -817,7 +817,7 @@ Private Sub m_MouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConsta
 
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
     If (Button And pdLeftButton) <> 0 Then
-        m_ActiveArrow = isCursorOverArrow(x, False)
+        m_ActiveArrow = IsCursorOverArrow(x, False)
     End If
 
 End Sub
@@ -873,7 +873,7 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
     Else
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
-        If isCursorOverArrow(x, False) >= 0 Then
+        If IsCursorOverArrow(x, False) >= 0 Then
             m_MouseEventsOut.SetSystemCursor IDC_HAND
         Else
             m_MouseEventsOut.SetSystemCursor IDC_ARROW
@@ -888,7 +888,7 @@ Private Sub m_MouseEventsOut_MouseUpCustom(ByVal Button As PDMouseButtonConstant
 End Sub
 
 'For mouse events over the input or output box, this function can be used to determine if the cursor is over a slider arrow.
-Private Function isCursorOverArrow(ByVal mouseX As Long, ByVal requestIsForInputArrows As Boolean) As Long
+Private Function IsCursorOverArrow(ByVal mouseX As Long, ByVal requestIsForInputArrows As Boolean) As Long
 
     Dim minDistance As Double, minDistanceIndex As Long
     minDistance = picInputArrows.ScaleWidth
@@ -918,9 +918,9 @@ Private Function isCursorOverArrow(ByVal mouseX As Long, ByVal requestIsForInput
     
     'The mouse must be within m_ArrowHalfWidth to even be counted.
     If minDistance < m_ArrowHalfWidth + 1 Then
-        isCursorOverArrow = minDistanceIndex
+        IsCursorOverArrow = minDistanceIndex
     Else
-        isCursorOverArrow = -1
+        IsCursorOverArrow = -1
     End If
 
 End Function

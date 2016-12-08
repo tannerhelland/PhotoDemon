@@ -478,9 +478,9 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim topH As Single, topS As Single, topV As Single, bottomV As Single
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -613,7 +613,7 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -762,7 +762,7 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -911,7 +911,7 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -1043,7 +1043,7 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -1178,7 +1178,7 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -1323,9 +1323,8 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
     
     'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
     
     For y = initY To finalY
         
@@ -1432,7 +1431,7 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -1564,7 +1563,7 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -1711,7 +1710,7 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -1858,7 +1857,7 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -1990,7 +1989,7 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -2121,9 +2120,9 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
     
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim topH As Single, bottomH As Single, bottomS As Single, bottomV As Single
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -2255,7 +2254,7 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -2387,7 +2386,7 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -2522,7 +2521,7 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -2657,7 +2656,7 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -2806,9 +2805,9 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -2941,7 +2940,7 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -3073,7 +3072,7 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -3205,7 +3204,7 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -3336,9 +3335,9 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-    Dim topH As Single, topS As Single, topV As Single, bottomH As Single, bottomS As Single, bottomV As Single
+    Dim topS As Single, bottomH As Single, bottomS As Single, bottomV As Single
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -3470,7 +3469,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -3602,7 +3601,7 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -3734,7 +3733,7 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
@@ -3869,7 +3868,7 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
     Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim newR As Single, newG As Single, newB As Single
     
     For y = initY To finalY
         
