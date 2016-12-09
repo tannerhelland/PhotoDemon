@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "pdPackage" v2.0 Interface (e.g. Zip-like archive handler)
 'Copyright 2014-2016 by Tanner Helland
 'Created: 05/April/14
-'Last updated: 08/December/16
-'Last update: offload all compression duties to the Compression module
+'Last updated: 09/December/16
+'Last update: interface changes to support new file-backed mode while reading packages
 'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
@@ -218,6 +218,14 @@ Private m_NumOfNodes As Long
 'The actual data chunk of the pdPackage is assembled using a pdStream instance.  It greatly simplifies the process of
 ' assembling a 1D byte array from discrete individual chunks.
 Private m_DataBuffer As pdStream
+
+'As of v2, pdPackages can be wrapped directly around source files, which greatly reduces memory usage compared to assembling
+' everything in-memory.  The access mode of the current package instance (including read/write access) is stored here.
+Private m_StreamMode As PD_STREAM_MODE, m_StreamAccess As PD_STREAM_ACCESS
+
+'Certain modes may require us to use temporary buffers for compression/decompression.  We try to use this as little as possible,
+' but sometimes it's inevitable.
+Private m_CompressionBuffer() As Byte
 
 'File operations are made easier by using the pdFSO class, which wraps a bunch of Unicode-friendly file APIs
 Private m_File As pdFSO
@@ -838,6 +846,15 @@ Private Function CopyArray(ByRef srcArray() As Byte, ByVal srcSize As Long, ByRe
     CopyArray = CopyPtrToArray(VarPtr(srcArray(0)), srcSize, dstArray, dstSize, useCompression, compressionLevel, trimDestinationArray)
 End Function
 
+'Close the current package.  Any used resources will be immediately freed, so make sure you're finished with the package data
+' (e.g. by writing it out to file or something) before closing it!
+Friend Sub ClosePackage()
+    
+    Erase m_CompressionBuffer
+    If (Not m_DataBuffer Is Nothing) Then m_DataBuffer.StopStream
+    
+End Sub
+
 'Load a pdPackage file into memory.  A few things to note:
 ' - For performance reasons, this class caches the entire file contents in RAM.  It does this so that individual nodes can be
 '    quickly extracted without touching the hard drive.  If your particular pdPackage file is enormous, make sure you have enough
@@ -851,7 +868,14 @@ End Function
 ' 1) Source file.  (Again, callers must do their own validation on this path.)
 ' 2) Optionally, a sub-type value you want to validate.  If this value is not found in bytes 4-7 of the file header, the file
 '     will be rejected.  (If you didn't request a specific sub-type at pdPackage creation time, don't enable this check!)
-Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0) As Boolean
+' 3) Mode for the pdStream backer.  MEMORY mode means the entire file will be immediately read into memory and stored there.
+'     For small files, this is fine, and will likely result in better node retrieval performance.  For large files, however,
+'     you probably just want the stream to be created in FILE mode.  This will only pull data from the file as it is requested,
+'     and you *must* keep the file alive for the duration of this pdPackage instance.
+' 4) Access rights for the pdStream backer.  In READ-ONLY mode, you will not be able to append anything to this pdPackage file.
+'     However, memory-mapping will be used to load nodes into file, resulting in even better performance.  This is the default
+'     mode, and at present, the only supported mode.
+Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0, Optional ByVal streamMode As PD_STREAM_MODE = PD_SM_MemoryBacked, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadOnly, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeRandomAccess) As Boolean
 
     On Error GoTo StopPackageFileRead
     
@@ -863,9 +887,21 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         GoTo StopPackageFileRead
     End If
     
-    'Open the file
+    'Open the file.  Note that we play some games with the "optimizeAccess" parameter here.  If the caller wants this file
+    ' to be memory-backed, optimizeAccess really doesn't matter (because we're just gonna copy the whole file into memory).
+    ' If, however, the caller wants file-backed mode (where the package is left on-disk, and only accessed as nodes are retrieved),
+    ' then we're gonna silently modify the optimizeAccess to start as Random Access (because we need to jump to the end of the
+    ' file to grab the directory), but after the initial file handle is closed, we'll respect the caller's request inside the
+    ' pdStream object (which grabs the actual nodes).
+    Dim initialOptimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE
+    If (streamMode = PD_SM_MemoryBacked) Then
+        initialOptimizeAccess = optimizeAccess
+    ElseIf (streamMode = PD_SM_FileBacked) Then
+        initialOptimizeAccess = OptimizeRandomAccess
+    End If
+    
     Dim hFile As Long
-    If m_File.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
+    If m_File.CreateFileHandle(srcFilename, hFile, True, False, initialOptimizeAccess) Then
         
         'Attempt to load the file header.  If the file is invalid, this may potentially be gibberish, but we won't know until we try!
         m_File.ReadDataFromFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
@@ -947,19 +983,43 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
             CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
             
-            'Now, retrieve the data chunk
-            Set m_DataBuffer = New pdStream
-            m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite
-            If (m_FileHeader.DataChunkSizePacked = m_FileHeader.DataChunkSizeOriginal) Then
+            'The package's directory is now available in-memory.  Before proceeding, make a note of the requested stream mode
+            ' and access, which affect how we pull data out of this file.
+            m_StreamMode = streamMode
+            m_StreamAccess = streamAccess
             
-                'No compression applied, so we can retrieve the data chunk as-is.  (Note that we entirely skip the use of a
-                ' temporary array, and instead read the data directly into our buffer object.)
-                m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSizeOriginal, True
-                m_File.ReadDataFromFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizeOriginal, m_FileHeader.DataChunkPosition, FILE_BEGIN
+            'Finally, retrieve the data chunk.  Note that we basically just wrap a pdStream object around the data, and it handles
+            ' everything from there.
+            Set m_DataBuffer = New pdStream
+            If (m_FileHeader.DataChunkSizePacked = m_FileHeader.DataChunkSizeOriginal) Then
                 
-                'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
-                m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSizeOriginal
-                m_DataBuffer.SetPosition 0
+                'For a memory-backed stream, immediately load the full data chunk into memory.
+                If (streamMode = PD_SM_MemoryBacked) Then
+                    
+                    m_DataBuffer.StartStream PD_SM_MemoryBacked, streamAccess
+                    m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSizeOriginal, True
+                    m_File.ReadDataFromFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizeOriginal, m_FileHeader.DataChunkPosition, FILE_BEGIN
+                
+                    'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
+                    m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSizeOriginal
+                    m_DataBuffer.SetPosition 0
+                    
+                    'Close the file handle (because we don't need it anymore - everything's copied into memory!)
+                    If (hFile <> 0) Then m_File.CloseFileHandle hFile
+                
+                'For a file-backed stream, simply wrap the pdStream object around the file, and set a new "zero" point inside
+                ' the stream (since we don't want to overwrite the file header, which sits at a fixed size and position).
+                ElseIf (streamMode = PD_SM_FileBacked) Then
+                
+                    'Start by closing our copy of the file handle
+                    If (hFile <> 0) Then m_File.CloseFileHandle hFile
+                    
+                    'Open the file again, but this time, use pdStream to do it.  Note that the stream object will automatically
+                    ' subtract the header size from all position requests we pass to it, so we don't have to worry about special
+                    ' handling in other parts of this class.
+                    m_DataBuffer.StartStream PD_SM_FileBacked, streamAccess, srcFilename, , LenB(m_FileHeader), optimizeAccess
+                
+                End If
                 
             Else
                 InternalErrorMsg "Data chunk sizes don't match.  Package cannot be read."
@@ -967,9 +1027,6 @@ Public Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             End If
             
         End If
-        
-        'Close the handle when finished, obviously!
-        If (hFile <> 0) Then m_File.CloseFileHandle hFile
         
         'File load complete!
         ReadPackageFromFile = True
@@ -1535,32 +1592,9 @@ Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         
         If needToSizeArray Then ReDim dstArray(0 To dataOriginalSize - 1) As Byte
         
-        Dim decompressionResult As Boolean: decompressionResult = False
-        
-        'Figure out which decompression library was used for the original compression.
-        ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
-        Dim cmpEngine As PD_COMPRESSION_ENGINES
-        If GetBitFlag(PDP_F2_ZstdRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            cmpEngine = PD_CE_Zstd
-        ElseIf GetBitFlag(PDP_F2_ZlibRequired, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            cmpEngine = PD_CE_ZLib
-        ElseIf GetBitFlag(PDP_F2_Lz4Required, m_NodeDirectory(nodeIndex).NodeFlags(0)) Then
-            cmpEngine = PD_CE_Lz4
-        End If
-        
-        If Compression.IsCompressionEngineAvailable(cmpEngine) Then decompressionResult = Compression.DecompressPtrToPtr(VarPtr(dstArray(0)), dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cmpEngine)
-        
-        'If decompression was successful, return the data's size (which the caller can use if the array is not being
-        ' trimmed to exactly fit the returned data).
-        If decompressionResult Then
-            dstFinalSize = dataOriginalSize
-            
-        'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
-        Else
-            InternalErrorMsg "WARNING!  Could not decompress pdPackage node #" & nodeIndex & ".  Possible explanations include missing decompression library or file corruption."
-            GetNodeDataByIndex = False
-            Exit Function
-        End If
+        'Now that the destination array is appropriately sized, we can offload further loading to the unsafe pointer-only function
+        dstFinalSize = dataOriginalSize
+        GetNodeDataByIndex = Me.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, VarPtr(dstArray(LBound(dstArray))))
         
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
@@ -1582,7 +1616,7 @@ End Function
 'WARNING!  This function is for expert users only.  Do not use it unless you fully understand the repercussions described below.
 '
 'Given a node index and a target buffer region (header or data), blindly copy the contents of that data buffer to a pointer supplied by the user.
-' As with the normal GetNodeDataByIndex() function, decompression is handled automatically, depending on the contents of the node.
+' Decompression is handled automatically, depending on the contents of the node.
 '
 'What makes this function different is that it completely relies on the caller to create a correctly sized buffer for the extracted data.
 ' For common cases, this is simply not possible, as the caller does not have enough knowledge necessary to prep such a buffer.  Instead, it relies
@@ -1628,7 +1662,34 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
             cmpEngine = PD_CE_Lz4
         End If
         
-        If Compression.IsCompressionEngineAvailable(cmpEngine) Then decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cmpEngine)
+        If Compression.IsCompressionEngineAvailable(cmpEngine) Then
+            
+            'I'm not happy about this, but for the moment, we have to split handling here.  In file-backed mode, we can't currently
+            ' read file data from blind pointers - instead, we need to load the compressed data into a temporary buffer, then decompress
+            ' it from there.  This is fixable once a memory-mapped backer is in-place.
+            
+            'Memory mode doesn't require a temporary buffer; just decompress immediately
+            If (m_StreamMode = PD_SM_MemoryBacked) Then
+                decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, cmpEngine)
+            ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            
+                'In the future, read-only mode will allow us to use memory-mapping to retrieve the data.  Read/write mode will require
+                ' a temporary buffer, however, as we don't have pointer-level access to the source file.
+                
+                'Prep the temporary compression buffer
+                If VB_Hacks.IsArrayInitialized(m_CompressionBuffer) Then
+                    If (UBound(m_CompressionBuffer) < (dataPackedSize - 1)) Then ReDim m_CompressionBuffer(0 To dataPackedSize - 1) As Byte
+                Else
+                    ReDim m_CompressionBuffer(0 To dataPackedSize - 1) As Byte
+                End If
+                
+                'Retrieve the compressed data, then perform immediate decompression
+                If (m_DataBuffer.ReadBytes(m_CompressionBuffer, dataPackedSize, False) <> 0) Then
+                    decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, VarPtr(m_CompressionBuffer(0)), dataPackedSize, cmpEngine)
+                End If
+            
+            End If
+        End If
         
         'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
         If (Not decompressionResult) Then
@@ -1639,7 +1700,14 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
         
     'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
-        CopyMemory_Strict dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
+        
+        'As with compressed mode, a switch is required depending on the stream backing mode
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            CopyMemory_Strict dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            m_DataBuffer.ReadBytesToBarePointer dstPointer, dataPackedSize
+        End If
+        
     End If
     
     'If we made it all the way here, the node has been successfully loaded!
