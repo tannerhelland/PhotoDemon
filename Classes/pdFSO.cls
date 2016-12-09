@@ -87,16 +87,17 @@ End Enum
     Private Const FILE_BEGIN = 0, FILE_CURRENT = 1, FILE_END = 2
 #End If
 
-Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
-Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToDstBuffer As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
-Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByVal lDistanceToMove As Long, ByRef lpDistanceToMoveHigh As Long, ByVal dwMoveMethod As FILE_POINTER_MOVE_METHOD) As Long
-Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
+Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 Private Declare Function CreateFileMapping Lib "kernel32" Alias "CreateFileMappingW" (ByVal hFile As Long, ByVal lpFileMappingAttributes As Long, ByVal flProtect As Long, ByVal dwMaximumSizeHigh As Long, ByVal dwMaximumSizeLow As Long, ByVal ptrToNameString As Long) As Long
+Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
+Private Declare Function FlushViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long, ByVal dwNumberOfBytesToFlush As Long) As Long
 Private Declare Function MapViewOfFile Lib "kernel32" (ByVal hFileMappingObject As Long, ByVal dwDesiredAccess As Long, ByVal dwFileOffsetHigh As Long, ByVal dwFileOffsetLow As Long, ByVal dwNumberOfBytesToMap As Long) As Long
 Private Declare Function OpenFileMapping Lib "kernel32" Alias "OpenFileMappingW" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal ptrToNameString As Long) As Long
+Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToDstBuffer As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
+Private Declare Function SetEndOfFile Lib "kernel32" (ByVal hFile As Long) As Long
+Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByVal lDistanceToMove As Long, ByRef lpDistanceToMoveHigh As Long, ByVal dwMoveMethod As FILE_POINTER_MOVE_METHOD) As Long
 Private Declare Function UnmapViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long) As Long
-Private Declare Function FlushViewOfFile Lib "kernel32" (ByVal lpBaseAddress As Long, ByVal dwNumberOfBytesToFlush As Long) As Long
-Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 
 Private Type WIN32_FIND_DATA
     dwFileAttributes As Long
@@ -1595,6 +1596,11 @@ Friend Function MoveFilePointer(ByVal srcHandle As Long, ByVal newPosition As Lo
     MoveFilePointer = CBool(SetFilePointer(srcHandle, newPosition, 0&, startingPosition) <> INVALID_SET_FILE_POINTER)
 End Function
 
+'After a file has been opened, you can use this function to query the current file pointer position
+Friend Function GetCurrentFilePointer(ByVal srcHandle As Long) As Long
+    GetCurrentFilePointer = SetFilePointer(srcHandle, 0&, 0&, FILE_CURRENT)
+End Function
+
 'Close an open file handle.
 ' Returns: TRUE if successful.
 Friend Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
@@ -1864,6 +1870,14 @@ Public Function FileLengthLarge(ByVal hFile As Long) As Currency
     End If
 
     
+End Function
+
+'Reverse function of GetFileLength.  Note that special considerations are required when using memory-mapped files;
+' see MSDN for details: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365531(v=vs.85).aspx
+Friend Function SetFileLength(ByVal hFile As Long, ByVal newLength As Long) As Boolean
+    If (hFile <> 0) Then
+        If Me.MoveFilePointer(hFile, newLength, FILE_BEGIN) Then SetFileLength = CBool(SetEndOfFile(hFile) <> 0)
+    End If
 End Function
 
 'Use the API to retrieve a Unicode-friendly version of app.path

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Generic Stream-like I/O Interface
 'Copyright 2016-2016 by Tanner Helland
 'Created: 05/December/16
-'Last updated: 05/December/16
-'Last update: heavily streamline all memory methods for idealized performance
+'Last updated: 09/December/16
+'Last update: ongoing work on implementing file-backed mode(s)
 '
 'Before I say anything else, please note that this class is based off work originally done by vbforums.com user
 ' "dilettante", whose original clsBasicBuffer class served PD well for a long time.  clsBasicBuffer is a nice,
@@ -79,6 +79,9 @@ Private m_StreamAccess As PD_STREAM_ACCESS
 'For in-memory streams, this array stores the actual stream data.
 Private m_MemBuffer() As Byte
 
+'For file-backed streams, pdFSO is used for file interactions
+Private m_FSO As pdFSO
+
 'When writing a stream, this is the current stream size.  It is updated on each write.  (Importantly, for memory streams,
 ' this is *not* the UBound() of m_MemBuffer()!  m_MemBuffer's UBound() will always be >= this number.)
 Private m_BufferSize As Long
@@ -90,27 +93,57 @@ Private m_Pointer As Long
 ' for ensuring that all internals have been properly prepped prior to issuing read/write requests.
 Private m_Open As Boolean
 
+'While in file-backed mode, the caller can specify an offset to use as position "zero" inside the file.  This is very helpful
+' for pdPackages, because we can ignore the file header and treat the beginning of the data chunk as "position 0".
+Private m_FilePointerOffset As Long
+
+'File-backed mode requires a number of other pointers and trackers
+Private m_FileHandle As Long
+
 'Return the current stream pointer position.
 Friend Function GetPosition() As Long
-    GetPosition = m_Pointer
+    If (m_StreamMode = PD_SM_MemoryBacked) Then
+        GetPosition = m_Pointer
+    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+        If (m_FileHandle <> 0) And (Not m_FSO Is Nothing) Then GetPosition = m_FSO.GetCurrentFilePointer(m_FileHandle) - m_FilePointerOffset
+    End If
 End Function
 
 'Set a new stream pointer position.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.  FALSE may occur if you attempt to set the pointer outside the current stream range.
-Friend Function SetPosition(ByVal newPosition As Long) As Boolean
+Friend Function SetPosition(ByVal newPosition As Long, Optional ByVal startingPosition As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
+    
+    'In memory-backed mode, we must manually handle the different "move method" options.
+    If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If (startingPosition = FILE_BEGIN) Then
+            'Do nothing; newPosition is an absolute value
+        ElseIf (startingPosition = FILE_CURRENT) Then
+            newPosition = m_Pointer + newPosition
+        ElseIf (startingPosition = FILE_END) Then
+            newPosition = m_BufferSize + newPosition
+        End If
+    
+    'In file-backed mode, we only need special handling for the FILE_BEGIN method, if the user has specified a custom offset
+    ' into the file
+    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+        If (startingPosition = FILE_BEGIN) Then newPosition = newPosition + m_FilePointerOffset
+    End If
+    
+    'Now we can actually apply the new position
     If (newPosition >= 0) And (newPosition <= m_BufferSize) Then
         
         If (m_StreamMode = PD_SM_MemoryBacked) Then
             m_Pointer = newPosition
             SetPosition = True
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        
+            If (Not m_FSO Is Nothing) Then SetPosition = m_FSO.MoveFilePointer(m_FileHandle, newPosition, startingPosition)
         End If
         
     Else
         SetPosition = False
     End If
+    
 End Function
 
 'Return the number of bytes in the current stream.  Note that this is *not* necessarily the size of the in-memory buffer;
@@ -143,8 +176,8 @@ End Sub
 ' 2) This is a memory-backed stream and the initial starting size is ridiculously huge.
 '
 'If this stream object is already open, the existing stream will be closed and a new one will be started.
-Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0) As Boolean
-
+Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadWrite, Optional ByVal srcFilename As String, Optional ByVal startingBufferSize As Long = 0, Optional ByVal baseFilePointerOffset As Long = 0, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
+    
     'If we're already open, close the current stream before starting a new one.
     If m_Open Then Me.StopStream
     
@@ -168,11 +201,27 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
         
     ElseIf (streamType = PD_SM_FileBacked) Then
     
-        'TODO: validate the filename, create a handle, etc
-    
+        If (m_FSO Is Nothing) Then Set m_FSO = New pdFSO
+        
+        If m_FSO.CreateFileHandle(srcFilename, m_FileHandle, True, CBool(streamAccess = PD_SA_ReadWrite), optimizeAccess) Then
+            m_Open = True
+            m_FilePointerOffset = baseFilePointerOffset
+            
+            'Automatically set the current "buffer size" to match the size of the file, minus any base pointer offset
+            m_BufferSize = m_FSO.FileLenW(srcFilename) - baseFilePointerOffset
+            
+            'Move the file pointer to the baseFilePointerOffset, if any
+            If (baseFilePointerOffset <> 0) Then m_FSO.MoveFilePointer m_FileHandle, baseFilePointerOffset, FILE_BEGIN
+        
+        End If
+        
     End If
     
     StartStream = m_Open
+    
+    If (Not StartStream) Then
+        InternalStreamError "Could not start stream"
+    End If
     
 End Function
 
@@ -180,14 +229,19 @@ End Function
 ' resets our internal buffers to null values.
 Friend Sub StopStream()
     
-    m_Open = False
-    m_Pointer = 0
-    m_BufferSize = 0
+    If m_Open Then
     
-    If (m_StreamMode = PD_SM_MemoryBacked) Then
-        Erase m_MemBuffer
-    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-    
+        m_Open = False
+        m_Pointer = 0
+        m_BufferSize = 0
+        
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            Erase m_MemBuffer
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.CloseFileHandle m_FileHandle
+            m_FileHandle = 0
+        End If
+        
     End If
     
 End Sub
@@ -208,11 +262,11 @@ Friend Function ReadBytes(ByRef dstBytes() As Byte, Optional ByVal readLength As
         
         'Calculate the length we need to move the current position marker
         If (readLength < 0) Then
-            readLength = m_BufferSize - m_Pointer
+            readLength = m_BufferSize - Me.GetPosition()
         
         'If the caller supplied a length value, make sure it doesn't extend past the end of the buffer
         Else
-            If (m_Pointer + readLength > m_BufferSize) Then readLength = m_BufferSize - m_Pointer
+            If (Me.GetPosition() + readLength > m_BufferSize) Then readLength = m_BufferSize - Me.GetPosition()
         End If
         
         Dim arrLBound As Long, arrUBound As Long
@@ -241,16 +295,39 @@ Friend Function ReadBytes(ByRef dstBytes() As Byte, Optional ByVal readLength As
             ReDim dstBytes(0 To readLength - 1) As Byte
         End If
         
+        'Rely on the bare pointer function from here
+        ReadBytes = ReadBytesToBarePointer(VarPtr(dstBytes(arrLBound)), readLength)
+        
+    End If
+    
+End Function
+
+Friend Function ReadBytesToBarePointer(ByVal dstPointer As Long, Optional ByVal readLength As Long = -1) As Long
+
+    If m_Open Then
+        
+        'Calculate the length we need to move the current position marker
+        If (readLength < 0) Then
+            readLength = m_BufferSize - Me.GetPosition()
+        
+        'If the caller supplied a length value, make sure it doesn't extend past the end of the buffer
+        Else
+            If (Me.GetPosition() + readLength > m_BufferSize) Then readLength = m_BufferSize - Me.GetPosition()
+        End If
+        
         'Copy the relevant amount of bytes into position
-        CopyMemory_Strict VarPtr(dstBytes(arrLBound)), VarPtr(m_MemBuffer(m_Pointer)), readLength
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+            CopyMemory_Strict dstPointer, VarPtr(m_MemBuffer(m_Pointer)), readLength
+            
+            'In memory mode, we must manually move the pointer to match the new position
+            m_Pointer = m_Pointer + readLength
+            If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
         
-        'Move the pointer
-        m_Pointer = m_Pointer + readLength
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            If (Not m_FSO Is Nothing) Then m_FSO.ReadDataFromFile m_FileHandle, dstPointer, readLength
+        End If
         
-        'As a failsafe, check for invalid pointer positions
-        If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
-        
-        ReadBytes = readLength
+        ReadBytesToBarePointer = readLength
         
     End If
     
@@ -274,20 +351,30 @@ End Function
 Friend Function ReadBytes_PointerOnly(Optional ByVal readLength As Long = -1) As Long
     
     If m_Open Then
-    
-        'Return a pointer to the current buffer position
-        ReadBytes_PointerOnly = VarPtr(m_MemBuffer(m_Pointer))
         
-        'Calculate the length we need to move the current position marker
-        If (readLength < 0) Then
-            readLength = m_BufferSize - m_Pointer
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        
+            'Return a pointer to the current buffer position
+            ReadBytes_PointerOnly = VarPtr(m_MemBuffer(m_Pointer))
+            
+            'Calculate the length we need to move the current position marker
+            If (readLength < 0) Then
+                readLength = m_BufferSize - m_Pointer
+            End If
+            
+            'Move the pointer
+            m_Pointer = m_Pointer + readLength
+            
+            'As a failsafe, check for invalid pointer positions
+            If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
+            
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+            
+            ReadBytes_PointerOnly = 0
+            
+            'TODO!!
+            
         End If
-        
-        'Move the pointer
-        m_Pointer = m_Pointer + readLength
-        
-        'As a failsafe, check for invalid pointer positions
-        If (m_Pointer > m_BufferSize) Then m_Pointer = m_BufferSize
         
     End If
     
@@ -303,7 +390,9 @@ Friend Function TrimStream() As Long
             ReDim Preserve m_MemBuffer(0 To m_BufferSize - 1) As Byte
             TrimStream = m_BufferSize
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-        
+            If (Not m_FSO Is Nothing) Then
+                m_FSO.SetFileLength m_FileHandle, m_BufferSize + m_FilePointerOffset
+            End If
         End If
     End If
 End Function
@@ -362,6 +451,23 @@ Friend Function WriteBytesFromPointer(ByVal dataPointer As Long, ByVal dataLengt
         
         ElseIf (m_StreamMode = PD_SM_FileBacked) Then
         
+            If (Not m_FSO Is Nothing) Then
+            
+                'Write the data out to file
+                m_FSO.WriteDataToFile m_FileHandle, dataPointer, dataLength
+                
+                'Retrieve the new file pointer (which is opaquely managed by WAPI)
+                WriteBytesFromPointer = m_FSO.GetCurrentFilePointer(m_FileHandle)
+                
+                'Manually increase the buffer size to match, but only if we've moved past the end of the file
+                Dim tmpSize As Long
+                tmpSize = WriteBytesFromPointer - m_FilePointerOffset
+                If (m_BufferSize < tmpSize) Then m_BufferSize = tmpSize
+            
+            Else
+                WriteBytesFromPointer = 0
+            End If
+        
         End If
     
     Else
@@ -385,13 +491,15 @@ End Function
 ' class functions are called.
 Friend Function Peek_PointerOnly(Optional ByVal peekPosition As Long = -1) As Long
 
-    If (peekPosition < 0) Then peekPosition = m_Pointer
+    If (peekPosition < 0) Then peekPosition = Me.GetPosition()
     
     If (m_StreamMode = PD_SM_MemoryBacked) Then
         Peek_PointerOnly = VarPtr(m_MemBuffer(peekPosition))
         
     ElseIf (m_StreamMode = PD_SM_FileBacked) Then
-    
+        
+        'TODO!!
+        
     End If
 
 End Function
@@ -408,7 +516,7 @@ End Function
 ' are allocated as 4k to start.  That may be too big for something like a string builder.)
 '
 'Returns: TRUE if the buffer was successfully resized to ensure (n) bytes are available; FALSE otherwise.  If this stream
-'         was opened in read-only mode, this function will always return FALSE.  If this stream is not open, returns FALSE.
+'         is not open, returns FALSE.  If this stream was opened in file-backed mode, this function does nothing.
 '
 'For an explanation of the allocation strategy used, please see:
 ' - http://stackoverflow.com/questions/1100311/what-is-the-ideal-growth-rate-for-a-dynamically-allocated-array
@@ -416,7 +524,7 @@ End Function
 ' - https://blog.mozilla.org/nnethercote/2014/11/04/please-grow-your-buffers-exponentially/
 Friend Function EnsureBufferSpaceAvailable(ByVal newDataSizeInBytes As Long, Optional ByVal exactAllocationWanted As Boolean = False) As Boolean
     
-    If (m_Open And (m_StreamAccess = PD_SA_ReadWrite)) Then
+    If m_Open Then
     
         Dim needAtLeastBytes As Long, bufferLimit As Long, newSize As Long
         
@@ -483,6 +591,11 @@ Friend Function EnsureBufferSpaceAvailable(ByVal newDataSizeInBytes As Long, Opt
                 
             End If
         
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+        
+            'TODO?  I'm not really sure there's anything *to* do here, honestly, besides maybe check for available file space
+            ' (but even that is unreliable, as Windows may not be able to write a file that consumes all that space).
+        
         End If
         
         EnsureBufferSpaceAvailable = True
@@ -491,3 +604,16 @@ Friend Function EnsureBufferSpaceAvailable(ByVal newDataSizeInBytes As Long, Opt
     
 End Function
 
+Private Sub InternalStreamError(ByVal errMessage As String, Optional ByVal errNumber As Long = 0)
+    #If DEBUGMODE = 1 Then
+        If (errNumber <> 0) Then
+            pdDebug.LogAction "WARNING!  pdStream error # " & errNumber & ": " & errMessage
+        Else
+            pdDebug.LogAction "WARNING!  Unspecified pdStream error: " & errMessage
+        End If
+    #End If
+End Sub
+
+Private Sub Class_Terminate()
+    If m_Open Then Me.StopStream
+End Sub

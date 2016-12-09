@@ -44,6 +44,8 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
+        Dim startTime As Currency
+        VB_Hacks.GetHighResTime startTime
     #End If
     
     On Error GoTo LoadPDIFail
@@ -56,9 +58,11 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     Dim pdiReader As pdPackager2
     Set pdiReader = New pdPackager2
     
-    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
-    ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    'Load the file into the pdPackager instance.  Note that this step will also validate the incoming file.
+    ' (Also, prior to v7.0, PD would copy the entire source file into memory, then load the PDI from there.  This no longer occurs;
+    '  instead, the file is left on-disk, and data is only loaded on a per-node basis.  This greatly reduces memory load.)
+    ' (Also, because PDI files store data roughly sequentially, we can use OptimizeSequentialAccess for a small perf boost.)
+    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER, PD_SM_MemoryBacked, PD_SA_ReadOnly, OptimizeSequentialAccess) Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
@@ -229,6 +233,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
+            Debug.Print "Time required to load PDI file: " & Format$(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000, "####0.00") & " ms"
         #End If
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
