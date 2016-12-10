@@ -240,7 +240,7 @@ End Function
 '   allows you to use the compression and decompression functions in "no compression" mode and have them behave as expected.)
 '   If FALSE occurs, however, you may need to abandon further processing, as there's currently no way to decompress the
 '   bytestream without help from the original decompression library.
-Public Function DecompressPtrToDstArray(ByRef dstArray() As Byte, ByVal dstDecompressedSizeInBytes As Long, ByVal ptrToSource As Long, ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES, Optional ByVal dstArrayIsAlreadySized As Boolean = False) As Byte
+Public Function DecompressPtrToDstArray(ByRef dstArray() As Byte, ByVal dstDecompressedSizeInBytes As Long, ByVal ptrToSource As Long, ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES, Optional ByVal dstArrayIsAlreadySized As Boolean = False) As Boolean
     
     'If the destination array isn't allocated, forcibly initialize it now
     If (Not dstArrayIsAlreadySized) Then ReDim dstArray(0 To dstDecompressedSizeInBytes - 1) As Byte
@@ -261,7 +261,7 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
         DecompressPtrToPtr = Plugin_zLib.ZlibDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         DecompressPtrToPtr = CBool(Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
-    ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4)) Then
+    ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4HC)) Then
         DecompressPtrToPtr = CBool(Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
     End If
     
