@@ -23,6 +23,11 @@ Attribute VB_Name = "Plugin_zstd"
 
 Option Explicit
 
+'These constants were originally declared in zstd.h
+Private Const ZSTD_MIN_CLEVEL As Long = 1
+Private Const ZSTD_DEFAULT_CLEVEL As Long = 1
+Private Const ZSTD_MAX_CLEVEL As Long = 22
+
 Private Declare Function ZSTD_VersionNumber Lib "libzstd" Alias "_ZSTD_versionNumber@0" () As Long
 Private Declare Function ZSTD_compress Lib "libzstd" Alias "_ZSTD_compress@20" (ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long, ByVal cCompressionLevel As Long) As Long
 Private Declare Function ZSTD_decompress Lib "libzstd" Alias "_ZSTD_decompress@16" (ByVal ptrToDstBuffer As Long, ByVal dstBufferCapacityInBytes As Long, ByVal constPtrToSrcBuffer As Long, ByVal srcSizeInBytes As Long) As Long
@@ -206,6 +211,18 @@ Public Function ZstdDecompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByVal kno
     
     ZstdDecompress_UnsafePtr = finalSize
 
+End Function
+
+Public Function Zstd_GetDefaultCompressionLevel() As Long
+    Zstd_GetDefaultCompressionLevel = ZSTD_DEFAULT_CLEVEL
+End Function
+
+Public Function Zstd_GetMinCompressionLevel() As Long
+    Zstd_GetMinCompressionLevel = ZSTD_MIN_CLEVEL
+End Function
+
+Public Function Zstd_GetMaxCompressionLevel() As Long
+    Zstd_GetMaxCompressionLevel = ZSTD_MAX_CLEVEL
 End Function
 
 Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturnCode As Long = 256)

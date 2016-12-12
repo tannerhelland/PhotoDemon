@@ -17,9 +17,13 @@ Option Explicit
 
 Private Const ZLIB_OK = 0
 
-Private Const Z_MIN_LEVEL = 0
-Private Const Z_DEFAULT_LEVEL = 3
-Private Const Z_MAX_LEVEL = 9
+'These constants were originally declared in zlib.h.  Note that zLib weirdly supports level 0, which just performs
+' a bare memory copy with no compression.  We deliberately omit that possibility here.
+Private Const ZLIB_MIN_CLEVEL = 1
+Private Const ZLIB_MAX_CLEVEL = 9
+
+'This constant was originally declared (or rather, resolved) in deflate.c.
+Private Const ZLIB_DEFAULT_CLEVEL = 6
 
 Private Declare Function compress Lib "zlibwapi" (ByVal ptrToDestBuffer As Long, ByRef dstLen As Long, ByVal ptrToSrcBuffer As Long, ByVal srcLen As Long) As Long
 Private Declare Function compress2 Lib "zlibwapi" (ByVal ptrDstBuffer As Long, ByRef dstLen As Long, ByVal ptrSrcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
@@ -84,10 +88,10 @@ End Function
 Public Function ZlibCompressArray(ByRef dstArray() As Byte, ByVal ptrToSrcData As Long, ByVal srcDataSize As Long, Optional ByVal dstArrayIsReady As Boolean = False, Optional ByVal dstArraySizeInBytes As Long = 0, Optional ByVal compressionLevel As Long = -1) As Long
     
     'Validate the requested compression level
-    If (compressionLevel < Z_MIN_LEVEL) Then
-        compressionLevel = Z_DEFAULT_LEVEL
-    ElseIf (compressionLevel > Z_MAX_LEVEL) Then
-        compressionLevel = Z_MAX_LEVEL
+    If (compressionLevel < ZLIB_MIN_CLEVEL) Then
+        compressionLevel = ZLIB_DEFAULT_CLEVEL
+    ElseIf (compressionLevel > ZLIB_MAX_CLEVEL) Then
+        compressionLevel = ZLIB_MAX_CLEVEL
     End If
     
     'Prep the destination array, as necessary
@@ -111,10 +115,10 @@ End Function
 'RETURNS: TRUE on success, FALSE on failure.  The dstLength parameter will be filled with the amount of data written to dstPoint
 '         (in bytes, 1-based).
 Public Function ZlibCompressNakedPointers(ByVal dstPointer As Long, ByRef dstLength As Long, ByVal srcPointer As Long, ByVal srcLength As Long, Optional ByVal compressionLevel As Long = -1) As Boolean
-    If (compressionLevel < Z_MIN_LEVEL) Then
-        compressionLevel = Z_DEFAULT_LEVEL
-    ElseIf (compressionLevel > Z_MAX_LEVEL) Then
-        compressionLevel = Z_MAX_LEVEL
+    If (compressionLevel < ZLIB_MIN_CLEVEL) Then
+        compressionLevel = ZLIB_DEFAULT_CLEVEL
+    ElseIf (compressionLevel > ZLIB_MAX_CLEVEL) Then
+        compressionLevel = ZLIB_MAX_CLEVEL
     End If
     ZlibCompressNakedPointers = CBool(compress2(dstPointer, dstLength, srcPointer, srcLength, compressionLevel) = ZLIB_OK)
 End Function
@@ -153,3 +157,16 @@ End Function
 Public Function ZlibGetMaxCompressedSize(ByVal srcSize As Long) As Long
     ZlibGetMaxCompressedSize = srcSize + (CSng(srcSize) * 0.01) + 12
 End Function
+
+Public Function ZLib_GetDefaultCompressionLevel() As Long
+    ZLib_GetDefaultCompressionLevel = ZLIB_DEFAULT_CLEVEL
+End Function
+
+Public Function ZLib_GetMinCompressionLevel() As Long
+    ZLib_GetMinCompressionLevel = ZLIB_MIN_CLEVEL
+End Function
+
+Public Function ZLib_GetMaxCompressionLevel() As Long
+    ZLib_GetMaxCompressionLevel = ZLIB_MAX_CLEVEL
+End Function
+
