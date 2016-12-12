@@ -436,13 +436,13 @@ End Function
 '    exposed to the user.)
 '  - Any number of other options might be helpful (e.g. password encryption, etc).  I should probably add a page about the PDI
 '    format to the help documentation, where various ideas for future additions could be tracked.
-Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal WriteMetadata As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDIError
     
     'Perform a few failsafe checks
     If (srcPDImage Is Nothing) Then Exit Function
-    If (Len(PDIPath) = 0) Then Exit Function
+    If (Len(pdiPath) = 0) Then Exit Function
     
     'Want to time this function?  Here's your chance:
     Dim startTime As Currency
@@ -455,15 +455,12 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of compressing individual layers,
     ' and storing everything to a running byte stream.
-    ' TODO: roll these declarations over to pdPackager2.  The v2 of the class is working well, but until I nail down the final
-    '       details of the new PDI spec, I don't want users of the nightly builds writing incompatible files.  Because of that,
-    '       nightly builds still write v1 PDI files for the time being.
     Dim pdiWriter As pdPackager2
     Set pdiWriter = New pdPackager2
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
-    pdiWriter.PrepareNewPackage srcPDImage.GetNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.EstimateRAMUsage
+    pdiWriter.PrepareNewPackage srcPDImage.GetNumOfLayers + 1, PD_IMAGE_IDENTIFIER, srcPDImage.EstimateRAMUsage, PD_SM_FileBacked, pdiPath
         
     'The first node we'll add is the pdImage header, in XML format.
     Dim nodeIndex As Long
@@ -539,7 +536,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonImage = pdiWriter.WritePackageToFile(PDIPath, secondPassDirectoryCompression, srcIsUndo)
+    SavePhotoDemonImage = pdiWriter.WritePackageToFile(pdiPath, secondPassDirectoryCompression, srcIsUndo)
     
     'Report timing on debug builds
     #If DEBUGMODE = 1 Then
@@ -558,14 +555,14 @@ End Function
 
 'Save the requested layer to a variant of PhotoDemon's native PDI format.  Because this function is internal (it is used by the
 ' Undo/Redo engine only), it is not as fleshed-out as the actual SavePhotoDemonImage function.
-Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
+Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressLayers As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1, Optional ByVal srcIsUndo As Boolean = False) As Boolean
     
     On Error GoTo SavePDLayerError
     
     'Perform a few failsafe checks
     If (srcLayer Is Nothing) Then Exit Function
     If (srcLayer.layerDIB Is Nothing) Then Exit Function
-    If (Len(PDIPath) = 0) Then Exit Function
+    If (Len(pdiPath) = 0) Then Exit Function
     
     Dim sFileType As String
     sFileType = "PDI"
@@ -579,7 +576,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
     pdiWriter.PrepareNewPackage 1, PD_LAYER_IDENTIFIER, srcLayer.EstimateRAMUsage
-        
+    
     'The first (and only) node we'll add is the specific pdLayer header and DIB data.
     ' To help us reconstruct the node later, we also note the current layer's ID (stored as the node ID)
     '  and the current layer's index (stored as the node type).
@@ -622,7 +619,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    SavePhotoDemonLayer = pdiWriter.WritePackageToFile(PDIPath, , srcIsUndo)
+    SavePhotoDemonLayer = pdiWriter.WritePackageToFile(pdiPath, , srcIsUndo)
     
     Exit Function
     

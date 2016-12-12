@@ -208,7 +208,11 @@ Friend Function StartStream(ByVal streamType As PD_STREAM_MODE, Optional ByVal s
             m_FilePointerOffset = baseFilePointerOffset
             
             'Automatically set the current "buffer size" to match the size of the file, minus any base pointer offset
-            m_BufferSize = m_FSO.FileLenW(srcFilename) - baseFilePointerOffset
+            If (m_FSO.FileLenW(srcFilename) > 0) Then
+                m_BufferSize = m_FSO.FileLenW(srcFilename) - baseFilePointerOffset
+            Else
+                m_BufferSize = baseFilePointerOffset
+            End If
             
             'Move the file pointer to the baseFilePointerOffset, if any
             If (baseFilePointerOffset <> 0) Then m_FSO.MoveFilePointer m_FileHandle, baseFilePointerOffset, FILE_BEGIN
