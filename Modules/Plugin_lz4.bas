@@ -33,6 +33,21 @@ Attribute VB_Name = "Plugin_lz4"
 
 Option Explicit
 
+'This constant was originally declared in lz4.c.  Note that lz4 does *not* support variable compression levels.
+' Instead, it supports variable *acceleration* levels.  The difference is that bigger values = worse compression.
+Private Const LZ4_MIN_ALEVEL As Long = 1
+Private Const LZ4_DEFAULT_ALEVEL As Long = 1
+
+'This value is not declared by the lz4 library, and technically, there is no maximum value.  Compression just
+' approaches 0% as you increase the level.  I provide a "magic number" cap simply so it supports the same
+' default/min/max functions as the other libraries
+Private Const LZ4_MAX_ALEVEL As Long = 1000
+
+'These constants were originally declared in lz4_hc.h
+Private Const LZ4HC_MIN_CLEVEL As Long = 3
+Private Const LZ4HC_DEFAULT_CLEVEL As Long = 9
+Private Const LZ4HC_MAX_CLEVEL As Long = 16
+
 Private Declare Function LZ4_versionNumber Lib "liblz4" Alias "_LZ4_versionNumber@0" () As Long
 Private Declare Function LZ4_compress_fast Lib "liblz4" Alias "_LZ4_compress_fast@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cAccelerationLevel As Long) As Long
 Private Declare Function LZ4_compress_HC Lib "liblz4" Alias "_LZ4_compress_HC@20" (ByVal constPtrToSrcBuffer As Long, ByVal ptrToDstBuffer As Long, ByVal srcSizeInBytes As Long, ByVal dstBufferCapacityInBytes As Long, ByVal cCompressionLevel As Long) As Long
@@ -226,6 +241,30 @@ Public Function Lz4Decompress_UnsafePtr(ByVal ptrToDstBuffer As Long, ByVal know
     
     Lz4Decompress_UnsafePtr = finalSize
 
+End Function
+
+Public Function Lz4_GetDefaultAccelerationLevel() As Long
+    Lz4_GetDefaultAccelerationLevel = LZ4_DEFAULT_ALEVEL
+End Function
+
+Public Function Lz4_GetMinAccelerationLevel() As Long
+    Lz4_GetMinAccelerationLevel = LZ4_MIN_ALEVEL
+End Function
+
+Public Function Lz4_GetMaxAccelerationLevel() As Long
+    Lz4_GetMaxAccelerationLevel = LZ4_MAX_ALEVEL
+End Function
+
+Public Function Lz4HC_GetDefaultCompressionLevel() As Long
+    Lz4HC_GetDefaultCompressionLevel = LZ4HC_DEFAULT_CLEVEL
+End Function
+
+Public Function Lz4HC_GetMinCompressionLevel() As Long
+    Lz4HC_GetMinCompressionLevel = LZ4HC_MIN_CLEVEL
+End Function
+
+Public Function Lz4HC_GetMaxCompressionLevel() As Long
+    Lz4HC_GetMaxCompressionLevel = LZ4HC_MAX_CLEVEL
 End Function
 
 Private Sub InternalError(ByVal errString As String, Optional ByVal faultyReturnCode As Long = 256)

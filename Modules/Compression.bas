@@ -3,8 +3,8 @@ Attribute VB_Name = "Compression"
 'Unified Compression Interface for PhotoDemon
 'Copyright 2016-2016 by Tanner Helland
 'Created: 02/December/16
-'Last updated: 07/December/16
-'Last update: add support for lz4-hc compression
+'Last updated: 12/December/16
+'Last update: add support for Windows Compression API, available on Win 8+
 'Dependencies: standalone plugin modules for whatever compression engines you want to use (e.g. the
 '              Plugin_ZLib module for zlib compression).  This module simply wraps those dedicated functions,
 '              and it performs no library initialization or termination of its own.
@@ -37,6 +37,11 @@ Attribute VB_Name = "Compression"
 'lz4-hc is also supported.  It is a high-compression variant of lz4, with compression times closer to zLib,
 ' but the same blazing decompression speeds as stock lz4.  Its support is provided by the stock lz4 library.
 '
+'I've also included support for the various built-in Windows compression algorithms.  These are only available
+' on Win 8 or later, making them poor choices for portability, but if you're only targeting new PCs, they will
+' give you access to compression without any external dependencies.  (Note that - like most things MS -
+' none of the algorithms outperform the available 3rd-party solutions, so adjust your expectations accordingly.)
+'
 'Anyway, the purpose of this module is to simplify code across PD by using standardized compression functions.
 ' Simply specify the compressor you desire, and this module will silently plug in the right compression or
 ' decompression code.  (Note that - at present - you *must* request the correct decompressor at decompression
@@ -62,26 +67,64 @@ Attribute VB_Name = "Compression"
 '
 '***************************************************************************
 
-
 Option Explicit
 
 'Currently supported compression engines.  Note that you must *always* use the same engine for compression
 ' and decompression (e.g. there is no way to auto-detect the format of a previously compressed stream).
 Public Enum PD_COMPRESSION_ENGINES
+    
+    'No compression just copies the source bytes to the destination bytes as-is.  It makes for a nice baseline
+    ' comparison, especially when testing large data sets.
     PD_CE_NoCompression = 0
+    
+    'The following compression engines require a 3rd-party DLL
     PD_CE_ZLib = 1
     PD_CE_Zstd = 2
     PD_CE_Lz4 = 3
     PD_CE_Lz4HC = 4
+    
+    'The following compression engines are built-in on Windows 8 or later
+    PD_CE_MSZIP = 5
+    PD_CE_XPRESS = 6
+    PD_CE_XPRESS_HUFF = 7
+    PD_CE_LZMS = 8
 End Enum
 
 #If False Then
-    Private Const PD_CE_NoCompression = 0, PD_CE_ZLib = 1, PD_CE_Zstd = 2, PD_CE_Lz4 = 3, PD_CE_Lz4HC = 4
+    Private Const PD_CE_NoCompression = 0, PD_CE_ZLib = 1, PD_CE_Zstd = 2, PD_CE_Lz4 = 3, PD_CE_Lz4HC = 4, PD_CE_MSZIP = 5, PD_CE_XPRESS = 6, PD_CE_XPRESS_HUFF = 7, PD_CE_LZMS = 8
 #End If
 
-Private Const NUM_OF_COMPRESSION_ENGINES = 5
+'Note that not all compression engines are available on all systems.  Some rely on 3rd-party DLLs; others require Win 8 or later.
+Private Const NUM_OF_COMPRESSION_ENGINES = 9
 
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+
+'We must perform a version check before enabling built-in Windows compression functions
+Private Type OSVERSIONINFOEX
+    dwOSVersionInfoSize As Long
+    dwMajorVersion As Long
+    dwMinorVersion As Long
+    dwBuildNumber As Long
+    dwPlatformId As Long
+    szCSDVersion As String * 128
+    wServicePackMajor  As Integer
+    wServicePackMinor  As Integer
+    wSuiteMask         As Integer
+    wProductType       As Byte
+    wReserved          As Byte
+End Type
+
+Private Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (ByRef lpVersionInformation As OSVERSIONINFOEX) As Long
+
+'All of these functions require Windows 8 or later!
+Private Declare Function CloseCompressor Lib "cabinet" (ByVal hCompressor As Long) As Long
+Private Declare Function CloseDecompressor Lib "cabinet" (ByVal hDecompressor As Long) As Long
+
+'We use an aliased name for this function so that it doesn't cause IDE case changes of the matching zLib function
+Private Declare Function MS_Compress Lib "cabinet" Alias "Compress" (ByVal hCompressor As Long, ByVal ptrToUncompressedData As Long, ByVal sizeOfUncompressedData As Long, ByVal ptrToCompressedData As Long, ByVal sizeOfCompressedBuffer As Long, ByRef finalCompressedSize As Long) As Long
+Private Declare Function Decompress Lib "cabinet" (ByVal hCompressor As Long, ByVal ptrToCompressedData As Long, ByVal sizeOfCompressedData As Long, ByVal ptrToUncompressedData As Long, ByVal sizeOfUncompressedBuffer As Long, ByRef finalUncompressedSize As Long) As Long
+Private Declare Function CreateCompressor Lib "cabinet" (ByVal whichAlgorithm As Long, ByVal ptrToAllocationRoutines As Long, ByRef hCompressor As Long) As Long
+Private Declare Function CreateDecompressor Lib "cabinet" (ByVal whichAlgorithm As Long, ByVal ptrToAllocationRoutines As Long, ByRef hDecompressor As Long) As Long
 
 'When a compression engine is initialized successfully, the matching value in this array will be set to TRUE.
 Private m_CompressorAvailable() As Boolean
@@ -99,6 +142,8 @@ Public Function InitializeCompressionEngine(ByVal whichEngine As PD_COMPRESSION_
     
     'Skip initialization if the compressor has already been initialized
     If (Not m_CompressorAvailable(whichEngine)) Then
+        
+        'Only 3rd-party DLLs need to be initialized.
         If (whichEngine = PD_CE_ZLib) Then
             m_CompressorAvailable(whichEngine) = Plugin_zLib.InitializeZLib(pathToDLLFolder)
         ElseIf (whichEngine = PD_CE_Zstd) Then
@@ -106,7 +151,12 @@ Public Function InitializeCompressionEngine(ByVal whichEngine As PD_COMPRESSION_
         ElseIf ((whichEngine = PD_CE_Lz4) Or (whichEngine = PD_CE_Lz4HC)) Then
             m_CompressorAvailable(PD_CE_Lz4) = Plugin_lz4.InitializeLz4(pathToDLLFolder)
             m_CompressorAvailable(PD_CE_Lz4HC) = m_CompressorAvailable(PD_CE_Lz4)
+        
+        'All built-in compression engines are enabled if the user is running Windows 8 or later
+        Else
+            m_CompressorAvailable(whichEngine) = IsWin8OrLater()
         End If
+        
     End If
     
     InitializeCompressionEngine = m_CompressorAvailable(whichEngine)
@@ -123,6 +173,7 @@ Public Sub ShutDownCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES
         
         'Skip termination if the compressor has already been shut down
         If m_CompressorAvailable(whichEngine) Then
+            
             If (whichEngine = PD_CE_ZLib) Then
                 Plugin_zLib.ReleaseZLib
                 m_CompressorAvailable(PD_CE_ZLib) = False
@@ -133,7 +184,12 @@ Public Sub ShutDownCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES
                 Plugin_lz4.ReleaseLz4
                 m_CompressorAvailable(PD_CE_Lz4) = False
                 m_CompressorAvailable(PD_CE_Lz4HC) = False
+            
+            'Manual shutdown is not required for built-in Windows compressors.
+            Else
+                m_CompressorAvailable(whichEngine) = False
             End If
+            
         End If
         
     End If
@@ -206,6 +262,27 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
         CompressPtrToPtr = Plugin_lz4.Lz4CompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     ElseIf (compressionEngine = PD_CE_Lz4HC) Then
         CompressPtrToPtr = Plugin_lz4.Lz4HCCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
+    
+    'Windows compression engines all use an identical set of functions
+    Else
+    
+        'Create a matching compressor.  Note that our internal compressor enums are three larger than the default
+        ' MS compression enums (hence the "-3" below).
+        Dim hCompressor As Long
+        If (CreateCompressor(compressionEngine - 3, 0&, hCompressor) <> 0) Then
+            
+            'Use the compression handle to perform the compression
+            Dim outputSizeUsed As Long
+            CompressPtrToPtr = CBool(MS_Compress(hCompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
+            
+            'Return the number of bytes used
+            dstSizeInBytes = outputSizeUsed
+            
+            'Windows compressors must be closed when finished
+            CloseCompressor hCompressor
+            
+        End If
+        
     End If
     
     'If compression failed, perform a direct source-to-dst copy
@@ -263,6 +340,23 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
         DecompressPtrToPtr = CBool(Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
     ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4HC)) Then
         DecompressPtrToPtr = CBool(Plugin_lz4.Lz4Decompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
+    
+    'Windows compression engines all use an identical set of functions
+    Else
+    
+        'Create a matching decompressor.  Note that our internal compressor enums are three larger than the default
+        ' MS compression enums (hence the "-3" below).
+        Dim hDecompressor As Long
+        If (CreateDecompressor(compressionEngine - 3, 0&, hDecompressor) <> 0) Then
+            
+            'Use the decompression handle to perform decompression
+            Dim outputSizeUsed As Long
+            DecompressPtrToPtr = CBool(Decompress(hDecompressor, constSrcPtr, constSrcSizeInBytes, constDstPtr, dstSizeInBytes, outputSizeUsed) <> 0)
+            
+            'Windows decompressors must be closed when finished
+            CloseDecompressor hDecompressor
+            
+        End If
     End If
     
     'If compression failed, perform a direct source-to-dst copy
@@ -280,7 +374,7 @@ End Function
 'Obviously, you must pass the size of your source data, and you must also specify the desired compression engine (as they
 ' use different rules for formulating a "worst-case" size).
 Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compressionEngine As PD_COMPRESSION_ENGINES) As Long
-
+    
     If (compressionEngine = PD_CE_NoCompression) Then
         GetWorstCaseSize = srcBufferSizeInBytes
     ElseIf (compressionEngine = PD_CE_ZLib) Then
@@ -289,6 +383,93 @@ Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compr
         GetWorstCaseSize = Plugin_zstd.ZstdGetMaxCompressedSize(srcBufferSizeInBytes)
     ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4HC)) Then
         GetWorstCaseSize = Plugin_lz4.Lz4GetMaxCompressedSize(srcBufferSizeInBytes)
+    Else
+        
+        'Create a matching compressor.  Note that our internal compressor enums are three larger than the default
+        ' MS compression enums (hence the "-3" below).
+        Dim hCompressor As Long
+        If (CreateCompressor(compressionEngine - 3, 0&, hCompressor) <> 0) Then
+            
+            'Call the compressor with zeroes to establish a compression buffer size.
+            Dim outputSizeRequired As Long
+            If (MS_Compress(hCompressor, 0&, srcBufferSizeInBytes, 0&, 0&, outputSizeRequired) <> 0) Then GetWorstCaseSize = outputSizeRequired
+            GetWorstCaseSize = outputSizeRequired
+            
+            'Windows compressors must be closed when finished
+            CloseCompressor hCompressor
+            
+        End If
+        
     End If
 
 End Function
+
+'Retrieve default/min/max compression levels from a given library.  Note that these are *not* standardized,
+' meaning each library has its own default/min/max levels, and the levels mean different things in different
+' libraries.  For example, most libraries use the formula where "larger numbers = slower, better compression",
+' but lz4 is the opposite - e.g. "larger lz4 numbers = faster, worse compression".
+'
+'None of the Windows compression functions support variable compression or acceleration levels, unfortunately.
+' (Actually, this isn't *technically* true - the XPRESS and XPRESS_HUFF algorithms support levels of either
+'  "0" or "1", but I don't current implement these because the differences are small and these algorithms
+'  are terrible compared to lz4 anyway.)
+Public Function GetDefaultCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Long
+
+    If (whichEngine = PD_CE_ZLib) Then
+        GetDefaultCompressionLevel = Plugin_zLib.ZLib_GetDefaultCompressionLevel()
+    ElseIf (whichEngine = PD_CE_Zstd) Then
+        GetDefaultCompressionLevel = Plugin_zstd.Zstd_GetDefaultCompressionLevel()
+    ElseIf (whichEngine = PD_CE_Lz4) Then
+        GetDefaultCompressionLevel = Plugin_lz4.Lz4_GetDefaultAccelerationLevel()
+    ElseIf (whichEngine = PD_CE_Lz4HC) Then
+        GetDefaultCompressionLevel = Plugin_lz4.Lz4HC_GetDefaultCompressionLevel()
+    Else
+        GetDefaultCompressionLevel = 0
+    End If
+
+End Function
+
+Public Function GetMinCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Long
+    
+    If (whichEngine = PD_CE_ZLib) Then
+        GetMinCompressionLevel = Plugin_zLib.ZLib_GetMinCompressionLevel()
+    ElseIf (whichEngine = PD_CE_Zstd) Then
+        GetMinCompressionLevel = Plugin_zstd.Zstd_GetMinCompressionLevel()
+    ElseIf (whichEngine = PD_CE_Lz4) Then
+        GetMinCompressionLevel = Plugin_lz4.Lz4_GetMinAccelerationLevel()
+    ElseIf (whichEngine = PD_CE_Lz4HC) Then
+        GetMinCompressionLevel = Plugin_lz4.Lz4HC_GetMinCompressionLevel()
+    Else
+        GetMinCompressionLevel = 0
+    End If
+    
+End Function
+
+Public Function GetMaxCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGINES) As Long
+
+    If (whichEngine = PD_CE_ZLib) Then
+        GetMaxCompressionLevel = Plugin_zLib.ZLib_GetMaxCompressionLevel()
+    ElseIf (whichEngine = PD_CE_Zstd) Then
+        GetMaxCompressionLevel = Plugin_zstd.Zstd_GetMaxCompressionLevel()
+    ElseIf (whichEngine = PD_CE_Lz4) Then
+        GetMaxCompressionLevel = Plugin_lz4.Lz4_GetMaxAccelerationLevel()
+    ElseIf (whichEngine = PD_CE_Lz4HC) Then
+        GetMaxCompressionLevel = Plugin_lz4.Lz4HC_GetMaxCompressionLevel()
+    Else
+        GetMaxCompressionLevel = 0
+    End If
+
+End Function
+
+'Functions below this line require Windows 8 or later.  They use the built-in Windows Compression API.
+Private Function IsWin8OrLater() As Boolean
+    
+    Dim tOSVI As OSVERSIONINFOEX
+    tOSVI.dwOSVersionInfoSize = Len(tOSVI)
+    GetVersionEx tOSVI
+    
+    IsWin8OrLater = (tOSVI.dwMajorVersion > 6) Or ((tOSVI.dwMajorVersion = 6) And (tOSVI.dwMinorVersion >= 2))
+
+End Function
+
+
