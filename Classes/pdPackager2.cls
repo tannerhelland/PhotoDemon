@@ -250,7 +250,7 @@ Private m_File As pdFSO
 ' directory assembly process much faster (because we don't have to ReDim Preserve the directory when we run out of space).
 ' Similarly, if you have some notion of how large the data chunk will be, you can supply it in advance.  There is generally
 ' no penalty to over-estimating space, as the buffer will be trimmed before writing it out to file.
-Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0, Optional ByVal estimatedDataChunkSize As Long = 0)
+Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0, Optional ByVal estimatedDataChunkSize As Long = 0, Optional ByVal streamMode As PD_STREAM_MODE = PD_SM_MemoryBacked, Optional ByVal backingFilename As String = vbNullString)
 
     'Reset all module-level storage structs related to writing a new pdPackage file
     
@@ -297,9 +297,17 @@ Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional
     'Prepare the data buffer.  Note that chunk size is largely irrelevant for our purposes; when handed a byte array that exceeds
     ' the size of the default chunk size, the buffer class is smart enough to extend the buffer by the size of that byte array.
     ' If writing a lot of small data, however, the chunk size becomes important; try to make it large enough that you will only
-    ' require a handful of ReDim Preserve statements throughout the pdPackage assembly process.
+    ' require a few ReDim Preserve statements throughout the pdPackage assembly process.
     Set m_DataBuffer = New pdStream
-    m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , estimatedDataChunkSize
+    m_StreamMode = streamMode
+    
+    If (streamMode = PD_SM_MemoryBacked) Then
+        m_DataBuffer.StartStream PD_SM_MemoryBacked, PD_SA_ReadWrite, , estimatedDataChunkSize
+    
+    'In file-backed mode, we'll actually open the file right away, and write our nodes to it "as we go"
+    ElseIf (streamMode = PD_SM_FileBacked) Then
+        m_DataBuffer.StartStream PD_SM_FileBacked, PD_SA_ReadWrite, backingFilename, estimatedDataChunkSize, LenB(m_FileHeader), OptimizeSequentialAccess
+    End If
 
 End Sub
 
@@ -418,11 +426,10 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
     'Data compression was requested, meaning we have a bit of extra work to do.
     Else
         
-        Dim compressedData() As Byte
         Dim compressedSize As Long
         
         'copyPtrToArray will return TRUE if the data was compressed; FALSE if it was not.  There is no error state for the function.
-        If CopyPtrToArray(dataPointer, dataLength, compressedData, compressedSize, compressData, compressionLevel, False) Then
+        If CopyPtrToArray(dataPointer, dataLength, m_CompressionBuffer, compressedSize, compressData, compressionLevel, False) Then
             
             'For fun, supply some debug info on the compression.
             Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
@@ -430,13 +437,13 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         Else
             
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
-            Debug.Print "zLib compression failed; writing original uncompressed data to buffer instead..."
+            Debug.Print "Node compression failed; writing original uncompressed data to buffer instead..."
         
         End If
         
         'Copy the contents of the compressedData() array into the buffer; note that even if zLib failed, copyPtrToArray will fill compressedData()
         ' with an uncompressed copy of the source bytes (and compressedSize with the source buffer size), so we can use the same code regardless.
-        m_DataBuffer.WriteBytesFromPointer VarPtr(compressedData(0)), compressedSize
+        m_DataBuffer.WriteBytesFromPointer VarPtr(m_CompressionBuffer(0)), compressedSize
         
         If useHeaderBuffer Then
             m_NodeDirectory(nodeIndex).NodeHeaderPackedSize = compressedSize
@@ -706,6 +713,9 @@ End Function
 '                    any way; it simply specifies hints related to file caching.
 Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False) As Boolean
     
+    'Free any temporary compression buffers, as they are no longer needed
+    Erase m_CompressionBuffer
+    
     'Start by updating the file header.  Most of this will have been done when the class was initialized, but some values
     ' can't be set until all nodes have been added.
     With m_FileHeader
@@ -756,53 +766,84 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     m_FileHeader.DataChunkPosition = LenB(m_FileHeader)
     m_FileHeader.DirectoryChunkPosition = m_FileHeader.DataChunkPosition + m_FileHeader.DataChunkSizePacked
     
-    'Kill the destination file if it already exists
-    If m_File.FileExist(dstFilename) Then m_File.KillFile dstFilename
+    'If this is a memory-backed stream, kill the destination file if it already exists (because we will be writing the entire
+    ' thing from scratch).
+    If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If m_File.FileExist(dstFilename) Then m_File.KillFile dstFilename
+    
+    'If this is a file-backed stream, the node data has already been written to file.  We just need to add the file header
+    ' and the dictionary.  Close the stream.
+    Else
+        m_DataBuffer.StopStream
+    End If
     
     'Retrieve a writable handle
     Dim hFile As Long, createSuccess As Boolean
     
-    If thisIsATempFile Then
-        createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeTempFile)
-    Else
-        createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)
+    If (m_StreamMode = PD_SM_MemoryBacked) Then
+        If thisIsATempFile Then
+            createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeTempFile)
+        Else
+            createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)
+        End If
+    ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+        createSuccess = m_File.CreateAppendFileHandle(dstFilename, hFile)
     End If
     
     If createSuccess Then
     
-        'NEW TEST!  First, attempt to write out the package using a memory-mapped file.  This is much faster (comparable to
-        ' an asynchronous write) vs raw WriteData calls.
-        Dim mmapHandle As Long, mmapPtr As Long, totalWriteSize As Long
-        totalWriteSize = LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked + m_FileHeader.DirectoryChunkSizePacked
+        Dim mmapHandle As Long, mmapPtr As Long, totalWriteSize As Long, mmapOffset As Long
         
-        If m_File.ConvertFileHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize) Then
-
-            'Write out the file data using good ol' CopyMemory_Strict!
-            Dim mmapOffset As Long
-            mmapOffset = LenB(m_FileHeader)
+        'Once again, split handling based on the stream type.  For a memory-backed stream, we have to write out the entire
+        ' data chunk, but for a file-backed stream, we have much less data to write.
+        If (m_StreamMode = PD_SM_MemoryBacked) Then
+        
+            'First, attempt to write out the package using a memory-mapped file.  This can be faster (comparable to
+            ' an asynchronous write) vs raw WriteData calls.
+            totalWriteSize = LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked + m_FileHeader.DirectoryChunkSizePacked
             
-            'File header...
-            CopyMemory_Strict mmapPtr, VarPtr(m_FileHeader), mmapOffset
-            
-            'Data buffer...
-            CopyMemory_Strict mmapPtr + mmapOffset, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
-            
-            'Directory at the end...
-            CopyMemory_Strict mmapPtr + mmapOffset + m_FileHeader.DataChunkSizePacked, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
-            
-            'Release the mapped view and allow the system to write the file at its leisure
-            m_File.ReleaseMMHandle mmapHandle, mmapPtr
-
-        'If we failed to allocate sufficient memory for a memory-mapped write, fall back to default write techniques
-        Else
+            If m_File.ConvertFileHandleToMMPtr(hFile, mmapHandle, mmapPtr, totalWriteSize) Then
     
-            'Writing out the three crucial pieces of data: the header, the data, the directory
+                'Write out the file data using good ol' CopyMemory_Strict!
+                
+                mmapOffset = LenB(m_FileHeader)
+                
+                'File header...
+                CopyMemory_Strict mmapPtr, VarPtr(m_FileHeader), mmapOffset
+                
+                'Data buffer...
+                CopyMemory_Strict mmapPtr + mmapOffset, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
+                
+                'Directory at the end...
+                CopyMemory_Strict mmapPtr + mmapOffset + m_FileHeader.DataChunkSizePacked, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+                
+                'Release the mapped view and allow the system to write the file at its leisure
+                m_File.ReleaseMMHandle mmapHandle, mmapPtr
+    
+            'If we failed to allocate sufficient memory for a memory-mapped write, fall back to default write techniques
+            Else
+        
+                'Writing out the three crucial pieces of data: the header, the data, the directory
+                With m_File
+                    .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
+                    .WriteDataToFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
+                    .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
+                End With
+                
+            End If
+            
+        ElseIf (m_StreamMode = PD_SM_FileBacked) Then
+        
+            'Writing the header at the start of the file
             With m_File
+                .MoveFilePointer hFile, 0, FILE_BEGIN
                 .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
-                .WriteDataToFile hFile, m_DataBuffer.Peek_PointerOnly(0), m_FileHeader.DataChunkSizePacked
+                
+                'Skip to the end of the file, then write the directory
+                .MoveFilePointer hFile, LenB(m_FileHeader) + m_FileHeader.DataChunkSizePacked, FILE_BEGIN
                 .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), m_FileHeader.DirectoryChunkSizePacked
             End With
-            
+        
         End If
         
         m_File.CloseFileHandle hFile

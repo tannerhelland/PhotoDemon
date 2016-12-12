@@ -922,3 +922,4 @@ Public Function GetPhotoDemonMasterHWnd() As Long
     GetPhotoDemonMasterHWnd = m_ThunderMainHwnd
 
 End Function
+
