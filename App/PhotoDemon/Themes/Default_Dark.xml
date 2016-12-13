@@ -353,12 +353,12 @@
 				<DescriptionUnselected>TextDefault</DescriptionUnselected>
 				<DescriptionUnselected-hover>TextHyperlink</DescriptionUnselected-hover>
 				<DescriptionUnselected-disabled>GrayDisabled</DescriptionUnselected-disabled>
-				<TagIsWritable>#74ee79</TagIsWritable>
-				<TagIsNotWritable>#ee4d51</TagIsNotWritable>
-				<TagIsUnsafe>#ff9451</TagIsUnsafe>
+				<TagIsWritable>#06994e</TagIsWritable>
+				<TagIsNotWritable>#be003a</TagIsNotWritable>
+				<TagIsUnsafe>#ff883b</TagIsUnsafe>
 				<TextTagEditError>TextError</TextTagEditError>
-				<TagBackgroundDeleted>#ffcfd6</TagBackgroundDeleted>
-				<TagBackgroundEdited>#daffc8</TagBackgroundEdited>
+				<TagBackgroundDeleted>#d21539</TagBackgroundDeleted>
+				<TagBackgroundEdited>#57b003</TagBackgroundEdited>
 			</PDMetadataList>
 			
 			<PDNavigator>
