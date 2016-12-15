@@ -6,8 +6,8 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2075</langversion>
-<langstatus>Vollständig</langstatus>
+<langversion>6.8.2106</langversion>
+<langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
 
@@ -13743,27 +13743,27 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
-<translation>Bspw. "1.0.0". Verwenden Sie bitte das Format "Hauptversion.Unterversion.Revision".</translation>
+<translation>Verwenden Sie bitte das Format "Hauptversion.Unterversion.Revision", z. B. "1.0.0".</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
-<translation>Bspw. "Vollständig", "Unfertig" etc. Jeder deskriptive Text ist akzeptabel.</translation>
+<translation>Jeder deskriptive Text ist akzeptabel, z. B. "Komplett", "Unfertig" etc.</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
-<translation>Bspw. "Deutsch" oder "Deutsch (DE)". Dieser Text wird im Sprachmenü von PhotoDemon angezeigt.</translation>
+<translation>Dieser Text wird im Sprachmenü von PhotoDemon angezeigt, z. B. "Deutsch" oder "Deutsch (DE)".</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
-<translation>Bspw. "DE" für "Deutschland". Verwenden Sie bitte das offizielle 2-stellige ISO-3166-1-Format.</translation>
+<translation>Verwenden Sie bitte das offizielle 2-stellige ISO-3166-1-Format, z. B. "DE" für "Deutschland".</translation>
 </phrase>
 
 <phrase>
 <original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
-<translation>Bspw. "de" für "Deutsch". Verwenden Sie bitte das offizielle 2-stellige ISO-639-1-Format.</translation>
+<translation>Verwenden Sie bitte das offizielle 2-stellige ISO-639-1-Format, z. B. "de" für "Deutsch".</translation>
 </phrase>
 
 <phrase>
@@ -14049,7 +14049,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>When you are finished editing this language, please consider sharing it!  Contact me by visiting</original>
-<translation>Wenn Sie die Bearbeitung dieser Spra- che abgeschlossen haben, erwägen Sie bitte, diese zu teilen! Kontaktieren Sie mich mit dem Besuch unter</translation>
+<translation>Wenn Sie die Bearbeitung dieser Spra- che beendet haben, erwägen Sie bitte, diese zu teilen! Kontaktieren Sie mich mit dem Besuch unter</translation>
 </phrase>
 
 <phrase>
@@ -14975,6 +14975,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdResources.cls -->
+
+<!-- pdResources.cls contains 0 phrases. -->
+
+<!-- END text for pdResources.cls-->
 
 <!-- Automatic text extraction complete. -->
 
