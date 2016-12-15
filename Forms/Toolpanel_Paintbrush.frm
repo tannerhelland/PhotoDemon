@@ -26,15 +26,25 @@ Begin VB.Form toolpanel_Paintbrush
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdCheckBox chkAntialiasing 
+      Height          =   375
+      Left            =   4080
+      TabIndex        =   5
+      Top             =   840
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   661
+      Caption         =   "antialiased"
+   End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   615
+      Height          =   735
       Index           =   0
       Left            =   3960
       TabIndex        =   2
       Top             =   0
       Width           =   2250
       _ExtentX        =   3969
-      _ExtentY        =   1085
+      _ExtentY        =   1296
       Caption         =   "blend mode"
       FontSizeCaption =   10
    End
@@ -77,26 +87,26 @@ Begin VB.Form toolpanel_Paintbrush
       DefaultValue    =   100
    End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   615
+      Height          =   735
       Index           =   1
       Left            =   6360
       TabIndex        =   3
       Top             =   0
       Width           =   2250
       _ExtentX        =   3969
-      _ExtentY        =   1085
+      _ExtentY        =   1296
       Caption         =   "alpha mode"
       FontSizeCaption =   10
    End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
-      Height          =   615
+      Height          =   735
       Index           =   2
       Left            =   8760
       TabIndex        =   4
       Top             =   0
       Width           =   2250
       _ExtentX        =   3969
-      _ExtentY        =   1085
+      _ExtentY        =   1296
       Caption         =   "preview quality"
       FontSizeCaption =   10
    End
@@ -144,6 +154,14 @@ Private Sub cboBrushSetting_Click(Index As Integer)
     
     End Select
     
+End Sub
+
+Private Sub chkAntialiasing_Click()
+    If (chkAntialiasing.Value = vbChecked) Then
+        Paintbrush.SetBrushAntialiasing P2_AA_HighQuality
+    Else
+        Paintbrush.SetBrushAntialiasing P2_AA_None
+    End If
 End Sub
 
 Private Sub Form_Load()
@@ -216,6 +234,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Paintbrush.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Paintbrush.SetBrushAlphaMode cboBrushSetting(1).ListIndex
     Paintbrush.SetBrushPreviewQuality cboBrushSetting(2).ListIndex
+    If CBool(chkAntialiasing.Value) Then Paintbrush.SetBrushAntialiasing P2_AA_HighQuality Else Paintbrush.SetBrushAntialiasing P2_AA_None
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
@@ -225,4 +244,5 @@ Public Sub SyncUIToAllPaintbrushSettings()
     cboBrushSetting(0).ListIndex = Paintbrush.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Paintbrush.GetBrushAlphaMode()
     cboBrushSetting(2).ListIndex = Paintbrush.GetBrushPreviewQuality()
+    If (Paintbrush.GetBrushAntialiasing = P2_AA_HighQuality) Then chkAntialiasing.Value = vbChecked Else chkAntialiasing.Value = vbUnchecked
 End Sub
