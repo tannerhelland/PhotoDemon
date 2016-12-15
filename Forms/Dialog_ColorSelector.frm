@@ -289,6 +289,7 @@ Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 'Changing the various text boxes resyncs the dialog, unless this parameter is set.  (We use it to prevent
 ' infinite resyncs.)
 Private m_suspendTextResync As Boolean, m_suspendHexInput As Boolean
+Private m_suspendParentNotifications As Boolean
 
 Private Enum PD_COLOR_CHANGE
     ccRed = 0
@@ -379,7 +380,9 @@ End Sub
 
 'The ShowDialog routine presents the user with this form.
 Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl As pdColorSelector = Nothing)
-    
+        
+    m_suspendParentNotifications = True
+        
     'Store a reference to the calling control (if any)
     Set m_ParentColorSelector = callingControl
     
@@ -401,6 +404,7 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     Drawing2D.QuickCreatePainter m_Painter
     
     'Sync all current color values to the initial color
+    m_suspendTextResync = True
     m_CurrentColor = initialColor
     m_Red = Colors.ExtractRed(initialColor)
     m_Green = Colors.ExtractGreen(initialColor)
@@ -419,6 +423,7 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     sldHSV(1).DefaultValue = sldHSV(1).NotchValueCustom
     sldHSV(2).NotchValueCustom = m_Value * 100
     sldHSV(2).DefaultValue = sldHSV(2).NotchValueCustom
+    m_suspendTextResync = False
     
     'Synchronize the interface to this new color
     SyncInterfaceToCurrentColor
@@ -428,6 +433,8 @@ Public Sub ShowDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
+    
+    m_suspendParentNotifications = False
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -443,7 +450,9 @@ End Sub
 Private Sub SyncInterfaceToCurrentColor()
     
     'The integrated color wheel is easy.  Just make it match our current RGB values!
+    m_suspendTextResync = True
     clrWheel.Color = RGB(m_Red, m_Green, m_Blue)
+    m_suspendTextResync = False
     
     'Render the "new" and "old" color boxes on the left
     noColor.RequestRedraw True
@@ -453,7 +462,7 @@ Private Sub SyncInterfaceToCurrentColor()
     
     'If we have a reference to a parent color selection user control, notify that control that the user's color
     ' has changed.
-    If Not (m_ParentColorSelector Is Nothing) Then
+    If (Not m_ParentColorSelector Is Nothing) And (Not m_suspendParentNotifications) Then
         m_ParentColorSelector.NotifyOfLiveColorChange RGB(m_Red, m_Green, m_Blue)
     End If
     
