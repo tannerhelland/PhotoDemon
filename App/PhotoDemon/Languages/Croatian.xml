@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2039</langversion>
+<langversion>6.8.2040</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -13253,6 +13253,11 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>alpha mode</original>
 <translation>alfa način</translation>
 </phrase>
@@ -13277,7 +13282,7 @@ To omogućiti podršku za ovu značajku, molimo kopirajte FreeImage.dll podnijet
 <translation>Najbolja predstava</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14135,6 +14140,31 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>maximum number of recent file entries</original>
+<translation>Maksimalni broj nedavnih datoteka unosa</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>Lista nedavne datoteke</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>glavni prozor</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>Veličina transparentnost šahovnica</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>Transparentnost šahovske boje</translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation>Prikaz renderiranje namjera</translation>
 </phrase>
@@ -14370,41 +14400,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>korištenje ulaz praćenje visoke razlučivosti</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>miš i olovka za unos</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Maksimalni broj nedavnih datoteka unosa</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>Lista nedavne datoteke</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>glavni prozor</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>Veličina transparentnost šahovnica</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>Transparentnost šahovske boje</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(Nema)</translation>
 </phrase>
@@ -14456,11 +14451,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>Naslov bar glavnom prozoru PhotoDemon prikazuje informacije o trenutno učitava slike. Koristite ovu postavku za kontrolu koliko informacija se prikazuje.</translation>
-</phrase>
-
-<phrase>
-<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation>Praćenje visoke razlučivosti omogućuje PhotoDemon za točnije reproducirati miša i olovke pokret. Na nekim starijim računalima, sustav se bore kako bi išli ukorak s podacima dodatnih praćenje, tako da možete onemogućiti ako je potrebno.</translation>
 </phrase>
 
 <phrase>
@@ -14862,7 +14852,7 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 <translation>Ova nova lokacija privremenu mapu neće stupiti na snagu dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14985,10 +14975,10 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12719 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12676 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2040</langversion>
+<langversion>6.8.2041</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13242,6 +13242,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>alpha mode</original>
 <translation>Alpha模式</translation>
 </phrase>
@@ -13266,7 +13271,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>最佳性能</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14122,6 +14127,31 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>maximum number of recent file entries</original>
+<translation>最近文件项的最大数目</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>最近的文件列表</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>主窗口</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>透明棋盘大小</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>透明度棋盘的颜色</translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation>显示渲染目标</translation>
 </phrase>
@@ -14357,41 +14387,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>使用高分辨率输入跟踪</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>鼠标和笔输入</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>最近文件项的最大数目</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>最近的文件列表</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>主窗口</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>透明棋盘大小</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>透明度棋盘的颜色</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>（无）</translation>
 </phrase>
@@ -14443,11 +14438,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>PhotoDemon主窗口的标题栏显示有关当前加载的图像的信息， 使用此首选项可以控制显示的信息量。</translation>
-</phrase>
-
-<phrase>
-<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation>高分辨率跟踪允许PhotoDemon以更准确地再现鼠标和笔移动。在一些旧的电脑，系统可能难以跟上额外的跟踪数据，因此，如果需要的话可以禁用它。</translation>
 </phrase>
 
 <phrase>
@@ -14848,7 +14838,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹的位置将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14971,10 +14961,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12719 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12676 total words. -->
 
 </pdData>
