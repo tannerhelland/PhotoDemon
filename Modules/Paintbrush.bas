@@ -3,8 +3,8 @@ Attribute VB_Name = "Paintbrush"
 'Paintbrush tool interface
 'Copyright 2016-2016 by Tanner Helland
 'Created: 1/November/16
-'Last updated: 1/November/16
-'Last update: initial build
+'Last updated: 15/December/16
+'Last update: ongoing performance improvements
 '
 'To simplify the design of the primary canvas, it makes brush-related requests to this module.  This module
 ' then handles all the messy business of managing the actual background brush data.
@@ -41,13 +41,14 @@ Public Enum BRUSH_ATTRIBUTES
     BA_Opacity = 2
     BA_BlendMode = 3
     BA_AlphaMode = 4
+    BA_Antialiasing = 5
     
     'Source-specific values can be stored here, as relevant
     BA_SourceColor = 1000
 End Enum
 
 #If False Then
-    Private Const BA_Source = 0, BA_Size = 1, BA_Opacity = 2, BA_BlendMode = 3, BA_AlphaMode = 4
+    Private Const BA_Source = 0, BA_Size = 1, BA_Opacity = 2, BA_BlendMode = 3, BA_AlphaMode = 4, BA_Antialiasing = 5
     Private Const BA_SourceColor = 1000
 #End If
 
@@ -70,6 +71,7 @@ Private m_BrushSize As Single
 Private m_BrushOpacity As Single
 Private m_BrushBlendmode As LAYER_BLENDMODE
 Private m_BrushAlphamode As LAYER_ALPHAMODE
+Private m_BrushAntialiasing As PD_2D_Antialiasing
 
 'Note that some brush attributes only exist for certain brush sources.
 Private m_BrushSourceColor As Long
@@ -97,6 +99,9 @@ Private m_ModifiedRectF As RECTF, m_TotalModifiedRectF As RECTF
 'The number of mouse events in the *current* brush stroke.  This value is reset after every mouse release.
 ' The compositor uses this to know when to fully regenerate the paint cache from scratch.
 Private m_NumOfMouseEvents As Long
+
+'pd2D is used for certain paint features
+Private m_Painter As pd2DPainter
 
 Public Function GetBrushSource() As BRUSH_SOURCES
     GetBrushSource = m_BrushSource
@@ -131,6 +136,10 @@ End Function
 
 Public Function GetBrushAlphaMode() As LAYER_ALPHAMODE
     GetBrushAlphaMode = m_BrushAlphamode
+End Function
+
+Public Function GetBrushAntialiasing() As PD_2D_Antialiasing
+    GetBrushAntialiasing = m_BrushAntialiasing
 End Function
 
 'Brush settings that vary by source
@@ -180,6 +189,13 @@ Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As LAYER_ALPHAMODE = LA
     End If
 End Sub
 
+Public Sub SetBrushAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialiasing = P2_AA_HighQuality)
+    If (newAntialiasing <> m_BrushAntialiasing) Then
+        m_BrushAntialiasing = newAntialiasing
+        m_BrushIsReady = False
+    End If
+End Sub
+
 Public Sub SetBrushSourceColor(Optional ByVal newColor As Long = vbWhite)
     If (newColor <> m_BrushSourceColor) Then
         m_BrushSourceColor = newColor
@@ -200,6 +216,8 @@ Public Function GetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES) As Variant
             GetBrushProperty = GetBrushBlendMode()
         Case BA_AlphaMode
             GetBrushProperty = GetBrushAlphaMode()
+        Case BA_Antialiasing
+            GetBrushProperty = GetBrushAntialiasing()
         Case BA_SourceColor
             GetBrushProperty = GetBrushSourceColor()
     End Select
@@ -219,6 +237,8 @@ Public Sub SetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES, ByVal newPropVa
             SetBrushBlendMode newPropValue
         Case BA_AlphaMode
             SetBrushAlphaMode newPropValue
+        Case BA_Antialiasing
+            SetBrushAntialiasing newPropValue
         Case BA_SourceColor
             SetBrushSourceColor newPropValue
     End Select
@@ -319,11 +339,8 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         UpdateModifiedRect srcX, srcY, isFirstStroke
         
         'Create required pd2D drawing tools (a painter and surface)
-        Dim cPainter As pd2DPainter
-        Drawing2D.QuickCreatePainter cPainter
-        
         Dim cSurface As pd2DSurface
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, True
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, CBool(m_BrushAntialiasing = P2_AA_HighQuality)
         
         Dim cPen As pd2DPen
         Drawing2D.QuickCreateSolidPen cPen, m_BrushSize, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
@@ -333,12 +350,12 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
             'GDI+ refuses to draw a line if the start and end points match; this isn't documented (as far as I know),
             ' but it may exist to provide backwards compatibility with GDI, which deliberately leaves the last point
             ' of a line unplotted, in case you are drawing multiple connected lines.
-            cPainter.DrawLineF cSurface, cPen, srcX, srcY, srcX - 0.01, srcY - 0.01
+            m_Painter.DrawLineF cSurface, cPen, srcX, srcY, srcX - 0.01, srcY - 0.01
         Else
-            cPainter.DrawLineF cSurface, cPen, m_MouseX, m_MouseY, srcX, srcY
+            m_Painter.DrawLineF cSurface, cPen, m_MouseX, m_MouseY, srcX, srcY
         End If
         
-        Set cPainter = Nothing: Set cSurface = Nothing: Set cPen = Nothing
+        Set cSurface = Nothing: Set cPen = Nothing
         
         pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
         
@@ -505,10 +522,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim innerPen As pd2DPen, outerPen As pd2DPen
     Drawing2D.QuickCreatePairOfUIPens outerPen, innerPen
     
-    'Create other required pd2D drawing tools (a painter and surface)
-    Dim cPainter As pd2DPainter
-    Drawing2D.QuickCreatePainter cPainter
-    
+    'Create other required pd2D drawing tools (a surface)
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, targetCanvas.hDC, True
     
@@ -518,10 +532,10 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     outerCrossBorder = 0.5
     
     If (Not m_MouseDown) Then
-        cPainter.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-        cPainter.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-        cPainter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-        cPainter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+        m_Painter.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
+        m_Painter.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
+        m_Painter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
+        m_Painter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
     End If
     
     'If size allows, render a transformed brush outline onto the canvas as well
@@ -534,11 +548,11 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         copyOfBrushOutline.CloneExistingPath m_BrushOutlinePath
         copyOfBrushOutline.ApplyTransformation canvasMatrix
     
-        cPainter.DrawPath cSurface, outerPen, copyOfBrushOutline
-        cPainter.DrawPath cSurface, innerPen, copyOfBrushOutline
+        m_Painter.DrawPath cSurface, outerPen, copyOfBrushOutline
+        m_Painter.DrawPath cSurface, innerPen, copyOfBrushOutline
     End If
     
-    Set cPainter = Nothing: Set cSurface = Nothing
+    Set cSurface = Nothing
     Set innerPen = Nothing: Set outerPen = Nothing
     
 End Sub
@@ -552,6 +566,8 @@ End Function
 'Any specialized initialization tasks can be handled here.  This function is called early in the PD load process.
 Public Sub InitializeBrushEngine()
     m_BrushPreviewQuality = PD_PERF_BALANCED
+    m_BrushAntialiasing = P2_AA_HighQuality
+    Drawing2D.QuickCreatePainter m_Painter
 End Sub
 
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached
@@ -560,4 +576,5 @@ Public Sub FreeBrushResources()
     Set m_GDIPPen = Nothing
     Set m_BrushOutlineImage = Nothing
     Set m_BrushOutlinePath = Nothing
+    Set m_Painter = Nothing
 End Sub
