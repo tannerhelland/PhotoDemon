@@ -616,7 +616,7 @@ Private Sub ApplyIndentation(ByRef srcString As String)
         End If
     
         'Apply any accumulated tabs to the start of this line
-        If numOfTabs > 0 Then
+        If (numOfTabs > 0) Then
             For j = 1 To numOfTabs
                 xmlArray(i) = vbTab & xmlArray(i)
             Next j
@@ -636,7 +636,7 @@ Private Sub ApplyIndentation(ByRef srcString As String)
     Loop
     
     'The i variable is now pointing at the line number of the closing tag.  ReDim the array to remove anything past this point.
-    If i > 0 Then ReDim Preserve xmlArray(0 To i + 1) As String
+    If (i > 0) Then ReDim Preserve xmlArray(0 To i + 1) As String
     
     'Once all tabs have been inserted, reassemble the original string
     srcString = Join$(xmlArray, vbCrLf)
@@ -812,8 +812,8 @@ Public Function GetTagValueAtPreciseLocation(ByVal startPosition As Long) As Str
 End Function
 
 'Return a location pointer immediately following the location of a given tag (assumed to be unique)
-Public Function GetLocationOfTag(ByVal TagName As String) As Long
-    GetLocationOfTag = InStr(1, m_xmlContents, "<" & TagName & ">", m_TextCompareMode)
+Public Function GetLocationOfTag(ByVal TagName As String, Optional ByVal startLocation As Long = 1) As Long
+    GetLocationOfTag = InStr(startLocation, m_xmlContents, "<" & TagName & ">", m_TextCompareMode)
 End Function
 
 'Return a location pointer immediately following the location of a given tag+attribute combo

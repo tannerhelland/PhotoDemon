@@ -1055,90 +1055,91 @@ End Function
 Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB) As Boolean
         
     'Some functions may call this before GDI+ has loaded; exit if that happens
-    If Not Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
-        LoadResourceToDIB = False
-        Exit Function
-    End If
+    If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
+            
+        'Start by extracting the resource data (typically a PNG) into a bytestream
+        Dim ImageData() As Byte
+        ImageData() = LoadResData(resTitle, "CUSTOM")
         
-    'Start by extracting the resource data (typically a PNG) into a bytestream
-    Dim ImageData() As Byte
-    ImageData() = LoadResData(resTitle, "CUSTOM")
-    
-    Dim IStream As IUnknown
-    Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
-    
-    If Not (IStream Is Nothing) Then
+        Dim IStream As IUnknown
+        Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
         
-        'Use GDI+ to convert the bytestream into a usable image
-        ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
-        Dim gdipBitmap As Long
-        If GdipLoadImageFromStream(IStream, gdipBitmap) = 0 Then
-        
-            'Retrieve the image's size and pixel format
-            Dim tmpRect As RECTF
-            GdipGetImageBounds gdipBitmap, tmpRect, UnitPixel
+        If (Not IStream Is Nothing) Then
             
-            Dim gdiPixelFormat As Long
-            GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
+            'Use GDI+ to convert the bytestream into a usable image
+            ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
+            Dim gdipBitmap As Long
+            If (GdipLoadImageFromStream(IStream, gdipBitmap) = 0) Then
             
-            'Create the DIB anew as necessary
-            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-            
-            'If the image has an alpha channel, create a 32bpp DIB to receive it
-            If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 32
-                dstDIB.SetInitialAlphaPremultiplicationState True
-            Else
-                dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 24
-            End If
-            
-            'Convert the GDI+ bitmap to a standard Windows hBitmap
-            Dim hBitmap As Long
-            If GdipCreateHBITMAPFromBitmap(gdipBitmap, hBitmap, vbBlack) = 0 Then
-            
-                'Select the hBitmap into a new DC so we can BitBlt it into the target DIB
-                Dim gdiDC As Long
-                gdiDC = GDI.GetMemoryDC()
+                'Retrieve the image's size and pixel format
+                Dim tmpRect As RECTF
+                GdipGetImageBounds gdipBitmap, tmpRect, UnitPixel
                 
-                Dim oldBitmap As Long
-                oldBitmap = SelectObject(gdiDC, hBitmap)
+                Dim gdiPixelFormat As Long
+                GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
                 
-                'Copy the GDI+ bitmap into the DIB
-                BitBlt dstDIB.GetDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
+                'Create the DIB anew as necessary
+                If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
                 
-                'Release the original DDB and temporary device context
-                SelectObject gdiDC, oldBitmap
-                DeleteObject hBitmap
-                GDI.FreeMemoryDC gdiDC
+                'If the image has an alpha channel, create a 32bpp DIB to receive it
+                If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
+                    dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 32
+                    dstDIB.SetInitialAlphaPremultiplicationState True
+                Else
+                    dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 24
+                End If
                 
-                'As an added bonus, free the destination DIB from its DC as well.  (pdDIB objects automatically
-                ' select themselves into a DC, as necessary, so if this DIB isn't needed right away, we can
-                ' spare usage of a DC until it actually needs to be rendered.)
-                dstDIB.FreeFromDC
+                'Convert the GDI+ bitmap to a standard Windows hBitmap
+                Dim hBitmap As Long
+                If (GdipCreateHBITMAPFromBitmap(gdipBitmap, hBitmap, vbBlack) = 0) Then
                 
-                LoadResourceToDIB = True
+                    'Select the hBitmap into a new DC so we can BitBlt it into the target DIB
+                    Dim gdiDC As Long
+                    gdiDC = GDI.GetMemoryDC()
+                    
+                    Dim oldBitmap As Long
+                    oldBitmap = SelectObject(gdiDC, hBitmap)
+                    
+                    'Copy the GDI+ bitmap into the DIB
+                    BitBlt dstDIB.GetDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
+                    
+                    'Release the original DDB and temporary device context
+                    SelectObject gdiDC, oldBitmap
+                    DeleteObject hBitmap
+                    GDI.FreeMemoryDC gdiDC
+                    
+                    'As an added bonus, free the destination DIB from its DC as well.  (pdDIB objects automatically
+                    ' select themselves into a DC, as necessary, so if this DIB isn't needed right away, we can
+                    ' spare usage of a DC until it actually needs to be rendered.)
+                    dstDIB.FreeFromDC
+                    
+                    LoadResourceToDIB = True
+                    
+                Else
+                    LoadResourceToDIB = False
+                    Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
+                End If
                 
+                'Release the GDI+ bitmap
+                GdipDisposeImage gdipBitmap
+                    
             Else
                 LoadResourceToDIB = False
-                Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
+                Debug.Print "GDI+ failed to load requested resource " & resTitle & " from stream."
             End If
+        
+            'Free the memory stream
+            Set IStream = Nothing
             
-            'Release the GDI+ bitmap
-            GdipDisposeImage gdipBitmap
-                
         Else
             LoadResourceToDIB = False
-            Debug.Print "GDI+ failed to load requested resource " & resTitle & " from stream."
+            Debug.Print "Could not load requested resource " & resTitle & " from file."
         End If
-    
-        'Free the memory stream
-        Set IStream = Nothing
         
     Else
         LoadResourceToDIB = False
-        Debug.Print "Could not load requested resource " & resTitle & " from file."
     End If
-    
+        
 End Function
 
 'PD will automatically update its taskbar icon to reflect the current image being edited.  I find this especially helpful
