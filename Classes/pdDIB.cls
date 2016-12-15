@@ -995,10 +995,14 @@ Private Sub Class_Terminate()
 End Sub
 
 'Draw this DIB to a picture box. The image will be automatically centered and sized to fit.
-Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False)
+Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False, Optional ByVal suspendTransparencyGrid As Boolean = False)
 
     'Erase any existing picture
-    If dstPicture.AutoRedraw Then dstPicture.Picture = LoadPicture("")
+    If dstPicture.AutoRedraw Then
+        dstPicture.Picture = LoadPicture("")
+    Else
+        dstPicture.Cls
+    End If
     
     Dim dstWidth As Double, dstHeight As Double
     dstWidth = dstPicture.ScaleWidth
@@ -1022,9 +1026,9 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     
     'Calculate the aspect ratio of this DIB and the target picture box
     Dim srcAspect As Double, dstAspect As Double
-    If srcHeight > 0 Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
-    If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
-        
+    If (srcHeight > 0) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
+    If (dstHeight > 0) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
+    
     Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
     ConvertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
     
@@ -1032,7 +1036,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         previewX = (dstPicture.ScaleWidth - srcWidth) / 2
         previewY = (dstPicture.ScaleHeight - srcHeight) / 2
     Else
-        If srcAspect > dstAspect Then
+        If (srcAspect > dstAspect) Then
             previewY = CLng((dstHeight - dHeight) / 2)
             previewX = 0
         Else
@@ -1045,15 +1049,14 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     ' performance issues with WCS; I'm working on an LittleCMS-based fix for the 7.0 release.
     If colorManagementMatters Then
         
-        'Create a temporary DIB to house the stretched image.  This is required for proper GDI-based color management.
+        'Create a temporary DIB to house the stretched image.  Because the stretched image is typically smaller than
+        ' the original image, this reduces color management time.
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        tmpDIB.CreateBlank dWidth, dHeight, 24
+        tmpDIB.CreateBlank dWidth, dHeight, m_dibColorDepth, 0, 0
         
-        'For 24bpp images, simply copy over the current image data
         If (m_dibColorDepth = 24) Then
         
-            'If the target area is smaller than the DIB, request halftoning
             If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
                 SetStretchBltMode tmpDIB.GetDIBDC, STRETCHBLT_HALFTONE
             Else
@@ -1062,21 +1065,22 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
             
             StretchBlt tmpDIB.GetDIBDC, 0, 0, dWidth, dHeight, Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, vbSrcCopy
         
-        'For 32bpp images, we must first apply a background checkerboard pattern, then alpha-blend the resized
-        ' image onto it.
         Else
-            GDI_Plus.GDIPlusFillDIBRect_Pattern tmpDIB, 0, 0, dWidth, dHeight, g_CheckerboardPattern
             GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight
         End If
         
-        'TODO: migrate this to LittleCMS... also, see where this function is still used in PD!
-        'Activate color management for the destination picture box
-        'AssignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
-        'TurnOnColorManagementForDC dstPicture.hDC
+        'Apply display color management now
+        ColorManagement.ApplyDisplayColorManagement tmpDIB
         
         'Render the image to the picture box
-        BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+        If (m_dibColorDepth = 24) Then
+            BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+        Else
+            If (Not suspendTransparencyGrid) Then GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern, dstPicture.hDC
+            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, dWidth, dHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, , , dstPicture.hDC
+        End If
         
+    'If color management is *not* required, we don't need a temporary DIB - just render directly onto the target.
     Else
         
         'For 24bpp images, simply copy over the current image data
@@ -1094,7 +1098,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         'For 32bpp images, we must first apply a background checkerboard pattern, then alpha-blend the resized
         ' image onto it.
         Else
-            GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern, dstPicture.hDC
+            If (Not suspendTransparencyGrid) Then GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern, dstPicture.hDC
             GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight, , , dstPicture.hDC
         End If
         
@@ -1539,13 +1543,13 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     Dim checkAlpha As Byte, tmpAlpha As Double
     
     'Because our alpha values are pre-multiplied, we can composite them against the background color via use of a look-up table.
-    Dim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
     For x = 0 To 255
         tmpAlpha = 1 - (x / 255)
         rLookup(x) = Int(newR * tmpAlpha)
-        gLookUp(x) = Int(newG * tmpAlpha)
+        gLookup(x) = Int(newG * tmpAlpha)
         bLookup(x) = Int(newB * tmpAlpha)
     Next x
     
@@ -1574,7 +1578,7 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
                 'Use that alpha value to blend the current colors with the newly requested color
                 If m_IsAlphaPremultiplied Then
                     dibPixels(x) = dibPixels(x) + bLookup(checkAlpha)
-                    dibPixels(x + 1) = dibPixels(x + 1) + gLookUp(checkAlpha)
+                    dibPixels(x + 1) = dibPixels(x + 1) + gLookup(checkAlpha)
                     dibPixels(x + 2) = dibPixels(x + 2) + rLookup(checkAlpha)
                 Else
                 

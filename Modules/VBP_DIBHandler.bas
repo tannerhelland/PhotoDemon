@@ -381,11 +381,11 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         conversionFactor = (255 / (numOfShades - 1))
         
         'Build a look-up table for our custom grayscale conversion results
-        Dim gLookUp(0 To 255) As Byte
+        Dim gLookup(0 To 255) As Byte
         For x = 0 To 255
             grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
             If grayVal > 255 Then grayVal = 255
-            gLookUp(x) = CByte(grayVal)
+            gLookup(x) = CByte(grayVal)
         Next x
             
         'Now we can loop through each pixel in the image, converting values as we go
@@ -413,7 +413,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             If grayVal > 255 Then grayVal = 255
             
             'If less than 256 shades are in play, calculate that now as well
-            grayVal = gLookUp(grayVal)
+            grayVal = gLookup(grayVal)
             
             'If alpha is premultiplied, calculate that now
             If alphaIsPremultiplied Then
@@ -821,6 +821,69 @@ Public Function ApplyBinaryTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTra
         End If
     Else
         Debug.Print "WARNING!  pdDIB.ApplyBinaryTransparencyTable() requires a 32-bpp DIB to operate correctly."
+    End If
+    
+End Function
+
+'Forcibly colorize a DIB.  Alpha is preserved by this function.
+'Returns: TRUE if successful; FALSE otherwise
+Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Boolean
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+            
+            Dim x As Long, y As Long, finalX As Long, finalY As Long, xLookup As Long
+            finalX = (srcDIB.GetDIBWidth - 1)
+            finalY = (srcDIB.GetDIBHeight - 1)
+            
+            Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
+            ReDim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+            Dim chkA As Byte
+            
+            Dim targetR As Long, targetG As Long, targetB As Long
+            targetR = Colors.ExtractRed(newColor)
+            targetG = Colors.ExtractGreen(newColor)
+            targetB = Colors.ExtractBlue(newColor)
+            
+            'Construct lookup tables with premultiplied RGB values.  This prevents us from needing
+            ' to un-premultiply values in advance, and post-premultiply values afterward.
+            Dim aFloat As Double
+            For x = 0 To 255
+                aFloat = CDbl(x) / 255
+                rLookup(x) = targetR * aFloat
+                gLookup(x) = targetG * aFloat
+                bLookup(x) = targetB * aFloat
+            Next x
+            
+            Dim iData() As Byte, tmpSA As SAFEARRAY2D
+            srcDIB.WrapArrayAroundDIB iData, tmpSA
+                
+            'Loop through the image, checking alphas as we go
+            For y = 0 To finalY
+            For x = 0 To finalX
+                
+                xLookup = x * 4
+                
+                chkA = iData(xLookup + 3, y)
+                
+                iData(xLookup, y) = bLookup(chkA)
+                iData(xLookup + 1, y) = gLookup(chkA)
+                iData(xLookup + 2, y) = rLookup(chkA)
+                
+            Next x
+            Next y
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            srcDIB.UnwrapArrayFromDIB iData
+            srcDIB.SetInitialAlphaPremultiplicationState True
+            
+            ColorizeDIB = True
+            
+        End If
+    Else
+        Debug.Print "WARNING!  DIB_Support.ColorizeDIB() requires a 32-bpp DIB to operate correctly."
     End If
     
 End Function
