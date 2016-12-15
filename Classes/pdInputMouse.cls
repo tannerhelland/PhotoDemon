@@ -758,10 +758,8 @@ Private Sub Class_Initialize()
     m_DelayTrackingActive = True
     m_DelayThreshold = DEFAULT_DELAY_THRESHOLD_MS
     
-    'In debug builds, high-resolution mode is made enabled automatically - but note that this value can be overridden by
-    ' a global value, currently used for further testing (and controllable from the Tools > Options dialog).
-    ' TODO: revisit this in final builds to make sure the default result provides the best experience.
-    m_HighResModeActive = True
+    'In debug builds, high-resolution mode is disabled by default.  In PD, we typically only use this for paintbrushes.
+    m_HighResModeActive = False
     
 End Sub
 
@@ -882,7 +880,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                         'There are two ways to raise MouseMove events for a window.  If high-resolution tracking is active,
                         ' we need to reconstruct any missing mouse events and raise them all in turn.  Otherwise, we can
                         ' simply return this event.
-                        If m_HighResModeActive And g_HighResolutionInput Then
+                        If m_HighResModeActive Then
                             ReconstructMouseMoveHistory retMouseButton, retShiftConstants, mouseX, mouseY, msgTimestamp, lng_hWnd
                         Else
                             
