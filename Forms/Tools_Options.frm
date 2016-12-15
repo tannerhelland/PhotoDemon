@@ -28,7 +28,7 @@ Begin VB.Form FormPreferences
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   38
+      TabIndex        =   37
       Top             =   6870
       Width           =   11505
       _ExtentX        =   20294
@@ -37,11 +37,145 @@ Begin VB.Form FormPreferences
    Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
-      TabIndex        =   34
+      TabIndex        =   33
       Top             =   120
       Width           =   2625
       _ExtentX        =   4630
       _ExtentY        =   11774
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   6660
+      Index           =   0
+      Left            =   3000
+      TabIndex        =   0
+      Top             =   120
+      Width           =   8295
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdDropDown cboMRUCaption 
+         Height          =   810
+         Left            =   240
+         TabIndex        =   1
+         Top             =   1800
+         Width           =   7800
+         _ExtentX        =   13758
+         _ExtentY        =   1429
+         Caption         =   "recently used file shortcuts:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboImageCaption 
+         Height          =   810
+         Left            =   240
+         TabIndex        =   2
+         Top             =   360
+         Width           =   7800
+         _ExtentX        =   13758
+         _ExtentY        =   1429
+         Caption         =   "main window title bar text: "
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdSpinner tudRecentFiles 
+         Height          =   345
+         Left            =   3900
+         TabIndex        =   5
+         Top             =   2640
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+         DefaultValue    =   10
+         Min             =   1
+         Max             =   32
+         Value           =   10
+      End
+      Begin PhotoDemon.pdLabel lblRecentFileCount 
+         Height          =   240
+         Left            =   240
+         Top             =   2670
+         Width           =   3480
+         _ExtentX        =   6138
+         _ExtentY        =   423
+         Caption         =   "maximum number of recent file entries: "
+         ForeColor       =   4210752
+         Layout          =   2
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   13
+         Left            =   0
+         Top             =   1440
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "recent files list"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblInterfaceTitle 
+         Height          =   285
+         Index           =   4
+         Left            =   0
+         Top             =   0
+         Width           =   8100
+         _ExtentX        =   14288
+         _ExtentY        =   503
+         Caption         =   "main window"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
+         Height          =   810
+         Left            =   240
+         TabIndex        =   45
+         Top             =   4530
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1429
+         Caption         =   "transparency checkerboard size:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdDropDown cboAlphaCheck 
+         Height          =   795
+         Left            =   240
+         TabIndex        =   46
+         Top             =   3660
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1402
+         Caption         =   "transparency checkerboard colors:"
+         FontSizeCaption =   10
+      End
+      Begin PhotoDemon.pdColorSelector csAlphaOne 
+         Height          =   435
+         Left            =   6240
+         TabIndex        =   47
+         Top             =   3990
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+         ShowMainWindowColor=   0   'False
+      End
+      Begin PhotoDemon.pdColorSelector csAlphaTwo 
+         Height          =   435
+         Left            =   7320
+         TabIndex        =   48
+         Top             =   3990
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+         ShowMainWindowColor=   0   'False
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   3240
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "transparency"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   6660
@@ -55,7 +189,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
          Height          =   735
          Left            =   240
-         TabIndex        =   45
+         TabIndex        =   44
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -66,7 +200,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdColorProfilePath 
          Height          =   375
          Left            =   7380
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   2760
          Width           =   810
          _ExtentX        =   1429
@@ -76,7 +210,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboMonitors 
          Height          =   690
          Left            =   780
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   1590
          Width           =   7440
          _ExtentX        =   13123
@@ -87,7 +221,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtColorProfilePath 
          Height          =   315
          Left            =   900
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   2790
          Width           =   6375
          _ExtentX        =   11245
@@ -98,7 +232,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   240
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   480
          Width           =   7920
          _ExtentX        =   13970
@@ -110,7 +244,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   840
          Width           =   7920
          _ExtentX        =   13970
@@ -144,7 +278,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   2
          Left            =   240
-         TabIndex        =   44
+         TabIndex        =   43
          Top             =   1200
          Width           =   7920
          _ExtentX        =   13970
@@ -156,7 +290,7 @@ Begin VB.Form FormPreferences
       Height          =   6660
       Index           =   2
       Left            =   3000
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   120
       Width           =   8295
       _ExtentX        =   0
@@ -164,7 +298,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
          Height          =   330
          Left            =   240
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -174,7 +308,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
          Height          =   690
          Left            =   240
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   2775
          Width           =   7980
          _ExtentX        =   14076
@@ -185,7 +319,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboSaveBehavior 
          Height          =   690
          Left            =   240
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   1365
          Width           =   7980
          _ExtentX        =   14076
@@ -244,7 +378,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataListPD 
          Height          =   375
          Left            =   240
-         TabIndex        =   43
+         TabIndex        =   42
          Top             =   4200
          Width           =   7935
          _ExtentX        =   13996
@@ -256,7 +390,7 @@ Begin VB.Form FormPreferences
       Height          =   6660
       Index           =   1
       Left            =   3000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   120
       Width           =   8295
       _ExtentX        =   0
@@ -264,7 +398,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkToneMapping 
          Height          =   330
          Left            =   240
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -274,7 +408,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkLoadingOrientation 
          Height          =   330
          Left            =   240
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   3360
          Width           =   7920
          _ExtentX        =   13970
@@ -284,7 +418,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboLargeImages 
          Height          =   690
          Left            =   240
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   4320
          Width           =   7980
          _ExtentX        =   14076
@@ -343,7 +477,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataBinary 
          Height          =   330
          Left            =   240
-         TabIndex        =   39
+         TabIndex        =   38
          Top             =   2400
          Width           =   7920
          _ExtentX        =   13970
@@ -354,7 +488,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
          Height          =   330
          Left            =   240
-         TabIndex        =   40
+         TabIndex        =   39
          Top             =   1680
          Width           =   7920
          _ExtentX        =   13970
@@ -364,7 +498,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
          Height          =   330
          Left            =   240
-         TabIndex        =   41
+         TabIndex        =   40
          Top             =   2040
          Width           =   7920
          _ExtentX        =   13970
@@ -375,7 +509,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
          Height          =   330
          Left            =   240
-         TabIndex        =   42
+         TabIndex        =   41
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -395,7 +529,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdSlider sltUndoCompression 
          Height          =   765
          Left            =   240
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   5370
          Width           =   7980
          _ExtentX        =   14076
@@ -410,7 +544,7 @@ Begin VB.Form FormPreferences
          Height          =   690
          Index           =   0
          Left            =   180
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   360
          Width           =   7920
          _ExtentX        =   13970
@@ -422,7 +556,7 @@ Begin VB.Form FormPreferences
          Height          =   690
          Index           =   1
          Left            =   180
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   1620
          Width           =   7920
          _ExtentX        =   13970
@@ -434,7 +568,7 @@ Begin VB.Form FormPreferences
          Height          =   690
          Index           =   2
          Left            =   180
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   2880
          Width           =   7920
          _ExtentX        =   13970
@@ -446,7 +580,7 @@ Begin VB.Form FormPreferences
          Height          =   690
          Index           =   3
          Left            =   180
-         TabIndex        =   25
+         TabIndex        =   24
          Top             =   4110
          Width           =   7920
          _ExtentX        =   13970
@@ -552,7 +686,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   6000
          Width           =   7935
          _ExtentX        =   13996
@@ -562,7 +696,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdTmpPath 
          Height          =   450
          Left            =   7680
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   435
          Width           =   525
          _ExtentX        =   926
@@ -572,7 +706,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButtonToolbox cmdCopyReportClipboard 
          Height          =   570
          Left            =   7650
-         TabIndex        =   32
+         TabIndex        =   31
          Top             =   3315
          Width           =   570
          _ExtentX        =   1005
@@ -582,7 +716,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtHardware 
          Height          =   1785
          Left            =   240
-         TabIndex        =   26
+         TabIndex        =   25
          Top             =   2040
          Width           =   7335
          _ExtentX        =   12938
@@ -593,7 +727,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   27
+         TabIndex        =   26
          Top             =   510
          Width           =   7335
          _ExtentX        =   12938
@@ -708,7 +842,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   0
          Left            =   240
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   2280
          Width           =   7935
          _ExtentX        =   13996
@@ -719,7 +853,7 @@ Begin VB.Form FormPreferences
          Height          =   735
          Index           =   0
          Left            =   240
-         TabIndex        =   29
+         TabIndex        =   28
          Top             =   480
          Width           =   7935
          _ExtentX        =   13996
@@ -731,7 +865,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   1
          Left            =   240
-         TabIndex        =   30
+         TabIndex        =   29
          Top             =   2760
          Width           =   7935
          _ExtentX        =   13996
@@ -742,7 +876,7 @@ Begin VB.Form FormPreferences
          Height          =   735
          Index           =   1
          Left            =   240
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   1350
          Width           =   7935
          _ExtentX        =   13996
@@ -766,168 +900,12 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   2
          Left            =   240
-         TabIndex        =   33
+         TabIndex        =   32
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
          _ExtentY        =   582
          Caption         =   "notify me when an update is ready"
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   6660
-      Index           =   0
-      Left            =   3000
-      TabIndex        =   0
-      Top             =   120
-      Width           =   8295
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdDropDown cboMRUCaption 
-         Height          =   690
-         Left            =   240
-         TabIndex        =   1
-         Top             =   2760
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   582
-         Caption         =   "recently used file shortcuts:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboImageCaption 
-         Height          =   690
-         Left            =   240
-         TabIndex        =   2
-         Top             =   360
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   582
-         Caption         =   "main window title bar text: "
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdSpinner tudRecentFiles 
-         Height          =   345
-         Left            =   3900
-         TabIndex        =   5
-         Top             =   3600
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-         DefaultValue    =   10
-         Min             =   1
-         Max             =   32
-         Value           =   10
-      End
-      Begin PhotoDemon.pdCheckBox chkMouseHighResolution 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   8
-         Top             =   1800
-         Width           =   7800
-         _ExtentX        =   13758
-         _ExtentY        =   582
-         Caption         =   "use high-resolution input tracking"
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   1440
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "mouse and pen input"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblRecentFileCount 
-         Height          =   240
-         Left            =   240
-         Top             =   3630
-         Width           =   3480
-         _ExtentX        =   6138
-         _ExtentY        =   423
-         Caption         =   "maximum number of recent file entries: "
-         ForeColor       =   4210752
-         Layout          =   2
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   13
-         Left            =   0
-         Top             =   2400
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "recent files list"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblInterfaceTitle 
-         Height          =   285
-         Index           =   4
-         Left            =   0
-         Top             =   0
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "main window"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
-         Height          =   690
-         Left            =   240
-         TabIndex        =   46
-         Top             =   5490
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1217
-         Caption         =   "transparency checkerboard size:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboAlphaCheck 
-         Height          =   690
-         Left            =   240
-         TabIndex        =   47
-         Top             =   4620
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1217
-         Caption         =   "transparency checkerboard colors:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdColorSelector csAlphaOne 
-         Height          =   435
-         Left            =   6240
-         TabIndex        =   48
-         Top             =   4830
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-         ShowMainWindowColor=   0   'False
-      End
-      Begin PhotoDemon.pdColorSelector csAlphaTwo 
-         Height          =   435
-         Left            =   7320
-         TabIndex        =   49
-         Top             =   4830
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-         ShowMainWindowColor=   0   'False
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   4200
-         Width           =   8205
-         _ExtentX        =   14473
-         _ExtentY        =   503
-         Caption         =   "transparency"
-         FontSize        =   12
-         ForeColor       =   4210752
       End
    End
 End
@@ -1107,10 +1085,6 @@ Private Sub cmdBarMini_OKClick()
         
         'START/END image window caption length
             g_UserPreferences.SetPref_Long "Interface", "Window Caption Length", cboImageCaption.ListIndex
-        
-        'START/END high-res input tracking
-            g_UserPreferences.SetPref_Boolean "Interface", "High Resolution Input", CBool(chkMouseHighResolution.Value)
-            g_HighResolutionInput = CBool(chkMouseHighResolution.Value)
         
         Dim mruNeedsToBeRebuilt As Boolean
         mruNeedsToBeRebuilt = False
@@ -1441,11 +1415,7 @@ Private Sub LoadAllPreferences()
             cboImageCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0)
             cboImageCaption.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
         'END image window caption length
-        
-        'START mouse and pen input
-            If g_UserPreferences.GetPref_Boolean("Interface", "High Resolution Input", True) Then chkMouseHighResolution.Value = vbChecked Else chkMouseHighResolution.Value = vbUnchecked
-            chkMouseHighResolution.AssignTooltip "High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary."
-        
+                
         'START Recent file max count
             lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent file entries: ")
             tudRecentFiles.SetLeft lblRecentFileCount.GetLeft + lblRecentFileCount.GetWidth + FixDPI(6)
