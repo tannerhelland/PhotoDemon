@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2039</langversion>
+<langversion>6.8.2040</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -13254,6 +13254,11 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>alpha mode</original>
 <translation>mod alpha</translation>
 </phrase>
@@ -13278,7 +13283,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>persembahan terbaik</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14136,6 +14141,31 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>maximum number of recent file entries</original>
+<translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>senarai fail baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>tetingkap utama</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>saiz ketelusan papan main dam</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>warna ketelusan papan main dam</translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation>paparan rendering niat</translation>
 </phrase>
@@ -14371,41 +14401,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>menggunakan Penjejakan input resolusi tinggi</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>tetikus dan input pen</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>senarai fail baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>tetingkap utama</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>saiz ketelusan papan main dam</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>warna ketelusan papan main dam</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(Tiada)</translation>
 </phrase>
@@ -14457,11 +14452,6 @@ Are anda pasti anda mahu teruskan?</translation>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>Bar tajuk tetingkap PhotoDemon utama memaparkan maklumat tentang imej yang sedang dimuatkan. Gunakan pilihan ini untuk mengawal berapa banyak maklumat yang dipaparkan.</translation>
-</phrase>
-
-<phrase>
-<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation>Pengesanan tinggi resolusi membolehkan PhotoDemon untuk mengeluarkan semula tetikus dan gerakan pen dengan lebih tepat. Pada sesetengah komputer yang lebih tua, sistem yang boleh berjuang untuk bersaing dengan data pengesanan tambahan, jadi anda boleh mematikan ini jika perlu.</translation>
 </phrase>
 
 <phrase>
@@ -14863,7 +14853,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>lokasi folder sementara yang baru ini tidak akan berfungsi sehingga anda memulakan semula program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14986,10 +14976,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12719 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12676 total words. -->
 
 </pdData>

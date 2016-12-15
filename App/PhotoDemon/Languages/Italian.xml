@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.222</langversion>
+<langversion>6.7.223</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13241,6 +13241,11 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>alpha mode</original>
 <translation></translation>
 </phrase>
@@ -13265,7 +13270,7 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14123,6 +14128,31 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>maximum number of recent file entries</original>
+<translation>numero massimo di voci dei file recenti</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>lista dei file recenti</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>dimensione della scacchiera per la trasparenza</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>dimensione della scacchiera per i colori</translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation></translation>
 </phrase>
@@ -14358,41 +14388,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>utilizzare il monitoraggio di ingresso ad alta risoluzione</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>mouse e di input penna</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>numero massimo di voci dei file recenti</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lista dei file recenti</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>dimensione della scacchiera per la trasparenza</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>dimensione della scacchiera per i colori</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(nessuno)</translation>
 </phrase>
@@ -14444,11 +14439,6 @@ Sei sicuro di voler continuare?</translation>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation>Ad alta risoluzione di tracking permette PhotoDemon di riprodurre con maggiore precisione del mouse e il movimento della penna. Su alcuni vecchi PC, il sistema può lottare per tenere il passo con i dati di tracciamento in più, in modo da poter disabilitare questa, se necessario.</translation>
 </phrase>
 
 <phrase>
@@ -14850,7 +14840,7 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14973,10 +14963,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12719 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12676 total words. -->
 
 </pdData>

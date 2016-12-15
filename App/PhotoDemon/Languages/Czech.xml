@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2039</langversion>
+<langversion>6.8.2040</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -13237,6 +13237,11 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>alpha mode</original>
 <translation>režim alpha</translation>
 </phrase>
@@ -13261,7 +13266,7 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 <translation>nejlepší výkon</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14114,6 +14119,31 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>maximum number of recent file entries</original>
+<translation>Maximální počet posledních záznamů souboru</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>Seznam nedávných souborů</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>hlavní okno</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>Velikost průhlednost šachovnice</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>průhlednost šachovnice barvy</translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation>Displej vykreslení</translation>
 </phrase>
@@ -14349,41 +14379,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>použijte vstupní sledování s vysokým rozlišením</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>myš a vstupní pero</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Maximální počet posledních záznamů souboru</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>Seznam nedávných souborů</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>hlavní okno</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>Velikost průhlednost šachovnice</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>průhlednost šachovnice barvy</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(žádný)</translation>
 </phrase>
@@ -14434,11 +14429,6 @@ Are you sure you want to continue?</original>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>Záhlaví hlavního okna PhotoDemon zobrazuje informace o aktuálně vloženého obrazu. Použijte tuto preferenci pro kontrolu kolik informací je zobrazena.</translation>
-</phrase>
-
-<phrase>
-<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation>Sledování s vysokým rozlišením umožňuje PhotoDemon přesněji reprodukovat myši a pohyb pera. Na některých starších počítačích, může systém se snaží držet krok s extra daty sledování, takže můžete v případě potřeby vypnout to.</translation>
 </phrase>
 
 <phrase>
@@ -14840,7 +14830,7 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 <translation>Tato nová umístění dočasné složky se projeví až po restartování programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14963,10 +14953,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12719 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12676 total words. -->
 
 </pdData>

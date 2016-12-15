@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2106</langversion>
+<langversion>6.8.2107</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -13252,6 +13252,11 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>alpha mode</original>
 <translation>Alphamodus</translation>
 </phrase>
@@ -13276,7 +13281,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <translation>Beste Performance</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14134,6 +14139,31 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
+<original>maximum number of recent file entries</original>
+<translation>Max. Anzahl der Dateieinträge bei "Zuletzt geöffnet"</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>Liste zuletzt geöffneter Dateien</translation>
+</phrase>
+
+<phrase>
+<original>main window</original>
+<translation>Hauptfenster</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>Größe des Transparenz-Schachbretts</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>Farben des Transparenz-Schachbretts</translation>
+</phrase>
+
+<phrase>
 <original>display rendering intent</original>
 <translation>Rendering-Intent anzeigen</translation>
 </phrase>
@@ -14369,41 +14399,6 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 </phrase>
 
 <phrase>
-<original>use high-resolution input tracking</original>
-<translation>Hochauflösendes Eingabe-Tracking verwenden</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>Maus- und Stifteingabe</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Max. Anzahl der Dateieinträge bei "Zuletzt geöffnet"</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>Liste zuletzt geöffneter Dateien</translation>
-</phrase>
-
-<phrase>
-<original>main window</original>
-<translation>Hauptfenster</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>Größe des Transparenz-Schachbretts</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>Farben des Transparenz-Schachbretts</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(kein Profil)</translation>
 </phrase>
@@ -14455,11 +14450,6 @@ Wollen Sie wirklich fortfahren?</translation>
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
 <translation>Die Titelleiste des Hauptfensters von PhotoDemon zeigt Informationen über das derzeitig geladene Bild an. Verwenden Sie diese Einstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
-</phrase>
-
-<phrase>
-<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation>Hochauflösendes Tracking erlaubt PhotoDemon, die Maus- und Stiftbewegung genauer zu reproduzieren. Auf einigen älteren PC´s kann das System mit den zusätzlichen Tracking-Daten überfordert sein, sodass Sie diese Funktion bei Notwendigkeit deaktivieren können.</translation>
 </phrase>
 
 <phrase>
@@ -14861,7 +14851,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Der neue Speicherort für den temporären Ordner wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 186 phrases. 41 were duplicates of existing phrases, so only 145 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14984,10 +14974,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2535</phrasecount>
+<phrasecount>2533</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4475 phrases. -->
-<!-- 1940 are duplicates, so only 2535 unique phrases have been written to file. -->
-<!-- These 2535 phrases contain approximately 12719 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
+<!-- These 2533 phrases contain approximately 12676 total words. -->
 
 </pdData>
