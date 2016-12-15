@@ -264,8 +264,16 @@ Public Sub CreateCurrentBrushOutline()
         Case BE_GDIPlus
         
             Set m_BrushOutlinePath = New pd2DPath
-            If (m_BrushSize > 0#) Then m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2 + 1#
-    
+            
+            'Single-pixel brushes are treated as a square for cursor purposes.
+            If (m_BrushSize > 0#) Then
+                If (m_BrushSize = 1) Then
+                    m_BrushOutlinePath.AddRectangle_Absolute -0.75, -0.75, 0.75, 0.75
+                Else
+                    m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2 + 0.5
+                End If
+            End If
+            
     End Select
 
 End Sub
@@ -491,7 +499,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     onScreenSize = Drawing.ConvertImageSizeToCanvasSize(m_BrushSize, pdImages(g_CurrentImage))
     
     Dim brushTooSmall As Boolean
-    If (onScreenSize < 5) Then brushTooSmall = True
+    If (onScreenSize < 7#) Then brushTooSmall = True
     
     'Create a pair of UI pens
     Dim innerPen As pd2DPen, outerPen As pd2DPen
@@ -504,15 +512,17 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, targetCanvas.hDC, True
     
-    'Regardless of brush size, paint a target cursor
+    'Paint a target cursor - but *only* if the mouse is not currently down!
     Dim crossLength As Single, outerCrossBorder As Single
     crossLength = 3#
     outerCrossBorder = 0.5
     
-    cPainter.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
-    cPainter.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
-    cPainter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
-    cPainter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+    If (Not m_MouseDown) Then
+        cPainter.DrawLineF cSurface, outerPen, cursX, cursY - crossLength - outerCrossBorder, cursX, cursY + crossLength + outerCrossBorder
+        cPainter.DrawLineF cSurface, outerPen, cursX - crossLength - outerCrossBorder, cursY, cursX + crossLength + outerCrossBorder, cursY
+        cPainter.DrawLineF cSurface, innerPen, cursX, cursY - crossLength, cursX, cursY + crossLength
+        cPainter.DrawLineF cSurface, innerPen, cursX - crossLength, cursY, cursX + crossLength, cursY
+    End If
     
     'If size allows, render a transformed brush outline onto the canvas as well
     If (Not brushTooSmall) Then
@@ -520,6 +530,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         'Get a copy of the current brush outline, transformed into position
         Dim copyOfBrushOutline As pd2DPath
         Set copyOfBrushOutline = New pd2DPath
+        
         copyOfBrushOutline.CloneExistingPath m_BrushOutlinePath
         copyOfBrushOutline.ApplyTransformation canvasMatrix
     
