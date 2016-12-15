@@ -220,6 +220,10 @@ Public g_DCsDestroyed As Long
 'If a modal window is active, this value will be set to TRUE.  This is helpful for controlling certain program flow issues.
 Public g_ModalDialogActive As Boolean
 
+'High-resolution input tracking allows for much more accurate reproduction of mouse values.  However, old PCs may struggle to
+' cope with all the extra input data.  A user-facing preference allows for disabling this behavior.
+Public g_HighResolutionInput As Boolean
+
 'If an update notification is ready, but we can't display it (for example, because a modal dialog is active) this flag will
 ' be set to TRUE.  PD's central processor uses this to display the update notification as soon as it reasonably can.
 Public g_ShowUpdateNotification As Boolean

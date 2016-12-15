@@ -377,6 +377,7 @@ Public Sub LoadUserSettings()
     Me.SetThumbnailPerformancePref g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
     g_UndoCompressionLevel = g_UserPreferences.GetPref_Long("Performance", "UndoCompression", 1)
+    g_HighResolutionInput = g_UserPreferences.GetPref_Boolean("Interface", "HighResolutionInput", False)
     
     'Initialize a few other settings to default values, despite them not coming from the preferences file
     
@@ -473,6 +474,7 @@ Private Sub CreateNewPreferencesFile()
     xmlEngine.WriteBlankLine
     
     xmlEngine.WriteTag "Interface", "", True
+        xmlEngine.WriteTag "HighResolutionInput", "False"
         xmlEngine.WriteTag "MRUCaptionLength", "0"
         xmlEngine.WriteTag "RecentFilesLimit", "10"
         xmlEngine.WriteTag "WindowCaptionLength", "0"
