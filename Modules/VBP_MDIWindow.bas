@@ -368,6 +368,9 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'If this form is already the active image, don't waste time re-activating it
     If (g_CurrentImage <> imageID) Then
         
+        'Release some temporary resources on the old image, if we can
+        Set pdImages(g_CurrentImage).ScratchLayer = Nothing
+        
         'Update the current form variable
         g_CurrentImage = imageID
     
@@ -376,7 +379,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         Debug.Print "(Image #" & g_CurrentImage & " was activated because " & reasonForActivation & ")"
         
         'Double-check which monitor we are appearing on (for color management reasons)
-        CheckParentMonitor True
+        ColorManagement.CheckParentMonitor True
         
     End If
     
@@ -390,6 +393,9 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
         'Notify the thumbnail bar that a new image has been selected
         Interface.NotifyNewActiveImage g_CurrentImage
+        
+        'Make sure any tool initializations that vary by image are up-to-date.
+        Tool_Support.InitializeToolsDependentOnImage
         
     End If
     

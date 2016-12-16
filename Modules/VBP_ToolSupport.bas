@@ -501,6 +501,32 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
     
 End Function
 
+'Some tools (paintbrushes, most notably), have to initialize themselves against the current image (prepping a scratch layer,
+' for example).  To reduce stuttering on first tool use, we initialize this behavior whenever...
+' 1) Such a tool is selected, or...
+' 2) The tool is already selected and the user switches images
+Public Sub InitializeToolsDependentOnImage()
+    If (g_OpenImageCount > 0) Then
+        If (g_CurrentTool = PAINT_BASICBRUSH) Then
+            
+            'A couple things require us to reset the scratch layer...
+            ' 1) If it hasn't been initialized at all
+            ' 2) If it doesn't match the current image's size
+            Dim scratchLayerResetRequired As Boolean: scratchLayerResetRequired = False
+            scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer Is Nothing)
+            If (Not scratchLayerResetRequired) Then
+                scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer.GetLayerWidth <> pdImages(g_CurrentImage).Width)
+                If (Not scratchLayerResetRequired) Then scratchLayerResetRequired = CBool(pdImages(g_CurrentImage).ScratchLayer.GetLayerHeight <> pdImages(g_CurrentImage).Height)
+            End If
+            
+            If scratchLayerResetRequired Then pdImages(g_CurrentImage).ResetScratchLayer True
+            
+        Else
+            Set pdImages(g_CurrentImage).ScratchLayer = Nothing
+        End If
+    End If
+End Sub
+
 'When the active layer changes, call this function.  It synchronizes various layer-specific tool panels against the
 ' currently active layer.
 Public Sub SyncToolOptionsUIToCurrentLayer()
