@@ -785,6 +785,9 @@ Private Sub NewToolSelected()
             If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
     End Select
+    
+    'Perform additional per-image initializations, as needed
+    Tool_Support.InitializeToolsDependentOnImage
         
 End Sub
 

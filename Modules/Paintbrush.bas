@@ -314,7 +314,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         m_NumOfMouseEvents = 1
         
         'Make sure the current scratch layer is properly initialized
-        pdImages(g_CurrentImage).ResetScratchLayer True
+        Tool_Support.InitializeToolsDependentOnImage
         pdImages(g_CurrentImage).ScratchLayer.SetLayerOpacity m_BrushOpacity
         pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_BrushBlendmode
         pdImages(g_CurrentImage).ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
@@ -468,6 +468,9 @@ Public Sub CommitBrushResults()
         
         'Ask the central processor to create Undo/Redo data for us
         Processor.Process "Paint stroke", , , UNDO_LAYER, g_CurrentTool
+        
+        'Reset the scratch layer
+        pdImages(g_CurrentImage).ScratchLayer.layerDIB.ResetDIB 0
     
     'If the layer beneath this one is *not* a raster layer, let's add the stroke as a new layer, instead.
     Else
@@ -491,6 +494,9 @@ Public Sub CommitBrushResults()
         
         'Ask the central processor to create Undo/Redo data for us
         Processor.Process "Paint stroke", , , UNDO_IMAGE_VECTORSAFE, g_CurrentTool
+        
+        'Create a new scratch layer
+        Tool_Support.InitializeToolsDependentOnImage
         
     End If
     
