@@ -302,6 +302,11 @@ Public Sub SetRedrawSuspension(ByVal newRedrawValue As Boolean)
     m_SuspendRedraws = newRedrawValue
 End Sub
 
+'Manually request standard-rate or high-rate mouse tracking.  (Drawing tools support high-rate tracking.)
+Public Sub SetHighResMouseInput(ByVal newState As Boolean)
+    ucSupport.RequestHighResMouseInput newState
+End Sub
+
 Private Sub ucSupport_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent AppCommand(cmdID, Shift, x, y)
 End Sub

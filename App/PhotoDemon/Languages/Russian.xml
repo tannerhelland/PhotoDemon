@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2040</langversion>
+<langversion>6.8.2113</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1585,7 +1585,7 @@ In версии 6.0, PhotoDemon макро файлы не были перера
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>Лицензия BSD</translation>
 </phrase>
 
 <phrase>
@@ -13254,7 +13254,7 @@ To включить поддержку этой функции, пожалуйс
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>сглаженный</translation>
 </phrase>
 
 <phrase>

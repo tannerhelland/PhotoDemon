@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2040</langversion>
+<langversion>6.8.2113</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1581,7 +1581,7 @@ In sürüm 6.0 geçerli sürümü tarafından desteklenen, PhotoDemon makro dosy
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>BSD lisansı</translation>
 </phrase>
 
 <phrase>
@@ -13246,7 +13246,7 @@ To olarak FreeImage arayüzü plug-in (FreeImage.dll) kutlandı, FreeImage.dll p
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>Antialiased</translation>
 </phrase>
 
 <phrase>

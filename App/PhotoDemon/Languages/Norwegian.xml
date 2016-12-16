@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2040</langversion>
+<langversion>6.8.2113</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1585,7 +1585,7 @@ In versjon 6.0, ble PhotoDemon makro-filer redesignet  for å støtte nye funksj
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>BSD-lisens</translation>
 </phrase>
 
 <phrase>
@@ -13254,7 +13254,7 @@ To aktivere støtte for denne funksjonen, kan du kopiere FreeImage.dll filen inn
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>antialiased</translation>
 </phrase>
 
 <phrase>
