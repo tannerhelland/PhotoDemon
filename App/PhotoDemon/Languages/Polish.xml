@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2040</langversion>
+<langversion>6.8.2113</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1579,7 +1579,7 @@ In wersji 6.0, pliki makro PhotoDemon zostały przeprojektowane w celu wspierani
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>licencja BSD</translation>
 </phrase>
 
 <phrase>
@@ -13238,7 +13238,7 @@ To włączyć obsługę tej funkcji, proszę skopiuj plik FreeImage.dll do katal
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>antyaliasing</translation>
 </phrase>
 
 <phrase>

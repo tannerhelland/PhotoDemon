@@ -493,6 +493,12 @@ Public Function IsCaptionActive() As Boolean
     End If
 End Function
 
+'Want to turn on/off high-resolution mouse input?  Request changes here.  (By default, high-resolution mouse input is
+' *not* enabled for most controls.)
+Public Sub RequestHighResMouseInput(ByVal newState As Boolean)
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetHighResolutionTrackingMode newState
+End Sub
+
 'Because this support class manages a back buffer for its parent control, it sometimes needs to raise redraw requests.  To prevent
 ' an excessive amount of back-and-forth requests, the caller needs to explicitly specify a custom backcolor if it wants one.
 ' NOTE: call this function without supplying a newColor value to reset to the default program-wide window backcolor.

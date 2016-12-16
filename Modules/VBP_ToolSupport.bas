@@ -506,6 +506,7 @@ End Function
 ' 1) Such a tool is selected, or...
 ' 2) The tool is already selected and the user switches images
 Public Sub InitializeToolsDependentOnImage()
+    
     If (g_OpenImageCount > 0) Then
         If (g_CurrentTool = PAINT_BASICBRUSH) Then
             
@@ -521,10 +522,15 @@ Public Sub InitializeToolsDependentOnImage()
             
             If scratchLayerResetRequired Then pdImages(g_CurrentImage).ResetScratchLayer True
             
+            'TODO: sync high-res mouse settings against some kind of user-accessible control
+            FormMain.mainCanvas(0).SetHighResMouseInput False
+            
         Else
             Set pdImages(g_CurrentImage).ScratchLayer = Nothing
+            FormMain.mainCanvas(0).SetHighResMouseInput False
         End If
     End If
+    
 End Sub
 
 'When the active layer changes, call this function.  It synchronizes various layer-specific tool panels against the

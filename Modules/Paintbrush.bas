@@ -103,6 +103,10 @@ Private m_NumOfMouseEvents As Long
 'pd2D is used for certain paint features
 Private m_Painter As pd2DPainter
 
+'To improve responsiveness, we measure the time delta between viewport refreshes.  If painting is happening fast enough,
+' we coalesce screen updates together, as they are (by far) the most time-consuming segment of paint rendering.
+Private m_TimeSinceLastRender As Currency
+
 Public Function GetBrushSource() As BRUSH_SOURCES
     GetBrushSource = m_BrushSource
 End Function
@@ -361,16 +365,47 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         
         Debug.Print "Paint tool render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
         
-        'Unlike other drawing tools, the paintbrush engine controls viewport redraws.  This allows us to optimize behavior
-        ' if we fall behind, and a long queue of drawing actions builds up.
-        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), , , pdImages(g_CurrentImage).GetActiveLayerIndex
-        
     End If
     
     'With all painting tasks complete, update all old state values to match the new state values
     m_MouseDown = mouseButtonDown
     m_MouseX = srcX
     m_MouseY = srcY
+    
+    'Unlike other drawing tools, the paintbrush engine controls viewport redraws.  This allows us to optimize behavior
+    ' if we fall behind, and a long queue of drawing actions builds up.
+    '
+    '(Note that we only request manual redraws if the mouse is currently down; if the mouse *isn't* down, the canvas
+    ' handles this for us.)
+    If mouseButtonDown Then
+    
+        'If this is the first paint stroke, we always want to update the viewport to reflect that.
+        Dim updateViewportNow As Boolean
+        updateViewportNow = isFirstStroke
+        
+        'In the background, paint tool rendering is uncapped.  (60+ fps is achievable on most modern PCs, thankfully.)
+        ' However, relaying those paint tool updates to the screen is a time-consuming process, as we have to composite
+        ' the full image, apply color management, calculate zoom, and a whole bunch of other crap.  Because of this,
+        ' it improves the user experience to run background paint calculations and on-screen viewport updates at
+        ' different framerates, with an emphasis on making sure the *background* paint tool rendering gets top priority.
+        If (Not updateViewportNow) Then
+        
+            'Limit viewport updates to 15 fps for now; we can revisit this in the future, as necessary
+            updateViewportNow = CBool(VB_Hacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 66#)
+            
+        End If
+        
+        'If a viewport update is required, composite the full layer stack prior to updating the screen
+        If updateViewportNow Then
+            VB_Hacks.GetHighResTime m_TimeSinceLastRender
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), , , pdImages(g_CurrentImage).GetActiveLayerIndex
+        
+        'If not enough time has passed since the last redraw, simply update the cursor
+        Else
+            Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        End If
+        
+    End If
     
 End Sub
 

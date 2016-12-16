@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2107</langversion>
+<langversion>6.8.2113</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1566,7 +1566,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen 
 
 <phrase>
 <original>artistic license</original>
-<translation>Artistic License</translation>
+<translation>Artistic-License</translation>
 </phrase>
 
 <phrase>
@@ -1576,22 +1576,22 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen 
 
 <phrase>
 <original>FreeImage public license</original>
-<translation>FreeImage Public License</translation>
+<translation>FreeImage Public-License</translation>
 </phrase>
 
 <phrase>
 <original>MIT license</original>
-<translation>MIT License</translation>
+<translation>MIT-License</translation>
 </phrase>
 
 <phrase>
 <original>BSD license</original>
-<translation>BSD License</translation>
+<translation>BSD-License</translation>
 </phrase>
 
 <phrase>
 <original>zLib license</original>
-<translation>zLib License</translation>
+<translation>zLib-License</translation>
 </phrase>
 
 <phrase>
@@ -13253,7 +13253,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>Mit Antialiasing</translation>
 </phrase>
 
 <phrase>

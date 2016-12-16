@@ -1194,9 +1194,11 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 Message "Shift key: preserve layer aspect ratio"
                 TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
             
+            'Unlike other tools, the paintbrush engine controls when the main viewport gets redrawn.
+            ' (Some tricks are used to improve performance, including coalescing render events if they occur
+            '  quickly enough.)  As such, there is no viewport redraw request here.
             Case PAINT_BASICBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
-                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me, , , pdImages(g_CurrentImage).GetActiveLayerIndex
                 
         End Select
     
@@ -1314,7 +1316,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         If (g_CurrentTool <> SELECT_WAND) Then
                             Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                         Else
-                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                         End If
                     
                     'The mouse is being released after a significant move event, or on a point of interest to the current selection.
@@ -1344,15 +1346,15 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                             
                                         'Creating a new selection
                                         Case -1
-                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                             
                                         'Moving an existing selection
                                         Case 8
-                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                             
                                         'Anything else is assumed to be resizing an existing selection
                                         Case Else
-                                            Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                             
                                     End Select
                                     
@@ -1362,16 +1364,16 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                             
                                         'Creating a new selection
                                         Case -1
-                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                             
                                         'Moving an existing selection
                                         Case Else
-                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                             
                                     End Select
                                     
                                 Case SELECT_WAND
-                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                             
                             End Select
                             
@@ -1409,13 +1411,13 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                             Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                             
                                 Case pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints
-                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                                 Case 0
                                     If ClickEventAlsoFiring Then
-                                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     Else
-                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     End If
                                     
                                 Case -1
@@ -1429,12 +1431,12 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                                     Else
                                         
                                         pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                         
                                     End If
                                 
                                 Case Else
-                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                             End Select
                             
@@ -1483,7 +1485,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'If the selection coordinates are valid, create it now.
                     Else
-                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                     End If
                     
                     'Force a redraw of the screen
@@ -1583,7 +1585,6 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 'Notify the brush engine of the final result, then permanently commit this round of brush work
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
                 Paintbrush.CommitBrushResults
-                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
                 
             Case Else
                     
@@ -2078,6 +2079,11 @@ End Sub
 Public Function PopulateSizeUnits()
     StatusBar.PopulateSizeUnits
 End Function
+
+'Various drawing tools support high-rate mouse input.  Change that behavior here.
+Public Sub SetHighResMouseInput(ByVal newState As Boolean)
+    CanvasView.SetHighResMouseInput newState
+End Sub
 
 'Whenever the mouse cursor needs to be reset, use this function to do so.  Also, when a new tool is created or a new tool feature
 ' is added, make sure to visit this sub and make any necessary cursor changes!

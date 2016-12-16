@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2040</langversion>
+<langversion>6.8.2113</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1586,7 +1586,7 @@ In versi 6.0, PhotoDemon fail makro telah direkabentuk semula untuk menyokong ci
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>lesen BSD</translation>
 </phrase>
 
 <phrase>
@@ -13255,7 +13255,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>antialias</translation>
 </phrase>
 
 <phrase>

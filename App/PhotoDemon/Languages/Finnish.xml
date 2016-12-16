@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2040</langversion>
+<langversion>6.8.2113</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1581,7 +1581,7 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>BSD-lisenssi</translation>
 </phrase>
 
 <phrase>
@@ -13248,7 +13248,7 @@ To käyttöön tuen tätä ominaisuutta, kopioi FreeImage.dll tiedosto plug-in h
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>antialiased</translation>
 </phrase>
 
 <phrase>
