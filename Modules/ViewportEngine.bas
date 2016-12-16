@@ -313,30 +313,40 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         ' in the future... but for now, we leave it, just in case.
         If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
             
+            '***************************************
             'PD provides two options for rendering the viewport.  One composites the full image in the background, and just snips
             ' out the relevant bit of the finished image.  The other does not maintain a composited image copy, but instead returns
             ' a composited rect whenever it's requested.  Branch down either path now.
-            If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
-                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcImage.compositeBuffer, srcLeft, srcTop, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor)
+            '
+            'NOTE!  As of v7.0, the "composite full image in background" option has been disabled.  It would take a lot of work to
+            ' make it usable with paint tools, and it simply doesn't receive much testing.  As such, I've reworked the quality modes
+            ' to enable higher performance at the default setting, with "Best Quality" now using the highest-quality bicubic
+            ' resampling algorithm.  This gives us a large performance boost across all settings, while reducing the amount of
+            ' viewport pipelines I have to test before release.
+            '
+            'I'll look at reinstating this option in a later release, if performance allows.
             
+            'If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
+            '    GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcImage.compositeBuffer, srcLeft, srcTop, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor)
+            'End If
+            '***************************************
+                
+            'We can now use PD's rect-specific compositor to retrieve only the relevant section of the current viewport.
+            ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
+            ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
+            '        GDI+'s preprocessing, which screws up subpixel positioning.)
+            
+            'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
+            If (g_ViewportPerformance = PD_PERF_FASTEST) Then
+                srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, GP_IM_NearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
+                
+            'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
+            ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
+            ' automatically (regardless of what method we request).
+            ElseIf (g_ViewportPerformance = PD_PERF_BALANCED) Then
+                srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_Bilinear, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
             Else
-                
-                'We can now use PD's rect-specific compositor to retrieve only the relevant section of the current viewport.
-                ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
-                ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
-                '        GDI+'s preprocessing, which screws up subpixel positioning.)
-                
-                'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
-                If (g_ViewportPerformance = PD_PERF_FASTEST) Then
-                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, GP_IM_NearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
-                    
-                'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
-                ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
-                ' automatically (regardless of what method we request).
-                Else
-                    srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
-                End If
-                
+                srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
             End If
                     
         'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
@@ -410,14 +420,18 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     
     'Note that only the "Best Quality" viewport mode actually requires this step.  The accelerated viewport pipeline assembles a
     ' shrunken version of the image, so it never requires a full-sized composite for the viewport
-    If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
-        
-        'Notify the parent object that a prepared composite buffer is required.  If the buffer is dirty, the parent will regenerate
-        ' the composite for us.
-        srcImage.RebuildCompositeBuffer renderScratchLayerIndex
-        
-    'Other viewport performance settings can automatically proceed to stage 3
-    End If
+    
+    '****************************************
+    'NOTE!  As of v7.0, this option has been disabled.  Look at viewport pipeline stage 3 for additional details.
+    'If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
+    '
+    '    'Notify the parent object that a prepared composite buffer is required.  If the buffer is dirty, the parent will regenerate
+    '    ' the composite for us.
+    '    srcImage.RebuildCompositeBuffer renderScratchLayerIndex
+    '
+    ''Other viewport performance settings can automatically proceed to stage 3
+    'End If
+    '****************************************
     
     'Before exiting, calculate the time spent in this stage
     m_TimeStage2 = VB_Hacks.GetTimerDifferenceNow(startTime)
