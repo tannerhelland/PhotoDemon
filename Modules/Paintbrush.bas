@@ -360,7 +360,11 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
         
         Debug.Print "Paint tool render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
-    
+        
+        'Unlike other drawing tools, the paintbrush engine controls viewport redraws.  This allows us to optimize behavior
+        ' if we fall behind, and a long queue of drawing actions builds up.
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), , , pdImages(g_CurrentImage).GetActiveLayerIndex
+        
     End If
     
     'With all painting tasks complete, update all old state values to match the new state values
