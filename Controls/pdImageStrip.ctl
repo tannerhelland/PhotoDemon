@@ -334,7 +334,7 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'On left-button presses, make a note of the initial mouse position
     If (Button And pdLeftButton) <> 0 Then
@@ -374,7 +374,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'We require a few mouse movements to fire before doing anything; otherwise this function will fire constantly.
     m_MouseDistanceTraveled = m_MouseDistanceTraveled + 1
@@ -495,7 +495,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     
     If m_MouseDown Then
         m_MouseDown = False
@@ -974,10 +974,10 @@ Private Sub LoadImageStripIcons()
     Dim tmpLUT() As Byte
     Dim cFilter As pdFilterLUT
     Set cFilter = New pdFilterLUT
-    cFilter.fillLUT_Invert tmpLUT
+    cFilter.FillLUT_Invert tmpLUT
     padDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
     QuickBlurDIB m_CloseIconShadow, FixDPI(2), False
-    cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
+    cFilter.ApplyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
     m_CloseIconShadow.SetAlphaPremultiplication True
     
 End Sub

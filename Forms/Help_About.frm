@@ -239,7 +239,7 @@ Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByV
     updateHoverState False
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
         
     mouseX = x
     mouseY = y

@@ -309,7 +309,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     Dim mouseClickIndex As Long
     mouseClickIndex = IsMouseOverButton(x, y)
@@ -340,7 +340,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 'When the mouse enters the clickable portion of the UC, we must repaint the caption (to reflect its hovered state)
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     UpdateCursor x, y
     
@@ -371,7 +371,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     m_ButtonMouseDown = -1
     RedrawBackBuffer
 End Sub

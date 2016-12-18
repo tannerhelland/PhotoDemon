@@ -472,7 +472,7 @@ End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click.
 ' (TODO: switch to MouseUp, so we have a chance to draw the down button state and provide some visual feedback)
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     If Me.Enabled Then
         
@@ -510,7 +510,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 'If toggle mode is active, remove the button's TRUE state and redraw it
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     If m_AutoToggle And Value Then Value = False
     RedrawBackBuffer
 End Sub

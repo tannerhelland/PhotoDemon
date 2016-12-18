@@ -405,7 +405,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 'When the mouse enters the UC, we must repaint the caption (to reflect its hovered state)
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     ucSupport.RequestCursor IDC_HAND
     

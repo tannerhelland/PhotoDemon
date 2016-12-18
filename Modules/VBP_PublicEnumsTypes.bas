@@ -559,3 +559,11 @@ End Enum
     Const PDIF_WMF = 110, PDIF_EMF = 111, PDIF_PNM = 112
 #End If
 
+'MSDN page: https://msdn.microsoft.com/en-us/library/windows/desktop/ms645603(v=vs.85).aspx
+Public Type MOUSEMOVEPOINT
+    x As Long
+    y As Long
+    ptTime As Long
+    dwExtraInfo As Long
+End Type
+

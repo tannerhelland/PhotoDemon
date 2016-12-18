@@ -518,7 +518,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     If (vkCode = VK_LEFT) Or (vkCode = VK_DOWN) Then Value = Value - GetIncrementAmount
 End Sub
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     If ((Button And pdLeftButton) <> 0) Then
     
@@ -556,7 +556,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     If m_MouseDown Then
         
@@ -596,7 +596,7 @@ End Sub
 'When the mouse button is released, we always perform a final MouseMove update at the last reported x/y position.
 ' If intensive processing occurred while the slider was being used, this ensures that the mouse location at its
 ' exact point of release is correctly rendered.
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     If (((Button And pdLeftButton) <> 0) And m_MouseDown) Then
         Value = GetCustomPositionValue(x)
         m_MouseDown = False

@@ -204,7 +204,7 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Right now, only left-clicks are addressed
     If (Button And pdLeftButton) <> 0 Then
@@ -242,7 +242,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Calculate a new hovered box ID, if any
     Dim oldMouseIndex As Long

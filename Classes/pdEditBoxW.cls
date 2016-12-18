@@ -715,7 +715,7 @@ Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByV
 End Sub
 
 'On first click, we select all text (but only if the user hasn't manually selected text with their initial mouse action)
-Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     If m_JustGotFocus And Me.SelLength = 0 Then Me.SelectAll
     m_JustGotFocus = False
 End Sub

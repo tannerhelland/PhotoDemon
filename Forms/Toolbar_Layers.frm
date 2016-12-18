@@ -328,7 +328,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
     ' the layer toolbox.
@@ -383,7 +383,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
 End Sub
 
-Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     m_MouseEvents.SetSystemCursor IDC_DEFAULT
 End Sub
 

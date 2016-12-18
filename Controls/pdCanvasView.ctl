@@ -63,9 +63,9 @@ Public Event LostFocusAPI()
 Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 Public Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 Public Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
@@ -303,9 +303,23 @@ Public Sub SetRedrawSuspension(ByVal newRedrawValue As Boolean)
 End Sub
 
 'Manually request standard-rate or high-rate mouse tracking.  (Drawing tools support high-rate tracking.)
-Public Sub SetHighResMouseInput(ByVal newState As Boolean)
+Public Sub SetMouseInput_HighRes(ByVal newState As Boolean)
     ucSupport.RequestHighResMouseInput newState
 End Sub
+
+Public Sub SetMouseInput_AutoDrop(ByVal newState As Boolean)
+    ucSupport.RequestAutoDropMouseMessages newState
+End Sub
+
+Public Function GetNumMouseEventsPending() As Long
+    GetNumMouseEventsPending = ucSupport.GetNumMouseEventsPending()
+End Function
+
+Public Function GetNextMouseMovePoint(ByVal ptrToDstMMP As Long) As Boolean
+    Dim tmpMMP As MOUSEMOVEPOINT
+    GetNextMouseMovePoint = ucSupport.GetNextMouseMovePoint(tmpMMP)
+    CopyMemory ByVal ptrToDstMMP, ByVal VarPtr(tmpMMP), LenB(tmpMMP)
+End Function
 
 Private Sub ucSupport_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     RaiseEvent AppCommand(cmdID, Shift, x, y)
@@ -335,8 +349,8 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    RaiseEvent MouseDownCustom(Button, Shift, x, y)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    RaiseEvent MouseDownCustom(Button, Shift, x, y, timeStamp)
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -356,12 +370,12 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    RaiseEvent MouseMoveCustom(Button, Shift, x, y)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    RaiseEvent MouseUpCustom(Button, Shift, x, y, ClickEventAlsoFiring)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+    RaiseEvent MouseUpCustom(Button, Shift, x, y, clickEventAlsoFiring, timeStamp)
 End Sub
 
 Private Sub ucSupport_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)

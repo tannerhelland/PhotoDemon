@@ -132,7 +132,7 @@ Private m_OrientationHorizontal As Boolean
 Private m_Value As Double, m_Min As Double, m_Max As Double, m_LargeChange As Double
 
 'The number of significant digits for this control.  0 means integer values.
-Private m_significantDigits As Long
+Private m_SignificantDigits As Long
 
 'To simplify mouse_down handling, resize events fill three rects: one for the "up" or "left" scroll button, one for
 ' the "down" or "right" scroll button, and a third one, for the track rect between the buttons.
@@ -317,11 +317,11 @@ End Property
 
 'Significant digits determines whether the control allows float values or int values (and with how much precision)
 Public Property Get SigDigits() As Long
-    SigDigits = m_significantDigits
+    SigDigits = m_SignificantDigits
 End Property
 
 Public Property Let SigDigits(ByVal newValue As Long)
-    m_significantDigits = newValue
+    m_SignificantDigits = newValue
     PropertyChanged "SigDigits"
 End Property
 
@@ -334,7 +334,7 @@ End Property
 Public Property Let Value(ByVal newValue As Double)
     
     'For integer-only scroll bars, clamp values to their integer range
-    If m_significantDigits = 0 Then newValue = Int(newValue)
+    If m_SignificantDigits = 0 Then newValue = Int(newValue)
     
     'Don't make any changes unless the new value deviates from the existing one
     If (newValue <> m_Value) Then
@@ -520,7 +520,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
 End Sub
 
 'Only left clicks raise Click() events
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     If Me.Enabled Then
         
@@ -640,7 +640,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 'When the mouse enters the button, we must initiate a repaint (to reflect its hovered state)
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Reset mouse capture behavior; this greatly simplifies parts of the drawing function
     If Not m_MouseInsideUC Then m_MouseInsideUC = True
@@ -703,7 +703,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     
     If Button = pdLeftButton Then
         
@@ -875,7 +875,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Max", m_Max, 10
         .WriteProperty "Value", m_Value, 0
         .WriteProperty "LargeChange", m_LargeChange, 1
-        .WriteProperty "SignificantDigits", m_significantDigits, 0
+        .WriteProperty "SignificantDigits", m_SignificantDigits, 0
         .WriteProperty "OrientationHorizontal", m_OrientationHorizontal, False
         .WriteProperty "VisualStyle", m_VisualStyle, SBVS_Standard
     End With
@@ -896,7 +896,7 @@ Private Sub MoveValueUp(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value + m_LargeChange
     Else
-        Value = m_Value + (1 / (10 ^ m_significantDigits))
+        Value = m_Value + (1 / (10 ^ m_SignificantDigits))
     End If
 End Sub
 
@@ -905,7 +905,7 @@ Private Sub MoveValueDown(Optional ByVal useLargeChange As Boolean = False)
     If useLargeChange Then
         Value = m_Value - m_LargeChange
     Else
-        Value = m_Value - (1 / (10 ^ m_significantDigits))
+        Value = m_Value - (1 / (10 ^ m_SignificantDigits))
     End If
 End Sub
 
@@ -1249,7 +1249,7 @@ Private Function GetValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
     End If
     
     'Just like the .Value property, for integer-only scroll bars, clamp values to their integer range
-    If m_significantDigits = 0 Then GetValueFromMouseCoords = Int(GetValueFromMouseCoords)
+    If m_SignificantDigits = 0 Then GetValueFromMouseCoords = Int(GetValueFromMouseCoords)
     
 End Function
 

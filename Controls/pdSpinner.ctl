@@ -371,7 +371,7 @@ Private Sub ucSupport_LostFocusAPI()
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Determine mouse button state for the up and down button areas
     If ((Button = pdLeftButton) And Me.Enabled) Then
@@ -429,7 +429,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Determine mouse hover state for the up and down button areas
     If Math_Functions.IsPointInRectF(x, y, m_UpRect) Then
@@ -456,7 +456,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 'Reset spin control button state on a mouse up event
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     
     If (Button = pdLeftButton) Then
         

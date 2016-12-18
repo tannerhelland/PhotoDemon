@@ -290,7 +290,7 @@ Public Function GetPreviewHeight() As Long
     GetPreviewHeight = m_PreviewAreaHeight
 End Function
 
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If viewport scrolling is allowed, initialize it now
     If Not ViewportFitFullImage Then
@@ -353,7 +353,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'If the viewport is not set to "fit to screen", then we must determine offsets based on the mouse position
     If Not ViewportFitFullImage Then
@@ -399,7 +399,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
 
     If Not ViewportFitFullImage Then
         ucSupport.RequestCursor IDC_HAND

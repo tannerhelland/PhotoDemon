@@ -89,7 +89,7 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     UserControl_Support.HideUCTooltip True
 End Sub
 

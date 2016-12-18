@@ -457,7 +457,7 @@ Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByV
     m_MouseEvents.SetSystemCursor IDC_ARROW
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
     ' the layer toolbox.

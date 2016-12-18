@@ -167,7 +167,7 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 End Sub
 
 'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     If (Button And pdLeftButton) <> 0 Then
         If Math_Functions.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
     End If
@@ -184,7 +184,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     m_LastMouseX = x: m_LastMouseY = y
     

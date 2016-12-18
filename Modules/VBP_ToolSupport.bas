@@ -522,12 +522,14 @@ Public Sub InitializeToolsDependentOnImage()
             
             If scratchLayerResetRequired Then pdImages(g_CurrentImage).ResetScratchLayer True
             
-            'TODO: sync high-res mouse settings against some kind of user-accessible control
-            FormMain.mainCanvas(0).SetHighResMouseInput False
-            
         Else
+            
+            'The scratch layer is not required for non-paint tools, and releasing it frees a lot of memory
             Set pdImages(g_CurrentImage).ScratchLayer = Nothing
-            FormMain.mainCanvas(0).SetHighResMouseInput False
+            
+            'As a failsafe, restore default mouse settings, which may have been modified by various paintbrush tools
+            FormMain.mainCanvas(0).SetMouseInput_AutoDrop True
+            FormMain.mainCanvas(0).SetMouseInput_HighRes False
         End If
     End If
     

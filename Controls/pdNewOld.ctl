@@ -172,7 +172,7 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 'Only left clicks raise Click() events
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     If Me.Enabled And ((Button And pdLeftButton) <> 0) Then
         
@@ -196,7 +196,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     Dim oldHoverCheck As Boolean
     oldHoverCheck = m_OldItemIsHovered
     m_OldItemIsHovered = Math_Functions.IsPointInRectF(x, y, m_OldItemRect)
