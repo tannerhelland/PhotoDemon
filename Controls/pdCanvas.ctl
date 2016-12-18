@@ -835,7 +835,7 @@ Private Sub CanvasView_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shif
 End Sub
 
 'RELAY (partially)
-Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
@@ -1068,8 +1068,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 End If
             
             Case PAINT_BASICBRUSH
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
-                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me, , , pdImages(g_CurrentImage).GetActiveLayerIndex
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
             'In the future, other tools can be handled here
             Case Else
@@ -1108,7 +1107,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     
 End Sub
 
-Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
@@ -1198,7 +1197,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
             '  quickly enough.)  As such, there is no viewport redraw request here.
             Case PAINT_BASICBRUSH
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
         End Select
     
@@ -1256,7 +1255,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             Case PAINT_BASICBRUSH
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
                 
             Case Else
@@ -1267,7 +1266,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
     
 End Sub
 
-Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     
     'Make sure interactions with this canvas are allowed
     If Not IsCanvasInteractionAllowed() Then Exit Sub
@@ -1311,7 +1310,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((ClickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    If ((clickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         
                         If (g_CurrentTool <> SELECT_WAND) Then
                             Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
@@ -1400,7 +1399,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 If pdImages(g_CurrentImage).selectionActive Then
                 
                     'Check to see if the selection is locked in.  If it is, we need to check for an "erase selection" click.
-                    If pdImages(g_CurrentImage).mainSelection.GetPolygonClosedState And ClickEventAlsoFiring And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1) Then
+                    If pdImages(g_CurrentImage).mainSelection.GetPolygonClosedState And clickEventAlsoFiring And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1) Then
                         Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                     
                     Else
@@ -1414,7 +1413,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                                     Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     
                                 Case 0
-                                    If ClickEventAlsoFiring Then
+                                    If clickEventAlsoFiring Then
                                         Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
                                     Else
                                         Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
@@ -1423,7 +1422,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                                 Case -1
                                 
                                     'If the user has clicked off the selection, we want to remove it.
-                                    If ClickEventAlsoFiring Then
+                                    If clickEventAlsoFiring Then
                                         Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                                     
                                     'If they haven't clicked, this could simply indicate that they dragged a polygon point off the polygon
@@ -1509,7 +1508,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     Tool_Support.SetToolBusyState True
                     
                     'See if this was just a click (as it might be at creation time).
-                    If ClickEventAlsoFiring Or (m_NumOfMouseMovements <= 2) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth < 4) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight < 4) Then
+                    If clickEventAlsoFiring Or (m_NumOfMouseMovements <= 2) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth < 4) Or (pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight < 4) Then
                         
                         'Update the layer's size.  At present, we simply make it fill the current viewport.
                         Dim curImageRectF As RECTF
@@ -1583,7 +1582,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             Case PAINT_BASICBRUSH
                 
                 'Notify the brush engine of the final result, then permanently commit this round of brush work
-                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY
+                Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 Paintbrush.CommitBrushResults
                 
             Case Else
@@ -2081,9 +2080,21 @@ Public Function PopulateSizeUnits()
 End Function
 
 'Various drawing tools support high-rate mouse input.  Change that behavior here.
-Public Sub SetHighResMouseInput(ByVal newState As Boolean)
-    CanvasView.SetHighResMouseInput newState
+Public Sub SetMouseInput_HighRes(ByVal newState As Boolean)
+    CanvasView.SetMouseInput_HighRes newState
 End Sub
+
+Public Sub SetMouseInput_AutoDrop(ByVal newState As Boolean)
+    CanvasView.SetMouseInput_AutoDrop newState
+End Sub
+
+Public Function GetNumMouseEventsPending() As Long
+    GetNumMouseEventsPending = CanvasView.GetNumMouseEventsPending()
+End Function
+
+Public Function GetNextMouseMovePoint(ByVal ptrToDstMMP As Long) As Boolean
+    GetNextMouseMovePoint = CanvasView.GetNextMouseMovePoint(ptrToDstMMP)
+End Function
 
 'Whenever the mouse cursor needs to be reset, use this function to do so.  Also, when a new tool is created or a new tool feature
 ' is added, make sure to visit this sub and make any necessary cursor changes!

@@ -492,7 +492,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
 End Sub
 
 'MouseDown is used for drag/drop layer reordering
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
@@ -537,7 +537,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 'When the mouse enters the button, we must initiate a repaint (to reflect its hovered state)
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
@@ -595,7 +595,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
@@ -605,7 +605,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
     layerIndexUnderMouse = GetLayerAtPosition(x, y, True)
     
     'Don't proceed further unless an image has been loaded, and the user is not just clicking the layer box
-    If (Not pdImages(g_CurrentImage) Is Nothing) And (Not ClickEventAlsoFiring) Then
+    If (Not pdImages(g_CurrentImage) Is Nothing) And (Not clickEventAlsoFiring) Then
         
         'If we're in drag/drop mode, and the left mouse button is pressed, terminate drag/drop layer reordering
         If m_LayerRearrangingMode And (Button = pdLeftButton) Then

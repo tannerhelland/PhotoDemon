@@ -48,9 +48,9 @@ Public Event WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
 Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 Public Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 Public Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
@@ -185,7 +185,7 @@ Private m_Colors As pdThemeColors
 
 'The FIRST THING a user control must do is call this sub.  This prepares the support class, applies basic subclassing,
 ' and initializes a bunch of other support modules.
-Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Control As Long = 0, Optional ByVal noBackBufferRequired As Boolean = False)
+Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Control As Long = 0, Optional ByVal noBackBufferRequired As Boolean = False)
     
     m_hWnd = hWnd_Control
     m_hDC = hDC_Control
@@ -246,7 +246,7 @@ End Sub
 'After RegisterControl has been called (above), the caller can request additional support via this function.
 ' (Because not all user controls require things like captions or custom input events, this functionality is restricted to
 '  an "as-required" basis.)
-Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False, Optional ByVal appCommandEvents As Boolean = False, Optional ByVal controlIsInteractive As Boolean = True)
+Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean = False, Optional ByVal customKeyEvents As Boolean = False, Optional ByVal appCommandEvents As Boolean = False, Optional ByVal controlIsInteractive As Boolean = True)
     
     If (Not g_IsProgramRunning) Then Exit Sub
     
@@ -271,7 +271,7 @@ Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
     
 End Sub
 
-Public Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
+Friend Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
     
     If (Not (m_KeyEvents Is Nothing)) And (m_hWnd <> 0) Then
         
@@ -300,26 +300,26 @@ End Sub
 'Want to allow some automatic text captioning on your control?  No problem; request it here, and the support class takes care of
 ' the rest.  (Obviously you also need to supply the caption text, font, and other things, but this function lets the class know
 ' that caption support is at least a *possibility*.)
-Public Sub RequestCaptionSupport(Optional ByVal supportWordWrap As Boolean = False)
+Friend Sub RequestCaptionSupport(Optional ByVal supportWordWrap As Boolean = False)
     m_Caption.SetWordWrapSupport supportWordWrap
     m_Caption.SetControlSize m_Width, m_Height
 End Sub
 
-Public Sub SetCaptionWordWrap(ByVal newWordWrapState As Boolean)
+Friend Sub SetCaptionWordWrap(ByVal newWordWrapState As Boolean)
     m_Caption.SetWordWrapSupport newWordWrapState
 End Sub
 
 'Get/Set functions for various caption-specific features.  Note that you can remove caption support by calling SetCaptionText and
 ' supplying a blank string.
-Public Function GetCaptionText() As String
+Friend Function GetCaptionText() As String
     GetCaptionText = m_Caption.GetCaptionEn()
 End Function
 
-Public Function GetCaptionTextTranslated() As String
+Friend Function GetCaptionTextTranslated() As String
     GetCaptionTextTranslated = m_Caption.GetCaptionTranslated()
 End Function
 
-Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
+Friend Sub SetCaptionText(Optional ByVal newCaption As String = "")
     
     'Pass the string to the pdCaption instance; it handles the actual mess of sizing and rendering text
     If m_Caption.SetCaption(newCaption) Then
@@ -334,11 +334,11 @@ Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
     
 End Sub
 
-Public Function GetCaptionFontSize() As Single
+Friend Function GetCaptionFontSize() As Single
     GetCaptionFontSize = m_Caption.GetFontSize
 End Function
 
-Public Sub SetCaptionFontSize(ByVal newSize As Single)
+Friend Sub SetCaptionFontSize(ByVal newSize As Single)
     
     'Changes to font size require redraws
     If m_Caption.SetFontSize(newSize) Then
@@ -348,11 +348,11 @@ Public Sub SetCaptionFontSize(ByVal newSize As Single)
     
 End Sub
 
-Public Function GetCaptionFontBold() As Boolean
+Friend Function GetCaptionFontBold() As Boolean
     GetCaptionFontBold = m_Caption.GetFontBold
 End Function
 
-Public Sub SetCaptionFontBold(ByVal newState As Boolean)
+Friend Sub SetCaptionFontBold(ByVal newState As Boolean)
     
     'Changes to font style require redraws
     If m_Caption.SetFontBold(newState) Then
@@ -362,11 +362,11 @@ Public Sub SetCaptionFontBold(ByVal newState As Boolean)
     
 End Sub
 
-Public Function GetCaptionFontItalic() As Boolean
+Friend Function GetCaptionFontItalic() As Boolean
     GetCaptionFontItalic = m_Caption.GetFontItalic
 End Function
 
-Public Sub SetCaptionFontItalic(ByVal newState As Boolean)
+Friend Sub SetCaptionFontItalic(ByVal newState As Boolean)
     
     'Changes to font style require redraws
     If m_Caption.SetFontItalic(newState) Then
@@ -376,11 +376,11 @@ Public Sub SetCaptionFontItalic(ByVal newState As Boolean)
     
 End Sub
 
-Public Function GetCaptionFontUnderline() As Boolean
+Friend Function GetCaptionFontUnderline() As Boolean
     GetCaptionFontUnderline = m_Caption.GetFontUnderline
 End Function
 
-Public Sub SetCaptionFontUnderline(ByVal newState As Boolean, Optional ByVal suspendRepaint As Boolean = False)
+Friend Sub SetCaptionFontUnderline(ByVal newState As Boolean, Optional ByVal suspendRepaint As Boolean = False)
     
     'Changes to font style require redraws
     If m_Caption.SetFontUnderline(newState) Then
@@ -390,11 +390,11 @@ Public Sub SetCaptionFontUnderline(ByVal newState As Boolean, Optional ByVal sus
     
 End Sub
 
-Public Function GetCaptionAlignment() As AlignmentConstants
+Friend Function GetCaptionAlignment() As AlignmentConstants
     GetCaptionAlignment = m_Caption.GetAlignment
 End Function
 
-Public Sub SetCaptionAlignment(ByVal newAlignment As AlignmentConstants)
+Friend Sub SetCaptionAlignment(ByVal newAlignment As AlignmentConstants)
     
     'Changes to alignment require redraws
     If m_Caption.SetAlignment(newAlignment) Then
@@ -406,7 +406,7 @@ End Sub
 
 'The caption will be positioned automatically, or the caller can set a custom rect here.
 ' To reset to default positioning, call with all zeroes.
-Public Sub SetCaptionCustomPosition(Optional ByVal newLeft As Long = 0, Optional ByVal newTop As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+Friend Sub SetCaptionCustomPosition(Optional ByVal newLeft As Long = 0, Optional ByVal newTop As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     If (newLeft = 0) And (newTop = 0) And (newWidth = 0) And (newHeight = 0) Then
         m_CustomCaptionRectActive = False
@@ -433,12 +433,12 @@ Public Sub SetCaptionCustomPosition(Optional ByVal newLeft As Long = 0, Optional
 End Sub
 
 'By default, this class manages caption painting for you.  If you want to do it manually, pass this function FALSE.
-Public Sub SetCaptionAutomaticPainting(ByVal newState As Boolean)
+Friend Sub SetCaptionAutomaticPainting(ByVal newState As Boolean)
     m_CustomCaptionPaintingActive = Not newState
 End Sub
 
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any location of their choosing.
-Public Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1)
+Friend Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1)
     If m_NoBackBufferMode Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
@@ -451,7 +451,7 @@ Public Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal
 End Sub
 
 'If automatic caption painting is turned off, the caller can use this function paint the caption to any rect of their choosing.
-Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
+Friend Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
     If m_NoBackBufferMode Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  You cannot paint outside a WM_PAINT cycle if double-buffering was deactivated!"
@@ -461,15 +461,15 @@ Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, 
     End If
 End Sub
 
-Public Sub SetCaptionCustomColor(ByVal newCaptionColor As Long)
+Friend Sub SetCaptionCustomColor(ByVal newCaptionColor As Long)
     m_Caption.SetCaptionColor newCaptionColor
 End Sub
 
-Public Function GetCaptionBottom() As Long
+Friend Function GetCaptionBottom() As Long
     GetCaptionBottom = m_CaptionRect.Bottom
 End Function
 
-Public Function GetCaptionHeight(Optional ByVal useAutoFit As Boolean = True) As Long
+Friend Function GetCaptionHeight(Optional ByVal useAutoFit As Boolean = True) As Long
     If useAutoFit Then
         GetCaptionHeight = m_Caption.GetCaptionHeight
     Else
@@ -477,7 +477,7 @@ Public Function GetCaptionHeight(Optional ByVal useAutoFit As Boolean = True) As
     End If
 End Function
 
-Public Function GetCaptionWidth(Optional ByVal useAutoFit As Boolean = True) As Long
+Friend Function GetCaptionWidth(Optional ByVal useAutoFit As Boolean = True) As Long
     If useAutoFit Then
         GetCaptionWidth = m_Caption.GetCaptionWidth
     Else
@@ -485,7 +485,7 @@ Public Function GetCaptionWidth(Optional ByVal useAutoFit As Boolean = True) As 
     End If
 End Function
 
-Public Function IsCaptionActive() As Boolean
+Friend Function IsCaptionActive() As Boolean
     If m_Caption Is Nothing Then
         IsCaptionActive = False
     Else
@@ -495,22 +495,36 @@ End Function
 
 'Want to turn on/off high-resolution mouse input?  Request changes here.  (By default, high-resolution mouse input is
 ' *not* enabled for most controls.)
-Public Sub RequestHighResMouseInput(ByVal newState As Boolean)
+Friend Sub RequestHighResMouseInput(ByVal newState As Boolean)
     If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetHighResolutionTrackingMode newState
 End Sub
+
+'Want to turn off auto-dropping of delayed mouse messages?  Request changes here.  (By default, auto-drop is always enabled.)
+Friend Sub RequestAutoDropMouseMessages(ByVal newState As Boolean)
+    If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetAutoDropOfDelayedEvents newState
+End Sub
+
+'Return the number of "pending" mouse move events.  Only relevant if high-resolution input tracking has been manually activated.
+Friend Function GetNumMouseEventsPending() As Long
+    If (Not m_MouseEvents Is Nothing) Then GetNumMouseEventsPending = m_MouseEvents.GetNumMouseMovePointsRemaining()
+End Function
+
+Friend Function GetNextMouseMovePoint(ByRef dstMMP As MOUSEMOVEPOINT) As Boolean
+    If (Not m_MouseEvents Is Nothing) Then GetNextMouseMovePoint = m_MouseEvents.GetNextMouseMovePoint(dstMMP)
+End Function
 
 'Because this support class manages a back buffer for its parent control, it sometimes needs to raise redraw requests.  To prevent
 ' an excessive amount of back-and-forth requests, the caller needs to explicitly specify a custom backcolor if it wants one.
 ' NOTE: call this function without supplying a newColor value to reset to the default program-wide window backcolor.
 ' ANOTHER NOTE: this function won't raise a redraw request, by design.
-Public Sub SetCustomBackColor(Optional ByVal newBackColor As Long = -1&)
+Friend Sub SetCustomBackColor(Optional ByVal newBackColor As Long = -1&)
     m_BackColor = newBackColor
 End Sub
 
 'Want to receive custom window messages?  No problem.  Register them here, then watch for the CustomMessage event.
 ' Note, however, that if the message is specific to PD, the caller needs to let us know, as we will need to manually
 ' handle message marshaling.
-Public Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInternalToPD As Boolean = False)
+Friend Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInternalToPD As Boolean = False)
     
     If g_IsProgramRunning Then
         
@@ -526,11 +540,11 @@ Public Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInterna
     
 End Sub
 
-Public Sub NotifyMouseDragResize_Start()
+Friend Sub NotifyMouseDragResize_Start()
     m_MouseEvents.SetCaptureOverride True
 End Sub
 
-Public Sub NotifyMouseDragResize_End()
+Friend Sub NotifyMouseDragResize_End()
     m_MouseEvents.SetCaptureOverride False
     m_MouseEvents.ResetTracking
     Me.RequestCursor IDC_DEFAULT
@@ -730,14 +744,14 @@ Private Sub m_MouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstan
     RaiseEvent DoubleClickCustom(Button, Shift, x, y)
 End Sub
 
-Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Track button state persistently, so the control can easily query it outside of events
     m_MouseButtonState = m_MouseButtonState Or Button
     
     'Ensure that a focus event has been raised, if it wasn't already
     If (Not m_FocusDetector.HasFocus) Then m_FocusDetector.SetFocusManually
-    RaiseEvent MouseDownCustom(Button, Shift, x, y)
+    RaiseEvent MouseDownCustom(Button, Shift, x, y, timeStamp)
     
 End Sub
 
@@ -759,18 +773,18 @@ Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByV
     RaiseEvent MouseLeave(Button, Shift, x, y)
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     If (Not m_MouseInsideUC) Then
         m_MouseInsideUC = True
         RaiseEvent MouseEnter(Button, Shift, x, y)
     Else
-        RaiseEvent MouseMoveCustom(Button, Shift, x, y)
+        RaiseEvent MouseMoveCustom(Button, Shift, x, y, timeStamp)
     End If
 End Sub
 
-Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     m_MouseButtonState = m_MouseButtonState And (Not Button)
-    RaiseEvent MouseUpCustom(Button, Shift, x, y, ClickEventAlsoFiring)
+    RaiseEvent MouseUpCustom(Button, Shift, x, y, clickEventAlsoFiring, timeStamp)
 End Sub
 
 Private Sub m_MouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
@@ -884,11 +898,11 @@ End Sub
 
 'Visibility, as tracked by the API.  Note that this will be set immediately before the change is actually applied, so the UC
 ' can check it to know how the control visibility is *about* to change.
-Public Function AmIVisible() As Boolean
+Friend Function AmIVisible() As Boolean
     AmIVisible = m_Visibility
 End Function
 
-Public Function AmIEnabled() As Boolean
+Friend Function AmIEnabled() As Boolean
     AmIEnabled = CBool(IsWindowEnabled(m_hWnd) = 1)
 End Function
 
@@ -896,7 +910,7 @@ End Function
 ' (IMPORTANT NOTE: per Windows rules, a parentHwnd is required.  We can't request the parent hWnd at creation time,
 '                  because the control isn't sited yet, so it must be supplied here.)
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
-Public Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Friend Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     
     If g_IsProgramRunning Then
     
@@ -957,12 +971,12 @@ End Sub
 
 'If the control wants to know if it has focus, it can call this function.  API techniques are used, so even API windows
 ' will be handled correctly.
-Public Function DoIHaveFocus() As Boolean
+Friend Function DoIHaveFocus() As Boolean
     DoIHaveFocus = m_FocusDetector.HasFocus
 End Function
 
 'Retrieve a copy of the back buffer's DC.  Optionally, you can request that the control wipe the background first.
-Public Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = False, Optional ByVal newBackColor As Long = -1&) As Long
+Friend Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = False, Optional ByVal newBackColor As Long = -1&) As Long
     
     If m_NoBackBufferMode Then
         #If DEBUGMODE = 1 Then
@@ -999,11 +1013,11 @@ Public Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = Fa
     
 End Function
 
-Public Function GetBackBufferWidth() As Long
+Friend Function GetBackBufferWidth() As Long
     GetBackBufferWidth = m_Width
 End Function
 
-Public Function GetBackBufferHeight() As Long
+Friend Function GetBackBufferHeight() As Long
     GetBackBufferHeight = m_Height
 End Function
 
@@ -1016,45 +1030,45 @@ Friend Sub GetControlRect(ByRef dstRect As RECTL)
     End With
 End Sub
 
-Public Function GetControlLeft() As Long
+Friend Function GetControlLeft() As Long
     GetControlLeft = m_MoveSize.GetLeft
 End Function
 
-Public Function GetControlTop() As Long
+Friend Function GetControlTop() As Long
     GetControlTop = m_MoveSize.GetTop
 End Function
 
-Public Function GetControlWidth() As Long
+Friend Function GetControlWidth() As Long
     GetControlWidth = m_MoveSize.GetWidth
 End Function
 
-Public Function GetControlHeight() As Long
+Friend Function GetControlHeight() As Long
     GetControlHeight = m_MoveSize.GetHeight
 End Function
 
-Public Function IsMouseInside() As Boolean
+Friend Function IsMouseInside() As Boolean
     IsMouseInside = m_MouseInsideUC
 End Function
 
-Public Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
+Friend Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
     IsMouseButtonDown = CBool((Button And m_MouseButtonState) <> 0)
 End Function
 
-Public Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
+Friend Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
     If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetSystemCursor standardCursorType
 End Sub
 
-Public Sub RequestCursor_PNG(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
+Friend Sub RequestCursor_PNG(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
     If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.SetPNGCursor pngResourceName, cursorHotspotX, cursorHotspotY
 End Sub
 
-Public Sub RequestMousePosition(ByVal mouseX As Double, ByVal mouseY As Double)
+Friend Sub RequestMousePosition(ByVal mouseX As Double, ByVal mouseY As Double)
     If (Not m_MouseEvents Is Nothing) Then m_MouseEvents.MoveCursorToNewPosition mouseX, mouseY
 End Sub
 
 'Want a new control size?  No problem.  Request a resize here.  Missing width/height parameters will be set to match the
 ' current control width/height.
-Public Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
+Friend Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
     
     'Fill in missing parameters, if any
     If (newWidth = 0) Then newWidth = m_MoveSize.GetWidth
@@ -1070,7 +1084,7 @@ End Sub
 
 'Want a new control position?  No problem.  Request a move here.  Missing left/top parameters will be set to match the
 ' current control width/height.
-Public Sub RequestNewPosition(Optional ByVal newLeft As Long = -100, Optional ByVal newTop As Long = -100, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
+Friend Sub RequestNewPosition(Optional ByVal newLeft As Long = -100, Optional ByVal newTop As Long = -100, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
     
     'Fill in missing parameters
     If newLeft = -100 Then newLeft = m_MoveSize.GetLeft
@@ -1084,7 +1098,7 @@ Public Sub RequestNewPosition(Optional ByVal newLeft As Long = -100, Optional By
     
 End Sub
 
-Public Sub RequestFullMove(Optional ByVal newLeft As Long = -100, Optional ByVal newTop As Long = -100, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
+Friend Sub RequestFullMove(Optional ByVal newLeft As Long = -100, Optional ByVal newTop As Long = -100, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
     
     'Fill in missing parameters
     If newLeft = -100 Then newLeft = m_MoveSize.GetLeft
@@ -1109,7 +1123,7 @@ End Sub
 '
 'Also, note that requests are not persistent, by design.  The caller must re-request management any time the underlying
 ' contents change (as this class has no way of being auto-notified).
-Public Sub RequestBufferColorManagement(ByVal ptrToSrcRectF As Long)
+Friend Sub RequestBufferColorManagement(ByVal ptrToSrcRectF As Long)
     Dim tmpRectF As RECTF
     CopyMemory_Strict VarPtr(tmpRectF), ptrToSrcRectF, 16&
     ColorManagement.ApplyDisplayColorManagement_RectF m_BackBuffer, tmpRectF, , False
@@ -1119,7 +1133,7 @@ End Sub
 ' for the window to paint itself naturally.  If this is unacceptable, you can set raiseImmediateDrawEvent to TRUE, which
 ' forces the paint event to fire immediately.  (Because window invalidation does not occur, clipping may not be handled
 ' precisely, but that should be okay because the caller knows why a redraw is needed.)
-Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
+Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     'When running, rely on the painter to paint the control for us
     If g_IsProgramRunning Then
@@ -1150,7 +1164,7 @@ End Sub
 'To support IDE painting of windowless controls, we have to jump through some unpleasant hoops.  This sub needs to be called from
 ' inside the parent user control's _Paint event, and the destination DC *must be passed* as it only exists for the lifetime of
 ' the Paint event (and we don't want to subclass inside the designer).
-Public Sub RequestIDERepaint(ByVal targetDC As Long)
+Friend Sub RequestIDERepaint(ByVal targetDC As Long)
 
     If (Not g_IsProgramRunning) And (m_hDC = 0) And (Not m_NoBackBufferMode) Then
         If Not (m_BackBuffer Is Nothing) Then
@@ -1179,7 +1193,7 @@ End Sub
 
 'Whenever the caller user control receives an UpdateAgainstTheme/Language request, it needs to relay that to this support
 ' class as well.  We'll update things like the tooltip and text caption (if any) to match the new settings.
-Public Sub UpdateAgainstThemeAndLanguage()
+Friend Sub UpdateAgainstThemeAndLanguage()
     
     If g_IsProgramRunning Then
         

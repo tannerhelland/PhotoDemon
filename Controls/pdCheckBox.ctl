@@ -219,7 +219,7 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
 End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
-Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     If Me.Enabled And IsMouseOverClickArea(x, y) Then
         If CBool(Me.Value) Then Me.Value = vbUnchecked Else Me.Value = vbChecked
     End If
@@ -232,7 +232,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 'When the mouse enters the clickable portion of the UC, we must repaint the caption (to reflect its hovered state)
-Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     If m_MouseInsideClickableRect <> IsMouseOverClickArea(x, y) Then

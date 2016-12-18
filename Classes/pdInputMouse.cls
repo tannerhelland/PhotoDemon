@@ -15,10 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Mouse Input Handler (mouse, pen, etc) class
 'Copyright 2014-2016 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 27/October/16
-'Last update: big code clean-up and refinement.  This class no longer supports tracking of multiple hWnds.  You must use
-'              unique class instances for each hWnd (by design), which greatly simplifies the class's reliability,
-'              particularly where subclassing is involved.
+'Last updated: 18/December/16
+'Last update: redefine mouse down/up/move events to report timestamps; this is crucial for calculating pointer velocity+acceleration
 '
 'As part of implementing paint tools in PhotoDemon, a comprehensive input solution was required.  (Prior to that point,
 ' a combination of intrinsic VB mouse events and a few extra subclassing bits (e.g. mousewheel) covered PD pretty well,
@@ -59,20 +57,18 @@ Option Explicit
 
 'This class can potentially raise many events.  Note that events will only be raised if the associated tracking behavior
 ' is explicitly requested (e.g. you don't *have* to request that the class handles all these events).
-Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-Public Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-Public Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
+Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-
-'The following events are raised only if specifically requested in the AddInputTracker function
-Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-Public Event AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseHover(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Public Event MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Public Event MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
+Public Event MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Public Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal zoomAmount As Double)
 
 'This class tracks all kinds of window messages.  Most objects won't need this level of tracking, but they're there
 ' if needed.
@@ -152,20 +148,13 @@ Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) A
 
 'Set a new cursor for a given class
 Private Declare Function GetCursor Lib "user32" () As Long
-Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
+Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Private Declare Function GetClassLong Lib "user32" Alias "GetClassLongW" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetClassLong Lib "user32" Alias "SetClassLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Const GCL_HCURSOR = (-12)
 
-'Reconstruct a full mouse movement history
-Private Type MOUSEMOVEPOINT
-    x As Long
-    y As Long
-    ptTime As Long
-    dwExtraInfo As Long
-End Type
-
+'Reconstruct a full mouse movement history.  Note that this requires the MOUSEMOVEPOINT type, declared elsewhere.
 Private Enum PD_MouseResolution
     GMMP_USE_DISPLAY_POINTS = 1
     GMMP_USE_HIGH_RESOLUTION_POINTS = 2
@@ -178,6 +167,7 @@ End Enum
 Private Declare Function GetMouseMovePointsEx Lib "user32" (ByVal sizeOfMouseMoveStruct As Long, ByRef currentMouseMovePoint As MOUSEMOVEPOINT, ByVal ptrToMouseMovePointArray As Long, ByVal numOfPointsToRetrieve As Long, ByVal resolutionFlag As PD_MouseResolution) As Long
 Private Declare Function GetMessageTime Lib "user32" () As Long
 Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 
 'Weird legacy desktop issues require us to transform points passed to/from GetMouseMovePointsEx, relative to the current monitor system
 Private Const SM_XVIRTUALSCREEN = 76
@@ -200,7 +190,7 @@ Private Const SPI_GETWHEELSCROLLCHARS As Long = &H6C
 Private m_Subclass As cSelfSubHookCallback
 
 'The hWnd currently being tracked.  You can test this value against zero to see if the class is active.
-Private m_TargetHWnd As Long
+Private m_targetHwnd As Long
 
 'You don't have to use all of the class's functionality.  For example, you may want to use VB for some mouse events,
 ' and this class for others.  That's okay.  We keep track of which events we're currently tracking, so we know what
@@ -230,8 +220,15 @@ Private m_MouseMoveCount As Long
 Private m_HighResModeActive As Boolean
 
 'To reconstruct missing mouse movement points, we must track the last returned mouse point.  Otherwise, we risk repeating points.
+Private Const MAX_MOUSE_HISTORY As Long = 64
+Private m_MouseHistory() As MOUSEMOVEPOINT
 Private m_PrevPointStored As Boolean
 Private m_LastPointTracked As MOUSEMOVEPOINT
+
+'Our parent control may want to know how many MOUSEMOVEPOINT objects have posted but not been relayed (yet).  This allows them
+' to delay handling of other items until mouse events catch up, for example.  We track the current "not yet relayed" MMP count
+' here.
+Private m_MouseMovePointsRemaining As Long
 
 'Because PD sometimes performs energy-intensive actions within mouse events, it is possible for raised messages to become
 ' increasingly delayed, especially if high-resolution tracking is active.  In an attempt to mitigate this, this class supports
@@ -239,7 +236,7 @@ Private m_LastPointTracked As MOUSEMOVEPOINT
 ' mouse events will be fired regardless of delay.
 Private m_DelayTrackingActive As Boolean
 Private m_DelayThreshold As Long
-Private Const DEFAULT_DELAY_THRESHOLD_MS = 120
+Private Const DEFAULT_DELAY_THRESHOLD_MS = 67
 
 'To improve mouse behavior on UCs, this class will auto-capture the mouse when a button is pressed.  Each press of a button increments
 ' this internal capture counter.  When a button is released, the capture counter is decremented.  When all buttons have been released,
@@ -251,6 +248,14 @@ Private m_DoNotCaptureOnButtonPress As Boolean
 
 'If the mouse is currently captured, this will be set to TRUE
 Private m_MouseHasBeenCaptured As Boolean
+
+'Because this class performs subclassing, and a lot of mouse events may be generated, we use module-level variables
+' for a number of "inside the subclasser" variables (to prevent flooding the stack with temp variables).
+Private m_retShiftConstants As ShiftConstants, m_retMouseButton As PDMouseButtonConstants
+Private m_scrollDelta As Long, m_finalScrollAmount As Double
+Private m_commandID As Long, m_msgTimestamp As Long
+Private m_MouseX As Long, m_MouseY As Long
+Private m_mouseXInt As Integer, m_mouseYInt As Integer
 
 'Initiate input tracking of a given hWnd.  Aside from the required hWnd, a few other, optional parameters exist:
 '
@@ -272,7 +277,7 @@ Public Function AddInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
     'Add the hWnd to our tracking array.  Note that the hWnd in position 0 is treated as the base.
     If (targetHwnd <> 0) Then
         
-        m_TargetHWnd = targetHwnd
+        m_targetHwnd = targetHwnd
         m_TrackMouseEnterLeave = alsoTrackMouseEnterLeave
         m_TrackStandardMouseEvents = alsoTrackStandardMouseEvents
         m_TrackAppCommands = alsoTrackAppCommands
@@ -376,6 +381,7 @@ End Sub
 'Use this function to enable/disable high-resolution tracking (where mouse motions between WM_MOUSEMOVE events are manually reconstructed)
 Public Sub SetHighResolutionTrackingMode(ByVal newMode As Boolean)
     m_HighResModeActive = newMode
+    If m_HighResModeActive Then ReDim m_MouseHistory(0 To MAX_MOUSE_HISTORY - 1) As MOUSEMOVEPOINT
 End Sub
 
 Public Sub ResetTracking()
@@ -392,9 +398,9 @@ Public Sub Shutdown()
 
     If g_IsProgramRunning Then
         
-        If (m_TargetHWnd <> 0) Then
-            m_Subclass.ssc_UnSubclass m_TargetHWnd
-            m_TargetHWnd = 0
+        If (m_targetHwnd <> 0) Then
+            m_Subclass.ssc_UnSubclass m_targetHwnd
+            m_targetHwnd = 0
         End If
         
         m_Subclass.ssc_Terminate
@@ -444,13 +450,13 @@ End Sub
 ' every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class cursor and overwrite
 ' it with NULL.
 Private Sub ApplyCursorToHwnds(Optional ByVal removeExistingClassCursor As Boolean = False)
-    If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_TargetHWnd, GCL_HCURSOR, 0&)
+    If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_targetHwnd, GCL_HCURSOR, 0&)
     SetCursor m_CursorHandle
 End Sub
 
 'Partner to ApplyCursorToHwnds, above.  To be used only when the mouse leaves a cursor-controlled area.
 Private Sub ResetClassCursor()
-    SetClassLong m_TargetHWnd, GCL_HCURSOR, LoadCursor(0, IDC_DEFAULT) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via SetHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
+    SetClassLong m_targetHwnd, GCL_HCURSOR, LoadCursor(0, IDC_DEFAULT) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via SetHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
     SetCursor LoadCursor(0, IDC_ARROW)      'Note that this MUST be IDC_ARROW; IDC_DEFAULT will show nothing on some controls
 End Sub
 
@@ -463,7 +469,7 @@ Private Function RequestMouseTrackingForHwnd()
     With eventTracker
         .cbSize = Len(eventTracker)
         .dwFlags = TME_LEAVE Or TME_HOVER
-        .hWndTrack = m_TargetHWnd
+        .hWndTrack = m_targetHwnd
         .dwHoverTime = &HFFFFFFFF       'Use the system default hover time (400 ms, I believe)
     End With
     
@@ -523,7 +529,7 @@ Private Function GetCurrentCursorPosition(ByRef controlX As Long, ByRef controlY
     If GetCursorPos(tmpPoint) <> 0 Then
         
         'Convert the screen coordinates into the coordinate space of the supplied hWnd
-        If (ScreenToClient(m_TargetHWnd, tmpPoint) <> 0) Then
+        If (ScreenToClient(m_targetHwnd, tmpPoint) <> 0) Then
             controlX = tmpPoint.x
             controlY = tmpPoint.y
             GetCurrentCursorPosition = True
@@ -545,7 +551,7 @@ Public Sub MoveCursorToNewPosition(ByVal xRelativeToHwnd As Double, ByVal yRelat
     tmpPoint.x = xRelativeToHwnd
     tmpPoint.y = yRelativeToHwnd
     
-    If (ClientToScreen(m_TargetHWnd, tmpPoint) <> 0) Then
+    If (ClientToScreen(m_targetHwnd, tmpPoint) <> 0) Then
         
         'Cursor trails may cause ghosting, where we move the cursor, but a cursor is still shown at the old mouse position.
         ' To account for that, we must hide the cursor, move it, then re-display it.
@@ -612,9 +618,9 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     Dim screenX As Long, screenY As Long
     screenX = tmpPoint.x
     screenY = tmpPoint.y
-
-    'If we have never tracked a previous point, we don't want to reconstruct a mouse movement history yet (because this is the user's
-    ' first click!)  Store the passed point for future reference, then exit immediately.
+    
+    'As a failsafe, see if we have stored the value of a previously tracked point.  (The only way this fails is for the first MouseMove
+    ' event a control receives; when this happens, there is nothing to reconstruct, so we should exit immediately.)
     If (Not m_PrevPointStored) Then
     
         m_PrevPointStored = True
@@ -625,13 +631,15 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             .ptTime = msgTimestamp
         End With
         
-        RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
+        m_MouseMovePointsRemaining = -1
+        RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY, msgTimestamp)
         Exit Sub
         
     End If
     
     'If we made it all the way here, a previous point has been stored.  We will now reconstruct a full mouse history between that point
     ' and the current one.
+    Dim eventAllowed As Boolean
 
     'Current tracking mode.  We can use either high-resolution pen input coordinates, or regular mouse coordinates.
     ' For now, PD only uses regular mouse coordinates, but perhaps we could make use of the pen code in the future,
@@ -659,11 +667,11 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     End With
     
     'Prepare a buffer to receive the mouse movement history.  The max number of retrievable events is 64.
-    Dim mouseHistory(0 To 63) As MOUSEMOVEPOINT
+    FillMemory VarPtr(m_MouseHistory(0)), LenB(curMouseMovePoint) * MAX_MOUSE_HISTORY, 0
     
     'Retrieve the mouse movement history.  The return value of the function is the number of points filled.
     Dim numPoints As Long
-    numPoints = GetMouseMovePointsEx(Len(curMouseMovePoint), curMouseMovePoint, VarPtr(mouseHistory(0)), 64, GMMP_USE_DISPLAY_POINTS)
+    numPoints = GetMouseMovePointsEx(Len(curMouseMovePoint), curMouseMovePoint, VarPtr(m_MouseHistory(0)), MAX_MOUSE_HISTORY, GMMP_USE_DISPLAY_POINTS)
         
     'If one or more valid points were returned, carry on
     If (numPoints > 0) Then
@@ -673,14 +681,14 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
         For i = 0 To numPoints - 1
         
             'If we reach a point that occurred prior to our last tracked time, exit
-            If (mouseHistory(i).ptTime < m_LastPointTracked.ptTime) Then Exit For
+            If (m_MouseHistory(i).ptTime < m_LastPointTracked.ptTime) Then Exit For
             
             'If we reach our exact last point time, also exit
-            If (mouseHistory(i).ptTime = m_LastPointTracked.ptTime) And (mouseHistory(i).x = m_LastPointTracked.x) And (mouseHistory(i).y = m_LastPointTracked.y) Then Exit For
+            If (m_MouseHistory(i).ptTime = m_LastPointTracked.ptTime) And (m_MouseHistory(i).x = m_LastPointTracked.x) And (m_MouseHistory(i).y = m_LastPointTracked.y) Then Exit For
         
         Next i
         
-        'The variable "i" now contains the index of the previous point (or one that occurred just prior to it, if the previous point wasn't found).
+        '"i" now contains the index of the previous point (or one that occurred just prior to it, if the previous point wasn't found).
         ' Iterate through all points following that one, and convert them to valid screen coordinates.
         numPoints = i - 1
         If (numPoints < 0) Then numPoints = 0
@@ -691,43 +699,57 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
             Select Case curTrackingResolution
             
                 Case GMMP_USE_DISPLAY_POINTS
-                    If (mouseHistory(i).x > 32767) Then mouseHistory(i).x = mouseHistory(i).x - 65536
-                    If (mouseHistory(i).y > 32767) Then mouseHistory(i).y = mouseHistory(i).y - 65536
+                    If (m_MouseHistory(i).x > 32767) Then m_MouseHistory(i).x = m_MouseHistory(i).x - 65536
+                    If (m_MouseHistory(i).y > 32767) Then m_MouseHistory(i).y = m_MouseHistory(i).y - 65536
                 
                 Case GMMP_USE_HIGH_RESOLUTION_POINTS
-                    mouseHistory(i).x = ((mouseHistory(i).x * (nVirtualWidth - 1)) - (nVirtualLeft * 65536)) / nVirtualWidth
-                    mouseHistory(i).y = ((mouseHistory(i).y * (nVirtualHeight - 1)) - (nVirtualTop * 65536)) / nVirtualHeight
+                    m_MouseHistory(i).x = ((m_MouseHistory(i).x * (nVirtualWidth - 1)) - (nVirtualLeft * 65536)) / nVirtualWidth
+                    m_MouseHistory(i).y = ((m_MouseHistory(i).y * (nVirtualHeight - 1)) - (nVirtualTop * 65536)) / nVirtualHeight
                 
             End Select
             
             'With this point successfully transformed, the last thing we need to do is convert it from screen to window coordinates.
-            tmpPoint.x = mouseHistory(i).x
-            tmpPoint.y = mouseHistory(i).y
-            ScreenToClient m_TargetHWnd, tmpPoint
+            tmpPoint.x = m_MouseHistory(i).x
+            tmpPoint.y = m_MouseHistory(i).y
+            ScreenToClient m_targetHwnd, tmpPoint
+            m_MouseHistory(i).x = tmpPoint.x
+            m_MouseHistory(i).y = tmpPoint.y
+            
+        Next i
+        
+        'Last of all, report the points.  Note that we handle this step separately, as our parent may attempt to manually
+        ' retrieve mouse points (without waiting for the events to fire on their own).  This allows us to skip through the
+        ' list based on how many points the caller has manually grabbed.
+        m_MouseMovePointsRemaining = numPoints
+        
+        'Regardless of time delays, raise the initial mouse event.
+        RaiseEvent MouseMoveCustom(Button, Shift, m_MouseHistory(m_MouseMovePointsRemaining).x, m_MouseHistory(m_MouseMovePointsRemaining).y, m_MouseHistory(m_MouseMovePointsRemaining).ptTime)
+        m_MouseMovePointsRemaining = m_MouseMovePointsRemaining - 1
+        
+        'Note that our parent may have manually pulled one or more points from the queue, so m_MouseMovePointsRemaining may have
+        ' changed since our last access.  Because of this, the following loop may not need to be called.
+        
+        'Now, proceed to fire each successive event in turn, while respecting the user's preference for delayed message handling
+        Do While (m_MouseMovePointsRemaining >= 0)
             
             'If automatic message dropping is active, make sure this message falls within the acceptable threshold
             ' before firing it.
-            If m_DelayTrackingActive Then
-                If (GetMessageDelay(mouseHistory(i).ptTime) <= m_DelayThreshold) Then
-                    RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
-                End If
-            Else
-                RaiseEvent MouseMoveCustom(Button, Shift, tmpPoint.x, tmpPoint.y)
-            End If
-        
-        Next i
+            eventAllowed = True
+            If m_DelayTrackingActive Then eventAllowed = CBool(GetMessageDelay(m_MouseHistory(m_MouseMovePointsRemaining).ptTime) <= m_DelayThreshold)
+            If eventAllowed Then RaiseEvent MouseMoveCustom(Button, Shift, m_MouseHistory(m_MouseMovePointsRemaining).x, m_MouseHistory(m_MouseMovePointsRemaining).y, m_MouseHistory(m_MouseMovePointsRemaining).ptTime)
+            
+            m_MouseMovePointsRemaining = m_MouseMovePointsRemaining - 1
+            
+        Loop
         
     'If the current point is also the previous point, GetMouseMovePointsEx may not have any prior points to return.  This is fine -
     ' simply raise the point we received, then exit.
     Else
         
-        If m_DelayTrackingActive Then
-            If (GetMessageDelay(msgTimestamp) <= m_DelayThreshold) Then
-                RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
-            End If
-        Else
-            RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY)
-        End If
+        m_MouseMovePointsRemaining = -1
+        eventAllowed = True
+        If m_DelayTrackingActive Then eventAllowed = CBool(GetMessageDelay(msgTimestamp) <= m_DelayThreshold)
+        If eventAllowed Then RaiseEvent MouseMoveCustom(Button, Shift, clientX, clientY, msgTimestamp)
         
     End If
     
@@ -745,6 +767,24 @@ Private Function GetMessageDelay(ByVal srcMessageTime As Long) As Long
     GetMessageDelay = GetTickCount() - srcMessageTime
 End Function
 
+'See if there are one (or more) points remaining in the GetMouseMovePointsEx queue.  This will always be zero if the
+' HighResInput property is disabled.
+Friend Function GetNumMouseMovePointsRemaining() As Long
+    GetNumMouseMovePointsRemaining = m_MouseMovePointsRemaining
+End Function
+
+'Retrieve the next point in the GetMouseMovePointsEx queue.  This only succeeds if the HighResInput property is enabled.
+' Returns: TRUE if another point exists in the queue; FALSE otherwise.
+Friend Function GetNextMouseMovePoint(ByRef dstMMP As MOUSEMOVEPOINT) As Boolean
+
+    If (m_MouseMovePointsRemaining > 0) Then
+        m_MouseMovePointsRemaining = m_MouseMovePointsRemaining - 1
+        dstMMP = m_MouseHistory(m_MouseMovePointsRemaining)
+        GetNextMouseMovePoint = True
+    End If
+    
+End Function
+
 Private Sub Class_Initialize()
     
     m_MouseTrackingActive = False
@@ -754,12 +794,14 @@ Private Sub Class_Initialize()
     'Unlike some PD classes, a subclasser is always initialized by this class.  (It can't function otherwise.)
     If g_IsProgramRunning Then Set m_Subclass = New cSelfSubHookCallback
     
-    'Note that auto-dropping of severely delayed events is activated by default
+    'Note that auto-dropping of severely delayed events is activated by default.  Some UI objects (like the primary canvas)
+    ' may disable this behavior under certain conditions.
     m_DelayTrackingActive = True
     m_DelayThreshold = DEFAULT_DELAY_THRESHOLD_MS
     
     'In debug builds, high-resolution mode is disabled by default.  In PD, we typically only use this for paintbrushes.
     m_HighResModeActive = False
+    m_MouseMovePointsRemaining = -1
     
 End Sub
 
@@ -790,12 +832,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
     Dim overrideRequired As Boolean
     
     'Before processing anything, retrieve this message's timestamp
-    Dim msgTimestamp As Long
-    msgTimestamp = GetMessageTime()
+    m_msgTimestamp = GetMessageTime()
     
     'Next, do a failsafe check to make sure the hWnd we've been passed is one we're actually responsible for.
     ' (This should always be TRUE.)
-    If (lng_hWnd = m_TargetHWnd) Then
+    If (lng_hWnd = m_targetHwnd) Then
         
         'As VB already does with its own mouse events, it is helpful to supply key modifiers directly in the event
         ' params.  Unfortunately, the window messages that report key states will only report SHIFT and CTRL masks,
@@ -806,31 +847,30 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
         
         'Anyway, because the Alt key requires special handling, and some messages don't report button state, I just
         ' ignore window message reports entirely and pull key states manually using GetAsyncKeyState.
-        Dim retShiftConstants As ShiftConstants
-        If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-        If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+        m_retShiftConstants = 0
+        If IsVirtualKeyDown(VK_SHIFT) Then m_retShiftConstants = m_retShiftConstants Or vbShiftMask
+        If IsVirtualKeyDown(VK_CONTROL) Then m_retShiftConstants = m_retShiftConstants Or vbCtrlMask
         
         'NOTE!  MSDN provides odd instructions for tracking the ALT key (see Remarks here:
         ' http://msdn.microsoft.com/en-us/library/ms646242%28v=vs.85%29.aspx).  They state explicitly to use
         ' use GetKeyState and not GetAsyncKeyState, but they don't provide any rationale for this.  I have no
         ' trouble with GetAsyncKeyState properly reporting Alt status on Win XP through 10, so I'm leaving this strategy
         ' for now, but I remain intrigued by MSDN's oddly specific instructions on the point...
-        If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+        If IsVirtualKeyDown(VK_ALT) Then m_retShiftConstants = m_retShiftConstants Or vbAltMask
         
         'Similarly, always grab mouse buttons independent of the window message
-        Dim retMouseButton As PDMouseButtonConstants
-        If IsMouseButtonDown(VK_LBUTTON) Then retMouseButton = retMouseButton Or pdLeftButton
-        If IsMouseButtonDown(VK_MBUTTON) Then retMouseButton = retMouseButton Or pdMiddleButton
-        If IsMouseButtonDown(VK_RBUTTON) Then retMouseButton = retMouseButton Or pdRightButton
-        If IsMouseButtonDown(VK_XBUTTON1) Then retMouseButton = retMouseButton Or pdXButtonOne
-        If IsMouseButtonDown(VK_XBUTTON2) Then retMouseButton = retMouseButton Or pdXButtonTwo
+        m_retMouseButton = 0
+        If IsMouseButtonDown(VK_LBUTTON) Then m_retMouseButton = m_retMouseButton Or pdLeftButton
+        If IsMouseButtonDown(VK_MBUTTON) Then m_retMouseButton = m_retMouseButton Or pdMiddleButton
+        If IsMouseButtonDown(VK_RBUTTON) Then m_retMouseButton = m_retMouseButton Or pdRightButton
+        If IsMouseButtonDown(VK_XBUTTON1) Then m_retMouseButton = m_retMouseButton Or pdXButtonOne
+        If IsMouseButtonDown(VK_XBUTTON2) Then m_retMouseButton = m_retMouseButton Or pdXButtonTwo
         
         'Some functions also supply mouse button and coordinate values; we'll be retrieving these as well.
         ' To improve accuracy of the retrieved coordinates (and to make future support for GetMouseMovePointsEx
         ' easier to implement), we're going to manually retrieve coordinates using GetCursorPos, then translate
         ' these into the coordinate space of the master hWnd given to this class.
-        Dim mouseX As Long, mouseY As Long
-        If Not GetCurrentCursorPosition(mouseX, mouseY) Then
+        If (Not GetCurrentCursorPosition(m_MouseX, m_MouseY)) Then
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  pdInput could not retrieve mouse coordinates relative to hWnd (" & lng_hWnd & ")."
             #End If
@@ -839,9 +879,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
         'As a failsafe, crucial mouse events (button down and up, particularly) can never afford to be delayed.  We must retrieve
         ' their values at *exactly* the moment the message arrives.  To that end, we always store copies of these integer-only values,
         ' using the values passed in the message parameters.
-        Dim mouseXInt As Integer, mouseYInt As Integer
-        mouseXInt = GetLoWord(lParam)
-        mouseYInt = GetHiWord(lParam)
+        m_mouseXInt = GetLoWord(lParam)
+        m_mouseYInt = GetHiWord(lParam)
         
         'Regardless of which event we are handling, we now have Shift modifier, mouse button, and mouse coordinate
         ' data (relative to the master hWnd for this class).  This makes individual message parsing much easier, as
@@ -870,7 +909,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                         'If cursor handling is enabled, reset the class cursor and re-apply any custom cursor now.
                         If m_TrackCursor Then ApplyCursorToHwnds True
                         
-                        RaiseEvent MouseEnter(retMouseButton, retShiftConstants, mouseX, mouseY)
+                        RaiseEvent MouseEnter(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
                         
                     End If
                                         
@@ -881,17 +920,17 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                         ' we need to reconstruct any missing mouse events and raise them all in turn.  Otherwise, we can
                         ' simply return this event.
                         If m_HighResModeActive Then
-                            ReconstructMouseMoveHistory retMouseButton, retShiftConstants, mouseX, mouseY, msgTimestamp, lng_hWnd
+                            ReconstructMouseMoveHistory m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_msgTimestamp, lng_hWnd
                         Else
                             
                             'If automatic message dropping is active, make sure this message falls within the acceptable threshold
                             ' before firing it.
                             If m_DelayTrackingActive Then
-                                If (GetMessageDelay(msgTimestamp) <= m_DelayThreshold) Then
-                                    RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                                If (GetMessageDelay(m_msgTimestamp) <= m_DelayThreshold) Then
+                                    RaiseEvent MouseMoveCustom(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_msgTimestamp)
                                 End If
                             Else
-                                RaiseEvent MouseMoveCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                                RaiseEvent MouseMoveCustom(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_msgTimestamp)
                             End If
                             
                         End If
@@ -928,25 +967,34 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                 'Reset the mouse move counter
                 m_MouseMoveCount = 0
                 
+                'Release any points remaining in the high-resolution input queue
+                m_PrevPointStored = True
+                With m_LastPointTracked
+                    .x = m_MouseX And &HFFFF&
+                    .y = m_MouseY And &HFFFF&
+                    .ptTime = m_msgTimestamp
+                End With
+                m_MouseMovePointsRemaining = -1
+                
                 'Because mouse up/down events tend to focus on the use of a single button, it makes more sense for us to
                 ' manually return a single-button type here (rather than a composite flag).  The calling function can
                 ' always query this class if it wants more detailed button up/down state data.
-                retMouseButton = 0
+                m_retMouseButton = 0
                 
                 If uMsg = WM_LBUTTONDOWN Then
-                    retMouseButton = vbLeftButton
+                    m_retMouseButton = vbLeftButton
                 ElseIf uMsg = WM_RBUTTONDOWN Then
-                    retMouseButton = vbRightButton
+                    m_retMouseButton = vbRightButton
                 ElseIf uMsg = WM_MBUTTONDOWN Then
-                    retMouseButton = vbMiddleButton
+                    m_retMouseButton = vbMiddleButton
                 ElseIf uMsg = WM_XBUTTONDOWN Then
                 
                     'In this rare instance, we have to pull data directly from the message, because which XButton triggered
                     ' the message can only be found by checking flags in the high-order word of the wParam.
                     If (wParam \ &H10000) = 1 Then
-                        retMouseButton = pdXButtonOne
+                        m_retMouseButton = pdXButtonOne
                     Else
-                        retMouseButton = pdXButtonTwo
+                        m_retMouseButton = pdXButtonTwo
                     End If
                     
                     'Also strange, X-button events require us to return TRUE!  This only for matters for pre-W2K systems,
@@ -955,7 +1003,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                     
                 End If
                 
-                RaiseEvent MouseDownCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt)
+                RaiseEvent MouseDownCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt, m_msgTimestamp)
                 
             'Mouse up
             Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP
@@ -973,22 +1021,22 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                 'Because mouse up/down events tend to focus on the use of a single button, it makes more sense for us to
                 ' manually return a single-button type here (rather than a composite flag).  The calling function can
                 ' always query this class if it wants more detailed button up/down state data.
-                retMouseButton = 0
+                m_retMouseButton = 0
                 
                 If uMsg = WM_LBUTTONUP Then
-                    retMouseButton = vbLeftButton
+                    m_retMouseButton = vbLeftButton
                 ElseIf uMsg = WM_RBUTTONUP Then
-                    retMouseButton = vbRightButton
+                    m_retMouseButton = vbRightButton
                 ElseIf uMsg = WM_MBUTTONUP Then
-                    retMouseButton = vbMiddleButton
+                    m_retMouseButton = vbMiddleButton
                 ElseIf uMsg = WM_XBUTTONUP Then
                 
                     'In this rare instance, we have to pull data directly from the message, because which XButton triggered
                     ' the message can only be found by checking flags in the high-order word of the wParam.
                     If (wParam \ &H10000) = 1 Then
-                        retMouseButton = pdXButtonOne
+                        m_retMouseButton = pdXButtonOne
                     Else
-                        retMouseButton = pdXButtonTwo
+                        m_retMouseButton = pdXButtonTwo
                     End If
                     
                     'Also strange, X-button events require us to return TRUE!  This only for matters for pre-W2K systems,
@@ -996,6 +1044,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                     lReturn = 1
                     
                 End If
+                
+                'Release any remaining points tracked in the high-resolution input queue
+                m_PrevPointStored = False
+                m_MouseMovePointsRemaining = -1
                 
                 'Fun fact!  If PD is busy doing a bunch of processing during MouseMove events (such as drag-resizing a
                 ' large layer), the MouseUp event may become artificially delayed.  When it finally triggers, the mouse
@@ -1015,12 +1067,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                 ' processing if the _Click event is implemented.
                 If (m_MouseMoveCount < 3) Then
                     
-                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, True)
-                    RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt)
+                    RaiseEvent MouseUpCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt, True, m_msgTimestamp)
+                    RaiseEvent ClickCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt)
                 
                 'The mouse has moved too much, so a Click event will not be raised.  Only raise a MouseUp event.
                 Else
-                    RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, False)
+                    RaiseEvent MouseUpCustom(m_retMouseButton, m_retShiftConstants, m_mouseXInt, m_mouseYInt, False, m_msgTimestamp)
                 End If
                 
             'Double-clicks
@@ -1030,22 +1082,22 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                 
                 'Because double-click events tend to focus on the use of a single button, it makes more sense for us to
                 ' manually return a single-button type here (rather than a composite flag).
-                retMouseButton = 0
+                m_retMouseButton = 0
                 
                 If uMsg = WM_LBUTTONDBLCLK Then
-                    retMouseButton = vbLeftButton
+                    m_retMouseButton = vbLeftButton
                 ElseIf uMsg = WM_RBUTTONDBLCLK Then
-                    retMouseButton = vbRightButton
+                    m_retMouseButton = vbRightButton
                 ElseIf uMsg = WM_MBUTTONDBLCLK Then
-                    retMouseButton = vbMiddleButton
+                    m_retMouseButton = vbMiddleButton
                 ElseIf uMsg = WM_XBUTTONDBLCLK Then
                 
                     'In this rare instance, we have to pull data directly from the message, because which XButton triggered
                     ' the message can only be found by checking flags in the high-order word of the wParam.
                     If (wParam \ &H10000) = 1 Then
-                        retMouseButton = pdXButtonOne
+                        m_retMouseButton = pdXButtonOne
                     Else
-                        retMouseButton = pdXButtonTwo
+                        m_retMouseButton = pdXButtonTwo
                     End If
                     
                     'Also strange, X-button events require us to return TRUE!  This only for matters for pre-W2K systems,
@@ -1054,7 +1106,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                     
                 End If
                 
-                RaiseEvent DoubleClickCustom(retMouseButton, retShiftConstants, mouseX, mouseY)
+                RaiseEvent DoubleClickCustom(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
                 
             'Mouse leaving the client area
             Case WM_MOUSELEAVE
@@ -1065,11 +1117,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                     'If we've been tracking mouse movements for this hWnd, raise a MouseLeave event now
                     If m_MouseTrackingActive Then
                         
+                        m_PrevPointStored = False
                         m_MouseTrackingActive = False
                         m_LastHoverX = -1
                         m_LastHoverY = -1
                         
-                        RaiseEvent MouseLeave(retMouseButton, retShiftConstants, mouseX, mouseY)
+                        RaiseEvent MouseLeave(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
                         
                         'If cursor handling is enabled for this hWnd, reset the cursor to its original value whenever
                         ' the mouse has left the control.  This will prevent us from mistakenly assigning our custom
@@ -1101,10 +1154,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                     'Unlike Enter/Leave events, we want to raise hover events regardless of the hWnd; the assumption
                     ' here is that the target window will always want these events, and if it doesn't, it can do its
                     ' own bounds-checking to determine if a hover event is relevant or not.
-                    If ((m_LastHoverX <> mouseX) Or (m_LastHoverY <> mouseY)) Then
-                        m_LastHoverX = mouseX
-                        m_LastHoverY = mouseY
-                        RaiseEvent MouseHover(retMouseButton, retShiftConstants, mouseX, mouseY)
+                    If ((m_LastHoverX <> m_MouseX) Or (m_LastHoverY <> m_MouseY)) Then
+                        m_LastHoverX = m_MouseX
+                        m_LastHoverY = m_MouseY
+                        RaiseEvent MouseHover(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
                     End If
                     
                 End If
@@ -1116,47 +1169,45 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
             Case WM_MOUSEWHEEL, WM_MOUSEHWHEEL
             
                 'First things first: retrieve the high-word, which contains the change (delta) in mousewheel position
-                Dim scrollDelta As Long
-                scrollDelta = wParam \ &H10000
+                m_scrollDelta = wParam \ &H10000
                 
                 'Next, use the user's scroll wheel setting (set via the Control Panel) to calculate a final scroll amount,
                 ' in lines or chars depending on whether vertical or horizontal scrolling is active.
-                Dim finalScrollAmount As Double
                 
                 'Vertical scroll only, meaning Vertical Wheel + !Shift and !Ctrl
-                If (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) = 0) And ((retShiftConstants And vbCtrlMask) = 0) Then
-                    finalScrollAmount = CDbl(scrollDelta) * GetUserScrollSetting(True)
-                    RaiseEvent MouseWheelVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                If (uMsg = WM_MOUSEWHEEL) And ((m_retShiftConstants And vbShiftMask) = 0) And ((m_retShiftConstants And vbCtrlMask) = 0) Then
+                    m_finalScrollAmount = CDbl(m_scrollDelta) * GetUserScrollSetting(True)
+                    RaiseEvent MouseWheelVertical(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_finalScrollAmount)
                 
                 'Horizontal scroll, but generated via Vertical Wheel + Shift and !Ctrl
-                ElseIf (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbShiftMask) <> 0) And ((retShiftConstants And vbCtrlMask) = 0) Then
+                ElseIf (uMsg = WM_MOUSEWHEEL) And ((m_retShiftConstants And vbShiftMask) <> 0) And ((m_retShiftConstants And vbCtrlMask) = 0) Then
                 
-                    finalScrollAmount = CDbl(scrollDelta) * GetUserScrollSetting(True)
+                    m_finalScrollAmount = CDbl(m_scrollDelta) * GetUserScrollSetting(True)
                     
                     'Because the user is using the Shift+VerticalWheel combination, reverse the delta; this makes it so
                     ' that shift+up_wheel = left, and shift+down_wheel = right - the idea is that up_wheel and shift+up_wheel
                     ' both target the top-left corner of the image.
-                    finalScrollAmount = -1 * finalScrollAmount
+                    m_finalScrollAmount = -1 * m_finalScrollAmount
                     
-                    RaiseEvent MouseWheelHorizontal(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    RaiseEvent MouseWheelHorizontal(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_finalScrollAmount)
                     
                 'Zoom scroll, generated via Vertical Wheel + Ctrl and !Shift
-                ElseIf (uMsg = WM_MOUSEWHEEL) And ((retShiftConstants And vbCtrlMask) <> 0) And ((retShiftConstants And vbShiftMask) = 0) Then
+                ElseIf (uMsg = WM_MOUSEWHEEL) And ((m_retShiftConstants And vbCtrlMask) <> 0) And ((m_retShiftConstants And vbShiftMask) = 0) Then
                 
-                    finalScrollAmount = CDbl(scrollDelta) * GetUserScrollSetting(True)
-                    RaiseEvent MouseWheelZoom(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    m_finalScrollAmount = CDbl(m_scrollDelta) * GetUserScrollSetting(True)
+                    RaiseEvent MouseWheelZoom(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_finalScrollAmount)
                 
                 'Horizontal scroll, generated via actual Horizontal Scroll/Tilt message
                 ElseIf (uMsg = WM_MOUSEHWHEEL) Then
                 
-                    finalScrollAmount = CDbl(scrollDelta) * GetUserScrollSetting(False)
-                    RaiseEvent MouseWheelHorizontal(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    m_finalScrollAmount = CDbl(m_scrollDelta) * GetUserScrollSetting(False)
+                    RaiseEvent MouseWheelHorizontal(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_finalScrollAmount)
                     
                 'The only combination left is Vertical scroll, but with some weird combination of Shift modifiers; return
                 ' a generic vertical wheel event as-is.
                 Else
-                    finalScrollAmount = CDbl(scrollDelta) * GetUserScrollSetting(True)
-                    RaiseEvent MouseWheelVertical(retMouseButton, retShiftConstants, mouseX, mouseY, finalScrollAmount)
+                    m_finalScrollAmount = CDbl(m_scrollDelta) * GetUserScrollSetting(True)
+                    RaiseEvent MouseWheelVertical(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY, m_finalScrollAmount)
                 
                 End If
                     
@@ -1171,9 +1222,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
             
                 'At present, we don't process the additional device or key parameters - just the action ID
                 If m_TrackAppCommands Then
-                    Dim commandID As Long
-                    ParseAppCommand lParam, commandID
-                    RaiseEvent AppCommand(commandID, retShiftConstants, mouseX, mouseY)
+                    ParseAppCommand lParam, m_commandID
+                    RaiseEvent AppCommand(m_commandID, m_retShiftConstants, m_MouseX, m_MouseY)
                 End If
             
             'While handling cursor duties, we must respond to WM_SETCURSOR events.
@@ -1204,5 +1254,4 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
-
 

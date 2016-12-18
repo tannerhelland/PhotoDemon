@@ -736,7 +736,7 @@ Private Sub cmdColorSelect_Click(Index As Integer)
 
 End Sub
 
-Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
     If (Button And pdLeftButton) <> 0 Then
@@ -745,7 +745,7 @@ Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstan
 
 End Sub
 
-Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'Left mouse button is down, and the user has a node selected
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2) Then
@@ -809,11 +809,11 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
 
 End Sub
 
-Private Sub m_MouseEventsIn_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub m_MouseEventsIn_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     m_ActiveArrow = -1
 End Sub
 
-Private Sub m_MouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
     If (Button And pdLeftButton) <> 0 Then
@@ -822,7 +822,7 @@ Private Sub m_MouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConsta
 
 End Sub
 
-Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
 
     'Left mouse button is down, and the user has a node selected
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 3) And (m_ActiveArrow <= 4) Then
@@ -883,7 +883,7 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
 
 End Sub
 
-Private Sub m_MouseEventsOut_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub m_MouseEventsOut_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean, ByVal timeStamp As Long)
     m_ActiveArrow = -1
 End Sub
 
