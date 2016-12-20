@@ -64,6 +64,7 @@ Private m_BrushPreviewQuality As PD_PERFORMANCE_SETTING
 
 'Brush resources, used only as necessary.  Check for null values before using.
 Private m_GDIPPen As pd2DPen
+Private m_CustomPenImage As pd2DSurface, m_SrcPenDIB As pdDIB
 
 'Brush attributes are stored in these variables
 Private m_BrushSource As BRUSH_SOURCES
@@ -86,6 +87,9 @@ Private m_BrushCreatedAtLeastOnce As Boolean
 Private m_MouseDown As Boolean
 Private m_MouseX As Single, m_MouseY As Single
 
+'Brush dynamics are calculated on-the-fly, and they include things like velocity, distance, angle, and more.
+Private m_DistPixels As Long
+
 'As brush movements are relayed to us, we keep a running note of the modified area of the scratch layer.
 ' The compositor can use this information to only regenerate the compositor cache area that's changed since the
 ' last repaint event.  Note that the m_ModifiedRectF may be cleared between accesses, by design - you'll need to
@@ -101,7 +105,7 @@ Private m_ModifiedRectF As RECTF, m_TotalModifiedRectF As RECTF
 Private m_NumOfMouseEvents As Long
 
 'pd2D is used for certain brush styles
-Private m_Painter As pd2DPainter, m_Surface As pd2DSurface, m_Pen As pd2DPen
+Private m_Painter As pd2DPainter, m_Surface As pd2DSurface
 
 'To improve responsiveness, we measure the time delta between viewport refreshes.  If painting is happening fast enough,
 ' we coalesce screen updates together, as they are (by far) the most time-consuming segment of paint rendering.
@@ -257,13 +261,34 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         ' I'm restricting things to GDI+ for simplicity's sake.
         m_BrushEngine = BE_GDIPlus
         
+        'Want to test the new PD brush engine?  Uncomment this line, and supply a valid image file in the
+        ' BE_PhotoDemon case below.
+        'm_BrushEngine = BE_PhotoDemon
+        
         Select Case m_BrushEngine
             
             Case BE_GDIPlus
                 'For now, create a circular pen at the current size
                 If (m_GDIPPen Is Nothing) Then Set m_GDIPPen = New pd2DPen
-                Drawing2D.QuickCreateSolidPen m_GDIPPen
-        
+                Drawing2D.QuickCreateSolidPen m_GDIPPen, m_BrushSize, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
+                
+            'TESTING ONLY!
+            Case BE_PhotoDemon
+                
+                'Use some arbitrary DIB for testing purposes; this is helpful until we've written our own
+                ' brush renderer.
+                'Dim testImgPath As String
+                'testImgPath = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\brush_test_500.png"
+                '
+                'If (m_SrcPenDIB Is Nothing) Then Set m_SrcPenDIB = New pdDIB
+                'Loading.QuickLoadImageToDIB testImgPath, m_SrcPenDIB, False, False, False
+                'SetBrushSize m_SrcPenDIB.GetDIBWidth
+                
+                'Want to use GDI+ as the renderer (instead of GDI)?  Uncomment these two lines,
+                ' then visit the ApplyPaintDab function and uncomment the GDI+ renderer comment there.
+                'If (m_CustomPenImage Is Nothing) Then Set m_CustomPenImage = New pd2DSurface
+                'm_CustomPenImage.CreateSurfaceFromFile testImgPath
+                
         End Select
         
         'Whenever we create a new brush, we should also refresh the current brush outline
@@ -298,6 +323,21 @@ Public Sub CreateCurrentBrushOutline()
                 End If
             End If
             
+        'TODO!  Right now this is just a copy+paste of the GDI+ outline algorithm; we obviously need a more sophisticated
+        ' one in the future.
+        Case BE_PhotoDemon
+            
+            Set m_BrushOutlinePath = New pd2DPath
+            
+            'Single-pixel brushes are treated as a square for cursor purposes.
+            If (m_BrushSize > 0#) Then
+                If (m_BrushSize = 1) Then
+                    m_BrushOutlinePath.AddRectangle_Absolute -0.75, -0.75, 0.75, 0.75
+                Else
+                    m_BrushOutlinePath.AddCircle 0, 0, m_BrushSize / 2 + 0.5
+                End If
+            End If
+            
     End Select
 
 End Sub
@@ -309,6 +349,9 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     Dim isFirstStroke As Boolean, isLastStroke As Boolean
     isFirstStroke = CBool((Not m_MouseDown) And mouseButtonDown)
     isLastStroke = CBool(m_MouseDown And (Not mouseButtonDown))
+    
+    'Perform a failsafe check for brush creation
+    If (Not m_BrushIsReady) Then CreateCurrentBrush
     
     'If this is a MouseDown operation, we need to prep the full paint engine.
     ' (TODO: initialize this elsewhere, so there's no "stutter" on first paint.)
@@ -337,7 +380,9 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         
         'Initialize any relevant GDI+ objects for the current brush
         Drawing2D.QuickCreateSurfaceFromDC m_Surface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, CBool(m_BrushAntialiasing = P2_AA_HighQuality)
-        Drawing2D.QuickCreateSolidPen m_Pen, m_BrushSize, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
+        
+        'Reset any brush dynamics that are calculated on a per-stroke basis
+        m_DistPixels = 0
         
     Else
         m_NumOfMouseEvents = m_NumOfMouseEvents + 1
@@ -429,14 +474,18 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         
     End If
     
-    'If the mouse button has been released, we can also release our internal GDI+ objects
+    'If the mouse button has been released, we can also release our internal GDI+ objects.
+    ' (Note that the current *brush* resources are *not* released, by design.)
     If isLastStroke Then
+        
         Set m_Surface = Nothing
-        Set m_Pen = Nothing
+        m_MouseX = -1000000#
+        m_MouseY = -1000000#
         
         'Reset the target canvas's mouse handling behavior
         srcCanvas.SetMouseInput_HighRes False
         srcCanvas.SetMouseInput_AutoDrop True
+        
     End If
     
 End Sub
@@ -451,20 +500,320 @@ Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isF
     
     'Next, perform line rendering based on the current brush style.
     ' (At present, GDI+ is used to render a very basic brush.  More advanced styles are coming soon.)
+    Select Case m_BrushEngine
+            
+        Case BE_GDIPlus
     
-    'GDI+ refuses to draw a line if the start and end points match; this isn't documented (as far as I know),
-    ' but it may exist to provide backwards compatibility with GDI, which deliberately leaves the last point
-    ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we manually render
-    ' a dab at the initial starting location.
-    If isFirstStroke Then
-        m_Painter.DrawLineF m_Surface, m_Pen, srcX, srcY, srcX - 0.01, srcY - 0.01
-    Else
-        m_Painter.DrawLineF m_Surface, m_Pen, m_MouseX, m_MouseY, srcX, srcY
-    End If
+            'GDI+ refuses to draw a line if the start and end points match; this isn't documented (as far as I know),
+            ' but it may exist to provide backwards compatibility with GDI, which deliberately leaves the last point
+            ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we have to
+            ' manually render a dab at the initial starting position.
+            If isFirstStroke Then
+                m_Painter.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.01, srcY - 0.01
+            Else
+                m_Painter.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
+            End If
+            
+        Case BE_PhotoDemon
+        
+            'First strokes can just be applied as a single dab; this spares us attempting to calculate things like
+            ' brush dynamics (which don't exist yet, as we have no point history).
+            If isFirstStroke Then
+                ApplyPaintDab srcX, srcY
+            Else
+                
+                'If the target point is identical to the last point we rendered, ignore it (as the line between
+                ' two identical points is "undefined", and not all line rasterizers detect this case successfully).
+                If (srcX <> m_MouseX) Or (srcY <> m_MouseY) Then
+                    ManuallyCalculateBrushPoints srcX, srcY
+                End If
+                
+            End If
+            
+    End Select
     
     'Update the "old" mouse coordinate trackers
     m_MouseX = srcX
     m_MouseY = srcY
+    
+End Sub
+
+'Calculate all point positions between (srcx, srcy) and the previous coordinates, and dab each point in turn.
+' (This function is currently under heavy development as I test various implementations for their quality
+' vs performance trade-offs.)
+Private Sub ManuallyCalculateBrushPoints(ByVal srcX As Single, ByVal srcY As Single)
+    
+    'CalcPoints_Bresenham srcX, srcY
+    'CalcPoints_Wu srcX, srcY
+    CalcPoints_VoxelTraversal srcX, srcY
+    
+End Sub
+
+Private Sub CalcPoints_VoxelTraversal(ByVal srcX As Single, ByVal srcY As Single)
+
+    'TEST 3: voxel traversal approach based on "A Fast Voxel Traversal Algorithm for Ray Tracing."
+    ' link: http://www.cse.yorku.ca/~amana/research/grid.pdf
+    '
+    'This is a highly efficient way to test every pixel "collision" against a line, by only testing pixel
+    ' intersections.  There is a penalty at start-up (like most line algorithms), but traversal itself is
+    ' extremely fast *and* friendly toward starting/ending floating-point coords.
+    
+    'Calculate directionality.  Note that I've manually added handling for the special case of horizontal
+    ' and vertical lines.  (What I *haven't* yet implemented is speed-optimized versions of those special
+    ' cases!)
+    Dim stepX As Long, stepY As Long
+    If (srcX > m_MouseX) Then
+        stepX = 1
+    Else
+        If (srcX < m_MouseX) Then stepX = -1 Else stepX = 0
+    End If
+    If (srcY > m_MouseY) Then
+        stepY = 1
+    Else
+        If (srcY < m_MouseY) Then stepY = -1 Else stepY = 0
+    End If
+    
+    'Calculate deltas and termination conditions.  Note that these are all floating-point values, so we could
+    ' theoretically support sub-pixel traversal conditions.  (At present, we only traverse full pixels.)
+    Dim dx As Single, tDeltaX As Single, tMaxX As Single
+    If (stepX <> 0) Then tDeltaX = Math_Functions.Min2Float_Single(CSng(stepX) / (srcX - m_MouseX), 10000000#) Else tDeltaX = 10000000#
+    If (stepX > 0) Then tMaxX = tDeltaX * (1 - m_MouseX + Int(m_MouseX)) Else tMaxX = tDeltaX * (m_MouseX - Int(m_MouseX))
+    
+    Dim dy As Single, tDeltaY As Single, tMaxY As Single
+    If (stepY <> 0) Then tDeltaY = Math_Functions.Min2Float_Single(CSng(stepY) / (srcY - m_MouseY), 10000000#) Else tDeltaY = 10000000#
+    If (stepY > 0) Then tMaxY = tDeltaY * (1 - m_MouseY + Int(m_MouseY)) Else tMaxY = tDeltaY * (m_MouseY - Int(m_MouseY))
+    
+    'After some testing, I'm pretty pleased with the integer-only results of the traversal algorithm,
+    ' so I've gone ahead and declared the traversal trackers as integer-only.  This doesn't do much for
+    ' performance (as this algorithm is already highly optimized), but it does simplify some of our
+    ' subsequent calculations.
+    Dim x As Long, y As Long
+    x = Int(m_MouseX)
+    y = Int(m_MouseY)
+    
+    'Start plotting points.  Note that - by design, the first point is *not* manually rendered.
+    Do
+        
+        'See if our next voxel (pixel) intersection occurs on a horizontal or vertical edge, and increase our
+        ' running offset proportionally.
+        If (tMaxX < tMaxY) Then
+            tMaxX = tMaxX + tDeltaX
+            x = x + stepX
+        Else
+            tMaxY = tMaxY + tDeltaY
+            y = y + stepY
+        End If
+        
+        'Apply this dab.
+        ApplyPaintDab x, y
+        
+        'Check for traversal past the end of the destination voxel
+        If (tMaxX > 1) Then
+            If (tMaxY > 1) Then Exit Do
+        End If
+        
+    Loop
+    
+End Sub
+
+Private Sub CalcPoints_Bresenham(ByVal srcX As Single, ByVal srcY As Single)
+
+    'TEST 2: This is a barebones Bresenham implementation.  It will be difficult to improve speed much beyond
+    ' this code, short of specialized per-brush implementations, so this is a nice baseline for "fast but
+    ' sketchy pixel coverage."  (Note that performance of this function itself is irrelevant -- the cost of
+    ' stroke rendering lies entirely in rendering the brush itself.)
+    
+    'Like any Bresenham implementation, all calculations are done as integers
+    Dim x0 As Long, x1 As Long, y0 As Long, y1 As Long
+    x0 = m_MouseX
+    y0 = m_MouseY
+    x1 = srcX
+    y1 = srcY
+    
+    'Calculate deltas
+    Dim dx As Long, dy As Long
+    dx = Abs(x1 - x0)
+    dy = Abs(y1 - y0)
+    
+    'Calculate step directionality.
+    ' (NOTE: this function does not currently implement specialized detection for horizontal or vertical lines.)
+    Dim sX As Long, sY As Long
+    If (x0 < x1) Then sX = 1 Else sX = -1
+    If (y0 < y1) Then sY = 1 Else sY = -1
+    
+    'Running "errors" are used to bump the running pixel calculations in x or y directions
+    Dim runningErr As Long, e2 As Long
+    runningErr = dx - dy
+    
+    Do
+        
+        'Once we hit the final pixel, exit immediately.
+        If ((x0 = x1) And (y0 = y1)) Then
+            Exit Do
+        End If
+        
+        'Calculate a new error, and determine if we need to advance in the X or Y direction
+        e2 = 2 * runningErr
+        If (e2 > -dy) Then
+            runningErr = runningErr - dy
+            x0 = x0 + sX
+        End If
+        
+        If (e2 < dx) Then
+            runningErr = runningErr + dx
+            y0 = y0 + sY
+        End If
+        
+        'Dab the target pixel
+        ApplyPaintDab x0, y0
+        
+    Loop
+    
+End Sub
+
+Private Sub CalcPoints_Wu(ByVal srcX As Single, ByVal srcY As Single)
+
+    'TEST ONE: use Wu's line algorithm to plot an idealized, "perfect coverage" stroke.
+    ' This implementation is an unoptimized port of Wiki's pseudocode implementation:
+    '  https://en.wikipedia.org/wiki/Xiaolin_Wu%27s_line_algorithm
+    '
+    'TEST NOTES: this implementation has some issues with point ordering, because it sometimes renders
+    ' the line front-to-back.  This greatly simplifies the code, but it's not workable for all brushes
+    ' (e.g. for something like an image pipe brush, point order *must* be respected).  Also, while coverage
+    ' can hypothetically be idealized (because we can easily calculate a "coverage percentage" for each
+    ' traversed point), the point ordering problem must be solved before this is really usable.
+    Dim x0 As Single, y0 As Single, x1 As Single, y1 As Single
+    x0 = m_MouseX
+    y0 = m_MouseY
+    x1 = srcX
+    y1 = srcY
+    
+    Dim steep As Boolean
+    steep = CBool(Abs(y1 - y0) > Abs(x1 - x0))
+    
+    'To simplify handling, always plot lines in a descending direction
+    Dim tmpSwap As Single
+    If steep Then
+        tmpSwap = x0
+        x0 = y0
+        y0 = tmpSwap
+        
+        tmpSwap = x1
+        x1 = y1
+        y1 = tmpSwap
+    End If
+    
+    If (x0 > x1) Then
+        tmpSwap = x0
+        x0 = x1
+        x1 = tmpSwap
+        
+        tmpSwap = y0
+        y0 = y1
+        y1 = tmpSwap
+    End If
+    
+    Dim dx As Single, dy As Single
+    dx = x1 - x0
+    dy = y1 - y0
+    
+    Dim Gradient As Single
+    Gradient = dy / dx
+    
+    'Handle first endpoint
+    Dim xEnd As Single, yEnd As Single, xGap As Single
+    xEnd = Int(x0 + 0.5)
+    yEnd = y0 + Gradient * (xEnd - x0)
+    xGap = 1 - FractionalPartWu(x0 + 0.5)
+    
+    Dim xPxl1 As Long, yPxl1 As Long
+    xPxl1 = xEnd
+    yPxl1 = Int(yEnd)
+    
+    'Draw the first endpoint
+    If steep Then
+        ApplyPaintDab yPxl1, xPxl1, (1 - FractionalPartWu(yEnd)) * xGap
+        ApplyPaintDab yPxl1 + 1, xPxl1, FractionalPartWu(yEnd) * xGap
+    Else
+        ApplyPaintDab xPxl1, yPxl1, (1 - FractionalPartWu(yEnd)) * xGap
+        ApplyPaintDab xPxl1, yPxl1 + 1, FractionalPartWu(yEnd) * xGap
+    End If
+    
+    'Calculate the first y-intersection point
+    Dim interY As Single
+    interY = yEnd + Gradient
+    
+    'Calculate the second endpoint's data, but don't actually render it yet
+    xEnd = Int(x1 + 0.5)
+    yEnd = y1 + Gradient * (xEnd - x1)
+    xGap = FractionalPartWu(x1 + 0.5)
+    
+    Dim xPxl2 As Long, yPxl2 As Long
+    xPxl2 = xEnd
+    yPxl2 = Int(yEnd)
+    
+    'Main loop
+    Dim x As Long
+    If steep Then
+        For x = xPxl1 + 1 To xPxl2 - 1
+            ApplyPaintDab Int(interY), x, (1 - FractionalPartWu(interY))
+            ApplyPaintDab Int(interY) + 1, x, FractionalPartWu(interY)
+            interY = interY + Gradient
+        Next x
+    Else
+        For x = xPxl1 + 1 To xPxl2 - 1
+           ApplyPaintDab x, Int(interY), (1 - FractionalPartWu(interY))
+           ApplyPaintDab x, Int(interY) + 1, FractionalPartWu(interY)
+           interY = interY + Gradient
+        Next x
+    End If
+    
+    'Render second endpoint
+    If steep Then
+        ApplyPaintDab yPxl2, xPxl2, (1 - FractionalPartWu(yEnd)) * xGap
+        ApplyPaintDab yPxl2 + 1, xPxl2, FractionalPartWu(yEnd) * xGap
+    Else
+        ApplyPaintDab xPxl2, yPxl2, (1 - FractionalPartWu(yEnd)) * xGap
+        ApplyPaintDab xPxl2, yPxl2 + 1, FractionalPartWu(yEnd) * xGap
+    End If
+    
+End Sub
+
+Private Function FractionalPartWu(ByVal x As Single) As Single
+    If (x < 0) Then
+        FractionalPartWu = 1 - (x - Int(x))
+    Else
+        FractionalPartWu = x - Fix(x)
+    End If
+End Function
+
+Private Function FractionalPartVoxel(ByVal x As Single) As Single
+    FractionalPartVoxel = x - Int(x)
+End Function
+
+'Apply a single paint dab to the target position
+Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal dabOpacity As Single = 1#)
+    
+    Dim allowedToDab As Boolean: allowedToDab = True
+    
+    'If brush dynamics are active, we only dab the brush if certain criteria are met.  (For example, if enough pixels have
+    ' elapsed since the last dab, as controlled by the Brush Spacing parameter.)
+    
+    'TODO: implement, e.g...
+    'If brushSpacingActive then allowedToDab = CBool((m_DistPixels Mod m_BrushSpacing )= 0)
+    allowedToDab = ((m_DistPixels Mod (m_BrushSize \ 8)) = 0)
+    
+    If allowedToDab Then
+        
+        'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
+        ' for a performance boost, however.
+        m_SrcPenDIB.AlphaBlendToDC pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, dabOpacity * 255, srcX - m_BrushSize \ 2, srcY - m_BrushSize \ 2
+        'm_Painter.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
+    End If
+    
+    'Each time we make a new dab, we keep a running tally of how many pixels we've traversed.  Some brush dynamics (e.g. spacing)
+    ' rely on this value for correct rendering behavior.
+    m_DistPixels = m_DistPixels + 1
     
 End Sub
 
@@ -654,6 +1003,7 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     
         m_Painter.DrawPath cSurface, outerPen, copyOfBrushOutline
         m_Painter.DrawPath cSurface, innerPen, copyOfBrushOutline
+        
     End If
     
     Set cSurface = Nothing
@@ -672,12 +1022,15 @@ Public Sub InitializeBrushEngine()
     m_BrushPreviewQuality = PD_PERF_BALANCED
     m_BrushAntialiasing = P2_AA_HighQuality
     Drawing2D.QuickCreatePainter m_Painter
+    m_MouseX = -1000000#
+    m_MouseY = -1000000#
 End Sub
 
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached
 ' for performance reasons).
 Public Sub FreeBrushResources()
     Set m_GDIPPen = Nothing
+    Set m_CustomPenImage = Nothing
     Set m_BrushOutlineImage = Nothing
     Set m_BrushOutlinePath = Nothing
     Set m_Painter = Nothing

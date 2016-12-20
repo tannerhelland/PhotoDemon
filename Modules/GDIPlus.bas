@@ -896,6 +896,7 @@ Private Declare Function GdipConvertToEmfPlus Lib "gdiplus" (ByVal hGraphics As 
 
 Private Declare Function GdipCreateBitmapFromGdiDib Lib "gdiplus" (ByRef origGDIBitmapInfo As BITMAPINFO, ByRef srcBitmapData As Any, ByRef dstGdipBitmap As Long) As GP_Result
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal bmpWidth As Long, ByVal bmpHeight As Long, ByVal bmpStride As Long, ByVal bmpPixelFormat As GP_PixelFormat, ByRef Scan0 As Any, ByRef dstGdipBitmap As Long) As GP_Result
+Private Declare Function GdipCreateCachedBitmap Lib "gdiplus" (ByVal hBitmap As Long, ByVal hGraphics As Long, ByRef dstCachedBitmap As Long) As GP_Result
 Private Declare Function GdipCreateFromHDC Lib "gdiplus" (ByVal hDC As Long, ByRef dstGraphics As Long) As GP_Result
 Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As GP_PatternStyle, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As GP_Result
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef dstImageAttributes As Long) As GP_Result
@@ -914,6 +915,8 @@ Private Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal srcColor As Lo
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal textureWrapMode As GP_WrapMode, ByRef dstTexture As Long) As GP_Result
 
 Private Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal hBrush As Long) As GP_Result
+Private Declare Function GdipDeleteCachedBitmap Lib "gdiplus" (ByVal hCachedBitmap As Long) As GP_Result
+
 Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal hGraphics As Long) As GP_Result
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As GP_Result
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As GP_Result
@@ -924,6 +927,7 @@ Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageA
 
 Private Declare Function GdipDrawArc Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As GP_Result
 Private Declare Function GdipDrawArcI Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal startAngle As Long, ByVal sweepAngle As Long) As GP_Result
+Private Declare Function GdipDrawCachedBitmap Lib "gdiplus" (ByVal hGraphics As Long, ByVal hCachedBitmap As Long, ByVal x As Long, ByVal y As Long) As GP_Result
 Private Declare Function GdipDrawClosedCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipDrawClosedCurve2I Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointLongs As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
 Private Declare Function GdipDrawCurve2 Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal ptrToPointFloats As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As GP_Result
@@ -2215,6 +2219,18 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     GdipDisposeImage dstBitmap
     GdipDeleteGraphics iGraphics
  
+End Sub
+
+Public Function GDIPlusGetCachedBitmap(ByVal srcBitmap As Long, ByVal srcGraphics As Long) As Long
+    GdipCreateCachedBitmap srcBitmap, srcGraphics, GDIPlusGetCachedBitmap
+End Function
+
+Public Sub GDIPlusDeleteCachedBitmap(ByVal srcCachedBitmap As Long)
+    GdipDeleteCachedBitmap srcCachedBitmap
+End Sub
+
+Public Sub GDIPlusDrawCachedBitmap(ByVal dstGraphics As Long, ByVal srcCachedBitmap As Long, ByVal x As Long, ByVal y As Long)
+    GdipDrawCachedBitmap dstGraphics, srcCachedBitmap, x, y
 End Sub
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
