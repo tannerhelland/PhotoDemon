@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2113</langversion>
+<langversion>6.8.2114</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -13254,8 +13254,8 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
-<original>antialiased</original>
-<translation>antialias</translation>
+<original>spacing</original>
+<translation>jarak</translation>
 </phrase>
 
 <phrase>
@@ -13264,26 +13264,11 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>preview quality</original>
-<translation>kualiti pratonton</translation>
+<original>hardness</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Best quality</original>
-<translation>Kualiti terbaik</translation>
-</phrase>
-
-<phrase>
-<original>Default</original>
-<translation>lalai</translation>
-</phrase>
-
-<phrase>
-<original>Best performance</original>
-<translation>persembahan terbaik</translation>
-</phrase>
-
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13563,11 +13548,6 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>spacing</original>
-<translation>jarak</translation>
-</phrase>
-
-<phrase>
 <original>jitter</original>
 <translation>ketar</translation>
 </phrase>
@@ -13717,7 +13697,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>Klik di sini untuk menukar lapisan ini kepada lapisan tipografi.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 27 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 28 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14974,12 +14954,23 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for pdResources.cls-->
 
+<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
+
+<phrase>
+<original>antialiased</original>
+<translation>antialias</translation>
+</phrase>
+
+<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Toolpanel_Pencil.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2533</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4473 phrases. -->
-<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
-<!-- These 2533 phrases contain approximately 12676 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1947 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12670 total words. -->
 
 </pdData>

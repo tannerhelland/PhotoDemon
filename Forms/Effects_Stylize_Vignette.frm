@@ -450,8 +450,3 @@ Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
 
-
-
-
-
-

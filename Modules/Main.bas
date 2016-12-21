@@ -72,7 +72,7 @@ Public Sub Main()
     'FormMain can now be loaded.  (We load it first, because many initialization steps silently interact with it,
     ' like loading menu icons or prepping toolboxes.)  That said, the first step of FormMain's load process is calling
     'the ContinueLoadingProgram sub, below, so look there for the next stages of the load process.
-    Load FormMain
+    If (Not g_ProgramShuttingDown) Then Load FormMain
     
 End Sub
 
