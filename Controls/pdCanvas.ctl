@@ -1067,7 +1067,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 
                 End If
             
-            Case PAINT_BASICBRUSH
+            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
             'In the future, other tools can be handled here
@@ -1098,7 +1098,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     m_IsMouseOverCanvas = False
     
     Select Case g_CurrentTool
-        Case PAINT_BASICBRUSH
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
     End Select
     
@@ -1196,7 +1196,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Unlike other tools, the paintbrush engine controls when the main viewport gets redrawn.
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
             '  quickly enough.)  As such, there is no viewport redraw request here.
-            Case PAINT_BASICBRUSH
+            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 
         End Select
@@ -1254,7 +1254,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Text tools
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
-            Case PAINT_BASICBRUSH
+            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
                 
@@ -1579,9 +1579,8 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 'Reset the generic tool mouse tracking function
                 Tool_Support.TerminateGenericToolTracking
             
-            Case PAINT_BASICBRUSH
-                
-                'Notify the brush engine of the final result, then permanently commit this round of brush work
+            'Notify the brush engine of the final result, then permanently commit this round of brush work
+            Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
                 Paintbrush.CommitBrushResults
                 
@@ -2352,9 +2351,8 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 CanvasView.RequestCursor_System IDC_IBEAM
             End If
         
-        Case PAINT_BASICBRUSH
-            
-            'Paint brushes are a little weird, because we custom-draw the current brush outline
+        'Paint brushes are a little weird, because we custom-draw the current brush outline
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             CanvasView.RequestCursor_System IDC_ICON
             Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
         

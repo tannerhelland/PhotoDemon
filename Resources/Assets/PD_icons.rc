@@ -377,6 +377,7 @@ TV_TEXT      CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_text_24.png
 TV_FANCYTEXT CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_fancy_text_24.png
 
 //Paint tool area toolbox icons
+PNT_SOFTBRUSH  CUSTOM MOVEABLE       LOADONCALL      toolbox_paint_pencil_24.png
 PNT_BASICBRUSH CUSTOM MOVEABLE       LOADONCALL      toolbox_paint_basicbrush_24.png
 
 //Tool options area icons

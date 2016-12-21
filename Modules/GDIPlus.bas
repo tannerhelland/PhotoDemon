@@ -3725,6 +3725,21 @@ Public Function FillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte)
     
 End Function
 
+Public Function FillLongWithRGBA(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long, ByVal srcA As Long) As Long
+    
+    Dim dstQuad As RGBQUAD
+    dstQuad.Red = srcR
+    dstQuad.Green = srcG
+    dstQuad.Blue = srcB
+    dstQuad.alpha = srcA
+    
+    Dim placeHolder As tmpLong
+    LSet placeHolder = dstQuad
+    
+    FillLongWithRGBA = placeHolder.lngResult
+    
+End Function
+
 'Given a long-type pARGB value returned from GDI+, retrieve just the opacity value on the scale [0, 100]
 Public Function GetOpacityFromPARGB(ByVal pARGB As Long) As Single
     Dim srcQuad As RGBQUAD

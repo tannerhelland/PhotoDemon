@@ -313,6 +313,16 @@ Begin VB.Form toolbar_Toolbox
       _ExtentY        =   423
       Caption         =   "paint"
    End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   12
+      Left            =   840
+      TabIndex        =   28
+      Top             =   6480
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
    Begin VB.Line lnRightSeparator 
       X1              =   136
       X2              =   136
@@ -543,7 +553,10 @@ Private Sub Form_Load()
     cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50
     cmdTools(VECTOR_FANCYTEXT).AssignImage "TV_FANCYTEXT", , , 50
     
-    cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_BASICBRUSH"
+    'TODO: these icons were mistakenly reversed in the resource file... we'll fix it when we move to
+    ' a custom resource file format
+    cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_SOFTBRUSH"
+    cmdTools(PAINT_SOFTBRUSH).AssignImage "PNT_BASICBRUSH"
     
     'Initialize a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -648,7 +661,7 @@ Private Sub ReflowToolboxLayout()
     
     'Paint group
     PositionToolLabel 5, cmdTools(VECTOR_FANCYTEXT), hOffset, vOffset
-    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_BASICBRUSH, hOffset, vOffset
+    ReflowButtonSet 5, True, PAINT_BASICBRUSH, PAINT_SOFTBRUSH, hOffset, vOffset
     
     'Macro recording message
     If (vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height) Then
@@ -769,10 +782,16 @@ Private Sub NewToolSelected()
             ' on the current text tool.
             If (g_OpenImageCount > 0) Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
-        Case PAINT_BASICBRUSH
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             
             'Synchronize all brush settings to the current UI
-            toolpanel_Paintbrush.SyncAllPaintbrushSettingsToUI
+            If (g_CurrentTool = PAINT_BASICBRUSH) Then
+                toolpanel_Pencil.SyncAllPaintbrushSettingsToUI
+                Paintbrush.SetBrushStyle BS_Pencil
+            Else
+                toolpanel_Paintbrush.SyncAllPaintbrushSettingsToUI
+                Paintbrush.SetBrushStyle BS_SoftBrush
+            End If
             
             'I'm not sure what paint tools require just yet, but a canvas redraw is always helpful to clear out any
             ' overlays left behind from previous tools.
@@ -856,6 +875,11 @@ Public Sub ResetToolButtonStates()
         
         'Paint tools
         Case PAINT_BASICBRUSH
+            Load toolpanel_Pencil
+            toolpanel_Pencil.UpdateAgainstCurrentTheme
+            m_ActiveToolPanelKey = "Pencil"
+            
+        Case PAINT_SOFTBRUSH
             Load toolpanel_Paintbrush
             toolpanel_Paintbrush.UpdateAgainstCurrentTheme
             m_ActiveToolPanelKey = "Paintbrush"
@@ -935,6 +959,7 @@ Public Sub ResetToolButtonStates()
     If Not (toolpanel_Selections Is Nothing) Then toolPanelCollection.AddEntry "Selections", toolpanel_Selections.hWnd
     If Not (toolpanel_Text Is Nothing) Then toolPanelCollection.AddEntry "Text", toolpanel_Text.hWnd
     If Not (toolpanel_FancyText Is Nothing) Then toolPanelCollection.AddEntry "FancyText", toolpanel_FancyText.hWnd
+    If Not (toolpanel_Pencil Is Nothing) Then toolPanelCollection.AddEntry "Pencil", toolpanel_Pencil.hWnd
     If Not (toolpanel_Paintbrush Is Nothing) Then toolPanelCollection.AddEntry "Paintbrush", toolpanel_Paintbrush.hWnd
     
     g_WindowManager.DeactivateToolPanel False

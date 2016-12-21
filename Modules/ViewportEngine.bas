@@ -129,7 +129,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             End If
             
         'Paintbrush tools use the brush engine to paint a custom brush outline at the current mouse position
-        Case PAINT_BASICBRUSH
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             
             If (Paintbrush.IsBrushActive Or FormMain.mainCanvas(0).IsMouseOverCanvas) Then
                 Paintbrush.RenderBrushOutline dstCanvas

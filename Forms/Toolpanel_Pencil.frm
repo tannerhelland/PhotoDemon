@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form toolpanel_Paintbrush 
+Begin VB.Form toolpanel_Pencil 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
@@ -26,37 +26,20 @@ Begin VB.Form toolpanel_Paintbrush
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdSlider sldSpacing 
-      Height          =   495
-      Left            =   7800
-      TabIndex        =   6
-      Top             =   960
-      Width           =   3015
-      _ExtentX        =   5318
-      _ExtentY        =   873
-      Min             =   1
-      Max             =   1000
-      ScaleStyle      =   1
-      ScaleExponent   =   5
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
-   End
-   Begin PhotoDemon.pdButtonStrip btsSpacing 
-      Height          =   855
-      Left            =   7800
-      TabIndex        =   5
-      Top             =   0
-      Width           =   3015
-      _ExtentX        =   5318
-      _ExtentY        =   1508
-      Caption         =   "spacing"
-      FontSizeCaption =   10
+   Begin PhotoDemon.pdCheckBox chkAntialiasing 
+      Height          =   375
+      Left            =   4080
+      TabIndex        =   4
+      Top             =   840
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   661
+      Caption         =   "antialiased"
    End
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   735
       Index           =   0
-      Left            =   10920
+      Left            =   3960
       TabIndex        =   2
       Top             =   0
       Width           =   2250
@@ -106,7 +89,7 @@ Begin VB.Form toolpanel_Paintbrush
    Begin PhotoDemon.pdDropDown cboBrushSetting 
       Height          =   735
       Index           =   1
-      Left            =   13200
+      Left            =   6360
       TabIndex        =   3
       Top             =   0
       Width           =   2250
@@ -115,39 +98,24 @@ Begin VB.Form toolpanel_Paintbrush
       Caption         =   "alpha mode"
       FontSizeCaption =   10
    End
-   Begin PhotoDemon.pdSlider sltBrushSetting 
-      CausesValidation=   0   'False
-      Height          =   690
-      Index           =   2
-      Left            =   3960
-      TabIndex        =   4
-      Top             =   0
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   1217
-      Caption         =   "hardness"
-      FontSizeCaption =   10
-      Min             =   1
-      Max             =   100
-      SigDigits       =   1
-      Value           =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
-   End
 End
-Attribute VB_Name = "toolpanel_Paintbrush"
+Attribute VB_Name = "toolpanel_Pencil"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Paintbrush Tool Panel
+'PhotoDemon Basic Brush ("Pencil") Tool Panel
 'Copyright 2016-2016 by Tanner Helland
 'Created: 31/Oct/16
-'Last updated: 04/Nov/16
-'Last update: ongoing work on initial build
+'Last updated: 21/December/16
+'Last update: kill the "preview quality" UI, which was for debug purposes only
 '
-'This form includes all user-editable settings for the "paintbrush" canvas tool.
+'This form includes all user-editable settings for the "pencil" canvas tool.  Unlike other programs,
+' PD's pencil tool supports a number of features (like antialiasing) while maintaining the high
+' performance everyone expects from a basic brush.
+'
+'Extremely large radii are suppored, as are all blend modes (including "erase").
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -159,10 +127,6 @@ Option Explicit
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
-
-Private Sub btsSpacing_Click(ByVal buttonIndex As Long)
-    UpdateSpacingVisibility
-End Sub
 
 Private Sub cboBrushSetting_Click(Index As Integer)
 
@@ -180,18 +144,20 @@ Private Sub cboBrushSetting_Click(Index As Integer)
     
 End Sub
 
+Private Sub chkAntialiasing_Click()
+    If (chkAntialiasing.Value = vbChecked) Then
+        Paintbrush.SetBrushAntialiasing P2_AA_HighQuality
+    Else
+        Paintbrush.SetBrushAntialiasing P2_AA_None
+    End If
+End Sub
+
 Private Sub Form_Load()
     
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeDropDown cboBrushSetting(0), BL_NORMAL
     Interface.PopulateAlphaModeDropDown cboBrushSetting(1), LA_NORMAL
-    
-    'Populate any other list-style UI elements
-    btsSpacing.AddItem "auto", 0
-    btsSpacing.AddItem "manual", 1
-    btsSpacing.ListIndex = 0
-    UpdateSpacingVisibility
-    
+        
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.SetParentForm Me
@@ -226,10 +192,6 @@ Public Sub UpdateAgainstCurrentTheme()
 
 End Sub
 
-Private Sub sldSpacing_Change()
-    Paintbrush.SetBrushSpacing sldSpacing.Value
-End Sub
-
 Private Sub sltBrushSetting_Change(Index As Integer)
     
     Select Case Index
@@ -241,10 +203,6 @@ Private Sub sltBrushSetting_Change(Index As Integer)
         'Opacity
         Case 1
             Paintbrush.SetBrushOpacity sltBrushSetting(Index).Value
-            
-        'Hardness
-        Case 2
-            Paintbrush.SetBrushHardness sltBrushSetting(Index).Value
     
     End Select
     
@@ -254,34 +212,17 @@ End Sub
 Public Sub SyncAllPaintbrushSettingsToUI()
     Paintbrush.SetBrushSize sltBrushSetting(0).Value
     Paintbrush.SetBrushOpacity sltBrushSetting(1).Value
-    Paintbrush.SetBrushHardness sltBrushSetting(2).Value
     Paintbrush.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Paintbrush.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Paintbrush.SetBrushAlphaMode cboBrushSetting(1).ListIndex
-    If (btsSpacing.ListIndex = 0) Then Paintbrush.SetBrushSpacing 0# Else Paintbrush.SetBrushSpacing sldSpacing.Value
+    If CBool(chkAntialiasing.Value) Then Paintbrush.SetBrushAntialiasing P2_AA_HighQuality Else Paintbrush.SetBrushAntialiasing P2_AA_None
 End Sub
 
 'If you want to synchronize all UI elements to match current paintbrush settings, use this function
 Public Sub SyncUIToAllPaintbrushSettings()
-    sltBrushSetting(0).Value = Paintbrush.GetBrushSize()
-    sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity()
-    sltBrushSetting(2).Value = Paintbrush.GetBrushHardness()
+    sltBrushSetting(0).Value = Paintbrush.GetBrushSize
+    sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity
     cboBrushSetting(0).ListIndex = Paintbrush.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Paintbrush.GetBrushAlphaMode()
-    If (Paintbrush.GetBrushSpacing() = 0#) Then
-        btsSpacing.ListIndex = 0
-    Else
-        btsSpacing.ListIndex = 1
-        sldSpacing.Value = Paintbrush.GetBrushSpacing()
-    End If
-End Sub
-
-Private Sub UpdateSpacingVisibility()
-    If (btsSpacing.ListIndex = 0) Then
-        sldSpacing.Visible = False
-        Paintbrush.SetBrushSpacing 0#
-    Else
-        sldSpacing.Visible = True
-        Paintbrush.SetBrushSpacing sldSpacing.Value
-    End If
+    If (Paintbrush.GetBrushAntialiasing = P2_AA_HighQuality) Then chkAntialiasing.Value = vbChecked Else chkAntialiasing.Value = vbUnchecked
 End Sub

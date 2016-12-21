@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.223</langversion>
+<langversion>6.7.224</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13242,7 +13242,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <!-- BEGIN text for Toolpanel_Paintbrush.frm (toolpanel_Paintbrush) -->
 
 <phrase>
-<original>antialiased</original>
+<original>spacing</original>
 <translation></translation>
 </phrase>
 
@@ -13252,26 +13252,11 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 </phrase>
 
 <phrase>
-<original>preview quality</original>
+<original>hardness</original>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>Best quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Default</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Best performance</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13551,11 +13536,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 </phrase>
 
 <phrase>
-<original>spacing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>jitter</original>
 <translation></translation>
 </phrase>
@@ -13705,7 +13685,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 27 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 60 phrases. 28 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14962,12 +14942,23 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for pdResources.cls-->
 
+<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
+
+<phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Toolpanel_Pencil.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2533</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4473 phrases. -->
-<!-- 1940 are duplicates, so only 2533 unique phrases have been written to file. -->
-<!-- These 2533 phrases contain approximately 12676 total words. -->
+<!-- As of this build, PhotoDemon contains 4477 phrases. -->
+<!-- 1947 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12670 total words. -->
 
 </pdData>

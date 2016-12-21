@@ -16,6 +16,12 @@ Attribute VB_Name = "Paintbrush"
 
 Option Explicit
 
+'PD allows the paintbrush to explicity set its own quality settings, independent of what the viewport quality
+' settings are.  This was very helpful during debugging (to isolate performance bottlenecks), but now that
+' things are working well, I prefer to lock the paintbrush renderer to the same settings as the viewport.
+' If you set this to TRUE, make sure the m_BrushPreviewQuality variable is initialized accordingly.
+Private Const USE_PAINTBRUSH_DEBUG_QUALITIES As Boolean = False
+
 'Internally, we switch between different brush rendering engines depending on the current brush settings.
 ' The caller doesn't need to concern themselves with this; it's used only to determine internal rendering paths.
 Private Enum BRUSH_ENGINE
@@ -27,7 +33,7 @@ End Enum
     Private Const BE_GDIPlus = 0, BE_PhotoDemon = 1
 #End If
 
-Public Enum BRUSH_SOURCES
+Public Enum BRUSH_SOURCE
     BS_Color = 0
 End Enum
 
@@ -35,20 +41,33 @@ End Enum
     Private Const BS_Color = 0
 #End If
 
+Public Enum BRUSH_STYLE
+    BS_Pencil = 0
+    BS_SoftBrush = 1
+End Enum
+
+#If False Then
+    Private Const BS_Pencil = 0, BS_SoftBrush = 1
+#End If
+
 Public Enum BRUSH_ATTRIBUTES
     BA_Source = 0
-    BA_Size = 1
-    BA_Opacity = 2
-    BA_BlendMode = 3
-    BA_AlphaMode = 4
-    BA_Antialiasing = 5
+    BA_Style = 1
+    BA_Size = 2
+    BA_Opacity = 3
+    BA_BlendMode = 4
+    BA_AlphaMode = 5
+    BA_Antialiasing = 6
+    BA_Hardness = 7
+    BA_Spacing = 8
     
     'Source-specific values can be stored here, as relevant
     BA_SourceColor = 1000
 End Enum
 
 #If False Then
-    Private Const BA_Source = 0, BA_Size = 1, BA_Opacity = 2, BA_BlendMode = 3, BA_AlphaMode = 4, BA_Antialiasing = 5
+    Private Const BA_Source = 0, BA_Style = 1, BA_Size = 2, BA_Opacity = 3, BA_BlendMode = 4, BA_AlphaMode = 5, BA_Antialiasing = 6
+    Private Const BA_Hardness = 7, BA_Spacing = 8
     Private Const BA_SourceColor = 1000
 #End If
 
@@ -67,12 +86,15 @@ Private m_GDIPPen As pd2DPen
 Private m_CustomPenImage As pd2DSurface, m_SrcPenDIB As pdDIB
 
 'Brush attributes are stored in these variables
-Private m_BrushSource As BRUSH_SOURCES
+Private m_BrushSource As BRUSH_SOURCE
+Private m_BrushStyle As BRUSH_STYLE
 Private m_BrushSize As Single
 Private m_BrushOpacity As Single
 Private m_BrushBlendmode As LAYER_BLENDMODE
 Private m_BrushAlphamode As LAYER_ALPHAMODE
 Private m_BrushAntialiasing As PD_2D_Antialiasing
+Private m_BrushHardness As Single
+Private m_BrushSpacing As Single
 
 'Note that some brush attributes only exist for certain brush sources.
 Private m_BrushSourceColor As Long
@@ -88,7 +110,8 @@ Private m_MouseDown As Boolean
 Private m_MouseX As Single, m_MouseY As Single
 
 'Brush dynamics are calculated on-the-fly, and they include things like velocity, distance, angle, and more.
-Private m_DistPixels As Long
+Private m_DistPixels As Long, m_BrushSizeInt As Long
+Private m_BrushSpacingCheck As Long
 
 'As brush movements are relayed to us, we keep a running note of the modified area of the scratch layer.
 ' The compositor can use this information to only regenerate the compositor cache area that's changed since the
@@ -111,37 +134,33 @@ Private m_Painter As pd2DPainter, m_Surface As pd2DSurface
 ' we coalesce screen updates together, as they are (by far) the most time-consuming segment of paint rendering.
 Private m_TimeSinceLastRender As Currency
 
-Public Function GetBrushSource() As BRUSH_SOURCES
-    GetBrushSource = m_BrushSource
-End Function
-
 Public Function GetBrushPreviewQuality() As PD_PERFORMANCE_SETTING
     GetBrushPreviewQuality = m_BrushPreviewQuality
 End Function
 
 Public Function GetBrushPreviewQuality_GDIPlus() As GP_InterpolationMode
-    If (m_BrushPreviewQuality = PD_PERF_FASTEST) Then
-        GetBrushPreviewQuality_GDIPlus = GP_IM_NearestNeighbor
-    ElseIf (m_BrushPreviewQuality = PD_PERF_BESTQUALITY) Then
-        GetBrushPreviewQuality_GDIPlus = GP_IM_HighQualityBicubic
+    If USE_PAINTBRUSH_DEBUG_QUALITIES Then
+        If (m_BrushPreviewQuality = PD_PERF_FASTEST) Then
+            GetBrushPreviewQuality_GDIPlus = GP_IM_NearestNeighbor
+        ElseIf (m_BrushPreviewQuality = PD_PERF_BESTQUALITY) Then
+            GetBrushPreviewQuality_GDIPlus = GP_IM_HighQualityBicubic
+        Else
+            GetBrushPreviewQuality_GDIPlus = GP_IM_Bilinear
+        End If
     Else
-        GetBrushPreviewQuality_GDIPlus = GP_IM_Bilinear
+        If (g_ViewportPerformance = PD_PERF_FASTEST) Then
+            GetBrushPreviewQuality_GDIPlus = GP_IM_NearestNeighbor
+        ElseIf (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
+            GetBrushPreviewQuality_GDIPlus = GP_IM_HighQualityBicubic
+        Else
+            GetBrushPreviewQuality_GDIPlus = GP_IM_Bilinear
+        End If
     End If
 End Function
 
-'Universal brush settings, applicable for all sources
-Public Function GetBrushSize() As Single
-    GetBrushSize = m_BrushSize
-End Function
-
-Public Function GetBrushOpacity() As Single
-    GetBrushOpacity = m_BrushOpacity
-End Function
-
-Public Function GetBrushBlendMode() As LAYER_BLENDMODE
-    GetBrushBlendMode = m_BrushBlendmode
-End Function
-
+'Universal brush settings, applicable for most sources.  (I say "most" because some settings can contradict each other;
+' for example, a "locked" alpha mode + "erase" blend mode makes little sense, but it is technically possible to set
+' those values simultaneously.)
 Public Function GetBrushAlphaMode() As LAYER_ALPHAMODE
     GetBrushAlphaMode = m_BrushAlphamode
 End Function
@@ -150,14 +169,72 @@ Public Function GetBrushAntialiasing() As PD_2D_Antialiasing
     GetBrushAntialiasing = m_BrushAntialiasing
 End Function
 
-'Brush settings that vary by source
+Public Function GetBrushBlendMode() As LAYER_BLENDMODE
+    GetBrushBlendMode = m_BrushBlendmode
+End Function
+
+Public Function GetBrushHardness() As Single
+    GetBrushHardness = m_BrushHardness
+End Function
+
+Public Function GetBrushOpacity() As Single
+    GetBrushOpacity = m_BrushOpacity
+End Function
+
+Public Function GetBrushSize() As Single
+    GetBrushSize = m_BrushSize
+End Function
+
+Public Function GetBrushSource() As BRUSH_SOURCE
+    GetBrushSource = m_BrushSource
+End Function
+
 Public Function GetBrushSourceColor() As Long
     GetBrushSourceColor = m_BrushSourceColor
 End Function
 
-Public Sub SetBrushSource(ByVal newSource As BRUSH_SOURCES)
-    If (newSource <> m_BrushSource) Then
-        m_BrushSource = newSource
+Public Function GetBrushSpacing() As Single
+    GetBrushSpacing = m_BrushSpacing
+End Function
+
+Public Function GetBrushStyle() As BRUSH_STYLE
+    GetBrushStyle = m_BrushStyle
+End Function
+
+'Property set functions.  Note that not all brush properties are used by all styles.
+' (e.g. "brush hardness" is not used by "pencil" style brushes, etc)
+Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+    If (newAlphaMode <> m_BrushAlphamode) Then
+        m_BrushAlphamode = newAlphaMode
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialiasing = P2_AA_HighQuality)
+    If (newAntialiasing <> m_BrushAntialiasing) Then
+        m_BrushAntialiasing = newAntialiasing
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As LAYER_BLENDMODE = BL_NORMAL)
+    If (newBlendMode <> m_BrushBlendmode) Then
+        m_BrushBlendmode = newBlendMode
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushHardness(Optional ByVal newHardness As Single = 100#)
+    newHardness = newHardness / 100
+    If (newHardness <> m_BrushHardness) Then
+        m_BrushHardness = newHardness
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushOpacity(ByVal newOpacity As Single)
+    If (newOpacity <> m_BrushOpacity) Then
+        m_BrushOpacity = newOpacity
         m_BrushIsReady = False
     End If
 End Sub
@@ -176,30 +253,9 @@ Public Sub SetBrushSize(ByVal newSize As Single)
     End If
 End Sub
 
-Public Sub SetBrushOpacity(Optional ByVal newOpacity As Single = 100#)
-    If (newOpacity <> m_BrushOpacity) Then
-        m_BrushOpacity = newOpacity
-        m_BrushIsReady = False
-    End If
-End Sub
-
-Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As LAYER_BLENDMODE = BL_NORMAL)
-    If (newBlendMode <> m_BrushBlendmode) Then
-        m_BrushBlendmode = newBlendMode
-        m_BrushIsReady = False
-    End If
-End Sub
-
-Public Sub SetBrushAlphaMode(Optional ByVal newAlphaMode As LAYER_ALPHAMODE = LA_NORMAL)
-    If (newAlphaMode <> m_BrushAlphamode) Then
-        m_BrushAlphamode = newAlphaMode
-        m_BrushIsReady = False
-    End If
-End Sub
-
-Public Sub SetBrushAntialiasing(Optional ByVal newAntialiasing As PD_2D_Antialiasing = P2_AA_HighQuality)
-    If (newAntialiasing <> m_BrushAntialiasing) Then
-        m_BrushAntialiasing = newAntialiasing
+Public Sub SetBrushSource(ByVal newSource As BRUSH_SOURCE)
+    If (newSource <> m_BrushSource) Then
+        m_BrushSource = newSource
         m_BrushIsReady = False
     End If
 End Sub
@@ -211,23 +267,44 @@ Public Sub SetBrushSourceColor(Optional ByVal newColor As Long = vbWhite)
     End If
 End Sub
 
+Public Sub SetBrushSpacing(ByVal newSpacing As Single)
+    newSpacing = newSpacing / 100
+    If (newSpacing <> m_BrushSpacing) Then
+        m_BrushSpacing = newSpacing
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushStyle(ByVal newStyle As BRUSH_STYLE)
+    If (newStyle <> m_BrushStyle) Then
+        m_BrushStyle = newStyle
+        m_BrushIsReady = False
+    End If
+End Sub
+
 Public Function GetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES) As Variant
     
     Select Case bProperty
-        Case BA_Source
-            GetBrushProperty = GetBrushSource()
-        Case BA_Size
-            GetBrushProperty = GetBrushSize()
-        Case BA_Opacity
-            GetBrushProperty = GetBrushOpacity()
-        Case BA_BlendMode
-            GetBrushProperty = GetBrushBlendMode()
         Case BA_AlphaMode
             GetBrushProperty = GetBrushAlphaMode()
         Case BA_Antialiasing
             GetBrushProperty = GetBrushAntialiasing()
+        Case BA_BlendMode
+            GetBrushProperty = GetBrushBlendMode()
+        Case BA_Hardness
+            GetBrushProperty = GetBrushHardness()
+        Case BA_Opacity
+            GetBrushProperty = GetBrushOpacity()
+        Case BA_Size
+            GetBrushProperty = GetBrushSize()
+        Case BA_Source
+            GetBrushProperty = GetBrushSource()
         Case BA_SourceColor
             GetBrushProperty = GetBrushSourceColor()
+        Case BA_Spacing
+            GetBrushProperty = GetBrushSpacing()
+        Case BA_Style
+            GetBrushProperty = GetBrushStyle()
     End Select
     
 End Function
@@ -235,20 +312,26 @@ End Function
 Public Sub SetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES, ByVal newPropValue As Variant)
     
     Select Case bProperty
-        Case BA_Source
-            SetBrushSource newPropValue
-        Case BA_Size
-            SetBrushSize newPropValue
-        Case BA_Opacity
-            SetBrushOpacity newPropValue
-        Case BA_BlendMode
-            SetBrushBlendMode newPropValue
         Case BA_AlphaMode
             SetBrushAlphaMode newPropValue
         Case BA_Antialiasing
             SetBrushAntialiasing newPropValue
+        Case BA_BlendMode
+            SetBrushBlendMode newPropValue
+        Case BA_Hardness
+            SetBrushHardness newPropValue
+        Case BA_Opacity
+            SetBrushOpacity newPropValue
+        Case BA_Size
+            SetBrushSize newPropValue
+        Case BA_Source
+            SetBrushSource newPropValue
         Case BA_SourceColor
             SetBrushSourceColor newPropValue
+        Case BA_Spacing
+            SetBrushSpacing newPropValue
+        Case BA_Style
+            SetBrushStyle newPropValue
     End Select
     
 End Sub
@@ -257,13 +340,21 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
     
     If ((Not m_BrushIsReady) Or forceCreation Or (Not m_BrushCreatedAtLeastOnce)) Then
     
-        'In the future we'll be implementing a full custom brush engine, but for this early testing phase,
-        ' I'm restricting things to GDI+ for simplicity's sake.
-        m_BrushEngine = BE_GDIPlus
+        'At present, brush styles correspond nicely to brush engines.
+        If (m_BrushStyle = BS_Pencil) Then
+            m_BrushEngine = BE_GDIPlus
+        ElseIf (m_BrushStyle = BS_SoftBrush) Then
         
-        'Want to test the new PD brush engine?  Uncomment this line, and supply a valid image file in the
-        ' BE_PhotoDemon case below.
-        'm_BrushEngine = BE_PhotoDemon
+            'At certain brush sizes, we lean on GDI+ because there is no conceivable difference between their method
+            ' and ours.
+            If (m_BrushSize < 3#) Then
+                m_BrushEngine = BE_GDIPlus
+                If (m_BrushHardness > 0.75) Then m_BrushAntialiasing = P2_AA_None Else m_BrushAntialiasing = P2_AA_HighQuality
+            Else
+                m_BrushEngine = BE_PhotoDemon
+            End If
+            
+        End If
         
         Select Case m_BrushEngine
             
@@ -275,8 +366,29 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
             'TESTING ONLY!
             Case BE_PhotoDemon
                 
-                'Use some arbitrary DIB for testing purposes; this is helpful until we've written our own
-                ' brush renderer.
+                'Build a new brush reference image that reflects the current brush properties
+                m_BrushSizeInt = Int(m_BrushSize + 0.999999)
+                If (m_BrushStyle = BS_SoftBrush) Then CreateSoftBrushReference_PD
+                m_SrcPenDIB.SetInitialAlphaPremultiplicationState True
+                
+                'We also need to calculate a brush spacing reference.  A spacing of 1 means that every pixel in
+                ' the current stroke is dabbed.  From a performance perspective, this is simply not feasible for
+                ' large brushes, so avoid it if possible.
+                '
+                'The "Automatic" setting (which maps to spacing = 0) automatically calculates spacing based on
+                ' the current brush size.  (Basically, we dab every 1/2pi of a radius.)
+                Dim tmpBrushSpacing As Single
+                tmpBrushSpacing = m_BrushSize / (PI_DOUBLE)
+                
+                If (m_BrushSpacing > 0#) Then
+                    tmpBrushSpacing = (m_BrushSpacing * tmpBrushSpacing)
+                End If
+                
+                'The module-level spacing check is an integer (because we Mod it to test for paint dabs)
+                m_BrushSpacingCheck = Int(tmpBrushSpacing + 0.5)
+                If (m_BrushSpacingCheck < 1) Then m_BrushSpacingCheck = 1
+                
+                'Want to use some arbitrary DIB for testing purposes?  Uncomment the lines below.
                 'Dim testImgPath As String
                 'testImgPath = "C:\PhotoDemon v4\PhotoDemon\no_sync\Images from testers\brush_test_500.png"
                 '
@@ -284,8 +396,10 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
                 'Loading.QuickLoadImageToDIB testImgPath, m_SrcPenDIB, False, False, False
                 'SetBrushSize m_SrcPenDIB.GetDIBWidth
                 
-                'Want to use GDI+ as the renderer (instead of GDI)?  Uncomment these two lines,
-                ' then visit the ApplyPaintDab function and uncomment the GDI+ renderer comment there.
+                'Want to the GDI+ renderer (instead of GDI)?  Uncomment these two lines, then visit the
+                ' ApplyPaintDab() function and uncomment the GDI+ renderer comment there.
+                ' (This will be needed in the future for rotating and/or skewing the brush "on the fly"
+                '  based on brush dynamics.)
                 'If (m_CustomPenImage Is Nothing) Then Set m_CustomPenImage = New pd2DSurface
                 'm_CustomPenImage.CreateSurfaceFromFile testImgPath
                 
@@ -299,6 +413,213 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         
     End If
     
+End Sub
+
+Private Sub CreateSoftBrushReference_MyPaint()
+
+    'Initialize our reference DIB as necessary
+    If (m_SrcPenDIB Is Nothing) Then Set m_SrcPenDIB = New pdDIB
+    If (m_SrcPenDIB.GetDIBWidth < m_BrushSizeInt - 1) Or (m_SrcPenDIB.GetDIBHeight < m_BrushSizeInt - 1) Then
+        m_SrcPenDIB.CreateBlank m_BrushSizeInt, m_BrushSizeInt, 32, 0, 0
+    Else
+        m_SrcPenDIB.ResetDIB 0
+    End If
+    
+    'Because we are only setting 255 possible different colors (one for each possible opacity, while the current
+    ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
+    ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
+    ' setting each byte individually.
+    Dim tmpR As Long, tmpG As Long, tmpB As Long, tmpA As Long
+    tmpR = Colors.ExtractRed(m_BrushSourceColor)
+    tmpG = Colors.ExtractGreen(m_BrushSourceColor)
+    tmpB = Colors.ExtractBlue(m_BrushSourceColor)
+    
+    Dim cLookup() As Long
+    ReDim cLookup(0 To 255) As Long
+    
+    Dim x As Long, y As Long, tmpMult As Single
+    For x = 0 To 255
+        tmpMult = CSng(x) / 255
+        cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x)
+    Next x
+    
+    'Prep manual per-pixel loop variables
+    Dim dstImageData() As Long
+    Dim tmpSA As SAFEARRAY2D
+    PrepSafeArray_Long tmpSA, m_SrcPenDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+    
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = m_SrcPenDIB.GetDIBWidth - 1
+    finalY = m_SrcPenDIB.GetDIBHeight - 1
+    
+    'At present, we use a MyPaint-compatible system for calculating brush hardness.  This gives us comparable
+    ' paint behavior against programs like MyPaint (obviously), Krita, and new versions of GIMP.
+    ' Reference: https://github.com/mypaint/libmypaint/wiki/Using-Brushlib
+    Dim brushAspectRatio As Single, brushAngle As Single
+    
+    'Some MyPaint-supported features are not currently exposed to the user.  Their hard-coded values appear below,
+    ' and in the future, we may migrate these over to the UI.
+    brushAspectRatio = 1#   '[1, #INF]
+    brushAngle = 0#         '[0, 180] in degrees
+    
+    Dim refCos As Single, refSin As Single
+    refCos = Cos(brushAngle / 360 * 2 * PI)
+    refSin = Sin(brushAngle / 360 * 2 * PI)
+    
+    Dim dx As Single, dy As Single
+    Dim dXr As Single, dYr As Single
+    Dim brushRadius As Single, brushRadiusSquare As Single
+    brushRadius = (m_BrushSize - 1) / 2
+    brushRadiusSquare = brushRadius * brushRadius
+    
+    Dim dd As Single, pxOpacity As Single
+    Dim brushHardness As Single
+    brushHardness = m_BrushHardness
+    If (brushHardness < 0.001) Then brushHardness = 0.001
+    If (brushHardness > 0.999) Then brushHardness = 0.999
+    
+    'Loop through each pixel in the image, calculating per-pixel brush values as we go
+    For x = initX To finalX
+    For y = initY To finalY
+    
+        dx = x - brushRadius
+        dy = y - brushRadius
+        dXr = (dy * refSin + dx * refCos)
+        dYr = (dy * refCos - dx * refSin) * brushAspectRatio
+        
+        dd = (dYr * dYr + dXr * dXr) / brushRadiusSquare
+        
+        If (dd > 1) Then
+            pxOpacity = 0
+        ElseIf (dd < brushHardness) Then
+            pxOpacity = dd + 1 - (dd / brushHardness)
+        Else
+            pxOpacity = brushHardness / (1 - brushHardness) * (1 - dd)
+        End If
+        
+        'NOTE: if you wanted to, you could apply a dab opacity here (e.g. pxOpacity * [0, 1])
+        ' We ignore this now as I haven't currently implemented an "incremental" paint mode.
+        dstImageData(x, y) = cLookup(pxOpacity * 255)
+        
+        'TODO: optimize this function by only processing one quadrant, then mirroring the results to the
+        ' other three matching quadrants.  (Obviously, this only works while aspect ratio = 1#)
+        
+    Next y
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+
+End Sub
+
+Private Sub CreateSoftBrushReference_PD()
+
+    'Initialize our reference DIB as necessary
+    If (m_SrcPenDIB Is Nothing) Then Set m_SrcPenDIB = New pdDIB
+    If (m_SrcPenDIB.GetDIBWidth < m_BrushSizeInt - 1) Or (m_SrcPenDIB.GetDIBHeight < m_BrushSizeInt - 1) Then
+        m_SrcPenDIB.CreateBlank m_BrushSizeInt, m_BrushSizeInt, 32, 0, 0
+    Else
+        m_SrcPenDIB.ResetDIB 0
+    End If
+    
+    'Because we are only setting 255 possible different colors (one for each possible opacity, while the current
+    ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
+    ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
+    ' setting each byte individually.
+    Dim tmpR As Long, tmpG As Long, tmpB As Long, tmpA As Long
+    tmpR = Colors.ExtractRed(m_BrushSourceColor)
+    tmpG = Colors.ExtractGreen(m_BrushSourceColor)
+    tmpB = Colors.ExtractBlue(m_BrushSourceColor)
+    
+    Dim cLookup() As Long
+    ReDim cLookup(0 To 255) As Long
+    
+    Dim x As Long, y As Long, tmpMult As Single
+    For x = 0 To 255
+        tmpMult = CSng(x) / 255
+        cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x)
+    Next x
+    
+    'Prep manual per-pixel loop variables
+    Dim dstImageData() As Long
+    Dim tmpSA As SAFEARRAY2D
+    PrepSafeArray_Long tmpSA, m_SrcPenDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+    
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = m_SrcPenDIB.GetDIBWidth - 1
+    finalY = m_SrcPenDIB.GetDIBHeight - 1
+    
+    'After a good deal of testing, I've decided that I don't like the MyPaint system for calculating brush hardness.
+    ' Their system behaves ridiculously at low "hardness" values, causing huge spacing issues for the brush.
+    '
+    'For now, I'm using a system similar to PD's "vignette" tool, which yields much better results IMO.
+    Dim brushHardness As Single
+    brushHardness = m_BrushHardness
+    
+    Dim brushRadius As Single, brushRadiusSquare As Single
+    brushRadius = m_BrushSize / 2
+    brushRadiusSquare = brushRadius * brushRadius
+    
+    Dim innerRadius As Single, innerRadiusSquare As Single
+    innerRadius = brushRadius * (brushHardness * 0.99)
+    innerRadiusSquare = innerRadius * innerRadius
+    
+    Dim radiusDifference As Single
+    radiusDifference = (brushRadiusSquare - innerRadiusSquare)
+    If (radiusDifference < 0.00001) Then radiusDifference = 0.00001
+    radiusDifference = (1 / radiusDifference)
+    
+    Dim cx As Single, cy As Single
+    Dim pxDistance As Single
+    Dim pxOpacity As Single
+    
+    
+    'Loop through each pixel in the image, calculating per-pixel brush values as we go
+    For x = initX To finalX
+    For y = initY To finalY
+        
+        'Calculate distance between this point and the idealized "center" of the brush
+        cx = x - brushRadius
+        cy = y - brushRadius
+        pxDistance = (cx * cx + cy * cy)
+        
+        'Ignore pixels that lie outside the brush radius
+        If (pxDistance <= brushRadiusSquare) Then
+            
+            'If pixels lie *inside* the inner radius, set them to maximum opacity
+            If (pxDistance <= innerRadiusSquare) Then
+                dstImageData(x, y) = cLookup(255)
+            
+            'If pixels lie somewhere between the inner radius and the brush radius, feather them appropriately
+            Else
+            
+                'Calculate the current distance as a linear amount between the inner radius (the smallest amount
+                ' of feathering this hardness value provides), and the outer radius (the actual brush radius)
+                pxOpacity = (brushRadiusSquare - pxDistance) * radiusDifference
+                
+                'Cube the result to produce a more gaussian-like fade
+                pxOpacity = pxOpacity * pxOpacity * pxOpacity
+                
+                'NOTE: if you wanted to, you could apply a dab opacity here (e.g. pxOpacity * [0, 1])
+                ' We ignore this now as I haven't currently implemented an "incremental" paint mode.
+                dstImageData(x, y) = cLookup(pxOpacity * 255)
+                
+            End If
+            
+        End If
+        
+    Next y
+    Next x
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+
 End Sub
 
 'As part of rendering the current brush, we also need to render a brush outline onto the canvas at the current
@@ -544,7 +865,6 @@ End Sub
 Private Sub ManuallyCalculateBrushPoints(ByVal srcX As Single, ByVal srcY As Single)
     
     'CalcPoints_Bresenham srcX, srcY
-    'CalcPoints_Wu srcX, srcY
     CalcPoints_VoxelTraversal srcX, srcY
     
 End Sub
@@ -671,122 +991,6 @@ Private Sub CalcPoints_Bresenham(ByVal srcX As Single, ByVal srcY As Single)
     
 End Sub
 
-Private Sub CalcPoints_Wu(ByVal srcX As Single, ByVal srcY As Single)
-
-    'TEST ONE: use Wu's line algorithm to plot an idealized, "perfect coverage" stroke.
-    ' This implementation is an unoptimized port of Wiki's pseudocode implementation:
-    '  https://en.wikipedia.org/wiki/Xiaolin_Wu%27s_line_algorithm
-    '
-    'TEST NOTES: this implementation has some issues with point ordering, because it sometimes renders
-    ' the line front-to-back.  This greatly simplifies the code, but it's not workable for all brushes
-    ' (e.g. for something like an image pipe brush, point order *must* be respected).  Also, while coverage
-    ' can hypothetically be idealized (because we can easily calculate a "coverage percentage" for each
-    ' traversed point), the point ordering problem must be solved before this is really usable.
-    Dim x0 As Single, y0 As Single, x1 As Single, y1 As Single
-    x0 = m_MouseX
-    y0 = m_MouseY
-    x1 = srcX
-    y1 = srcY
-    
-    Dim steep As Boolean
-    steep = CBool(Abs(y1 - y0) > Abs(x1 - x0))
-    
-    'To simplify handling, always plot lines in a descending direction
-    Dim tmpSwap As Single
-    If steep Then
-        tmpSwap = x0
-        x0 = y0
-        y0 = tmpSwap
-        
-        tmpSwap = x1
-        x1 = y1
-        y1 = tmpSwap
-    End If
-    
-    If (x0 > x1) Then
-        tmpSwap = x0
-        x0 = x1
-        x1 = tmpSwap
-        
-        tmpSwap = y0
-        y0 = y1
-        y1 = tmpSwap
-    End If
-    
-    Dim dx As Single, dy As Single
-    dx = x1 - x0
-    dy = y1 - y0
-    
-    Dim Gradient As Single
-    Gradient = dy / dx
-    
-    'Handle first endpoint
-    Dim xEnd As Single, yEnd As Single, xGap As Single
-    xEnd = Int(x0 + 0.5)
-    yEnd = y0 + Gradient * (xEnd - x0)
-    xGap = 1 - FractionalPartWu(x0 + 0.5)
-    
-    Dim xPxl1 As Long, yPxl1 As Long
-    xPxl1 = xEnd
-    yPxl1 = Int(yEnd)
-    
-    'Draw the first endpoint
-    If steep Then
-        ApplyPaintDab yPxl1, xPxl1, (1 - FractionalPartWu(yEnd)) * xGap
-        ApplyPaintDab yPxl1 + 1, xPxl1, FractionalPartWu(yEnd) * xGap
-    Else
-        ApplyPaintDab xPxl1, yPxl1, (1 - FractionalPartWu(yEnd)) * xGap
-        ApplyPaintDab xPxl1, yPxl1 + 1, FractionalPartWu(yEnd) * xGap
-    End If
-    
-    'Calculate the first y-intersection point
-    Dim interY As Single
-    interY = yEnd + Gradient
-    
-    'Calculate the second endpoint's data, but don't actually render it yet
-    xEnd = Int(x1 + 0.5)
-    yEnd = y1 + Gradient * (xEnd - x1)
-    xGap = FractionalPartWu(x1 + 0.5)
-    
-    Dim xPxl2 As Long, yPxl2 As Long
-    xPxl2 = xEnd
-    yPxl2 = Int(yEnd)
-    
-    'Main loop
-    Dim x As Long
-    If steep Then
-        For x = xPxl1 + 1 To xPxl2 - 1
-            ApplyPaintDab Int(interY), x, (1 - FractionalPartWu(interY))
-            ApplyPaintDab Int(interY) + 1, x, FractionalPartWu(interY)
-            interY = interY + Gradient
-        Next x
-    Else
-        For x = xPxl1 + 1 To xPxl2 - 1
-           ApplyPaintDab x, Int(interY), (1 - FractionalPartWu(interY))
-           ApplyPaintDab x, Int(interY) + 1, FractionalPartWu(interY)
-           interY = interY + Gradient
-        Next x
-    End If
-    
-    'Render second endpoint
-    If steep Then
-        ApplyPaintDab yPxl2, xPxl2, (1 - FractionalPartWu(yEnd)) * xGap
-        ApplyPaintDab yPxl2 + 1, xPxl2, FractionalPartWu(yEnd) * xGap
-    Else
-        ApplyPaintDab xPxl2, yPxl2, (1 - FractionalPartWu(yEnd)) * xGap
-        ApplyPaintDab xPxl2, yPxl2 + 1, FractionalPartWu(yEnd) * xGap
-    End If
-    
-End Sub
-
-Private Function FractionalPartWu(ByVal x As Single) As Single
-    If (x < 0) Then
-        FractionalPartWu = 1 - (x - Int(x))
-    Else
-        FractionalPartWu = x - Fix(x)
-    End If
-End Function
-
 Private Function FractionalPartVoxel(ByVal x As Single) As Single
     FractionalPartVoxel = x - Int(x)
 End Function
@@ -798,16 +1002,13 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
     
     'If brush dynamics are active, we only dab the brush if certain criteria are met.  (For example, if enough pixels have
     ' elapsed since the last dab, as controlled by the Brush Spacing parameter.)
-    
-    'TODO: implement, e.g...
-    'If brushSpacingActive then allowedToDab = CBool((m_DistPixels Mod m_BrushSpacing )= 0)
-    allowedToDab = ((m_DistPixels Mod (m_BrushSize \ 8)) = 0)
+    If (m_BrushSpacingCheck > 1) Then allowedToDab = ((m_DistPixels Mod m_BrushSpacingCheck) = 0)
     
     If allowedToDab Then
         
         'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
         ' for a performance boost, however.
-        m_SrcPenDIB.AlphaBlendToDC pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, dabOpacity * 255, srcX - m_BrushSize \ 2, srcY - m_BrushSize \ 2
+        m_SrcPenDIB.AlphaBlendToDCEx pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, srcX - m_BrushSize \ 2, srcY - m_BrushSize \ 2, m_BrushSize, m_BrushSize, 0, 0, m_BrushSize, m_BrushSize, dabOpacity * 255
         'm_Painter.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
     End If
     

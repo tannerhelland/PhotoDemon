@@ -115,6 +115,24 @@ Public Sub PrepSafeArray(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
     
 End Sub
 
+'This function can be used to populate a valid SAFEARRAY2D structure against any DIB, but instead of using bytes, each pixel
+' is represented by a full LONG.
+' DO NOT USE THIS ON 24-BPP DIBS, OBVIOUSLY!
+Public Sub PrepSafeArray_Long(ByRef srcSA As SAFEARRAY2D, ByRef srcDIB As pdDIB)
+    
+    'Populate a relevant SafeArray variable for the supplied DIB
+    With srcSA
+        .cbElements = 4
+        .cDims = 2
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = srcDIB.GetDIBHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = srcDIB.GetDIBWidth
+        .pvData = srcDIB.GetDIBPointer
+    End With
+    
+End Sub
+
 'For some odd functions (e.g. export JPEG dialog), it's helpful to have the full power of prepImageData, but against
 ' a target other than the current image's main layer.  This function is roughly equivalent to prepImageData, below, but
 ' stripped down and specifically designed for PREVIEWS ONLY.  A source image must be explicitly supplied.

@@ -25,14 +25,15 @@ Public Enum PDTools
     VECTOR_TEXT = 9
     VECTOR_FANCYTEXT = 10
     PAINT_BASICBRUSH = 11
+    PAINT_SOFTBRUSH = 12
 End Enum
 
 #If False Then
-    Const NAV_DRAG = 0, NAV_MOVE = 1, QUICK_FIX_LIGHTING = 2
-    Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5
-    Const SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
-    Const VECTOR_TEXT = 9, VECTOR_FANCYTEXT = 10
-    Const PAINT_BASICBRUSH = 11
+    Private Const NAV_DRAG = 0, NAV_MOVE = 1, QUICK_FIX_LIGHTING = 2
+    Private Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5
+    Private Const SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
+    Private Const VECTOR_TEXT = 9, VECTOR_FANCYTEXT = 10
+    Private Const PAINT_BASICBRUSH = 11, PAINT_SOFTBRUSH = 12
 #End If
 
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.

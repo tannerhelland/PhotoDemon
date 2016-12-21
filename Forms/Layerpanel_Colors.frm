@@ -84,7 +84,7 @@ Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal
     'We also check to see if a paint-related tool is active.  If it is, assign the new color immediately.
     Select Case g_CurrentTool
     
-        Case PAINT_BASICBRUSH
+        Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             Paintbrush.SetBrushSourceColor newColor
     
     End Select
