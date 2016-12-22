@@ -376,7 +376,7 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     If undoNum = undoMax Then redoState = False Else redoState = True
     
     'Select the relevant tool for this action, if one is provided
-    If GetUndoTool > -1 Then toolbar_Toolbox.SelectNewTool GetUndoTool
+    If (GetUndoTool > -1) Then toolbar_Toolbox.SelectNewTool GetUndoTool
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     If UNDO_DEBUG_MODE Then DebugUndo "Undo pointer moved by request to a specific location"

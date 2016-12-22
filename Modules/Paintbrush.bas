@@ -344,16 +344,7 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
         If (m_BrushStyle = BS_Pencil) Then
             m_BrushEngine = BE_GDIPlus
         ElseIf (m_BrushStyle = BS_SoftBrush) Then
-        
-            'At certain brush sizes, we lean on GDI+ because there is no conceivable difference between their method
-            ' and ours.
-            If (m_BrushSize < 3#) Then
-                m_BrushEngine = BE_GDIPlus
-                If (m_BrushHardness > 0.75) Then m_BrushAntialiasing = P2_AA_None Else m_BrushAntialiasing = P2_AA_HighQuality
-            Else
-                m_BrushEngine = BE_PhotoDemon
-            End If
-            
+            m_BrushEngine = BE_PhotoDemon
         End If
         
         Select Case m_BrushEngine
@@ -516,109 +507,157 @@ Private Sub CreateSoftBrushReference_MyPaint()
 End Sub
 
 Private Sub CreateSoftBrushReference_PD()
-
+    
     'Initialize our reference DIB as necessary
     If (m_SrcPenDIB Is Nothing) Then Set m_SrcPenDIB = New pdDIB
-    If (m_SrcPenDIB.GetDIBWidth < m_BrushSizeInt - 1) Or (m_SrcPenDIB.GetDIBHeight < m_BrushSizeInt - 1) Then
+    If (m_SrcPenDIB.GetDIBWidth < m_BrushSizeInt) Or (m_SrcPenDIB.GetDIBHeight < m_BrushSizeInt) Then
         m_SrcPenDIB.CreateBlank m_BrushSizeInt, m_BrushSizeInt, 32, 0, 0
     Else
         m_SrcPenDIB.ResetDIB 0
     End If
     
-    'Because we are only setting 255 possible different colors (one for each possible opacity, while the current
-    ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
-    ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
-    ' setting each byte individually.
-    Dim tmpR As Long, tmpG As Long, tmpB As Long, tmpA As Long
-    tmpR = Colors.ExtractRed(m_BrushSourceColor)
-    tmpG = Colors.ExtractGreen(m_BrushSourceColor)
-    tmpB = Colors.ExtractBlue(m_BrushSourceColor)
-    
-    Dim cLookup() As Long
-    ReDim cLookup(0 To 255) As Long
-    
-    Dim x As Long, y As Long, tmpMult As Single
-    For x = 0 To 255
-        tmpMult = CSng(x) / 255
-        cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x)
-    Next x
-    
-    'Prep manual per-pixel loop variables
-    Dim dstImageData() As Long
-    Dim tmpSA As SAFEARRAY2D
-    PrepSafeArray_Long tmpSA, m_SrcPenDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
-    
-    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = m_SrcPenDIB.GetDIBWidth - 1
-    finalY = m_SrcPenDIB.GetDIBHeight - 1
-    
-    'After a good deal of testing, I've decided that I don't like the MyPaint system for calculating brush hardness.
-    ' Their system behaves ridiculously at low "hardness" values, causing huge spacing issues for the brush.
-    '
-    'For now, I'm using a system similar to PD's "vignette" tool, which yields much better results IMO.
-    Dim brushHardness As Single
-    brushHardness = m_BrushHardness
-    
-    Dim brushRadius As Single, brushRadiusSquare As Single
-    brushRadius = m_BrushSize / 2
-    brushRadiusSquare = brushRadius * brushRadius
-    
-    Dim innerRadius As Single, innerRadiusSquare As Single
-    innerRadius = brushRadius * (brushHardness * 0.99)
-    innerRadiusSquare = innerRadius * innerRadius
-    
-    Dim radiusDifference As Single
-    radiusDifference = (brushRadiusSquare - innerRadiusSquare)
-    If (radiusDifference < 0.00001) Then radiusDifference = 0.00001
-    radiusDifference = (1 / radiusDifference)
-    
-    Dim cx As Single, cy As Single
-    Dim pxDistance As Single
-    Dim pxOpacity As Single
-    
-    
-    'Loop through each pixel in the image, calculating per-pixel brush values as we go
-    For x = initX To finalX
-    For y = initY To finalY
+    'Next, check for a few special cases.  First, brushes with maximum hardness don't need to be rendered manually.
+    ' Instead, just plot an antialiased circle and call it good.
+    Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+    If (m_BrushHardness = 1#) Then
         
-        'Calculate distance between this point and the idealized "center" of the brush
-        cx = x - brushRadius
-        cy = y - brushRadius
-        pxDistance = (cx * cx + cy * cy)
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SrcPenDIB.GetDIBDC, True
+        cSurface.SetSurfacePixelOffset P2_PO_Half
         
-        'Ignore pixels that lie outside the brush radius
-        If (pxDistance <= brushRadiusSquare) Then
+        Drawing2D.QuickCreateSolidBrush cBrush, m_BrushSourceColor
+        m_Painter.FillCircleF cSurface, cBrush, m_BrushSize / 2, m_BrushSize / 2, m_BrushSize / 2
+        
+        Set cBrush = Nothing: Set cSurface = Nothing
+    
+    'If a brush has custom hardness, we're gonna have to render it manually.
+    Else
+        
+        'Because we are only setting 255 possible different colors (one for each possible opacity, while the current
+        ' color remains constant), this is a great candidate for lookup tables.  Note that for performance reasons,
+        ' we're going to do something wacky, and prep our lookup table as *longs*.  This is (obviously) faster than
+        ' setting each byte individually.
+        Dim tmpR As Long, tmpG As Long, tmpB As Long, tmpA As Long
+        tmpR = Colors.ExtractRed(m_BrushSourceColor)
+        tmpG = Colors.ExtractGreen(m_BrushSourceColor)
+        tmpB = Colors.ExtractBlue(m_BrushSourceColor)
+        
+        Dim cLookup() As Long
+        ReDim cLookup(0 To 255) As Long
+        
+        Dim x As Long, y As Long, tmpMult As Single
+        For x = 0 To 255
+            tmpMult = CSng(x) / 255
+            cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x)
+        Next x
+        
+        'Next, we're going to do something weird.  If this brush is quite small, it's very difficult to plot subpixel
+        ' data accurately.  Instead of messing with specialized calculations, we're just going to plot a larger
+        ' temporary brush, then resample it down to the target size.  This is the least of many evils.
+        Dim tmpBrushRequired As Boolean, tmpDIB As pdDIB
+        Const BRUSH_SIZE_MIN_CUTOFF As Long = 15
+        tmpBrushRequired = CBool(m_BrushSize < BRUSH_SIZE_MIN_CUTOFF)
+        
+        'Prep manual per-pixel loop variables
+        Dim dstImageData() As Long
+        Dim tmpSA As SAFEARRAY2D
+        
+        If tmpBrushRequired Then
+            Set tmpDIB = New pdDIB
+            tmpDIB.CreateBlank BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, 32, 0, 0
+            PrepSafeArray_Long tmpSA, tmpDIB
+        Else
+            PrepSafeArray_Long tmpSA, m_SrcPenDIB
+        End If
+        
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+        
+        Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        
+        If tmpBrushRequired Then
+            finalX = tmpDIB.GetDIBWidth - 1
+            finalY = tmpDIB.GetDIBHeight - 1
+        Else
+            finalX = m_SrcPenDIB.GetDIBWidth - 1
+            finalY = m_SrcPenDIB.GetDIBHeight - 1
+        End If
+        
+        'After a good deal of testing, I've decided that I don't like the MyPaint system for calculating brush hardness.
+        ' Their system behaves ridiculously at low "hardness" values, causing huge spacing issues for the brush.
+        '
+        'For now, I'm using a system similar to PD's "vignette" tool, which yields much better results IMO.
+        Dim brushHardness As Single
+        brushHardness = m_BrushHardness
+        
+        Dim brushRadius As Single, brushRadiusSquare As Single
+        
+        If tmpBrushRequired Then
+            brushRadius = CSng(BRUSH_SIZE_MIN_CUTOFF) / 2
+        Else
+            brushRadius = m_BrushSize / 2
+        End If
+        brushRadiusSquare = brushRadius * brushRadius
+        
+        Dim innerRadius As Single, innerRadiusSquare As Single
+        innerRadius = (brushRadius - 1) * (brushHardness * 0.99)
+        innerRadiusSquare = innerRadius * innerRadius
+        
+        Dim radiusDifference As Single
+        radiusDifference = (brushRadiusSquare - innerRadiusSquare)
+        If (radiusDifference < 0.00001) Then radiusDifference = 0.00001
+        radiusDifference = (1 / radiusDifference)
+        
+        Dim cx As Single, cy As Single
+        Dim pxDistance As Single, pxOpacity As Single
+        
+        'Loop through each pixel in the image, calculating per-pixel brush values as we go
+        For x = initX To finalX
+        For y = initY To finalY
             
-            'If pixels lie *inside* the inner radius, set them to maximum opacity
-            If (pxDistance <= innerRadiusSquare) Then
-                dstImageData(x, y) = cLookup(255)
+            'Calculate distance between this point and the idealized "center" of the brush
+            cx = x - brushRadius
+            cy = y - brushRadius
+            pxDistance = (cx * cx + cy * cy)
             
-            'If pixels lie somewhere between the inner radius and the brush radius, feather them appropriately
-            Else
-            
-                'Calculate the current distance as a linear amount between the inner radius (the smallest amount
-                ' of feathering this hardness value provides), and the outer radius (the actual brush radius)
-                pxOpacity = (brushRadiusSquare - pxDistance) * radiusDifference
+            'Ignore pixels that lie outside the brush radius
+            If (pxDistance <= brushRadiusSquare) Then
                 
-                'Cube the result to produce a more gaussian-like fade
-                pxOpacity = pxOpacity * pxOpacity * pxOpacity
+                'If pixels lie *inside* the inner radius, set them to maximum opacity
+                If (pxDistance <= innerRadiusSquare) Then
+                    dstImageData(x, y) = cLookup(255)
                 
-                'NOTE: if you wanted to, you could apply a dab opacity here (e.g. pxOpacity * [0, 1])
-                ' We ignore this now as I haven't currently implemented an "incremental" paint mode.
-                dstImageData(x, y) = cLookup(pxOpacity * 255)
+                'If pixels lie somewhere between the inner radius and the brush radius, feather them appropriately
+                Else
+                
+                    'Calculate the current distance as a linear amount between the inner radius (the smallest amount
+                    ' of feathering this hardness value provides), and the outer radius (the actual brush radius)
+                    pxOpacity = (brushRadiusSquare - pxDistance) * radiusDifference
+                    
+                    'Cube the result to produce a more gaussian-like fade
+                    pxOpacity = pxOpacity * pxOpacity * pxOpacity
+                    
+                    'NOTE: if you wanted to, you could apply a dab opacity here (e.g. pxOpacity * [0, 1])
+                    ' We ignore this now as I haven't currently implemented an "incremental" paint mode.
+                    dstImageData(x, y) = cLookup(pxOpacity * 255)
+                    
+                End If
                 
             End If
             
+        Next y
+        Next x
+        
+        'With our work complete, point ImageData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        
+        'If a temporary brush was required (because the target brush is so small), downscale it to its
+        ' final size now.
+        If tmpBrushRequired Then
+            GDI_Plus.GDIPlus_StretchBlt m_SrcPenDIB, 0#, 0#, m_BrushSize, m_BrushSize, tmpDIB, 0#, 0#, BRUSH_SIZE_MIN_CUTOFF, BRUSH_SIZE_MIN_CUTOFF, , GP_IM_HighQualityBilinear, , , True, True
         End If
         
-    Next y
-    Next x
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    End If
 
 End Sub
 
@@ -914,6 +953,9 @@ Private Sub CalcPoints_VoxelTraversal(ByVal srcX As Single, ByVal srcY As Single
     'Start plotting points.  Note that - by design, the first point is *not* manually rendered.
     Do
         
+        'Apply this dab.
+        ApplyPaintDab x, y
+        
         'See if our next voxel (pixel) intersection occurs on a horizontal or vertical edge, and increase our
         ' running offset proportionally.
         If (tMaxX < tMaxY) Then
@@ -923,9 +965,6 @@ Private Sub CalcPoints_VoxelTraversal(ByVal srcX As Single, ByVal srcY As Single
             tMaxY = tMaxY + tDeltaY
             y = y + stepY
         End If
-        
-        'Apply this dab.
-        ApplyPaintDab x, y
         
         'Check for traversal past the end of the destination voxel
         If (tMaxX > 1) Then
@@ -1225,6 +1264,8 @@ Public Sub InitializeBrushEngine()
     Drawing2D.QuickCreatePainter m_Painter
     m_MouseX = -1000000#
     m_MouseY = -1000000#
+    m_BrushIsReady = False
+    m_BrushCreatedAtLeastOnce = False
 End Sub
 
 'Before PD closes, you *must* call this function!  It will free any lingering brush resources (which are cached

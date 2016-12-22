@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2042</langversion>
+<langversion>6.8.2044</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13139,7 +13139,17 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>排版（高级）</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 52 phrases. 14 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<phrase>
+<original>Pencil (hard-tipped brush)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paintbrush (soft-tipped brush)</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 54 phrases. 14 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14952,10 +14962,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1947 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12670 total words. -->
+<!-- As of this build, PhotoDemon contains 4479 phrases. -->
+<!-- 1947 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12676 total words. -->
 
 </pdData>
