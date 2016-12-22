@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.224</langversion>
+<langversion>6.7.226</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -13138,7 +13138,17 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 52 phrases. 14 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<phrase>
+<original>Pencil (hard-tipped brush)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Paintbrush (soft-tipped brush)</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_ToolSelect.frm contains 54 phrases. 14 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14954,10 +14964,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2532</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4477 phrases. -->
-<!-- 1947 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12670 total words. -->
+<!-- As of this build, PhotoDemon contains 4479 phrases. -->
+<!-- 1947 are duplicates, so only 2532 unique phrases have been written to file. -->
+<!-- These 2532 phrases contain approximately 12676 total words. -->
 
 </pdData>

@@ -1148,8 +1148,12 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdTools(VECTOR_TEXT).AssignTooltip "Text (basic)"
     cmdTools(VECTOR_FANCYTEXT).AssignTooltip "Typography (advanced)"
     
+    '...then paint tools...
+    cmdTools(PAINT_BASICBRUSH).AssignTooltip "Pencil (hard-tipped brush)"
+    cmdTools(PAINT_SOFTBRUSH).AssignTooltip "Paintbrush (soft-tipped brush)"
+    
     'The right separator line is colored according to the current shadow accent color
-    If Not g_Themer Is Nothing Then
+    If (Not g_Themer Is Nothing) Then
         lnRightSeparator.borderColor = g_Themer.GetGenericUIColor(UI_GrayDark)
     Else
         lnRightSeparator.borderColor = vbHighlight
