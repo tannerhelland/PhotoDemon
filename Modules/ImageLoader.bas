@@ -40,7 +40,7 @@ End Function
 'Note the unique "sourceIsUndoFile" parameter for this load function.  PDI files are used to store undo/redo data, and when one of their
 ' kind is loaded as part of an Undo/Redo action, we must ignore certain elements stored in the file (e.g. settings like "LastSaveFormat"
 ' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer, and it tells it to ignore certain settings.
-Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
+Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
@@ -62,7 +62,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     ' (Also, prior to v7.0, PD would copy the entire source file into memory, then load the PDI from there.  This no longer occurs;
     '  instead, the file is left on-disk, and data is only loaded on a per-node basis.  This greatly reduces memory load.)
     ' (Also, because PDI files store data roughly sequentially, we can use OptimizeSequentialAccess for a small perf boost.)
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER, PD_SM_MemoryBacked, PD_SA_ReadOnly, OptimizeSequentialAccess) Then
+    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER, PD_SM_MemoryBacked, PD_SA_ReadOnly, OptimizeSequentialAccess) Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
@@ -250,7 +250,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Legacy PDI file encountered; dropping back to pdPackage v1 functions..."
         #End If
-        LoadPhotoDemonImage = LoadPDI_Legacy(PDIPath, dstDIB, dstImage, sourceIsUndoFile)
+        LoadPhotoDemonImage = LoadPDI_Legacy(pdiPath, dstDIB, dstImage, sourceIsUndoFile)
     
     End If
     
@@ -266,7 +266,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(PDIPath)
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(pdiPath)
         Exit Function
     End If
 
@@ -287,7 +287,7 @@ End Function
 
 'Load just the layer stack from a standard PDI file, and non-destructively align our current layer stack to match.
 ' At present, this function is only used internally by the Undo/Redo engine.
-Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dstImage As pdImage) As Boolean
+Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dstImage As pdImage) As Boolean
     
     On Error GoTo LoadPDIHeaderFail
     
@@ -298,7 +298,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
@@ -371,7 +371,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
             pdDebug.LogAction "PDI v2 validation failed.  Attempting v1 load engine..."
         #End If
         
-        LoadPhotoDemonImageHeaderOnly = LoadPhotoDemonImageHeaderOnly_Legacy(PDIPath, dstImage)
+        LoadPhotoDemonImageHeaderOnly = LoadPhotoDemonImageHeaderOnly_Legacy(pdiPath, dstImage)
     
     End If
     
@@ -398,7 +398,7 @@ End Function
 'Load a single layer from a standard PDI file.
 ' At present, this function is only used internally by the Undo/Redo engine.  If the nearest diff to a layer-specific change is a
 ' full pdImage stack, this function is used to extract only the relevant layer (or layer header) from the PDI file.
-Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
+Public Function LoadSingleLayerFromPDI(ByVal pdiPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadLayerFromPDIFail
     
@@ -409,7 +409,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
         'PDI files all follow a standard format: a pdImage node at the top, which contains the full pdImage header,
         ' followed by individual nodes for each layer.  Layers are stored in stack order, which makes it very fast and easy
@@ -508,7 +508,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             pdDebug.LogAction "PDI v2 validation failed.  Attempting v1 load engine..."
         #End If
         
-        LoadSingleLayerFromPDI = LoadSingleLayerFromPDI_Legacy(PDIPath, dstLayer, targetLayerID, loadHeaderOnly)
+        LoadSingleLayerFromPDI = LoadSingleLayerFromPDI_Legacy(pdiPath, dstLayer, targetLayerID, loadHeaderOnly)
     
     End If
     
@@ -535,7 +535,7 @@ End Function
 'Load a single PhotoDemon layer from a standalone pdLayer file (which is really just a modified PDI file).
 ' At present, this function is only used internally by the Undo/Redo engine.  Its counterpart is SavePhotoDemonLayer in
 ' the Saving module; any changes there should be mirrored here.
-Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As pdLayer, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
+Public Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As pdLayer, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadPDLayerFail
     
@@ -546,7 +546,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
     
     'Load the file into the pdPackager instance.  pdPackager It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_LAYER_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(pdiPath, PD_LAYER_IDENTIFIER) Then
     
         'Layer variants of PDI files contain a single node.  The layer's header is stored to the node's header chunk
         ' (in XML format, as expected).  The layer's DIB data is stored to the node's data chunk (in binary format, as expected).
@@ -1277,7 +1277,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     FormMain.mainCanvas(0).AlignCanvasView
     
     'If the user wants us to resize the image to fit on-screen, do that now
-    If g_AutozoomLargeImages = 0 Then
+    If (g_AutozoomLargeImages = 0) Then
         
         'Normally we would want to re-enable "g_AllowViewportRendering", but the FitImageToViewport function handles that
         ' reinitialization internally.
@@ -1285,7 +1285,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     
     'If the "view 100%" option is checked instead, reset the zoom listbox to match and paint the main window immediately
     Else
-        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = srcImage.currentZoomValue
+        FormMain.mainCanvas(0).SetZoomDropDownIndex srcImage.currentZoomValue
         g_AllowViewportRendering = True
         Viewport_Engine.Stage1_InitializeBuffer srcImage, FormMain.mainCanvas(0), VSR_ResetToZero
     End If
@@ -1299,7 +1299,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
 End Sub
 
 'Legacy import functions for old PDI versions are found below.  These functions are no longer maintained; use at your own risk.
-Private Function LoadPDI_Legacy(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
+Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
 
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Legacy PDI file identified.  Starting pdPackage decompression..."
@@ -1318,7 +1318,7 @@ Private Function LoadPDI_Legacy(ByVal PDIPath As String, ByRef dstDIB As pdDIB, 
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
@@ -1535,7 +1535,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.GetPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(PDIPath)
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(pdiPath)
         Exit Function
     End If
 
@@ -1556,7 +1556,7 @@ End Function
 
 'Load just the layer stack from a standard PDI file, and non-destructively align our current layer stack to match.
 ' At present, this function is only used internally by the Undo/Redo engine.
-Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal PDIPath As String, ByRef dstImage As pdImage) As Boolean
+Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, ByRef dstImage As pdImage) As Boolean
     
     On Error GoTo LoadPDIHeaderFail
     
@@ -1568,7 +1568,7 @@ Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal PDIPath As String, B
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
@@ -1673,7 +1673,7 @@ End Function
 'Load a single layer from a standard PDI file.
 ' At present, this function is only used internally by the Undo/Redo engine.  If the nearest diff to a layer-specific change is a
 ' full pdImage stack, this function is used to extract only the relevant layer (or layer header) from the PDI file.
-Private Function LoadSingleLayerFromPDI_Legacy(ByVal PDIPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
+Private Function LoadSingleLayerFromPDI_Legacy(ByVal pdiPath As String, ByRef dstLayer As pdLayer, ByVal targetLayerID As Long, Optional ByVal loadHeaderOnly As Boolean = False) As Boolean
     
     On Error GoTo LoadLayerFromPDIFail
     
@@ -1685,7 +1685,7 @@ Private Function LoadSingleLayerFromPDI_Legacy(ByVal PDIPath As String, ByRef ds
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
-    If pdiReader.ReadPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
+    If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
         'PDI files all follow a standard format: a pdImage node at the top, which contains the full pdImage header,
         ' followed by individual nodes for each layer.  Layers are stored in stack order, which makes it very fast and easy

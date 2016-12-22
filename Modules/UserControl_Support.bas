@@ -713,7 +713,7 @@ End Sub
 
 'When an object requests a tooltip, they need to pass a number of additional parameters (like the window rect, which is used to
 ' ideally position the tooltip).  Logic similar to pdDropDown is used to display the tooltip.
-Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL, ByVal mouseX As Single, ByVal mouseY As Single, ByRef ttCaption As String, ByRef ttTitle As String)
+Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL, ByVal mouseX As Single, ByVal mouseY As Single, ByRef ttCaption As String, ByRef ttTitle As String)
     
     On Error GoTo UnexpectedTTTrouble
     
@@ -725,7 +725,7 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
         m_TimerEventSink.StopTTTimer
     End If
     
-    m_TTOwner = OwnerHwnd
+    m_TTOwner = ownerHwnd
     
     'We now want to figure out the idealized coordinates for the tooltip.  The goal is to position the tooltip as
     ' close to the mouse pointer as possible, while also positioning it outside the control rectangle (so that we
@@ -737,7 +737,7 @@ Public Sub ShowUCTooltip(ByVal OwnerHwnd As Long, ByRef srcControlRect As RECTL,
     Dim mouseScreenPos As POINTAPI
     mouseScreenPos.x = mouseX
     mouseScreenPos.y = mouseY
-    ClientToScreen OwnerHwnd, mouseScreenPos
+    ClientToScreen ownerHwnd, mouseScreenPos
     
     Dim ttDistance(0 To 3) As Single
     ttDistance(TTS_Right) = srcControlRect.Right - mouseScreenPos.x
@@ -983,8 +983,8 @@ Private Sub HideTTImmediately(Optional ByVal useAnimation As Boolean = True)
         
 End Sub
 
-Public Function IsTooltipActive(ByVal OwnerHwnd As Long) As Boolean
-    IsTooltipActive = CBool(m_TTOwner = OwnerHwnd)
+Public Function IsTooltipActive(ByVal ownerHwnd As Long) As Boolean
+    IsTooltipActive = CBool(m_TTOwner = ownerHwnd)
 End Function
 
 'Do not call this function until the program is going down.  VB is very unhappy about changing window longs on the fly,

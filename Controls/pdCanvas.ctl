@@ -534,7 +534,20 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-'TODO: why is this exposed externally?
+'Get/set zoom-related UI elements
+Public Function IsZoomEnabled() As Boolean
+    IsZoomEnabled = StatusBar.IsZoomEnabled
+End Function
+
+Public Sub SetZoomDropDownIndex(ByVal newIndex As Long)
+    StatusBar.SetZoomDropDownIndex newIndex
+End Sub
+
+Public Function GetZoomDropDownIndex() As Long
+    GetZoomDropDownIndex = StatusBar.GetZoomDropDownIndex
+End Function
+
+'Only use this function for initially populating the zoom drop-down
 Public Function GetZoomDropDownReference() As pdDropDown
     Set GetZoomDropDownReference = StatusBar.GetZoomDropDownReference
 End Function
@@ -1640,18 +1653,12 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     g_AllowViewportRendering = False
     
     'Calculate a new zoom value
-    If zoomAmount > 0 Then
-        
-        If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex > 0 Then
-            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+    If StatusBar.IsZoomEnabled Then
+        If (zoomAmount > 0) Then
+            If (StatusBar.GetZoomDropDownIndex > 0) Then StatusBar.SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(StatusBar.GetZoomDropDownIndex)
+        ElseIf (zoomAmount < 0) Then
+            If (StatusBar.GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then StatusBar.SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(StatusBar.GetZoomDropDownIndex)
         End If
-           
-    ElseIf zoomAmount < 0 Then
-        
-        If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.GetZoomCount Then
-            FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
-        End If
-        
     End If
     
     'Re-enable automatic viewport redraws

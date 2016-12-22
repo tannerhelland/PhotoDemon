@@ -363,9 +363,9 @@ Public Function AttachEvents(EventReceiver As Object, Optional ByVal Key As Stri
 End Function
 
 '--------------------------------------------------------------------------------------------------
-Public Function DialogShow(ByVal OwnerHwnd As Long, _
+Public Function DialogShow(ByVal ownerHwnd As Long, _
                             Optional ByVal Mode As FileDialogModeEnum = FDLG_FILEOPEN, _
-                            Optional DialogTitle As String) As Long
+                            Optional dialogTitle As String) As Long
 
     ' The user-selected item(s) are passed via the Result property of this class
     '   Results are in the form of an IShellItem object passed to you
@@ -493,8 +493,8 @@ Public Function DialogShow(ByVal OwnerHwnd As Long, _
     If Not m_InitFile = vbNullString Then _
         pvCallFunction_COM ObjPtr(m_FDlg), ifFileDialog_SetFileName, StrPtr(m_InitFile)
     
-    If Not DialogTitle = vbNullString Then _
-        pvCallFunction_COM ObjPtr(m_FDlg), ifFileDialog_SetTitle, StrPtr(DialogTitle)
+    If Not dialogTitle = vbNullString Then _
+        pvCallFunction_COM ObjPtr(m_FDlg), ifFileDialog_SetTitle, StrPtr(dialogTitle)
     
     If Not m_OKCaption = vbNullString Then _
         pvCallFunction_COM ObjPtr(m_FDlg), ifFileDialog_SetOkButtonLabel, StrPtr(m_OKCaption)
@@ -508,7 +508,7 @@ Public Function DialogShow(ByVal OwnerHwnd As Long, _
     ' create the events callbacks
     If (m_State And 7) Then Call AttachEvents(m_Events, (m_State And 7))
     ' display the dialog
-    hr = pvCallFunction_COM(ObjPtr(m_FDlg), ifModalWindow_Show, CLng(OwnerHwnd))
+    hr = pvCallFunction_COM(ObjPtr(m_FDlg), ifModalWindow_Show, CLng(ownerHwnd))
     
     ' release the callbacks
     Call AttachEvents(m_Events, , False)
@@ -543,8 +543,8 @@ End Function
 
 '--------------------------------------------------------------------------------------------------
 ' User-selected files/folder. Can be more than 1 if multi-selection was opted for
-Public Property Get Results() As IUnknown
-    Set Results = m_Result
+Public Property Get results() As IUnknown
+    Set results = m_Result
 End Property
 ' This will return number of selections, if any
 Public Property Get ResultsCount() As Long

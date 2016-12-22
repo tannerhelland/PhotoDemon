@@ -2425,40 +2425,40 @@ Private Sub pdHotkeys_Accelerator(ByVal acceleratorIndex As Long)
         
         'Actual size
         If .HotKeyName(acceleratorIndex) = "Actual_Size" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetZoom100Index
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
         End If
         
         'Various zoom values
         If .HotKeyName(acceleratorIndex) = "Zoom_161" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 2
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 2
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_81" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 4
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 4
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_41" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 8
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 8
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_21" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 10
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 10
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_12" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 14
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 14
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_14" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 16
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 16
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_18" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 19
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 19
         End If
         
         If .HotKeyName(acceleratorIndex) = "Zoom_116" Then
-            If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 21
+            If FormMain.mainCanvas(0).IsZoomEnabled Then FormMain.mainCanvas(0).SetZoomDropDownIndex 21
         End If
         
         'Remove selection
@@ -4312,28 +4312,28 @@ End Sub
 Private Sub MnuSpecificZoom_Click(Index As Integer)
 
     'Only attempt to change zoom if the primary zoom box is not currently disabled
-    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled Then
+    If FormMain.mainCanvas(0).IsZoomEnabled Then
 
         Select Case Index
         
             Case 0
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 2
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 2
             Case 1
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 4
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 4
             Case 2
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 8
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 8
             Case 3
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 10
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 10
             Case 4
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetZoom100Index
+                FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoom100Index
             Case 5
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 14
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 14
             Case 6
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 16
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 16
             Case 7
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 19
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 19
             Case 8
-                FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = 21
+                FormMain.mainCanvas(0).SetZoomDropDownIndex 21
                 
         End Select
 
@@ -4621,14 +4621,14 @@ End Sub
 
 'Zoom in/out rely on the g_Zoom object to calculate a new value
 Private Sub MnuZoomIn_Click()
-    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex > 0 Then
-        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+    If FormMain.mainCanvas(0).IsZoomEnabled Then
+        If (FormMain.mainCanvas(0).GetZoomDropDownIndex > 0) Then FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownIndex)
     End If
 End Sub
 
 Private Sub MnuZoomOut_Click()
-    If FormMain.mainCanvas(0).GetZoomDropDownReference().Enabled And FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex <> g_Zoom.GetZoomCount Then
-        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+    If FormMain.mainCanvas(0).IsZoomEnabled Then
+        If (FormMain.mainCanvas(0).GetZoomDropDownIndex <> g_Zoom.GetZoomCount) Then FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownIndex)
     End If
 End Sub
 

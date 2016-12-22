@@ -112,7 +112,7 @@ Private m_File As String        ' file name returned by ShowBrowseForFolder func
 Private m_ThunkAddr As Long     ' allocated memory address if callback thunk was created
 Private m_InitPath As String    ' startup path for the dialog, either string or PIDL
 
-Public Function ShowBrowseForFolder(ByVal OwnerHwnd As Long, Optional ReleasePIDL As Boolean = True) As Boolean
+Public Function ShowBrowseForFolder(ByVal ownerHwnd As Long, Optional releasePIDL As Boolean = True) As Boolean
     
     ' Depending on what flags you set, you may get a returned path and/or file name or nothing.
     ' If the user makes a selection to a virtual path/object, you will not get a path returned.
@@ -137,8 +137,8 @@ Public Function ShowBrowseForFolder(ByVal OwnerHwnd As Long, Optional ReleasePID
     
     Dim lLen As Long
    
-    Call pvInitStructure(OwnerHwnd)                 ' ensure structure is configured correctly
-    If ReleasePIDL = False Then m_State = m_State Or 4& ' set flag whether to manage the returned PIDL
+    Call pvInitStructure(ownerHwnd)                 ' ensure structure is configured correctly
+    If releasePIDL = False Then m_State = m_State Or 4& ' set flag whether to manage the returned PIDL
     
     If (m_State And 1&) = 1& Then                   ' call unicode or ANSI method as needed
         m_PIDL = SHBrowseForFolderW(VarPtr(obif))
@@ -240,10 +240,10 @@ Public Property Let CustomHookProc(ByVal nProc As Long)
 End Property
 
 ' returns/sets the dialog window caption/title
-Public Property Get DialogTitle() As String
-    DialogTitle = obif.lpszTitle
+Public Property Get dialogTitle() As String
+    dialogTitle = obif.lpszTitle
 End Property
-Public Property Let DialogTitle(ByVal dTitle As String)
+Public Property Let dialogTitle(ByVal dTitle As String)
     obif.lpszTitle = dTitle
 End Property
 
