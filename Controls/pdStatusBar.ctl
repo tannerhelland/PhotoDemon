@@ -342,6 +342,20 @@ Public Sub DisplayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
         
 End Sub
 
+Public Function GetZoomDropDownIndex() As Long
+    GetZoomDropDownIndex = cmbZoom.ListIndex
+End Function
+
+Public Sub SetZoomDropDownIndex(ByVal newIndex As Long)
+    cmbZoom.ListIndex = newIndex
+    If (cmbZoom.ListIndex = g_Zoom.GetZoomFitAllIndex) Then cmdZoomFit.Value = True
+End Sub
+
+Public Function IsZoomEnabled() As Boolean
+    IsZoomEnabled = cmbZoom.Enabled
+End Function
+
+'Only use this function for initially populating the zoom drop-down
 Public Function GetZoomDropDownReference() As pdDropDown
     Set GetZoomDropDownReference = cmbZoom
 End Function
@@ -358,7 +372,7 @@ End Function
 
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
 Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
-    If newNetworkState <> m_NetworkAccessActive Then
+    If (newNetworkState <> m_NetworkAccessActive) Then
         m_NetworkAccessActive = newNetworkState
         FitMessageArea
     End If
@@ -432,11 +446,11 @@ Private Sub cmdZoomFit_Click()
 End Sub
 
 Private Sub cmdZoomIn_Click()
-    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomInIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+    cmbZoom.ListIndex = g_Zoom.GetNearestZoomInIndex(cmbZoom.ListIndex)
 End Sub
 
 Private Sub cmdZoomOut_Click()
-    FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = g_Zoom.GetNearestZoomOutIndex(FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex)
+    cmbZoom.ListIndex = g_Zoom.GetNearestZoomOutIndex(cmbZoom.ListIndex)
 End Sub
 
 Private Sub UserControl_Initialize()

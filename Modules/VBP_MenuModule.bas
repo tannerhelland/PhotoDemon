@@ -552,7 +552,7 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
         ' update the zoom combo box to match the zoom assigned by the window-fit function.
         g_AllowViewportRendering = False
-        FormMain.mainCanvas(0).GetZoomDropDownReference().ListIndex = newImage.currentZoomValue
+        FormMain.mainCanvas(0).SetZoomDropDownIndex newImage.currentZoomValue
     
         'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
         g_AllowViewportRendering = True

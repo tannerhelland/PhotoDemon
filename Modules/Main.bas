@@ -439,7 +439,7 @@ Public Sub ContinueLoadingProgram()
     g_Zoom.InitializeViewportEngine
     
     'Populate the main form's zoom drop-down
-    g_Zoom.PopulateZoomComboBox FormMain.mainCanvas(0).GetZoomDropDownReference()
+    g_Zoom.PopulateZoomComboBox FormMain.mainCanvas(0).GetZoomDropDownReference
     
     'Populate the main canvas's size unit dropdown
     FormMain.mainCanvas(0).PopulateSizeUnits
