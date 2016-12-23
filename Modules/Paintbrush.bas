@@ -131,8 +131,9 @@ Private m_NumOfMouseEvents As Long
 Private m_Painter As pd2DPainter, m_Surface As pd2DSurface
 
 'To improve responsiveness, we measure the time delta between viewport refreshes.  If painting is happening fast enough,
-' we coalesce screen updates together, as they are (by far) the most time-consuming segment of paint rendering.
-Private m_TimeSinceLastRender As Currency
+' we coalesce screen updates together, as they are (by far) the most time-consuming segment of paint rendering;
+' similarly, if painting is too slow, we temporarily reduce viewport update frequency until painting "catches up."
+Private m_TimeSinceLastRender As Currency, m_NetTimeToRender As Currency, m_NumRenders As Long, m_FramesDropped As Long
 
 Public Function GetBrushPreviewQuality() As PD_PERFORMANCE_SETTING
     GetBrushPreviewQuality = m_BrushPreviewQuality
@@ -725,8 +726,11 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         srcCanvas.SetMouseInput_HighRes True
         srcCanvas.SetMouseInput_AutoDrop False
         
-        'Reset the number of mouse events
+        'Reset the number of mouse events, and any associated mouse trackers
         m_NumOfMouseEvents = 1
+        m_NetTimeToRender = 0
+        m_NumRenders = 0
+        m_FramesDropped = 0
         
         'Make sure the current scratch layer is properly initialized
         Tool_Support.InitializeToolsDependentOnImage
@@ -748,12 +752,13 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         m_NumOfMouseEvents = m_NumOfMouseEvents + 1
     End If
     
+    Dim startTime As Currency
+    
     'If the mouse button is down, perform painting between the old and new points.
     ' (All painting occurs in image coordinate space, and is applied to the current image's scratch layer.)
     If mouseButtonDown Then
     
         'Want to profile this function?  Use this line of code (and the matching report line at the bottom of the function).
-        Dim startTime As Currency
         VB_Hacks.GetHighResTime startTime
         
         'A separate function handles the actual rendering.
@@ -816,14 +821,77 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         ' it improves the user experience to run background paint calculations and on-screen viewport updates at
         ' different framerates, with an emphasis on making sure the *background* paint tool rendering gets top priority.
         If (Not updateViewportNow) Then
-        
-            'Limit viewport updates to 15 fps for now; we can revisit this in the future, as necessary
-            updateViewportNow = CBool(VB_Hacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 66#)
+            
+            'If this is the first frame we're rendering (which should have already been caught by the "isFirstStroke"
+            ' check above), force a render
+            If (m_NumRenders > 0) Then
+            
+                'Perform some quick heuristics to determine if brush performance is lagging; if it is, we can
+                ' artificially delay viewport updates to compensate.  (On large images and/or at severe zoom-out values,
+                ' viewport rendering consumes a disproportionate portion of the brush rendering process.)
+                'Debug.Print "Average render time: " & Format$((m_NetTimeToRender / m_NumRenders) * 1000, "0000") & " ms"
+                
+                'Calculate an average per-frame render time for the current stroke, in ms.
+                Dim avgFrameTime As Currency
+                avgFrameTime = (m_NetTimeToRender / m_NumRenders) * 1000
+                
+                'If our average rendering time is "good" (above 15 fps), allow viewport updates to occur "in realtime",
+                ' e.g. as fast as the background brush rendering.
+                If (avgFrameTime < 66) Then
+                    updateViewportNow = True
+                
+                'If our average frame rendering time drops below 15 fps, start dropping viewport rendering frames, but only
+                ' until we hit the (barely workable) threshold of 2 fps - at that point, we have to provide visual feedback,
+                ' whatever the cost.
+                Else
+                    
+                    'Never skip so many frames that viewport updates drop below 2 fps.  (This is absolutely a
+                    ' "worst-case" scenario, and it should never be relevant except on the lowliest of PCs.)
+                    updateViewportNow = CBool(VB_Hacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 500#)
+                    
+                    'If we're somewhere between 2 and 15 fps, keep an eye on how many frames we're dropping.  If we drop
+                    ' *too* many, the performance gain is outweighed by the obnoxiousness of stuttering screen renders.
+                    If (Not updateViewportNow) Then
+                        
+                        'This frame is a candidate for dropping.
+                        Dim frameCutoff As Long
+                        
+                        'Next, determine how many frames we're allowed to drop.  As our average frame time increases,
+                        ' we get more aggressive about dropping frames to compensate.  (This sliding scale tops out at
+                        ' dropping 5 consecutive frames, which is pretty damn severe - but note that framerate drops
+                        ' are also limited by the 2 fps check before this If/Then block.)
+                        If (avgFrameTime < 100) Then
+                            frameCutoff = 1
+                        ElseIf (avgFrameTime < 133) Then
+                            frameCutoff = 2
+                        ElseIf (avgFrameTime < 167) Then
+                            frameCutoff = 3
+                        ElseIf (avgFrameTime < 200) Then
+                            frameCutoff = 4
+                        Else
+                            frameCutoff = 5
+                        End If
+                        
+                        'Keep track of how many frames we've dropped in a row
+                        m_FramesDropped = m_FramesDropped + 1
+                        
+                        'If we've dropped too many frames proportionate to the current framerate, cancel this drop and
+                        ' update the viewport.
+                        If (m_FramesDropped > frameCutoff) Then updateViewportNow = True
+                        
+                    End If
+                    
+                End If
+            
+            End If
             
         End If
         
         'If a viewport update is required, composite the full layer stack prior to updating the screen
         If updateViewportNow Then
+            
+            'Reset the frame drop counter and the "time since last viewport render" tracker
+            m_FramesDropped = 0
             VB_Hacks.GetHighResTime m_TimeSinceLastRender
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , , pdImages(g_CurrentImage).GetActiveLayerIndex
         
@@ -831,6 +899,10 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         Else
             Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
         End If
+        
+        'Update our running "time to render" tracker
+        m_NetTimeToRender = m_NetTimeToRender + VB_Hacks.GetTimerDifferenceNow(startTime)
+        m_NumRenders = m_NumRenders + 1
         
     End If
     
