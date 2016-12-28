@@ -114,7 +114,7 @@ End Sub
 Private Sub ReflowInterface()
 
     'Failsafe to prevent IDE errors
-    If Me.ScaleWidth > 10 Then
+    If (Me.ScaleWidth > 10) Then
     
         'Right-align the color wheel
         clrWheel.Move Me.ScaleWidth - (Me.ScaleHeight + FixDPI(10)), 0, Me.ScaleHeight, Me.ScaleHeight

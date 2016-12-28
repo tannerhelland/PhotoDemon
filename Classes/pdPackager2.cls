@@ -711,7 +711,7 @@ End Function
 ' - secondPassDirectoryCompression: compress the directory chunk before writing it out to file.
 ' - thisIsATempFile: special WAPI flags related to temp files will be set.  Note that this flag does not affect file correctness in
 '                    any way; it simply specifies hints related to file caching.
-Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False) As Boolean
+Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
     
     'Free any temporary compression buffers, as they are no longer needed
     Erase m_CompressionBuffer
@@ -742,7 +742,7 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
     
     'Use the copyPtrToArray function to copy the contents of m_NodeDirectory into rawDirectoryBuffer().  The function will return TRUE
     ' if it compresses the data; false, otherwise.
-    If CopyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, , True) Then
+    If CopyPtrToArray(VarPtr(m_NodeDirectory(0)), originalSize, rawDirectoryBuffer, compressedSize, secondPassDirectoryCompression, compressionLevel, True) Then
         m_FileHeader.DirectoryChunkSizePacked = compressedSize
         
         If ((secondPassDirectoryCompression = PD_CE_Zstd) And (originalSize <> compressedSize)) Then
@@ -1493,8 +1493,8 @@ End Function
 '
 'For an explanation of the trimDstArray and dstFinalSize parameters, please see GetNodeDataByIndex(), below (which this function
 ' merely wraps).
-Public Function GetNodeDataByName(ByVal targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
-
+Public Function GetNodeIndexFromName(ByRef targetNodeName As String) As Long
+    
     'Node headers use a fixed-length 32 character string for storing names.  As such, pad the supplied node name to
     ' 32 chars as necessary.
     Dim nodeName32 As String * 32
@@ -1510,6 +1510,15 @@ Public Function GetNodeDataByName(ByVal targetNodeName As String, ByVal useHeade
             Exit For
         End If
     Next i
+    
+    GetNodeIndexFromName = nodeIndex
+    
+End Function
+
+Public Function GetNodeDataByName(ByRef targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
+
+    Dim nodeIndex As Long
+    nodeIndex = GetNodeIndexFromName(targetNodeName)
     
     'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
     If (nodeIndex >= 0) Then

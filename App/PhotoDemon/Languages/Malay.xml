@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2116</langversion>
+<langversion>6.8.2146</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -56,11 +56,6 @@
 </phrase>
 
 <phrase>
-<original>Loading plugins</original>
-<translation>memuatkan plugin</translation>
-</phrase>
-
-<phrase>
 <original>Loading import/export libraries</original>
 <translation>Memuatkan perpustakaan import/eksport</translation>
 </phrase>
@@ -100,7 +95,7 @@
 <translation>Menyediakan menu program</translation>
 </phrase>
 
-<!-- Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
 
 <!-- END text for Main.bas-->
 
@@ -904,11 +899,6 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 </phrase>
 
 <phrase>
-<original>Fade last action</original>
-<translation>Fade tindakan lepas</translation>
-</phrase>
-
-<phrase>
 <original>Repeat: %1</original>
 <translation>Ulang: %1</translation>
 </phrase>
@@ -1163,7 +1153,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 <translation>preview tidak tersedia</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 77 phrases. 23 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 73 phrases. 20 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -13153,15 +13143,15 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation></translation>
+<translation>Pensil (berus keras disebut-sebut)</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation></translation>
+<translation>Paintbrush (berus lembut berkepala)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 54 phrases. 14 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -13275,7 +13265,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>hardness</original>
-<translation></translation>
+<translation>kekerasan</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -14977,10 +14967,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4479 phrases. -->
-<!-- 1947 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12676 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12671 total words. -->
 
 </pdData>

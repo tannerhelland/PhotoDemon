@@ -317,42 +317,29 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Index           =   12
       Left            =   840
-      TabIndex        =   28
+      TabIndex        =   0
       Top             =   6480
       Width           =   720
       _ExtentX        =   1270
       _ExtentY        =   1058
+   End
+   Begin PhotoDemon.pdLabel lblRecording 
+      Height          =   720
+      Left            =   120
+      Top             =   7200
+      Visible         =   0   'False
+      Width           =   1800
+      _ExtentX        =   3175
+      _ExtentY        =   1270
+      Alignment       =   2
+      Caption         =   "macro recording in progress..."
+      Layout          =   1
    End
    Begin VB.Line lnRightSeparator 
       X1              =   136
       X2              =   136
       Y1              =   0
       Y2              =   648
-   End
-   Begin VB.Label lblRecording 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "macro recording in progress..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   600
-      Left            =   120
-      TabIndex        =   0
-      Top             =   7200
-      UseMnemonic     =   0   'False
-      Visible         =   0   'False
-      Width           =   2160
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "toolbar_Toolbox"
@@ -403,6 +390,10 @@ Private Const BTS_HEIGHT_SMALL As Long = 32
 Private Const BTS_HEIGHT_MEDIUM As Long = 38
 Private Const BTS_HEIGHT_LARGE As Long = 48
 
+Private Const BTS_IMG_SMALL As Long = 18
+Private Const BTS_IMG_MEDIUM As Long = 24
+Private Const BTS_IMG_LARGE As Long = 36
+
 Private m_ButtonWidth As Long, m_ButtonHeight As Long
 
 'These values are basically constants; they are set by the ReflowToolboxLayout function.
@@ -451,9 +442,6 @@ Private Sub cmdFile_Click(Index As Integer)
         Case FILE_UNDO
             Process "Undo", , , UNDO_NOTHING
             
-        Case FILE_FADE
-            Process "Fade", True
-        
         Case FILE_REDO
             Process "Redo", , , UNDO_NOTHING
     
@@ -528,35 +516,9 @@ End Sub
 
 Private Sub Form_Load()
     
-    'Initialize file tool button images
-    cmdFile(FILE_NEW).AssignImage "TF_NEW"
-    cmdFile(FILE_OPEN).AssignImage "TF_OPEN", , , 10
-    cmdFile(FILE_CLOSE).AssignImage "TF_CLOSE", , 100
-    cmdFile(FILE_SAVE).AssignImage "TF_SAVE", , 50
-    cmdFile(FILE_SAVEAS_LAYERS).AssignImage "TF_SAVEPDI", , 50
-    cmdFile(FILE_SAVEAS_FLAT).AssignImage "TF_SAVEAS", , 50
-    cmdFile(FILE_UNDO).AssignImage "TF_UNDO", , 50
-    cmdFile(FILE_FADE).AssignImage "TF_FADE", , 50
-    cmdFile(FILE_REDO).AssignImage "TF_REDO"
-    
-    'Initialize canvas tool button images
-    cmdTools(NAV_DRAG).AssignImage "T_HAND"
-    cmdTools(NAV_MOVE).AssignImage "T_MOVE"
-    cmdTools(QUICK_FIX_LIGHTING).AssignImage "T_NDFX"
-    cmdTools(SELECT_RECT).AssignImage "T_SELRECT"
-    cmdTools(SELECT_CIRC).AssignImage "T_SELCIRCLE"
-    cmdTools(SELECT_LINE).AssignImage "T_SELLINE"
-    cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON"
-    cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO"
-    cmdTools(SELECT_WAND).AssignImage "T_SELWAND"
-    
-    cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50
-    cmdTools(VECTOR_FANCYTEXT).AssignImage "TV_FANCYTEXT", , , 50
-    
-    'TODO: these icons were mistakenly reversed in the resource file... we'll fix it when we move to
-    ' a custom resource file format
-    cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_SOFTBRUSH"
-    cmdTools(PAINT_SOFTBRUSH).AssignImage "PNT_BASICBRUSH"
+    'Retrieve any relevant toolbox display settings from the user's preferences file
+    m_ShowCategoryLabels = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
+    m_ButtonSize = g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1)
     
     'Initialize a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -564,10 +526,6 @@ Private Sub Form_Load()
         
     g_PreviousTool = -1
     g_CurrentTool = g_UserPreferences.GetPref_Long("Tools", "LastUsedTool", NAV_DRAG)
-    
-    'Retrieve any relevant toolbox display settings from the user's preferences file
-    m_ShowCategoryLabels = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
-    m_ButtonSize = g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1)
     
     'Note that we don't actually reflow the interface here; that will happen later, when the form's previous size and
     ' position are loaded from the user's preference file.
@@ -604,7 +562,7 @@ Private Sub ReflowToolboxLayout()
         ttlCategories(i).SetWidth m_rightBoundary - (ttlCategories(i).GetLeft)
     Next i
     
-    lblRecording.Width = m_rightBoundary - (lblRecording.Left + FixDPI(2))
+    lblRecording.SetWidth m_rightBoundary - (lblRecording.Left + FixDPI(2))
     
     'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
     ' they are actual buttons and not persistent toggles), then the toolbox buttons.
@@ -669,7 +627,7 @@ Private Sub ReflowToolboxLayout()
     End If
     
     vOffset = vOffset + m_labelMarginTop
-    lblRecording.Move lblRecording.Left, vOffset
+    lblRecording.SetPosition lblRecording.GetLeft, vOffset
 
 End Sub
 
@@ -679,9 +637,9 @@ Private Sub PositionToolLabel(ByRef targetLabelIndex As Long, ByRef referenceBut
     If m_ShowCategoryLabels Then
         
         Dim heightCalc As Long
-        If ttlCategories(targetLabelIndex - 1).Value Then heightCalc = referenceButton.Height Else heightCalc = 0
+        If ttlCategories(targetLabelIndex - 1).Value Then heightCalc = referenceButton.GetHeight Else heightCalc = 0
         
-        vOffset = referenceButton.Top + heightCalc + m_buttonMarginBottom
+        vOffset = referenceButton.GetTop + heightCalc + m_buttonMarginBottom
         vOffset = vOffset + m_labelMarginTop
         ttlCategories(targetLabelIndex).SetLeft m_hOffsetDefaultLabel
         ttlCategories(targetLabelIndex).SetTop vOffset
@@ -696,7 +654,7 @@ End Sub
 Private Sub ReflowButtonSet(ByVal associatedTitleIndex As Long, ByVal categoryIsTools As Boolean, ByVal startIndex As Long, ByVal endIndex As Long, ByRef hOffset As Long, ByRef vOffset As Long)
     
     Dim i As Long, targetObject As Object
-        
+    
     For i = startIndex To endIndex
         
         'Toolbox buttons are divided into two groups: file, and canvas.  The code for positioning these is identical,
@@ -708,16 +666,16 @@ Private Sub ReflowButtonSet(ByVal associatedTitleIndex As Long, ByVal categoryIs
         End If
         
         'Move this button into position
-        targetObject.Move hOffset, vOffset
+        targetObject.SetPosition hOffset, vOffset
         
         'If the associated title index is set to TRUE, display the button and calculate a new offset for the next button
         targetObject.Visible = ttlCategories(associatedTitleIndex).Value
         
         If ttlCategories(associatedTitleIndex).Value Then
-            hOffset = hOffset + targetObject.Width + m_buttonMarginRight
-            If hOffset + targetObject.Width > m_rightBoundary Then
+            hOffset = hOffset + targetObject.GetWidth + m_buttonMarginRight
+            If (hOffset + targetObject.GetWidth > m_rightBoundary) Then
                 hOffset = m_hOffsetDefaultButton
-                vOffset = vOffset + targetObject.Height + m_buttonMarginBottom
+                vOffset = vOffset + targetObject.GetHeight + m_buttonMarginBottom
             End If
         End If
         
@@ -1033,7 +991,7 @@ End Sub
 Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw As Boolean = False)
     
     'Export the updated size to file
-    If Not suppressRedraw Then g_UserPreferences.SetPref_Long "Core", "Toolbox Button Size", newSize
+    If (Not suppressRedraw) Then g_UserPreferences.SetPref_Long "Core", "Toolbox Button Size", newSize
     
     'Update our internal size metrics to match
     m_ButtonSize = newSize
@@ -1058,14 +1016,14 @@ Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     Dim i As Long
     
     For i = 0 To cmdFile.UBound
-        If (cmdFile(i).Width <> m_ButtonWidth) Or (cmdFile(i).Height <> m_ButtonHeight) Then
-            cmdFile(i).Move cmdFile(i).Left, cmdFile(i).Top, m_ButtonWidth, m_ButtonHeight
+        If (cmdFile(i).GetWidth <> m_ButtonWidth) Or (cmdFile(i).GetHeight <> m_ButtonHeight) Then
+            cmdFile(i).SetPositionAndSize cmdFile(i).Left, cmdFile(i).Top, m_ButtonWidth, m_ButtonHeight
         End If
     Next i
     
     For i = 0 To cmdTools.UBound
-        If (cmdTools(i).Width <> m_ButtonWidth) Or (cmdTools(i).Height <> m_ButtonHeight) Then
-            cmdTools(i).Move cmdTools(i).Left, cmdTools(i).Top, m_ButtonWidth, m_ButtonHeight
+        If (cmdTools(i).GetWidth <> m_ButtonWidth) Or (cmdTools(i).GetHeight <> m_ButtonHeight) Then
+            cmdTools(i).SetPositionAndSize cmdTools(i).Left, cmdTools(i).Top, m_ButtonWidth, m_ButtonHeight
         End If
     Next i
     
@@ -1085,7 +1043,8 @@ Public Sub UpdateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     'g_WindowManager.UpdateMinimumDimensions Me.hWnd, m_ButtonWidth
     
     'Reflow the interface as requested
-    If Not suppressRedraw Then ReflowToolboxLayout
+    UpdateAgainstCurrentTheme
+    If (Not suppressRedraw) Then ReflowToolboxLayout
     
 End Sub
 
@@ -1096,7 +1055,58 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-
+    
+    'From the current button size, determine what size we want our various image resources
+    Dim buttonImageSize As Long
+    If (m_ButtonSize = PDTBS_SMALL) Then
+        buttonImageSize = BTS_IMG_SMALL
+    ElseIf (m_ButtonSize = PDTBS_MEDIUM) Then
+        buttonImageSize = BTS_IMG_MEDIUM
+    ElseIf (m_ButtonSize = PDTBS_LARGE) Then
+        buttonImageSize = BTS_IMG_LARGE
+    End If
+    
+    buttonImageSize = FixDPI(buttonImageSize)
+    
+    'Initialize file tool button images
+    'cmdFile(FILE_NEW).AssignImage "TF_NEW", , , , buttonImageSize, buttonImageSize
+    'cmdFile(FILE_OPEN).AssignImage "TF_OPEN", , , 10, buttonImageSize, buttonImageSize
+    'cmdFile(FILE_CLOSE).AssignImage "TF_CLOSE", , 100, , buttonImageSize, buttonImageSize
+    'cmdFile(FILE_SAVE).AssignImage "TF_SAVE", , 50, , buttonImageSize, buttonImageSize
+    'cmdFile(FILE_SAVEAS_LAYERS).AssignImage "TF_SAVEPDI", , 50, , buttonImageSize, buttonImageSize
+    'cmdFile(FILE_SAVEAS_FLAT).AssignImage "TF_SAVEAS", , 50, , buttonImageSize, buttonImageSize
+    'cmdFile(FILE_UNDO).AssignImage "TF_UNDO", , 50, , buttonImageSize, buttonImageSize
+    'cmdFile(FILE_REDO).AssignImage "TF_REDO", , , , buttonImageSize, buttonImageSize
+    
+    cmdFile(FILE_NEW).AssignImage "file_new", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_OPEN).AssignImage "file_open", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_CLOSE).AssignImage "file_close", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_SAVE).AssignImage "file_save", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_SAVEAS_LAYERS).AssignImage "file_savedup", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_SAVEAS_FLAT).AssignImage "file_saveas", , , , buttonImageSize, buttonImageSize
+    
+    cmdFile(FILE_UNDO).AssignImage "edit_undo", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_REDO).AssignImage "edit_redo", , , , buttonImageSize, buttonImageSize
+    
+    'Initialize canvas tool button images
+    cmdTools(NAV_DRAG).AssignImage "T_HAND", , , , buttonImageSize, buttonImageSize
+    cmdTools(NAV_MOVE).AssignImage "T_MOVE", , , , buttonImageSize, buttonImageSize
+    cmdTools(QUICK_FIX_LIGHTING).AssignImage "T_NDFX", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_RECT).AssignImage "T_SELRECT", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_CIRC).AssignImage "T_SELCIRCLE", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_LINE).AssignImage "T_SELLINE", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_WAND).AssignImage "T_SELWAND", , , , buttonImageSize, buttonImageSize
+    
+    cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50, buttonImageSize, buttonImageSize
+    cmdTools(VECTOR_FANCYTEXT).AssignImage "TV_FANCYTEXT", , , 50, buttonImageSize, buttonImageSize
+    
+    'TODO: these icons were mistakenly reversed in the resource file... we'll fix it when we move to
+    ' a custom resource file format
+    cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_SOFTBRUSH", , , , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_SOFTBRUSH).AssignImage "PNT_BASICBRUSH", , , , buttonImageSize, buttonImageSize
+    
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me

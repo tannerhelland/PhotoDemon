@@ -48,14 +48,13 @@ Public Enum PDFileTools
     FILE_SAVEAS_LAYERS = 4
     FILE_SAVEAS_FLAT = 5
     FILE_UNDO = 6
-    FILE_FADE = 7
-    FILE_REDO = 8
+    FILE_REDO = 7
 End Enum
 
 #If False Then
     Const FILE_NEW = 0, FILE_OPEN = 1, FILE_CLOSE = 2
     Const FILE_SAVE = 3, FILE_SAVEAS_LAYERS = 4, FILE_SAVEAS_FLAT = 5
-    Const FILE_UNDO = 6, FILE_FADE = 7, FILE_REDO = 8
+    Const FILE_UNDO = 6, FILE_REDO = 7
 #End If
 
 'How should a selection be rendered?
@@ -477,7 +476,7 @@ End Type
 ' BaseColor value.  (As such, the BaseColor value will always be present in a color definition.)
 Public Type PDThemeColor
     baseColor As Long
-    DisabledColor As Long
+    disabledColor As Long
     ActiveColor As Long
     HoverColor As Long
     ActiveHoverColor As Long

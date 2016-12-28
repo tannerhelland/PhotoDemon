@@ -502,10 +502,6 @@ Private Sub SetUIMode_NoImages()
     FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
     FormMain.MnuEdit(5).Enabled = False
     
-    'The fade option in the primary toolbar must also go
-    toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip g_Language.TranslateMessage("Fade last action")
-    toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
-    
     'Reset the main window's caption to its default PD name and version
     If Not (g_WindowManager Is Nothing) Then
         g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(Nothing)
@@ -604,17 +600,11 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             If pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
-                toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip pdImages(g_CurrentImage).undoManager.GetUndoProcessID, "Fade last action"
-                
-                toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = True
                 FormMain.MnuEdit(4).Enabled = True
                 FormMain.MnuEdit(5).Enabled = True
             Else
                 FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-                toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip "Fade last action"
-                
-                toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
                 FormMain.MnuEdit(4).Enabled = False
                 FormMain.MnuEdit(5).Enabled = False
             End If

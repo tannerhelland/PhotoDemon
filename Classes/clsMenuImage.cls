@@ -664,6 +664,18 @@ AddImageFromFile_Error:
 
 End Function
 
+'CREATED BY TANNER: load an image from an existing pdDIB object
+Public Function AddImageFromDIB(ByRef srcDIB As pdDIB, Optional bGhosted As Boolean) As Boolean
+
+    On Local Error GoTo AddImageFromDIB_Error
+    
+    Dim hImage As Long
+    If (Not srcDIB Is Nothing) Then GDI_Plus.GetGdipBitmapHandleFromDIB hImage, srcDIB
+    If (hImage <> 0) Then AddImageFromDIB = pvAddImagen(hImage, bGhosted) Else Debug.Print "WARNING!  AddImageFromDIB failed; hImage = 0"
+    
+AddImageFromDIB_Error:
+
+End Function
 
 Public Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As Boolean) As Boolean
     
@@ -675,7 +687,7 @@ Public Function AddImageFromStream(ByRef bvData() As Byte, Optional bGhosted As 
 
     If Not IsArrayDim(VarPtrArray(bvData)) Then Exit Function
 
-    If bvData(2) = vbResIcon Or bvData(2) = vbResCursor Then
+    If ((bvData(2) = vbResIcon) Or (bvData(2) = vbResCursor)) Then
     
         hIcon = LoadIconFromStream(bvData)
         

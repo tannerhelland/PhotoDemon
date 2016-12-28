@@ -84,7 +84,7 @@ End Sub
 Private Sub ReflowInterface()
 
     'For now, make the navigator UC the same size as the underlying form
-    If Me.ScaleWidth > 10 Then
+    If (Me.ScaleWidth > 10) Then
         nvgMain.Move 0, 0, Me.ScaleWidth - FixDPI(10), Me.ScaleHeight
     End If
     

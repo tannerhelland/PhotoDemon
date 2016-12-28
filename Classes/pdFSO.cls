@@ -1166,7 +1166,7 @@ Public Function GetFilename(ByRef sString As String, Optional ByVal stripExtensi
         If (dotPos > 1) Then
             GetFilename = Left$(GetFilename, dotPos - 1)
         ElseIf (dotPos = 1) Then
-            GetFilename = ""
+            GetFilename = vbNullString
         End If
         
     End If
@@ -1180,8 +1180,8 @@ Public Function GetFileExtension(sFile As String) As String
     For i = Len(sFile) To 1 Step -1
     
         'If we find a path before we find an extension, return a blank string
-        If StringsEqual(Mid$(sFile, i, 1), "\") Or StringsEqual(Mid(sFile, i, 1), "/") Then
-            GetFileExtension = ""
+        If StringsEqual(Mid$(sFile, i, 1), "\") Or StringsEqual(Mid$(sFile, i, 1), "/") Then
+            GetFileExtension = vbNullString
             Exit Function
         End If
         

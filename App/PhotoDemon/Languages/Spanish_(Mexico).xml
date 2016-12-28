@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.229</langversion>
+<langversion>6.7.230</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -56,11 +56,6 @@
 </phrase>
 
 <phrase>
-<original>Loading plugins</original>
-<translation>Cargando plugins</translation>
-</phrase>
-
-<phrase>
 <original>Loading import/export libraries</original>
 <translation>Cargando bibliotecas de importación/exportación</translation>
 </phrase>
@@ -100,7 +95,7 @@
 <translation>Preparación de menús del programa</translation>
 </phrase>
 
-<!-- Main.bas contains 17 phrases.  All 17 were unique, so 17 new phrases were written to file. -->
+<!-- Main.bas contains 16 phrases.  All 16 were unique, so 16 new phrases were written to file. -->
 
 <!-- END text for Main.bas-->
 
@@ -904,11 +899,6 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 </phrase>
 
 <phrase>
-<original>Fade last action</original>
-<translation>Fundido última acción</translation>
-</phrase>
-
-<phrase>
 <original>Repeat: %1</original>
 <translation>Repetir: %1</translation>
 </phrase>
@@ -1163,7 +1153,7 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 77 phrases. 23 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 73 phrases. 20 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -13150,7 +13140,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 54 phrases. 14 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14966,10 +14956,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2532</phrasecount>
+<phrasecount>2530</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4479 phrases. -->
-<!-- 1947 are duplicates, so only 2532 unique phrases have been written to file. -->
-<!-- These 2532 phrases contain approximately 12676 total words. -->
+<!-- As of this build, PhotoDemon contains 4473 phrases. -->
+<!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
+<!-- These 2530 phrases contain approximately 12671 total words. -->
 
 </pdData>
