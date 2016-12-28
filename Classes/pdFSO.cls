@@ -812,10 +812,10 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
     Dim rfReturn As Long, mfReturn As Long
     
     'Make sure the target file exists.  If it doesn't, we need to use a different set of APIs
-    If FileExist(oldFile) Then
+    If Me.FileExist(oldFile) Then
     
         'Consider forcibly specifying a backup path if the user didn't provide their own
-        If Len(customBackupFile) = 0 Then
+        If (Len(customBackupFile) = 0) Then
         
             'IMPORTANT NOTE!  If the files you're patching are critical, I STRONGLY recommend forcibly creating a backup here.
             ' Otherwise, you risk a scenario where something goes wrong during the replace step, and the original file is gone forever.
@@ -824,7 +824,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
             'backupFile = getFilename(oldFile)
             'backupFile = g_UserPreferences.getUpdatePath & backupFile
             
-            'This ensure that we always have a way to undo the replace step if something goes wrong
+            'This ensures that we always have a way to undo the replace step if something goes wrong
         
         Else
             backupFile = customBackupFile
@@ -835,7 +835,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
         rfReturn = ReplaceFileW(StrPtr(oldFile), StrPtr(newFile), StrPtr(backupFile), REPLACEFILE_IGNORE_MERGE_ERRORS, 0&, 0&)
         
         'Success means we can exit immediately
-        If rfReturn <> 0 Then
+        If (rfReturn <> 0) Then
             
             'Remove the backup file, then report success
             KillFile backupFile
@@ -852,7 +852,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                 Case ERROR_UNABLE_TO_MOVE_REPLACEMENT
                     
                     'See if the old file exists
-                    If FileExist(oldFile) Then
+                    If Me.FileExist(oldFile) Then
                     
                         'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
                         ' to this function being invoked, the caller is free to try again.
@@ -864,7 +864,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                     Else
                     
                         'The old file no longer exists.  Restore the backup file, if at all possible.
-                        If FileExist(backupFile) Then
+                        If Me.FileExist(backupFile) Then
                         
                             'The backup file exists.  Try to restore it to the location of the original file.
                             mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
@@ -903,7 +903,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                 Case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2
                 
                     'See if the old file exists; this should never happen.
-                    If FileExist(oldFile) Then
+                    If Me.FileExist(oldFile) Then
                     
                         'The old file exists.  Remove the backup file (if any), then exit.  Because the system is in an identical place as it was prior
                         ' to this function being invoked, the caller is free to try again.
@@ -916,35 +916,30 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
                     Else
                     
                         'The old file no longer exists.  Restore the backup file.  (The backup file is supposedly guaranteed to exist with this error code.)
-                        If FileExist(backupFile) Then
+                        If Me.FileExist(backupFile) Then
                         
                             'The backup file exists.  Try to restore it to the location of the original file.
                             mfReturn = MoveFileExW(StrPtr(backupFile), StrPtr(oldFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
                             
                             'The move succeeded!  Perform a failsafe deletion of the backup file, then notify the caller that the system has been
                             ' restored to its original state.
-                            If mfReturn <> 0 Then
-                                
+                            If (mfReturn <> 0) Then
                                 KillFile backupFile
                                 ReplaceFile = FPR_FAIL_NOTHING_CHANGED
                                 Exit Function
                             
                             'The move failed.  This should never happen.
                             Else
-                                
                                 Debug.Print "WARNING!  Impossible outcome 4 occurred in ReplaceFile.  Please investigate."
                                 ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
                                 Exit Function
-                            
                             End If
                         
                         'The backup file does not exist.  This should never happen.
                         Else
-                        
                             Debug.Print "WARNING!  Impossible outcome 5 occurred in ReplaceFile.  Please investigate."
                             ReplaceFile = FPR_FAIL_OLD_FILE_REMOVED
                             Exit Function
-                        
                         End If
                     
                     End If
@@ -974,7 +969,7 @@ Public Function ReplaceFile(ByVal oldFile As String, ByVal newFile As String, Op
         mfReturn = MoveFileExW(StrPtr(oldFile), StrPtr(newFile), MOVEFILE_REPLACE_EXISTING Or MOVEFILE_COPY_ALLOWED)
         
         'The move succeeded!  Exit immediately.
-        If mfReturn <> 0 Then
+        If (mfReturn <> 0) Then
             
             ReplaceFile = FPR_SUCCESS
             Exit Function

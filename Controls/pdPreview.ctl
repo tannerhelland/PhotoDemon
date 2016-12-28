@@ -581,12 +581,14 @@ Private Sub UserControl_Show()
         ' will modify m_SrcImageWidth/Height.  If those are non-zero, assume a non-standard source, and do not
         ' auto-load dimensions from the active window.
         If Not (pdImages(g_CurrentImage) Is Nothing) And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
-            If pdImages(g_CurrentImage).selectionActive Then
-                m_SrcImageWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-                m_SrcImageHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
-            Else
-                m_SrcImageWidth = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth
-                m_SrcImageHeight = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight
+            If (pdImages(g_CurrentImage).GetNumOfLayers <> 0) Then
+                If pdImages(g_CurrentImage).selectionActive Then
+                    m_SrcImageWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+                    m_SrcImageHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+                Else
+                    m_SrcImageWidth = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth
+                    m_SrcImageHeight = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight
+                End If
             End If
         End If
         
