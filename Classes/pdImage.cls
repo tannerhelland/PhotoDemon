@@ -311,7 +311,11 @@ End Function
 'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when we
 ' need quick access to the current layer's DIB.
 Public Function GetActiveDIB() As pdDIB
-    Set GetActiveDIB = imgLayers(m_curLayer).layerDIB
+    If (m_numOfLayers <> 0) Then
+        Set GetActiveDIB = imgLayers(m_curLayer).layerDIB
+    Else
+        Set GetActiveDIB = Nothing
+    End If
 End Function
 
 'Retrieve the currently active layer

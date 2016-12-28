@@ -122,7 +122,7 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
             Set cFile = New pdFSO
             
             Dim filenameCheck As String
-            filenameCheck = cFile.GetFilename(dstFilename, True) & "-8bpp.png"
+            filenameCheck = cFile.GetPathOnly(dstFilename) & cFile.GetFilename(dstFilename, True) & "-8bpp.png"
             
             'Make sure both FreeImage and PNGQuant were able to generate valid files, then rewrite the FreeImage one
             ' with the PNGQuant one.
