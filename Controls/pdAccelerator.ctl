@@ -251,7 +251,7 @@ Public Function ActivateHook() As Boolean
             #If DEBUGMODE = 1 Then
                 If (Not m_SubsequentInitialization) Then
                     If m_HookingActive Then
-                        pdDebug.LogAction "pdAccelerator.ActivateHook successful.  Hotkeys enabled for this session."
+                        'pdDebug.LogAction "pdAccelerator.ActivateHook successful.  Hotkeys enabled for this session."
                     Else
                         pdDebug.LogAction "WARNING!  pdAccelerator.ActivateHook failed.   Hotkeys disabled for this session."
                     End If

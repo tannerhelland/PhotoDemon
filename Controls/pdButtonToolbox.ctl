@@ -232,10 +232,16 @@ End Property
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
+Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
+    
+    'This is a temporary workaround for AssignImage calls that do not supply the desired width/height.
+    ' (As of 7.0, callers must *always* specify a desired size at 100% DPI, because resources are stored
+    ' at multiple sizes!)
+    If (useImgWidth = 0) Then useImgWidth = (ucSupport.GetBackBufferWidth \ 8) * 8
+    If (useImgHeight = 0) Then useImgHeight = (ucSupport.GetBackBufferHeight \ 8) * 8
     
     'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
-    If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
+    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
     If (srcDIB Is Nothing) Then Exit Sub
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
@@ -278,24 +284,17 @@ End Sub
 ' the spritesheet with the "glowy hovered" and "grayscale disabled" button image variants.
 Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long = 0, Optional ByVal disabledGlowAmount As Long = 0)
 
-    If hoverGlowAmount = 0 Then hoverGlowAmount = UC_HOVER_BRIGHTNESS
+    If (hoverGlowAmount = 0) Then hoverGlowAmount = UC_HOVER_BRIGHTNESS
     
-    'Start by building two lookup tables: one for the hovered image, and a second one for the grayscale image
-    Dim hLookup() As Byte, gLookUp() As Byte
-    ReDim hLookup(0 To 255) As Byte: ReDim gLookUp(0 To 765) As Byte
+    'Start by building two lookup tables: one for the hovered image, and a second one for the disabled image
+    Dim hLookup() As Byte
+    ReDim hLookup(0 To 255) As Byte
     
-    Dim newPxColor As Long
-    Dim x As Long, y As Long
+    Dim newPxColor As Long, x As Long, y As Long
     For x = 0 To 255
         newPxColor = x + hoverGlowAmount
-        If newPxColor > 255 Then newPxColor = 255
+        If (newPxColor > 255) Then newPxColor = 255
         hLookup(x) = newPxColor
-    Next x
-    
-    For x = 0 To 765
-        newPxColor = (x \ 3) + disabledGlowAmount
-        If newPxColor > 255 Then newPxColor = 255
-        gLookUp(x) = newPxColor
     Next x
     
     'Grab direct access to the spritesheet's bytes
@@ -319,7 +318,7 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     For y = initY To finalY
     For x = initX To finalX Step 4
         alpha = srcPixels(x + 3, y - offsetY)
-        If alpha <> 0 Then
+        If (alpha <> 0) Then
             srcPixels(x, y) = hLookup(srcPixels(x, y - offsetY))
             srcPixels(x + 1, y) = hLookup(srcPixels(x + 1, y - offsetY))
             srcPixels(x + 2, y) = hLookup(srcPixels(x + 2, y - offsetY))
@@ -328,7 +327,15 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     Next x
     Next y
     
-    'Paint the disabled segment of the sprite strip
+    'Paint the disabled segment of the sprite strip.  (For this, note that we use a theme-level disabled color.)
+    Dim disabledColor As Long
+    disabledColor = g_Themer.GetGenericUIColor(UI_GrayDisabled)
+    
+    Dim dR As Integer, dG As Integer, dB As Integer
+    dR = Colors.ExtractRed(disabledColor)
+    dG = Colors.ExtractGreen(disabledColor)
+    dB = Colors.ExtractBlue(disabledColor)
+    
     initY = m_ButtonHeight * 2
     finalY = m_ButtonHeight * 2 + (m_ButtonHeight - 1)
     offsetY = m_ButtonHeight * 2
@@ -336,14 +343,10 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     For y = initY To finalY
     For x = initX To finalX Step 4
         alpha = srcPixels(x + 3, y - offsetY)
-        If alpha <> 0 Then
-            b = srcPixels(x, y - offsetY)
-            g = srcPixels(x + 1, y - offsetY)
-            r = srcPixels(x + 2, y - offsetY)
-            gray = gLookUp(r + g + b)
-            srcPixels(x, y) = gray
-            srcPixels(x + 1, y) = gray
-            srcPixels(x + 2, y) = gray
+        If (alpha <> 0) Then
+            srcPixels(x, y) = dR
+            srcPixels(x + 1, y) = dG
+            srcPixels(x + 2, y) = dB
             srcPixels(x + 3, y) = alpha
         End If
     Next x
@@ -361,7 +364,7 @@ End Sub
 '
 'Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).  No preprocessing is currently
 ' applied to DIBs loaded as a resource, but in the future we will need to deal with high-DPI concerns.
-Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
+Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
     
     'Load the requested resource DIB, as necessary
     If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
@@ -415,6 +418,10 @@ End Function
 
 Public Sub SetHeight(ByVal newHeight As Long)
     ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long)
+    ucSupport.RequestNewPosition newLeft, newTop, True
 End Sub
 
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)

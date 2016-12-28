@@ -521,7 +521,7 @@ End Sub
 Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB)
     
     'Load the requested resource DIB, as necessary
-    If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
+    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)

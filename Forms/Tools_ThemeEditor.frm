@@ -4,7 +4,7 @@ Begin VB.Form FormThemeEditor
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Resource editor"
-   ClientHeight    =   9315
+   ClientHeight    =   10170
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   13260
@@ -20,27 +20,58 @@ Begin VB.Form FormThemeEditor
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   621
+   ScaleHeight     =   678
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblExport 
+      Height          =   375
+      Left            =   4200
+      Top             =   8760
+      Visible         =   0   'False
+      Width           =   8895
+      _ExtentX        =   16113
+      _ExtentY        =   661
+      Caption         =   ""
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdCheckBox chkDelete 
+      Height          =   375
+      Left            =   4200
+      TabIndex        =   15
+      Top             =   7920
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   661
+      Caption         =   "mark resource for deletion"
+   End
+   Begin PhotoDemon.pdButton cmdExport 
+      Height          =   615
+      Left            =   240
+      TabIndex        =   14
+      Top             =   8640
+      Width           =   3615
+      _ExtentX        =   6376
+      _ExtentY        =   1085
+      Caption         =   "export finished resource file"
+   End
    Begin PhotoDemon.pdButtonStrip btsBackcolor 
-      Height          =   495
+      Height          =   615
       Left            =   9600
       TabIndex        =   13
-      Top             =   7440
+      Top             =   7200
       Width           =   3495
       _ExtentX        =   6165
-      _ExtentY        =   873
+      _ExtentY        =   1085
    End
-   Begin PhotoDemon.pdColorSelector csColorLight 
-      Height          =   1575
+   Begin PhotoDemon.pdColorSelector csLight 
+      Height          =   855
       Left            =   4200
       TabIndex        =   11
       Top             =   5640
       Width           =   2535
-      _ExtentX        =   4895
-      _ExtentY        =   2778
+      _ExtentX        =   4471
+      _ExtentY        =   1508
       Caption         =   "light theme color"
       FontSize        =   10
    End
@@ -49,9 +80,9 @@ Begin VB.Form FormThemeEditor
       AutoRedraw      =   -1  'True
       BackColor       =   &H00000000&
       ForeColor       =   &H80000008&
-      Height          =   2775
+      Height          =   2535
       Left            =   9600
-      ScaleHeight     =   183
+      ScaleHeight     =   167
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
       TabIndex        =   10
@@ -69,7 +100,7 @@ Begin VB.Form FormThemeEditor
       Caption         =   "run-time coloration"
    End
    Begin PhotoDemon.pdButton cmdSave 
-      Height          =   495
+      Height          =   615
       Left            =   240
       TabIndex        =   8
       Top             =   7920
@@ -153,7 +184,7 @@ Begin VB.Form FormThemeEditor
       Height          =   795
       Left            =   0
       TabIndex        =   0
-      Top             =   8520
+      Top             =   9375
       Width           =   13260
       _ExtentX        =   23389
       _ExtentY        =   1402
@@ -185,7 +216,7 @@ Begin VB.Form FormThemeEditor
       Left            =   4200
       TabIndex        =   7
       Top             =   2880
-      Width           =   8895
+      Width           =   8295
       _ExtentX        =   15690
       _ExtentY        =   661
    End
@@ -211,16 +242,26 @@ Begin VB.Form FormThemeEditor
       Caption         =   "image resource properties:"
       FontSize        =   12
    End
-   Begin PhotoDemon.pdColorSelector csColorDark 
-      Height          =   1575
+   Begin PhotoDemon.pdColorSelector csDark 
+      Height          =   855
       Left            =   6960
       TabIndex        =   12
       Top             =   5640
       Width           =   2535
       _ExtentX        =   4471
-      _ExtentY        =   2778
+      _ExtentY        =   1508
       Caption         =   "dark theme color"
       FontSize        =   10
+   End
+   Begin PhotoDemon.pdButton cmdResItemPath 
+      Height          =   375
+      Left            =   12600
+      TabIndex        =   16
+      Top             =   2880
+      Width           =   450
+      _ExtentX        =   794
+      _ExtentY        =   661
+      Caption         =   "..."
    End
 End
 Attribute VB_Name = "FormThemeEditor"
@@ -232,8 +273,8 @@ Attribute VB_Exposed = False
 'Resource editor dialog
 'Copyright 2016-2016 by Tanner Helland
 'Created: 22/August/16
-'Last updated: 15/December/16
-'Last update: start work on compiling resource files
+'Last updated: 28/December/16
+'Last update: continued work on core features
 '
 'As of v7.0, PD finally supports visual themes using its internal theming engine.  As part of supporting
 ' visual themes, various PD controls need access to image resources at a size and color scheme appropriate
@@ -267,6 +308,7 @@ Private Type PD_Resource
     ResSupportsColoration As Boolean
     ResColorLight As Long
     ResColorDark As Long
+    MarkedForDeletion As Boolean    'Resource deletion is very primitive at present; it may not work as expected
 End Type
 
 Private m_NumOfResources As Long
@@ -274,7 +316,6 @@ Private m_Resources() As PD_Resource
 Private m_LastResourceIndex As Long
 
 Private m_FSO As pdFSO
-
 Private m_PreviewDIBOriginal As pdDIB, m_PreviewDIB As pdDIB
 
 Private m_SuspendUpdates As Boolean
@@ -290,6 +331,10 @@ End Sub
 Private Sub chkColoration_Click()
     SyncResourceAgainstCurrentUI
     UpdatePreview
+End Sub
+
+Private Sub chkDelete_Click()
+    SyncResourceAgainstCurrentUI
 End Sub
 
 Private Sub cmdAddResource_Click()
@@ -322,6 +367,136 @@ Private Sub cmdAddResource_Click()
     
 End Sub
 
+Private Sub cmdBar_OKClick()
+    SaveWorkingFile
+End Sub
+
+'Export the current resource collection to an actual resource file.  This is a one-way conversion.
+Private Sub cmdExport_Click()
+    
+    'At present, resources are saved to the App/PhotoDemon/Themes subfolder.  Before release, we should
+    ' default to the user's /Data folder instead.
+    ' TODO 7.0: make sure this doesn't overwrite the core PD resource file.
+    Dim targetResFile As String
+    
+    If (Len(txtResourcePath.Text) <> 0) Then
+        
+        'Provide minimal UI feedback
+        lblExport.Visible = True
+        lblExport.Caption = "Prepping resource file..."
+        
+        'Keep the existing filename, but strip the extension and replace it with "PDRC"
+        ' (for... PhotoDemon Resource Collection, I guess?)
+        Dim cFSO As pdFSO
+        Set cFSO = New pdFSO
+        targetResFile = g_UserPreferences.GetThemePath & cFSO.GetFilename(txtResourcePath.Text, True) & ".pdrc"
+        
+        'Prep a pdPackage
+        Dim cPackage As pdPackager2
+        Set cPackage = New pdPackager2
+        cPackage.PrepareNewPackage lstResources.ListCount, PD_RES_IDENTIFIER, , PD_SM_FileBacked, targetResFile
+        
+        'Compression settings are still being tested.  Fast decompression time is important, but zstd yields
+        ' significantly better compression ratios, so I'm currently leaning toward using it over something
+        ' like lz4hc.
+        Dim resCompressionEngine As PD_COMPRESSION_ENGINES
+        resCompressionEngine = PD_CE_Zstd
+        
+        'Start adding resources.  Resources are stored in a predefined format that describes how the icons are
+        ' to be treated at load-time.  (Generally speaking, we apply specific post-processing based on the
+        ' current theme and/or request information from the caller.)  Some icons come pre-colored, and as such,
+        ' they obey different rules.  This must all be stored in the resource file.
+        Dim i As Long, nodeIndex As Long
+        Dim cXML As pdXML: Set cXML = New pdXML
+        Dim tmpDIB As pdDIB, tmpDIBSize As Long, tmpDIBPointer As Long
+        Const PD_RES_NODE_ID_IMG As String = "PDRSI"
+        
+        For i = 0 To m_NumOfResources - 1
+            
+            lblExport.Caption = "Writing resource #" & CStr(i + 1) & " of " & CStr(m_NumOfResources)
+            lblExport.RequestRefresh
+            
+            nodeIndex = cPackage.AddNode(m_Resources(i).ResourceName)
+            
+            'Prep the XML packet for this resource.  For image-type entries, this stores things like the original
+            ' resource image size (w/h), coloration behavior, and any other special instructions.
+            If (m_Resources(i).ResType = PDRT_Image) Then
+            
+                cXML.PrepareNewXML PD_RES_NODE_ID_IMG
+            
+                'Load the source image to a temporary DIB (so we can query various image attributes)
+                If Loading.QuickLoadImageToDIB(m_Resources(i).ResFileLocation, tmpDIB, False, False) Then
+                    
+                    'Write the bare amount of information required to reconstruct the image at run-time
+                    cXML.WriteTag "w", tmpDIB.GetDIBWidth
+                    cXML.WriteTag "h", tmpDIB.GetDIBHeight
+                    cXML.WriteTag "bpp", tmpDIB.GetDIBColorDepth
+                    
+                    If m_Resources(i).ResSupportsColoration Then
+                        cXML.WriteTag "rt-clr", "True"
+                        cXML.WriteTag "clr-l", m_Resources(i).ResColorLight
+                        cXML.WriteTag "clr-d", m_Resources(i).ResColorDark
+                    Else
+                        cXML.WriteTag "rt-clr", "False"
+                    End If
+                    
+                    'Write this data to the first half of the node
+                    cPackage.AddNodeDataFromString nodeIndex, True, cXML.ReturnCurrentXMLString, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                    
+                    'Write the actual bitmap data to the second half of the node.  Note that we use two
+                    ' different strategies here.
+                    ' 1) If this resource does *not* support run-time coloration, store it like a normal DIB
+                    ' 2) If this resource *does* support run-time coloration, just store the alpha channel.
+                    '    (Color values will be plugged-in at run-time.)
+                    If m_Resources(i).ResSupportsColoration Then
+                        Dim tmpBytes() As Byte
+                        If DIB_Support.RetrieveTransparencyTable(tmpDIB, tmpBytes) Then
+                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                        End If
+                    Else
+                        tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
+                        cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                    End If
+                    
+                End If
+                
+            End If
+            
+        Next i
+        
+        lblExport.Caption = "Writing final directory..."
+        lblExport.RequestRefresh
+        
+        'With the package complete, write it out to file!
+        cPackage.WritePackageToFile targetResFile, resCompressionEngine, False, Compression.GetMaxCompressionLevel(resCompressionEngine)
+        
+        lblExport.Caption = "Resource export complete."
+        lblExport.RequestRefresh
+        
+    End If
+
+End Sub
+
+Private Sub cmdExport_LostFocusAPI()
+    lblExport.Visible = False
+End Sub
+
+Private Sub cmdResItemPath_Click()
+
+    Dim srcFile As String
+    srcFile = m_FSO.GetFilename(txtResourceLocation.Text)
+    
+    Dim cCommonDialog As pdOpenSaveDialog: Set cCommonDialog = New pdOpenSaveDialog
+    If cCommonDialog.GetOpenFileName(srcFile, , True, False, "All files (*.*)|*.*", , m_FSO.GetPathOnly(txtResourceLocation.Text), "Select resource item", , Me.hWnd) Then
+        If (Len(srcFile) <> 0) Then
+            txtResourceLocation.Text = srcFile
+            SyncResourceAgainstCurrentUI
+            UpdatePreview
+        End If
+    End If
+    
+End Sub
+
 Private Sub cmdResourcePath_Click()
     
     Dim srcFile As String
@@ -339,6 +514,10 @@ Private Sub cmdResourcePath_Click()
 End Sub
 
 Private Sub cmdSave_Click()
+    SaveWorkingFile
+End Sub
+
+Private Sub SaveWorkingFile()
 
     Dim okayToProceed As Boolean: okayToProceed = True
     
@@ -371,22 +550,32 @@ Private Sub cmdSave_Click()
         cXML.WriteTag "ResourceCount", m_NumOfResources
         cXML.WriteTag "LastEditedResource", m_LastResourceIndex
         
+        Dim numResourcesWritten As Long: numResourcesWritten = 0
+        
         Dim i As Long
         For i = 0 To m_NumOfResources - 1
-            cXML.WriteTag CStr(i + 1), vbNullString, True
             
-            With m_Resources(i)
-                cXML.WriteTag "Name", m_Resources(i).ResourceName
-                cXML.WriteTag "FileLocation", .ResFileLocation
-                cXML.WriteTag "Type", .ResType
-                cXML.WriteTag "SupportsColoration", .ResSupportsColoration
-                If .ResSupportsColoration Then
-                    cXML.WriteTag "ColorLight", .ResColorLight
-                    cXML.WriteTag "ColorDark", .ResColorDark
-                End If
-            End With
+            If (Not m_Resources(i).MarkedForDeletion) Then
             
-            cXML.CloseTag CStr(i + 1)
+                cXML.WriteTag CStr(numResourcesWritten + 1), vbNullString, True
+                
+                With m_Resources(numResourcesWritten)
+                    cXML.WriteTag "Name", .ResourceName
+                    cXML.WriteTag "FileLocation", .ResFileLocation
+                    cXML.WriteTag "Type", .ResType
+                    cXML.WriteTag "SupportsColoration", .ResSupportsColoration
+                    If .ResSupportsColoration Then
+                        cXML.WriteTag "ColorLight", .ResColorLight
+                        cXML.WriteTag "ColorDark", .ResColorDark
+                    End If
+                End With
+                
+                cXML.CloseTag CStr(numResourcesWritten + 1)
+                
+                numResourcesWritten = numResourcesWritten + 1
+                
+            End If
+            
         Next i
         
         If (Not cXML.WriteXMLToFile(txtResourcePath.Text)) Then Debug.Print "WARNING!  Save to file failed!!"
@@ -395,21 +584,21 @@ Private Sub cmdSave_Click()
     
 End Sub
 
-Private Sub csColorDark_ColorChanged()
+Private Sub csLight_ColorChanged()
     If (Not m_SuspendUpdates) Then
         SyncResourceAgainstCurrentUI
         m_SuspendUpdates = True
-        btsBackcolor.ListIndex = 1
+        btsBackcolor.ListIndex = 0
         m_SuspendUpdates = False
         UpdatePreview
     End If
 End Sub
 
-Private Sub csColorLight_ColorChanged()
+Private Sub csDark_ColorChanged()
     If (Not m_SuspendUpdates) Then
         SyncResourceAgainstCurrentUI
         m_SuspendUpdates = True
-        btsBackcolor.ListIndex = 0
+        btsBackcolor.ListIndex = 1
         m_SuspendUpdates = False
         UpdatePreview
     End If
@@ -493,6 +682,7 @@ Private Sub LoadResourceFromFile()
                                 .ResColorLight = cXML.GetUniqueTag_Long("ColorLight", 0, tagPos)
                                 .ResColorDark = cXML.GetUniqueTag_Long("ColorDark", 0, tagPos)
                             End If
+                            .MarkedForDeletion = False
                         End With
                         
                         lstResources.AddItem m_Resources(i).ResourceName
@@ -520,14 +710,20 @@ Private Sub SyncResourceAgainstCurrentUI()
     If (m_LastResourceIndex >= 0) And (Not m_SuspendUpdates) Then
     
         With m_Resources(m_LastResourceIndex)
+        
             .ResourceName = txtResourceName.Text
             .ResType = btsResourceType.ListIndex
             .ResFileLocation = txtResourceLocation.Text
             If (.ResType = PDRT_Image) Then .ResSupportsColoration = CBool(chkColoration.Value)
             If .ResSupportsColoration Then
-                .ResColorLight = csColorLight.Color
-                .ResColorDark = csColorDark.Color
+                .ResColorLight = csLight.Color
+                .ResColorDark = csDark.Color
             End If
+            
+            'To delete a resource, you have to click the delete button, save the resource file,
+            ' then exit and re-enter the dialog.  (Sorry; deletion is not really meant to be used often.)
+            .MarkedForDeletion = CBool(chkDelete.Value)
+            
         End With
     
     End If
@@ -548,13 +744,15 @@ Private Sub SyncUIAgainstCurrentResource()
             txtResourceLocation.Text = .ResFileLocation
             If .ResSupportsColoration Then
                 chkColoration.Value = vbChecked
-                csColorLight.Color = .ResColorLight
-                csColorDark.Color = .ResColorDark
+                csLight.Color = .ResColorLight
+                csDark.Color = .ResColorDark
             Else
                 chkColoration.Value = vbUnchecked
             End If
             
-                m_SuspendUpdates = False
+            If .MarkedForDeletion Then chkDelete.Value = vbChecked Else chkDelete.Value = vbUnchecked
+            
+            m_SuspendUpdates = False
             
             'Image resources get a live preview
             If (.ResType = PDRT_Image) Then UpdatePreview
@@ -565,6 +763,7 @@ Private Sub SyncUIAgainstCurrentResource()
     
 End Sub
 
+'Paint a preview of the current resource image, with any coloration settings applied
 Private Sub UpdatePreview()
     
     On Error GoTo PreviewError
@@ -576,7 +775,7 @@ Private Sub UpdatePreview()
             Dim newColor As Long
             If (btsBackcolor.ListIndex = 0) Then
                 Colors.GetColorFromString "#ffffff", newColor, ColorHex
-            Else
+            ElseIf (btsBackcolor.ListIndex = 1) Then
                 Colors.GetColorFromString "#313131", newColor, ColorHex
             End If
             picPreview.BackColor = newColor
@@ -590,9 +789,9 @@ Private Sub UpdatePreview()
                     m_PreviewDIB.CreateFromExistingDIB m_PreviewDIBOriginal
                     
                     If (btsBackcolor.ListIndex = 0) Then
-                        DIB_Support.ColorizeDIB m_PreviewDIB, csColorLight.Color
-                    Else
-                        DIB_Support.ColorizeDIB m_PreviewDIB, csColorDark.Color
+                        DIB_Support.ColorizeDIB m_PreviewDIB, csLight.Color
+                    ElseIf (btsBackcolor.ListIndex = 1) Then
+                        DIB_Support.ColorizeDIB m_PreviewDIB, csDark.Color
                     End If
                     m_PreviewDIB.RenderToPictureBox picPreview, False, True, True
                     

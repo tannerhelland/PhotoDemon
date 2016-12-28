@@ -190,8 +190,8 @@ Private Sub Form_Load()
     'Theme everything
     UpdateAgainstCurrentTheme
     
-    'Reflow the interface to match its current size
-    ReflowInterface
+    'Technically, we would now want to call ReflowInterface() to make sure everything is correctly aligned.
+    ' However, UpdateAgainstCurrentTheme now calls that function automatically.
     
 End Sub
 

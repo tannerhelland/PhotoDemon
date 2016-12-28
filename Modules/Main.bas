@@ -195,7 +195,6 @@ Public Sub ContinueLoadingProgram()
     HandleClearType True
     
     
-    
     '*************************************************************************************************************************************
     ' Initialize the user preferences (settings) handler
     '*************************************************************************************************************************************
@@ -235,6 +234,29 @@ Public Sub ContinueLoadingProgram()
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
     ImageImporter.ResetImageImportPreferenceCache
+    
+        
+    '*************************************************************************************************************************************
+    ' Check for the presence of plugins (as other functions rely on these to initialize themselves)
+    '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Load plugins"
+    #End If
+    
+    PluginManager.LoadAllPlugins
+    
+    
+    '*************************************************************************************************************************************
+    ' Initialize our internal resources handler
+    '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Initialize resource handler"
+    #End If
+    
+    Set g_Resources = New pdResources
+    g_Resources.LoadInitialResourceCollection
     
     
     '*************************************************************************************************************************************
@@ -340,24 +362,10 @@ Public Sub ContinueLoadingProgram()
     
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
     FormSplash.PrepareSplashLogo NUMBER_OF_LOADING_STEPS
-    FormSplash.prepareRestOfSplash
+    FormSplash.PrepareRestOfSplash
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
     FormSplash.Show vbModeless
-        
-    
-    '*************************************************************************************************************************************
-    ' Check for the presence of plugins (as other functions rely on these to initialize themselves)
-    '*************************************************************************************************************************************
-    
-    #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Load plugins"
-    #End If
-    
-    LoadMessage "Loading plugins..."
-    
-    PluginManager.LoadAllPlugins
-    
     
     '*************************************************************************************************************************************
     ' If this is not a production build, initialize PhotoDemon's central debugger

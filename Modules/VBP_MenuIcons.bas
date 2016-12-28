@@ -182,8 +182,11 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
         
     'File Menu
-    AddMenuIcon "NEWIMAGE", 0, 0      'New
-    AddMenuIcon "OPENIMG", 0, 1       'Open Image
+    'AddMenuIcon "NEWIMAGE", 0, 0      'New
+    'AddMenuIcon "OPENIMG", 0, 1       'Open Image
+    AddMenuIcon "file_new", 0, 0      'New
+    AddMenuIcon "file_open", 0, 1       'Open Image
+    
     AddMenuIcon "OPENREC", 0, 2       'Open recent
     AddMenuIcon "IMPORT", 0, 3        'Import
         '--> Import sub-menu
@@ -192,11 +195,19 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         AddMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
         AddMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
         AddMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
-    AddMenuIcon "CLOSE", 0, 5         'Close
-    AddMenuIcon "CLOSE", 0, 6         'Close All
-    AddMenuIcon "SAVE", 0, 8          'Save
-    AddMenuIcon "SAVECOPY", 0, 9      'Save copy
-    AddMenuIcon "SAVEAS", 0, 10       'Save As...
+    
+    'AddMenuIcon "CLOSE", 0, 5         'Close
+    'AddMenuIcon "CLOSE", 0, 6         'Close All
+    'AddMenuIcon "SAVE", 0, 8          'Save
+    'AddMenuIcon "SAVECOPY", 0, 9      'Save copy
+    'AddMenuIcon "SAVEAS", 0, 10       'Save As...
+    
+    AddMenuIcon "file_close", 0, 5         'Close
+    'AddMenuIcon "file_close", 0, 6         'Close All
+    AddMenuIcon "file_save", 0, 8          'Save
+    AddMenuIcon "file_savedup", 0, 9      'Save copy
+    AddMenuIcon "file_saveas", 0, 10       'Save As...
+    
     AddMenuIcon "REVERT", 0, 11       'Revert
     AddMenuIcon "BCONVERT", 0, 13     'Batch operations
         '--> Batch sub-menu
@@ -207,8 +218,10 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
         
     'Edit Menu
-    AddMenuIcon "UNDO", 1, 0           'Undo
-    AddMenuIcon "REDO", 1, 1           'Redo
+    'AddMenuIcon "UNDO", 1, 0           'Undo
+    'AddMenuIcon "REDO", 1, 1           'Redo
+    AddMenuIcon "edit_undo", 1, 0           'Undo
+    AddMenuIcon "edit_redo", 1, 1           'Redo
     AddMenuIcon "UNDOHISTORY", 1, 2    'Undo history browser
     
     AddMenuIcon "REPEAT", 1, 4         'Repeat previous action
@@ -556,6 +569,8 @@ End Sub
 ' of loaded icons and automatically fill in the numeric identifier as necessary.
 Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
     
+    On Error GoTo MenuIconNotFound
+    
     Dim i As Long
     Dim iconLocation As Long
     Dim iconAlreadyLoaded As Boolean
@@ -565,7 +580,7 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     'Loop through all icons that have been loaded, and see if this one has been requested already.
     For i = 0 To curIcon
     
-        If iconNames(i) = resID Then
+        If (iconNames(i) = resID) Then
             iconAlreadyLoaded = True
             iconLocation = i
             Exit For
@@ -576,8 +591,22 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     'If the icon was not found, load it and add it to the list
     If (Not iconAlreadyLoaded) Then
         
-        If Not (cMenuImage Is Nothing) Then
-            cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
+        If (Not cMenuImage Is Nothing) Then
+            
+            'Attempt to load the image from our internal resource manager
+            Dim loadedInternally As Boolean: loadedInternally = False
+            If (Not g_Resources Is Nothing) Then
+                If g_Resources.AreResourcesAvailable Then
+                    Dim tmpDIB As pdDIB
+                    loadedInternally = g_Resources.LoadImageResource(resID, tmpDIB, 16, 16, 0.5, True)
+                    If loadedInternally Then cMenuImage.AddImageFromDIB tmpDIB
+                End If
+            End If
+            
+            If (Not loadedInternally) Then
+                cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
+            End If
+            
             iconNames(curIcon) = resID
             iconLocation = curIcon
             curIcon = curIcon + 1
@@ -586,9 +615,9 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     End If
         
     'Place the icon onto the requested menu
-    If Not (cMenuImage Is Nothing) Then
+    If (Not cMenuImage Is Nothing) Then
     
-        If subSubMenu = -1 Then
+        If (subSubMenu = -1) Then
             cMenuImage.PutImageToVBMenu iconLocation, subMenu, topMenu
         Else
             cMenuImage.PutImageToVBMenu iconLocation, subSubMenu, topMenu, subMenu
@@ -599,6 +628,8 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     'If an outside progress bar needs to refresh, do so now
     If m_refreshOutsideProgressBar Then DoEvents
 
+MenuIconNotFound:
+
 End Sub
 
 'When menu captions are changed, the associated images are lost.  This forces a reset.
@@ -606,8 +637,10 @@ End Sub
 Public Sub ResetMenuIcons()
         
     'Redraw the Undo/Redo menus
-    AddMenuIcon "UNDO", 1, 0     'Undo
-    AddMenuIcon "REDO", 1, 1     'Redo
+    'AddMenuIcon "UNDO", 1, 0     'Undo
+    'AddMenuIcon "REDO", 1, 1     'Redo
+    AddMenuIcon "edit_undo", 1, 0     'Undo
+    AddMenuIcon "edit_redo", 1, 1     'Redo
     
     'Redraw the Repeat and Fade menus
     AddMenuIcon "REPEAT", 1, 4         'Repeat previous action
@@ -1052,93 +1085,127 @@ End Function
 
 'Given an image in the .exe's resource section (typically a PNG image), load it to a pdDIB object.
 ' The calling function is responsible for deleting the DIB once they are done with it.
-Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB) As Boolean
+Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Long = 0) As Boolean
+        
+    'As of v7.0, PD now has two places from which to pull resources:
+    ' 1) Its own custom resource handler (which is the preferred location)
+    ' 2) The old, standard .exe resource section (which is deprecated, and in the process of being removed)
+    '
+    'We always attempt (1) before falling back to (2).  The goal for 7.0's release is to remove (2) entirely.
         
     'Some functions may call this before GDI+ has loaded; exit if that happens
     If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
+    
+        'Attempt the default resource manager first
+        Dim intResFound As Boolean: intResFound = False
+        If (Not g_Resources Is Nothing) Then
+            If g_Resources.AreResourcesAvailable Then
             
-        'Start by extracting the resource data (typically a PNG) into a bytestream
-        Dim ImageData() As Byte
-        ImageData() = LoadResData(resTitle, "CUSTOM")
+                'Attempt to load the requested resource.  (This may fail, as I am still in the process of migrating
+                ' all resources to the new format.)
+                intResFound = g_Resources.LoadImageResource(resTitle, dstDIB, desiredWidth, desiredHeight, desiredBorders)
+                LoadResourceToDIB = intResFound
+            
+            End If
+        End If
         
-        Dim IStream As IUnknown
-        Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
-        
-        If (Not IStream Is Nothing) Then
+        'If we failed to load the resource data using our internal methods, fall back to the old system
+        If (Not intResFound) Then
             
-            'Use GDI+ to convert the bytestream into a usable image
-            ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
-            Dim gdipBitmap As Long
-            If (GdipLoadImageFromStream(IStream, gdipBitmap) = 0) Then
+            On Error GoTo Err_ResNotFound
             
-                'Retrieve the image's size and pixel format
-                Dim tmpRect As RECTF
-                GdipGetImageBounds gdipBitmap, tmpRect, UnitPixel
+            'Start by extracting the resource data (typically a PNG) into a bytestream
+            Dim ImageData() As Byte
+            ImageData() = LoadResData(resTitle, "CUSTOM")
+            
+            Dim IStream As IUnknown
+            Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
+            
+            If (Not IStream Is Nothing) Then
                 
-                Dim gdiPixelFormat As Long
-                GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
+                'Use GDI+ to convert the bytestream into a usable image
+                ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
+                Dim gdipBitmap As Long
+                If (GdipLoadImageFromStream(IStream, gdipBitmap) = 0) Then
                 
-                'Create the DIB anew as necessary
-                If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-                
-                'If the image has an alpha channel, create a 32bpp DIB to receive it
-                If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                    dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 32
-                    dstDIB.SetInitialAlphaPremultiplicationState True
-                Else
-                    dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 24
-                End If
-                
-                'Convert the GDI+ bitmap to a standard Windows hBitmap
-                Dim hBitmap As Long
-                If (GdipCreateHBITMAPFromBitmap(gdipBitmap, hBitmap, vbBlack) = 0) Then
-                
-                    'Select the hBitmap into a new DC so we can BitBlt it into the target DIB
-                    Dim gdiDC As Long
-                    gdiDC = GDI.GetMemoryDC()
+                    'Retrieve the image's size and pixel format
+                    Dim tmpRect As RECTF
+                    GdipGetImageBounds gdipBitmap, tmpRect, UnitPixel
                     
-                    Dim oldBitmap As Long
-                    oldBitmap = SelectObject(gdiDC, hBitmap)
+                    Dim gdiPixelFormat As Long
+                    GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
                     
-                    'Copy the GDI+ bitmap into the DIB
-                    BitBlt dstDIB.GetDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
+                    'Create the DIB anew as necessary
+                    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
                     
-                    'Release the original DDB and temporary device context
-                    SelectObject gdiDC, oldBitmap
-                    DeleteObject hBitmap
-                    GDI.FreeMemoryDC gdiDC
+                    'If the image has an alpha channel, create a 32bpp DIB to receive it
+                    If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
+                        dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 32
+                        dstDIB.SetInitialAlphaPremultiplicationState True
+                    Else
+                        dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 24
+                    End If
                     
-                    'As an added bonus, free the destination DIB from its DC as well.  (pdDIB objects automatically
-                    ' select themselves into a DC, as necessary, so if this DIB isn't needed right away, we can
-                    ' spare usage of a DC until it actually needs to be rendered.)
-                    dstDIB.FreeFromDC
+                    'Convert the GDI+ bitmap to a standard Windows hBitmap
+                    Dim hBitmap As Long
+                    If (GdipCreateHBITMAPFromBitmap(gdipBitmap, hBitmap, vbBlack) = 0) Then
                     
-                    LoadResourceToDIB = True
+                        'Select the hBitmap into a new DC so we can BitBlt it into the target DIB
+                        Dim gdiDC As Long
+                        gdiDC = GDI.GetMemoryDC()
+                        
+                        Dim oldBitmap As Long
+                        oldBitmap = SelectObject(gdiDC, hBitmap)
+                        
+                        'Copy the GDI+ bitmap into the DIB
+                        BitBlt dstDIB.GetDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
+                        
+                        'Release the original DDB and temporary device context
+                        SelectObject gdiDC, oldBitmap
+                        DeleteObject hBitmap
+                        GDI.FreeMemoryDC gdiDC
+                        
+                        'As an added bonus, free the destination DIB from its DC as well.  (pdDIB objects automatically
+                        ' select themselves into a DC, as necessary, so if this DIB isn't needed right away, we can
+                        ' spare usage of a DC until it actually needs to be rendered.)
+                        dstDIB.FreeFromDC
+                        
+                        LoadResourceToDIB = True
+                        
+                    Else
+                        LoadResourceToDIB = False
+                        Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
+                    End If
                     
+                    'Release the GDI+ bitmap
+                    GdipDisposeImage gdipBitmap
+                        
                 Else
                     LoadResourceToDIB = False
-                    Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
+                    Debug.Print "GDI+ failed to load requested resource " & resTitle & " from stream."
                 End If
+            
+                'Free the memory stream
+                Set IStream = Nothing
                 
-                'Release the GDI+ bitmap
-                GdipDisposeImage gdipBitmap
-                    
             Else
                 LoadResourceToDIB = False
-                Debug.Print "GDI+ failed to load requested resource " & resTitle & " from stream."
+                Debug.Print "Could not load requested resource " & resTitle & " from file."
             End If
-        
-            'Free the memory stream
-            Set IStream = Nothing
             
-        Else
-            LoadResourceToDIB = False
-            Debug.Print "Could not load requested resource " & resTitle & " from file."
         End If
         
     Else
+        'Debug.Print "GDI+ unavailable; resources suspended for this session."
         LoadResourceToDIB = False
     End If
+    
+    Exit Function
+    
+Err_ResNotFound:
+
+    Debug.Print "Requested resource " & resTitle & " wasn't found."
+    LoadResourceToDIB = False
         
 End Function
 

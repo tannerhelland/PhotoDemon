@@ -100,7 +100,7 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
 End Sub
 
 'Load the form backdrop.  Note that this CANNOT BE DONE until the global monitor classes are initialized.
-Public Sub prepareRestOfSplash()
+Public Sub PrepareRestOfSplash()
     
     If m_dibsLoadedSuccessfully Then
     
