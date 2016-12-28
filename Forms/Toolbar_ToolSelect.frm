@@ -402,9 +402,6 @@ Private m_labelMarginBottom As Long, m_labelMarginTop As Long
 Private m_buttonMarginBottom As Long, m_buttonMarginRight As Long
 Private m_rightBoundary As Long
 
-'The currently active tool panel and ID key will be mirrored to this reference
-Private m_ActiveToolPanelKey As String
-
 'When toggling tool-buttons, we set a module-level check to ensure that each toggle doesn't cause us to
 ' re-enter the reflow code.
 Private m_InsideReflowCode As Boolean
@@ -412,6 +409,38 @@ Private m_InsideReflowCode As Boolean
 'This form supports a variety of resize modes, and we use m_MouseEvents to handle cursor duties
 Private WithEvents m_MouseEvents As pdInputMouse
 Attribute m_MouseEvents.VB_VarHelpID = -1
+
+'This form also manages individual toolpanel windows (because they are shown/hidden based upon interactions
+' with the buttons on *this* form).
+Private Type ToolPanelTracker
+    PanelHWnd As Long
+    IsPanelLoaded As Boolean
+End Type
+
+Private m_NumOfPanels As Long
+Private m_Panels() As ToolPanelTracker
+Private Const NUM_OF_TOOL_PANELS As Long = 7
+
+'Each individual tool panel must have a unique entry inside *this* enum.  Note that a number of
+' tools share panels, so this number has no meaningful relation to the net number of tools available.
+Private Enum PD_ToolPanels
+    TP_None = -1
+    TP_MoveSize = 0
+    TP_NDFX = 1
+    TP_Selections = 2
+    TP_Text = 3
+    TP_Typography = 4
+    TP_Pencil = 5
+    TP_Paintbrush = 6
+End Enum
+
+#If False Then
+    Private Const TP_None = -1, TP_MoveSize = 0, TP_NDFX = 1, TP_Selections = 2, TP_Text = 3, TP_Typography = 4
+    Private Const TP_Pencil = 5, TP_Paintbrush = 6
+#End If
+
+'The currently active tool panel will be mirrored to this value
+Private m_ActiveToolPanel As PD_ToolPanels
 
 Private Sub cmdFile_Click(Index As Integer)
         
@@ -797,6 +826,16 @@ Public Sub ResetToolButtonStates()
     
     Dim i As Long
     
+    'If our panel tracker doesn't exist, create it now
+    If (m_NumOfPanels = 0) Then
+        
+        'Unfortunately, we don't currently have an easy way to generate this value automatically,
+        ' so it must be hard-coded.
+        m_NumOfPanels = NUM_OF_TOOL_PANELS
+        ReDim m_Panels(0 To m_NumOfPanels - 1) As ToolPanelTracker
+        
+    End If
+    
     'Next, we need to display the correct tool options panel.  There is no set pattern to this; some tools share
     ' panels, but show/hide certain controls as necessary.  Other tools require their own unique panel.  I've tried
     ' to strike a balance between "as few panels as possible" without going overboard.
@@ -806,45 +845,52 @@ Public Sub ResetToolButtonStates()
         Case NAV_MOVE
             Load toolpanel_MoveSize
             toolpanel_MoveSize.UpdateAgainstCurrentTheme
-            m_ActiveToolPanelKey = "MoveSize"
+            m_ActiveToolPanel = TP_MoveSize
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_MoveSize.hWnd
             
         '"Quick fix" tool(s)
         Case QUICK_FIX_LIGHTING
             Load toolpanel_NDFX
             toolpanel_NDFX.UpdateAgainstCurrentTheme
-            m_ActiveToolPanelKey = "NDFX"
+            m_ActiveToolPanel = TP_NDFX
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_NDFX.hWnd
             
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             Load toolpanel_Selections
             toolpanel_Selections.UpdateAgainstCurrentTheme
-            m_ActiveToolPanelKey = "Selections"
+            m_ActiveToolPanel = TP_Selections
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Selections.hWnd
             
         'Vector tools
         Case VECTOR_TEXT
             Load toolpanel_Text
             toolpanel_Text.UpdateAgainstCurrentTheme
-            m_ActiveToolPanelKey = "Text"
+            m_ActiveToolPanel = TP_Text
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Text.hWnd
             
         Case VECTOR_FANCYTEXT
             Load toolpanel_FancyText
             toolpanel_FancyText.UpdateAgainstCurrentTheme
-            m_ActiveToolPanelKey = "FancyText"
+            m_ActiveToolPanel = TP_Typography
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_FancyText.hWnd
         
         'Paint tools
         Case PAINT_BASICBRUSH
             Load toolpanel_Pencil
             toolpanel_Pencil.UpdateAgainstCurrentTheme
-            m_ActiveToolPanelKey = "Pencil"
+            m_ActiveToolPanel = TP_Pencil
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Pencil.hWnd
             
         Case PAINT_SOFTBRUSH
             Load toolpanel_Paintbrush
             toolpanel_Paintbrush.UpdateAgainstCurrentTheme
-            m_ActiveToolPanelKey = "Paintbrush"
+            m_ActiveToolPanel = TP_Paintbrush
+            m_Panels(m_ActiveToolPanel).PanelHWnd = toolpanel_Paintbrush.hWnd
         
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
-            m_ActiveToolPanelKey = "NoPanels"
+            m_ActiveToolPanel = TP_None
             
     End Select
         
@@ -908,40 +954,72 @@ Public Sub ResetToolButtonStates()
         
     End If
     
-    'Display the current tool options panel, while hiding all inactive ones
-    Dim toolPanelCollection As pdDictionary
-    Set toolPanelCollection = New pdDictionary
-    
-    If Not (toolpanel_MoveSize Is Nothing) Then toolPanelCollection.AddEntry "MoveSize", toolpanel_MoveSize.hWnd
-    If Not (toolpanel_NDFX Is Nothing) Then toolPanelCollection.AddEntry "NDFX", toolpanel_NDFX.hWnd
-    If Not (toolpanel_Selections Is Nothing) Then toolPanelCollection.AddEntry "Selections", toolpanel_Selections.hWnd
-    If Not (toolpanel_Text Is Nothing) Then toolPanelCollection.AddEntry "Text", toolpanel_Text.hWnd
-    If Not (toolpanel_FancyText Is Nothing) Then toolPanelCollection.AddEntry "FancyText", toolpanel_FancyText.hWnd
-    If Not (toolpanel_Pencil Is Nothing) Then toolPanelCollection.AddEntry "Pencil", toolpanel_Pencil.hWnd
-    If Not (toolpanel_Paintbrush Is Nothing) Then toolPanelCollection.AddEntry "Paintbrush", toolpanel_Paintbrush.hWnd
-    
+    'Next, we want to display the current tool options panel, while hiding all inactive ones.
+    ' (This must be handled carefully, or we risk accidentally enabling unloaded panels, which we don't want
+    '  as toolpanels are quite resource-heavy.)
     g_WindowManager.DeactivateToolPanel False
     
     'To prevent flicker, we handle this in two passes.
     
     'First, activate the new window.
-    If (toolPanelCollection.GetNumOfEntries > 0) Then
+    If (m_NumOfPanels <> 0) Then
     
-        For i = 0 To toolPanelCollection.GetNumOfEntries - 1
+        For i = 0 To m_NumOfPanels - 1
             
             'If this is the active panel, display it
-            If (StrComp(toolPanelCollection.GetKeyByIndex(i), LCase(m_ActiveToolPanelKey)) = 0) Then
-                g_WindowManager.ActivateToolPanel toolPanelCollection.GetValueByIndex(i), toolbar_Options.hWnd
+            If (i = m_ActiveToolPanel) Then
+                g_WindowManager.ActivateToolPanel m_Panels(i).PanelHWnd, toolbar_Options.hWnd
                 Exit For
             End If
             
         Next i
         
         'Next, hide all other panels
-        For i = 0 To toolPanelCollection.GetNumOfEntries - 1
-            If (StrComp(toolPanelCollection.GetKeyByIndex(i), LCase(m_ActiveToolPanelKey)) <> 0) Then
-                g_WindowManager.SetVisibilityByHWnd toolPanelCollection.GetValueByIndex(i), False
+        For i = 0 To m_NumOfPanels - 1
+            
+            If (i <> m_ActiveToolPanel) Then
+                    
+                'Hide the (now inactive) panel
+                If (m_Panels(i).PanelHWnd <> 0) Then
+                    g_WindowManager.SetVisibilityByHWnd m_Panels(i).PanelHWnd, False
+                    m_Panels(i).PanelHWnd = 0
+                End If
+                    
+                'Unload the panel form to free up resources
+                Select Case i
+                
+                    Case TP_MoveSize
+                        Unload toolpanel_MoveSize
+                        Set toolpanel_MoveSize = Nothing
+    
+                    Case TP_NDFX
+                        Unload toolpanel_NDFX
+                        Set toolpanel_NDFX = Nothing
+    
+                    Case TP_Selections
+                        Unload toolpanel_Selections
+                        Set toolpanel_Selections = Nothing
+        
+                    Case TP_Text
+                        Unload toolpanel_Text
+                        Set toolpanel_Text = Nothing
+        
+                    Case TP_Typography
+                        Unload toolpanel_FancyText
+                        Set toolpanel_FancyText = Nothing
+        
+                    Case TP_Pencil
+                        Unload toolpanel_Pencil
+                        Set toolpanel_Pencil = Nothing
+        
+                    Case TP_Paintbrush
+                        Unload toolpanel_Paintbrush
+                        Set toolpanel_Paintbrush = Nothing
+                        
+                End Select
+                
             End If
+            
         Next i
         
     End If

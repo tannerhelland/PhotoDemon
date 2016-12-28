@@ -173,6 +173,10 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     
                     End If
                     
+                    'Before returning, free the target DIB from its DC.  (There's a chance our caller won't
+                    ' use the DIB right away, and this keeps an unnecessary GDI object from being created.)
+                    dstDIB.FreeFromDC
+                    
                 End If
                 
             End If
