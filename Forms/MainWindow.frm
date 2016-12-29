@@ -1952,6 +1952,7 @@ Private Sub mnuDevelopers_Click(Index As Integer)
     
     If themeRefreshRequired Then
         g_Themer.LoadDefaultPDTheme
+        g_Resources.NotifyThemeChange
         Interface.RedrawEntireUI
     End If
 
@@ -3059,68 +3060,86 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Unloading tool panels..."
     #End If
     
-    g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
-    Unload toolpanel_MoveSize
-    Set toolpanel_MoveSize = Nothing
+    'Now that toolpanels are loaded/unloaded on-demand, we don't need to manually unload them at shutdown.
+    ' Instead, just unload the *active* one (which we can infer from the active tool).
+    If (g_CurrentTool = NAV_MOVE) Then
+        
+        g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
+        Unload toolpanel_MoveSize
+        Set toolpanel_MoveSize = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+            pdDebug.LogAction "(above memory report is post-unload toolpanel_Movesize)"
+        #End If
+        
+    ElseIf (g_CurrentTool = QUICK_FIX_LIGHTING) Then
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolpanel_Movesize)"
-    #End If
+        g_WindowManager.DeactivateToolPanel True, toolpanel_NDFX.hWnd
+        Unload toolpanel_NDFX
+        Set toolpanel_NDFX = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+            pdDebug.LogAction "(above memory report is post-unload toolpanel_NDFX)"
+        #End If
+        
+    ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_WAND) Then
     
-    g_WindowManager.DeactivateToolPanel True, toolpanel_NDFX.hWnd
-    Unload toolpanel_NDFX
-    Set toolpanel_NDFX = Nothing
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
+        Unload toolpanel_Selections
+        Set toolpanel_Selections = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+            pdDebug.LogAction "(above memory report is post-unload toolpanel_Selections)"
+        #End If
+        
+    ElseIf (g_CurrentTool = VECTOR_TEXT) Then
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolpanel_NDFX)"
-    #End If
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
+        Unload toolpanel_Text
+        Set toolpanel_Text = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+            pdDebug.LogAction "(above memory report is post-unload toolpanel_Text)"
+        #End If
+        
+    ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
     
-    g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
-    Unload toolpanel_Selections
-    Set toolpanel_Selections = Nothing
+        g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
+        Unload toolpanel_FancyText
+        Set toolpanel_FancyText = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+            pdDebug.LogAction "(above memory report is post-unload toolpanel_FancyText)"
+        #End If
+        
+    ElseIf (g_CurrentTool = PAINT_BASICBRUSH) Then
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolpanel_Selections)"
-    #End If
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Pencil.hWnd
+        Unload toolpanel_Pencil
+        Set toolpanel_Pencil = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+            pdDebug.LogAction "(above memory report is post-unload toolpanel_Pencil)"
+        #End If
+        
+    ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
     
-    g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
-    Unload toolpanel_Text
-    Set toolpanel_Text = Nothing
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolpanel_Text)"
-    #End If
-    
-    g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
-    Unload toolpanel_FancyText
-    Set toolpanel_FancyText = Nothing
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolpanel_FancyText)"
-    #End If
-    
-    g_WindowManager.DeactivateToolPanel True, toolpanel_Pencil.hWnd
-    Unload toolpanel_Pencil
-    Set toolpanel_Pencil = Nothing
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolpanel_Pencil)"
-    #End If
-    
-    g_WindowManager.DeactivateToolPanel True, toolpanel_Paintbrush.hWnd
-    Unload toolpanel_Paintbrush
-    Set toolpanel_Paintbrush = Nothing
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolpanel_Paintbrush)"
-    #End If
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Paintbrush.hWnd
+        Unload toolpanel_Paintbrush
+        Set toolpanel_Paintbrush = Nothing
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
+            pdDebug.LogAction "(above memory report is post-unload toolpanel_Paintbrush)"
+        #End If
+        
+    End If
     
     'With all tool panels unloaded, unload all toolboxes as well
     #If DEBUGMODE = 1 Then

@@ -568,51 +568,39 @@ Private Sub Form_Load()
     If g_IsProgramRunning Then
         cboTextFontFace.InitializeFontList
         cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(g_InterfaceFont, vbBinaryCompare)
+    
+        cboTextRenderingHint.Clear
+        cboTextRenderingHint.AddItem "None", 0
+        cboTextRenderingHint.AddItem "Normal", 1
+        cboTextRenderingHint.AddItem "Crisp", 2
+        cboTextRenderingHint.ListIndex = 1
+        
+        'Add dummy entries to the various alignment buttons; we'll populate these with theme-specific
+        ' images in the UpdateAgainstCurrentTheme() function.
+        btsHAlignment.AddItem vbNullString, 0
+        btsHAlignment.AddItem vbNullString, 1
+        btsHAlignment.AddItem vbNullString, 2
+        
+        btsVAlignment.AddItem vbNullString, 0
+        btsVAlignment.AddItem vbNullString, 1
+        btsVAlignment.AddItem vbNullString, 2
+        
+        'Load any last-used settings for this form
+        Set lastUsedSettings = New pdLastUsedSettings
+        lastUsedSettings.SetParentForm Me
+        lastUsedSettings.LoadAllControlValues
+        
+        'Update everything against the current theme.  This will also set tooltips for various controls.
+        UpdateAgainstCurrentTheme
+        
     End If
-    
-    cboTextRenderingHint.Clear
-    cboTextRenderingHint.AddItem "None", 0
-    cboTextRenderingHint.AddItem "Normal", 1
-    cboTextRenderingHint.AddItem "Crisp", 2
-    cboTextRenderingHint.ListIndex = 1
-    
-    'Draw font style buttons
-    btnFontStyles(0).AssignImage "TEXT_BOLD"
-    btnFontStyles(1).AssignImage "TEXT_ITALIC"
-    btnFontStyles(2).AssignImage "TEXT_UNDERLINE"
-    btnFontStyles(3).AssignImage "TEXT_STRIKE"
-    
-    'Draw alignment buttons
-    btsHAlignment.AddItem "", 0
-    btsHAlignment.AddItem "", 1
-    btsHAlignment.AddItem "", 2
-    
-    btsHAlignment.AssignImageToItem 0, "TEXT_ALIGN_LEFT"
-    btsHAlignment.AssignImageToItem 1, "TEXT_ALIGN_HCENTER"
-    btsHAlignment.AssignImageToItem 2, "TEXT_ALIGN_RIGHT"
-    
-    btsVAlignment.AddItem "", 0
-    btsVAlignment.AddItem "", 1
-    btsVAlignment.AddItem "", 2
-    
-    btsVAlignment.AssignImageToItem 0, "TEXT_ALIGN_TOP"
-    btsVAlignment.AssignImageToItem 1, "TEXT_ALIGN_VCENTER"
-    btsVAlignment.AssignImageToItem 2, "TEXT_ALIGN_BOTTOM"
-       
-    'Load any last-used settings for this form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.SetParentForm Me
-    lastUsedSettings.LoadAllControlValues
-    
-    'Update everything against the current theme.  This will also set tooltips for various controls.
-    UpdateAgainstCurrentTheme
     
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    If Not (lastUsedSettings Is Nothing) Then
+    If (Not lastUsedSettings Is Nothing) Then
         lastUsedSettings.SaveAllControlValues
         lastUsedSettings.SetParentForm Nothing
     End If
@@ -780,7 +768,24 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-
+    
+    'Update any UI images against the current theme
+    Dim buttonSize As Long
+    buttonSize = FixDPI(24)
+    
+    btnFontStyles(0).AssignImage "format_bold", , , , buttonSize, buttonSize
+    btnFontStyles(1).AssignImage "format_italic", , , , buttonSize, buttonSize
+    btnFontStyles(2).AssignImage "format_underline", , , , buttonSize, buttonSize
+    btnFontStyles(3).AssignImage "format_strikethrough", , , , buttonSize, buttonSize
+    
+    btsHAlignment.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize
+    btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize
+    btsHAlignment.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize
+    
+    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize
+    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize
+    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize
+        
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me

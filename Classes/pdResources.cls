@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Resource Manager
 'Copyright 2016-2016 by Tanner Helland
 'Created: 13/December/16
-'Last updated: 27/December/16
-'Last update: add debug code for testing
+'Last updated: 29/December/16
+'Last update: add rudimentary monochrome icon support
 '
 'PhotoDemon needs to include a whole swatch of custom resources.  These resources take up a lot of space,
 ' and we also need to pull different resources depending on things like screen DPI.  To simplify this process,
@@ -29,6 +29,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Const DBG_TEST_MONOCHROME_ICONS As Boolean = False
+
 'If a resource file was loaded successfully, this will be set to TRUE.  You *must* check this value before
 ' attempting to retrieve individual resources.
 Private m_ResourcesAvailable As Boolean
@@ -38,7 +40,10 @@ Private m_ResourcesAvailable As Boolean
 Private m_Resources As pdPackager2
 
 'We use a temporary DIB to pull resources from file, prior to applying any real-time coloring changes.
-Private m_TmpDIB As pdDIB
+Private m_tmpDIB As pdDIB
+
+'Some theme-related settings are cached to improve performance
+Private m_ThemeIconColor As Long, m_ThemeIconColorMenu As Long, m_ThemeIconsMonochrome As Boolean
 
 'Called early in PD's startup, this function checks to see if we've already extracted PD's resource file to a
 ' separate working folder.  If we have, grab the data from there instead of from the .exe.  (This is helpful
@@ -56,6 +61,10 @@ Public Function LoadInitialResourceCollection() As Boolean
         
     #End If
     
+    'Pull the "monochrome icon" setting from the theme engine.
+    ' TODO: actually implement this!
+    m_ThemeIconsMonochrome = DBG_TEST_MONOCHROME_ICONS
+    
     'TODO!  Someday we'll build the (finished) resource file directly into the .exe, but for now,
     ' load it from a static debug folder.
     
@@ -71,6 +80,11 @@ End Function
 Public Function AreResourcesAvailable() As Boolean
     AreResourcesAvailable = m_ResourcesAvailable
 End Function
+
+Public Sub NotifyThemeChange()
+    m_ThemeIconColor = g_Themer.GetGenericUIColor(UI_IconMonochrome)
+    m_ThemeIconColorMenu = g_Themer.GetGenericUIColor(UI_IconMonochromeMenu)
+End Sub
 
 Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Single = 0#, Optional ByVal dstIsMenu As Boolean = False) As Boolean
     
@@ -104,18 +118,18 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     imgBPP = cXML.GetUniqueTag_Long("bpp")
                     
                     'Prep a temporary DIB (as we may need to resize the DIB to meet the user's request)
-                    If (m_TmpDIB Is Nothing) Then Set m_TmpDIB = New pdDIB
+                    If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
                     
                     Dim needToCreateDIB As Boolean: needToCreateDIB = False
-                    If (m_TmpDIB.GetDIBWidth <> imgWidth) Then
+                    If (m_tmpDIB.GetDIBWidth <> imgWidth) Then
                         needToCreateDIB = True
-                    ElseIf (m_TmpDIB.GetDIBHeight <> imgHeight) Then
+                    ElseIf (m_tmpDIB.GetDIBHeight <> imgHeight) Then
                         needToCreateDIB = True
-                    ElseIf (m_TmpDIB.GetDIBColorDepth <> imgBPP) Then
+                    ElseIf (m_tmpDIB.GetDIBColorDepth <> imgBPP) Then
                         needToCreateDIB = True
                     End If
                     
-                    If needToCreateDIB Then m_TmpDIB.CreateBlank imgWidth, imgHeight, imgBPP, 0, 0
+                    If needToCreateDIB Then m_tmpDIB.CreateBlank imgWidth, imgHeight, imgBPP, 0, 0
                     
                     'We now have to use one of two strategies to retrieve the DIB
                     ' 1) Pull the actual DIB bits out of the file.  This is only an option if the image
@@ -126,15 +140,15 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                         Dim srcBytes() As Byte
                         ReDim srcBytes(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
                         LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, VarPtr(srcBytes(0, 0)))
-                        If LoadImageResource Then LoadImageResource = DIB_Support.ApplyTransparencyTable(m_TmpDIB, srcBytes)
+                        If LoadImageResource Then LoadImageResource = DIB_Support.ApplyTransparencyTable(m_tmpDIB, srcBytes)
                     Else
                         Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                        m_TmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                        m_tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                         LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, tmpDIBPointer)
                     End If
                     
                     'At present, all resources contain premultiplied alpha, so force the corresponding state now
-                    m_TmpDIB.SetInitialAlphaPremultiplicationState True
+                    m_tmpDIB.SetInitialAlphaPremultiplicationState True
                     
                     'See if the DIB requires real-time coloration
                     
@@ -153,24 +167,32 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                         dstDIB.ResetDIB 0
                     End If
                     
-                    dstDIB.SetAlphaPremultiplication True
-                    GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_TmpDIB, 0, 0, imgWidth, imgHeight, , GP_IM_HighQualityBicubic, , , , True
+                    dstDIB.SetInitialAlphaPremultiplicationState True
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_tmpDIB, 0, 0, imgWidth, imgHeight, , GP_IM_HighQualityBicubic, , , , True
                     
-                    'If the image supports real-time coloration, apply it now (based on the currently selected theme).
-                    If cXML.GetUniqueTag_Boolean("rt-clr") Then
+                    'If the user wants monochrome icons, this overrides all other color settings
+                    Dim targetColor As Long
                     
-                        'Retrieve the image's color.  (NOTE: the specified color will be overridden with
-                        ' monochrome if the monochrome icon preference is active.)
-                        ' TODO: implement monochrome handling here
-                        Dim targetColor As Long
-                        If ((g_Themer.GetCurrentThemeClass = PDTC_Light) Or dstIsMenu) Then
-                            targetColor = cXML.GetUniqueTag_Long("clr-l")
-                        ElseIf (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then
-                            targetColor = cXML.GetUniqueTag_Long("clr-d")
+                    If m_ThemeIconsMonochrome Then
+                        If dstIsMenu Then targetColor = m_ThemeIconColorMenu Else targetColor = m_ThemeIconColor
+                        DIB_Support.ColorizeDIB dstDIB, targetColor
+                    Else
+                    
+                        'If the image supports real-time coloration, apply it now (based on the currently selected theme).
+                        If cXML.GetUniqueTag_Boolean("rt-clr") Then
+                        
+                            'Retrieve the image's color.  (NOTE: the specified color will be overridden with
+                            ' monochrome if the monochrome icon preference is active; see the branch above.)
+                            If ((g_Themer.GetCurrentThemeClass = PDTC_Light) Or dstIsMenu) Then
+                                targetColor = cXML.GetUniqueTag_Long("clr-l")
+                            ElseIf (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then
+                                targetColor = cXML.GetUniqueTag_Long("clr-d")
+                            End If
+                            
+                            DIB_Support.ColorizeDIB dstDIB, targetColor
+                        
                         End If
                         
-                        DIB_Support.ColorizeDIB dstDIB, targetColor
-                    
                     End If
                     
                     'Before returning, free the target DIB from its DC.  (There's a chance our caller won't

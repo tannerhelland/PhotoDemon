@@ -37,6 +37,8 @@
 			<GrayLight>#5b5b5b</GrayLight>
 			<GrayNeutral>#7f7f7f</GrayNeutral>
 			<GrayUltralight>#363636</GrayUltralight>
+			<MonochromeIcon>#cacaca</MonochromeIcon>
+			<MonochromeIconMenu>#373737</MonochromeIconMenu>
 			<TextDefault>#c0c0c0</TextDefault>
 			<TextDark>#d9d9d9</TextDark>
 			<TextEditBox>TextDark</TextEditBox>
@@ -565,6 +567,9 @@
 				<UniversalGrayLight>GrayLight</UniversalGrayLight>
 				<UniversalGrayNeutral>GrayNeutral</UniversalGrayNeutral>
 				<UniversalGrayUltralight>GrayUltralight</UniversalGrayUltralight>
+				<UniversalIconMenuMonochrome>MonochromeIconMenu</UniversalIconMenuMonochrome>
+				<UniversalIconMonochrome>MonochromeIcon</UniversalIconMonochrome>
+				<UniversalImageDisabled>GrayLight</UniversalImageDisabled>
 				<UniversalLineEdge>Black</UniversalLineEdge>
 				<UniversalLineCenter>White</UniversalLineCenter>
 				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>

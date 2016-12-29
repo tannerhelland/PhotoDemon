@@ -443,8 +443,8 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 
                     'If the last selection Undo param string does not match the current selection param string, the user has
                     ' modified the selection in some way since the last Undo was created.  Create a new entry now.
-                    If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.getSelectionParamString, vbTextCompare) <> 0 Then
-                        pdImages(g_CurrentImage).undoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.getSelectionParamString, UNDO_SELECTION, , -1
+                    If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, vbTextCompare) <> 0 Then
+                        pdImages(g_CurrentImage).undoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, , -1
                     End If
                 
                 End If
@@ -1054,7 +1054,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             Filters_Miscellaneous.AutoContrastCorrect
         
         Case "Auto correct lighting"
-            FormLevels.MapImageLevels FormLevels.getIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
+            FormLevels.MapImageLevels FormLevels.GetIdealLevelParamString(pdImages(g_CurrentImage).GetActiveDIB)
             Unload FormLevels
             
         Case "Auto correct shadows and highlights"
@@ -1931,7 +1931,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         Dim timingString As String
         timingString = g_Language.TranslateMessage("Time taken")
-        timingString = timingString & ": " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(m_ProcessingTime) * 1000), "#0.0000") & " "
+        timingString = timingString & ": " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(m_ProcessingTime)), "#0.0000") & " "
         timingString = timingString & g_Language.TranslateMessage("seconds")
         
         Message timingString

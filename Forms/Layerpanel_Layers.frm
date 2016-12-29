@@ -360,12 +360,6 @@ Private Sub Form_Load()
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeDropDown cboBlendMode, BL_NORMAL
     Interface.PopulateAlphaModeDropDown cboAlphaMode, LA_NORMAL
-        
-    'Add images to the layer action buttons at the bottom of the toolbox
-    cmdLayerAction(0).AssignImage "LAYER_ADD_32", , 50
-    cmdLayerAction(1).AssignImage "LAYER_REMOVE_32", , 50
-    cmdLayerAction(2).AssignImage "LAYER_UP_32", , 50
-    cmdLayerAction(3).AssignImage "LAYER_DOWN_32", , 50
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -482,6 +476,14 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    'Add images to the layer action buttons at the bottom of the toolbox
+    Dim buttonSize As Long
+    buttonSize = FixDPI(26)
+    cmdLayerAction(0).AssignImage "layer_add", , , , buttonSize, buttonSize
+    cmdLayerAction(1).AssignImage "layer_delete", , , , buttonSize, buttonSize
+    cmdLayerAction(2).AssignImage "layer_up", , , , buttonSize, buttonSize
+    cmdLayerAction(3).AssignImage "layer_down", , , , buttonSize, buttonSize
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

@@ -100,29 +100,32 @@ Public Enum PD_UI_COLOR_LIST
     UI_AccentUltraLight = 6
     UI_Background = 7
     UI_CanvasElement = 8
-    UI_ErrorRed = 9
-    UI_GrayDefault = 10
-    UI_GrayDisabled = 11
-    UI_GrayDark = 12
-    UI_GrayLight = 13
-    UI_GrayNeutral = 14
-    UI_GrayUltraLight = 15
-    UI_LineEdge = 16
-    UI_LineCenter = 17
-    UI_TextReadOnly = 18
-    UI_TextClickableSelected = 19
-    UI_TextClickableUnselected = 20
-    UI_ChannelRed = 21
-    UI_ChannelGreen = 22
-    UI_ChannelBlue = 23
-    [_Last] = 23
-    [_Count] = 24
+    UI_ChannelRed = 9
+    UI_ChannelGreen = 10
+    UI_ChannelBlue = 11
+    UI_ErrorRed = 12
+    UI_GrayDefault = 13
+    UI_GrayDisabled = 14
+    UI_GrayDark = 15
+    UI_GrayLight = 16
+    UI_GrayNeutral = 17
+    UI_GrayUltraLight = 18
+    UI_IconMonochrome = 19
+    UI_IconMonochromeMenu = 20
+    UI_ImageDisabled = 21
+    UI_LineEdge = 22
+    UI_LineCenter = 23
+    UI_TextReadOnly = 24
+    UI_TextClickableSelected = 25
+    UI_TextClickableUnselected = 26
+    [_Last] = 26
+    [_Count] = 27
 End Enum
 
 #If False Then
-    Private Const UI_Accent = 0, UI_AccentDark = 1, UI_AccentLight = 2, UI_AccentSemiDark = 3, UI_AccentSemiLight = 4, UI_AccentUltraDark = 5, UI_AccentUltraLight = 6, UI_Background = 7, UI_CanvasElement = 8, UI_ErrorRed = 9
-    Private Const UI_GrayDefault = 10, UI_GrayDisabled = 11, UI_GrayDark = 12, UI_GrayLight = 13, UI_GrayNeutral = 14, UI_GrayUltraLight = 15, UI_LineEdge = 16, UI_LineCenter = 17, UI_TextReadOnly = 18, UI_TextClickableSelected = 19
-    Private Const UI_TextClickableUnselected = 20, UI_ChannelRed = 21, UI_ChannelGreen = 22, UI_ChannelBlue = 23
+    Private Const UI_Accent = 0, UI_AccentDark = 1, UI_AccentLight = 2, UI_AccentSemiDark = 3, UI_AccentSemiLight = 4, UI_AccentUltraDark = 5, UI_AccentUltraLight = 6, UI_Background = 7, UI_CanvasElement = 8, UI_ChannelRed = 9
+    Private Const UI_ChannelGreen = 10, UI_ChannelBlue = 11, UI_ErrorRed = 12, UI_GrayDefault = 13, UI_GrayDisabled = 14, UI_GrayDark = 15, UI_GrayLight = 16, UI_GrayNeutral = 17, UI_GrayUltraLight = 18, UI_IconMonochrome = 19
+    Private Const UI_IconMonochromeMenu = 20, UI_ImageDisabled = 21, UI_LineEdge = 22, UI_LineCenter = 23, UI_TextReadOnly = 24, UI_TextClickableSelected = 25, UI_TextClickableUnselected = 26
 #End If
 
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
@@ -136,7 +139,7 @@ Private m_Subclass As cSelfSubHookCallback
 ' we'll fall back to PD's default light-on-dark theme.
 Public Sub LoadDefaultPDTheme()
 
-    'By default, we assume a light-on-dark theme.  (This will be overridden by a successful theme load.)
+    'By default, assume a light-on-dark theme.  (This will be overridden by a successful theme load.)
     m_ThemeClass = PDTC_Light
     
     'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the IDE.)
@@ -530,6 +533,9 @@ Private Sub CacheUniversalColors()
         .LoadThemeColor UI_GrayLight, "UniversalGrayLight", IDE_GRAY
         .LoadThemeColor UI_GrayNeutral, "UniversalGrayNeutral", IDE_GRAY
         .LoadThemeColor UI_GrayUltraLight, "UniversalGrayUltralight", IDE_GRAY
+        .LoadThemeColor UI_IconMonochrome, "UniversalIconMonochrome", IDE_BLACK
+        .LoadThemeColor UI_IconMonochromeMenu, "UniversalIconMenuMonochrome", IDE_BLACK
+        .LoadThemeColor UI_ImageDisabled, "UniversalImageDisabled", IDE_GRAY
         .LoadThemeColor UI_LineEdge, "UniversalLineEdge", IDE_BLUE
         .LoadThemeColor UI_LineCenter, "UniversalLineCenter", IDE_GRAY
         .LoadThemeColor UI_TextReadOnly, "UniversalTextReadOnly", IDE_BLACK

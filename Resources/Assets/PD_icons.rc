@@ -351,55 +351,55 @@ ABOUT_MINUS  CUSTOM  MOVEABLE        LOADONCALL      minus_24.png
 ABOUT_PAUSE  CUSTOM  MOVEABLE        LOADONCALL      pause_24.png
 
 //File tool area toolbox icons
-TF_NEW       CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_new_24.png
-TF_OPEN      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_open_24.png
-TF_CLOSE     CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_close_24.png
-TF_SAVE      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_save_24.png
-TF_SAVEPDI   CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_saveas_24.png
-TF_SAVEAS    CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_export_24.png
-TF_UNDO      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_undo_24.png
-TF_FADE      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_fade_24.png
-TF_REDO      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_redo_24.png
+//TF_NEW       CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_new_24.png
+//TF_OPEN      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_open_24.png
+//TF_CLOSE     CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_close_24.png
+//TF_SAVE      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_save_24.png
+//TF_SAVEPDI   CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_saveas_24.png
+//TF_SAVEAS    CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_export_24.png
+//TF_UNDO      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_undo_24.png
+//TF_FADE      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_fade_24.png
+//TF_REDO      CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_redo_24.png
 
 //Canvas tool area toolbox icons
-T_HAND       CUSTOM  MOVEABLE        LOADONCALL      toolbox_hand_24.png
-T_MOVE       CUSTOM  MOVEABLE        LOADONCALL      toolbox_move_arrow_24.png
-T_NDFX       CUSTOM  MOVEABLE        LOADONCALL      toolbox_ndfx_24.png
-T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_rect_24.png
-T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_circle_24.png
-T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_line_24.png
-T_SELPOLYGON CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_polygon_24.png
-T_SELLASSO   CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_lasso_24.png
-T_SELWAND    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_wand_24.png
+//T_HAND       CUSTOM  MOVEABLE        LOADONCALL      toolbox_hand_24.png
+//T_MOVE       CUSTOM  MOVEABLE        LOADONCALL      toolbox_move_arrow_24.png
+//T_NDFX       CUSTOM  MOVEABLE        LOADONCALL      toolbox_ndfx_24.png
+//T_SELRECT    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_rect_24.png
+//T_SELCIRCLE  CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_circle_24.png
+//T_SELLINE    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_line_24.png
+//T_SELPOLYGON CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_polygon_24.png
+//T_SELLASSO   CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_lasso_24.png
+//T_SELWAND    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_wand_24.png
 
 //Vector tool area toolbox icons
-TV_TEXT      CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_text_24.png
-TV_FANCYTEXT CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_fancy_text_24.png
+//TV_TEXT      CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_text_24.png
+//TV_FANCYTEXT CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_fancy_text_24.png
 
 //Paint tool area toolbox icons
-PNT_SOFTBRUSH  CUSTOM MOVEABLE       LOADONCALL      toolbox_paint_pencil_24.png
-PNT_BASICBRUSH CUSTOM MOVEABLE       LOADONCALL      toolbox_paint_basicbrush_24.png
+//PNT_SOFTBRUSH  CUSTOM MOVEABLE       LOADONCALL      toolbox_paint_pencil_24.png
+//PNT_BASICBRUSH CUSTOM MOVEABLE       LOADONCALL      toolbox_paint_basicbrush_24.png
 
 //Tool options area icons
-TO_APPLY     CUSTOM  MOVEABLE        LOADONCALL      apply_changes.png
-TEXT_BOLD    CUSTOM  MOVEABLE        LOADONCALL      text_bold_24.png
-TEXT_ITALIC  CUSTOM  MOVEABLE        LOADONCALL      text_italic_24.png
-TEXT_UNDERLINE CUSTOM  MOVEABLE      LOADONCALL      text_underline_24.png
-TEXT_STRIKE  CUSTOM  MOVEABLE        LOADONCALL      text_strikeout_24.png
-TEXT_ALIGN_LEFT    CUSTOM  MOVEABLE  LOADONCALL      text_align_left_24.png
-TEXT_ALIGN_HCENTER CUSTOM  MOVEABLE  LOADONCALL      text_align_horizontal_center_24.png
-TEXT_ALIGN_RIGHT   CUSTOM  MOVEABLE  LOADONCALL      text_align_right_24.png
-TEXT_ALIGN_TOP     CUSTOM  MOVEABLE  LOADONCALL      text_align_top_24.png
-TEXT_ALIGN_VCENTER CUSTOM  MOVEABLE  LOADONCALL      text_align_vertical_center_24.png
-TEXT_ALIGN_BOTTOM  CUSTOM  MOVEABLE  LOADONCALL      text_align_bottom_24.png
+//TO_APPLY     CUSTOM  MOVEABLE        LOADONCALL      apply_changes.png
+//TEXT_BOLD    CUSTOM  MOVEABLE        LOADONCALL      text_bold_24.png
+//TEXT_ITALIC  CUSTOM  MOVEABLE        LOADONCALL      text_italic_24.png
+//TEXT_UNDERLINE CUSTOM  MOVEABLE      LOADONCALL      text_underline_24.png
+//TEXT_STRIKE  CUSTOM  MOVEABLE        LOADONCALL      text_strikeout_24.png
+//TEXT_ALIGN_LEFT    CUSTOM  MOVEABLE  LOADONCALL      text_align_left_24.png
+//TEXT_ALIGN_HCENTER CUSTOM  MOVEABLE  LOADONCALL      text_align_horizontal_center_24.png
+//TEXT_ALIGN_RIGHT   CUSTOM  MOVEABLE  LOADONCALL      text_align_right_24.png
+//TEXT_ALIGN_TOP     CUSTOM  MOVEABLE  LOADONCALL      text_align_top_24.png
+//TEXT_ALIGN_VCENTER CUSTOM  MOVEABLE  LOADONCALL      text_align_vertical_center_24.png
+//TEXT_ALIGN_BOTTOM  CUSTOM  MOVEABLE  LOADONCALL      text_align_bottom_24.png
 
 //Layer toolbox (note that other layer toolbox entries are in the Layer Menu section, above
-EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
-EYE_CLOSE    CUSTOM  MOVEABLE        LOADONCALL      eye_close.png
-LAYER_UP_32  CUSTOM  MOVEABLE        LOADONCALL      arrowhead_up_32.png
-LAYER_DOWN_32 CUSTOM MOVEABLE        LOADONCALL      arrowhead_down_32.png
-LAYER_ADD_32 CUSTOM  MOVEABLE        LOADONCALL      layer_add_32.png
-LAYER_REMOVE_32 CUSTOM MOVEABLE      LOADONCALL      layer_remove_32.png
+//EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
+//EYE_CLOSE    CUSTOM  MOVEABLE        LOADONCALL      eye_close.png
+//LAYER_UP_32  CUSTOM  MOVEABLE        LOADONCALL      arrowhead_up_32.png
+//LAYER_DOWN_32 CUSTOM MOVEABLE        LOADONCALL      arrowhead_down_32.png
+//LAYER_ADD_32 CUSTOM  MOVEABLE        LOADONCALL      layer_add_32.png
+//LAYER_REMOVE_32 CUSTOM MOVEABLE      LOADONCALL      layer_remove_32.png
 
 //Cursors
 HANDOPEN     CUSTOM  MOVEABLE        LOADONCALL      openhand.png
@@ -471,7 +471,7 @@ PRNT_MLTIMGS CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_imag
 PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_pages.png
 
 //Etched icon for "load an image" screen
-IMAGE_ETCH_256 CUSTOM  MOVEABLE      LOADONCALL      image_etched_256.png
+//IMAGE_ETCH_256 CUSTOM  MOVEABLE      LOADONCALL      image_etched_256.png
 
 //Control arrows used on either side of the hue box in the color selection dialog
 CLR_ARROW_L  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_left.png
@@ -484,10 +484,10 @@ LVL_ARROW_GRY CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_gray.png
 LVL_ARROW_WHT CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_white.png
 
 //Channel ID images
-CHANNEL_RED   CUSTOM  MOVEABLE       LOADONCALL      red.png
-CHANNEL_GREEN CUSTOM  MOVEABLE       LOADONCALL      green.png
-CHANNEL_BLUE  CUSTOM  MOVEABLE       LOADONCALL      blue.png
-CHANNEL_RGB   CUSTOM  MOVEABLE       LOADONCALL      RGB.png
+//CHANNEL_RED   CUSTOM  MOVEABLE       LOADONCALL      red.png
+//CHANNEL_GREEN CUSTOM  MOVEABLE       LOADONCALL      green.png
+//CHANNEL_BLUE  CUSTOM  MOVEABLE       LOADONCALL      blue.png
+//CHANNEL_RGB   CUSTOM  MOVEABLE       LOADONCALL      RGB.png
 
 //Image tabstrip run-time icons
 CLOSE_MINI_RED   CUSTOM  MOVEABLE       LOADONCALL      close_red_16.png

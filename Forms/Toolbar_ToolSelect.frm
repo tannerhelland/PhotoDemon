@@ -1155,6 +1155,19 @@ Public Sub UpdateAgainstCurrentTheme()
     'cmdFile(FILE_SAVEAS_FLAT).AssignImage "TF_SAVEAS", , 50, , buttonImageSize, buttonImageSize
     'cmdFile(FILE_UNDO).AssignImage "TF_UNDO", , 50, , buttonImageSize, buttonImageSize
     'cmdFile(FILE_REDO).AssignImage "TF_REDO", , , , buttonImageSize, buttonImageSize
+    'cmdTools(NAV_DRAG).AssignImage "T_HAND", , , , buttonImageSize, buttonImageSize
+    'cmdTools(NAV_MOVE).AssignImage "T_MOVE", , , , buttonImageSize, buttonImageSize
+    'cmdTools(QUICK_FIX_LIGHTING).AssignImage "T_NDFX", , , , buttonImageSize, buttonImageSize
+    'cmdTools(SELECT_RECT).AssignImage "T_SELRECT", , , , buttonImageSize, buttonImageSize
+    'cmdTools(SELECT_CIRC).AssignImage "T_SELCIRCLE", , , , buttonImageSize, buttonImageSize
+    'cmdTools(SELECT_LINE).AssignImage "T_SELLINE", , , , buttonImageSize, buttonImageSize
+    'cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON", , , , buttonImageSize, buttonImageSize
+    'cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO", , , , buttonImageSize, buttonImageSize
+    'cmdTools(SELECT_WAND).AssignImage "T_SELWAND", , , , buttonImageSize, buttonImageSize
+    'cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50, buttonImageSize, buttonImageSize
+    'cmdTools(VECTOR_FANCYTEXT).AssignImage "TV_FANCYTEXT", , , 50, buttonImageSize, buttonImageSize
+    'cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_SOFTBRUSH", , , , buttonImageSize, buttonImageSize
+    'cmdTools(PAINT_SOFTBRUSH).AssignImage "PNT_BASICBRUSH", , , , buttonImageSize, buttonImageSize
     
     cmdFile(FILE_NEW).AssignImage "file_new", , , , buttonImageSize, buttonImageSize
     cmdFile(FILE_OPEN).AssignImage "file_open", , , , buttonImageSize, buttonImageSize
@@ -1167,23 +1180,24 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdFile(FILE_REDO).AssignImage "edit_redo", , , , buttonImageSize, buttonImageSize
     
     'Initialize canvas tool button images
-    cmdTools(NAV_DRAG).AssignImage "T_HAND", , , , buttonImageSize, buttonImageSize
-    cmdTools(NAV_MOVE).AssignImage "T_MOVE", , , , buttonImageSize, buttonImageSize
-    cmdTools(QUICK_FIX_LIGHTING).AssignImage "T_NDFX", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_RECT).AssignImage "T_SELRECT", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_CIRC).AssignImage "T_SELCIRCLE", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_LINE).AssignImage "T_SELLINE", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_WAND).AssignImage "T_SELWAND", , , , buttonImageSize, buttonImageSize
+    cmdTools(NAV_DRAG).AssignImage "nd_hand", , , , buttonImageSize, buttonImageSize
+    cmdTools(NAV_MOVE).AssignImage "nd_move", , , , buttonImageSize, buttonImageSize
+    cmdTools(QUICK_FIX_LIGHTING).AssignImage "nd_quickfix", , , , buttonImageSize, buttonImageSize
     
-    cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50, buttonImageSize, buttonImageSize
-    cmdTools(VECTOR_FANCYTEXT).AssignImage "TV_FANCYTEXT", , , 50, buttonImageSize, buttonImageSize
+    cmdTools(SELECT_RECT).AssignImage "select_rect", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_CIRC).AssignImage "select_circle", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_LINE).AssignImage "select_line", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_POLYGON).AssignImage "select_polygon", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_LASSO).AssignImage "select_lasso", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_WAND).AssignImage "select_wand", , , , buttonImageSize, buttonImageSize
+    
+    cmdTools(VECTOR_TEXT).AssignImage "text_basic", , , , buttonImageSize, buttonImageSize
+    cmdTools(VECTOR_FANCYTEXT).AssignImage "text_fancy", , , , buttonImageSize, buttonImageSize
     
     'TODO: these icons were mistakenly reversed in the resource file... we'll fix it when we move to
     ' a custom resource file format
-    cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_SOFTBRUSH", , , , buttonImageSize, buttonImageSize
-    cmdTools(PAINT_SOFTBRUSH).AssignImage "PNT_BASICBRUSH", , , , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_BASICBRUSH).AssignImage "paint_pencil", , , , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , , , buttonImageSize, buttonImageSize
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

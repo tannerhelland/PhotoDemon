@@ -1343,28 +1343,15 @@ Private Sub Form_Load()
         cboTextRenderingHint.AddItem "crisp", 2
         cboTextRenderingHint.ListIndex = 1
         
-        'Draw font style buttons
-        btnFontStyles(0).AssignImage "TEXT_BOLD"
-        btnFontStyles(1).AssignImage "TEXT_ITALIC"
-        btnFontStyles(2).AssignImage "TEXT_UNDERLINE"
-        btnFontStyles(3).AssignImage "TEXT_STRIKE"
+        'Add dummy entries to the various alignment buttons; we'll populate these with theme-specific
+        ' images in the UpdateAgainstCurrentTheme() function.
+        btsHAlignment.AddItem vbNullString, 0
+        btsHAlignment.AddItem vbNullString, 1
+        btsHAlignment.AddItem vbNullString, 2
         
-        'Draw alignment buttons
-        btsHAlignment.AddItem "", 0
-        btsHAlignment.AddItem "", 1
-        btsHAlignment.AddItem "", 2
-        
-        btsHAlignment.AssignImageToItem 0, "TEXT_ALIGN_LEFT"
-        btsHAlignment.AssignImageToItem 1, "TEXT_ALIGN_HCENTER"
-        btsHAlignment.AssignImageToItem 2, "TEXT_ALIGN_RIGHT"
-        
-        btsVAlignment.AddItem "", 0
-        btsVAlignment.AddItem "", 1
-        btsVAlignment.AddItem "", 2
-        
-        btsVAlignment.AssignImageToItem 0, "TEXT_ALIGN_TOP"
-        btsVAlignment.AssignImageToItem 1, "TEXT_ALIGN_VCENTER"
-        btsVAlignment.AssignImageToItem 2, "TEXT_ALIGN_BOTTOM"
+        btsVAlignment.AddItem vbNullString, 0
+        btsVAlignment.AddItem vbNullString, 1
+        btsVAlignment.AddItem vbNullString, 2
         
         'Fill various character positioning settings
         cboCharMirror.Clear
@@ -1384,7 +1371,6 @@ Private Sub Form_Load()
         cboCharCase.AddItem "traditional Chinese", 6
         If g_IsWin7OrLater Then cboCharCase.AddItem "Titlecase", 7
         cboCharCase.ListIndex = 0
-        
         
         'Fill wordwrap options
         cboWordWrap.Clear
@@ -1845,16 +1831,27 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-
+    
+    'Update any UI images against the current theme
+    Dim buttonSize As Long
+    buttonSize = FixDPI(24)
+    
+    btnFontStyles(0).AssignImage "format_bold", , , , buttonSize, buttonSize
+    btnFontStyles(1).AssignImage "format_italic", , , , buttonSize, buttonSize
+    btnFontStyles(2).AssignImage "format_underline", , , , buttonSize, buttonSize
+    btnFontStyles(3).AssignImage "format_strikethrough", , , , buttonSize, buttonSize
+    
+    btsHAlignment.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize
+    btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize
+    btsHAlignment.AssignImageToItem 2, "format_alignright", , buttonSize, buttonSize
+    
+    btsVAlignment.AssignImageToItem 0, "format_aligntop", , buttonSize, buttonSize
+    btsVAlignment.AssignImageToItem 1, "format_alignmiddle", , buttonSize, buttonSize
+    btsVAlignment.AssignImageToItem 2, "format_alignbottom", , buttonSize, buttonSize
+        
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
 
 End Sub
-
-
-
-
-
-
 

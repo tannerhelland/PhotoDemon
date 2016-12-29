@@ -316,9 +316,13 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 
 'Two sub-panels are available on the "move options" panel
 Private Sub btsMoveOptions_Click(ByVal buttonIndex As Long)
+    UpdateSubpanel
+End Sub
+
+Private Sub UpdateSubpanel()
     Dim i As Long
     For i = 0 To ctlMoveContainer.UBound
-        ctlMoveContainer(i).Visible = CBool(i = buttonIndex)
+        ctlMoveContainer(i).Visible = CBool(i = btsMoveOptions.ListIndex)
     Next i
 End Sub
 
@@ -326,7 +330,7 @@ Private Sub cboLayerResizeQuality_Click()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    If (Not Tool_Support.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -374,10 +378,13 @@ Private Sub chkRotateNode_Click()
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
+    If (g_OpenImageCount = 0) Then Exit Sub
     Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdLayerMove_Click(Index As Integer)
+    
+    If (g_OpenImageCount = 0) Then Exit Sub
     
     Select Case Index
     
@@ -396,13 +403,10 @@ Private Sub Form_Load()
     btsMoveOptions.AddItem "angle and shear", 1
     btsMoveOptions.AddItem "tool settings", 2
     btsMoveOptions.ListIndex = 0
-    btsMoveOptions_Click 0
+    UpdateSubpanel
     
-    'Several reset/apply buttons on this form use identical images (and nearly identical tooltips)
-    cmdLayerMove(0).AssignImage "TO_APPLY", , 50
+    'Several reset/apply buttons on this form have very similar purposes
     cmdLayerMove(0).AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
-    
-    cmdLayerAffinePermanent.AssignImage "TO_APPLY", , 50
     cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
     cboLayerResizeQuality.Clear
@@ -424,7 +428,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    If Not (lastUsedSettings Is Nothing) Then
+    If (Not lastUsedSettings Is Nothing) Then
         lastUsedSettings.SaveAllControlValues
         lastUsedSettings.SetParentForm Nothing
     End If
@@ -435,7 +439,7 @@ Private Sub sltLayerAngle_Change()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    If (Not Tool_Support.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -622,5 +626,13 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    'UI images must be updated against theme-specific colors
+    Dim buttonSize As Long
+    buttonSize = FixDPI(32)
+    cmdLayerMove(0).AssignImage "generic_commit", , , , buttonSize, buttonSize
+    cmdLayerAffinePermanent.AssignImage "generic_commit", , , , buttonSize, buttonSize
+    
     ApplyThemeAndTranslations Me
+    
 End Sub
