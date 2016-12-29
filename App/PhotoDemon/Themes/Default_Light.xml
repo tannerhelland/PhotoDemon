@@ -37,6 +37,8 @@
 			<GrayLight>#bababa</GrayLight>
 			<GrayUltralight>#ebebeb</GrayUltralight>
 			<GrayNeutral>#7f7f7f</GrayNeutral>
+			<MonochromeIcon>#373737</MonochromeIcon>
+			<MonochromeIconMenu>#373737</MonochromeIconMenu>
 			<TextDefault>#404040</TextDefault>
 			<TextDark>#212121</TextDark>
 			<TextEditBox>TextDark</TextEditBox>
@@ -563,6 +565,9 @@
 				<UniversalGrayLight>GrayLight</UniversalGrayLight>
 				<UniversalGrayNeutral>GrayNeutral</UniversalGrayNeutral>
 				<UniversalGrayUltralight>GrayUltralight</UniversalGrayUltralight>
+				<UniversalIconMenuMonochrome>MonochromeIconMenu</UniversalIconMenuMonochrome>
+				<UniversalIconMonochrome>MonochromeIcon</UniversalIconMonochrome>
+				<UniversalImageDisabled>GrayLight</UniversalImageDisabled>
 				<UniversalLineEdge>Black</UniversalLineEdge>
 				<UniversalLineCenter>White</UniversalLineCenter>
 				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>

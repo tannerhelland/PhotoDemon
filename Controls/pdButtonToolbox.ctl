@@ -329,7 +329,7 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     
     'Paint the disabled segment of the sprite strip.  (For this, note that we use a theme-level disabled color.)
     Dim disabledColor As Long
-    disabledColor = g_Themer.GetGenericUIColor(UI_GrayDisabled)
+    disabledColor = g_Themer.GetGenericUIColor(UI_ImageDisabled)
     
     Dim dR As Integer, dG As Integer, dB As Integer
     dR = Colors.ExtractRed(disabledColor)

@@ -195,6 +195,7 @@ End Sub
 Private Sub cmdQuickFix_Click(Index As Integer)
 
     'Do nothing unless an image has been loaded
+    If (g_OpenImageCount = 0) Then Exit Sub
     If (pdImages(g_CurrentImage) Is Nothing) Then Exit Sub
     If Not pdImages(g_CurrentImage).IsActive Then Exit Sub
 
@@ -250,10 +251,6 @@ End Sub
 
 Private Sub Form_Load()
 
-    'Initialize quick-fix tools
-    cmdQuickFix(0).AssignImage "CMDBAR_RESET", , 50
-    cmdQuickFix(1).AssignImage "TO_APPLY", , 50
-    
     cmdQuickFix(0).AssignTooltip "Reset all quick-fix adjustment values"
     cmdQuickFix(1).AssignTooltip "Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance."
     
@@ -329,7 +326,13 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-
+    
+    'UI icons must be updated against theme-specific colors
+    Dim buttonSize As Long
+    buttonSize = FixDPI(32)
+    cmdQuickFix(0).AssignImage "generic_reset", , , , buttonSize, buttonSize
+    cmdQuickFix(1).AssignImage "generic_commit", , , , buttonSize, buttonSize
+    
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
@@ -337,7 +340,7 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 Private Sub sltQuickFix_GotFocusAPI(Index As Integer)
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_NDFX Index, sltQuickFix(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 

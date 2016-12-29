@@ -518,10 +518,12 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
 End Sub
 
 'Assign a DIB to a button entry.  Disabled and hover states are automatically generated.
-Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB)
+Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0)
     
     'Load the requested resource DIB, as necessary
-    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB
+    If (imgWidth = 0) Then imgWidth = 32
+    If (imgHeight = 0) Then imgHeight = 32
+    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)

@@ -179,9 +179,12 @@ Public Sub ClearCanvas()
     'If no images have been loaded, draw a "load image" placeholder atop the empty background.
     If (g_OpenImageCount = 0) And g_IsProgramRunning And (Not g_ProgramShuttingDown) Then
         
+        Dim placeholderImageSize As Long
+        placeholderImageSize = 256
+        
         Dim iconLoadAnImage As pdDIB
         Set iconLoadAnImage = New pdDIB
-        LoadResourceToDIB "IMAGE_ETCH_256", iconLoadAnImage
+        LoadResourceToDIB "generic_imageplaceholder", iconLoadAnImage, placeholderImageSize, placeholderImageSize
 
         Dim notifyFont As pdFont
         Set notifyFont = New pdFont
@@ -202,7 +205,7 @@ Public Sub ClearCanvas()
         notifyFont.CreateFontObject
         notifyFont.AttachToDC bufferDC
 
-        If Not (iconLoadAnImage Is Nothing) Then
+        If (Not iconLoadAnImage Is Nothing) Then
 
             Dim modifiedHeight As Long
             modifiedHeight = bHeight + (iconLoadAnImage.GetDIBHeight / 2) + FixDPI(24)
@@ -214,7 +217,7 @@ Public Sub ClearCanvas()
             notifyFont.DrawCenteredText loadImageMessage, bWidth, modifiedHeight
 
             'Just above the text instructions, add a generic image icon
-            iconLoadAnImage.AlphaBlendToDC bufferDC, 192, (bWidth - iconLoadAnImage.GetDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.GetDIBHeight) - FixDPI(20)
+            iconLoadAnImage.AlphaBlendToDC bufferDC, 255, (bWidth - iconLoadAnImage.GetDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.GetDIBHeight) - FixDPI(20)
             
         End If
 
@@ -483,5 +486,6 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
     UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+    If (g_OpenImageCount = 0) Then Me.ClearCanvas
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
 End Sub

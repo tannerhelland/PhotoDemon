@@ -698,12 +698,6 @@ Private Sub UserControl_Initialize()
     m_Colors.InitializeColorList "PDLayerBoxInner", colorCount
     If (Not g_IsProgramRunning) Then UpdateColorList
     
-    'Load all hover UI image resources
-    If g_IsProgramRunning Then
-        InitializeUIDib img_EyeOpen, "EYE_OPEN"
-        InitializeUIDib img_EyeClosed, "EYE_CLOSE"
-    End If
-    
     'Reset all internal storage objects (used to track layer thumbnails, among other things)
     m_NumOfThumbnails = 0
     ReDim m_LayerThumbnails(0 To m_NumOfThumbnails) As LayerThumbDisplay
@@ -768,26 +762,6 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Enabled", Me.Enabled, True
     End With
-End Sub
-
-'Load a UI image from the resource section and into a DIB
-Private Sub InitializeUIDib(ByRef dstDIB As pdDIB, ByRef resString As String)
-    
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-
-    LoadResourceToDIB resString, tmpDIB
-    
-    Set dstDIB = New pdDIB
-    
-    'If the screen is high DPI, resize all DIBs to match
-    If (Interface.FixDPIFloat(1) > 1) Then
-        dstDIB.CreateBlank FixDPI(tmpDIB.GetDIBWidth), FixDPI(tmpDIB.GetDIBHeight), tmpDIB.GetDIBColorDepth, 0
-        GDIPlusResizeDIB dstDIB, 0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
-    Else
-        dstDIB.CreateFromExistingDIB tmpDIB
-    End If
-        
 End Sub
 
 'External functions can request a redraw of the layer box by calling this function.  (This is necessary
@@ -1292,9 +1266,19 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    'Load all hover UI image resources
+    If g_IsProgramRunning Then
+        Dim iconSize As Long
+        iconSize = FixDPI(16)
+        LoadResourceToDIB "generic_visible", img_EyeOpen, iconSize, iconSize
+        LoadResourceToDIB "generic_invisible", img_EyeClosed, iconSize, iconSize
+    End If
+    
     UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     txtLayerName.UpdateAgainstCurrentTheme
+    
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

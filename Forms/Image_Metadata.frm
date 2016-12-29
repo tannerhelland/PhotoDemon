@@ -639,14 +639,16 @@ Private Sub Form_Load()
     btsEditPanel.AddItem "editor options", 1
     btsEditPanel.ListIndex = 0
     
-    btnTagOptions(MDTB_Remove).AssignImage "TF_CLOSE", , 100
-    btnTagOptions(MDTB_Remove).AssignTooltip "Mark this tag for removal"
-    btnTagOptions(MDTB_Reset).AssignImage "CMDBAR_RESET", , 50
-    btnTagOptions(MDTB_Reset).AssignTooltip "Reset tag to its original value"
+    Dim buttonSize As Long
+    buttonSize = FixDPI(32)
+    btnTagOptions(MDTB_Remove).AssignImage "generic_trash", , , , buttonSize, buttonSize
+    btnTagOptions(MDTB_Reset).AssignImage "generic_reset", , , , buttonSize, buttonSize
+    btnGroupOptions(MDTB_Remove).AssignImage "generic_trash", , , , buttonSize, buttonSize
+    btnGroupOptions(MDTB_Reset).AssignImage "generic_reset", , , , buttonSize, buttonSize
     
-    btnGroupOptions(MDTB_Remove).AssignImage "TF_CLOSE", , 100
+    btnTagOptions(MDTB_Remove).AssignTooltip "Mark this tag for removal"
+    btnTagOptions(MDTB_Reset).AssignTooltip "Reset tag to its original value"
     btnGroupOptions(MDTB_Remove).AssignTooltip "Mark this entire group for removal"
-    btnGroupOptions(MDTB_Reset).AssignImage "CMDBAR_RESET", , 50
     btnGroupOptions(MDTB_Reset).AssignTooltip "Reset entire group to its original values"
     
     'Technical metadata reports are only available for images that actually exist on disk (vs clipboard or scanned images)
