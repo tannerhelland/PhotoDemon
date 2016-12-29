@@ -402,6 +402,24 @@ Private Sub cmdExport_Click()
         Dim resCompressionEngine As PD_COMPRESSION_ENGINES
         resCompressionEngine = PD_CE_Zstd
         
+        'We're also going to use a quick trick to significantly reduce file size of bitmap data.
+        ' In our icons, we force all transparency values to be a multiple of 5.  This reduces net entropy
+        ' by 80% (vs normal 8-bit data), and since we typically resize these icons to a tiny fraction of
+        ' their original size, there's basically no difference in final visual quality.
+        '
+        '(As a hard number for file size reduction, on a test resource file with 8 icons, the resource file
+        ' size drops from 16.5 kb to 6 kb thanks to this silly trick.)
+        '
+        'You can pick an interval larger than five if you want an even larger reduction, but at some point
+        ' it starts interfering with antialiasing quality, so be cautious.
+        Dim cmpLookup() As Byte
+        ReDim cmpLookup(0 To 255) As Byte
+        
+        Dim x As Long, y As Long
+        For x = 0 To 255
+            cmpLookup(x) = (x \ 5) * 5
+        Next x
+        
         'Start adding resources.  Resources are stored in a predefined format that describes how the icons are
         ' to be treated at load-time.  (Generally speaking, we apply specific post-processing based on the
         ' current theme and/or request information from the caller.)  Some icons come pre-colored, and as such,
@@ -449,9 +467,19 @@ Private Sub cmdExport_Click()
                     ' 2) If this resource *does* support run-time coloration, just store the alpha channel.
                     '    (Color values will be plugged-in at run-time.)
                     If m_Resources(i).ResSupportsColoration Then
+                        
                         Dim tmpBytes() As Byte
                         If DIB_Support.RetrieveTransparencyTable(tmpDIB, tmpBytes) Then
+                        
+                            'Apply our previously calculated lookup table to the transparency bytes
+                            For y = 0 To tmpDIB.GetDIBHeight - 1
+                            For x = 0 To tmpDIB.GetDIBWidth - 1
+                                tmpBytes(x, y) = cmpLookup(tmpBytes(x, y))
+                            Next x
+                            Next y
+                            
                             cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                            
                         End If
                     Else
                         tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
