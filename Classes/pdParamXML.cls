@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Internal Parameter Handler v2
 'Copyright 2013-2016 by Tanner Helland
 'Created: 25/March/13
-'Last updated: 05/October/15
-'Last update: new helper function for adding a bunch of parameters at once
+'Last updated: 29/December/16
+'Last update: minor performance improvements
 '
 'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all actions as part of
 ' macros, the program needs a way to not only trade around parameters, but also store them in a file.
@@ -55,7 +55,7 @@ Public Function GetParamString() As String
 End Function
 
 'If you obtain a parameter string from elsewhere (e.g. a PDI file), you can simple pass it as-is to this function
-Public Sub SetParamString(ByVal srcString As String)
+Public Sub SetParamString(ByRef srcString As String)
     m_ParamString = srcString
 End Sub
 
@@ -103,91 +103,75 @@ End Function
 
 'Retrieve various type-specific parameters.  Note that these ultimately wrap getParamValue; they simply cast the result explicitly.
 Public Function GetBool(ByVal paramName As String, Optional ByVal defaultReturn As Boolean = False) As Boolean
-    
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetBool = CBool(Trim$(paramValue))
     Else
         GetBool = defaultReturn
     End If
-
 End Function
 
 Public Function GetByte(ByVal paramName As String, Optional ByVal defaultReturn As Byte = 0) As Byte
-
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetByte = CByte(Trim$(paramValue))
     Else
         GetByte = defaultReturn
     End If
-
 End Function
 
 Public Function GetInteger(ByVal paramName As String, Optional ByVal defaultReturn As Integer = 0) As Integer
-
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetInteger = CInt(CDblCustom(Trim$(paramValue)))
     Else
         GetInteger = defaultReturn
     End If
-
 End Function
 
 Public Function GetLong(ByVal paramName As String, Optional ByVal defaultReturn As Long = 0) As Long
-
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetLong = CLng(CDblCustom(Trim$(paramValue)))
     Else
         GetLong = defaultReturn
     End If
-
 End Function
 
 Public Function GetSingle(ByVal paramName As String, Optional ByVal defaultReturn As Single = 0#) As Single
-
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetSingle = CDblCustom(Trim$(paramValue))
     Else
         GetSingle = defaultReturn
     End If
-
 End Function
 
 Public Function GetDouble(ByVal paramName As String, Optional ByVal defaultReturn As Double = 0#) As Double
-
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetDouble = CDblCustom(Trim$(paramValue))
     Else
         GetDouble = defaultReturn
     End If
-
 End Function
 
 Public Function GetString(ByVal paramName As String, Optional ByVal defaultReturn As String = "") As String
-
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetString = paramValue
     Else
         GetString = defaultReturn
     End If
-
 End Function
 
 Public Function GetVariant(ByVal paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
-
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetVariant = CVar(paramValue)
     Else
         GetVariant = defaultReturn
     End If
-
 End Function
 
 'Given a parameter name, fill a user-supplied string with the parameter value.
@@ -206,12 +190,12 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
         tagEnd = InStr(tagStart, m_ParamString, "</" & paramName & ">")
         
         'If the closing tag exists, return everything between that and the opening tag
-        If tagEnd > tagStart Then
+        If (tagEnd > tagStart) Then
             
             'Increment the tag start location by the length of the tag plus two (+1 for each bracket: <>)
             tagStart = tagStart + Len(paramName) + 2
             
-            If tagEnd > tagStart Then
+            If (tagEnd > tagStart) Then
                 dstString = Mid$(m_ParamString, tagStart, tagEnd - tagStart)
                 dstString = UnDelimitParamValue(dstString)
                 GetParamValue = True
@@ -287,7 +271,7 @@ Public Function AddMultipleParams(ParamArray allParams() As Variant) As Boolean
     
     On Error GoTo multiParamFailure
     
-    If UBound(allParams) >= LBound(allParams) Then
+    If (UBound(allParams) >= LBound(allParams)) Then
     
         Dim tmpName As String, tmpValue As Variant
         
@@ -349,7 +333,7 @@ Public Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
         'Split the XML file into two halves: the half before the relevant tag, and the half after
         Dim paramCloseLocation As Long
         paramCloseLocation = InStr(paramLocation, m_ParamString, "</" & paramName & ">")
-        splitStringIn2 m_ParamString, paramCloseLocation - 1, topHalf, bottomHalf
+        SplitStringIn2 m_ParamString, paramCloseLocation - 1, topHalf, bottomHalf
         
         'The "topHalf" string now includes everything before the closing tag.  Chop it off at the end of the start tag (e.g. after
         ' the closing bracket), add the new contents, then add the bottom half of the original XML string.
@@ -380,17 +364,17 @@ Public Function UpdateParam(ByVal paramName As String, ByVal paramValue As Strin
 End Function
 
 'Given a string and a position, split it into two strings at that position
-Private Function splitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
+Private Function SplitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
     dstFirstHalf = Left$(srcString, splitPosition)
     dstSecondHalf = Right$(srcString, Len(srcString) - splitPosition)
 End Function
 
 'Given a string, replace any characters that are not allowed with underscores; this is used as a failsafe when adding
 ' new parameters to the master string.
-Private Function GetXMLSafeName(ByRef srcString As String) As String
+Public Function GetXMLSafeName(ByRef srcString As String) As String
     
     'Remove any incidental white space before processing
-    GetXMLSafeName = Trim(srcString)
+    GetXMLSafeName = Trim$(srcString)
     
     'Create a string of valid numerical characters, based on the XML spec at http://www.w3.org/TR/1998/REC-xml-19980210.html#sec-common-syn
     Dim validChars As String
@@ -411,8 +395,8 @@ End Function
 ' Note that we don't currently delimit other chars because PD uses only a subset of XML functionality, by design.
 Private Function DelimitParamValue(ByVal srcString As String) As String
 
-    If InStr(1, srcString, "<") Then srcString = Replace(srcString, "<", "&lt;")
-    If InStr(1, srcString, ">") Then srcString = Replace(srcString, ">", "&gt;")
+    If InStr(1, srcString, "<") Then srcString = Replace$(srcString, "<", "&lt;")
+    If InStr(1, srcString, ">") Then srcString = Replace$(srcString, ">", "&gt;")
     
     DelimitParamValue = srcString
 
@@ -420,8 +404,8 @@ End Function
 
 Private Function UnDelimitParamValue(ByVal srcString As String) As String
         
-    If InStr(1, srcString, "&lt;") Then srcString = Replace(srcString, "&lt;", "<")
-    If InStr(1, srcString, "&gt;") Then srcString = Replace(srcString, "&gt;", ">")
+    If InStr(1, srcString, "&lt;") Then srcString = Replace$(srcString, "&lt;", "<")
+    If InStr(1, srcString, "&gt;") Then srcString = Replace$(srcString, "&gt;", ">")
     
     UnDelimitParamValue = srcString
     
@@ -432,7 +416,7 @@ End Function
 Private Function CDblCustom(ByVal srcString As String) As Double
 
     'Replace commas with periods
-    If InStr(1, srcString, ",") > 0 Then srcString = Replace(srcString, ",", ".")
+    If InStr(1, srcString, ",") > 0 Then srcString = Replace$(srcString, ",", ".")
     
     'We can now use Val() to convert to Double
     If IsNumberLocaleUnaware(srcString) Then

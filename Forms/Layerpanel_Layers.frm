@@ -126,6 +126,7 @@ Begin VB.Form layerpanel_Layers
       _ExtentX        =   4868
       _ExtentY        =   53
       Max             =   100
+      Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
    End
