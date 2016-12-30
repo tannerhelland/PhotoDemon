@@ -44,10 +44,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'API for determining certain system folders
-Private Declare Function GetSystemTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Long, ByVal lpBuffer As String) As Long
-
-'API for determining specific system-related folders
-Private Declare Function SHGetFolderPath Lib "shfolder" Alias "SHGetFolderPathA" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As String) As Long
+Private Declare Function GetSystemTempPath Lib "kernel32" Alias "GetTempPathW" (ByVal nBufferLength As Long, ByVal lpBuffer As Long) As Long
+Private Declare Function SHGetFolderPath Lib "shfolder" Alias "SHGetFolderPathW" (ByVal hWndOwner As Long, ByVal nFolder As CSIDLs, ByVal hToken As Long, ByVal dwReserved As Long, ByVal lpszPath As Long) As Long
 
 'Windows Folder Constants
 Public Enum CSIDLs
@@ -62,28 +60,34 @@ Private Const S_OK = 0
 'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
 '  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
 '  /Data/ subfolder, which contains information that is OPTIONAL and UNIQUE for each PhotoDemon install (e.g. user prefs, saved macros)
-Private ProgramPath As String
-Private AppPath As String
-Private DataPath As String
-Private ThemePath As String
+Private m_ProgramPath As String
+Private m_AppPath As String
+Private m_DataPath As String
 
 'Within the /App and /Data folders are additional subfolders, whose purposes should be obvious from their titles
-Private MacroPath As String
-Private PreferencesPath As String
-Private TempPath As String
-Private IconPath As String
-Private LanguagePath As String
-Private UserLanguagePath As String
-Private SelectionPath As String
-Private PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
-Private DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
+
+'/App subfolders come first.  These folders should already exist in the downloaded PD .zip, and we will create them
+' if they do not exist.
+Private m_ThemePath As String
+Private m_LanguagePath As String
+
+'/Data subfolders come next.
+Private m_MacroPath As String
+Private m_PreferencesPath As String
+Private m_TempPath As String
+Private m_IconPath As String
+
+Private m_UserLanguagePath As String
+Private m_SelectionPath As String
+Private m_PresetPath As String        'This folder is a bit different; it is used to store last-used and user-created presets for each tool dialog
+Private m_DebugPath As String         'If the user is running a nightly or beta buid, a Debug folder will be created.  Debug and performance dumps
                                     ' are automatically placed here.
-Private UserThemePath As String     '6.6 nightly builds added prelimianary theme support.  These are currently handled in-memory only, but in
+Private m_UserThemePath As String     '6.6 nightly builds added prelimianary theme support.  These are currently handled in-memory only, but in
                                     ' the future, themes may be extracted into this (or a matching /Data/) folder.
-Private UpdatesPath As String       '6.6 greatly improved update support.  Update check and temp files are now stored in a dedicated folder.
+Private m_UpdatesPath As String       '6.6 greatly improved update support.  Update check and temp files are now stored in a dedicated folder.
 
 'XML engine for reading/writing preference values from file
-Private xmlEngine As pdXML
+Private m_XMLEngine As pdXML
 
 'To improve performance when saving many preferences at once (as we do when closing the Preferences dialog), this class can be placed in
 ' "batch preference mode".  While active, a single XML class instance will be persistently used to handle all preference updates, and
@@ -93,6 +97,11 @@ Private m_BatchModeActive As Boolean
 'Some preferences are used in performance-sensitive areas.  These preferences are cached internally to improve responsiveness.
 ' Outside callers can retrieve them via their dedicated functions.
 Private m_ThumbnailPerformance As PD_PERFORMANCE_SETTING, m_ThumbnailInterpolation As GP_InterpolationMode
+
+'Prior to v7.0, each dialog stored its preset data to a unique XML file.  This causes a lot of HDD thrashing as each
+' main window panel retrieves its preset data separately.  To improve performance, we now use a single master preset
+' file, and individual windows rely on this module to manage the file for them.
+Private m_XMLPresets As pdXML, m_MasterPresetFile As String
 
 'Helper functions for performance-sensitive preferences.
 Friend Function GetThumbnailInterpolationPref() As GP_InterpolationMode
@@ -122,8 +131,8 @@ Public Sub StartBatchPreferenceMode()
     m_BatchModeActive = True
 
     'Initialize an XML object
-    Set xmlEngine = New pdXML
-    xmlEngine.LoadXMLFile PreferencesPath
+    Set m_XMLEngine = New pdXML
+    m_XMLEngine.LoadXMLFile m_PreferencesPath
 
 End Sub
 
@@ -131,53 +140,53 @@ End Sub
 ' immediately written to file.
 Public Sub EndBatchPreferenceMode()
     m_BatchModeActive = False
-    xmlEngine.WriteXMLToFile PreferencesPath
+    m_XMLEngine.WriteXMLToFile m_PreferencesPath
 End Sub
 
 'Get the current Theme path.  Note that there are /App (program default) and /Data (userland) variants of this folder.
 Public Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
     If getUserThemePathInstead Then
-        GetThemePath = UserThemePath
+        GetThemePath = m_UserThemePath
     Else
-        GetThemePath = ThemePath
+        GetThemePath = m_ThemePath
     End If
 End Function
 
 'Get the current Debug path
 Public Function GetDebugPath() As String
-    GetDebugPath = DebugPath
+    GetDebugPath = m_DebugPath
 End Function
 
 'Get the current Preset path
 Public Function GetPresetPath() As String
-    GetPresetPath = PresetPath
+    GetPresetPath = m_PresetPath
 End Function
 
 'Get/set the current Selection directory
 Public Function GetSelectionPath() As String
-    GetSelectionPath = SelectionPath
+    GetSelectionPath = m_SelectionPath
 End Function
 
 Public Sub SetSelectionPath(ByVal newSelectionPath As String)
     StripDirectory newSelectionPath
-    newSelectionPath = FixPath(newSelectionPath)
-    SelectionPath = newSelectionPath
-    SetPref_String "Paths", "Selections", SelectionPath
+    newSelectionPath = FileSystem.FixPath(newSelectionPath)
+    m_SelectionPath = newSelectionPath
+    SetPref_String "Paths", "Selections", m_SelectionPath
 End Sub
 
 'Return the current Language directory
 Public Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
     If getUserLanguagePathInstead Then
-        GetLanguagePath = UserLanguagePath
+        GetLanguagePath = m_UserLanguagePath
     Else
-        GetLanguagePath = LanguagePath
+        GetLanguagePath = m_LanguagePath
     End If
 End Function
 
 'Return the current temporary directory, as specified by the user's preferences.  (Note that this is a totally different function from
 ' this class's GetSystemTemporaryPath function, which returns the current Windows system temp path.)
 Public Function GetTempPath() As String
-    GetTempPath = TempPath
+    GetTempPath = m_TempPath
 End Function
 
 'Set the current temp directory
@@ -188,7 +197,7 @@ Public Sub SetTempPath(ByVal newTempPath As String)
     
     'If the folder exists and is writable as-is, great: save it and exit
     If cFile.FolderExist(newTempPath, True) Or cFile.FolderExist(cFile.EnforcePathSlash(newTempPath), True) Then
-        TempPath = cFile.EnforcePathSlash(newTempPath)
+        m_TempPath = cFile.EnforcePathSlash(newTempPath)
         
     'If it doesn't exist, make sure the user didn't do something weird, like supply a file instead of a folder
     Else
@@ -197,56 +206,56 @@ Public Sub SetTempPath(ByVal newTempPath As String)
         
         'Test the path again
         If cFile.FolderExist(newTempPath, True) Or cFile.FolderExist(cFile.EnforcePathSlash(newTempPath), True) Then
-            TempPath = cFile.EnforcePathSlash(newTempPath)
+            m_TempPath = cFile.EnforcePathSlash(newTempPath)
             
         'If it still fails, revert to the default system temp path
         Else
-            TempPath = GetSystemTemporaryPath()
+            m_TempPath = GetSystemTemporaryPath()
         End If
     
     End If
     
     'Write the final path out to file
-    SetPref_String "Paths", "TempFiles", TempPath
+    SetPref_String "Paths", "TempFiles", m_TempPath
     
 End Sub
 
 'Return the current program directory
 Public Function GetProgramPath() As String
-    GetProgramPath = ProgramPath
+    GetProgramPath = m_ProgramPath
 End Function
 
 'Return the current app data directory
 Public Function GetAppPath() As String
-    GetAppPath = AppPath
+    GetAppPath = m_AppPath
 End Function
 
 'Return the current user data directory
 Public Function GetDataPath() As String
-    GetDataPath = DataPath
+    GetDataPath = m_DataPath
 End Function
 
 'Return the current macro directory
 Public Function GetMacroPath() As String
-    GetMacroPath = MacroPath
+    GetMacroPath = m_MacroPath
 End Function
 
 'Set the current macro directory
 Public Sub SetMacroPath(ByVal newMacroPath As String)
     StripDirectory newMacroPath
-    newMacroPath = FixPath(newMacroPath)
-    MacroPath = newMacroPath
-    SetPref_String "Paths", "Macro", MacroPath
+    newMacroPath = FileSystem.FixPath(newMacroPath)
+    m_MacroPath = newMacroPath
+    SetPref_String "Paths", "Macro", m_MacroPath
 End Sub
 
 'Return the current MRU icon directory
 Public Function GetIconPath() As String
-    GetIconPath = IconPath
+    GetIconPath = m_IconPath
 End Function
 
 'Return the current update-specific temp path
 Public Function GetUpdatePath() As String
-    GetUpdatePath = UpdatesPath
+    GetUpdatePath = m_UpdatesPath
 End Function
 
 'Initialize key program directories
@@ -256,82 +265,67 @@ Public Sub InitializePaths()
     Set cFile = New pdFSO
     
     'First things first: figure out where this .exe was launched from
-    ProgramPath = cFile.AppPathW
+    m_ProgramPath = cFile.AppPathW
     
-    'Create an "App" path based off the ProgramPath - this is where essential application files (like plugins) are stored.
+    'Create an "App" path based off the m_ProgramPath - this is where essential application files (like plugins) are stored.
     ' Also, make sure the directory exists; if it doesn't, create it.
-    AppPath = ProgramPath & "App\"
-    If Not cFile.FolderExist(AppPath) Then cFile.CreateFolder AppPath
+    m_AppPath = m_ProgramPath & "App\"
+    If (Not cFile.FolderExist(m_AppPath)) Then cFile.CreateFolder m_AppPath
     
-    AppPath = AppPath & "PhotoDemon\"
-    If Not cFile.FolderExist(AppPath) Then cFile.CreateFolder AppPath
+    m_AppPath = m_AppPath & "PhotoDemon\"
+    If (Not cFile.FolderExist(m_AppPath)) Then cFile.CreateFolder m_AppPath
     
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL translations.  (User translations go in the Data folder.)
-    LanguagePath = AppPath & "Languages\"
-    If Not cFile.FolderExist(LanguagePath) Then cFile.CreateFolder LanguagePath
+    m_LanguagePath = m_AppPath & "Languages\"
+    If (Not cFile.FolderExist(m_LanguagePath)) Then cFile.CreateFolder m_LanguagePath
     
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL themes.  (User themes go in the Data folder.)
-    ThemePath = AppPath & "Themes\"
-    If Not cFile.FolderExist(ThemePath) Then cFile.CreateFolder ThemePath
+    m_ThemePath = m_AppPath & "Themes\"
+    If (Not cFile.FolderExist(m_ThemePath)) Then cFile.CreateFolder m_ThemePath
     
-    'Create a "Data" path based off the ProgramPath - this is where the preferences file and any other user-specific files
+    'Create a "Data" path based off the m_ProgramPath - this is where the preferences file and any other user-specific files
     ' (saved filters, macros) will be stored.  Also, make sure the directory exists; if it doesn't, create it.
-    DataPath = ProgramPath & "Data\"
-    If Not cFile.FolderExist(DataPath) Then cFile.CreateFolder DataPath
+    m_DataPath = m_ProgramPath & "Data\"
+    If (Not cFile.FolderExist(m_DataPath)) Then cFile.CreateFolder m_DataPath
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
-    MacroPath = DataPath & "Macros\"
-    If Not cFile.FolderExist(MacroPath) Then cFile.CreateFolder MacroPath
+    m_MacroPath = m_DataPath & "Macros\"
+    If (Not cFile.FolderExist(m_MacroPath)) Then cFile.CreateFolder m_MacroPath
             
-    SelectionPath = DataPath & "Selections\"
-    If Not cFile.FolderExist(SelectionPath) Then cFile.CreateFolder SelectionPath
+    m_SelectionPath = m_DataPath & "Selections\"
+    If (Not cFile.FolderExist(m_SelectionPath)) Then cFile.CreateFolder m_SelectionPath
     
-    UserLanguagePath = DataPath & "Languages\"
-    If Not cFile.FolderExist(UserLanguagePath) Then cFile.CreateFolder UserLanguagePath
+    m_UserLanguagePath = m_DataPath & "Languages\"
+    If (Not cFile.FolderExist(m_UserLanguagePath)) Then cFile.CreateFolder m_UserLanguagePath
     
-    PresetPath = DataPath & "Presets\"
-    If Not cFile.FolderExist(PresetPath) Then cFile.CreateFolder PresetPath
+    m_PresetPath = m_DataPath & "Presets\"
+    If (Not cFile.FolderExist(m_PresetPath)) Then cFile.CreateFolder m_PresetPath
     
-    IconPath = DataPath & "Icons\"
-    If Not cFile.FolderExist(IconPath) Then cFile.CreateFolder IconPath
+    m_IconPath = m_DataPath & "Icons\"
+    If (Not cFile.FolderExist(m_IconPath)) Then cFile.CreateFolder m_IconPath
         
-    DebugPath = DataPath & "Debug\"
-    If Not cFile.FolderExist(DebugPath) Then cFile.CreateFolder DebugPath
+    m_DebugPath = m_DataPath & "Debug\"
+    If (Not cFile.FolderExist(m_DebugPath)) Then cFile.CreateFolder m_DebugPath
     
-    UserThemePath = DataPath & "Themes\"
-    If Not cFile.FolderExist(UserThemePath) Then cFile.CreateFolder UserThemePath
+    m_UserThemePath = m_DataPath & "Themes\"
+    If (Not cFile.FolderExist(m_UserThemePath)) Then cFile.CreateFolder m_UserThemePath
     
-    UpdatesPath = DataPath & "Updates\"
-    If Not cFile.FolderExist(UpdatesPath) Then cFile.CreateFolder UpdatesPath
+    m_UpdatesPath = m_DataPath & "Updates\"
+    If (Not cFile.FolderExist(m_UpdatesPath)) Then cFile.CreateFolder m_UpdatesPath
     
-    'The user preferences file is also located in the \Data subdirectory
-    PreferencesPath = DataPath & PROGRAMNAME & "_settings.xml"
+    'The user preferences file is also located in the \Data folder
+    m_PreferencesPath = m_DataPath & PROGRAMNAME & "_settings.xml"
     
-    'Historically, language files were stored in a different location.  We need to move any valid language files from
-    ' the old language directory to the new language directory.
-    ' (NOTE: this is no longer necessary, but in case it becomes necessary to move language files in the future, I have
-    '         left this code here as a helpful reminder.)
-    
-    'On Error Resume Next
-    'Dim chkFile As String
-    '
-    'chkFile = Dir(DataPath & "Languages\" & "*.xml", vbNormal)
-    '
-    'If chkFile <> "" Then
-    '
-    '    LoadMessage "Moving language files to updated folder location..."
-    '
-    '    Do While chkFile <> ""
-    '        If FileExist(DataPath & "Languages\" & chkFile) Then
-    '            FileCopy DataPath & "Languages\" & chkFile, LanguagePath & chkFile
-    '            Kill DataPath & "Languages\" & chkFile
-    '        End If
-    '        chkFile = Dir
-    '    Loop
-    '
-    '    RmDir DataPath & "Languages\"
-    '
-    'End If
+    'Last-used dialog settings are also located in the \Presets subfolder; retrieve the master file now, if it exists.
+    m_MasterPresetFile = m_PresetPath & "MainPanels.xml"
+    If (m_XMLPresets Is Nothing) Then Set m_XMLPresets = New pdXML
+    If cFile.FileExist(m_MasterPresetFile) Then
+        If m_XMLPresets.LoadXMLFile(m_MasterPresetFile) Then
+            If (Not m_XMLPresets.IsPDDataType("Presets")) Then m_XMLPresets.PrepareNewXML "Presets"
+        End If
+    Else
+        m_XMLPresets.PrepareNewXML ("Presets")
+    End If
         
 End Sub
 
@@ -342,7 +336,7 @@ Public Sub LoadUserSettings()
     Set cFile = New pdFSO
     
     'If no preferences file exists, build a default one
-    If Not cFile.FileExist(PreferencesPath) Then CreateNewPreferencesFile
+    If Not cFile.FileExist(m_PreferencesPath) Then CreateNewPreferencesFile
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
@@ -350,15 +344,15 @@ Public Sub LoadUserSettings()
         
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
-    TempPath = GetPref_String("Paths", "TempFiles", "")
-    If Not cFile.FolderExist(TempPath) Then
-        TempPath = GetSystemTemporaryPath
-        SetPref_String "Paths", "TempFiles", TempPath
+    m_TempPath = GetPref_String("Paths", "TempFiles", "")
+    If (Not cFile.FolderExist(m_TempPath)) Then
+        m_TempPath = GetSystemTemporaryPath
+        SetPref_String "Paths", "TempFiles", m_TempPath
     End If
         
     'Pull all other stored paths
-    MacroPath = GetPref_String("Paths", "Macro", MacroPath)
-    SelectionPath = GetPref_String("Paths", "Selections", SelectionPath)
+    m_MacroPath = GetPref_String("Paths", "Macro", m_MacroPath)
+    m_SelectionPath = GetPref_String("Paths", "Selections", m_SelectionPath)
         
     'Check if the user wants us to prompt them about closing unsaved images
     g_ConfirmClosingUnsaved = GetPref_Boolean("Saving", "ConfirmClosingUnsaved", True)
@@ -390,8 +384,7 @@ Public Sub ResetPreferences()
 
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    
-    If cFile.FileExist(PreferencesPath) Then cFile.KillFile PreferencesPath
+    If cFile.FileExist(m_PreferencesPath) Then cFile.KillFile m_PreferencesPath
     
     CreateNewPreferencesFile
     LoadUserSettings
@@ -416,152 +409,152 @@ Private Sub CreateNewPreferencesFile()
     'As a failsafe against data corruption, if this is determined to be a first run, we also delete some settings-related
     ' files in the Presets folder (if they exist).
     If g_IsFirstRun Then
-        If cFile.FileExist(PresetPath & "Program_WindowLocations.xml") Then cFile.KillFile PresetPath & "Program_WindowLocations.xml"
+        If cFile.FileExist(m_PresetPath & "Program_WindowLocations.xml") Then cFile.KillFile m_PresetPath & "Program_WindowLocations.xml"
     End If
     
     'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)
-    Set xmlEngine = New pdXML
-    xmlEngine.PrepareNewXML "User Preferences"
-    xmlEngine.WriteBlankLine
+    Set m_XMLEngine = New pdXML
+    m_XMLEngine.PrepareNewXML "User Preferences"
+    m_XMLEngine.WriteBlankLine
     
     'Write out a comment marking the date and build of this preferences code; this can be helpful when debugging
-    xmlEngine.WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteComment "This preferences file was created on " & Format$(Now, "dd-mmm-yyyy") & " by version " & App.Major & "." & App.Minor & "." & App.Revision & " of the software."
+    m_XMLEngine.WriteBlankLine
     
     'Write out the "advanced" block of preferences:
-    xmlEngine.WriteTag "Advanced", "", True
+    m_XMLEngine.WriteTag "Advanced", "", True
         'As of 6.4, there are no longer any Advanced preferences that need to be stored here.  There may be in the future,
         ' so I've left the creation code for this section of the preferences file.
-    xmlEngine.CloseTag "Advanced"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.closeTag "Advanced"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "BatchProcess", "", True
-        xmlEngine.WriteTag "DriveBox", ""
-        xmlEngine.WriteTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.WriteTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
-        xmlEngine.WriteTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-    xmlEngine.CloseTag "BatchProcess"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "BatchProcess", "", True
+        m_XMLEngine.WriteTag "DriveBox", ""
+        m_XMLEngine.WriteTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
+        m_XMLEngine.WriteTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
+    m_XMLEngine.closeTag "BatchProcess"
+    m_XMLEngine.WriteBlankLine
     
     'Write out the "color management" block of preferences:
-    xmlEngine.WriteTag "ColorManagement", "", True
-        xmlEngine.WriteTag "Display CM Mode", Trim$(Str(DCM_NoManagement))
-        xmlEngine.WriteTag "Display Rendering Intent", Trim$(Str(INTENT_PERCEPTUAL))
-    xmlEngine.CloseTag "ColorManagement"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "ColorManagement", "", True
+        m_XMLEngine.WriteTag "Display CM Mode", Trim$(Str(DCM_NoManagement))
+        m_XMLEngine.WriteTag "Display Rendering Intent", Trim$(Str(INTENT_PERCEPTUAL))
+    m_XMLEngine.closeTag "ColorManagement"
+    m_XMLEngine.WriteBlankLine
     
     'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly
     ' exposed to the user (e.g. the user cannot toggle these from the Preferences dialog).
-    xmlEngine.WriteTag "Core", "", True
-        xmlEngine.WriteTag "DisplayIDEWarning", "True"
-        xmlEngine.WriteTag "HasGitHubAccount", ""
-        xmlEngine.WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
-        xmlEngine.WriteTag "LastPreferencesPage", "0"
-        xmlEngine.WriteTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
-        xmlEngine.WriteTag "LastWindowState", "0"
-        xmlEngine.WriteTag "LastWindowLeft", "1"
-        xmlEngine.WriteTag "LastWindowTop", "1"
-        xmlEngine.WriteTag "LastWindowWidth", "1"
-        xmlEngine.WriteTag "LastWindowHeight", "1"
-    xmlEngine.CloseTag "Core"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Core", "", True
+        m_XMLEngine.WriteTag "DisplayIDEWarning", "True"
+        m_XMLEngine.WriteTag "HasGitHubAccount", ""
+        m_XMLEngine.WriteTag "LastOpenFilter", "1"        'Default to "All Compatible Graphics" filter for loading
+        m_XMLEngine.WriteTag "LastPreferencesPage", "0"
+        m_XMLEngine.WriteTag "LastSaveFilter", "-1"       'Mark the last-used save filter as "unknown"
+        m_XMLEngine.WriteTag "LastWindowState", "0"
+        m_XMLEngine.WriteTag "LastWindowLeft", "1"
+        m_XMLEngine.WriteTag "LastWindowTop", "1"
+        m_XMLEngine.WriteTag "LastWindowWidth", "1"
+        m_XMLEngine.WriteTag "LastWindowHeight", "1"
+    m_XMLEngine.closeTag "Core"
+    m_XMLEngine.WriteBlankLine
     
     'Write out a blank "dialogs" block.  Dialogs that offer to remember the user's current choice will store the given choice here.
     ' We don't prepopulate it with all possible choices; instead, choices are added as the user encounters those dialogs.
-    xmlEngine.WriteTag "Dialogs", "", True
-    xmlEngine.CloseTag "Dialogs"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Dialogs", "", True
+    m_XMLEngine.closeTag "Dialogs"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Interface", "", True
-        xmlEngine.WriteTag "MRUCaptionLength", "0"
-        xmlEngine.WriteTag "RecentFilesLimit", "10"
-        xmlEngine.WriteTag "WindowCaptionLength", "0"
-    xmlEngine.CloseTag "Interface"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Interface", "", True
+        m_XMLEngine.WriteTag "MRUCaptionLength", "0"
+        m_XMLEngine.WriteTag "RecentFilesLimit", "10"
+        m_XMLEngine.WriteTag "WindowCaptionLength", "0"
+    m_XMLEngine.closeTag "Interface"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Language", "", True
-        xmlEngine.WriteTag "CurrentLanguageFile", ""
-    xmlEngine.CloseTag "Language"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Language", "", True
+        m_XMLEngine.WriteTag "CurrentLanguageFile", ""
+    m_XMLEngine.closeTag "Language"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Loading", "", True
-        xmlEngine.WriteTag "ExifAutoRotate", "True"
-        xmlEngine.WriteTag "InitialImageZoom", "0"
-        xmlEngine.WriteTag "MetadataEstimateJPEG", "True"
-        xmlEngine.WriteTag "MetadataExtractBinary", "False"
-        xmlEngine.WriteTag "MetadataExtractUnknown", "False"
-        xmlEngine.WriteTag "MetadataHideDuplicates", "True"
-        xmlEngine.WriteTag "ToneMappingPrompt", "True"
-    xmlEngine.CloseTag "Loading"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Loading", "", True
+        m_XMLEngine.WriteTag "ExifAutoRotate", "True"
+        m_XMLEngine.WriteTag "InitialImageZoom", "0"
+        m_XMLEngine.WriteTag "MetadataEstimateJPEG", "True"
+        m_XMLEngine.WriteTag "MetadataExtractBinary", "False"
+        m_XMLEngine.WriteTag "MetadataExtractUnknown", "False"
+        m_XMLEngine.WriteTag "MetadataHideDuplicates", "True"
+        m_XMLEngine.WriteTag "ToneMappingPrompt", "True"
+    m_XMLEngine.closeTag "Loading"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Paths", "", True
-        xmlEngine.WriteTag "TempFiles", GetSystemTemporaryPath
-        xmlEngine.WriteTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.WriteTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
-        xmlEngine.WriteTag "Macro", MacroPath
-        xmlEngine.WriteTag "Selections", SelectionPath
-    xmlEngine.CloseTag "Paths"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Paths", "", True
+        m_XMLEngine.WriteTag "TempFiles", GetSystemTemporaryPath
+        m_XMLEngine.WriteTag "OpenImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
+        m_XMLEngine.WriteTag "Macro", m_MacroPath
+        m_XMLEngine.WriteTag "Selections", m_SelectionPath
+    m_XMLEngine.closeTag "Paths"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Performance", "", True
-        xmlEngine.WriteTag "ColorPerformance", "1"
-        xmlEngine.WriteTag "InterfaceDecorationPerformance", "1"
-        xmlEngine.WriteTag "ThumbnailPerformance", "1"
-        xmlEngine.WriteTag "ViewportRenderPerformance", "1"
-        xmlEngine.WriteTag "UndoCompression", "1"
-    xmlEngine.CloseTag "Performance"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Performance", "", True
+        m_XMLEngine.WriteTag "ColorPerformance", "1"
+        m_XMLEngine.WriteTag "InterfaceDecorationPerformance", "1"
+        m_XMLEngine.WriteTag "ThumbnailPerformance", "1"
+        m_XMLEngine.WriteTag "ViewportRenderPerformance", "1"
+        m_XMLEngine.WriteTag "UndoCompression", "1"
+    m_XMLEngine.closeTag "Performance"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Plugins", "", True
-        xmlEngine.WriteTag "ForceExifToolDisable", "False"
-        xmlEngine.WriteTag "ForceEZTwainDisable", "False"
-        xmlEngine.WriteTag "ForceFreeImageDisable", "False"
-        xmlEngine.WriteTag "ForceLittleCMSDisable", "False"
-        xmlEngine.WriteTag "ForceOptiPNGDisable", "False"
-        xmlEngine.WriteTag "ForcePngQuantDisable", "False"
-        xmlEngine.WriteTag "ForceZLibDisable", "False"
-        xmlEngine.WriteTag "LastPluginPreferencesPage", "0"
-    xmlEngine.CloseTag "Plugins"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Plugins", "", True
+        m_XMLEngine.WriteTag "ForceExifToolDisable", "False"
+        m_XMLEngine.WriteTag "ForceEZTwainDisable", "False"
+        m_XMLEngine.WriteTag "ForceFreeImageDisable", "False"
+        m_XMLEngine.WriteTag "ForceLittleCMSDisable", "False"
+        m_XMLEngine.WriteTag "ForceOptiPNGDisable", "False"
+        m_XMLEngine.WriteTag "ForcePngQuantDisable", "False"
+        m_XMLEngine.WriteTag "ForceZLibDisable", "False"
+        m_XMLEngine.WriteTag "LastPluginPreferencesPage", "0"
+    m_XMLEngine.closeTag "Plugins"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Saving", "", True
-        xmlEngine.WriteTag "ConfirmClosingUnsaved", "True"
-        xmlEngine.WriteTag "OverwriteOrCopy", "0"
-        xmlEngine.WriteTag "SuggestedFormat", "0"
-        xmlEngine.WriteTag "MetadataListPD", "True"
-    xmlEngine.CloseTag "Saving"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Saving", "", True
+        m_XMLEngine.WriteTag "ConfirmClosingUnsaved", "True"
+        m_XMLEngine.WriteTag "OverwriteOrCopy", "0"
+        m_XMLEngine.WriteTag "SuggestedFormat", "0"
+        m_XMLEngine.WriteTag "MetadataListPD", "True"
+    m_XMLEngine.closeTag "Saving"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Themes", "", True
-        xmlEngine.WriteTag "CurrentTheme", "Light"
-        xmlEngine.WriteTag "CurrentAccent", "Blue"
-    xmlEngine.CloseTag "Themes"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Themes", "", True
+        m_XMLEngine.WriteTag "CurrentTheme", "Light"
+        m_XMLEngine.WriteTag "CurrentAccent", "Blue"
+    m_XMLEngine.closeTag "Themes"
+    m_XMLEngine.WriteBlankLine
     
     'Toolbox settings are automatically filled-in by the Toolboxes module
-    xmlEngine.WriteTag "Toolbox", "", True
-    xmlEngine.CloseTag "Toolbox"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Toolbox", "", True
+    m_XMLEngine.closeTag "Toolbox"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Tools", "", True
-        xmlEngine.WriteTag "ClearSelectionAfterCrop", "True"
-    xmlEngine.CloseTag "Tools"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Tools", "", True
+        m_XMLEngine.WriteTag "ClearSelectionAfterCrop", "True"
+    m_XMLEngine.closeTag "Tools"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Transparency", "", True
-        xmlEngine.WriteTag "AlphaCheckMode", "0"
-        xmlEngine.WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
-        xmlEngine.WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
-        xmlEngine.WriteTag "AlphaCheckSize", "1"
-    xmlEngine.CloseTag "Transparency"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "Transparency", "", True
+        m_XMLEngine.WriteTag "AlphaCheckMode", "0"
+        m_XMLEngine.WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
+        m_XMLEngine.WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
+        m_XMLEngine.WriteTag "AlphaCheckSize", "1"
+    m_XMLEngine.closeTag "Transparency"
+    m_XMLEngine.WriteBlankLine
     
-    xmlEngine.WriteTag "Updates", "", True
-        xmlEngine.WriteTag "CheckForUpdates", "True"
-        xmlEngine.WriteTag "LastUpdateCheck", ""
-        xmlEngine.WriteTag "PromptForPluginDownload", "True"
-        xmlEngine.WriteTag "UpdateFrequency", PDUF_EACH_SESSION
+    m_XMLEngine.WriteTag "Updates", "", True
+        m_XMLEngine.WriteTag "CheckForUpdates", "True"
+        m_XMLEngine.WriteTag "LastUpdateCheck", ""
+        m_XMLEngine.WriteTag "PromptForPluginDownload", "True"
+        m_XMLEngine.WriteTag "UpdateFrequency", PDUF_EACH_SESSION
         
         'The current update track is set according to the hard-coded build ID of this .exe instance.
         Select Case PD_BUILD_QUALITY
@@ -570,25 +563,25 @@ Private Sub CreateNewPreferencesFile()
             ' to the nightly builds to fix a specific bug.  As they likely don't want to be bothered by so many updates, I am
             ' changing this to default to beta builds only.
             Case PD_PRE_ALPHA, PD_ALPHA
-                xmlEngine.WriteTag "UpdateTrack", PDUT_BETA
+                m_XMLEngine.WriteTag "UpdateTrack", PDUT_BETA
                 
             Case PD_BETA
-                xmlEngine.WriteTag "UpdateTrack", PDUT_BETA
+                m_XMLEngine.WriteTag "UpdateTrack", PDUT_BETA
                 
             Case PD_PRODUCTION
-                xmlEngine.WriteTag "UpdateTrack", PDUT_STABLE
+                m_XMLEngine.WriteTag "UpdateTrack", PDUT_STABLE
         
         End Select
         
-        xmlEngine.WriteTag "UpdateLanguagesIndependently", True
-        xmlEngine.WriteTag "UpdatePluginsIndependently", True
-        xmlEngine.WriteTag "UpdateNotifications", True
+        m_XMLEngine.WriteTag "UpdateLanguagesIndependently", True
+        m_XMLEngine.WriteTag "UpdatePluginsIndependently", True
+        m_XMLEngine.WriteTag "UpdateNotifications", True
         
-    xmlEngine.CloseTag "Updates"
-    xmlEngine.WriteBlankLine
+    m_XMLEngine.closeTag "Updates"
+    m_XMLEngine.WriteBlankLine
     
     'With all tags successfully written, we can now close the XML data and write it out to file.
-    xmlEngine.WriteXMLToFile PreferencesPath
+    m_XMLEngine.WriteXMLToFile m_PreferencesPath
     
 End Sub
 
@@ -600,7 +593,7 @@ Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
     tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If Len(tmpString) = 0 Then
+    If (Len(tmpString) = 0) Then
         
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue))
@@ -639,7 +632,7 @@ Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
     tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If Len(tmpString) = 0 Then
+    If (Len(tmpString) = 0) Then
     
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & Trim$(Str(prefDefaultValue ))
@@ -702,13 +695,13 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
     
     'Create an XML object and load the XML settings file
     If (Not m_BatchModeActive) Then
-        Set xmlEngine = New pdXML
-        xmlEngine.LoadXMLFile PreferencesPath
+        Set m_XMLEngine = New pdXML
+        m_XMLEngine.LoadXMLFile m_PreferencesPath
     End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If xmlEngine.IsPDDataType("User Preferences") And xmlEngine.ValidateLoadedXMLData("Paths") Then
-        GetPreference = xmlEngine.GetUniqueTag_String(strVariableName, , , strSectionHeader)
+    If m_XMLEngine.IsPDDataType("User Preferences") And m_XMLEngine.ValidateLoadedXMLData("Paths") Then
+        GetPreference = m_XMLEngine.GetUniqueTag_String(strVariableName, , , strSectionHeader)
     Else
         GetPreference = ""
     End If
@@ -724,29 +717,29 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
     strVariableName = Replace$(strVariableName, " ", "")
     
     'Create an XML object and load the XML settings file
-    If Not m_BatchModeActive Then
-        Set xmlEngine = New pdXML
-        xmlEngine.LoadXMLFile PreferencesPath
+    If (Not m_BatchModeActive) Then
+        Set m_XMLEngine = New pdXML
+        m_XMLEngine.LoadXMLFile m_PreferencesPath
     End If
     
     'Check for a few necessary tags, just to make sure this is actually a PhotoDemon preferences file
-    If xmlEngine.IsPDDataType("User Preferences") And xmlEngine.ValidateLoadedXMLData("Paths") Then
+    If m_XMLEngine.IsPDDataType("User Preferences") And m_XMLEngine.ValidateLoadedXMLData("Paths") Then
     
         'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
-        If xmlEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
+        If m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
             WritePreference = True
-            If Not m_BatchModeActive Then xmlEngine.WriteXMLToFile PreferencesPath
+            If Not m_BatchModeActive Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
         Else
             
             'Update tag will fail if the requested preferences section doesn't exist (which may happen after the user upgrades from
             ' an old PhotoDemon version, but keeps their old preferences file).  To prevent the problem from recurring, add this
             ' section to the preferences file.
-            If xmlEngine.WriteNewSection(strSectionHeader) Then
+            If m_XMLEngine.WriteNewSection(strSectionHeader) Then
             
                 'Try the write again
-                If xmlEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
+                If m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
                     WritePreference = True
-                    If Not m_BatchModeActive Then xmlEngine.WriteXMLToFile PreferencesPath
+                    If Not m_BatchModeActive Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
                 Else
                     WritePreference = False
                 End If
@@ -761,22 +754,41 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
     
 End Function
 
+'Return the XML parameter list for a given dialog ID (constructed by the last-used settings class).
+' Returns: TRUE if a preset exists for that ID; FALSE otherwise.
+Public Function GetDialogPresets(ByRef dialogID As String, ByRef dstXMLString As String) As Boolean
+
+    If m_XMLPresets.DoesTagExist(dialogID) Then
+        dstXMLString = m_XMLPresets.GetUniqueTag_String(dialogID, vbNullString)
+        GetDialogPresets = True
+    Else
+        dstXMLString = vbNullString
+        GetDialogPresets = False
+    End If
+
+End Function
+
+'Set an XML parameter list for a given dialog ID (constructed by the last-used settings class).
+Public Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As String) As Boolean
+    m_XMLPresets.UpdateTag dialogID, srcXMLString
+End Function
+
 'Get the current Windows-specified temp directory
 Private Function GetSystemTemporaryPath() As String
     
     'Create a blank string (as required by the API call)
     Dim sRet As String
-    sRet = String(255, 0)
+    sRet = String$(255, 0)
     
     'Fill that string with the temporary path
     Dim lngLen As Long
-    lngLen = GetSystemTempPath(255, sRet)
+    lngLen = GetSystemTempPath(255, StrPtr(sRet))
     
     'If something went wrong, raise an error
-    If lngLen = 0 Then Err.Raise Err.LastDllError
+    If (lngLen = 0) Then Err.Raise Err.LastDllError
     
     'Return the temporary path, and ensure that it has a trailing "\"
-    GetSystemTemporaryPath = FixPath(Left$(sRet, lngLen))
+    GetSystemTemporaryPath = FileSystem.FixPath(Left$(sRet, lngLen))
 
 End Function
 
@@ -787,14 +799,22 @@ Private Function GetWindowsFolder(eFolder As CSIDLs) As String
     Dim sPath As String
     
     sPath = String$(MAX_LENGTH, " ")
-    If SHGetFolderPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, sPath) = S_OK Then
+    If (SHGetFolderPath(0&, eFolder, 0&, SHGFP_TYPE_CURRENT, StrPtr(sPath)) = S_OK) Then
         
         'Find the end of the string
         iR = InStr(1, sPath, vbNullChar) - 1
         
-        'Return everything up to the NULL + (Tanner's fix) add a terminating slash
-        GetWindowsFolder = FixPath(Left$(sPath, iR))
+        'Return everything up to the first NULL and add a terminating slash
+        GetWindowsFolder = FileSystem.FixPath(Left$(sPath, iR))
         
     End If
     
 End Function
+
+Private Sub Class_Initialize()
+    Set m_XMLPresets = New pdXML
+End Sub
+
+Private Sub Class_Terminate()
+    If ((Not m_XMLPresets Is Nothing) And (Len(m_MasterPresetFile) <> 0)) Then m_XMLPresets.WriteXMLToFile m_MasterPresetFile
+End Sub
