@@ -2025,9 +2025,6 @@ Private Sub UserControl_Show()
 
     If g_IsProgramRunning Then
         
-        'Prep the command buttons
-        cmdCenter.AssignImage "SB_ZOOM_CENTER"
-        
         'XP users may not have Segoe UI available, which will cause the following lines to throw an error;
         ' it's not really a problem, as the labels will just keep their Tahoma font, but we must catch it anyway.
         On Error GoTo CanvasShowError
@@ -2422,6 +2419,9 @@ Public Sub UpdateAgainstCurrentTheme()
     ImageStrip.UpdateAgainstCurrentTheme
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
+    Dim centerButtonIconSize As Long
+    centerButtonIconSize = FixDPI(14)
+    cmdCenter.AssignImage "zoom_center", , , , centerButtonIconSize, centerButtonIconSize
     cmdCenter.AssignTooltip "Center the image inside the viewport"
     cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)
     cmdCenter.UpdateAgainstCurrentTheme

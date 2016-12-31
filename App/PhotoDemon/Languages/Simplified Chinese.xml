@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2045</langversion>
+<langversion>6.8.2046</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2791,12 +2791,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdLastUsedSettings.cls -->
 
-<phrase>
-<original>This form's preset file may be corrupted.  A new preset file has been created.</original>
-<translation>这种形式的预设文件可能已损坏。新的预设文件创建。</translation>
-</phrase>
-
-<!-- pdLastUsedSettings.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdLastUsedSettings.cls contains 0 phrases. -->
 
 <!-- END text for pdLastUsedSettings.cls-->
 
@@ -13256,7 +13251,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>flow</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14956,6 +14956,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- As of this build, PhotoDemon contains 4473 phrases. -->
 <!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12671 total words. -->
+<!-- These 2530 phrases contain approximately 12658 total words. -->
 
 </pdData>

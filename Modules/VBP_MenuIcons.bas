@@ -236,9 +236,9 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "CLEAR", 1, 14         'Empty Clipboard
     
     'View Menu
-    AddMenuIcon "FITONSCREEN", 2, 0    'Fit on Screen
-    AddMenuIcon "ZOOMIN", 2, 2         'Zoom In
-    AddMenuIcon "ZOOMOUT", 2, 3        'Zoom Out
+    AddMenuIcon "zoom_fit", 2, 0    'Fit on Screen
+    AddMenuIcon "zoom_in", 2, 2         'Zoom In
+    AddMenuIcon "zoom_out", 2, 3        'Zoom Out
     AddMenuIcon "ZOOMACTUAL", 2, 9     'Zoom 100%
     
     'Image Menu

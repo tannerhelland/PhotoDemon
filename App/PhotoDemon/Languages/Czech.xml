@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2146</langversion>
+<langversion>6.8.2147</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2789,12 +2789,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdLastUsedSettings.cls -->
 
-<phrase>
-<original>This form's preset file may be corrupted.  A new preset file has been created.</original>
-<translation>Tato forma přednastavit soubor může být poškozen. Byl vytvořen nový přednastavený soubor.</translation>
-</phrase>
-
-<!-- pdLastUsedSettings.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdLastUsedSettings.cls contains 0 phrases. -->
 
 <!-- END text for pdLastUsedSettings.cls-->
 
@@ -13251,7 +13246,12 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 <translation>tvrdost</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>flow</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14948,6 +14948,6 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- As of this build, PhotoDemon contains 4473 phrases. -->
 <!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12671 total words. -->
+<!-- These 2530 phrases contain approximately 12658 total words. -->
 
 </pdData>

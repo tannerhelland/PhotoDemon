@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2146</langversion>
+<langversion>6.8.2147</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2800,12 +2800,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- BEGIN text for pdLastUsedSettings.cls -->
 
-<phrase>
-<original>This form's preset file may be corrupted.  A new preset file has been created.</original>
-<translation>Preset-Datei in dieser Form kann beschädigt sein. Eine neue Preset-Datei ist erstellt worden.</translation>
-</phrase>
-
-<!-- pdLastUsedSettings.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdLastUsedSettings.cls contains 0 phrases. -->
 
 <!-- END text for pdLastUsedSettings.cls-->
 
@@ -13266,7 +13261,12 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <translation>Härte</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>flow</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -14969,6 +14969,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- As of this build, PhotoDemon contains 4473 phrases. -->
 <!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12671 total words. -->
+<!-- These 2530 phrases contain approximately 12658 total words. -->
 
 </pdData>
