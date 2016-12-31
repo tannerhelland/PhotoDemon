@@ -60,6 +60,7 @@ Public Enum BRUSH_ATTRIBUTES
     BA_Antialiasing = 6
     BA_Hardness = 7
     BA_Spacing = 8
+    BA_Flow = 9
     
     'Source-specific values can be stored here, as relevant
     BA_SourceColor = 1000
@@ -67,7 +68,7 @@ End Enum
 
 #If False Then
     Private Const BA_Source = 0, BA_Style = 1, BA_Size = 2, BA_Opacity = 3, BA_BlendMode = 4, BA_AlphaMode = 5, BA_Antialiasing = 6
-    Private Const BA_Hardness = 7, BA_Spacing = 8
+    Private Const BA_Hardness = 7, BA_Spacing = 8, BA_Flow = 9
     Private Const BA_SourceColor = 1000
 #End If
 
@@ -95,6 +96,7 @@ Private m_BrushAlphamode As LAYER_ALPHAMODE
 Private m_BrushAntialiasing As PD_2D_Antialiasing
 Private m_BrushHardness As Single
 Private m_BrushSpacing As Single
+Private m_BrushFlow As Single
 
 'Note that some brush attributes only exist for certain brush sources.
 Private m_BrushSourceColor As Long
@@ -174,6 +176,10 @@ Public Function GetBrushBlendMode() As LAYER_BLENDMODE
     GetBrushBlendMode = m_BrushBlendmode
 End Function
 
+Public Function GetBrushFlow() As Single
+    GetBrushFlow = m_BrushFlow
+End Function
+
 Public Function GetBrushHardness() As Single
     GetBrushHardness = m_BrushHardness
 End Function
@@ -221,6 +227,13 @@ End Sub
 Public Sub SetBrushBlendMode(Optional ByVal newBlendMode As LAYER_BLENDMODE = BL_NORMAL)
     If (newBlendMode <> m_BrushBlendmode) Then
         m_BrushBlendmode = newBlendMode
+        m_BrushIsReady = False
+    End If
+End Sub
+
+Public Sub SetBrushFlow(Optional ByVal newFlow As Single = 100#)
+    If (newFlow <> m_BrushFlow) Then
+        m_BrushFlow = newFlow
         m_BrushIsReady = False
     End If
 End Sub
@@ -292,6 +305,8 @@ Public Function GetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES) As Variant
             GetBrushProperty = GetBrushAntialiasing()
         Case BA_BlendMode
             GetBrushProperty = GetBrushBlendMode()
+        Case BA_Flow
+            GetBrushProperty = GetBrushFlow()
         Case BA_Hardness
             GetBrushProperty = GetBrushHardness()
         Case BA_Opacity
@@ -319,6 +334,8 @@ Public Sub SetBrushProperty(ByVal bProperty As BRUSH_ATTRIBUTES, ByVal newPropVa
             SetBrushAntialiasing newPropValue
         Case BA_BlendMode
             SetBrushBlendMode newPropValue
+        Case BA_Flow
+            SetBrushFlow newPropValue
         Case BA_Hardness
             SetBrushHardness newPropValue
         Case BA_Opacity
@@ -492,8 +509,8 @@ Private Sub CreateSoftBrushReference_MyPaint()
             pxOpacity = brushHardness / (1 - brushHardness) * (1 - dd)
         End If
         
-        'NOTE: if you wanted to, you could apply a dab opacity here (e.g. pxOpacity * [0, 1])
-        ' We ignore this now as I haven't currently implemented an "incremental" paint mode.
+        'NOTE: if you wanted to, you could apply flow here (e.g. pxOpacity * [0, 1])
+        ' We ignore this for now as the MyPaint brush calculator isn't made available to the user.
         dstImageData(x, y) = cLookup(pxOpacity * 255)
         
         'TODO: optimize this function by only processing one quadrant, then mirroring the results to the
@@ -525,7 +542,7 @@ Private Sub CreateSoftBrushReference_PD()
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_SrcPenDIB.GetDIBDC, True
         cSurface.SetSurfacePixelOffset P2_PO_Half
         
-        Drawing2D.QuickCreateSolidBrush cBrush, m_BrushSourceColor
+        Drawing2D.QuickCreateSolidBrush cBrush, m_BrushSourceColor, m_BrushFlow
         m_Painter.FillCircleF cSurface, cBrush, m_BrushSize / 2, m_BrushSize / 2, m_BrushSize / 2
         
         Set cBrush = Nothing: Set cSurface = Nothing
@@ -545,10 +562,14 @@ Private Sub CreateSoftBrushReference_PD()
         Dim cLookup() As Long
         ReDim cLookup(0 To 255) As Long
         
+        Dim normMult As Single, flowMult As Single
+        flowMult = (m_BrushFlow / 100)
+        normMult = (1 / 255) * flowMult
+        
         Dim x As Long, y As Long, tmpMult As Single
         For x = 0 To 255
-            tmpMult = CSng(x) / 255
-            cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x)
+            tmpMult = CSng(x) * normMult
+            cLookup(x) = GDI_Plus.FillLongWithRGBA(tmpMult * tmpR, tmpMult * tmpG, tmpMult * tmpB, x * flowMult)
         Next x
         
         'Next, we're going to do something weird.  If this brush is quite small, it's very difficult to plot subpixel

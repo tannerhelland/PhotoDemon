@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Preferences Interface
 'Copyright 2012-2016 by Tanner Helland
 'Created: 03/November/12
-'Last updated: 07/December/16
-'Last update: migrate some global preference values into this module, which can better handle caching
+'Last updated: 31/December/16
+'Last update: let this class handle preset saving/loading for the main window panels (instead of each panel managing
+'             a separate, standalone preset file on its own)
 '
 'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
 ' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
