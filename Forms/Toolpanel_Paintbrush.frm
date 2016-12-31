@@ -134,6 +134,24 @@ Begin VB.Form toolpanel_Paintbrush
       NotchPosition   =   2
       NotchValueCustom=   100
    End
+   Begin PhotoDemon.pdSlider sltBrushSetting 
+      CausesValidation=   0   'False
+      Height          =   690
+      Index           =   3
+      Left            =   3960
+      TabIndex        =   7
+      Top             =   660
+      Width           =   3750
+      _ExtentX        =   6615
+      _ExtentY        =   1217
+      Caption         =   "flow"
+      FontSizeCaption =   10
+      Max             =   100
+      SigDigits       =   1
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
+   End
 End
 Attribute VB_Name = "toolpanel_Paintbrush"
 Attribute VB_GlobalNameSpace = False
@@ -245,6 +263,10 @@ Private Sub sltBrushSetting_Change(Index As Integer)
         'Hardness
         Case 2
             Paintbrush.SetBrushHardness sltBrushSetting(Index).Value
+            
+        'Flow
+        Case 3
+            Paintbrush.SetBrushFlow sltBrushSetting(Index).Value
     
     End Select
     
@@ -255,6 +277,7 @@ Public Sub SyncAllPaintbrushSettingsToUI()
     Paintbrush.SetBrushSize sltBrushSetting(0).Value
     Paintbrush.SetBrushOpacity sltBrushSetting(1).Value
     Paintbrush.SetBrushHardness sltBrushSetting(2).Value
+    Paintbrush.SetBrushFlow sltBrushSetting(3).Value
     Paintbrush.SetBrushSourceColor layerpanel_Colors.GetCurrentColor()
     Paintbrush.SetBrushBlendMode cboBrushSetting(0).ListIndex
     Paintbrush.SetBrushAlphaMode cboBrushSetting(1).ListIndex
@@ -266,6 +289,7 @@ Public Sub SyncUIToAllPaintbrushSettings()
     sltBrushSetting(0).Value = Paintbrush.GetBrushSize()
     sltBrushSetting(1).Value = Paintbrush.GetBrushOpacity()
     sltBrushSetting(2).Value = Paintbrush.GetBrushHardness()
+    sltBrushSetting(3).Value = Paintbrush.GetBrushFlow()
     cboBrushSetting(0).ListIndex = Paintbrush.GetBrushBlendMode()
     cboBrushSetting(1).ListIndex = Paintbrush.GetBrushAlphaMode()
     If (Paintbrush.GetBrushSpacing() = 0#) Then
