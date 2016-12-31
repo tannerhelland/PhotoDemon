@@ -695,16 +695,19 @@ Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
     
     If g_IsProgramRunning Then
-    
-        cmdZoomFit.AssignImage "SB_ZOOM_FIT"
-        cmdZoomIn.AssignImage "SB_ZOOM_IN"
-        cmdZoomOut.AssignImage "SB_ZOOM_OUT"
-        cmdImgSize.AssignImage "SB_IMG_SIZE"
+        
+        Dim buttonIconSize As Long
+        buttonIconSize = FixDPI(16)
+        
+        cmdZoomFit.AssignImage "zoom_fit", , , , buttonIconSize, buttonIconSize
+        cmdZoomIn.AssignImage "zoom_in", , , , buttonIconSize, buttonIconSize
+        cmdZoomOut.AssignImage "zoom_out", , , , buttonIconSize, buttonIconSize
+        cmdImgSize.AssignImage "generic_imageportrait", , , , buttonIconSize, buttonIconSize
         
         'Load various status bar icons from the resource file
         If (sbIconCoords Is Nothing) Then Set sbIconCoords = New pdDIB
         If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
-        LoadResourceToDIB "SB_MOUSE_POS", sbIconCoords
+        LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
         LoadResourceToDIB "SB_NETWORK", sbIconNetwork
         
     End If
