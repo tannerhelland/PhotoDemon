@@ -152,7 +152,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Canvas Size Handler
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 20/May/16
 'Last update: remove "fill blank area" setting; after the move to layers, this is always handled with transparency
@@ -331,7 +331,7 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
     'Based on the anchor position, determine x and y locations for the image on the new canvas

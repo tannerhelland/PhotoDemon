@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Random Number Generator
-'Copyright 2015-2016 by Tanner Helland
+'Copyright 2015-2017 by Tanner Helland
 'Created: 23/June/15 (but assembled from bits scattered throughout PD, many from years earlier)
 'Last updated: 14/September/15
 'Last update: fix potential integer overflow; thanks to GioRock for catching and reporting

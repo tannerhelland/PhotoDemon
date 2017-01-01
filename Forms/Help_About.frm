@@ -99,7 +99,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon About Dialog
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 31/May/14
 'Last update: convert extra mouse handling code to pdInput
@@ -306,7 +306,10 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou ""
     GenerateThankyou ""
-    GenerateThankyou GetPhotoDemonNameAndVersion(), "Copyright 2016 Tanner Helland and contributors"
+    GenerateThankyou "The text in this dialog is out of date.", "It will be updated for the v7.0 release."
+    GenerateThankyou "For an up-to-date list of contributors, please visit", "https://github.com/tannerhelland/PhotoDemon", True
+    GenerateThankyou ""
+    GenerateThankyou GetPhotoDemonNameAndVersion(), "Copyright 2017 Tanner Helland and contributors"
     GenerateThankyou g_Language.TranslateMessage("the fast, free, portable photo editor"), ""
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""

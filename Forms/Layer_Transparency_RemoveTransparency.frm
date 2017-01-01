@@ -61,7 +61,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Convert image to 24bpp (remove alpha channel) interface
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 14/June/13
 'Last updated: 14/June/13
 'Last update: initial build

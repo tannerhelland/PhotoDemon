@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 
 '***************************************************************************
 'Google Translate Interface
-'Copyright 2013-2016 by Frank Donckers
+'Copyright 2013-2017 by Frank Donckers
 'Created: 19/February/13
 'Last updated: 20/April/16
 'Last update: add failsafe error-checking if IE is not installed.  (Thank you to Chen Lin for reporting!)

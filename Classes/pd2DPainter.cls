@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 2D Painting class (interface for using pd2dBrush and pd2dPen on pd2dSurface objects)
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 01/September/12
 'Last updated: 28/June/16
 'Last update: implement additional surface-to-surface rendering functions

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 12/June/16
 'Last update: clean-up some esoteric functions by moving them to the DIB_Support module.
@@ -958,11 +958,11 @@ End Sub
 Public Sub ResetDIB(Optional ByVal fillValue As Byte = 0)
 
     'Retrieve a pointer to the DIB array and the array's current size
-    Dim tmpDIBPointer As Long, tmpDibSize As Long
-    RetrieveDIBPointerAndSize tmpDIBPointer, tmpDibSize
+    Dim tmpDIBPointer As Long, tmpDIBSize As Long
+    RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
     
     'Erase everything
-    If (tmpDIBPointer <> 0) And (tmpDibSize > 0) Then FillMemory tmpDIBPointer, tmpDibSize, fillValue
+    If (tmpDIBPointer <> 0) And (tmpDIBSize > 0) Then FillMemory tmpDIBPointer, tmpDIBSize, fillValue
     
 End Sub
 
@@ -1543,13 +1543,13 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     Dim checkAlpha As Byte, tmpAlpha As Double
     
     'Because our alpha values are pre-multiplied, we can composite them against the background color via use of a look-up table.
-    Dim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+    Dim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
     
     'Populate a unique lookup table for each color, based on each possible alpha value (0 to 255)
     For x = 0 To 255
         tmpAlpha = 1 - (x / 255)
         rLookup(x) = Int(newR * tmpAlpha)
-        gLookup(x) = Int(newG * tmpAlpha)
+        gLookUp(x) = Int(newG * tmpAlpha)
         bLookup(x) = Int(newB * tmpAlpha)
     Next x
     
@@ -1578,7 +1578,7 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
                 'Use that alpha value to blend the current colors with the newly requested color
                 If m_IsAlphaPremultiplied Then
                     dibPixels(x) = dibPixels(x) + bLookup(checkAlpha)
-                    dibPixels(x + 1) = dibPixels(x + 1) + gLookup(checkAlpha)
+                    dibPixels(x + 1) = dibPixels(x + 1) + gLookUp(checkAlpha)
                     dibPixels(x + 2) = dibPixels(x + 2) + rLookup(checkAlpha)
                 Else
                 

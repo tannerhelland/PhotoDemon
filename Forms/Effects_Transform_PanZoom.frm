@@ -116,7 +116,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pan and Zoom Effect Interface
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 28/May/13
 'Last updated: 25/September/14
 'Last update: integrate new adaptive supersampling engine
@@ -205,7 +205,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
     ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
     Dim numSamples As Long
     Dim ssX() As Single, ssY() As Single
-    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    Filters_Area.GetSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
     
     'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
     ' count in advance.

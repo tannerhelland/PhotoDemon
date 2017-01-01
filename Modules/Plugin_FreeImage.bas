@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 03/May/16
 'Last update: continued work on improving the GetFIDib_SpecificColorMode() function
@@ -1252,12 +1252,12 @@ Private Function RaiseToneMapDialog(ByRef fi_Handle As Long, ByRef dst_fiHandle 
     'Ask the user how they want to proceed.  Note that the dialog wrapper automatically handles the case of "do not prompt;
     ' use previous settings."  If that happens, it will retrieve the proper conversion settings for us, and return a dummy
     ' value of OK (as if the dialog were actually raised).
-    Dim howToProceed As VbMsgBoxResult, toneMapSettings As String
+    Dim howToProceed As VbMsgBoxResult, ToneMapSettings As String
     If noUIMode Then
         howToProceed = vbOK
-        toneMapSettings = vbNullString
+        ToneMapSettings = vbNullString
     Else
-        howToProceed = DialogManager.PromptToneMapSettings(fi_Handle, toneMapSettings)
+        howToProceed = DialogManager.PromptToneMapSettings(fi_Handle, ToneMapSettings)
     End If
     
     'Check for a cancellation state; if encountered, abandon ship now.
@@ -1267,7 +1267,7 @@ Private Function RaiseToneMapDialog(ByRef fi_Handle As Long, ByRef dst_fiHandle 
         ' central tone-mapping handler and use its success/fail state for this function as well.
         FI_DebugMsg "Tone-map dialog appears to have been successful; result = " & howToProceed
         If (Not noUIMode) Then Message "Applying tone-mapping..."
-        dst_fiHandle = ApplyToneMapping(fi_Handle, toneMapSettings)
+        dst_fiHandle = ApplyToneMapping(fi_Handle, ToneMapSettings)
         
         If (dst_fiHandle = 0) Then
             FI_DebugMsg "WARNING!  ApplyToneMapping() failed for reasons unknown."
@@ -1293,7 +1293,7 @@ End Function
 ' to ensure proper load behavior (e.g. loading can't continue after a failed conversion, because we've forcibly killed the image handle),
 ' and to reduce resource usage (as the source handle is likely enormous, and we don't want it sitting around any longer than is
 ' absolutely necessary).
-Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByVal toneMapSettings As String) As Long
+Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByVal ToneMapSettings As String) As Long
     
     'Retrieve the source image's bit-depth and data type.  These are crucial to successful tone-mapping operations.
     Dim fi_BPP As Long
@@ -1313,7 +1313,7 @@ Public Function ApplyToneMapping(ByRef fi_Handle As Long, ByVal toneMapSettings 
     'toneMapSettings contains all conversion instructions.  Parse it to determine which tone-map function to use.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    cParams.SetParamString toneMapSettings
+    cParams.SetParamString ToneMapSettings
     
     'The first parameter contains the requested tone-mapping operation.
     Select Case cParams.GetLong(1, PDTM_DRAGO)

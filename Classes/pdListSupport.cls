@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box support class
-'Copyright 2015-2016 by Tanner Helland
+'Copyright 2015-2017 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 18/February/16
 'Last update: continued integration with pdListBoxView
@@ -677,10 +677,10 @@ Public Sub NotifyMouseMove(ByVal Button As PDMouseButtonConstants, ByVal Shift A
     End If
 End Sub
 
-Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Public Sub NotifyMouseUp(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal clickEventAlsoFiring As Boolean)
     If ((Button And pdLeftButton) <> 0) And m_LMBDown Then
         m_LMBDown = False
-        If (Not ClickEventAlsoFiring) Then ScrollListByDrag x, y
+        If (Not clickEventAlsoFiring) Then ScrollListByDrag x, y
     End If
 End Sub
 

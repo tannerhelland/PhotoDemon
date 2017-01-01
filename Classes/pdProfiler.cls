@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Performance Profiler
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 19/June/14
 'Last updated: 21/July/14
 'Last update: add support for timing databases, so we can track performance (and associated metrics, like stddevs)
@@ -417,7 +417,7 @@ Private Sub WriteUpdatedDatabase()
         End With
         
         'Close this entry
-        xmlEngine.CloseTag "profileEvent"
+        xmlEngine.closeTag "profileEvent"
         xmlEngine.WriteBlankLine
             
     Next i

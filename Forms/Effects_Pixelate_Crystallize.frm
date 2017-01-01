@@ -121,7 +121,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Crystallize Effect Interface
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 05/April/15
 'Last update: split off Crystallize into its own function, separate from Stained Glass

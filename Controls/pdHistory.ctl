@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Automatic History control
-'Copyright 2016-2016 by Tanner Helland
+'Copyright 2016-2017 by Tanner Helland
 'Created: 16/October/16
 'Last updated: 27/October/16
 'Last update: add "rows" property, which allows for cramming more history blocks into a small space

@@ -62,7 +62,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Vibrance Adjustment Tool
-'Copyright 2013-2016 by Audioglider
+'Copyright 2013-2017 by Audioglider
 'Created: 26/June/13
 'Last updated: 24/August/13
 'Last update: added command bar

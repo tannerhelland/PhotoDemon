@@ -154,7 +154,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Canvas User Control (previously a standalone form)
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: 29/November/02
 'Last updated: 05/March/16
 'Last update: finish integrating the image strip control as a canvas element

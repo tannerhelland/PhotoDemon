@@ -104,7 +104,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Rotation Interface
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 06/June/16
 'Last update: total overhaul to improve performance, quality, and feature set.  FreeImage is no longer involved.
@@ -172,7 +172,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     'If we're rotating an entire image, and a selection tool is active, disable the selection before rotating
     If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).selectionActive And (Not isPreview) Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
     Dim tmpDIB As pdDIB

@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Portable Pixmap Export Dialog
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 01/May/16
 'Last updated: 01/May/17
 'Last update: construct an actual export-time dialog for users

@@ -59,6 +59,8 @@ Begin VB.Form FormPluginManager
       TabIndex        =   3
       Top             =   240
       Width           =   7695
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdButtonStrip btsDisablePlugin 
          Height          =   1095
          Left            =   360
@@ -188,6 +190,8 @@ Begin VB.Form FormPluginManager
       TabIndex        =   0
       Top             =   240
       Width           =   7695
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   300
          Index           =   0
@@ -249,7 +253,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Plugin Manager
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 21/December/12
 'Last updated: 20/April/16
 'Last update: overhaul the dialog so that it never needs to be updated against new plugins.  (Instead, all settings

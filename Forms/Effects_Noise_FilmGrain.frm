@@ -78,7 +78,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Add Film Grain Tool
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 11/January/14
 'Last update: convert softness to floating point; minor performance improvements

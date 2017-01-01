@@ -137,6 +137,7 @@ Begin VB.Form FormPrintNew
          Width           =   1815
          _ExtentX        =   3201
          _ExtentY        =   661
+         DefaultValue    =   1
          Min             =   1
          Max             =   256
          Value           =   1
@@ -387,7 +388,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Combined Print / Print Preview Interface
-'Copyright 2003-2016 by Tanner Helland
+'Copyright 2003-2017 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 12/November/13
 'Last update: rewritten from scratch.  Literally.
@@ -464,9 +465,9 @@ Private Sub Form_Load()
     Set sampleOneImageOnePage = New pdDIB
     Set sampleMultipleImagesOnePage = New pdDIB
     Set sampleOneImageMultiplePages = New pdDIB
-    loadResourceToDIB "PRNT_1IMAGE", sampleOneImageOnePage
-    loadResourceToDIB "PRNT_MLTIMGS", sampleMultipleImagesOnePage
-    loadResourceToDIB "PRNT_MLTPGS", sampleOneImageMultiplePages
+    LoadResourceToDIB "PRNT_1IMAGE", sampleOneImageOnePage
+    LoadResourceToDIB "PRNT_MLTIMGS", sampleMultipleImagesOnePage
+    LoadResourceToDIB "PRNT_MLTPGS", sampleOneImageMultiplePages
     
     'Display the relevant image for the selected option button
     updatePrintTypeSampleImage
@@ -498,7 +499,7 @@ End Sub
 Private Sub updatePrintTypeSampleImage()
 
     Dim xOffset As Long
-    xOffset = (picPrintJobSample.ScaleWidth - sampleOneImageOnePage.getDIBWidth) \ 2
+    xOffset = (picPrintJobSample.ScaleWidth - sampleOneImageOnePage.GetDIBWidth) \ 2
 
     If optPrintJob(0) Then
         sampleOneImageOnePage.RenderToPictureBox picPrintJobSample
@@ -508,7 +509,7 @@ Private Sub updatePrintTypeSampleImage()
     
     Else
         picPrintJobSample.Picture = LoadPicture("")
-        sampleOneImageMultiplePages.alphaBlendToDC picPrintJobSample.hDC, 255, xOffset, 0
+        sampleOneImageMultiplePages.AlphaBlendToDC picPrintJobSample.hDC, 255, xOffset, 0
         picPrintJobSample.Picture = picPrintJobSample.Image
         picPrintJobSample.Refresh
     

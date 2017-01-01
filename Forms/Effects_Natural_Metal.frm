@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Metal" or "Chrome" Image effect
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: sometime 2002
 'Last updated: 04/April/15
 'Last update: rewrite function from scratch
@@ -195,9 +195,9 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     
     Dim cLut As pdFilterLUT
     Set cLut = New pdFilterLUT
-    cLut.fillLUT_Curve rLookup, rCurve
-    cLut.fillLUT_Curve gLookUp, gCurve
-    cLut.fillLUT_Curve bLookup, bCurve
+    cLut.FillLUT_Curve rLookup, rCurve
+    cLut.FillLUT_Curve gLookUp, gCurve
+    cLut.FillLUT_Curve bLookup, bCurve
         
     'We are now ready to apply the final curve to the image!
     

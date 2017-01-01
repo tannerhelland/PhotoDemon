@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Red-eye Detection Engine
-'Copyright 2015-2016 by Tanner Helland
+'Copyright 2015-2017 by Tanner Helland
 'Created: 31/December/16
 'Last updated: 06/January/16
 'Last update: rework flood fill functionality into red-eye region detection
@@ -52,7 +52,7 @@ Private m_Width As Long, m_Height As Long
 'As each region is identified, we're going to add its data to a region stack.  This stack is completely different from
 ' the pixel coordinate stack used for region detection.  It stores additional information about each region,
 ' (like boundary positions) which greatly simplifies the subsequent steps of processing each region in turn.
-Private m_RegionStack() As PD_DYNAMIC_REGION
+Private m_RegionStack() As PD_Dynamic_Region
 Private m_RegionStackPosition As Long
 Private m_RegionStackHeight As Long
 Private Const INITIAL_REGION_STACK_HEIGHT As Long = 256
@@ -76,7 +76,7 @@ Public Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight A
     
     'Reset all internal tracking arrays
     m_RegionStackHeight = INITIAL_REGION_STACK_HEIGHT - 1
-    ReDim m_RegionStack(0 To m_RegionStackHeight) As PD_DYNAMIC_REGION
+    ReDim m_RegionStack(0 To m_RegionStackHeight) As PD_Dynamic_Region
     m_RegionStackPosition = 0
     
     m_StackHeight = INITIAL_STACK_HEIGHT - 1
@@ -183,7 +183,7 @@ Public Function FindHighlightRegion(ByVal inputX As Long, ByVal inputY As Long, 
     ' boundaries to our stack collection.
     If m_RegionStackPosition > m_RegionStackHeight Then
         m_RegionStackHeight = m_RegionStackHeight * 2 + 1
-        ReDim Preserve m_RegionStack(0 To m_RegionStackHeight) As PD_DYNAMIC_REGION
+        ReDim Preserve m_RegionStack(0 To m_RegionStackHeight) As PD_Dynamic_Region
     End If
     
     With m_RegionStack(m_RegionStackPosition)
@@ -207,7 +207,7 @@ End Function
 
 'Given an existing highlight region, expand it to include any neighboring red-eye pixels.  The end result is a region that
 ' encompasses both highlight and red-eye pixels.
-Friend Function ExpandToIncludeRedEye(ByRef srcRegion As PD_DYNAMIC_REGION, ByVal highlightID As Long, ByVal redEyeID As Long) As Boolean
+Friend Function ExpandToIncludeRedEye(ByRef srcRegion As PD_Dynamic_Region, ByVal highlightID As Long, ByVal redEyeID As Long) As Boolean
     
     'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
     ' if this class is used multiple times in a row.
@@ -285,12 +285,12 @@ Friend Function ExpandToIncludeRedEye(ByRef srcRegion As PD_DYNAMIC_REGION, ByVa
 End Function
 
 'Return a copy of the current region stack.  If no regions were detected, this function will fail.
-Friend Function GetCopyOfRegionStack(ByRef dstArray() As PD_DYNAMIC_REGION, ByRef numOfRegions As Long) As Boolean
+Friend Function GetCopyOfRegionStack(ByRef dstArray() As PD_Dynamic_Region, ByRef numOfRegions As Long) As Boolean
     
     numOfRegions = m_RegionStackPosition
     
     If numOfRegions > 0 Then
-        ReDim dstArray(0 To numOfRegions - 1) As PD_DYNAMIC_REGION
+        ReDim dstArray(0 To numOfRegions - 1) As PD_Dynamic_Region
         CopyMemoryStrict VarPtr(dstArray(0)), VarPtr(m_RegionStack(0)), LenB(m_RegionStack(0)) * numOfRegions
         GetCopyOfRegionStack = True
     Else

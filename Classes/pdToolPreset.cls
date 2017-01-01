@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Individual Tool Preset handler
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 07/March/15
 'Last update: split some parts of preset management out of the command bar and into this standalone class
@@ -77,7 +77,7 @@ Public Sub SetPresetFilePath(ByRef srcPresetFilePath As String, ByRef toolName A
     If m_File.FileExist(srcPresetFilePath) Then
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
-        If (Not m_XMLEngine.loadXMLFile(srcPresetFilePath)) Or Not (m_XMLEngine.validateLoadedXMLData("toolName")) Then
+        If (Not m_XMLEngine.LoadXMLFile(srcPresetFilePath)) Or Not (m_XMLEngine.ValidateLoadedXMLData("toolName")) Then
             DebugNote "This tool's preset file may be corrupted.  A new preset file has been created."
             ResetXMLData
         End If
@@ -90,7 +90,7 @@ End Sub
 
 'After the caller is done working with presets, they can call this function to write the current preset collection to file.
 Public Sub WritePresetFile()
-    m_XMLEngine.writeXMLToFile m_PresetFilePath
+    m_XMLEngine.WriteXMLToFile m_PresetFilePath
 End Sub
 
 'Given a pdStringStack object, fill it with a list of all available preset names.
@@ -104,11 +104,11 @@ Public Function GetListOfPresets(ByRef dstStringStack As pdStringStack) As Long
     'The XML engine will do most the heavy lifting for this task.  We pass it a String array, and it fills it with
     ' all values corresponding to the given tag name and attribute.
     Dim allPresets() As String
-    If m_XMLEngine.findAllAttributeValues(allPresets, "presetEntry", "id") Then
+    If m_XMLEngine.FindAllAttributeValues(allPresets, "presetEntry", "id") Then
         
         Dim i As Long
         For i = 0 To UBound(allPresets)
-            dstStringStack.AddString m_XMLEngine.getUniqueTag_String("fullPresetName", , , "presetEntry", "id", allPresets(i))
+            dstStringStack.AddString m_XMLEngine.GetUniqueTag_String("fullPresetName", , , "presetEntry", "id", allPresets(i))
         Next i
         
         GetListOfPresets = UBound(allPresets) + 1
@@ -127,10 +127,10 @@ Public Function DoesPresetExist(ByVal presetName As String) As Boolean
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
     Dim xmlSafePresetName As String
-    xmlSafePresetName = m_XMLEngine.getXMLSafeTagName(Trim$(presetName))
+    xmlSafePresetName = m_XMLEngine.GetXMLSafeTagName(Trim$(presetName))
     
     'The XML engine handles the actual preset search
-    DoesPresetExist = m_XMLEngine.doesTagExist("presetEntry", "id", xmlSafePresetName)
+    DoesPresetExist = m_XMLEngine.DoesTagExist("presetEntry", "id", xmlSafePresetName)
 
 End Function
 
@@ -140,7 +140,7 @@ Public Sub BeginPresetRead(ByVal presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
-    m_ActivePresetName = m_XMLEngine.getXMLSafeTagName(Trim$(presetName))
+    m_ActivePresetName = m_XMLEngine.GetXMLSafeTagName(Trim$(presetName))
     
 End Sub
 
@@ -154,7 +154,7 @@ Public Function ReadPresetValue(ByVal objectName As String, ByRef dstObjectValue
     If Len(m_ActivePresetName) <> 0 Then
     
         'Retrieve said value, and return TRUE if a non-zero length string is found
-        dstObjectValue = m_XMLEngine.getUniqueTag_String(objectName, "", , "presetEntry", "id", m_ActivePresetName)
+        dstObjectValue = m_XMLEngine.GetUniqueTag_String(objectName, "", , "presetEntry", "id", m_ActivePresetName)
         ReadPresetValue = CBool(Len(dstObjectValue) <> 0)
         
     Else
@@ -177,20 +177,20 @@ Public Sub BeginPresetWrite(ByVal presetName As String)
     
     'Users can name presets however they'd like, but when looking up preset data, we only use XML-friendly tag names
     ' (e.g. no spaces, etc).
-    m_ActivePresetName = m_XMLEngine.getXMLSafeTagName(Trim$(presetName))
+    m_ActivePresetName = m_XMLEngine.GetXMLSafeTagName(Trim$(presetName))
     
     'When writing presets, we need to make sure the parent set of preset tags exists.  If it does, no problem - we'll overwrite
     ' the existing settings.  But if it does NOT exist, we need to create it now.
-    If Not m_XMLEngine.doesTagExist("presetEntry", "id", m_ActivePresetName) Then
+    If Not m_XMLEngine.DoesTagExist("presetEntry", "id", m_ActivePresetName) Then
         
         'Presets use a pretty simple set of tags
-        m_XMLEngine.writeTagWithAttribute "presetEntry", "id", m_ActivePresetName, "", True
+        m_XMLEngine.WriteTagWithAttribute "presetEntry", "id", m_ActivePresetName, "", True
         
             'Note that we also write the preset name here; this is the exact string we are handed, spaces and all
-            m_XMLEngine.writeTag "fullPresetName", presetName
+            m_XMLEngine.WriteTag "fullPresetName", presetName
             
         m_XMLEngine.closeTag "presetEntry"
-        m_XMLEngine.writeBlankLine
+        m_XMLEngine.WriteBlankLine
         
     End If
     
@@ -204,7 +204,7 @@ Public Sub WritePresetValue(ByRef objectName As String, ByRef objectValue As Str
     If Len(m_ActivePresetName) <> 0 Then
         
         'Store the new value inside the master XML object
-        m_XMLEngine.updateTag objectName, objectValue, "presetEntry", "id", m_ActivePresetName
+        m_XMLEngine.UpdateTag objectName, objectValue, "presetEntry", "id", m_ActivePresetName
     
     'If preset writing hasn't been initialized, there's nothing we can do
     Else
@@ -221,13 +221,13 @@ End Sub
 'Reset the XML engine for this session.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
 Private Function ResetXMLData()
 
-    m_XMLEngine.prepareNewXML "Tool preset"
-    m_XMLEngine.writeBlankLine
-    m_XMLEngine.writeTag "toolName", m_ToolName
-    m_XMLEngine.writeTag "toolDescription", m_ToolDescription
-    m_XMLEngine.writeBlankLine
-    m_XMLEngine.writeComment "Everything past this point is tool preset data.  Presets are sorted in the order they were created."
-    m_XMLEngine.writeBlankLine
+    m_XMLEngine.PrepareNewXML "Tool preset"
+    m_XMLEngine.WriteBlankLine
+    m_XMLEngine.WriteTag "toolName", m_ToolName
+    m_XMLEngine.WriteTag "toolDescription", m_ToolDescription
+    m_XMLEngine.WriteBlankLine
+    m_XMLEngine.WriteComment "Everything past this point is tool preset data.  Presets are sorted in the order they were created."
+    m_XMLEngine.WriteBlankLine
 
 End Function
 

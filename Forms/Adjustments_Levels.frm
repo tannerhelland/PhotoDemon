@@ -261,7 +261,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright 2006-2016 by Tanner Helland
+'Copyright 2006-2017 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 07/September/15
 'Last update: overhaul the underlying histogram UI code, using a new centralized histogram renderer

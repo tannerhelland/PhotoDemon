@@ -1,7 +1,7 @@
 Attribute VB_Name = "OS_Win7_8_Features"
 '***************************************************************************
 'Handler for features specific to Windows 7+
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 21/November/13
 'Last updated: 21/November/13
 'Last update: initial build
@@ -26,7 +26,7 @@ Private Declare Sub OleInitialize Lib "ole32" (pvReserved As Any)
 Private Declare Sub OleUninitialize Lib "ole32" ()
 Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, pclsid As Guid) As Long
 Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As String, lpiid As Guid) As Long
-Private Declare Function CoCreateInstance Lib "ole32" (rclsid As Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, riid As Guid, ppv As Any) As Long
+Private Declare Function CoCreateInstance Lib "ole32" (rclsid As Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, rIID As Guid, ppv As Any) As Long
 
 Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal newValue As Long) As Long

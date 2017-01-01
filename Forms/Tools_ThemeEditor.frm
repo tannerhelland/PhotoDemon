@@ -293,7 +293,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Resource editor dialog
-'Copyright 2016-2016 by Tanner Helland
+'Copyright 2016-2017 by Tanner Helland
 'Created: 22/August/16
 'Last updated: 28/December/16
 'Last update: continued work on core features

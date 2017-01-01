@@ -1,12 +1,12 @@
 Attribute VB_Name = "Drawing2D"
 '***************************************************************************
 'High-Performance Backend-Agnostic 2D Rendering Interface
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 1/September/12
 'Last updated: 11/May/16
 'Last update: continue migrating various rendering bits out of GDI+ and into this generic renderer.
 '
-'In 2015-2016, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton of 2D rendering tasks,
+'In 2015-2017, I slowly migrated PhotoDemon to its own UI toolkit.  The new toolkit performs a ton of 2D rendering tasks,
 ' so it was finally time to migrate PD's hoary old GDI+ interface to a more modern solution.
 '
 'This module provides a renderer-agnostic solution for various 2D drawing tasks.  At present, it leans only on GDI+,

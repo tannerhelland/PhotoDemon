@@ -1,7 +1,7 @@
 Attribute VB_Name = "Layer_Handler"
 '***************************************************************************
 'Layer Interface
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 24/March/14
 'Last updated: 04/July/14
 'Last update: added eraseLayerByIndex() function
@@ -1143,7 +1143,7 @@ End Sub
 ' to handle that case gracefully!
 Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_TYPE = PDL_TEXT, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
     
-    Dim questionText As String, yesText As String, noText As String, cancelText As String, rememberText As String, DialogTitle As String
+    Dim questionText As String, yesText As String, noText As String, cancelText As String, rememberText As String, dialogTitle As String
     
     'If multiple layers are involved, we don't care about the current layer type
     If multipleLayersInvolved Then
@@ -1175,10 +1175,10 @@ Public Function AskIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_T
     'Cancel text, "remember in the future" check box text, and dialog title are universal
     cancelText = g_Language.TranslateMessage("I can't decide.  Cancel this action.")
     rememberText = g_Language.TranslateMessage("In the future, automatically rasterize without prompting me")
-    DialogTitle = "Rasterization required"
+    dialogTitle = "Rasterization required"
     
     'Display the dialog and return the result
-    AskIfOkayToRasterizeLayer = DialogManager.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, DialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
+    AskIfOkayToRasterizeLayer = DialogManager.PromptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
 
 End Function
 

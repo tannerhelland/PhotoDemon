@@ -1,7 +1,7 @@
 Attribute VB_Name = "Printing"
 '***************************************************************************
 'Printer support functions
-'Copyright 2003-2016 by Tanner Helland
+'Copyright 2003-2017 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 09/August/14
 'Last update: perform necessary cleanup for printer temp files in Vista+
@@ -129,8 +129,8 @@ Public Sub PrintViaWindowsPhotoPrinter()
     'Create a temporary copy of the currently active image, composited against a white background
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
-    If tmpDIB.getDIBColorDepth <> 24 Then tmpDIB.convertTo24bpp
+    pdImages(g_CurrentImage).GetCompositedImage tmpDIB, False
+    If tmpDIB.GetDIBColorDepth <> 24 Then tmpDIB.ConvertTo24bpp
     
     'Windows itself handles the heavy lifting for printing.  We just write a temp file that contains the image data.
     Dim tmpFilename As String

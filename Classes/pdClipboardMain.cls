@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Clipboard Interface
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 28/February/16
 'Last update: add Unicode support for drag/drop routines, lots o' refactoring to accommodate this

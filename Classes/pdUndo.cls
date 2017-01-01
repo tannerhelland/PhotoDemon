@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo/Redo Handler
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 2/April/01
 'Last updated: 04/December/16
 'Last update: use lz4 for all Undo/Redo compression needs; this is significantly faster than zlib, with only a minor
@@ -1067,7 +1067,7 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
         xmlEngine.WriteTag "RelevantTool", undoStack(i).relevantTool
         
         'Close this undo entry
-        xmlEngine.CloseTag "UndoEntry"
+        xmlEngine.closeTag "UndoEntry"
         xmlEngine.WriteBlankLine
     
     Next i

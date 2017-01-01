@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon 2D Transformation manager
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 09/May/15 (though assembled from various parts written much earlier)
 'Last updated: 22/June/15
 'Last update: add x/y shear support

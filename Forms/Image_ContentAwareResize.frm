@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Content-Aware Resize (e.g. "content-aware scale" in Photoshop, "liquid rescale" in GIMP) Dialog
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 29/July/14
 'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds
@@ -233,7 +233,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         'If a selection is active, remove it now
         If pdImages(g_CurrentImage).selectionActive Then
             pdImages(g_CurrentImage).selectionActive = False
-            pdImages(g_CurrentImage).mainSelection.lockRelease
+            pdImages(g_CurrentImage).mainSelection.LockRelease
         End If
                    
         'Flatten the image; note that we route this through the central processor, so that a proper Undo/Redo entry
@@ -309,8 +309,8 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     Set seamCarver = New pdSeamCarving
     
     'Give the seam carving class a copy of our source and energy images
-    seamCarver.setSourceImage srcDIB
-    seamCarver.setEnergyImage energyDIB
+    seamCarver.SetSourceImage srcDIB
+    seamCarver.SetEnergyImage energyDIB
     
     'We no longer need a copy of the energy image, so release it.
     Set energyDIB = Nothing
@@ -318,14 +318,14 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     Message "Applying content-aware resize..."
     
     'This initial seam-carving algorithm is not particularly well-implemented, but that's okay.  It's a starting point!
-    seamCarver.startSeamCarve iWidth, iHeight
+    seamCarver.StartSeamCarve iWidth, iHeight
     
     'Release the progress bar
     ReleaseProgressBar
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
     If Not g_cancelCurrentAction Then
-        srcDIB.CreateFromExistingDIB seamCarver.getCarvedImage()
+        srcDIB.CreateFromExistingDIB seamCarver.GetCarvedImage()
         SeamCarveDIB = True
     Else
         SeamCarveDIB = False

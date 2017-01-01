@@ -63,7 +63,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Preset Editor Dialog
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 06/March/15
 'Last updated: 02/September/15
 'Last update: convert to the new mini-command-bar UC

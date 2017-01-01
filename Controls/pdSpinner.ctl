@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 24/May/16
 'Last update: migrate to the new Drawing2D classes

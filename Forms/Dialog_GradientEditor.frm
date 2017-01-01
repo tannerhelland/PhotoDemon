@@ -202,7 +202,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gradient Editor Dialog
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
 'Last updated: 23/July/15
 'Last update: initial build

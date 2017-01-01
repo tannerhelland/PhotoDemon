@@ -1,7 +1,7 @@
 Attribute VB_Name = "DialogManager"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 30/November/12
 'Last updated: 04/May/15
 'Last update: start work on a generic "remember my choice" dialog, which will greatly simplify future tasks
@@ -257,7 +257,7 @@ Public Function PromptToneMapSettings(ByVal fi_Handle As Long, ByRef copyOfParam
         
             '...but we also need to return a copy of the parameter string, which FreeImage will use to actually render
             ' any requested tone-mapping operations.
-            copyOfParamString = dialog_ToneMapping.toneMapSettings
+            copyOfParamString = dialog_ToneMapping.ToneMapSettings
             
             'If the user doesn't want us to raise this dialog in the future, store their preference now
             g_UserPreferences.SetPref_Boolean "Loading", "Tone Mapping Prompt", Not dialog_ToneMapping.RememberSettings

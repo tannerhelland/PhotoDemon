@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Right-side ("Layers") Toolbar
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 30/September/15
 'Last update: implement collapsible panels
@@ -146,14 +146,14 @@ Attribute m_MouseEvents.VB_VarHelpID = -1
 Private m_defaultPanelHeight() As Long
 
 'Number of panels; set automatically at Form_Load
-Private m_numOfPanels As Long
+Private m_NumOfPanels As Long
 
 Private Sub Form_Load()
     
     'All layout decisions on this form are contingent on the number of panels, so set this first as subsequent code
     ' will likely rely on it.
-    m_numOfPanels = ttlPanel.Count
-    ReDim m_defaultPanelHeight(0 To m_numOfPanels - 1) As Long
+    m_NumOfPanels = ttlPanel.Count
+    ReDim m_defaultPanelHeight(0 To m_NumOfPanels - 1) As Long
     
     'Some panel heights are hard-coded.  Calculate those now.
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
@@ -261,7 +261,7 @@ Private Sub ReflowInterface()
     xWidth = Me.ScaleWidth - xOffset
     
     Dim i As Long
-    For i = 0 To m_numOfPanels - 1
+    For i = 0 To m_NumOfPanels - 1
         
         'Move the titlebar of this panel into position
         ttlPanel(i).SetPositionAndSize xOffset, yOffset, xWidth - xOffset + FixDPI(2), ttlPanel(i).GetHeight
@@ -274,7 +274,7 @@ Private Sub ReflowInterface()
             
             'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
             If (xWidth - xOffset > 0) Then
-                If i < (m_numOfPanels - 1) Then
+                If i < (m_NumOfPanels - 1) Then
                     ctlContainer(i).SetPositionAndSize xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
                     
                 'The layers panel is unique, because it shrinks to fit all available space.

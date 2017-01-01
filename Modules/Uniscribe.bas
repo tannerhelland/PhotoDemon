@@ -1,7 +1,7 @@
 Attribute VB_Name = "Uniscribe_Interface"
 '***************************************************************************
 'Uniscribe API Types
-'Copyright 2015-2016 by Tanner Helland
+'Copyright 2015-2017 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 01/June/16
 'Last update: construct a new dynamic cache when retrieving script properties; this greatly improves performance for

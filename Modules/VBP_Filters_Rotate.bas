@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Transform"
 '***************************************************************************
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
-'Copyright 2003-2016 by Tanner Helland
+'Copyright 2003-2017 by Tanner Helland
 'Created: 25/January/03
 'Last updated: 08/May/14
 'Last update: convert rotate 90/270 functions to use GDI+; this gives a small but welcome speed improvement
@@ -258,9 +258,9 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
         selectionIsPureRectangle = CBool(.GetSelectionShape = sRectangle)
         
         If selectionIsPureRectangle Then
-            selectionIsPureRectangle = selectionIsPureRectangle And CBool(.getSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) = 0)
-            selectionIsPureRectangle = selectionIsPureRectangle And CBool(.getSelectionProperty_Long(SP_AREA) = sInterior)
-            selectionIsPureRectangle = selectionIsPureRectangle And CBool((.getSelectionProperty_Long(SP_SMOOTHING) = sNone) Or (.getSelectionProperty_Long(SP_SMOOTHING) = sAntialiased) Or ((.getSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered) And (.getSelectionProperty_Long(SP_FEATHERING_RADIUS) = 0)))
+            selectionIsPureRectangle = selectionIsPureRectangle And CBool(.GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) = 0)
+            selectionIsPureRectangle = selectionIsPureRectangle And CBool(.GetSelectionProperty_Long(SP_AREA) = sInterior)
+            selectionIsPureRectangle = selectionIsPureRectangle And CBool((.GetSelectionProperty_Long(SP_SMOOTHING) = sNone) Or (.GetSelectionProperty_Long(SP_SMOOTHING) = sAntialiased) Or ((.GetSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered) And (.GetSelectionProperty_Long(SP_FEATHERING_RADIUS) = 0)))
         End If
         
         'If that huge list of above criteria are met, we can apply a non-destructive crop operation.

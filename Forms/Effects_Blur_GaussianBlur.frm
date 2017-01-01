@@ -75,7 +75,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gaussian Blur Tool
-'Copyright 2010-2016 by Tanner Helland
+'Copyright 2010-2017 by Tanner Helland
 'Created: 01/July/10
 'Last updated: 25/September/14
 'Last update: switch quality option buttons to button strip

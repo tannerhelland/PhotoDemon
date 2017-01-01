@@ -1,7 +1,7 @@
 Attribute VB_Name = "Paintbrush"
 '***************************************************************************
 'Paintbrush tool interface
-'Copyright 2016-2016 by Tanner Helland
+'Copyright 2016-2017 by Tanner Helland
 'Created: 1/November/16
 'Last updated: 15/December/16
 'Last update: ongoing performance improvements

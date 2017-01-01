@@ -131,7 +131,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Cross-Screen (Star) Tool
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 20/January/15
 'Last updated: 26/January/15
 'Last update: minor performance and quality tweaks
@@ -224,8 +224,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     Set cLut = New pdFilterLUT
     
     Dim tmpLUT() As Byte
-    cLut.fillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
-    cLut.applyLUTsToDIB_Gray m_thresholdDIB, tmpLUT, True
+    cLut.FillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
+    cLut.ApplyLUTsToDIB_Gray m_thresholdDIB, tmpLUT, True
     
     'Progress is reported artificially, because it's too complex to handle using normal means
     If Not toPreview Then
@@ -335,13 +335,13 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     'We now need to brighten up m_mbDIB.
     Dim lMax As Long, lMin As Long
     getDIBMaxMinLuminance m_mbDIB, lMin, lMax
-    cLut.fillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
+    cLut.FillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
     
     'On top of the remapped range (which is most important), we also gamma-correct the DIB according to the input strength parameter
     Dim gammaLUT() As Byte, finalLUT() As Byte
-    cLut.fillLUT_Gamma gammaLUT, 0.5 + (csStrength / 100)
+    cLut.FillLUT_Gamma gammaLUT, 0.5 + (csStrength / 100)
     cLut.MergeLUTs tmpLUT, gammaLUT, finalLUT
-    cLut.applyLUTsToDIB_Gray m_mbDIB, finalLUT, True
+    cLut.ApplyLUTsToDIB_Gray m_mbDIB, finalLUT, True
     
     'We also want to apply a slight blur to the final result, to improve the feathering of the light boundaries (as they may be
     ' quite sharp due to the remapping).

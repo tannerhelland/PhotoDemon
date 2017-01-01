@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Miscellaneous"
 '***************************************************************************
 'Filter Module
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 07/September/15
 'Last update: continued work on moving crap out of this module
@@ -930,8 +930,8 @@ Public Sub MenuCountColors()
     progBarCheck = FindBestProgBarValue()
     
     'This array will track whether or not a given color has been detected in the image
-    Dim UniqueColors() As Byte
-    ReDim UniqueColors(0 To 16777216) As Byte
+    Dim uniqueColors() As Byte
+    ReDim uniqueColors(0 To 16777216) As Byte
     
     'Total number of unique colors counted so far
     Dim totalCount As Long
@@ -949,9 +949,9 @@ Public Sub MenuCountColors()
         r = ImageData(x + 2, y)
         
         chkValue = RGB(r, g, b)
-        If UniqueColors(chkValue) = 0 Then
+        If uniqueColors(chkValue) = 0 Then
             totalCount = totalCount + 1
-            UniqueColors(chkValue) = 1
+            uniqueColors(chkValue) = 1
         End If
     Next x
         If (y And progBarCheck) = 0 Then SetProgBarVal y
@@ -959,7 +959,7 @@ Public Sub MenuCountColors()
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase UniqueColors
+    Erase uniqueColors
     Set tmpImageComposite = Nothing
     
     'Reset the progress bar
@@ -1002,9 +1002,9 @@ Public Sub MenuTest()
     
     '*******************************
     'Gamma test
-    cLut.fillLUT_Gamma rLUT, 2.2
-    cLut.fillLUT_Gamma gLUT, 2.2
-    cLut.fillLUT_Gamma bLUT, 2.2
+    cLut.FillLUT_Gamma rLUT, 2.2
+    cLut.FillLUT_Gamma gLUT, 2.2
+    cLut.FillLUT_Gamma bLUT, 2.2
     '*******************************
     
     '*******************************
@@ -1029,7 +1029,7 @@ Public Sub MenuTest()
     '*******************************
     
     'Apply the test LUTs to the image
-    cLut.applyLUTsToDIB_Color pdImages(g_CurrentImage).GetActiveDIB, rLUT, gLUT, bLUT
+    cLut.ApplyLUTsToDIB_Color pdImages(g_CurrentImage).GetActiveDIB, rLUT, gLUT, bLUT
         
     'Reflect any image changes on the screen.
     ReleaseProgressBar

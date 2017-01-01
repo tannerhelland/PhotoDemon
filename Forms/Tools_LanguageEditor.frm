@@ -89,6 +89,8 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   6
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdListBox lstLanguages 
          Height          =   4575
          Left            =   840
@@ -151,6 +153,8 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   18
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin VB.PictureBox picProgBar 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -186,6 +190,8 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   11
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdTextBox txtLangID 
          Height          =   345
          Index           =   1
@@ -394,6 +400,8 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   8
       Top             =   720
       Width           =   11775
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdListBox lstPhrases 
          Height          =   5175
          Left            =   240
@@ -543,7 +551,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Interactive Language (Translation) Editor
-'Copyright 2013-2016 by Frank Donckers and Tanner Helland
+'Copyright 2013-2017 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
 'Last updated: 03/September/15
 'Last update: convert all buttons to pdButton and overhaul UI code accordingly
@@ -702,7 +710,7 @@ Private Sub cmdAutoTranslate_Click()
             If InStr(1, srcPhrase, "&") Then srcPhrase = Replace(srcPhrase, "&", "")
             
             'Request a translation from Google
-            retString = autoTranslate.getGoogleTranslation(srcPhrase)
+            retString = autoTranslate.GetGoogleTranslation(srcPhrase)
             
             'If Google succeeded, store the new translation
             If Len(retString) <> 0 Then
@@ -711,7 +719,7 @@ Private Sub cmdAutoTranslate_Click()
                 allPhrases(i).Translation = retString
                 
                 'Insert this translation into the original XML file
-                xmlEngine.updateTagAtLocation "translation", allPhrases(i).Translation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(i).Original)
+                xmlEngine.UpdateTagAtLocation "translation", allPhrases(i).Translation, xmlEngine.GetLocationOfParentTag("phrase", "original", allPhrases(i).Original)
     
             End If
             
@@ -804,7 +812,7 @@ Private Sub cmdNextPhrase_Click()
     allPhrases(GetPhraseIndexFromListIndex()).Translation = txtTranslation
     
     'Insert this translation into the original XML file
-    xmlEngine.updateTagAtLocation "translation", txtTranslation, xmlEngine.getLocationOfParentTag("phrase", "original", allPhrases(GetPhraseIndexFromListIndex()).Original)
+    xmlEngine.UpdateTagAtLocation "translation", txtTranslation, xmlEngine.GetLocationOfParentTag("phrase", "original", allPhrases(GetPhraseIndexFromListIndex()).Original)
     
     'Write an alternating backup out to file
     PerformAutosave
@@ -928,11 +936,11 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             ' hopefully present... if not, there's not much we can do.)
             If optBaseLanguage(0) Then
                                 
-                If LoadAllPhrasesFromFile(g_UserPreferences.getLanguagePath & "Master\MASTER.xml") Then
+                If LoadAllPhrasesFromFile(g_UserPreferences.GetLanguagePath & "Master\MASTER.xml") Then
                     
                     'Populate the current language's metadata container with some default values
                     With curLanguage
-                        .FileName = g_UserPreferences.getLanguagePath(True) & "new language.xml"
+                        .FileName = g_UserPreferences.GetLanguagePath(True) & "new language.xml"
                         .langID = "en-US"
                         .LangName = g_Language.TranslateMessage("New Language")
                         .LangStatus = g_Language.TranslateMessage("incomplete")
@@ -955,7 +963,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
                 curLanguage = listOfAvailableLanguages(GetLanguageIndexFromListIndex())
-                curLanguage.FileName = g_UserPreferences.getLanguagePath(True) & GetFilename(listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName)
+                curLanguage.FileName = g_UserPreferences.GetLanguagePath(True) & GetFilename(listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName)
                 
                 'Attempt to load the selected language from file
                 If LoadAllPhrasesFromFile(listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName) Then
@@ -995,11 +1003,11 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             
             'Write these updated tags into the original XML text
             With curLanguage
-                xmlEngine.updateTagAtLocation "langid", .langID
-                xmlEngine.updateTagAtLocation "langname", .LangName
-                xmlEngine.updateTagAtLocation "langstatus", .LangStatus
-                xmlEngine.updateTagAtLocation "langversion", .langVersion
-                xmlEngine.updateTagAtLocation "author", .Author
+                xmlEngine.UpdateTagAtLocation "langid", .langID
+                xmlEngine.UpdateTagAtLocation "langname", .LangName
+                xmlEngine.UpdateTagAtLocation "langstatus", .LangStatus
+                xmlEngine.UpdateTagAtLocation "langversion", .langVersion
+                xmlEngine.UpdateTagAtLocation "author", .Author
             End With
             
             'Update the autosave file
@@ -1031,7 +1039,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 If saveDialog.GetSaveFileName(sFile, , True, cdFilter, , GetDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd) Then
                 
                     'Write the current XML file out to the user's requested path
-                    xmlEngine.writeXMLToFile sFile, True
+                    xmlEngine.WriteXMLToFile sFile, True
                     unloadFormNow = True
                     
                 Else
@@ -1220,17 +1228,17 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
     If xmlEngine.LoadXMLFile(srcLangFile) Then
     
         'Validate the language file's contents
-        If xmlEngine.isPDDataType("Translation") And xmlEngine.validateLoadedXMLData("phrase") Then
+        If xmlEngine.IsPDDataType("Translation") And xmlEngine.ValidateLoadedXMLData("phrase") Then
         
             lblPleaseWait.Caption = g_Language.TranslateMessage("Please wait while the language file is validated...")
             
             'New as of August '14 is the ability to set text comparison mode.  To ensure output matches
             ' the rest of PD, the language editor now uses binary comparison mode exclusively.
-            xmlEngine.setTextCompareMode vbBinaryCompare
+            xmlEngine.SetTextCompareMode vbBinaryCompare
         
             'Attempt to load all phrase tag location occurrences
             Dim phraseLocations() As Long
-            If xmlEngine.findAllTagLocations(phraseLocations, "phrase", True) Then
+            If xmlEngine.FindAllTagLocations(phraseLocations, "phrase", True) Then
             
                 lblPleaseWait.Caption = g_Language.TranslateMessage("Validation successful!  Loading all phrases and preparing translation engine...")
                 
@@ -1241,10 +1249,10 @@ Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
                 
                 Dim i As Long
                 For i = 0 To m_NumOfPhrases - 1
-                    tmpString = xmlEngine.getUniqueTag_String("original", , phraseLocations(i))
+                    tmpString = xmlEngine.GetUniqueTag_String("original", , phraseLocations(i))
                     allPhrases(i).Original = tmpString
                     allPhrases(i).Length = Len(tmpString)
-                    allPhrases(i).Translation = xmlEngine.getUniqueTag_String("translation", , phraseLocations(i))
+                    allPhrases(i).Translation = xmlEngine.GetUniqueTag_String("translation", , phraseLocations(i))
                     
                     'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
                     ' and it can't be so long that it overflows the list box.
@@ -1304,7 +1312,7 @@ Private Sub lstPhrases_Click()
             'I've had trouble with the text boxes not clearing properly (no idea why), so manually clear them before
             ' assigning new text.
             Dim retString As String
-            retString = autoTranslate.getGoogleTranslation(allPhrases(GetPhraseIndexFromListIndex()).Original)
+            retString = autoTranslate.GetGoogleTranslation(allPhrases(GetPhraseIndexFromListIndex()).Original)
             If Len(retString) <> 0 Then
                 txtTranslation = ""
                 txtTranslation = retString
@@ -1357,10 +1365,10 @@ Private Sub PerformAutosave()
     'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
     ' (assuming they have different language IDs).
     Dim backupFile As String
-    backupFile = g_UserPreferences.getLanguagePath(True) & backupFileName & curLanguage.langID & "_" & Str(curBackupFile) & ".tmpxml"
+    backupFile = g_UserPreferences.GetLanguagePath(True) & backupFileName & curLanguage.langID & "_" & Str(curBackupFile) & ".tmpxml"
     
     'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
-    xmlEngine.writeXMLToFile backupFile, True
+    xmlEngine.WriteXMLToFile backupFile, True
 
 End Sub
 
@@ -1370,37 +1378,37 @@ Private Sub PopulateAvailableLanguages()
     ReDim m_langListIndexes(0 To 15) As Long
     
     'Retrieve a list of available languages from the translation engine
-    g_Language.copyListOfLanguages listOfAvailableLanguages
+    g_Language.CopyListOfLanguages listOfAvailableLanguages
     
     'We now do a bit of additional work.  Look for any autosave files (with extension .tmpxml) in the user language folder.  Allow the
     ' user to load these if available.
     Dim chkFile As String
-    chkFile = Dir(g_UserPreferences.getLanguagePath(True) & "*.tmpxml", vbNormal)
+    chkFile = Dir(g_UserPreferences.GetLanguagePath(True) & "*.tmpxml", vbNormal)
         
     Do While (chkFile <> "")
         
         'Use PD's XML engine to load the file
         Dim tmpXMLEngine As pdXML
         Set tmpXMLEngine = New pdXML
-        If tmpXMLEngine.LoadXMLFile(g_UserPreferences.getLanguagePath(True) & chkFile) Then
+        If tmpXMLEngine.LoadXMLFile(g_UserPreferences.GetLanguagePath(True) & chkFile) Then
         
             'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
-            If tmpXMLEngine.isPDDataType("Translation") And tmpXMLEngine.validateLoadedXMLData("langid", "langname", "phrase") Then
+            If tmpXMLEngine.IsPDDataType("Translation") And tmpXMLEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
             
                 ReDim Preserve listOfAvailableLanguages(0 To UBound(listOfAvailableLanguages) + 1) As pdLanguageFile
                 
                 With listOfAvailableLanguages(UBound(listOfAvailableLanguages))
                     'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
-                    .langID = tmpXMLEngine.getUniqueTag_String("langid")
-                    .LangName = tmpXMLEngine.getUniqueTag_String("langname")
+                    .langID = tmpXMLEngine.GetUniqueTag_String("langid")
+                    .LangName = tmpXMLEngine.GetUniqueTag_String("langname")
     
                     'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
-                    .langVersion = tmpXMLEngine.getUniqueTag_String("langversion")
-                    .LangStatus = tmpXMLEngine.getUniqueTag_String("langstatus")
-                    .Author = tmpXMLEngine.getUniqueTag_String("author")
+                    .langVersion = tmpXMLEngine.GetUniqueTag_String("langversion")
+                    .LangStatus = tmpXMLEngine.GetUniqueTag_String("langstatus")
+                    .Author = tmpXMLEngine.GetUniqueTag_String("author")
                     
                     'Finally, add some internal metadata
-                    .FileName = g_UserPreferences.getLanguagePath(True) & chkFile
+                    .FileName = g_UserPreferences.GetLanguagePath(True) & chkFile
                     .LangType = "Autosave"
                     
                 End With

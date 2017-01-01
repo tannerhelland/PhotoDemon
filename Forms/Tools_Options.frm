@@ -916,7 +916,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Program Preferences Handler
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: 8/November/02
 'Last updated: 28/November/16
 'Last update: overhaul a number of panels to reflect new program behavior in 7.0

@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Generic Button control
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 31/August/15
 'Last update: split off from pdButtonToolbox.  The two controls are similar, but this one needs to manage a caption.

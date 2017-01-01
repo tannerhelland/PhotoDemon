@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Layer Listbox (inner portion only)
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 11/September/16
 'Last update: isolate the old layer toolbox code inside its own control.  This greatly simplifies theming,

@@ -28,8 +28,8 @@ Begin VB.UserControl pdListBoxOD
       Top             =   360
       Visible         =   0   'False
       Width           =   255
-      _extentx        =   450
-      _extenty        =   2778
+      _ExtentX        =   450
+      _ExtentY        =   2778
    End
    Begin PhotoDemon.pdListBoxViewOD lbView 
       Height          =   1575
@@ -37,8 +37,8 @@ Begin VB.UserControl pdListBoxOD
       TabIndex        =   0
       Top             =   360
       Width           =   1575
-      _extentx        =   2778
-      _extenty        =   2778
+      _ExtentX        =   2778
+      _ExtentY        =   2778
    End
 End
 Attribute VB_Name = "pdListBoxOD"
@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Owner-Drawn List Box control
-'Copyright 2016-2016 by Tanner Helland
+'Copyright 2016-2017 by Tanner Helland
 'Created: 26/March/16
 'Last updated: 27/March/16
 'Last update: continued migrating code from the default list box to this instance

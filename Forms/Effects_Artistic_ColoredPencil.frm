@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pencil Sketch Image Effect
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: sometime 2001
 'Last updated: 23/July/14
 'Last update: overhauled algorithm, gave tool its own dialog

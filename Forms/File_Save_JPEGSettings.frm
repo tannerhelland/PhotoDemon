@@ -174,7 +174,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG Export Dialog
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 5/8/00
 'Last updated: 06/May/16
 'Last update: finish migration to the new export engine

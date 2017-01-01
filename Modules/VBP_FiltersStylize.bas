@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Stylize"
 '***************************************************************************
 'Stylize Filter Collection
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 02/April/15
 'Last update: finish optimizing new Color Halftone filter

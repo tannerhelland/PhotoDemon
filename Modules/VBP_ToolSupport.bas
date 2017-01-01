@@ -1,7 +1,7 @@
 Attribute VB_Name = "Tool_Support"
 '***************************************************************************
 'Helper functions for various PhotoDemon tools
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 06/February/14
 'Last updated: 25/June/14
 'Last update: add new makeQuickFixesPermanent() function

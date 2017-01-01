@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Visual Theme Color List class
-'Copyright 2016-2016 by Tanner Helland
+'Copyright 2016-2017 by Tanner Helland
 'Created: 15/January/16
 'Last updated: 21/January/16
 'Last update: continue fleshing out features
@@ -122,7 +122,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
                         ' and active+hovered variants.  Each must be handled individually, and all are optional.  (If an
                         ' optional variant is missing, we'll just plug in the base color value, with the exception of
                         ' active+hovered which gets the active color by default.)
-                        FillInColorVariant m_ObjectName, colorName, "disabled", m_ColorList(colorIndex).DisabledColor, baseColorValue
+                        FillInColorVariant m_ObjectName, colorName, "disabled", m_ColorList(colorIndex).disabledColor, baseColorValue
                         FillInColorVariant m_ObjectName, colorName, "active", m_ColorList(colorIndex).ActiveColor, baseColorValue
                         FillInColorVariant m_ObjectName, colorName, "hover", m_ColorList(colorIndex).HoverColor, baseColorValue
                         FillInColorVariant m_ObjectName, colorName, "activehover", m_ColorList(colorIndex).ActiveHoverColor, m_ColorList(colorIndex).ActiveColor
@@ -150,7 +150,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
             If colorLookupSuccessful Then
                 With m_ColorList(colorIndex)
                     .baseColor = baseColorValue
-                    .DisabledColor = baseColorValue
+                    .disabledColor = baseColorValue
                     .ActiveColor = baseColorValue
                     .HoverColor = baseColorValue
                 End With
@@ -213,7 +213,7 @@ Public Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledSt
                 End If
             End If
         Else
-            RetrieveColor = m_ColorList(colorIndex).DisabledColor
+            RetrieveColor = m_ColorList(colorIndex).disabledColor
         End If
     
     Else

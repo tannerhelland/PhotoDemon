@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Slider+Spinner custom control
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 12/February/16
 'Last update: migrate slider-specific code into pdSliderStandalone, which hugely reduces the complexity of
