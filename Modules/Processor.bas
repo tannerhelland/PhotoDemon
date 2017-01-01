@@ -3,7 +3,7 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright 2001-2016 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 06/May/15
+'Last updated: 01/January/17
 'Last update: new functions for processing non-destructive changes
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
@@ -2256,13 +2256,22 @@ Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
     
-    'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
-    ' (if they're currently being recorded, obviously)
-    If StrComp(CStr(textSettingValue), CStr(prevTextSetting(textSettingID)), vbBinaryCompare) <> 0 Then
-        
-        'Raise a generic "text setting change" processor request
-        MiniProcess_NDFXOnly "Modify text layer", , BuildParams(textSettingID, textSettingValue), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
-        
+    'Ignore requests if the affected layer is not a text layer
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+        If (Not pdImages(g_CurrentImage).GetLayerByID(prevTextLayerID) Is Nothing) Then
+            If pdImages(g_CurrentImage).GetLayerByID(prevTextLayerID).IsLayerText Then
+    
+                'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
+                ' (if they're currently being recorded, obviously)
+                If StrComp(CStr(textSettingValue), CStr(prevTextSetting(textSettingID)), vbBinaryCompare) <> 0 Then
+                    
+                    'Raise a generic "text setting change" processor request
+                    MiniProcess_NDFXOnly "Modify text layer", , BuildParams(textSettingID, textSettingValue), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
+                    
+                End If
+                
+            End If
+        End If
     End If
     
 End Sub
