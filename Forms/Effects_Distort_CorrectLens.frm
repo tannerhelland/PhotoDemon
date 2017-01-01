@@ -134,7 +134,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fix Lens Distort Tool
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 22/January/13
 'Last updated: 05/June/13
 'Last update: fix typo that prevented zoom slider from being validated
@@ -221,7 +221,7 @@ Public Sub ApplyLensCorrection(ByVal fixStrength As Double, ByVal fixZoom As Dou
     ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
     Dim numSamples As Long
     Dim ssX() As Single, ssY() As Single
-    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    Filters_Area.GetSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
     
     'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
     ' count in advance.

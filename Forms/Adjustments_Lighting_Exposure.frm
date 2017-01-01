@@ -120,7 +120,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exposure Dialog
-'Copyright 2013-2016 by Audioglider and Tanner Helland
+'Copyright 2013-2017 by Audioglider and Tanner Helland
 'Created: 13/July/13
 'Last updated: 05/November/15
 'Last update: add the other (non-exposure, but whatevs) controls provided by Photoshop's exposure dialog

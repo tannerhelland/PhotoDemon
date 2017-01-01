@@ -62,7 +62,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo History dialog
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 22/May/16
 'Last update: overhaul UI to use new owner-drawn pdListBox
@@ -97,7 +97,7 @@ Private Const BLOCKHEIGHT As Long = 58
 
 'Two font objects; one for names and one for descriptions.  (Two are needed because they have different sizes and colors,
 ' and it is faster to cache these values rather than constantly recreating them on a single pdFont object.)
-Private m_titleFont As pdFont, m_descriptionFont As pdFont
+Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 
 'The size at which we render the thumbnail images
 Private Const UNDO_THUMB_SMALL As Long = 48
@@ -137,18 +137,18 @@ End Sub
 Private Sub Form_Load()
     
     'Initialize a custom font object for undo action names
-    Set m_titleFont = New pdFont
-    m_titleFont.SetFontBold True
-    m_titleFont.SetFontSize 12
-    m_titleFont.CreateFontObject
-    m_titleFont.SetTextAlignment vbLeftJustify
+    Set m_TitleFont = New pdFont
+    m_TitleFont.SetFontBold True
+    m_TitleFont.SetFontSize 12
+    m_TitleFont.CreateFontObject
+    m_TitleFont.SetTextAlignment vbLeftJustify
     
     '...and a second custom font object for undo descriptions
-    Set m_descriptionFont = New pdFont
-    m_descriptionFont.SetFontBold False
-    m_descriptionFont.SetFontSize 10
-    m_descriptionFont.CreateFontObject
-    m_descriptionFont.SetTextAlignment vbLeftJustify
+    Set m_DescriptionFont = New pdFont
+    m_DescriptionFont.SetFontBold False
+    m_DescriptionFont.SetFontSize 10
+    m_DescriptionFont.CreateFontObject
+    m_DescriptionFont.SetTextAlignment vbLeftJustify
     
     'Retrieve a copy of all Undo data from the current image's undo manager
     pdImages(g_CurrentImage).undoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
@@ -189,11 +189,11 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
         
     'If this filter has been selected, draw the background with the system's current selection color
     If itemIsSelected Then
-        m_titleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
-        m_descriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+        m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
+        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableSelected)
     Else
-        m_titleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
-        m_descriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+        m_TitleFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
+        m_DescriptionFont.SetFontColor g_Themer.GetGenericUIColor(UI_TextClickableUnselected, , , itemIsHovered)
     End If
     
     'Prepare a title string (with an asterisk added to the "current" image state title)
@@ -209,19 +209,19 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     
     'Render the title text
     If (Len(drawString) <> 0) Then
-        m_titleFont.AttachToDC bufferDC
-        m_titleFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
-        m_titleFont.ReleaseFromDC
+        m_TitleFont.AttachToDC bufferDC
+        m_TitleFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
+        m_TitleFont.ReleaseFromDC
     End If
             
     'Below that, add the description text (if any)
     drawString = GetStringForUndoType(m_undoEntries(itemIndex).undoType, m_undoEntries(itemIndex).undoLayerID)
     
     If (Len(drawString) <> 0) Then
-        mHeight = m_titleFont.GetHeightOfString(drawString) + linePadding
-        m_descriptionFont.AttachToDC bufferDC
-        m_descriptionFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
-        m_descriptionFont.ReleaseFromDC
+        mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
+        m_DescriptionFont.AttachToDC bufferDC
+        m_DescriptionFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
+        m_DescriptionFont.ReleaseFromDC
     End If
         
 End Sub

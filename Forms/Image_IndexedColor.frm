@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Reduction Form
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 14/April/14
 'Last update: rewrite function against layers; note that this will now flatten a layered image before proceeding
@@ -266,7 +266,7 @@ Public Sub ReduceImageColors_Auto(ByVal toolParams As String, Optional ByVal toP
     'If this is not a preview, and a selection is active on the main image, remove it.
     If (Not toPreview) And pdImages(g_CurrentImage).selectionActive Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
     'Color reduction only works on a flat copy of the image, so retrieve a composited version now.

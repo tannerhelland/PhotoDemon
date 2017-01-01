@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Miscellaneous Distort Tools
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 07/June/13
 'Last updated: 07/June/13
 'Last update: initial build
@@ -169,7 +169,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
     ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
     Dim numSamples As Long
     Dim ssX() As Single, ssY() As Single
-    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    Filters_Area.GetSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
     
     'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
     ' count in advance.

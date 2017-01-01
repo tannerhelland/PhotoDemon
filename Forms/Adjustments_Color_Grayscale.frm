@@ -191,7 +191,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Grayscale Conversion Handler
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 16/February/14
 'Last update: rewrite code so that all conversion methods provide an option for specific # of gray shades and/or dithering,

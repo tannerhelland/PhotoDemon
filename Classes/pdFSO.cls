@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon File System Object Interface
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 04/February/15
 'Last updated: 09/August/15
 'Last update: rewrite tons of functions against actual system APIs (instead of just wrapping VB functions with GetShortPath())

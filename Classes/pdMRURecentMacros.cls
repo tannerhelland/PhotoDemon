@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Recent Files (MRU) handler for PD macros (Tools > Macros)
-'Copyright 2005-2016 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2017 by Raj Chaudhuri and Tanner Helland
 'Created: 17/February/15
 'Last updated: 18/February/15
 'Last updated by: Raj
@@ -48,7 +48,7 @@ End Function
 
 'The location of the XML file is hard-coded against the current preset path
 Private Property Get IMRUList_XMLFileName() As String
-    IMRUList_XMLFileName = g_UserPreferences.getPresetPath & "Program_RecentMacros.xml"
+    IMRUList_XMLFileName = g_UserPreferences.GetPresetPath & "Program_RecentMacros.xml"
 End Property
 
 'When the recent macro list is cleared, we can unload the entire mnuRecentMacros collection (except index 0, which is simply hidden)
@@ -119,7 +119,7 @@ Private Sub IMRUList_OnItemLoad(ByRef mruManager As pdMRUManager, ByVal Index As
     End If
     
     'Apply the caption we were passed
-    FormMain.MnuRecentMacros(Index).Caption = getFilenameWithoutExtension(mruCaption)
+    FormMain.MnuRecentMacros(Index).Caption = GetFilenameWithoutExtension(mruCaption)
     
 End Sub
 

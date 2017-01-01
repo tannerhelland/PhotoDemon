@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Mouse Input Handler (mouse, pen, etc) class
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
 'Last updated: 18/December/16
 'Last update: redefine mouse down/up/move events to report timestamps; this is crucial for calculating pointer velocity+acceleration

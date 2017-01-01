@@ -289,7 +289,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Browser
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 27/May/13
 'Last updated: 08/April/16
 'Last update: mass overhaul in conjunction with building the Metadata Editor dialog

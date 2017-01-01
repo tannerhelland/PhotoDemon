@@ -188,7 +188,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright 2012-2016 by Tanner Helland & Audioglider
+'Copyright 2012-2017 by Tanner Helland & Audioglider
 'Created: 31/January/13
 'Last updated: 16/June/14
 'Last update: Rewrote the color balance formula to allow the adjustment of

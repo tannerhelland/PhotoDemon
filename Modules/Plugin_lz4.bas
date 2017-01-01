@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_lz4"
 '***************************************************************************
 'Lz4 Compression Library Interface
-'Copyright 2016-2016 by Tanner Helland
+'Copyright 2016-2017 by Tanner Helland
 'Created: 04/December/16
 'Last updated: 07/December/16
 'Last update: add LZ4_HC compression algorithm.  (LZ4_HC has no special decompression algorithm;

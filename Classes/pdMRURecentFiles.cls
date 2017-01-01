@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Recent Files (MRU) handler for PD's primary image list (File > Open Recent)
-'Copyright 2005-2016 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2017 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
 'Last updated: 17/February/15
 'Last updated by: Raj

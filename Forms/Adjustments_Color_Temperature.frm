@@ -181,7 +181,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Temperature Adjustment Form
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 16/September/12
 'Last updated: 10/September/16
 'Last update: total overhaul.  Among other things, a new "basic" temperature adjustment method is available, and the "advanced"
@@ -272,9 +272,9 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
     Dim h As Double, s As Double, l As Double
     Dim originalLuminance As Double
     Dim tmpR As Long, tmpG As Long, tmpB As Long
-    Dim rLookUp() As Long, bLookUp() As Long
-    ReDim rLookUp(0 To 255) As Long
-    ReDim bLookUp(0 To 255) As Long
+    Dim rLookup() As Long, bLookup() As Long
+    ReDim rLookup(0 To 255) As Long
+    ReDim bLookup(0 To 255) As Long
     
     If (temperatureMethod = PDTA_Basic) Then
         
@@ -286,8 +286,8 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
             r = x + basicTempAdjustment
             If r > 255 Then r = 255
             If r < 0 Then r = 0
-            bLookUp(x) = b
-            rLookUp(x) = r
+            bLookup(x) = b
+            rLookup(x) = r
         Next x
         
     Else
@@ -314,7 +314,7 @@ Public Sub ApplyTemperatureToImage(ByVal parameterList As String, Optional ByVal
         originalLuminance = Colors.GetLuminance(r, g, b) / 255
         
         If (temperatureMethod = PDTA_Basic) Then
-            tRGBToHSL rLookUp(r), g, bLookUp(b), h, s, l
+            tRGBToHSL rLookup(r), g, bLookup(b), h, s, l
             tHSLToRGB h, s, originalLuminance, r, g, b
         Else
             

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_zLib"
 '***************************************************************************
 'File Compression Interface (via zLib)
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: 3/02/02
 'Last updated: 08/December/16
 'Last update: general code clean-up to better integrate with the new Compression wrapper module

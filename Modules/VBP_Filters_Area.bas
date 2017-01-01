@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 14/March/15
 'Last update: finish work on an IIR Gaussian Blur implementation

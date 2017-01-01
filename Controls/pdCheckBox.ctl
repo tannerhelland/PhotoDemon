@@ -30,7 +30,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Checkbox control
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 28/January/13
 'Last updated: 15/February/16
 'Last update: finalize theming support

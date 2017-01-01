@@ -126,7 +126,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Spherize" Distortion
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 05/June/13
 'Last updated: 27/September/14
 'Last update: add supersampling support, rework interface a bit
@@ -225,7 +225,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
     Dim numSamples As Long
     Dim ssX() As Single, ssY() As Single
-    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    Filters_Area.GetSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
     
     'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
     ' count in advance.

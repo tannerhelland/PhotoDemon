@@ -129,7 +129,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Waves" Distortion
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 07/January/13
 'Last updated: 27/September/14
 'Last update: add supersampling support
@@ -216,7 +216,7 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
     ' coordinates are precalculated and cached using a modified rotated grid function, which is consistent throughout PD.
     Dim numSamples As Long
     Dim ssX() As Single, ssY() As Single
-    Filters_Area.getSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
+    Filters_Area.GetSupersamplingTable superSamplingAmount, numSamples, ssX, ssY
     
     'Because supersampling will be used in the inner loop as (samplecount - 1), permanently decrease the sample
     ' count in advance.

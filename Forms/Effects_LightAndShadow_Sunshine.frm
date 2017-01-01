@@ -155,7 +155,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sunshine Effect Form
-'Copyright 2014-2016 by Audioglider and Tanner Helland
+'Copyright 2014-2017 by Audioglider and Tanner Helland
 'Created: 30/May/14
 'Last updated: 04/June/14
 'Last update: added "color variance" control

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Handler
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 23/May/13
 'Last updated: 09/June/16
 'Last update: improve parsing behavior against incorrectly formed multiline print values that are non-binary in nature
@@ -153,7 +153,7 @@ End Function
 
 'Does a given tag exist in the metadata collection?  Returns TRUE if yes, FALSE, if no.
 ' If the tag does exist, the optional byref tagIndex will be set to the index.  It will be set to -1 if the tag is not found.
-Private Function DoesTagExist(ByVal TagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
+Private Function DoesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     DoesTagExist = False
     
@@ -163,7 +163,7 @@ Private Function DoesTagExist(ByVal TagName As String, Optional ByRef tagIndex A
     'Scan the metadata collection, looking for the given tag name
     Dim i As Long
     For i = 0 To m_NumOfTags - 1
-        If StrComp(m_Tags(i).TagName, TagName, searchMode) = 0 Then
+        If StrComp(m_Tags(i).tagName, tagName, searchMode) = 0 Then
             DoesTagExist = True
             tagIndex = i
             Exit For
@@ -410,7 +410,7 @@ Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
             
             'Next, look for GPS coordinate tags.  If found, we can enable some fun bonus metadata options (like pulling up Google Maps
             ' with the photo's location already helpfully tagged).
-            If (StrComp(m_Tags(i).TagName, "GPSPosition", vbBinaryCompare) = 0) Then
+            If (StrComp(m_Tags(i).tagName, "GPSPosition", vbBinaryCompare) = 0) Then
                 m_HasGPSCoordinates = True
                 Interface.SyncInterfaceToCurrentImage
             End If
@@ -1378,7 +1378,7 @@ Private Function PARSE_GetTagAndGroupName(ByRef fullName As String, ByRef dstMet
     
     If (locColon <> 0) Then
         dstMetadata.TagGroup = Trim$(Left$(fullName, locColon - 1))
-        dstMetadata.TagName = Trim$(Right$(fullName, Len(fullName) - locColon))
+        dstMetadata.tagName = Trim$(Right$(fullName, Len(fullName) - locColon))
         PARSE_GetTagAndGroupName = True
     End If
     

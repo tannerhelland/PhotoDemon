@@ -1,7 +1,7 @@
 Attribute VB_Name = "FileSystem"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 28/May/16
 'Last update: update the BrowseForFolder function to use the new IFileDialog interfaces on Vista+.  Note that this
@@ -176,7 +176,7 @@ Public Function BrowseForFolder(ByVal srcHwnd As Long, Optional ByVal initFolder
         With cBrowse
         
             If (Len(initFolder) <> 0) Then .InitialDirectory = initFolder
-            .DialogTitle = dialogTitleText
+            .dialogTitle = dialogTitleText
             .Flags = BIF_RETURNONLYFSDIRS Or BIF_NEWDIALOGSTYLE
                 
             If .ShowBrowseForFolder(srcHwnd) Then

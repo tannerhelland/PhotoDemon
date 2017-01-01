@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Manager class
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 05/March/06
 'Last update: purge all image tabstrip code, as it's now handled by pdCanvas and pdImageStrip
@@ -729,7 +729,7 @@ Public Function SaveAllWindowLocations() As Boolean
         If Not xmlEngine.DoesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
         
             xmlEngine.WriteTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
-            xmlEngine.CloseTag "windowEntry"
+            xmlEngine.closeTag "windowEntry"
             xmlEngine.WriteBlankLine
         
         End If

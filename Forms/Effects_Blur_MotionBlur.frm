@@ -96,7 +96,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Motion Blur Tool
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 26/August/13
 'Last updated: 02/October/15
 'Last update: rewrite against new all-in-one rotate/edge-extend function

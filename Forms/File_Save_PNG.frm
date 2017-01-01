@@ -451,7 +451,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PNG export dialog
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 21/April/16
 'Last update: repurpose old color-depth dialog into a PNG-specific one

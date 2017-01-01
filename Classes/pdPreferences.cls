@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Preferences Interface
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 03/November/12
 'Last updated: 31/December/16
 'Last update: let this class handle preset saving/loading for the main window panels (instead of each panel managing

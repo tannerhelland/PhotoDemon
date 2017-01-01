@@ -84,7 +84,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Trace Contour (Outline) Tool
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 15/Feb/13
 'Last updated: 10/January/14
 'Last update: greatly improve performance by switching to approximate gaussian blur function

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Graphics Fill ("Brush" in GDI/GDI+ parlance) Class
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 13/May/16
 'Last update: total overhaul

@@ -101,7 +101,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pixelate/Mosaic filter interface
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 08/May/00
 'Last updated: 02/October/15
 'Last update: add support for variable angles

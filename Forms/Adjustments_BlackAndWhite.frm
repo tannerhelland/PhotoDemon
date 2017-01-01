@@ -129,7 +129,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Monochrome Conversion Form
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: some time 2002
 'Last updated: 07/June/16
 'Last update: add option for stripping transparency from the image

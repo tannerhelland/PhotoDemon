@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Portrait glow (sometimes called "soft glow") image effect
-'Copyright 2015-2016 by Tanner Helland
+'Copyright 2015-2017 by Tanner Helland
 'Created: 20/Dec/15
 'Last updated: 20/Dec/15
 'Last update: initial build
@@ -180,8 +180,8 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
             Set cLut = New pdFilterLUT
             
             Dim exposureLookup() As Byte
-            cLut.fillLUT_BrightnessMultiplicative exposureLookup, glowBoost
-            cLut.applyLUTToAllColorChannels blurDIB, exposureLookup, toPreview, progBarMax, progBarOffset
+            cLut.FillLUT_BrightnessMultiplicative exposureLookup, glowBoost
+            cLut.ApplyLUTToAllColorChannels blurDIB, exposureLookup, toPreview, progBarMax, progBarOffset
             
         End If
         

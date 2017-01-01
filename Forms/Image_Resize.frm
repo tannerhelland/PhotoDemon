@@ -120,7 +120,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Size Handler
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 09/May/14
 'Last update: allow resizing of the entire image, or a single layer
@@ -505,7 +505,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     'If the image contains an active selection, automatically deactivate it
     If pdImages(g_CurrentImage).selectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     'Because most resize methods require a temporary DIB, create one here

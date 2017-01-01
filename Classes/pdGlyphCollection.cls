@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Glyph Collection Interface
-'Copyright 2015-2016 by Tanner Helland
+'Copyright 2015-2017 by Tanner Helland
 'Created: 27/April/15
 'Last updated: 19/May/15
 'Last update: overhaul of the Uniscribe interface to use a class system (m_Uniscribe is the relevant instance)
@@ -190,7 +190,7 @@ Public Sub NotifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal 
         m_GDIFont = srcGDIFontHandle
         
         'Notify our Uniscribe manager that it needs to generate a new script cache, too
-        m_Uniscribe.updateFont
+        m_Uniscribe.UpdateFont
         
     End If
     

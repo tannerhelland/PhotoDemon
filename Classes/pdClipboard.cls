@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Clipboard Interface
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 06/November/15 (formally split off from a heavily modified cCustomClipboard by Steve McMahon)
 'Last updated: 15/November/15
 'Last update: rewrite the damn thing from scratch

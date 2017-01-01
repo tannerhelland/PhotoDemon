@@ -65,7 +65,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Straightening Interface
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 11/May/14
 'Last updated: 11/May/14
 'Last update: initial build, based heavily off PD's existing Rotate dialog
@@ -99,7 +99,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
     'If the image contains an active selection, disable it before transforming the canvas
     If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).selectionActive And (Not isPreview) Then
         pdImages(g_CurrentImage).selectionActive = False
-        pdImages(g_CurrentImage).mainSelection.lockRelease
+        pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
     'Many 2D libraries use positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this

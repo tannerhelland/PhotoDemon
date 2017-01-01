@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "pdPackage" v2.0 Interface (e.g. Zip-like archive handler)
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 05/April/14
 'Last updated: 09/December/16
 'Last update: interface changes to support new file-backed mode while reading packages

@@ -1,7 +1,7 @@
 Attribute VB_Name = "DIB_Support"
 '***************************************************************************
 'DIB Support Functions
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 27/March/15 (though many of the individual functions are much older!)
 'Last updated: 12/June/16
 'Last update: continued migration of functions
@@ -381,11 +381,11 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         conversionFactor = (255 / (numOfShades - 1))
         
         'Build a look-up table for our custom grayscale conversion results
-        Dim gLookup(0 To 255) As Byte
+        Dim gLookUp(0 To 255) As Byte
         For x = 0 To 255
             grayVal = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
             If grayVal > 255 Then grayVal = 255
-            gLookup(x) = CByte(grayVal)
+            gLookUp(x) = CByte(grayVal)
         Next x
             
         'Now we can loop through each pixel in the image, converting values as we go
@@ -413,7 +413,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
             If grayVal > 255 Then grayVal = 255
             
             'If less than 256 shades are in play, calculate that now as well
-            grayVal = gLookup(grayVal)
+            grayVal = gLookUp(grayVal)
             
             'If alpha is premultiplied, calculate that now
             If alphaIsPremultiplied Then
@@ -838,8 +838,8 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             finalX = (srcDIB.GetDIBWidth - 1)
             finalY = (srcDIB.GetDIBHeight - 1)
             
-            Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
-            ReDim rLookup(0 To 255) As Byte, gLookup(0 To 255) As Byte, bLookup(0 To 255) As Byte
+            Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
+            ReDim rLookup(0 To 255) As Byte, gLookUp(0 To 255) As Byte, bLookup(0 To 255) As Byte
             Dim chkA As Byte
             
             Dim targetR As Long, targetG As Long, targetB As Long
@@ -853,7 +853,7 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             For x = 0 To 255
                 aFloat = CDbl(x) / 255
                 rLookup(x) = targetR * aFloat
-                gLookup(x) = targetG * aFloat
+                gLookUp(x) = targetG * aFloat
                 bLookup(x) = targetB * aFloat
             Next x
             
@@ -869,7 +869,7 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
                 chkA = iData(xLookup + 3, y)
                 
                 iData(xLookup, y) = bLookup(chkA)
-                iData(xLookup + 1, y) = gLookup(chkA)
+                iData(xLookup + 1, y) = gLookUp(chkA)
                 iData(xLookup + 2, y) = rLookup(chkA)
                 
             Next x

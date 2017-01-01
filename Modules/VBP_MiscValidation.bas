@@ -1,7 +1,7 @@
 Attribute VB_Name = "Text_Support"
 '***************************************************************************
 'Miscellaneous functions related to specialized text handling
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 07/May/14
 'Last update: Fix bugs with IsNumberLocaleUnaware() so that very large and very small exponents are handled correctly.

@@ -1,7 +1,7 @@
 Attribute VB_Name = "ExifTool"
 '***************************************************************************
 'ExifTool Plugin Interface
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 24/May/13
 'Last updated: 08/April/16
 'Last update: mass overhaul in conjunction with building the Metadata Editor dialog
@@ -146,7 +146,7 @@ Public Type PDMetadataItem
     TagGroupAndName As String       'Something like "IFD0:ResolutionUnit".  This is the tag name used by ExifTool
     TagGroup As String              'The first half of FullGroupAndName
     TagGroupFriendly As String      'The PhotoDemon-specific categoriziation of this tag.  Users do not generally need to know subgroups; instead, we use naming conventions similar to other photo editors.
-    TagName As String               'The second half of FullGroupAndName
+    tagName As String               'The second half of FullGroupAndName
     TagNameFriendly As String       'The human-friendly tag name (supports spaces and special chars)
     TagTable As String              'The primary categorization of this tag, e.g. "Exif::Main", "JPEG::Adobe", "ICC_Profile::Main"
     TagID As String                 'The low-level, format-specific ID of a given tag.  For many tags, this is just a string matching the tag's Exiftool name.  For some tag types, however, (e.g. EXIF), this will be a numeric ID corresponding to the actual spec-defined "id" of a given tag.
@@ -1491,7 +1491,7 @@ Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Bool
         ' At present, we want to track down the start and end lines of the tag in question, so we can parse
         ' out any additional attributes.
         Dim srcTagSearch As String, tagStart As Long, tagEnd As Long
-        srcTagSearch = "<tag id='" & dstMetadata.TagID & "' name='" & dstMetadata.TagName & "'"
+        srcTagSearch = "<tag id='" & dstMetadata.TagID & "' name='" & dstMetadata.tagName & "'"
         tagStart = InStr(tableStart, m_DatabaseString, srcTagSearch, vbBinaryCompare)
         If (tagStart <> 0) Then
             tagEnd = InStr(tagStart, m_DatabaseString, "</tag>", vbBinaryCompare)
@@ -1514,18 +1514,18 @@ Public Function FillTagFromDatabase(ByRef dstMetadata As PDMetadataItem) As Bool
                         'To prevent future passes from hitting the database again, set the relevant shortcut flag
                         dstMetadata.DB_TagHitDatabase = True
                     Else
-                        Debug.Print "WARNING!  ExifTool.ParseTagDatabaseEntry() failed on a tag: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+                        Debug.Print "WARNING!  ExifTool.ParseTagDatabaseEntry() failed on a tag: " & dstMetadata.TagTable & ">>" & dstMetadata.tagName
                     End If
                 
                 Else
-                    Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() found a tag, but it lies outside the required table boundaries: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+                    Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() found a tag, but it lies outside the required table boundaries: " & dstMetadata.TagTable & ">>" & dstMetadata.tagName
                 End If
                 
             Else
-                Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing tag: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+                Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a closing tag: " & dstMetadata.TagTable & ">>" & dstMetadata.tagName
             End If
         Else
-            Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & dstMetadata.TagTable & ">>" & dstMetadata.TagName
+            Debug.Print "WARNING!  ExifTool.FillTagFromDatabase() failed to find a matching table: " & dstMetadata.TagTable & ">>" & dstMetadata.tagName
         End If
         
     Else
@@ -1887,7 +1887,7 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
         
         'First, we check technical tag names for known problematic text
         Dim sMetadataName As String
-        sMetadataName = UCase$(Trim$(srcTag.TagName))
+        sMetadataName = UCase$(Trim$(srcTag.tagName))
         
         If InStr(1, sMetadataName, "FIRMWARE", vbBinaryCompare) > 0 Then potentialConcern = True
         If InStr(1, sMetadataName, "ABOUT", vbBinaryCompare) > 0 Then potentialConcern = True
@@ -1945,7 +1945,7 @@ Public Function SerializeTagToString(ByRef srcMetadata As PDMetadataItem) As Str
         cParams.AddParam "PDMD_TagGroupAndName", .TagGroupAndName
         cParams.AddParam "PDMD_TagGroup", .TagGroup
         cParams.AddParam "PDMD_TagGroupFriendly", .TagGroupFriendly
-        cParams.AddParam "PDMD_TagName", .TagName
+        cParams.AddParam "PDMD_TagName", .tagName
         cParams.AddParam "PDMD_TagNameFriendly", .TagNameFriendly
         cParams.AddParam "PDMD_TagTable", .TagTable
         cParams.AddParam "PDMD_TagID", .TagID
@@ -2006,7 +2006,7 @@ Public Sub RecoverTagFromSerializedString(ByRef srcString As String, ByRef dstMe
             .TagGroupAndName = cParams.GetString("PDMD_TagGroupAndName")
             .TagGroup = cParams.GetString("PDMD_TagGroup")
             .TagGroupFriendly = cParams.GetString("PDMD_TagGroupFriendly")
-            .TagName = cParams.GetString("PDMD_TagName")
+            .tagName = cParams.GetString("PDMD_TagName")
             .TagNameFriendly = cParams.GetString("PDMD_TagNameFriendly")
             .TagTable = cParams.GetString("PDMD_TagTable")
             .TagID = cParams.GetString("PDMD_TagID")

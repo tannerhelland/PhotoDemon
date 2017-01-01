@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fog Effect
-'Copyright 2002-2016 by Tanner Helland
+'Copyright 2002-2017 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 10/July/14
 'Last update: rewrite filter from scratch, give it a dialog, and basically rethink the whole way the function is implemented

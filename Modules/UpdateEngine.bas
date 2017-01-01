@@ -1,7 +1,7 @@
 Attribute VB_Name = "Update_Support"
 '***************************************************************************
 'Automatic Software Updater (note: at present this doesn't technically DO the updating (e.g. overwriting program files), it just CHECKS for updates)
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 19/August/12
 'Last updated: 06/January/16
 'Last update: migrate misc update functions from other modules to this one

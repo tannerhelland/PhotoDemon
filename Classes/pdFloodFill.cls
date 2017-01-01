@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Flood Fill Engine
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 11/October/14
 'Last updated: 29/November/16
 'Last update: minor modifications to better support 32-bpp destination flood fill maps

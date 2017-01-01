@@ -89,7 +89,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'HSL Adjustment Form
-'Copyright 2012-2016 by Tanner Helland
+'Copyright 2012-2017 by Tanner Helland
 'Created: 05/October/12
 'Last updated: 26/April/13
 'Last update: simplify code by relying on new slider/text custom control

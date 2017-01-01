@@ -147,7 +147,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Curves Adjustment Dialog
-'Copyright 2008-2016 by Tanner Helland
+'Copyright 2008-2017 by Tanner Helland
 'Created: sometime 2008
 'Last updated: 07/September/15
 'Last update: unify the histogram UI renderer with the Levels dialog, which greatly simplifies the dialog loading code

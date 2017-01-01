@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Comic Book Image Effect
-'Copyright 2013-2016 by Tanner Helland
+'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Feb/13 (ish... I didn't write it down, alas)
 'Last updated: 23/May/16
 'Last update: optimize function a bit

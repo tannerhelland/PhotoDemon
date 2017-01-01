@@ -1,7 +1,7 @@
 Attribute VB_Name = "PluginManager"
 '***************************************************************************
 'Core Plugin Manager
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 01/December/16
 'Last update: integrate zstd as a permanent plugin

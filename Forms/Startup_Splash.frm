@@ -36,7 +36,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Splash Screen
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 01/December/14
 'Last update: overhauled splash screen

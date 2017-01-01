@@ -683,7 +683,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright 2007-2016 by Tanner Helland
+'Copyright 2007-2017 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 09/September/16
 'Last update: complete overhaul of UI and underlying logic

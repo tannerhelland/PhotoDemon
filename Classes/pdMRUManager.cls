@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Generic Recent Files (MRU) List Manager
-'Copyright 2005-2016 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2017 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
 'Last updated: 17/February/15
 'Last updated by: Raj
@@ -231,7 +231,7 @@ Public Sub MRU_SaveToFile()
         For i = 0 To m_NumEntries - 1
             m_XMLEngine.WriteTagWithAttribute "mruEntry", "id", CStr(i), "", True
             m_XMLEngine.WriteTag "filePath", m_FileList(i)
-            m_XMLEngine.CloseTag "mruEntry"
+            m_XMLEngine.closeTag "mruEntry"
             m_XMLEngine.WriteBlankLine
         Next i
         

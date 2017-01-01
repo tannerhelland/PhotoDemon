@@ -1,7 +1,7 @@
 Attribute VB_Name = "VB_Hacks"
 '***************************************************************************
 'Misc VB6 Hacks
-'Copyright 2016-2016 by Tanner Helland
+'Copyright 2016-2017 by Tanner Helland
 'Created: 06/January/16
 'Last updated: 06/January/16
 'Last update: started moving VB6 hacks to a dedicated home; this should make various other modules more readable,

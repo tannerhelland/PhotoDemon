@@ -37,7 +37,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Asynchronous Download control
-'Copyright 2014-2016 by Tanner Helland
+'Copyright 2014-2017 by Tanner Helland
 'Created: 24/January/15
 'Last updated: 26/January/15
 'Last update: wrapped up initial build
@@ -247,7 +247,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                 Set cPackage = New pdPackager
                 
                 Dim chksumVerify As Long
-                chksumVerify = cPackage.checkSumArbitraryArray(m_DownloadList(itemIndex).DataBytes)
+                chksumVerify = cPackage.ChecksumArbitraryArray(m_DownloadList(itemIndex).DataBytes)
                 
                 'Check for equality; the downloader will report failure if the checksums do not match
                 checkSumPassed = (chksumVerify = m_DownloadList(itemIndex).ExpectedChecksum)

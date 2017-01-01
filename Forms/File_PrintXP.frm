@@ -269,7 +269,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Printer Interface (including Print Preview)
-'Copyright 2000-2016 by Tanner Helland
+'Copyright 2000-2017 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 26/June/12
 'Last update: redesign from the ground up.  Print previewing via FreeImage. Manual and automatic DPI calculation support.

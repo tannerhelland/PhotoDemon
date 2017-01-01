@@ -1,7 +1,7 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
-'Copyright 2001-2016 by Tanner Helland
+'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 06/March/16
 'Last update: start implementing fine-grained UI sync caching, so sync various controls only when necessary
