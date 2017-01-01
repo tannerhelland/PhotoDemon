@@ -4,8 +4,8 @@ AAA          ICON    MOVEABLE        PRELOAD         PHOTO_all.ico
 //PNGs for use in menus - these are stored as custom data-types
 
 //File menu
-NEWIMAGE     CUSTOM  MOVEABLE        LOADONCALL      document.png
-OPENIMG      CUSTOM  MOVEABLE        LOADONCALL      image.png
+//NEWIMAGE     CUSTOM  MOVEABLE        LOADONCALL      document.png
+//OPENIMG      CUSTOM  MOVEABLE        LOADONCALL      image.png
 OPENREC      CUSTOM  MOVEABLE        LOADONCALL      clock_arrow.png
 //--> Recent documents sub-menu
 LOADALL      CUSTOM  MOVEABLE        LOADONCALL      folder_open_image.png
@@ -20,11 +20,11 @@ SCANNERSEL   CUSTOM  MOVEABLE        LOADONCALL      scanner_plus.png
 DOWNLOAD     CUSTOM  MOVEABLE        LOADONCALL      download_cloud.png
 SCREENCAP    CUSTOM  MOVEABLE        LOADONCALL      monitor_wallpaper.png
 
-CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
+//CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
 
-SAVE         CUSTOM  MOVEABLE        LOADONCALL      disk.png
-SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      disk_save_as.png
-SAVECOPY     CUSTOM  MOVEABLE        LOADONCALL      disks.png
+//SAVE         CUSTOM  MOVEABLE        LOADONCALL      disk.png
+//SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      disk_save_as.png
+//SAVECOPY     CUSTOM  MOVEABLE        LOADONCALL      disks.png
 REVERT       CUSTOM  MOVEABLE        LOADONCALL      disk_revert.png
 
 BCONVERT     CUSTOM  MOVEABLE        LOADONCALL      images_stack.png
@@ -33,8 +33,8 @@ EXIT         CUSTOM  MOVEABLE        LOADONCALL      exit.png
 
 
 //Edit menu
-UNDO         CUSTOM  MOVEABLE        LOADONCALL      edit_undo.png
-REDO         CUSTOM  MOVEABLE        LOADONCALL      edit_redo.png
+//UNDO         CUSTOM  MOVEABLE        LOADONCALL      edit_undo.png
+//REDO         CUSTOM  MOVEABLE        LOADONCALL      edit_redo.png
 UNDOHISTORY  CUSTOM  MOVEABLE        LOADONCALL      ui_scroll_pane_blog.png
 
 REPEAT       CUSTOM  MOVEABLE        LOADONCALL      arrow_repeat.png
@@ -50,10 +50,10 @@ CLEAR        CUSTOM  MOVEABLE        LOADONCALL      clipboard_empty.png
 
 
 //View menu
-ZOOMIN       CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_in.png
-ZOOMOUT      CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_out.png
-ZOOMACTUAL   CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_actual_equal.png
-FITONSCREEN  CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_fit.png
+//ZOOMIN       CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_in.png
+//ZOOMOUT      CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_out.png
+//ZOOMACTUAL   CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_actual_equal.png
+//FITONSCREEN  CUSTOM  MOVEABLE        LOADONCALL      magnifier_zoom_fit.png
 
 
 //Image menu
@@ -410,12 +410,12 @@ C_PIPETTE    CUSTOM  MOVEABLE        LOADONCALL      pipette_cursor.png
 MRUHOLDER    CUSTOM  MOVEABLE        LOADONCALL      folder_image.png
 
 //Button images for the command bar on each tool form
-RESETBUTTON  CUSTOM  MOVEABLE        LOADONCALL      arrow_circle_double_135_24x24.png
-PRESETSAVE   CUSTOM  MOVEABLE        LOADONCALL      blue_document_text_disk_24x24.png
-RANDOMIZE24  CUSTOM  MOVEABLE        LOADONCALL      equalizer_24x24.png
-CMDBAR_RESET CUSTOM  MOVEABLE        LOADONCALL      command_reset_32.png
-CMDBAR_RANDOM CUSTOM MOVEABLE        LOADONCALL      dice_32.png
-CMDBAR_SAVE  CUSTOM  MOVEABLE        LOADONCALL      document_add_32.png
+//RESETBUTTON  CUSTOM  MOVEABLE        LOADONCALL      arrow_circle_double_135_24x24.png
+//PRESETSAVE   CUSTOM  MOVEABLE        LOADONCALL      blue_document_text_disk_24x24.png
+//RANDOMIZE24  CUSTOM  MOVEABLE        LOADONCALL      equalizer_24x24.png
+//CMDBAR_RESET CUSTOM  MOVEABLE        LOADONCALL      command_reset_32.png
+//CMDBAR_RANDOM CUSTOM MOVEABLE        LOADONCALL      dice_32.png
+//CMDBAR_SAVE  CUSTOM  MOVEABLE        LOADONCALL      document_add_32.png
 
 //Large (32x32) command button images
 LRGSAVE      CUSTOM  MOVEABLE        LOADONCALL      floppy_32.png
@@ -448,17 +448,17 @@ MARROWDOWNL  CUSTOM  MOVEABLE        LOADONCALL      arrow_225_medium.png
 NTFY_UNSAVED CUSTOM  MOVEABLE        LOADONCALL      asterisk.png
 
 //Status bar notifications
-SB_MOUSE_POS CUSTOM  MOVEABLE        LOADONCALL      snap_orthogonal_oxygen.png
-SB_ZOOM_IN   CUSTOM  MOVEABLE        LOADONCALL      zoom_in_16.png
-SB_ZOOM_OUT  CUSTOM  MOVEABLE        LOADONCALL      zoom_out_16.png
-SB_ZOOM_FIT  CUSTOM  MOVEABLE        LOADONCALL      zoom_fit_16.png
-SB_ZOOM_CENTER CUSTOM MOVEABLE       LOADONCALL      zoom_center_16.png
-SB_IMG_SIZE  CUSTOM  MOVEABLE        LOADONCALL      document_resize_16.png
-SB_NETWORK   CUSTOM  MOVEABLE        LOADONCALL      network_access_16.png
+//SB_MOUSE_POS CUSTOM  MOVEABLE        LOADONCALL      snap_orthogonal_oxygen.png
+//SB_ZOOM_IN   CUSTOM  MOVEABLE        LOADONCALL      zoom_in_16.png
+//SB_ZOOM_OUT  CUSTOM  MOVEABLE        LOADONCALL      zoom_out_16.png
+//SB_ZOOM_FIT  CUSTOM  MOVEABLE        LOADONCALL      zoom_fit_16.png
+//SB_ZOOM_CENTER CUSTOM MOVEABLE       LOADONCALL      zoom_center_16.png
+//SB_IMG_SIZE  CUSTOM  MOVEABLE        LOADONCALL      document_resize_16.png
+//SB_NETWORK   CUSTOM  MOVEABLE        LOADONCALL      network_access_16.png
 
 //Resize dialog images
-LOCK_32      CUSTOM  MOVEABLE        LOADONCALL      lock_32.png
-UNLOCK_32    CUSTOM  MOVEABLE        LOADONCALL      unlock_32.png
+//LOCK_32      CUSTOM  MOVEABLE        LOADONCALL      lock_32.png
+//UNLOCK_32    CUSTOM  MOVEABLE        LOADONCALL      unlock_32.png
 
 //Resize mode sample images
 RSZ_STRETCH  CUSTOM  MOVEABLE        LOADONCALL      resize_stretch.png
@@ -474,9 +474,9 @@ PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_page
 //IMAGE_ETCH_256 CUSTOM  MOVEABLE      LOADONCALL      image_etched_256.png
 
 //Control arrows used on either side of the hue box in the color selection dialog
-CLR_ARROW_L  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_left.png
-CLR_ARROW_R  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_right.png
-CLR_ARROW_U  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_up.png
+//CLR_ARROW_L  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_left.png
+//CLR_ARROW_R  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_right.png
+//CLR_ARROW_U  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_up.png
 
 //Control arrows for levels dialog (black, gray, white)
 LVL_ARROW_BLK CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_black.png

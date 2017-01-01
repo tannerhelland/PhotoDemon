@@ -708,7 +708,7 @@ Public Sub UpdateAgainstCurrentTheme()
         If (sbIconCoords Is Nothing) Then Set sbIconCoords = New pdDIB
         If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
         LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
-        LoadResourceToDIB "SB_NETWORK", sbIconNetwork
+        LoadResourceToDIB "generic_network", sbIconNetwork
         
     End If
     
