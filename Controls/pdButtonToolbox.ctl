@@ -364,10 +364,17 @@ End Sub
 '
 'Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).  No preprocessing is currently
 ' applied to DIBs loaded as a resource, but in the future we will need to deal with high-DPI concerns.
-Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
+Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
-    'Load the requested resource DIB, as necessary
-    If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
+    'This is a temporary workaround for AssignImage calls that do not supply the desired width/height.
+    ' (As of 7.0, callers must *always* specify a desired size at 100% DPI, because resources are stored
+    ' at multiple sizes!)
+    If (useImgWidth = 0) Then useImgWidth = (ucSupport.GetBackBufferWidth \ 8) * 8
+    If (useImgHeight = 0) Then useImgHeight = (ucSupport.GetBackBufferHeight \ 8) * 8
+    
+    'Load the requested resource DIB, as necessary.  (I say "as necessary" because the caller can supply the DIB as-is, too.)
+    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, useImgWidth, useImgHeight, imgBorderSizeIfAny
+    If (srcDIB Is Nothing) Then Exit Sub
     
     'Start by making a copy of the source DIB
     Set btImage_Pressed = New pdDIB
@@ -376,7 +383,7 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, 
     'Also create a "glowy" hovered version of the DIB for hover state
     Set btImageHover_Pressed = New pdDIB
     btImageHover_Pressed.CreateFromExistingDIB btImage_Pressed
-    If customGlowWhenHovered = 0 Then
+    If (customGlowWhenHovered = 0) Then
         ScaleDIBRGBValues btImageHover_Pressed, UC_HOVER_BRIGHTNESS, True
     Else
         ScaleDIBRGBValues btImageHover_Pressed, customGlowWhenHovered, True

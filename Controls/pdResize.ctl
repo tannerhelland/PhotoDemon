@@ -759,10 +759,6 @@ Private Sub UserControl_Show()
     'Translate various bits of UI text at run-time
     If g_IsProgramRunning Then
         
-        'Add the "lock aspect ratio" button
-        cmdAspectRatio.AssignImage "UNLOCK_32"
-        cmdAspectRatio.AssignImage_Pressed "LOCK_32"
-        
         'Add tooltips to the controls that natively support them
         cmdAspectRatio.AssignTooltip "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.", "Preserve aspect ratio"
         cmbWidthUnit.AssignTooltip "Change the unit of measurement used to resize the image."
@@ -929,7 +925,7 @@ Private Sub UpdateAspectRatio()
         
         'Convert the floating-point aspect ratio to a fraction
         If (imgHeightPixels > 0) Then
-            convertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, Numerator, Denominator, 4, 99.9
+            ConvertToFraction imgWidthPixels / imgHeightPixels, wholeNumber, Numerator, Denominator, 4, 99.9
         End If
         
         'Aspect ratios are typically given in terms of base 10 if possible, so change values like 8:5 to 16:10
@@ -1046,6 +1042,14 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    'Add the "lock aspect ratio" button
+    If g_IsProgramRunning Then
+        Dim buttonImageSize As Long
+        buttonImageSize = FixDPI(32)
+        cmdAspectRatio.AssignImage "generic_unlock", , , , buttonImageSize, buttonImageSize
+        cmdAspectRatio.AssignImage_Pressed "generic_lock", , , , buttonImageSize, buttonImageSize
+    End If
     
     UpdateColorList
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage

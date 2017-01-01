@@ -239,7 +239,7 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "zoom_fit", 2, 0    'Fit on Screen
     AddMenuIcon "zoom_in", 2, 2         'Zoom In
     AddMenuIcon "zoom_out", 2, 3        'Zoom Out
-    AddMenuIcon "ZOOMACTUAL", 2, 9     'Zoom 100%
+    AddMenuIcon "zoom_actual", 2, 9     'Zoom 100%
     
     'Image Menu
     AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
@@ -269,13 +269,13 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         AddMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
     
     'Layer menu
-    AddMenuIcon "ADDLAYER", 4, 0        'Add layer (top-level)
+    AddMenuIcon "layer_add", 4, 0        'Add layer (top-level)
         '--> Add layer sub-menu
         AddMenuIcon "ADDLAYER", 4, 0, 0             'Add blank layer
         AddMenuIcon "DUPL_LAYER", 4, 0, 1          'Add duplicate layer
         AddMenuIcon "PASTE_LAYER", 4, 0, 3          'Add layer from clipboard
         AddMenuIcon "ADDLAYERFILE", 4, 0, 4             'Add layer from file
-    AddMenuIcon "DELLAYER", 4, 1        'Delete layer (top-level)
+    AddMenuIcon "layer_delete", 4, 1        'Delete layer (top-level)
         '--> Delete layer sub-menu
         AddMenuIcon "DELLAYER", 4, 1, 0       'Delete current layer
         AddMenuIcon "DELLAYERHDN", 4, 1, 1       'Delete all hidden layers
@@ -283,8 +283,8 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "MERGE_DOWN", 4, 4       'Merge down
     AddMenuIcon "LAYERORDER", 4, 5      'Order (top-level)
         '--> Order layer sub-menu
-        AddMenuIcon "LAYERUP", 4, 5, 0     'Raise layer
-        AddMenuIcon "LAYERDOWN", 4, 5, 1     'Lower layer
+        AddMenuIcon "layer_up", 4, 5, 0     'Raise layer
+        AddMenuIcon "layer_down", 4, 5, 1     'Lower layer
         AddMenuIcon "LAYERTOTOP", 4, 5, 3     'Raise to top
         AddMenuIcon "LAYERTOBTM", 4, 5, 4     'Lower to bottom
     AddMenuIcon "ROTATECW", 4, 7         'Layer Orientation (top-level)

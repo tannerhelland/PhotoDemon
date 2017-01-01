@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdCheckBox chkCustomMenuColor 
+      Height          =   375
+      Left            =   4200
+      TabIndex        =   17
+      Top             =   6600
+      Width           =   5295
+      _ExtentX        =   9340
+      _ExtentY        =   661
+      Caption         =   "use custom menu color"
+      Value           =   0
+   End
    Begin PhotoDemon.pdLabel lblExport 
       Height          =   375
       Left            =   4200
@@ -39,7 +50,7 @@ Begin VB.Form FormThemeEditor
       Height          =   375
       Left            =   4200
       TabIndex        =   15
-      Top             =   7920
+      Top             =   8040
       Width           =   5295
       _ExtentX        =   9340
       _ExtentY        =   661
@@ -263,6 +274,17 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   661
       Caption         =   "..."
    End
+   Begin PhotoDemon.pdColorSelector csMenu 
+      Height          =   735
+      Left            =   4200
+      TabIndex        =   18
+      Top             =   7080
+      Width           =   2535
+      _ExtentX        =   4471
+      _ExtentY        =   1296
+      Caption         =   "custom menu color"
+      FontSize        =   10
+   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
@@ -306,8 +328,10 @@ Private Type PD_Resource
     ResFileLocation As String
     ResType As PD_Resource_Type
     ResSupportsColoration As Boolean
+    ResCustomMenuColor As Boolean
     ResColorLight As Long
     ResColorDark As Long
+    ResColorMenu As Long
     MarkedForDeletion As Boolean    'Resource deletion is very primitive at present; it may not work as expected
 End Type
 
@@ -454,6 +478,10 @@ Private Sub cmdExport_Click()
                         cXML.WriteTag "rt-clr", "True"
                         cXML.WriteTag "clr-l", m_Resources(i).ResColorLight
                         cXML.WriteTag "clr-d", m_Resources(i).ResColorDark
+                        If m_Resources(i).ResCustomMenuColor Then
+                            cXML.WriteTag "rt-clrmenu", "True"
+                            cXML.WriteTag "clr-m", m_Resources(i).ResColorMenu
+                        End If
                     Else
                         cXML.WriteTag "rt-clr", "False"
                     End If
@@ -596,9 +624,11 @@ Private Sub SaveWorkingFile()
                         cXML.WriteTag "ColorLight", .ResColorLight
                         cXML.WriteTag "ColorDark", .ResColorDark
                     End If
+                    cXML.WriteTag "SupportsCustomMenuColor", .ResCustomMenuColor
+                    If .ResCustomMenuColor Then cXML.WriteTag "ColorMenu", .ResColorMenu
                 End With
                 
-                cXML.CloseTag CStr(numResourcesWritten + 1)
+                cXML.closeTag CStr(numResourcesWritten + 1)
                 
                 numResourcesWritten = numResourcesWritten + 1
                 
@@ -632,6 +662,16 @@ Private Sub csDark_ColorChanged()
     End If
 End Sub
 
+Private Sub csMenu_ColorChanged()
+    If (Not m_SuspendUpdates) Then
+        SyncResourceAgainstCurrentUI
+        m_SuspendUpdates = True
+        btsBackcolor.ListIndex = 2
+        m_SuspendUpdates = False
+        UpdatePreview
+    End If
+End Sub
+
 Private Sub Form_Load()
             
     btsResourceType.AddItem "image", 0
@@ -640,6 +680,7 @@ Private Sub Form_Load()
     
     btsBackcolor.AddItem "light", 0
     btsBackcolor.AddItem "dark", 1
+    btsBackcolor.AddItem "menu", 2
     If (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then btsBackcolor.ListIndex = 1 Else btsBackcolor.ListIndex = 0
     
     Set m_FSO = New pdFSO
@@ -710,6 +751,8 @@ Private Sub LoadResourceFromFile()
                                 .ResColorLight = cXML.GetUniqueTag_Long("ColorLight", 0, tagPos)
                                 .ResColorDark = cXML.GetUniqueTag_Long("ColorDark", 0, tagPos)
                             End If
+                            .ResCustomMenuColor = cXML.GetUniqueTag_Boolean("SupportsCustomMenuColor", False, tagPos)
+                            If .ResCustomMenuColor Then .ResColorMenu = cXML.GetUniqueTag_Long("ColorMenu", 0, tagPos)
                             .MarkedForDeletion = False
                         End With
                         
@@ -747,6 +790,8 @@ Private Sub SyncResourceAgainstCurrentUI()
                 .ResColorLight = csLight.Color
                 .ResColorDark = csDark.Color
             End If
+            If (.ResType = PDRT_Image) Then .ResCustomMenuColor = CBool(chkCustomMenuColor.Value)
+            If .ResCustomMenuColor Then .ResColorMenu = csMenu.Color
             
             'To delete a resource, you have to click the delete button, save the resource file,
             ' then exit and re-enter the dialog.  (Sorry; deletion is not really meant to be used often.)
@@ -777,6 +822,12 @@ Private Sub SyncUIAgainstCurrentResource()
             Else
                 chkColoration.Value = vbUnchecked
             End If
+            If .ResCustomMenuColor Then
+                chkCustomMenuColor.Value = vbChecked
+                csMenu.Color = .ResColorMenu
+            Else
+                chkCustomMenuColor.Value = vbUnchecked
+            End If
             
             If .MarkedForDeletion Then chkDelete.Value = vbChecked Else chkDelete.Value = vbUnchecked
             
@@ -805,6 +856,8 @@ Private Sub UpdatePreview()
                 Colors.GetColorFromString "#ffffff", newColor, ColorHex
             ElseIf (btsBackcolor.ListIndex = 1) Then
                 Colors.GetColorFromString "#313131", newColor, ColorHex
+            ElseIf (btsBackcolor.ListIndex = 2) Then
+                Colors.GetColorFromString "#ffffff", newColor, ColorHex
             End If
             picPreview.BackColor = newColor
             
@@ -820,6 +873,8 @@ Private Sub UpdatePreview()
                         DIB_Support.ColorizeDIB m_PreviewDIB, csLight.Color
                     ElseIf (btsBackcolor.ListIndex = 1) Then
                         DIB_Support.ColorizeDIB m_PreviewDIB, csDark.Color
+                    ElseIf (btsBackcolor.ListIndex = 2) Then
+                        DIB_Support.ColorizeDIB m_PreviewDIB, csMenu.Color
                     End If
                     m_PreviewDIB.RenderToPictureBox picPreview, False, True, True
                     

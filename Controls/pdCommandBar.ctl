@@ -703,13 +703,6 @@ Private Sub UserControl_Initialize()
     
     'Initialize a preset handler
     Set m_Presets = New pdToolPreset
-    
-    'When running, we can assign images and tooltips to the image-only command buttons
-    If g_IsProgramRunning Then
-        cmdAction(0).AssignImage "CMDBAR_RESET"
-        cmdAction(1).AssignImage "CMDBAR_RANDOM"
-        cmdAction(2).AssignImage "CMDBAR_SAVE"
-    End If
         
     'Validations succeed by default
     m_userValidationFailed = False
@@ -1222,7 +1215,7 @@ Private Sub UpdateControlLayout()
     'Make the control the same width as its parent
     If g_IsProgramRunning Then
         
-        If bWidth <> parentWindowWidth Then ucSupport.RequestNewSize parentWindowWidth
+        If (bWidth <> parentWindowWidth) Then ucSupport.RequestNewSize parentWindowWidth
         
         'Right-align the Cancel and OK buttons
         cmdCancel.SetLeft parentWindowWidth - cmdCancel.GetWidth - FixDPI(8)
@@ -1262,6 +1255,15 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
+    
+    'When running, we can assign images and tooltips to the image-only command buttons
+    If g_IsProgramRunning Then
+        Dim cmdButtonImageSize As Long
+        cmdButtonImageSize = FixDPI(24)
+        cmdAction(0).AssignImage "generic_reset", , , , cmdButtonImageSize, cmdButtonImageSize
+        cmdAction(1).AssignImage "generic_random", , , , cmdButtonImageSize, cmdButtonImageSize
+        cmdAction(2).AssignImage "generic_savepreset", , , , cmdButtonImageSize, cmdButtonImageSize
+    End If
     
     cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
     cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
