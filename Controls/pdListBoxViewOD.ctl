@@ -31,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Owner-Drawn List Box View control (e.g. the list part of a list box, not including the scroll bar)
 'Copyright 2016-2017 by Tanner Helland
 'Created: 26/March/16
-'Last updated: 26/March/16
-'Last update: started migrating code from the default list box to this instance
+'Last updated: 04/January/17
+'Last update: added support for a "borderless" rendering mode
 '
 'The list portion of a pdListBox object, with all drawing functionality provided as events that the parent control *must*
 ' respond to.  As with the default ListBoxView, the list view manages all the list data, and if no scroll bar is required,
@@ -79,6 +79,10 @@ Attribute listSupport.VB_VarHelpID = -1
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
+'Most owner-drawn listboxes use the same general visual behavior as other listboxes (e.g. glowing outline on hover,
+' control outline on focus, etc).  Some may choose to suspend this behavior in favor of a custom solution, however.
+Private m_BorderlessMode As Boolean
+
 'Local list of themable colors.  This list includes all potential colors used by this class, regardless of state change
 ' or internal control settings.  The list is updated by calling the UpdateColorList function.
 ' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
@@ -100,6 +104,17 @@ End Enum
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
+
+Public Property Get BorderlessMode() As Boolean
+    BorderlessMode = m_BorderlessMode
+End Property
+
+Public Property Let BorderlessMode(ByVal newMode As Boolean)
+    If (newMode <> m_BorderlessMode) Then
+        m_BorderlessMode = newMode
+        UpdateControlLayout
+    End If
+End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -357,28 +372,31 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+    BorderlessMode = False
     Enabled = True
     ListItemHeight = 36
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not g_IsProgramRunning) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
+        BorderlessMode = .ReadProperty("BorderlessMode", False)
         Enabled = .ReadProperty("Enabled", True)
         ListItemHeight = .ReadProperty("ListItemHeight", 10)
     End With
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
+        .WriteProperty "BorderlessMode", m_BorderlessMode, False
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "ListItemHeight", Me.ListItemHeight, 10
     End With
@@ -511,8 +529,9 @@ Private Sub RedrawBackBuffer()
                 End If
                 
                 ' (As of the 7.0 release, the border is only drawn if the current item is selected.  This is a deliberate decision
-                '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.)
-                If itemIsHovered Or itemIsSelected Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , False, GP_LJ_Miter
+                '  to improve aesthetics on the Metadata dialog, among others.  This may be revisited in the future.
+                '  Note also that the caller can manually request borderless rendering via the matching property.)
+                If ((itemIsHovered Or itemIsSelected) And (Not m_BorderlessMode)) Then GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, tmpRect, curColor, , , False, GP_LJ_Miter
                 
                 '...and finally, render a separator line, if any
                 If itemHasSeparator Then
@@ -527,14 +546,18 @@ Private Sub RedrawBackBuffer()
         'Last of all, we render the listbox border.  Note that we actually draw *two* borders.  The actual border,
         ' which is slightly inset from the list box boundaries, then a second border - pure white, erasing any item
         ' rendering that may have fallen outside the clipping area.
-        Dim borderWidth As Single, borderColor As Long
-        If listHasFocus Then borderWidth = 3# Else borderWidth = 1#
-        borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
+        If (Not m_BorderlessMode) Then
         
-        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
-        
-        If (Not listHasFocus) Then
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, finalBackColor, , , , GP_LJ_Miter
+            Dim borderWidth As Single, borderColor As Long
+            If listHasFocus Then borderWidth = 3# Else borderWidth = 1#
+            borderColor = m_Colors.RetrieveColor(PDLB_Border, enabledState, listHasFocus)
+            
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_ListRect, borderColor, , borderWidth, , GP_LJ_Miter
+            
+            If (Not listHasFocus) Then
+                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, finalBackColor, , , , GP_LJ_Miter
+            End If
+            
         End If
         
     End If

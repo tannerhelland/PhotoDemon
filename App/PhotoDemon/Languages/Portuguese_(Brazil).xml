@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Portuguese (Brazil)</langname>
-<langversion>6.8.2147</langversion>
+<langversion>6.8.2149</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -12072,23 +12072,13 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 </phrase>
 
 <phrase>
-<original>Decrease speed</original>
-<translation>Diminuir a velocidade</translation>
+<original>Donate to PhotoDemon development</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Increase speed</original>
-<translation>Aumentar a velocidade</translation>
-</phrase>
-
-<phrase>
-<original>Pause scrolling</original>
-<translation>pausa rolagem</translation>
-</phrase>
-
-<phrase>
-<original>click to visit</original>
-<translation>clique para visitar</translation>
+<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12097,46 +12087,41 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 </phrase>
 
 <phrase>
-<original>PhotoDemon is the product of many talented contributors, including</original>
-<translation>PhotoDemon é o produto de muitos colaboradores talentosos, incluindo</translation>
+<original>Participate in development, design, or translation work</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon is released under an open-source BSD license</original>
-<translation>PhotoDemon é liberado sob uma licença BSD de código aberto</translation>
+<original>Contact the author</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on licensing, please visit</original>
-<translation>Para mais informações sobre o licenciamento, visite</translation>
+<original>Download program source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Please note that PhotoDemon uses several third-party plugins</original>
-<translation>Por favor note que PhotoDemon utiliza vários plugins de terceiros</translation>
+<original>Review program and plugin licenses</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>These plugins are also free and open source</original>
-<translation>Esses plugins também são livres e de código aberto</translation>
+<original>Latest news</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>...but they are governed by their own licenses, separate from PhotoDemon</original>
-<translation>... mas eles são regidos por suas próprias licenças, separar PhotoDemon</translation>
+<original>About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on plugin licensing, please visit</original>
-<translation>Para mais informações sobre licenciamento plugin, visite</translation>
+<original>Contributors</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Thank you for using PhotoDemon</original>
-<translation>Obrigado por usar PhotoDemon</translation>
-</phrase>
-
-<!-- Help_About.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14966,10 +14951,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4473 phrases. -->
-<!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4461 phrases. -->
+<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12620 total words. -->
 
 </pdData>

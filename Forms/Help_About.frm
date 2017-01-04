@@ -1,13 +1,14 @@
 VERSION 5.00
 Begin VB.Form FormAbout 
    AutoRedraw      =   -1  'True
-   BackColor       =   &H00000000&
+   BackColor       =   &H00FFFFFF&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " About PhotoDemon"
-   ClientHeight    =   8925
+   ClientHeight    =   7980
    ClientLeft      =   2340
    ClientTop       =   1875
-   ClientWidth     =   11685
+   ClientWidth     =   9870
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -17,79 +18,161 @@ Begin VB.Form FormAbout
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   595
+   ScaleHeight     =   532
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   779
+   ScaleWidth      =   658
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdButton cmdOK 
-      Height          =   495
-      Left            =   9840
-      TabIndex        =   4
-      Top             =   8280
-      Width           =   1695
-      _ExtentX        =   2990
-      _ExtentY        =   873
-      Caption         =   "&OK"
+   Begin PhotoDemon.pdCommandBarMini cmdBar 
+      Align           =   2  'Align Bottom
+      Height          =   615
+      Left            =   0
+      TabIndex        =   3
+      Top             =   7365
+      Width           =   9870
+      _ExtentX        =   17410
+      _ExtentY        =   1085
    End
-   Begin PhotoDemon.pdButtonToolbox cmdSpeed 
-      Height          =   510
+   Begin PhotoDemon.pdButtonStrip btsPanel 
+      Height          =   615
+      Left            =   120
+      TabIndex        =   0
+      Top             =   120
+      Width           =   9615
+      _ExtentX        =   16960
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdContainer pnlAbout 
+      Height          =   6375
       Index           =   0
       Left            =   120
       TabIndex        =   1
-      Top             =   8280
-      Width           =   510
-      _ExtentX        =   1296
-      _ExtentY        =   661
-      AutoToggle      =   -1  'True
-      BackColor       =   0
+      Top             =   840
+      Width           =   9615
+      _ExtentX        =   16960
+      _ExtentY        =   11245
+      Begin PhotoDemon.pdHyperlink hypAbout 
+         Height          =   375
+         Index           =   0
+         Left            =   240
+         Top             =   1440
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   661
+         Caption         =   "Donate to PhotoDemon development"
+         URL             =   "http://photodemon.org/donate/"
+      End
+      Begin PhotoDemon.pdLabel lblAbout 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         Top             =   5880
+         Width           =   9375
+         _ExtentX        =   16536
+         _ExtentY        =   661
+         Caption         =   "PhotoDemon is Copyright 2017 by Tanner Helland and Contributors"
+      End
+      Begin PhotoDemon.pdLabel lblAbout 
+         Height          =   495
+         Index           =   1
+         Left            =   120
+         Top             =   240
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   873
+         Caption         =   "PhotoDemon"
+         FontBold        =   -1  'True
+         FontSize        =   14
+      End
+      Begin PhotoDemon.pdLabel lblAbout 
+         Height          =   495
+         Index           =   2
+         Left            =   120
+         Top             =   720
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   873
+         Caption         =   "the fast, free, portable photo editor"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdHyperlink hypAbout 
+         Height          =   375
+         Index           =   1
+         Left            =   240
+         Top             =   1920
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   661
+         Caption         =   "Participate in development, design, or translation work"
+         URL             =   "http://photodemon.org/get-involved/"
+      End
+      Begin PhotoDemon.pdHyperlink hypAbout 
+         Height          =   375
+         Index           =   2
+         Left            =   240
+         Top             =   3840
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   661
+         Caption         =   "Contact the author"
+         URL             =   "http://photodemon.org/about/contact/"
+      End
+      Begin PhotoDemon.pdHyperlink hypAbout 
+         Height          =   375
+         Index           =   3
+         Left            =   240
+         Top             =   2400
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   661
+         Caption         =   "Download program source code"
+         URL             =   "https://github.com/tannerhelland/PhotoDemon"
+      End
+      Begin PhotoDemon.pdHyperlink hypAbout 
+         Height          =   375
+         Index           =   4
+         Left            =   240
+         Top             =   2880
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   661
+         Caption         =   "Review program and plugin licenses"
+         URL             =   "http://photodemon.org/about/license/"
+      End
+      Begin PhotoDemon.pdHyperlink hypAbout 
+         Height          =   375
+         Index           =   5
+         Left            =   240
+         Top             =   3360
+         Width           =   9300
+         _ExtentX        =   16404
+         _ExtentY        =   661
+         Caption         =   "Latest news"
+         URL             =   "http://photodemon.org/blog/"
+      End
    End
-   Begin VB.PictureBox picBuffer 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00000000&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5535
-      Left            =   600
-      ScaleHeight     =   369
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   697
-      TabIndex        =   0
-      Top             =   600
-      Width           =   10455
-   End
-   Begin VB.Timer tmrText 
-      Enabled         =   0   'False
-      Interval        =   17
-      Left            =   2520
-      Top             =   8280
-   End
-   Begin PhotoDemon.pdButtonToolbox cmdSpeed 
-      Height          =   510
+   Begin PhotoDemon.pdContainer pnlAbout 
+      Height          =   6375
       Index           =   1
-      Left            =   720
+      Left            =   120
       TabIndex        =   2
-      Top             =   8280
-      Width           =   510
-      _ExtentX        =   1296
-      _ExtentY        =   661
-      AutoToggle      =   -1  'True
-      BackColor       =   0
-   End
-   Begin PhotoDemon.pdButtonToolbox cmdSpeed 
-      Height          =   510
-      Index           =   2
-      Left            =   1320
-      TabIndex        =   3
-      Top             =   8280
-      Width           =   510
-      _ExtentX        =   1296
-      _ExtentY        =   661
-      BackColor       =   0
-      StickyToggle    =   -1  'True
+      Top             =   840
+      Width           =   9615
+      _ExtentX        =   16960
+      _ExtentY        =   11245
+      Begin PhotoDemon.pdListBoxOD lstContributors 
+         Height          =   6135
+         Left            =   120
+         TabIndex        =   4
+         Top             =   240
+         Width           =   9255
+         _ExtentX        =   16325
+         _ExtentY        =   10821
+         BorderlessMode  =   -1  'True
+      End
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -101,8 +184,8 @@ Attribute VB_Exposed = False
 'PhotoDemon About Dialog
 'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 31/May/14
-'Last update: convert extra mouse handling code to pdInput
+'Last updated: 04/Jan/17
+'Last update: greatly simplify dialog layout and design
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -111,484 +194,210 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Type pdCredit
-    Name As String
-    URL As String
-    Clickable As Boolean
+Private Type PD_Contributor
+    ctbName As String
+    ctbURL As String
 End Type
 
-Private creditList() As pdCredit
-Private numOfCredits As Long
-
-'Number of pixels to scroll the list on each timer tick
-Private m_pxScroll As Long
-
-'The offset is incremented upward; this controls the credit scroll distance
-Private scrollOffset As Double
+Private m_contributorList() As PD_Contributor
+Private m_numOfContributors As Long
 
 'Height of each credit content block
-Private Const BLOCKHEIGHT As Long = 54
+Private Const BLOCKHEIGHT As Long = 24
 
-Private backDIB As pdDIB
-Private bufferDIB As pdDIB
-Private m_BufferWidth As Long, m_BufferHeight As Long
-Private m_FormWidth As Long
+Private Sub btsPanel_Click(ByVal buttonIndex As Long)
+    UpdateVisiblePanel
+End Sub
 
-Private logoDIB As pdDIB, maskDIB As pdDIB
-
-'Two font objects; one for names and one for URLs.  (Two are needed because they have different sizes and colors.)
-Private firstFont As pdFont, secondFont As pdFont
-
-'...and another font object for highlighted text (when URLs are hovered)
-Private highlightFont As pdFont
-
-'Current mouse position; to make the URLs clickable, we track the current mouse position and highlight the relevant credit
-Private mouseX As Long, mouseY As Long
-
-'Currently hovered credit (if any)
-Private curHoveredCredit As Long
-Private inHoverState As Boolean
-
-'As the credit list is now clickable, we display "click to visit" with the current entry
-Private clickToVisitText As String
-
-'An outside class provides access to specialized mouse events (mouse enter/leave, in this case)
-Private WithEvents m_MouseEvents As pdInputMouse
-Attribute m_MouseEvents.VB_VarHelpID = -1
-
-'When the mouse moves over something clickable, update the pointer and stop the timer
-Private Sub updateHoverState(ByVal isSomethingUsefulHovered As Boolean)
-
-    If isSomethingUsefulHovered Then
-        
-        'If we are already in hover state, disregard this command
-        If Not inHoverState Then
-            
-            'Slow the scrolling (to simplify clicking)
-            tmrText.Interval = 50
-            
-            'Display a hand cursor
-            m_MouseEvents.SetSystemCursor IDC_HAND
-            
-            'Mark the new hover state
-            inHoverState = True
-            
-        Else
-            m_MouseEvents.SetSystemCursor IDC_HAND
-        End If
-        
-    Else
-        
-        If inHoverState Then
-        
-            'Return scrolling to normal speed
-            tmrText.Interval = 17
-            
-            'Restore an arrow cursor
-            m_MouseEvents.SetSystemCursor IDC_ARROW
-            
-            'Mark the new hover state
-            inHoverState = False
-        
-        Else
-            If Not (m_MouseEvents Is Nothing) Then m_MouseEvents.SetSystemCursor IDC_ARROW
-        End If
-        
-    End If
-    
+Private Sub UpdateVisiblePanel()
+    Dim i As Long
+    For i = 0 To btsPanel.ListCount - 1
+        pnlAbout(i).Visible = CBool(i = btsPanel.ListIndex)
+    Next i
 End Sub
 
 Private Sub CmdOK_Click()
-    tmrText.Enabled = False
     Unload Me
 End Sub
 
-Private Sub cmdSpeed_Click(Index As Integer)
-    
-    'Reduce speed
-    If Index = 0 Then
-    
-        m_pxScroll = m_pxScroll - 1
-        If m_pxScroll = 1 Then cmdSpeed(0).Enabled = False
-        If (m_pxScroll < 5) And (Not cmdSpeed(1).Enabled) Then cmdSpeed(1).Enabled = True
-    
-    'Increase speed
-    ElseIf Index = 1 Then
-    
-        m_pxScroll = m_pxScroll + 1
-        If m_pxScroll = 5 Then cmdSpeed(1).Enabled = False
-        If (m_pxScroll > 1) And (Not cmdSpeed(0).Enabled) Then cmdSpeed(0).Enabled = True
-    
-    'Pause
-    ElseIf Index = 2 Then
-    
-        tmrText.Enabled = Not cmdSpeed(2).Value
-    
-    End If
-    
-End Sub
-
-Private Sub m_MouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If (curHoveredCredit >= 0) Then OpenURL creditList(curHoveredCredit).URL
-End Sub
-
-Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    mouseX = -1
-    mouseY = -1
-    curHoveredCredit = -1
-    updateHoverState False
-End Sub
-
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-        
-    mouseX = x
-    mouseY = y
-    
-    If Not tmrText.Enabled Then RenderFullCreditList
-    
-End Sub
-
 Private Sub Form_Load()
-
-    'By default, the image will scroll by 1 px each timer interval
-    m_pxScroll = 1
-    cmdSpeed(0).Enabled = False
-    cmdSpeed(1).Enabled = True
-    cmdSpeed(2).Value = False
     
-    'Load button images
-    cmdSpeed(0).AssignImage "ABOUT_MINUS"
-    cmdSpeed(1).AssignImage "ABOUT_PLUS"
-    cmdSpeed(2).AssignImage "ABOUT_PAUSE"
+    lstContributors.ListItemHeight = FixDPI(BLOCKHEIGHT)
     
-    'Load button tooltips
-    cmdSpeed(0).AssignTooltip "Decrease speed"
-    cmdSpeed(1).AssignTooltip "Increase speed"
-    cmdSpeed(2).AssignTooltip "Pause scrolling"
+    btsPanel.AddItem "About", 0
+    btsPanel.AddItem "Contributors", 1
+    btsPanel.ListIndex = 0
+    UpdateVisiblePanel
     
-    'Reset the mouse coordinates and currently hovered entry
-    mouseX = -1
-    mouseY = -1
-    curHoveredCredit = -1
-    updateHoverState False
+    'Fill any custom "About" panel text
+    lblAbout(1).Caption = GetPhotoDemonNameAndVersion()
     
-    'Translate "click to visit" and cache it to improve performance
-    clickToVisitText = "(" & g_Language.TranslateMessage("click to visit") & ") "
+    'Fill the "Contributor" panel text
+    ReDim m_contributorList(0 To 31) As PD_Contributor
+    m_numOfContributors = 0
     
-    'Enable mouse subclassing for the main buffer box, which allows us to track when the mouse leaves
-    Set m_MouseEvents = New pdInputMouse
-    m_MouseEvents.AddInputTracker picBuffer.hWnd, True, True, , True
-    m_MouseEvents.SetSystemCursor IDC_ARROW
-
-    'Load the logo from the resource file
-    Set logoDIB = New pdDIB
-    LoadResourceToDIB "PDLOGONOTEXT", logoDIB
+    'Shout-outs to designers, programmers, testers and sponsors
+    GenerateContributor "Abhijit Mhapsekar"
+    GenerateContributor "A.G. Violette", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=55938&lngWId=1"
+    GenerateContributor "Allan Lima"
+    GenerateContributor "Andrew Yeoman"
+    GenerateContributor "Ari Sohandri Putra", "http://arisohandrip.indonesiaz.com/"
+    GenerateContributor "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1"
+    GenerateContributor "Audioglider", "https://github.com/audioglider"
+    GenerateContributor "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html"
+    GenerateContributor "Boban Gjerasimoski", "https://www.behance.net/Boban_Gjerasimoski"
+    GenerateContributor "Bonnie West", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1"
+    GenerateContributor "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
+    GenerateContributor "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
+    GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
+    GenerateContributor "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control"
+    GenerateContributor "Djordje Djoric", "https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/"
+    GenerateContributor "Dirk Hartmann", "http://www.taichi-zentrum-heidelberg.de"
+    GenerateContributor "Dosadi", "http://eztwain.com/eztwain1.htm"
+    GenerateContributor "Easy RGB", "http://www.easyrgb.com/"
+    GenerateContributor "Everaldo Coelho", "http://www.everaldo.com/"
+    GenerateContributor "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
+    GenerateContributor "Frans van Beers", "https://plus.google.com/+FransvanBeers/"
+    GenerateContributor "FreeImage Project", "http://freeimage.sourceforge.net/"
+    GenerateContributor "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html"
+    GenerateContributor "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock"
+    GenerateContributor "Google Translate", "http://translate.google.com"
+    GenerateContributor "Hans Nolte", "https://github.com/hansnolte"
+    GenerateContributor "Helmut Kuerbiss"
+    GenerateContributor "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
+    GenerateContributor "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
+    GenerateContributor "Kroc Camen", "http://camendesign.com"
+    GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
+    GenerateContributor "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
+    GenerateContributor "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
+    GenerateContributor "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
+    GenerateContributor "Mohammad Reza Karimi"
+    GenerateContributor "Nguyen Van Hung"
+    GenerateContributor "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/"
+    GenerateContributor "Paul Bourke", "http://paulbourke.net/miscellaneous/"
+    GenerateContributor "Peter Burn"
+    GenerateContributor "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/"
+    GenerateContributor "Plinio C Garcia"
+    GenerateContributor "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652"
+    GenerateContributor "Roy (rk)"
+    GenerateContributor "Raj Chaudhuri", "https://github.com/rajch"
+    GenerateContributor "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1"
+    GenerateContributor "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
+    GenerateContributor "Tango Icon Library", "http://tango.freedesktop.org/"
+    GenerateContributor "Tom Loos", "http://www.designedbyinstinct.com"
+    GenerateContributor "Will Stampfer", "https://github.com/epmatsw"
+    GenerateContributor "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
+    GenerateContributor "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1"
     
-    'Load the logo mask from the resource file into a temporary DIB
-    Dim tmpMaskDIB As pdDIB
-    Set tmpMaskDIB = New pdDIB
-    LoadResourceToDIB "PDLOGOMASK", tmpMaskDIB
+    'Add dummy entries to the owner-drawn list box
+    lstContributors.SetAutomaticRedraws False, False
+    Dim i As Long
+    For i = 0 To m_numOfContributors - 1
+        lstContributors.AddItem vbNullString
+    Next i
+    lstContributors.SetAutomaticRedraws True, True
     
-    scrollOffset = 0
-
-    ReDim creditList(0) As pdCredit
-
-    numOfCredits = 0
-    
-    'Shout-outs to other designers, programmers, testers and sponsors who provided various resources
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou ""
-    GenerateThankyou "The text in this dialog is out of date.", "It will be updated for the v7.0 release."
-    GenerateThankyou "For an up-to-date list of contributors, please visit", "https://github.com/tannerhelland/PhotoDemon", True
-    GenerateThankyou ""
-    GenerateThankyou GetPhotoDemonNameAndVersion(), "Copyright 2017 Tanner Helland and contributors"
-    GenerateThankyou g_Language.TranslateMessage("the fast, free, portable photo editor"), ""
-    GenerateThankyou ""
-    GenerateThankyou g_Language.TranslateMessage("PhotoDemon is the product of many talented contributors, including:"), ""
-    GenerateThankyou "Abhijit Mhapsekar"
-    GenerateThankyou "A.G. Violette", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=55938&lngWId=1", True
-    GenerateThankyou "Allan Lima"
-    GenerateThankyou "Andrew Yeoman"
-    GenerateThankyou "Ari Sohandri Putra", "http://arisohandrip.indonesiaz.com/", True
-    GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1", True
-    GenerateThankyou "Audioglider", "https://github.com/audioglider", True
-    GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html", True
-    GenerateThankyou "Boban Gjerasimoski", "https://www.behance.net/Boban_Gjerasimoski", True
-    GenerateThankyou "Bonnie West", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1", True
-    GenerateThankyou "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1", True
-    GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546", True
-    GenerateThankyou "Dana Seaman", "http://www.cyberactivex.com/", True
-    GenerateThankyou "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control", True
-    GenerateThankyou "Djordje Djoric", "https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/", True
-    GenerateThankyou "Dirk Hartmann", "http://www.taichi-zentrum-heidelberg.de", True
-    GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm", True
-    GenerateThankyou "Easy RGB", "http://www.easyrgb.com/", True
-    GenerateThankyou "Everaldo Coelho", "http://www.everaldo.com/", True
-    GenerateThankyou "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers", True
-    GenerateThankyou "Frans van Beers", "https://plus.google.com/+FransvanBeers/", True
-    GenerateThankyou "FreeImage Project", "http://freeimage.sourceforge.net/", True
-    GenerateThankyou "Gilles Vollant", "http://www.winimage.com/zLibDll/index.html", True
-    GenerateThankyou "GioRock", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=giorock", True
-    GenerateThankyou "Google Translate", "http://translate.google.com", True
-    GenerateThankyou "Hans Nolte", "https://github.com/hansnolte", True
-    GenerateThankyou "Helmut Kuerbiss"
-    GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1", True
-    GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html", True
-    GenerateThankyou "Kroc Camen", "http://camendesign.com", True
-    GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736", True
-    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/", True
-    GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1", True
-    GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/", True
-    GenerateThankyou "Mohammad Reza Karimi"
-    GenerateThankyou "Nguyen Van Hung"
-    GenerateThankyou "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/", True
-    GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True
-    GenerateThankyou "Peter Burn"
-    GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/", True
-    GenerateThankyou "Plinio C Garcia"
-    GenerateThankyou "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652", True
-    GenerateThankyou "Roy (rk)"
-    GenerateThankyou "Raj Chaudhuri", "https://github.com/rajch", True
-    GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1", True
-    GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp", True
-    GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/", True
-    GenerateThankyou "Tom Loos", "http://www.designedbyinstinct.com", True
-    GenerateThankyou "Will Stampfer", "https://github.com/epmatsw", True
-    GenerateThankyou "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/", True
-    GenerateThankyou "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1", True
-    GenerateThankyou ""
-    
-    Dim extraString1 As String, extraString2 As String
-    extraString1 = g_Language.TranslateMessage("PhotoDemon is released under an open-source BSD license")
-    GenerateThankyou extraString1
-    extraString1 = g_Language.TranslateMessage("For more information on licensing, please visit")
-    GenerateThankyou extraString1, "http://photodemon.org/about/license/", True
-    GenerateThankyou ""
-    extraString1 = g_Language.TranslateMessage("Please note that PhotoDemon uses several third-party plugins")
-    GenerateThankyou extraString1
-    GenerateThankyou ""
-    extraString1 = g_Language.TranslateMessage("These plugins are also free and open source...")
-    extraString2 = g_Language.TranslateMessage("...but they are governed by their own licenses, separate from PhotoDemon")
-    GenerateThankyou extraString1, extraString2
-    GenerateThankyou ""
-    extraString1 = g_Language.TranslateMessage("For more information on plugin licensing, please visit:")
-    GenerateThankyou extraString1
-    GenerateThankyou "ExifTool", "http://dev.perl.org/licenses/", True
-    GenerateThankyou "EZTwain", "http://eztwain.com/ezt1faq.htm", True
-    GenerateThankyou "FreeImage", "http://freeimage.sourceforge.net/license.html", True
-    GenerateThankyou "PNGQuant", "http://pngquant.org/#source", True
-    GenerateThankyou "zLib", "http://www.zlib.net/zlib_license.html", True
-    GenerateThankyou ""
-    GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
+'    Dim extraString1 As String, extraString2 As String
+'    extraString1 = g_Language.TranslateMessage("PhotoDemon is released under an open-source BSD license")
+'    GenerateContributor extraString1
+'    extraString1 = g_Language.TranslateMessage("For more information on licensing, please visit")
+'    GenerateContributor extraString1, "http://photodemon.org/about/license/", True
+'    GenerateContributor ""
+'    extraString1 = g_Language.TranslateMessage("Please note that PhotoDemon uses several third-party plugins")
+'    GenerateContributor extraString1
+'    GenerateContributor ""
+'    extraString1 = g_Language.TranslateMessage("These plugins are also free and open source...")
+'    extraString2 = g_Language.TranslateMessage("...but they are governed by their own licenses, separate from PhotoDemon")
+'    GenerateContributor extraString1, extraString2
+'    GenerateContributor ""
+'    extraString1 = g_Language.TranslateMessage("For more information on plugin licensing, please visit:")
+'    GenerateContributor extraString1
+'    GenerateContributor "ExifTool", "http://dev.perl.org/licenses/", True
+'    GenerateContributor "EZTwain", "http://eztwain.com/ezt1faq.htm", True
+'    GenerateContributor "FreeImage", "http://freeimage.sourceforge.net/license.html", True
+'    GenerateContributor "PNGQuant", "http://pngquant.org/#source", True
+'    GenerateContributor "zLib", "http://www.zlib.net/zlib_license.html", True
+'    GenerateContributor ""
+'    GenerateContributor g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    
-    'Initialize the background DIB (this allows for faster blitting than a picture box)
-    ' Note that this DIB is dynamically resized; this solves issues with high-DPI screens
-    Set backDIB = New pdDIB
-    Dim logoAspectRatio As Double
-    logoAspectRatio = CDbl(logoDIB.GetDIBWidth) / CDbl(logoDIB.GetDIBHeight)
-    backDIB.CreateFromExistingDIB logoDIB, Me.ScaleWidth, Me.ScaleWidth / logoAspectRatio
-    
-    'Copy the resized logo into the logo DIB.  (We don't want to resize it every time we need it.)
-    logoDIB.EraseDIB
-    logoDIB.CreateFromExistingDIB backDIB
-    
-    'Create a mask DIB at the same size.
-    Set maskDIB = New pdDIB
-    maskDIB.CreateFromExistingDIB tmpMaskDIB, backDIB.GetDIBWidth, backDIB.GetDIBHeight, False
-    tmpMaskDIB.EraseDIB
-    Set tmpMaskDIB = Nothing
-    
-    'In order to fix high-DPI screen issues, resize the buffer at run-time.  (Why not blit directly to the form?  Because
-    ' the OK command button will flicker.  Instead, we just draw to a picture box sized to match the form.)
-    picBuffer.Move 0, 0, backDIB.GetDIBWidth, backDIB.GetDIBHeight
-    
-    'Remember that the PicBuffer picture box is used only as a placeholder.  We render everything manually to an
-    ' off-screen buffer, then flip that buffer to the picture box after all rendering is complete.
-    Set bufferDIB = New pdDIB
-    bufferDIB.CreateBlank backDIB.GetDIBWidth, backDIB.GetDIBHeight, 24, 0
-    
-    'Initialize a few other variables for speed reasons
-    m_BufferWidth = backDIB.GetDIBWidth
-    m_BufferHeight = backDIB.GetDIBHeight
-    m_FormWidth = Me.ScaleWidth
-    
-    'Initialize a custom font objects for names
-    Set firstFont = New pdFont
-    firstFont.SetFontColor RGB(255, 255, 255)
-    firstFont.SetFontBold True
-    firstFont.SetFontSize 14
-    firstFont.CreateFontObject
-    firstFont.SetTextAlignment vbRightJustify
-    
-    '...and a second custom font object for URLs
-    Set secondFont = New pdFont
-    secondFont.SetFontColor RGB(192, 192, 192)
-    secondFont.SetFontBold False
-    secondFont.SetFontSize 10
-    secondFont.CreateFontObject
-    secondFont.SetTextAlignment vbRightJustify
-    
-    '...and a third custom font object for highlighted text
-    Set highlightFont = New pdFont
-    highlightFont.SetFontColor ConvertSystemColor(vbHighlight)
-    highlightFont.SetFontBold False
-    highlightFont.SetFontSize 10
-    highlightFont.SetFontUnderline True
-    highlightFont.CreateFontObject
-    highlightFont.SetTextAlignment vbRightJustify
-    
-    'Render the primary background image to the form
-    BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoDIB.GetDIBDC, 0, 0, vbSrcCopy
-    picBuffer.Picture = picBuffer.Image
-    picBuffer.Refresh
-    
-    'Start the credit scroll timer
-    tmrText.Enabled = True
-    
+     
 End Sub
 
-'Generate a label with the specified "thank you" text, and link it to the specified URL
-Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL As String = "", Optional ByVal isClickable As Boolean = False)
-    
-    creditList(numOfCredits).Name = thxText
-    creditList(numOfCredits).URL = creditURL
-    creditList(numOfCredits).Clickable = isClickable
-    
-    numOfCredits = numOfCredits + 1
-    ReDim Preserve creditList(0 To numOfCredits) As pdCredit
-    
+Private Sub GenerateContributor(ByVal contributorName As String, Optional ByVal contributorURL As String = vbNullString)
+    If (m_numOfContributors > UBound(m_contributorList)) Then ReDim Preserve m_contributorList(0 To m_numOfContributors * 2 - 1) As PD_Contributor
+    m_contributorList(m_numOfContributors).ctbName = contributorName
+    m_contributorList(m_numOfContributors).ctbURL = contributorURL
+    m_numOfContributors = m_numOfContributors + 1
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    Set m_MouseEvents = Nothing
 End Sub
 
-'Scroll the credit list; nothing fancy here, just a basic credit scroller, using a modified version of the
-' scrolling code I wrote for the metadata browser.
-Private Sub tmrText_Timer()
-    
-    scrollOffset = scrollOffset + FixDPIFloat(m_pxScroll)
-    If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
-    
-    RenderFullCreditList
-    
+Private Sub lstContributors_Click()
+    If ((lstContributors.ListIndex < m_numOfContributors) And (lstContributors.ListIndex >= 0)) Then
+        If (Len(m_contributorList(lstContributors.ListIndex).ctbURL) <> 0) Then FileSystem.OpenURL m_contributorList(lstContributors.ListIndex).ctbURL
+    End If
 End Sub
 
-Private Sub RenderFullCreditList()
+Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
 
-    'Erase the back DIB by copying over the logo (onto which we will render the text)
-    BitBlt backDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.GetDIBDC, 0, 0, vbSrcCopy
-        
-    'Render all text
-    Dim i As Long
-    For i = 0 To numOfCredits - 1
-        RenderCredit i, FixDPI(8), FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPIFloat(2)
-    Next i
+    'Calculate text colors (which vary depending on hover state and URL availability)
+    Dim itemIsClickable As Boolean
+    itemIsClickable = CBool(Len(m_contributorList(itemIndex).ctbURL) <> 0)
     
-    'The back DIB now contains the credit text drawn over the program logo.
+    If g_IsProgramRunning Then
     
-    'Black out the section of the back DIB where the base text appears - we don't want text rendering over
-    ' the top of this section.
-    BitBlt backDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.GetDIBDC, 0, 0, vbMergePaint
-    
-    'Blit a blank copy of the logo to the buffer DIB
-    BitBlt bufferDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, logoDIB.GetDIBDC, 0, 0, vbSrcCopy
-    
-    'Blit the logo mask over the top
-    BitBlt bufferDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, maskDIB.GetDIBDC, 0, 0, vbSrcPaint
-    
-    'Blit the back DIB, with the text, over the top of the buffer
-    BitBlt bufferDIB.GetDIBDC, 0, 0, m_BufferWidth, m_BufferHeight, backDIB.GetDIBDC, 0, 0, vbSrcAnd
-    
-    'Copy the buffer to the main form and refresh it
-    BitBlt picBuffer.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.GetDIBDC, 0, 0, vbSrcCopy
-    picBuffer.Picture = picBuffer.Image
-    picBuffer.Refresh
-
-End Sub
-
-'Render the given metadata index onto the background picture box at the specified offset.  Custom font objects are used for better performance.
-Private Sub RenderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
-
-    'Only draw the current block if it will be visible
-    If ((offsetY + FixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight - 40) Then
-    
-        'Check to see if the current credit block is highlighted
-        Dim isHovered As Boolean
-        
-        'If this entry is clickable, compare it to the current mouse position
-        If (mouseX >= 0) And (mouseX < m_BufferWidth) And (mouseY >= offsetY) And (mouseY < offsetY + BLOCKHEIGHT) Then
-            
-            'Ignore unclickable entries
-            If creditList(blockIndex).Clickable Then
-                isHovered = True
-                curHoveredCredit = blockIndex
-                updateHoverState True
-            Else
-                isHovered = False
-                curHoveredCredit = -1
-                updateHoverState False
-            End If
-            
+        Dim textColor As Long
+        If itemIsClickable Then
+            textColor = g_Themer.GetGenericUIColor(UI_TextClickable, , , itemIsHovered)
         Else
-            isHovered = False
+            textColor = g_Themer.GetGenericUIColor(UI_TextReadOnly)
         End If
-                
-        Dim linePadding As Long
-        linePadding = 1
-    
-        Dim mHeight As Single
         
+        'Prep various default rendering values (including retrieval of the boundary rect from the list box manager)
+        Dim tmpRectF As RECTF
+        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+        
+        'Manually paint an uncolored background
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC
+        Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background, Me.Enabled)
+        cPainter.FillRectangleF_FromRectF cSurface, cBrush, tmpRectF
+        Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
+        
+        'Prepare and render the contributor's name
         Dim drawString As String
-        drawString = creditList(blockIndex).Name
+        drawString = m_contributorList(itemIndex).ctbName
         
-        'If this entry is hovered, append "click to visit" to the name
-        If isHovered Then drawString = clickToVisitText & drawString
+        Dim tmpFont As pdFont, txtFontSize As Single
+        txtFontSize = 10#
         
-        'Render the "name" field
-        firstFont.AttachToDC backDIB.GetDIBDC
-        firstFont.FastRenderText m_BufferWidth - offsetX, offsetY, drawString
-                
-        'Below the name, add the URL (or other description)
-        mHeight = firstFont.GetHeightOfString(drawString) + linePadding
-        drawString = creditList(blockIndex).URL
-        
-        'Detach the first font from the DC
-        firstFont.ReleaseFromDC
-        
-        If isHovered Then
-            highlightFont.AttachToDC backDIB.GetDIBDC
-            highlightFont.FastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
-            highlightFont.ReleaseFromDC
+        If itemIsClickable Then
+            Set tmpFont = Font_Management.GetMatchingUIFont(txtFontSize, False, False, itemIsHovered)
         Else
-            secondFont.AttachToDC backDIB.GetDIBDC
-            secondFont.FastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
-            secondFont.ReleaseFromDC
+            Set tmpFont = Font_Management.GetMatchingUIFont(txtFontSize, False, False, False)
         End If
         
-        'If the user's mouse is over the current block, highlight the block
-        If isHovered Then
+        'Offset text slightly to make it look better
+        Dim offsetY As Single, offsetX As Single
+        tmpFont.AttachToDC bufferDC
+        tmpFont.SetFontColor textColor
         
-            Dim tmpRect As RECTL, hBrush As Long
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
-            hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
-            FrameRect backDIB.GetDIBDC, tmpRect, hBrush
-            DeleteObject hBrush
+        Dim targetRect As RECT
+        With targetRect
+            .Left = tmpRectF.Left
+            .Top = tmpRectF.Top
+            .Right = tmpRectF.Left + tmpRectF.Width
+            .Bottom = tmpRectF.Top + tmpRectF.Height
+        End With
         
-        End If
+        tmpFont.DrawCenteredTextToRect drawString, targetRect, True
+        tmpFont.ReleaseFromDC
         
     End If
-
+    
 End Sub

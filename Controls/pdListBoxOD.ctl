@@ -101,6 +101,14 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+Public Property Get BorderlessMode() As Boolean
+    BorderlessMode = lbView.BorderlessMode
+End Property
+
+Public Property Let BorderlessMode(ByVal newMode As Boolean)
+    lbView.BorderlessMode = newMode
+End Property
+
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
 ' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
@@ -169,8 +177,8 @@ End Function
 
 Public Function SetScrollValue(ByVal newValue As Long)
     If vScroll.Visible Then
-        If newValue < vScroll.Min Then newValue = vScroll.Min
-        If newValue > vScroll.Max Then newValue = vScroll.Max
+        If (newValue < vScroll.Min) Then newValue = vScroll.Min
+        If (newValue > vScroll.Max) Then newValue = vScroll.Max
         vScroll.Value = newValue
     End If
 End Function
@@ -266,11 +274,8 @@ End Sub
 
 Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
     
-    If vScroll.Visible <> lbView.ShouldScrollBarBeVisible Then
-        vScroll.Visible = lbView.ShouldScrollBarBeVisible
-    End If
-    
-    If newMax >= 0 Then vScroll.Max = newMax
+    If (vScroll.Visible <> lbView.ShouldScrollBarBeVisible) Then vScroll.Visible = lbView.ShouldScrollBarBeVisible
+    If (newMax >= 0) Then vScroll.Max = newMax
     vScroll.LargeChange = lbView.GetDefaultItemHeight
     vScroll.Value = lbView.ScrollValue
     
@@ -304,7 +309,7 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
-    If lbView.ScrollValue <> vScroll.Value Then lbView.ScrollValue = vScroll.Value
+    If (lbView.ScrollValue <> vScroll.Value) Then lbView.ScrollValue = vScroll.Value
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -318,7 +323,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDLISTBOX_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDListBox", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If (Not g_IsProgramRunning) Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout
@@ -326,6 +331,7 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
+    BorderlessMode = False
     Caption = ""
     ListItemHeight = 36
     FontSizeCaption = 12
@@ -333,11 +339,12 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not g_IsProgramRunning) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
+        BorderlessMode = .ReadProperty("BorderlessMode", False)
         Caption = .ReadProperty("Caption", "")
         ListItemHeight = .ReadProperty("ListItemHeight", 36)
         FontSizeCaption = .ReadProperty("FontSizeCaption", 12)
@@ -345,11 +352,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
+        .WriteProperty "BorderlessMode", lbView.BorderlessMode, False
         .WriteProperty "Caption", ucSupport.GetCaptionText, ""
         .WriteProperty "ListItemHeight", lbView.ListItemHeight, 36
         .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12

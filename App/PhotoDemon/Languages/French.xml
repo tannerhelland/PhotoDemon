@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.228</langversion>
+<langversion>6.7.230</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -12061,23 +12061,13 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>Decrease speed</original>
-<translation>Réduire la vitesse</translation>
+<original>Donate to PhotoDemon development</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Increase speed</original>
-<translation>augmentation de la vitesse</translation>
-</phrase>
-
-<phrase>
-<original>Pause scrolling</original>
-<translation>Mettre en pause le défilement</translation>
-</phrase>
-
-<phrase>
-<original>click to visit</original>
-<translation>cliquez pour visiter</translation>
+<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12086,46 +12076,41 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>PhotoDemon is the product of many talented contributors, including</original>
-<translation>PhotoDemon est le produit de nombreux collaborateurs talentueux, y compris</translation>
+<original>Participate in development, design, or translation work</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon is released under an open-source BSD license</original>
-<translation>PhotoDemon est publié sous une licence BSD open-source</translation>
+<original>Contact the author</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on licensing, please visit</original>
-<translation>Pour plus d'informations sur les licences, s'il vous plaît visitez</translation>
+<original>Download program source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Please note that PhotoDemon uses several third-party plugins</original>
-<translation>Veuillez noter que PhotoDemon utilise plusieurs plug-ins tiers</translation>
+<original>Review program and plugin licenses</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>These plugins are also free and open source</original>
-<translation>Ces plugins sont également libres et open source</translation>
+<original>Latest news</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>...but they are governed by their own licenses, separate from PhotoDemon</original>
-<translation>... mais ils sont régis par leurs propres licences, distincte de PhotoDemon</translation>
+<original>About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on plugin licensing, please visit</original>
-<translation>Pour plus d'informations sur les licences de plugin, s'il vous plaît visitez</translation>
+<original>Contributors</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Thank you for using PhotoDemon</original>
-<translation>Merci d'utiliser PhotoDemon</translation>
-</phrase>
-
-<!-- Help_About.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14956,10 +14941,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4473 phrases. -->
-<!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4461 phrases. -->
+<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12620 total words. -->
 
 </pdData>
