@@ -116,16 +116,17 @@ Public Enum PD_UI_COLOR_LIST
     UI_LineEdge = 22
     UI_LineCenter = 23
     UI_TextReadOnly = 24
-    UI_TextClickableSelected = 25
-    UI_TextClickableUnselected = 26
-    [_Last] = 26
-    [_Count] = 27
+    UI_TextClickable = 25
+    UI_TextClickableSelected = 26
+    UI_TextClickableUnselected = 27
+    [_Last] = 27
+    [_Count] = 28
 End Enum
 
 #If False Then
     Private Const UI_Accent = 0, UI_AccentDark = 1, UI_AccentLight = 2, UI_AccentSemiDark = 3, UI_AccentSemiLight = 4, UI_AccentUltraDark = 5, UI_AccentUltraLight = 6, UI_Background = 7, UI_CanvasElement = 8, UI_ChannelRed = 9
     Private Const UI_ChannelGreen = 10, UI_ChannelBlue = 11, UI_ErrorRed = 12, UI_GrayDefault = 13, UI_GrayDisabled = 14, UI_GrayDark = 15, UI_GrayLight = 16, UI_GrayNeutral = 17, UI_GrayUltraLight = 18, UI_IconMonochrome = 19
-    Private Const UI_IconMonochromeMenu = 20, UI_ImageDisabled = 21, UI_LineEdge = 22, UI_LineCenter = 23, UI_TextReadOnly = 24, UI_TextClickableSelected = 25, UI_TextClickableUnselected = 26
+    Private Const UI_IconMonochromeMenu = 20, UI_ImageDisabled = 21, UI_LineEdge = 22, UI_LineCenter = 23, UI_TextReadOnly = 24, UI_TextClickable = 25, UI_TextClickableSelected = 26, UI_TextClickableUnselected = 27
 #End If
 
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
@@ -526,6 +527,9 @@ Private Sub CacheUniversalColors()
         .LoadThemeColor UI_AccentUltraLight, "UniversalAccentUltralight", IDE_BLUE
         .LoadThemeColor UI_Background, "UniversalBackground", IDE_WHITE
         .LoadThemeColor UI_CanvasElement, "UniversalCanvasElement", IDE_GRAY
+        .LoadThemeColor UI_ChannelRed, "UniversalChannelRed", RGB(255, 0, 0)
+        .LoadThemeColor UI_ChannelGreen, "UniversalChannelGreen", RGB(0, 255, 0)
+        .LoadThemeColor UI_ChannelBlue, "UniversalChannelBlue", RGB(0, 0, 255)
         .LoadThemeColor UI_ErrorRed, "UniversalErrorRed", RGB(255, 0, 0)
         .LoadThemeColor UI_GrayDefault, "UniversalGrayDefault", IDE_GRAY
         .LoadThemeColor UI_GrayDisabled, "UniversalGrayDisabled", IDE_GRAY
@@ -538,12 +542,10 @@ Private Sub CacheUniversalColors()
         .LoadThemeColor UI_ImageDisabled, "UniversalImageDisabled", IDE_GRAY
         .LoadThemeColor UI_LineEdge, "UniversalLineEdge", IDE_BLUE
         .LoadThemeColor UI_LineCenter, "UniversalLineCenter", IDE_GRAY
-        .LoadThemeColor UI_TextReadOnly, "UniversalTextReadOnly", IDE_BLACK
+        .LoadThemeColor UI_TextClickable, "UniversalTextClickable", IDE_BLUE
         .LoadThemeColor UI_TextClickableSelected, "UniversalTextClickableSelected", IDE_WHITE
         .LoadThemeColor UI_TextClickableUnselected, "UniversalTextClickableUnselected", IDE_GRAY
-        .LoadThemeColor UI_ChannelRed, "UniversalChannelRed", RGB(255, 0, 0)
-        .LoadThemeColor UI_ChannelGreen, "UniversalChannelGreen", RGB(0, 255, 0)
-        .LoadThemeColor UI_ChannelBlue, "UniversalChannelBlue", RGB(0, 0, 255)
+        .LoadThemeColor UI_TextReadOnly, "UniversalTextReadOnly", IDE_BLACK
     End With
     
 End Sub

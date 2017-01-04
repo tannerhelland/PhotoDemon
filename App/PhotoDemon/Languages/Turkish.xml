@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2147</langversion>
+<langversion>6.8.2149</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -12064,23 +12064,13 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>Decrease speed</original>
-<translation>hızı azaltın</translation>
+<original>Donate to PhotoDemon development</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Increase speed</original>
-<translation>artış hızı</translation>
-</phrase>
-
-<phrase>
-<original>Pause scrolling</original>
-<translation>kaydırma Pause</translation>
-</phrase>
-
-<phrase>
-<original>click to visit</original>
-<translation>ziyaret etmek için tıklayın</translation>
+<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12089,46 +12079,41 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon is the product of many talented contributors, including</original>
-<translation>PhotoDemon dahil olmak üzere birçok yetenekli katkıda ürünüdür</translation>
+<original>Participate in development, design, or translation work</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon is released under an open-source BSD license</original>
-<translation>PhotoDemon bir açık kaynak BSD lisansı altında yayınlandı</translation>
+<original>Contact the author</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on licensing, please visit</original>
-<translation>lisans hakkında daha fazla bilgi için, lütfen ziyaret edin</translation>
+<original>Download program source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Please note that PhotoDemon uses several third-party plugins</original>
-<translation>PhotoDemon birkaç üçüncü taraf eklentileri kullandığını unutmayın</translation>
+<original>Review program and plugin licenses</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>These plugins are also free and open source</original>
-<translation>Bu eklentiler de ücretsiz ve açık kaynak vardır</translation>
+<original>Latest news</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>...but they are governed by their own licenses, separate from PhotoDemon</original>
-<translation>... Ama PhotoDemon ayrı, kendi lisansları ile yönetilir</translation>
+<original>About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on plugin licensing, please visit</original>
-<translation>eklenti lisans hakkında daha fazla bilgi için, lütfen ziyaret edin</translation>
+<original>Contributors</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Thank you for using PhotoDemon</original>
-<translation>PhotoDemon kullandığınız için teşekkür ederiz</translation>
-</phrase>
-
-<!-- Help_About.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14952,10 +14937,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4473 phrases. -->
-<!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4461 phrases. -->
+<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12620 total words. -->
 
 </pdData>

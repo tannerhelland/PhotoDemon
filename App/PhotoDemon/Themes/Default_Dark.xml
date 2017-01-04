@@ -573,6 +573,8 @@
 				<UniversalLineEdge>Black</UniversalLineEdge>
 				<UniversalLineCenter>White</UniversalLineCenter>
 				<UniversalLineCenter-hover>AccentDefault</UniversalLineCenter-hover>
+				<UniversalTextClickable>TextHyperlink</UniversalTextClickable>
+				<UniversalTextClickable-hover>TextHover</UniversalTextClickable-hover>
 				<UniversalTextReadOnly>TextDefault</UniversalTextReadOnly>
 				<UniversalTextReadOnly-disabled>GrayDisabled</UniversalTextReadOnly-disabled>
 				<UniversalTextClickableSelected>TextInvert</UniversalTextClickableSelected> 

@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2046</langversion>
+<langversion>6.8.2048</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -12058,23 +12058,13 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>Decrease speed</original>
-<translation>下降速度</translation>
+<original>Donate to PhotoDemon development</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Increase speed</original>
-<translation>增长速度</translation>
-</phrase>
-
-<phrase>
-<original>Pause scrolling</original>
-<translation>暂停滚动</translation>
-</phrase>
-
-<phrase>
-<original>click to visit</original>
-<translation>单击浏览</translation>
+<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12083,46 +12073,41 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>PhotoDemon is the product of many talented contributors, including</original>
-<translation>Photodemon是许多天才捐助者的产品，包括</translation>
+<original>Participate in development, design, or translation work</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon is released under an open-source BSD license</original>
-<translation>Photodemon是一个BSD开源许可下发布的软件</translation>
+<original>Contact the author</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on licensing, please visit</original>
-<translation>更多声明信息请浏览</translation>
+<original>Download program source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Please note that PhotoDemon uses several third-party plugins</original>
-<translation>请注意，PhotodeMon使用一些第三方插件</translation>
+<original>Review program and plugin licenses</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>These plugins are also free and open source</original>
-<translation>这些插件是免费和开放源码</translation>
+<original>Latest news</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>...but they are governed by their own licenses, separate from PhotoDemon</original>
-<translation>...但他们是由他们自己的许可证，PhotodeMon分开</translation>
+<original>About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>For more information on plugin licensing, please visit</original>
-<translation>基于插件的许可证的更多信息，请访问</translation>
+<original>Contributors</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Thank you for using PhotoDemon</original>
-<translation>感谢使用PhotoDemon！</translation>
-</phrase>
-
-<!-- Help_About.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14952,10 +14937,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2530</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4473 phrases. -->
-<!-- 1943 are duplicates, so only 2530 unique phrases have been written to file. -->
-<!-- These 2530 phrases contain approximately 12658 total words. -->
+<!-- As of this build, PhotoDemon contains 4461 phrases. -->
+<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12620 total words. -->
 
 </pdData>
