@@ -962,20 +962,28 @@ Private Sub RedrawBackBuffer()
         m_Painter.DrawLineF_FromPtF cSurface, cPen, buttonPt2, buttonPt3
         
         'Finally, calculate coordinate positions for the reset button arcs.  (These are drawn dynamically.)
-        Dim resetCenterX As Single, resetCenterY As Single, resetArcRadius As Single, resetAngleStart As Single
+        Dim resetCenterX As Single, resetCenterY As Single, resetArcRadius As Single
         With m_ResetRect
             resetCenterX = .Left + (.Width / 2)
             resetCenterY = .Top + (.Height / 2)
             resetArcRadius = (.Width / 2) - 3.5
         End With
-        resetAngleStart = 20#
         
         cSurface.SetSurfacePixelOffset P2_PO_Half
         Drawing2D.QuickCreateSolidPen cPen, 1#, resetButtonArrowColor, , P2_LJ_Round, P2_LC_Round
-        cPen.SetPenStartCap P2_LC_ArrowAnchor
-        cPen.SetPenEndCap P2_LC_Round
-        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (170 - resetAngleStart)
-        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (170 - resetAngleStart)
+        
+        'New single-arrow design (which matches "reset" icons in the rest of PD):
+        cPen.SetPenStartCap P2_LC_Round
+        cPen.SetPenEndCap P2_LC_ArrowAnchor
+        m_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, 148, -305
+        
+        'Old double-arrow design:
+        'Dim resetAngleStart As Single
+        'resetAngleStart = 20#
+        'cPen.SetPenStartCap P2_LC_ArrowAnchor
+        'cPen.SetPenEndCap P2_LC_Round
+        'm_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, resetAngleStart, (170 - resetAngleStart)
+        'm_Painter.DrawArcF cSurface, cPen, resetCenterX, resetCenterY, resetArcRadius, (180 + resetAngleStart), (170 - resetAngleStart)
         
         Set cSurface = Nothing: Set cBrush = Nothing: Set cPen = Nothing
     
