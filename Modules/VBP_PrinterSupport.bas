@@ -160,7 +160,7 @@ Public Sub PrintViaWindowsPhotoPrinter()
 End Sub
 
 'Use the API to retrieve all supported paper sizes for the current printer
-Public Function getPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames() As String, ByRef paperIDs() As Integer, ByRef exactPaperSizes() As POINTAPI) As Boolean
+Public Function GetPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames() As String, ByRef paperIDs() As Integer, ByRef exactPaperSizes() As POINTAPI) As Boolean
 
     'We're going to use the printer name and port frequently, so cache their names in advance
     Dim pName As String, pPort As String
@@ -201,8 +201,7 @@ Public Function getPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames()
     ' which is hugely helpful for rendering our print preview accurately.
     DeviceCapabilities pName, pPort, DC_PAPERSIZE, exactPaperSizes(0), 0
         
-    getPaperSizes = True
+    GetPaperSizes = True
 
 End Function
-        
 

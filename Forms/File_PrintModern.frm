@@ -419,14 +419,8 @@ Private paperSizeNames() As String
 Private paperSizeIDs() As Integer
 Private paperSizeExact() As POINTAPI
 
-'To help orient the user, sample output is provided for the three types of print jobs.  These pre-rendered images
-' are stored in the resource section of the executable, and we load them to DIBs at run-time.
-Private sampleOneImageOnePage As pdDIB
-Private sampleMultipleImagesOnePage As pdDIB
-Private sampleOneImageMultiplePages As pdDIB
-
 Private Sub cmbPrinter_Click()
-    updatePaperSizeList
+    UpdatePaperSizeList
 End Sub
 
 Private Sub CmdCancel_Click()
@@ -452,7 +446,7 @@ Private Sub Form_Load()
     Next i
     
     'Fill our paper size arrays with paper sizes supported by the current printer
-    updatePaperSizeList
+    UpdatePaperSizeList
     
     'Populate the quality combo box
     cmbQuality.AddItem "draft (least ink)", 0
@@ -461,24 +455,13 @@ Private Sub Form_Load()
     cmbQuality.AddItem "best (most ink)", 3
     cmbQuality.ListIndex = 3
     
-    'Load the print job type sample images from the resource file
-    Set sampleOneImageOnePage = New pdDIB
-    Set sampleMultipleImagesOnePage = New pdDIB
-    Set sampleOneImageMultiplePages = New pdDIB
-    LoadResourceToDIB "PRNT_1IMAGE", sampleOneImageOnePage
-    LoadResourceToDIB "PRNT_MLTIMGS", sampleMultipleImagesOnePage
-    LoadResourceToDIB "PRNT_MLTPGS", sampleOneImageMultiplePages
-    
-    'Display the relevant image for the selected option button
-    updatePrintTypeSampleImage
-    
 End Sub
 
 'The bulk of this function is handled by the matching function in the Printer module
-Private Sub updatePaperSizeList()
+Private Sub UpdatePaperSizeList()
 
     'Retrieve all paper sizes
-    getPaperSizes cmbPrinter.ListIndex, paperSizeNames, paperSizeIDs, paperSizeExact
+    GetPaperSizes cmbPrinter.ListIndex, paperSizeNames, paperSizeIDs, paperSizeExact
     
     'Clear the combo box, then populate it with the new list of paper sizes
     cmbPaperSize.Clear
@@ -494,35 +477,6 @@ Private Sub updatePaperSizeList()
 
 End Sub
 
-'When the user selects a different type of print job, we display a pre-rendered sample image to help them understand
-' what the various job types actually do.
-Private Sub updatePrintTypeSampleImage()
-
-    Dim xOffset As Long
-    xOffset = (picPrintJobSample.ScaleWidth - sampleOneImageOnePage.GetDIBWidth) \ 2
-
-    If optPrintJob(0) Then
-        sampleOneImageOnePage.RenderToPictureBox picPrintJobSample
-    
-    ElseIf optPrintJob(1) Then
-        sampleMultipleImagesOnePage.RenderToPictureBox picPrintJobSample
-    
-    Else
-        picPrintJobSample.Picture = LoadPicture("")
-        sampleOneImageMultiplePages.AlphaBlendToDC picPrintJobSample.hDC, 255, xOffset, 0
-        picPrintJobSample.Picture = picPrintJobSample.Image
-        picPrintJobSample.Refresh
-    
-    End If
+Private Sub TestCurrentPrintSettings()
 
 End Sub
-
-Private Sub optPrintJob_Click(Index As Integer)
-    updatePrintTypeSampleImage
-End Sub
-
-Private Sub testCurrentPrintSettings()
-
-End Sub
-
-

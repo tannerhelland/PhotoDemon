@@ -882,8 +882,8 @@ Private Sub DrawGradientNodes()
         '...and pen/fill objects for the actual rendering
         Dim blockFill As pd2DBrush
         Set blockFill = New pd2DBrush
-        blockFill.SetBrushProperty P2_BrushMode, 0
-        blockFill.SetBrushProperty P2_BrushOpacity, 100
+        blockFill.SetBrushMode P2_BM_Solid
+        blockFill.SetBrushOpacity 100#
         
         'Prep the target interaction DIB
         If (m_InteractiveDIB Is Nothing) Then Set m_InteractiveDIB = New pdDIB
