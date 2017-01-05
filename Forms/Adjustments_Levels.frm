@@ -39,7 +39,7 @@ Begin VB.Form FormLevels
       Index           =   0
       Left            =   7740
       TabIndex        =   2
-      Top             =   3135
+      Top             =   3255
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -49,7 +49,7 @@ Begin VB.Form FormLevels
       Height          =   375
       Left            =   7230
       TabIndex        =   13
-      Top             =   3135
+      Top             =   3255
       Width           =   495
       _ExtentX        =   873
       _ExtentY        =   661
@@ -62,9 +62,9 @@ Begin VB.Form FormLevels
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   195
+      Height          =   360
       Left            =   5760
-      ScaleHeight     =   13
+      ScaleHeight     =   24
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   473
       TabIndex        =   12
@@ -77,9 +77,9 @@ Begin VB.Form FormLevels
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   195
+      Height          =   360
       Left            =   5760
-      ScaleHeight     =   13
+      ScaleHeight     =   24
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   473
       TabIndex        =   11
@@ -119,7 +119,7 @@ Begin VB.Form FormLevels
       Index           =   0
       Left            =   6000
       TabIndex        =   4
-      Top             =   3120
+      Top             =   3240
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -150,7 +150,7 @@ Begin VB.Form FormLevels
       Index           =   1
       Left            =   8760
       TabIndex        =   5
-      Top             =   3120
+      Top             =   3240
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -165,7 +165,7 @@ Begin VB.Form FormLevels
       Index           =   2
       Left            =   11490
       TabIndex        =   6
-      Top             =   3120
+      Top             =   3240
       Width           =   1200
       _ExtentX        =   2117
       _ExtentY        =   714
@@ -179,7 +179,7 @@ Begin VB.Form FormLevels
       Index           =   3
       Left            =   6000
       TabIndex        =   7
-      Top             =   4920
+      Top             =   5040
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -190,7 +190,7 @@ Begin VB.Form FormLevels
       Index           =   4
       Left            =   11355
       TabIndex        =   8
-      Top             =   4920
+      Top             =   5040
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   714
@@ -202,7 +202,7 @@ Begin VB.Form FormLevels
       Height          =   375
       Left            =   10920
       TabIndex        =   14
-      Top             =   3135
+      Top             =   3255
       Width           =   495
       _ExtentX        =   873
       _ExtentY        =   661
@@ -223,7 +223,7 @@ Begin VB.Form FormLevels
       Index           =   1
       Left            =   10530
       TabIndex        =   16
-      Top             =   3135
+      Top             =   3255
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
@@ -263,8 +263,8 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright 2006-2017 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 07/September/15
-'Last update: overhaul the underlying histogram UI code, using a new centralized histogram renderer
+'Last updated: 04/January/17
+'Last update: remove the need for external icons, and instead dynamically render sliders at run-time
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
 ' values entered into both programs should yield an identical image.
@@ -287,26 +287,27 @@ Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
+'Size of level bar "nodes" in the interactive UI.
+Private Const LEVEL_NODE_WIDTH As Single = 12#
+Private Const LEVEL_NODE_HEIGHT As Single = 14#
+
 'An image of the current image histogram is generated for each channel, then displayed as requested
-Private hDIB() As pdDIB
+Private m_hDIB() As pdDIB
 
-'Copies of the "slider arrows" used to display and control input/output level manipulation
-Private m_Arrows(0 To 2) As pdDIB
-
-'For convenience, the dimensions and offsets of the UI arrows are stored in these variables.  Note that there are two
-' extra offsets relative to the arrow DIBs themselves; this is because we render two copies of the black and white
-' arrows to the screen, one each for input and output levels.
-Private m_ArrowOffsets(0 To 4) As Long
-Private m_ArrowWidth As Long, m_ArrowHalfWidth As Long
-Private m_DstArrowBoxWidth As Long, m_DstArrowBoxOffset As Long
+'For convenience, the dimensions and offsets of the UI arrows are stored in these variables.  Note that there are
+' a total of five offsets, matching the five sliders: three for input levels (including midtones), two for
+' output levels.
+Private m_ArrowOffsets(0 To 4) As Single
+Private m_ArrowWidth As Single, m_ArrowHalfWidth As Single
+Private m_DstArrowBoxWidth As Single, m_DstArrowBoxOffset As Single
 
 'Current channel ([0, 3] where 0 = red, 1 = green, 2 = blue, 3 = luminance)
 Private m_curChannel As Long
 
-'Because the user can now change levels independently for each of Red, Green, Blue, and Luminance, we must store all
+'Because the user can change levels independently for each of Red, Green, Blue, and Luminance, we must store all
 ' level values internally (rather than relying on the text up/down controls to do it for us).  Also, because the
 ' midtone values are floating-point, we declare the whole tracking array as Double-type (even though shadow, highlight,
-' and output levels are integers).  The layout of this array is [channel, level adjustment].
+' and output levels are integers).  The layout of this array is [channel R/G/B/L, level adjustment].
 Private m_LevelValues(0 To 3, 0 To 4) As Double
 
 'Two special input classes are required; one each for the input and output arrow boxes
@@ -315,13 +316,18 @@ Attribute m_MouseEventsIn.VB_VarHelpID = -1
 Private WithEvents m_MouseEventsOut As pdInputMouse
 Attribute m_MouseEventsOut.VB_VarHelpID = -1
 
-'If the user is using the mouse to slide nodes around, these values will be used to store the node's index
-Private m_ActiveArrow As Long
+'When the user is interacting with input or output level nodes, these values are updated to match.  (Note that the same
+' [0, 4] indices are used to identify these nodes; also, these are set to -1 when no node is active/hovered.)
+Private m_ActiveArrow As Long, m_HoverArrow As Long
+
+'Node UI render helpers
+Private inactiveArrowFill As pd2DBrush, activeArrowFill As pd2DBrush
+Private inactiveOutlinePen As pd2DPen, activeOutlinePen As pd2DPen
 
 'To prevent complicated interactions related to the max/min codependence of input shadow and highlight values, m_DisableMaxMinLimits
 ' can be used to disable automatic bounds-checking of input/output values.  Set this to TRUE when overwriting all on-screen level
 ' values with the ones stored in memory (e.g. when the user is changing the active channel, so the whole screen gets refreshed).
-' When the new values have all been set, restore this to FALSE, then make a single call to fixScrollBars() to establish the new
+' When the new values have all been set, restore this to FALSE, then make a single call to FixScrollBars() to establish the new
 ' max/min bounds.
 Private m_DisableMaxMinLimits As Boolean
 
@@ -331,13 +337,13 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     m_curChannel = buttonIndex
     
     'Draw the relevant histogram onto the histogram box
-    On Error GoTo ignoreChannelRender
+    On Error GoTo IgnoreChannelRender
     picHistogram.Picture = LoadPicture("")
-    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
+    If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
     
     'Update the text boxes to match the values for the selected channel
-ignoreChannelRender:
+IgnoreChannelRender:
     UpdateTextBoxes
     
     'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
@@ -392,7 +398,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickX As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Color values
@@ -420,14 +426,15 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     
     'Build an image histogram
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickX = x * qvDepth
     For y = initY To finalY
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        rCount(r) = rCount(r) + 1
-        gCount(g) = gCount(g) + 1
+        b = ImageData(quickX, y)
+        g = ImageData(quickX + 1, y)
+        r = ImageData(quickX + 2, y)
+        
         bCount(b) = bCount(b) + 1
+        gCount(g) = gCount(g) + 1
+        rCount(r) = rCount(r) + 1
         
         l = (213 * r + 715 * g + 72 * b) \ 1000
         lCount(l) = lCount(l) + 1
@@ -453,7 +460,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     
     'Find minimum values of red, green, blue, and luminance
     Do
-        If rCount(r) + rTally < wbThreshold Then
+        If (rCount(r) + rTally < wbThreshold) Then
             r = r + 1
             rTally = rTally + rCount(r)
         Else
@@ -465,7 +472,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
         
     Do
-        If gCount(g) + gTally < wbThreshold Then
+        If (gCount(g) + gTally < wbThreshold) Then
             g = g + 1
             gTally = gTally + gCount(g)
         Else
@@ -477,7 +484,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
     
     Do
-        If bCount(b) + bTally < wbThreshold Then
+        If (bCount(b) + bTally < wbThreshold) Then
             b = b + 1
             bTally = bTally + bCount(b)
         Else
@@ -489,7 +496,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
     
     Do
-        If lCount(l) + lTally < wbThreshold Then
+        If (lCount(l) + lTally < wbThreshold) Then
             l = l + 1
             lTally = lTally + lCount(l)
         Else
@@ -505,7 +512,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     rTally = 0: gTally = 0: bTally = 0: lTally = 0
     
     Do
-        If rCount(r) + rTally < wbThreshold Then
+        If (rCount(r) + rTally < wbThreshold) Then
             r = r - 1
             rTally = rTally + rCount(r)
         Else
@@ -517,7 +524,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
         
     Do
-        If gCount(g) + gTally < wbThreshold Then
+        If (gCount(g) + gTally < wbThreshold) Then
             g = g - 1
             gTally = gTally + gCount(g)
         Else
@@ -529,7 +536,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
     
     Do
-        If bCount(b) + bTally < wbThreshold Then
+        If (bCount(b) + bTally < wbThreshold) Then
             b = b - 1
             bTally = bTally + bCount(b)
         Else
@@ -541,7 +548,7 @@ Public Function GetIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     foundYet = False
     
     Do
-        If lCount(l) + lTally < wbThreshold Then
+        If (lCount(l) + lTally < wbThreshold) Then
             l = l - 1
             lTally = lTally + lCount(l)
         Else
@@ -585,12 +592,12 @@ End Function
 'Because the Levels dialog only uses one set of UI controls for all channels, we must manually write out preset data for each channel.
 ' This event will be raised whenever the command bar needs custom data from us.
 Private Sub cmdBar_AddCustomPresetData()
-    cmdBar.AddPresetData "MultichannelLevelData", getLevelsParamString()
+    cmdBar.AddPresetData "MultichannelLevelData", GetLevelsParamString()
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Levels", , getLevelsParamString(), UNDO_LAYER
+    Process "Levels", , GetLevelsParamString(), UNDO_LAYER
 End Sub
 
 'Randomize button (command bar)
@@ -607,8 +614,8 @@ Private Sub cmdBar_RandomizeClick()
         
         'Set a random midtone value (range 0.01 - 0.99)
         m_LevelValues(i, 1) = Rnd
-        If m_LevelValues(i, 1) < 0.01 Then m_LevelValues(i, 1) = 0.01
-        If m_LevelValues(i, 1) > 0.99 Then m_LevelValues(i, 1) = 0.99
+        If (m_LevelValues(i, 1) < 0.01) Then m_LevelValues(i, 1) = 0.01
+        If (m_LevelValues(i, 1) > 0.99) Then m_LevelValues(i, 1) = 0.99
         
         'Set random output levels
         m_LevelValues(i, 3) = Rnd * 256
@@ -724,7 +731,7 @@ Private Sub cmdColorSelect_Click(Index As Integer)
         cmdBar.MarkPreviewStatus False
         
         'Toggle the other command button (as only one can be active at any time)
-        If Index = 0 Then
+        If (Index = 0) Then
             cmdColorSelect(1).Value = False
         Else
             cmdColorSelect(0).Value = False
@@ -737,18 +744,35 @@ Private Sub cmdColorSelect_Click(Index As Integer)
 End Sub
 
 Private Sub m_MouseEventsIn_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-
+    
     'Check the mouse position.  If it is over a slider, activate drag mode; otherwise, ignore the click.
-    If (Button And pdLeftButton) <> 0 Then
+    If ((Button And pdLeftButton) <> 0) Then
         m_ActiveArrow = IsCursorOverArrow(x, True)
     End If
 
 End Sub
 
-Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Private Sub m_MouseEventsIn_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If (m_HoverArrow >= 0) Then
+        m_HoverArrow = -1
+        UpdatePreview False
+    End If
+End Sub
 
+Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    'If the mouse is not down, check for a hovered node
+    If ((Button And pdLeftButton) = 0) Then
+        Dim hoverCheck As Long
+        hoverCheck = IsCursorOverArrow(x, True)
+        If (hoverCheck <> m_HoverArrow) Then
+            m_HoverArrow = hoverCheck
+            UpdatePreview False
+        End If
+    End If
+    
     'Left mouse button is down, and the user has a node selected
-    If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2) Then
+    If (((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 0) And (m_ActiveArrow <= 2)) Then
     
         'Disable automatic preview updates
         cmdBar.MarkPreviewStatus False
@@ -760,8 +784,8 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
         tmpX = x - m_DstArrowBoxOffset
         tmpX = tmpX / m_DstArrowBoxWidth
         
-        If tmpX < 0 Then tmpX = 0
-        If tmpX > 1 Then tmpX = 1
+        If (tmpX < 0) Then tmpX = 0
+        If (tmpX > 1) Then tmpX = 1
         
         'Calculate a new value for the corresponding text box
         Select Case m_ActiveArrow
@@ -769,16 +793,16 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
             'Shadow input node
             Case 0
                 newTUDValue = tmpX * 255
-                If newTUDValue > tudLevels(0).Max Then newTUDValue = tudLevels(0).Max
+                If (newTUDValue > tudLevels(0).Max) Then newTUDValue = tudLevels(0).Max
                 tudLevels(0).Value = newTUDValue
             
             'Midtones input node
             Case 1
                 newTUDValue = tmpX * 255
                 newTUDValue = (newTUDValue - tudLevels(0).Value) / (tudLevels(2).Value - tudLevels(0).Value)
-                If newTUDValue > tudLevels(1).Max Then
+                If (newTUDValue > tudLevels(1).Max) Then
                     newTUDValue = tudLevels(1).Max
-                ElseIf tmpX < tudLevels(1).Min Then
+                ElseIf (tmpX < tudLevels(1).Min) Then
                     newTUDValue = tudLevels(1).Min
                 End If
                 tudLevels(1).Value = newTUDValue
@@ -786,7 +810,7 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
             'Highlight input node
             Case 2
                 newTUDValue = tmpX * 255
-                If newTUDValue < tudLevels(2).Min Then newTUDValue = tudLevels(2).Min
+                If (newTUDValue < tudLevels(2).Min) Then newTUDValue = tudLevels(2).Min
                 tudLevels(2).Value = newTUDValue
         
         End Select
@@ -799,7 +823,7 @@ Private Sub m_MouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
     Else
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
-        If IsCursorOverArrow(x, True) >= 0 Then
+        If (IsCursorOverArrow(x, True) >= 0) Then
             m_MouseEventsIn.SetSystemCursor IDC_HAND
         Else
             m_MouseEventsIn.SetSystemCursor IDC_ARROW
@@ -822,8 +846,26 @@ Private Sub m_MouseEventsOut_MouseDownCustom(ByVal Button As PDMouseButtonConsta
 
 End Sub
 
-Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+Private Sub m_MouseEventsOut_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    If (m_HoverArrow >= 0) Then
+        m_HoverArrow = -1
+        UpdatePreview False
+    End If
+End Sub
 
+Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
+    
+    
+    'If the mouse is not down, check for a hovered node
+    If ((Button And pdLeftButton) = 0) Then
+        Dim hoverCheck As Long
+        hoverCheck = IsCursorOverArrow(x, False)
+        If (hoverCheck <> m_HoverArrow) Then
+            m_HoverArrow = hoverCheck
+            UpdatePreview False
+        End If
+    End If
+    
     'Left mouse button is down, and the user has a node selected
     If ((Button And pdLeftButton) <> 0) And (m_ActiveArrow >= 3) And (m_ActiveArrow <= 4) Then
     
@@ -837,8 +879,8 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
         tmpX = x - m_DstArrowBoxOffset
         tmpX = tmpX / m_DstArrowBoxWidth
         
-        If tmpX < 0 Then tmpX = 0
-        If tmpX > 1 Then tmpX = 1
+        If (tmpX < 0) Then tmpX = 0
+        If (tmpX > 1) Then tmpX = 1
         
         'Calculate a new value for the corresponding text box
         Select Case m_ActiveArrow
@@ -846,9 +888,9 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
             'Black level node
             Case 3
                 newTUDValue = tmpX * 255
-                If newTUDValue > 255 Then
+                If (newTUDValue > 255) Then
                     newTUDValue = 255
-                ElseIf newTUDValue < 0 Then
+                ElseIf (newTUDValue < 0) Then
                     newTUDValue = 0
                 End If
                 tudLevels(3).Value = newTUDValue
@@ -856,9 +898,9 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
             'White level node
             Case 4
                 newTUDValue = tmpX * 255
-                If newTUDValue > 255 Then
+                If (newTUDValue > 255) Then
                     newTUDValue = 255
-                ElseIf newTUDValue < 0 Then
+                ElseIf (newTUDValue < 0) Then
                     newTUDValue = 0
                 End If
                 tudLevels(4).Value = newTUDValue
@@ -873,7 +915,7 @@ Private Sub m_MouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConsta
     Else
     
         'See if the cursor is over a slider.  If it is, change the cursor to a hand.
-        If IsCursorOverArrow(x, False) >= 0 Then
+        If (IsCursorOverArrow(x, False) >= 0) Then
             m_MouseEventsOut.SetSystemCursor IDC_HAND
         Else
             m_MouseEventsOut.SetSystemCursor IDC_ARROW
@@ -887,10 +929,12 @@ Private Sub m_MouseEventsOut_MouseUpCustom(ByVal Button As PDMouseButtonConstant
     m_ActiveArrow = -1
 End Sub
 
-'For mouse events over the input or output box, this function can be used to determine if the cursor is over a slider arrow.
+'For mouse events over the input or output box, this function can be used to determine if the cursor is over a slider node.
+' To try and "optimize" arrow selection, distance is calculated to the centerpoint of each node, and the smallest distance
+' is treated as the "best" match.
 Private Function IsCursorOverArrow(ByVal mouseX As Long, ByVal requestIsForInputArrows As Boolean) As Long
 
-    Dim minDistance As Double, minDistanceIndex As Long
+    Dim minDistance As Single, minDistanceIndex As Long
     minDistance = picInputArrows.ScaleWidth
     minDistanceIndex = -1
     
@@ -909,15 +953,15 @@ Private Function IsCursorOverArrow(ByVal mouseX As Long, ByVal requestIsForInput
     
     Dim i As Long
     For i = loopStart To loopEnd
-        tmpDistance = Abs(mouseX - (m_ArrowOffsets(i) + m_DstArrowBoxOffset))
-        If tmpDistance < minDistance Then
+        tmpDistance = Abs(mouseX - m_ArrowOffsets(i))
+        If (tmpDistance < minDistance) Then
             minDistance = tmpDistance
             minDistanceIndex = i
         End If
     Next i
     
     'The mouse must be within m_ArrowHalfWidth to even be counted.
-    If minDistance < m_ArrowHalfWidth + 1 Then
+    If (minDistance <= m_ArrowHalfWidth) Then
         IsCursorOverArrow = minDistanceIndex
     Else
         IsCursorOverArrow = -1
@@ -940,16 +984,16 @@ Private Sub csHighlight_ColorChanged()
         b = Colors.ExtractBlue(csHighlight.Color)
         
         'Set the internal shadow colors to match these RGB values
-        If r < m_LevelValues(0, 0) + 2 Then r = m_LevelValues(0, 0) + 2
-        If g < m_LevelValues(1, 0) + 2 Then g = m_LevelValues(1, 0) + 2
-        If b < m_LevelValues(2, 0) + 2 Then b = m_LevelValues(2, 0) + 2
+        If (r < m_LevelValues(0, 0) + 2) Then r = m_LevelValues(0, 0) + 2
+        If (g < m_LevelValues(1, 0) + 2) Then g = m_LevelValues(1, 0) + 2
+        If (b < m_LevelValues(2, 0) + 2) Then b = m_LevelValues(2, 0) + 2
         
         m_LevelValues(0, 2) = r
         m_LevelValues(1, 2) = g
         m_LevelValues(2, 2) = b
         
         l = (r + g + b) \ 3
-        If l < m_LevelValues(3, 0) + 2 Then l = m_LevelValues(3, 0) + 2
+        If (l < m_LevelValues(3, 0) + 2) Then l = m_LevelValues(3, 0) + 2
         m_LevelValues(3, 2) = l
         
         'Update the active text box to match
@@ -977,16 +1021,16 @@ Private Sub csShadow_ColorChanged()
         b = Colors.ExtractBlue(csShadow.Color)
         
         'Set the internal shadow colors to match these RGB values
-        If r > m_LevelValues(0, 2) - 2 Then r = m_LevelValues(0, 2) - 2
-        If g > m_LevelValues(1, 2) - 2 Then g = m_LevelValues(1, 2) - 2
-        If b > m_LevelValues(2, 2) - 2 Then b = m_LevelValues(2, 2) - 2
+        If (r > m_LevelValues(0, 2) - 2) Then r = m_LevelValues(0, 2) - 2
+        If (g > m_LevelValues(1, 2) - 2) Then g = m_LevelValues(1, 2) - 2
+        If (b > m_LevelValues(2, 2) - 2) Then b = m_LevelValues(2, 2) - 2
         
         m_LevelValues(0, 0) = r
         m_LevelValues(1, 0) = g
         m_LevelValues(2, 0) = b
         
         l = (r + g + b) \ 3
-        If l > m_LevelValues(3, 2) - 2 Then l = m_LevelValues(3, 2) - 2
+        If (l > m_LevelValues(3, 2) - 2) Then l = m_LevelValues(3, 2) - 2
         m_LevelValues(3, 0) = l
         
         'Update the active text box to match
@@ -1015,7 +1059,7 @@ Private Sub PrepHistogramOverlays()
     Histogram_Analysis.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
     'Use that data to generate DIBs for the histogram data
-    Histogram_Analysis.GenerateHistogramImages hData, hMax, hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
+    Histogram_Analysis.GenerateHistogramImages hData, hMax, m_hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
     
 End Sub
 
@@ -1043,14 +1087,23 @@ Private Sub Form_Load()
     m_MouseEventsOut.AddInputTracker picOutputArrows.hWnd, True, True, , True
     
     'Add button images
-    cmdColorSelect(0).AssignImage "EYE_DROPPER_GENERIC"
-    cmdColorSelect(1).AssignImage "EYE_DROPPER_GENERIC"
+    Dim dropperSize As Long
+    dropperSize = FixDPI(16)
+    cmdColorSelect(0).AssignImage "generic_dropper", , , , dropperSize, dropperSize
+    cmdColorSelect(1).AssignImage "generic_dropper", , , , dropperSize, dropperSize
     cmdColorSelect(0).AssignTooltip "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
     cmdColorSelect(1).AssignTooltip "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
     cmdColorSelect(0).Value = True
     
     'Note that the user is not currently interacting with a slider node
+    m_HoverArrow = -1
     m_ActiveArrow = -1
+    
+    'Prep a bunch of drawing objects related to rendering the interactive nodes
+    Drawing2D.QuickCreateSolidBrush inactiveArrowFill, g_Themer.GetGenericUIColor(UI_Background)
+    Drawing2D.QuickCreateSolidBrush activeArrowFill, g_Themer.GetGenericUIColor(UI_AccentLight)
+    Drawing2D.QuickCreateSolidPen inactiveOutlinePen, 1#, g_Themer.GetGenericUIColor(UI_GrayDark)
+    Drawing2D.QuickCreateSolidPen activeOutlinePen, 1#, g_Themer.GetGenericUIColor(UI_Accent)
     
     'Fill the histogram arrays and prepare the overlay DIBs.  To conserve resources, this is only done once,
     ' when the dialog is first loaded.
@@ -1064,21 +1117,11 @@ Private Sub Form_Load()
     
     'Draw the default histogram onto the histogram box
     picHistogram.Picture = LoadPicture("")
-    If (Not hDIB(m_curChannel) Is Nothing) Then hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
+    If (Not m_hDIB(m_curChannel) Is Nothing) Then m_hDIB(m_curChannel).AlphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
-        
-    'Load the arrow slider images from the resource file
-    Dim i As Long
-    For i = 0 To 2
-        Set m_Arrows(i) = New pdDIB
-    Next i
-    
-    LoadResourceToDIB "LVL_ARROW_BLK", m_Arrows(0)
-    LoadResourceToDIB "LVL_ARROW_GRY", m_Arrows(1)
-    LoadResourceToDIB "LVL_ARROW_WHT", m_Arrows(2)
     
     'Store the arrow dimensions
-    m_ArrowWidth = m_Arrows(0).GetDIBWidth
+    m_ArrowWidth = LEVEL_NODE_WIDTH
     m_ArrowHalfWidth = m_ArrowWidth / 2
         
     'Calculate persistent width and offset values for the arrow interaction zones.  These must extend past the left and
@@ -1100,7 +1143,7 @@ Private Sub Form_Load()
     Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputGradient.hDC, False
     Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, vbBlack, vbWhite
     cPainter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
-    Set cSurface = Nothing
+    Set cSurface = Nothing: Set cBrush = Nothing: Set cPainter = Nothing
     picOutputGradient.Picture = picOutputGradient.Image
     
     'Apply translations and visual themes
@@ -1284,9 +1327,9 @@ End Sub
 
 'Used to convert Long-type variables to bytes (with proper [0,255] range)
 Private Function ByteMe(ByVal bVal As Long) As Byte
-    If bVal > 255 Then
+    If (bVal > 255) Then
         ByteMe = 255
-    ElseIf bVal < 0 Then
+    ElseIf (bVal < 0) Then
         ByteMe = 0
     Else
         ByteMe = bVal
@@ -1296,21 +1339,21 @@ End Function
 'Used to make sure the scroll bars have appropriate limits
 Private Sub FixScrollBars()
     
-    If Not m_DisableMaxMinLimits Then
+    If (Not m_DisableMaxMinLimits) Then
     
         'The black tone input level is never allowed to be > the white tone input level.
-        If tudLevels(0).Max <> tudLevels(2).Value - 2 Then tudLevels(0).Max = tudLevels(2).Value - 2
+        If (tudLevels(0).Max <> tudLevels(2).Value - 2) Then tudLevels(0).Max = tudLevels(2).Value - 2
         
         ' Similarly, the white tone input level is never allowed to be < the black tone input level.
-        If tudLevels(2).Min <> tudLevels(0).Value + 2 Then tudLevels(2).Min = tudLevels(0).Value + 2
+        If (tudLevels(2).Min <> tudLevels(0).Value + 2) Then tudLevels(2).Min = tudLevels(0).Value + 2
         
     End If
     
 End Sub
 
-Private Sub UpdatePreview()
+Private Sub UpdatePreview(Optional ByVal alsoUpdateEffect As Boolean = True)
     
-    If cmdBar.PreviewsAllowed And (Not m_Arrows(0) Is Nothing) Then
+    If cmdBar.PreviewsAllowed And g_IsProgramRunning Then
         
         cmdBar.MarkPreviewStatus False
         
@@ -1319,21 +1362,113 @@ Private Sub UpdatePreview()
         picOutputArrows.Picture = LoadPicture("")
         
         'Synchronize the arrow offsets with the values of the corresponding text boxes
-        m_ArrowOffsets(0) = (tudLevels(0).Value / 255) * m_DstArrowBoxWidth
-        m_ArrowOffsets(2) = (tudLevels(2).Value / 255) * m_DstArrowBoxWidth
-        
+        ' (input levels)
+        m_ArrowOffsets(0) = (tudLevels(0).Value / 255) * m_DstArrowBoxWidth + m_DstArrowBoxOffset
+        m_ArrowOffsets(2) = (tudLevels(2).Value / 255) * m_DstArrowBoxWidth + m_DstArrowBoxOffset
         m_ArrowOffsets(1) = tudLevels(1).Value * (m_ArrowOffsets(2) - m_ArrowOffsets(0)) + m_ArrowOffsets(0)
         
-        m_ArrowOffsets(3) = (tudLevels(3).Value / 255) * m_DstArrowBoxWidth
-        m_ArrowOffsets(4) = (tudLevels(4).Value / 255) * m_DstArrowBoxWidth
+        ' (output levels)
+        m_ArrowOffsets(3) = (tudLevels(3).Value / 255) * m_DstArrowBoxWidth + m_DstArrowBoxOffset
+        m_ArrowOffsets(4) = (tudLevels(4).Value / 255) * m_DstArrowBoxWidth + m_DstArrowBoxOffset
         
-        'Render the arrows onto their respective picture boxes
-        m_Arrows(0).AlphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(0) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(1).AlphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(1) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(2).AlphaBlendToDC picInputArrows.hDC, 255, m_ArrowOffsets(2) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(0).AlphaBlendToDC picOutputArrows.hDC, 255, m_ArrowOffsets(3) - m_ArrowHalfWidth + m_DstArrowBoxOffset
-        m_Arrows(2).AlphaBlendToDC picOutputArrows.hDC, 255, m_ArrowOffsets(4) - m_ArrowHalfWidth + m_DstArrowBoxOffset
+        'Each level node is basically comprised of three parts:
+        ' 1) An upward arrowhead pointing at the node's precise position
+        ' 2) a colored block representing the node's type (e.g. "shadows" vs "midtones" vs "highlights")
+        ' 3) An outline encompassing (1) and (2), which is colored based on the node's hover state
         
+        'To simplify things, we assemble generic paths for (1) and (2), then simply translate and draw them for each individual node.
+        Dim baseArrow As pd2DPath, baseBlock As pd2DPath
+        Set baseArrow = New pd2DPath
+        Set baseBlock = New pd2DPath
+        
+        'The base arrow is centered at 0, for convenience when translating
+        Dim triangleHalfWidth As Single, triangleHeight As Single
+        triangleHalfWidth = (LEVEL_NODE_WIDTH / 2)
+        triangleHeight = (picInputArrows.ScaleHeight - LEVEL_NODE_HEIGHT) - 1
+        baseArrow.AddTriangle -1 * triangleHalfWidth, triangleHeight, 0, 0, triangleHalfWidth, triangleHeight
+        
+        'Next up is the colored block, also centered horizontally around position 0
+        baseBlock.AddRectangle_Relative -1 * LEVEL_NODE_WIDTH \ 2, triangleHeight, LEVEL_NODE_WIDTH, LEVEL_NODE_HEIGHT
+        
+        'We also want some duplicate nodes, to remove the need to reset our base node shapes between draws
+        Dim tmpArrow As pd2DPath, tmpBlock As pd2DPath
+        Set tmpArrow = New pd2DPath
+        Set tmpBlock = New pd2DPath
+        
+        'Finally, some generic scale factors to simplify the process of positioning nodes (who store their positions on the range [0, 1])
+        Dim hOffset As Single, hScaleFactor As Single
+        hOffset = scaleX((picHistogram.Left - picInputArrows.Left), vbTwips, vbPixels) + 1
+        hScaleFactor = (picHistogram.ScaleWidth - 1)
+        
+        '...and pen/fill objects for the actual rendering
+        Dim blockFill As pd2DBrush
+        Set blockFill = New pd2DBrush
+        blockFill.SetBrushMode P2_BM_Solid
+        blockFill.SetBrushOpacity 100#
+        
+        Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPainter As pd2DPainter
+        Drawing2D.QuickCreatePainter cPainter
+        
+        'Fill the target picture boxes with the current background color
+        Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_Background)
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, picInputArrows.hDC, False
+        cPainter.FillRectangleF cSurface, cBrush, 0, 0, picInputArrows.ScaleWidth, picInputArrows.ScaleHeight
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputArrows.hDC, False
+        cPainter.FillRectangleF cSurface, cBrush, 0, 0, picOutputArrows.ScaleWidth, picOutputArrows.ScaleHeight
+        
+        cSurface.SetSurfaceAntialiasing P2_AA_HighQuality
+        
+        'Draw each node in turn
+        Dim i As Long, targetColor As Long
+        For i = 0 To 4
+            
+            'Copy the base shapes
+            tmpArrow.CloneExistingPath baseArrow
+            tmpBlock.CloneExistingPath baseBlock
+            
+            'Translate them to this node's position
+            tmpArrow.TranslatePath m_ArrowOffsets(i), 0
+            tmpBlock.TranslatePath m_ArrowOffsets(i), 0
+            
+            'The node's colored block is rendered the same regardless of hover
+            If (i = 0) Then
+                targetColor = RGB(0, 0, 0)
+            ElseIf (i = 1) Then
+                targetColor = RGB(127, 127, 127)
+            ElseIf (i = 2) Then
+                targetColor = RGB(255, 255, 255)
+            ElseIf (i = 3) Then
+                targetColor = RGB(0, 0, 0)
+            ElseIf (i = 4) Then
+                targetColor = RGB(255, 255, 255)
+            End If
+            
+            'Make sure we target the right picture box!
+            If (i < 3) Then
+                Drawing2D.QuickCreateSurfaceFromDC cSurface, picInputArrows.hDC, True
+            Else
+                Drawing2D.QuickCreateSurfaceFromDC cSurface, picOutputArrows.hDC, True
+            End If
+            
+            blockFill.SetBrushColor targetColor
+            cPainter.FillPath cSurface, blockFill, tmpBlock
+            
+            'The node outline and arrow fill varies by hover/active state
+            If ((i = m_ActiveArrow) Or (i = m_HoverArrow)) Then
+                cPainter.DrawPath cSurface, activeOutlinePen, tmpBlock
+                cPainter.FillPath cSurface, activeArrowFill, tmpArrow
+                cPainter.DrawPath cSurface, activeOutlinePen, tmpArrow
+            Else
+                cPainter.DrawPath cSurface, inactiveOutlinePen, tmpBlock
+                cPainter.FillPath cSurface, inactiveArrowFill, tmpArrow
+                cPainter.DrawPath cSurface, inactiveOutlinePen, tmpArrow
+            End If
+            
+        Next i
+        
+        Set cSurface = Nothing: Set cBrush = Nothing
+        
+        'Relay changes to the screen
         picInputArrows.Picture = picInputArrows.Image
         picInputArrows.Refresh
         picOutputArrows.Picture = picOutputArrows.Image
@@ -1371,7 +1506,7 @@ Private Sub UpdatePreview()
         cmdBar.MarkPreviewStatus True
         
         'Actually render the levels effect
-        MapImageLevels getLevelsParamString(), True, pdFxPreview
+        If alsoUpdateEffect Then MapImageLevels GetLevelsParamString(), True, pdFxPreview
         
     End If
     
@@ -1408,7 +1543,7 @@ Private Sub tudLevels_Change(Index As Integer)
 End Sub
 
 'Convert all channel level values into a single list, built according to PD's internal string parameter format.
-Private Function getLevelsParamString() As String
+Private Function GetLevelsParamString() As String
 
     Dim tmpString As String
     tmpString = ""
@@ -1421,13 +1556,7 @@ Private Function getLevelsParamString() As String
     Next j
     Next i
     
-    getLevelsParamString = tmpString
+    GetLevelsParamString = tmpString
     
 End Function
-
-
-
-
-
-
 

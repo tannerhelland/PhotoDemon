@@ -48,11 +48,11 @@ Begin VB.Form FormThemeEditor
    End
    Begin PhotoDemon.pdCheckBox chkDelete 
       Height          =   375
-      Left            =   4200
+      Left            =   9600
       TabIndex        =   15
-      Top             =   8040
-      Width           =   5295
-      _ExtentX        =   9340
+      Top             =   8280
+      Width           =   3495
+      _ExtentX        =   6165
       _ExtentY        =   661
       Caption         =   "mark resource for deletion"
    End

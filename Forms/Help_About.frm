@@ -68,10 +68,10 @@ Begin VB.Form FormAbout
       Begin PhotoDemon.pdLabel lblAbout 
          Height          =   375
          Index           =   0
-         Left            =   120
+         Left            =   240
          Top             =   5880
-         Width           =   9375
-         _ExtentX        =   16536
+         Width           =   9255
+         _ExtentX        =   16325
          _ExtentY        =   661
          Caption         =   "PhotoDemon is Copyright 2017 by Tanner Helland and Contributors"
       End

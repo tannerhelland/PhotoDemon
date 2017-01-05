@@ -346,9 +346,9 @@ PDLOGOWHITE  CUSTOM  MOVEABLE        LOADONCALL      PD_white_logo_splash.png
 PDLOGOBLACK  CUSTOM  MOVEABLE        LOADONCALL      PD_black_logo_splash.png
 
 //About dialog
-ABOUT_PLUS   CUSTOM  MOVEABLE        LOADONCALL      plus_24.png
-ABOUT_MINUS  CUSTOM  MOVEABLE        LOADONCALL      minus_24.png
-ABOUT_PAUSE  CUSTOM  MOVEABLE        LOADONCALL      pause_24.png
+//ABOUT_PLUS   CUSTOM  MOVEABLE        LOADONCALL      plus_24.png
+//ABOUT_MINUS  CUSTOM  MOVEABLE        LOADONCALL      minus_24.png
+//ABOUT_PAUSE  CUSTOM  MOVEABLE        LOADONCALL      pause_24.png
 
 //File tool area toolbox icons
 //TF_NEW       CUSTOM  MOVEABLE        LOADONCALL      toolbox_file_new_24.png
@@ -466,9 +466,9 @@ RSZ_FITIN    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_inclusive.png
 RSZ_FITEX    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_exclusive.png
 
 //Print mode sample images
-PRNT_1IMAGE  CUSTOM  MOVEABLE        LOADONCALL      print_preview_one_page.png
-PRNT_MLTIMGS CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_images.png
-PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_pages.png
+//PRNT_1IMAGE  CUSTOM  MOVEABLE        LOADONCALL      print_preview_one_page.png
+//PRNT_MLTIMGS CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_images.png
+//PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_pages.png
 
 //Etched icon for "load an image" screen
 //IMAGE_ETCH_256 CUSTOM  MOVEABLE      LOADONCALL      image_etched_256.png
@@ -479,9 +479,9 @@ PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_page
 //CLR_ARROW_U  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_up.png
 
 //Control arrows for levels dialog (black, gray, white)
-LVL_ARROW_BLK CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_black.png
-LVL_ARROW_GRY CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_gray.png
-LVL_ARROW_WHT CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_white.png
+//LVL_ARROW_BLK CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_black.png
+//LVL_ARROW_GRY CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_gray.png
+//LVL_ARROW_WHT CUSTOM  MOVEABLE       LOADONCALL      flat_UI_arrow_up_white.png
 
 //Channel ID images
 //CHANNEL_RED   CUSTOM  MOVEABLE       LOADONCALL      red.png
@@ -504,7 +504,7 @@ PREF_PERFORMANCE CUSTOM  MOVEABLE       LOADONCALL      pref_performance.png
 PREF_SAVING      CUSTOM  MOVEABLE       LOADONCALL      pref_floppy.png
 
 //Color selector 
-CS_FROM_SCREEN   CUSTOM  MOVEABLE       LOADONCALL      color_selector_from_screen.png
+//CS_FROM_SCREEN   CUSTOM  MOVEABLE       LOADONCALL      color_selector_from_screen.png
 EYE_DROPPER_GENERIC CUSTOM MOVEABLE     LOADONCALL      eye_dropper_24.png
 
 //Sample image for rendering sample effects
