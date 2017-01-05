@@ -389,7 +389,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         
         If m_MouseInResizeTerritory Then
                 
-            If (Button And pdLeftButton) <> 0 Then
+            If ((Button And pdLeftButton) <> 0) Then
             
                 'Figure out which resize message to send to Windows; this varies by tabstrip orientation (obviously)
                 Dim hitCode As Long
@@ -426,7 +426,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         Else
             
             'If the list is scrollable (due to tons of images being loaded), calculate a new offset now
-            If m_ListScrollable And (m_MouseDistanceTraveled > 5) And (Not weAreResponsibleForResize) Then
+            If (m_ListScrollable And (m_MouseDistanceTraveled > 5) And (Not weAreResponsibleForResize)) Then
             
                 m_ScrollingOccured = True
             
@@ -437,9 +437,9 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
                 Dim newScrollValue As Long
                 newScrollValue = m_InitOffset + mouseOffset
                 
-                If newScrollValue < 0 Then
+                If (newScrollValue < 0) Then
                     m_ScrollValue = 0
-                ElseIf newScrollValue > m_ScrollMax Then
+                ElseIf (newScrollValue > m_ScrollMax) Then
                     m_ScrollValue = m_ScrollMax
                 Else
                     m_ScrollValue = newScrollValue
@@ -462,12 +462,12 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         m_CurrentThumbHover = GetThumbAtPosition(x, y)
                 
         'To prevent flickering, only update the tooltip when absolutely necessary
-        If m_CurrentThumbHover <> oldThumbHover Then
+        If (m_CurrentThumbHover <> oldThumbHover) Then
         
             'If the cursor is over a thumbnail, update the tooltip to display that image's filename
-            If m_CurrentThumbHover <> -1 Then
+            If (m_CurrentThumbHover <> -1) Then
                         
-                If Len(pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0 Then
+                If (Len(pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0) Then
                     Me.AssignTooltip pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("CurrentLocationOnDisk"), pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("OriginalFileName")
                 Else
                     Me.AssignTooltip "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."
@@ -701,7 +701,7 @@ Private Function GetThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
     Dim thumbIndex As Long
     thumbIndex = GetThumbAtPosition(x, y)
     
-    If thumbIndex <> -1 Then
+    If (thumbIndex <> -1) Then
         
         'Start by determing the boundary region of the underlying thumbnail
         Dim thumbnailStartOffsetX As Long, thumbnailStartOffsetY As Long
@@ -720,8 +720,8 @@ Private Function GetThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
         clickBoundaryX = x - closeButtonStartOffsetX
         clickBoundaryY = y - closeButtonStartOffsetY
         
-        If (clickBoundaryX >= 0) And (clickBoundaryY >= 0) Then
-            If (clickBoundaryX <= m_CloseIconGray.GetDIBWidth) And (clickBoundaryY <= m_CloseIconGray.GetDIBHeight) Then
+        If ((clickBoundaryX >= 0) And (clickBoundaryY >= 0)) Then
+            If ((clickBoundaryX < m_CloseIconGray.GetDIBWidth) And (clickBoundaryY < m_CloseIconGray.GetDIBHeight)) Then
                 GetThumbWithCloseIconAtPosition = thumbIndex
             End If
         End If
@@ -952,15 +952,20 @@ End Sub
 Private Sub LoadImageStripIcons()
 
     'Retrieve the unsaved image notification icon from the resource file
+    Dim unsavedNoteSize As Long
+    unsavedNoteSize = FixDPI(16)
     If (m_ModifiedIcon Is Nothing) Then Set m_ModifiedIcon = New pdDIB
-    LoadResourceToDIB "NTFY_UNSAVED", m_ModifiedIcon
+    LoadResourceToDIB "generic_asterisk", m_ModifiedIcon, unsavedNoteSize, unsavedNoteSize
     
     'Retrieve all PNGs necessary to render the "close by hovering" X that appears
+    Dim xCloseSize As Long, xClosePadding As Long
+    xCloseSize = FixDPI(20): xClosePadding = FixDPI(0)
+    
     If (m_CloseIconRed Is Nothing) Then Set m_CloseIconRed = New pdDIB
-    LoadResourceToDIB "CLOSE_MINI_RED", m_CloseIconRed
+    LoadResourceToDIB "file_close", m_CloseIconRed, xCloseSize, xCloseSize, xClosePadding, g_Themer.GetGenericUIColor(UI_ErrorRed)
     
     If (m_CloseIconGray Is Nothing) Then Set m_CloseIconGray = New pdDIB
-    LoadResourceToDIB "CLOSE_MINI_GRAY", m_CloseIconGray
+    LoadResourceToDIB "file_close", m_CloseIconGray, xCloseSize, xCloseSize, xClosePadding, g_Themer.GetGenericUIColor(UI_GrayNeutral)
     
     'Update the drop-shadow blur radius to account for DPI
     m_ShadowRadius = FixDPI(2)
@@ -968,7 +973,6 @@ Private Sub LoadImageStripIcons()
     'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
     If (m_CloseIconShadow Is Nothing) Then Set m_CloseIconShadow = New pdDIB
     Filters_Layers.CreateShadowDIB m_CloseIconGray, m_CloseIconShadow
-    m_CloseIconShadow.SetAlphaPremultiplication False
     
     'Pad and blur the drop-shadow
     Dim tmpLUT() As Byte
@@ -977,6 +981,7 @@ Private Sub LoadImageStripIcons()
     cFilter.FillLUT_Invert tmpLUT
     padDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
     QuickBlurDIB m_CloseIconShadow, FixDPI(2), False
+    m_CloseIconShadow.SetAlphaPremultiplication False
     cFilter.ApplyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
     m_CloseIconShadow.SetAlphaPremultiplication True
     

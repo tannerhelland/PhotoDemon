@@ -1085,7 +1085,7 @@ End Function
 
 'Given an image in the .exe's resource section (typically a PNG image), load it to a pdDIB object.
 ' The calling function is responsible for deleting the DIB once they are done with it.
-Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Long = 0) As Boolean
+Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Long = 0, Optional ByVal useCustomColor As Long = -1) As Boolean
         
     'As of v7.0, PD now has two places from which to pull resources:
     ' 1) Its own custom resource handler (which is the preferred location)
@@ -1103,7 +1103,7 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             
                 'Attempt to load the requested resource.  (This may fail, as I am still in the process of migrating
                 ' all resources to the new format.)
-                intResFound = g_Resources.LoadImageResource(resTitle, dstDIB, desiredWidth, desiredHeight, desiredBorders)
+                intResFound = g_Resources.LoadImageResource(resTitle, dstDIB, desiredWidth, desiredHeight, desiredBorders, , useCustomColor)
                 LoadResourceToDIB = intResFound
             
             End If
