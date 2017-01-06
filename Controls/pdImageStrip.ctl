@@ -33,8 +33,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Strip control (e.g. a scrollable line of image thumbnails)
 'Copyright 2013-2017 by Tanner Helland
 'Created: 15/October/13
-'Last updated: 02/March/16
-'Last update: migrate to a dedicated user control, as part of the program-wide window cleanup
+'Last updated: 05/January/17
+'Last update: delay resource loading until absolutely required
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -713,6 +713,7 @@ Private Function GetThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
         
         'From this, determine where the "close icon" would appear on the thumbnail
         Dim closeButtonStartOffsetX As Long, closeButtonStartOffsetY As Long
+        If (m_CloseIconGray Is Nothing) Then GetCloseImageResources
         closeButtonStartOffsetX = thumbnailStartOffsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconGray.GetDIBWidth + FixDPI(2)))
         closeButtonStartOffsetY = thumbnailStartOffsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
         
@@ -949,17 +950,37 @@ Public Sub WriteUserPreferences()
     g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Size", Me.ConstrainingSize
 End Sub
 
-Private Sub LoadImageStripIcons()
+Private Sub GetChangedImageResources()
 
-    'Retrieve the unsaved image notification icon from the resource file
-    Dim unsavedNoteSize As Long
-    unsavedNoteSize = FixDPI(16)
-    If (m_ModifiedIcon Is Nothing) Then Set m_ModifiedIcon = New pdDIB
-    LoadResourceToDIB "generic_asterisk", m_ModifiedIcon, unsavedNoteSize, unsavedNoteSize
+    'Retrieve the unsaved image notification icon from the resource file, and stroke an outline around it
+    ' to make it more visible.
     
+    'Start by retrieving the original image at a much larger size than we actually need
+    Dim unsavedNoteSizeTmp As Long:    unsavedNoteSizeTmp = FixDPI(64)
+    Dim tmpDIB As pdDIB
+    LoadResourceToDIB "generic_asterisk", tmpDIB, unsavedNoteSizeTmp, unsavedNoteSizeTmp, 2
+    
+    'Create an outline pen and stroke the image outline
+    Dim cPen As pd2DPen
+    Drawing2D.QuickCreateSolidPen cPen, 2.8, 0&, 80#, P2_LJ_Round, P2_LC_Round
+    DIB_Support.OutlineDIB tmpDIB, cPen
+    
+    'Shrink the outlined DIB down to the size we actually need.  This results in a higher-quality outline
+    ' since we're basically supersampling it.
+    If (m_ModifiedIcon Is Nothing) Then Set m_ModifiedIcon = New pdDIB
+    Dim unsavedNoteSizeFinal As Long
+    unsavedNoteSizeFinal = FixDPI(16)
+    m_ModifiedIcon.CreateBlank unsavedNoteSizeFinal, unsavedNoteSizeFinal, 32, 0, 0
+    GDI_Plus.GDIPlus_StretchBlt m_ModifiedIcon, 1, 1, unsavedNoteSizeFinal - 2, unsavedNoteSizeFinal - 2, tmpDIB, 0, 0, unsavedNoteSizeTmp, unsavedNoteSizeTmp, , , , , , True
+    Set tmpDIB = Nothing
+    
+End Sub
+
+Private Sub GetCloseImageResources()
+
     'Retrieve all PNGs necessary to render the "close by hovering" X that appears
     Dim xCloseSize As Long, xClosePadding As Long
-    xCloseSize = FixDPI(20): xClosePadding = FixDPI(0)
+    xCloseSize = FixDPI(16): xClosePadding = FixDPI(0)
     
     If (m_CloseIconRed Is Nothing) Then Set m_CloseIconRed = New pdDIB
     LoadResourceToDIB "file_close", m_CloseIconRed, xCloseSize, xCloseSize, xClosePadding, g_Themer.GetGenericUIColor(UI_ErrorRed)
@@ -1081,13 +1102,6 @@ Private Sub RedrawBackBuffer()
         Else
             m_ListScrollable = True
             m_ScrollMax = maxThumbSize - constrainingMax
-            
-            'Dynamically set the scrollbar's LargeChange value relevant to thumbnail size
-            'Dim lChange As Long
-            'lChange = (maxThumbSize - constrainingMax) \ 16
-            'If lChange < 1 Then lChange = 1
-            'If lChange > m_ThumbWidth \ 4 Then lChange = m_ThumbWidth \ 4
-            'hsThumbnails.LargeChange = lChange
         End If
         
         'Render each thumbnail block
@@ -1190,6 +1204,7 @@ Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByR
     '...then an asterisk in the bottom-left if the parent image has unsaved changes...
     If Not (pdImages(m_Thumbs(thumbIndex).indexInPDImages) Is Nothing) Then
         If Not pdImages(m_Thumbs(thumbIndex).indexInPDImages).GetSaveState(pdSE_AnySave) Then
+            If (m_ModifiedIcon Is Nothing) Then GetChangedImageResources
             m_ModifiedIcon.AlphaBlendToDC targetDC, 230, offsetX + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2), offsetY + m_ThumbHeight - FixDPI(THUMB_BORDER_PADDING) - m_ModifiedIcon.GetDIBHeight - FixDPI(2)
         End If
     End If
@@ -1197,6 +1212,7 @@ Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByR
     '...and finally, if this thumb is being hovered, we paint a "close" icon in the top-right corner.
     If isHovered Then
         
+        If (m_CloseIconShadow Is Nothing) Then GetCloseImageResources
         m_CloseIconShadow.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2 + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(2)
         
         If (thumbIndex = m_CloseIconHovered) Then
@@ -1234,7 +1250,14 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     UpdateColorList
     UserControl.BackColor = m_Colors.RetrieveColor(PDIS_Background, Me.Enabled)
-    LoadImageStripIcons
+    
+    'Reset any resource DIBs, which will force us to regenerate them against new theme settings the
+    ' next time we need to render them.
+    Set m_CloseIconRed = Nothing
+    Set m_CloseIconGray = Nothing
+    Set m_CloseIconShadow = Nothing
+    Set m_ModifiedIcon = Nothing
+    
     ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
 
@@ -1243,4 +1266,3 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-

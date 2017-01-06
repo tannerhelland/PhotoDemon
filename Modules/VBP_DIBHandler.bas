@@ -887,3 +887,100 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
     End If
     
 End Function
+
+'Outline a 32-bpp DIB.  The outline is drawn along the first-encountered border where transparent and opaque pixels meet.
+' The caller must supply the outline pen they want used and optionally, an edge threshold on the range [0, 100].
+'Returns: TRUE if successful; FALSE otherwise
+Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, Optional ByVal edgeThreshold As Single = 50#) As Boolean
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+            
+            Dim x As Long, y As Long, finalX As Long, finalY As Long, xLookup As Long
+            finalX = (srcDIB.GetDIBWidth - 1)
+            finalY = (srcDIB.GetDIBHeight - 1)
+            
+            Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+            srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+            
+            'We first need to construct a byte array that separates the pixels into two groups; the barrier
+            ' between these groups will be used to construct our outline.
+            Dim edgeThresholdL As Long
+            edgeThresholdL = edgeThreshold * 2.55
+            If (edgeThresholdL < 0) Then edgeThresholdL = 0
+            If (edgeThresholdL >= 255) Then edgeThresholdL = 254
+                
+            Dim iWidth As Long, iHeight As Long
+            iWidth = finalX + 2
+            iHeight = finalY + 2
+            
+            'To spare our edge detector from worrying about edge pixels (which slow down processing due to obnoxious
+            ' nested If/Then statements), we declare our input array with a guaranteed list of non-edge pixels on
+            ' all sides.
+            Dim edgeData() As Byte
+            ReDim edgeData(0 To iWidth, 0 To iHeight) As Byte
+            
+            Dim xOffset As Long, yOffset As Long
+            xOffset = 1
+            yOffset = 1
+            
+            For y = 0 To finalY
+            For x = 0 To finalX
+                If (srcPixels(x * 4 + 3, y) > edgeThresholdL) Then edgeData(x + xOffset, y + yOffset) = 1
+            Next x
+            Next y
+            
+            'We no longer need direct access to the source image pixels
+            srcDIB.UnwrapArrayFromDIB srcPixels
+            
+            'With an edge array successfully assembled, prepare an edge detector
+            Dim cEdges As pdEdgeDetector
+            Set cEdges = New pdEdgeDetector
+            
+            Dim finalPolygon() As POINTFLOAT, numOfPoints As Long
+            
+            'Use the edge detector to find an initial (x, y) location to start our path trace
+            Dim startX As Long, startY As Long
+            If cEdges.FindStartingPoint(edgeData, 1, 1, finalX + 1, finalY + 1, startX, startY) Then
+            
+                'Run the path analyzer
+                If cEdges.FindEdges(edgeData, startX, startY, -xOffset, -yOffset) Then
+                
+                    'Retrieve the polygon that defines the outer boundary
+                    cEdges.RetrieveFinalPolygon finalPolygon, numOfPoints
+                
+                End If
+            
+            'No exterior path found, which is basically total failure.  Treat the image boundaries as our
+            ' final path outline, instead.
+            Else
+                numOfPoints = 4
+                ReDim finalPolygon(0 To 3) As POINTFLOAT
+                finalPolygon(0).x = 0
+                finalPolygon(0).y = 0
+                finalPolygon(1).x = 0
+                finalPolygon(1).y = finalY
+                finalPolygon(2).x = finalX
+                finalPolygon(2).y = finalY
+                finalPolygon(3).x = 0
+                finalPolygon(3).y = finalY
+            End If
+            
+            'Use pd2D to render the outline onto the image
+            Dim cPainter As pd2DPainter, cSurface As pd2DSurface
+            Drawing2D.QuickCreatePainter cPainter
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, srcDIB.GetDIBDC, True
+            cPainter.DrawPolygonF cSurface, outlinePen, numOfPoints, VarPtr(finalPolygon(0))
+            Set cSurface = Nothing: Set cPainter = Nothing
+            
+            OutlineDIB = True
+            
+        End If
+    Else
+        Debug.Print "WARNING!  DIB_Support.OutlineDIB() requires a 32-bpp DIB to operate correctly."
+    End If
+    
+End Function
+
