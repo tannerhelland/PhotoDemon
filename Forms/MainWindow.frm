@@ -1273,20 +1273,24 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Portrait glow..."
+            Caption         =   "Outline..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Solarize..."
+            Caption         =   "Portrait glow..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Twins..."
+            Caption         =   "Solarize..."
             Index           =   4
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Vignetting..."
+            Caption         =   "Twins..."
             Index           =   5
+         End
+         Begin VB.Menu MnuStylize 
+            Caption         =   "Vignetting..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -4373,20 +4377,24 @@ Private Sub MnuStylize_Click(Index As Integer)
         Case 1
             Process "Diffuse", True
         
-        'Portrait glow
+        'Outline
         Case 2
+            Process "Outline", True
+            
+        'Portrait glow
+        Case 3
             Process "Portrait glow", True
         
         'Solarize
-        Case 3
+        Case 4
             Process "Solarize", True
 
         'Twins
-        Case 4
+        Case 5
             Process "Twins", True
             
         'Vignetting
-        Case 5
+        Case 6
             Process "Vignetting", True
     
     End Select

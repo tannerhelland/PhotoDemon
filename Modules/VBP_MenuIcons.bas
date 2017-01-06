@@ -506,10 +506,11 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         '--> Stylize sub-menu
         AddMenuIcon "ANTIQUE", 7, 9, 0       'Antique (Sepia)
         AddMenuIcon "DIFFUSE", 7, 9, 1       'Diffuse
-        'addMenuIcon "PORTGLOW", 7, 9, 2      'Portrait glow
-        AddMenuIcon "SOLARIZE", 7, 9, 3      'Solarize
-        AddMenuIcon "TWINS", 7, 9, 4         'Twins
-        AddMenuIcon "VIGNETTE", 7, 9, 5      'Vignetting
+        'addMenuIcon "OUTLINE", 7, 9, 2       'Outline
+        'addMenuIcon "PORTGLOW", 7, 9, 3      'Portrait glow
+        AddMenuIcon "SOLARIZE", 7, 9, 4      'Solarize
+        AddMenuIcon "TWINS", 7, 9, 5         'Twins
+        AddMenuIcon "VIGNETTE", 7, 9, 6      'Vignetting
         
     AddMenuIcon "PANANDZOOM", 7, 10        'Transform
         '--> Transform sub-menu

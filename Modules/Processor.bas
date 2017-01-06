@@ -1804,6 +1804,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
         
+        Case "Outline"
+            If ShowDialog Then
+                ShowPDDialog vbModal, FormOutlineEffect
+            Else
+                FormOutlineEffect.ApplyOutlineEffect cXMLParams.GetParamString()
+            End If
+        
         Case "Portrait glow"
             If ShowDialog Then
                 ShowPDDialog vbModal, FormPortraitGlow
