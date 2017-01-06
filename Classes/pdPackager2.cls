@@ -1493,7 +1493,7 @@ End Function
 '
 'For an explanation of the trimDstArray and dstFinalSize parameters, please see GetNodeDataByIndex(), below (which this function
 ' merely wraps).
-Public Function GetNodeIndexFromName(ByRef targetNodeName As String) As Long
+Public Function GetNodeIndexFromName(ByRef targetNodeName As String, Optional ByVal compareMode As VbCompareMethod = vbTextCompare) As Long
     
     'Node headers use a fixed-length 32 character string for storing names.  As such, pad the supplied node name to
     ' 32 chars as necessary.
@@ -1505,7 +1505,7 @@ Public Function GetNodeIndexFromName(ByRef targetNodeName As String) As Long
     nodeIndex = -1
     
     For i = 0 To UBound(m_NodeDirectory)
-        If (StrComp(nodeName32, m_NodeDirectory(i).NodeName, vbTextCompare) = 0) Then
+        If (StrComp(nodeName32, m_NodeDirectory(i).NodeName, compareMode) = 0) Then
             nodeIndex = i
             Exit For
         End If

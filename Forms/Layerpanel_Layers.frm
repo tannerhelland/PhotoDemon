@@ -357,7 +357,7 @@ Private Sub cmdLayerAction_Click(Index As Integer)
 End Sub
 
 Private Sub Form_Load()
-        
+    
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeDropDown cboBlendMode, BL_NORMAL
     Interface.PopulateAlphaModeDropDown cboAlphaMode, LA_NORMAL
@@ -369,9 +369,6 @@ Private Sub Form_Load()
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
-    
-    'Reflow the interface to match its current size
-    ReflowInterface
     
 End Sub
 
@@ -434,7 +431,7 @@ Private Sub ReflowInterface()
     sizeCheck = (ctlGroupLayerButtons.GetTop - lstLayers.GetTop) - FixDPI(7)
     If (sizeCheck > 0) Then
             
-        lstLayers.SetHeight sizeCheck
+        If (lstLayers.GetHeight <> sizeCheck) Then lstLayers.SetHeight sizeCheck
         
         'Vertical resizing has now been covered successfully.  Time to handle horizontal resizing.
         
@@ -449,7 +446,7 @@ Private Sub ReflowInterface()
         cboAlphaMode.SetWidth Me.ScaleWidth - (cboAlphaMode.GetLeft + FixDPI(4))
         
         'Resize the layer box and associated scrollbar
-        lstLayers.SetWidth Me.ScaleWidth - (lstLayers.GetLeft + FixDPI(4))
+        If (lstLayers.GetWidth <> Me.ScaleWidth - (lstLayers.GetLeft + FixDPI(4))) Then lstLayers.SetWidth Me.ScaleWidth - (lstLayers.GetLeft + FixDPI(4))
         
         'Reflow the bottom button box; this is inevitably more complicated, owing to the spacing requirements of the buttons
         ctlGroupLayerButtons.SetLeft lstLayers.GetLeft

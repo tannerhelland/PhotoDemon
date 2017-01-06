@@ -130,6 +130,10 @@ Private Const NESTED_POPUP_LIMIT As Long = 16&
 Private m_PopupHWnds() As Long, m_NumOfPopupHWnds As Long
 Private m_PopupIconsSmall() As Long, m_PopupIconsLarge() As Long
 
+'A unique string that tracks the current theme and language combination.  If either one changes, we need to redraw
+' large swaths of the interface to match.
+Private m_CurrentInterfaceID As String
+
 'Because the Interface handler is a module and not a class, like I prefer, we need to use a dedicated initialization function.
 Public Sub InitializeInterfaceBackend()
 
@@ -149,6 +153,26 @@ End Sub
 
 Public Function GetSystemDPI() As Single
     GetSystemDPI = m_CurrentSystemDPI
+End Function
+
+'Generate a unique interface ID string that describes the current visual theme + language combination
+Public Sub GenerateInterfaceID()
+    If (Not g_Themer Is Nothing) Then
+        m_CurrentInterfaceID = g_Themer.GetCurrentThemeID
+        If (Not g_Language Is Nothing) Then
+            If g_Language.TranslationActive Then m_CurrentInterfaceID = m_CurrentInterfaceID & "|" & CStr(g_Language.GetCurrentLanguageIndex)
+        End If
+    Else
+        If (Not g_Language Is Nothing) Then
+            If g_Language.TranslationActive Then m_CurrentInterfaceID = CStr(g_Language.GetCurrentLanguageIndex)
+        Else
+            m_CurrentInterfaceID = vbNullString
+        End If
+    End If
+End Sub
+
+Public Function GetCurrentInterfaceID() As String
+    GetCurrentInterfaceID = m_CurrentInterfaceID
 End Function
 
 'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
@@ -250,7 +274,7 @@ Public Sub SyncInterfaceToCurrentImage()
         If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
             SetUIGroupState PDUI_Selections, True
             SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
-            syncTextToCurrentSelection g_CurrentImage
+            SyncTextToCurrentSelection g_CurrentImage
         Else
             SetUIGroupState PDUI_Selections, False
             SetUIGroupState PDUI_SelectionTransforms, False
@@ -503,7 +527,7 @@ Private Sub SetUIMode_NoImages()
     FormMain.MnuEdit(5).Enabled = False
     
     'Reset the main window's caption to its default PD name and version
-    If Not (g_WindowManager Is Nothing) Then
+    If (Not g_WindowManager Is Nothing) Then
         g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(Nothing)
     Else
         FormMain.Caption = Update_Support.GetPhotoDemonNameAndVersion()
@@ -1284,7 +1308,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
     dstForm.BackColor = g_Themer.GetGenericUIColor(UI_Background)
     g_Themer.AddWindowPainter dstForm.hWnd
-    dstForm.MouseIcon = LoadPicture("")
+    dstForm.MouseIcon = Nothing
     dstForm.MousePointer = 0
     
     Dim isPDControl As Boolean, isControlEnabled As Boolean
@@ -1294,112 +1318,130 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     For Each eControl In dstForm.Controls
         
-        '*******************************************
-        ' NOTE: some of these steps are based on old code, and will shortly be dying.  There are only a few remaining places in PD
-        '  where traditional VB controls are used, and I am actively replacing them as time allows.
-        
-        'STEP 1: give all clickable controls a hand icon instead of the default pointer.
-        ' (Note: this code sets all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
+        'This is a bit weird, but PD still uses generic picture boxes in various places.  Picture boxes get confused
+        ' by all the weird run-time UI APIs we call, so to ensure that their cursors work properly, we use the API
+        ' to reset their cursors as well.
         If (TypeOf eControl Is PictureBox) Then
+        
             SetArrowCursor eControl
+            
+            'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus,
+            ' but I often forget to change this at design-time.
+            eControl.TabStop = False
+            
         Else
-            'If ((TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) Then
-            '    SetHandCursor eControl
-            'End If
+            
+            'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.  This function updates
+            ' two things:
+            ' 1) The control's visual appearance (to reflect any changes to visual themes)
+            ' 2) Updating any translatable text against the current translation
+            isPDControl = False
+            
+            'These controls are fully compatible with PD's theming and translation engines:
+            If (TypeOf eControl Is pdLabel) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdButtonStrip) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdButtonStripVertical) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdButton) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdButtonToolbox) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdDropDown) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdTextBox) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdSpinner) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdSlider) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdSliderStandalone) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdScrollBar) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdTitle) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdCheckBox) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdRadioButton) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdContainer) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdListBox) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdListBoxView) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdColorVariants) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdColorWheel) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdNavigator) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdNavigatorInner) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdCommandBar) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdCommandBarMini) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdResize) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdCanvas) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdCanvasView) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdListBoxOD) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdListBoxViewOD) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdLayerList) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdLayerListInner) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdHyperlink) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdColorSelector) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdBrushSelector) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdGradientSelector) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdPenSelector) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdFxPreviewCtl) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdPreview) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdMetadataExport) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdNewOld) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdHistory) Then
+                isPDControl = True
+            ElseIf (TypeOf eControl Is pdDropDownFont) Then
+                isPDControl = True
+            End If
+            
+            'Disabled controls may ignore theming requests, so we manually toggle their enablement prior
+            ' to theming them.  (TODO: figure out if this is still necessary after our many 7.0 enhancements.)
+            If isPDControl Then
+                isControlEnabled = eControl.Enabled
+                If (Not isControlEnabled) Then eControl.Enabled = True
+                eControl.UpdateAgainstCurrentTheme
+                If (Not isControlEnabled) Then eControl.Enabled = False
+            End If
+            
         End If
-        
-        'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
-        ' redraw all control fonts using Segoe UI.
-        'If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
-            'eControl.fontName = g_InterfaceFont
-        'End If
-        
-        'STEP 3: make common control drop-down boxes display their full drop-down contents, without a scroll bar.
-        '         (Note: this behavior requires a manifest, so it's entirely useless inside the IDE.)
-        '         (Also, once all combo boxes are replaced with PD's dedicated replacement, this line can be removed.)
-        'If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
-        
-        ' TODO 6.8: remove these steps once and for all
-        '*******************************************
-        
-        'All of PhotoDemon's custom UI controls implement an UpdateAgainstCurrentTheme function.  This function updates two things:
-        ' 1) The control's visual appearance (to reflect any changes to visual themes)
-        ' 2) Updating any translatable text against the current translation
-        
-        isPDControl = False
-        
-        'These controls are fully compatible with PD's theming and translation engines:
-        If (TypeOf eControl Is pdButtonStrip) Or (TypeOf eControl Is pdButtonStripVertical) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdColorSelector) Or (TypeOf eControl Is pdBrushSelector) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdGradientSelector) Or (TypeOf eControl Is pdPenSelector) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdScrollBar) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdTextBox) Or (TypeOf eControl Is pdSpinner) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSliderStandalone) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdTitle) Or (TypeOf eControl Is pdMetadataExport) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdFxPreviewCtl) Or (TypeOf eControl Is pdPreview) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdCheckBox) Or (TypeOf eControl Is pdRadioButton) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdNavigator) Or (TypeOf eControl Is pdNavigatorInner) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdCommandBar) Or (TypeOf eControl Is pdCommandBarMini) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdResize) Or (TypeOf eControl Is pdContainer) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdCanvasView) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdListBox) Or (TypeOf eControl Is pdListBoxView) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdListBoxOD) Or (TypeOf eControl Is pdListBoxViewOD) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdDropDown) Or (TypeOf eControl Is pdDropDownFont) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdLayerList) Or (TypeOf eControl Is pdLayerListInner) Then
-            isPDControl = True
-        ElseIf (TypeOf eControl Is pdNewOld) Or (TypeOf eControl Is pdHistory) Then
-            isPDControl = True
-        End If
-        
-        'Disabled controls will ignore any function calls, so we must manually enable disabled controls prior to theming them
-        If isPDControl Then
-            isControlEnabled = eControl.Enabled
-            If (Not isControlEnabled) Then eControl.Enabled = True
-            eControl.UpdateAgainstCurrentTheme
-            If (Not isControlEnabled) Then eControl.Enabled = False
-        End If
-        
-        'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
-        ' to change this at design-time.
-        If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
-        
-        'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-        ' bars to be automatically refreshed.  We use this when the user actively changes the visual theme and/or language,
-        ' as it allows the user to "see" the changes appear on the main PD window.
-        ' (TODO 6.8: investigate where else this is used, if anywhere, and consider removal.)
-        If useDoEvents Then DoEvents
         
     Next
-    
+        
     'FORM STEP 3: translate the form (and all controls on it)
     ' Note that this step is not as relevant as it used to be, because all PD controls apply their own translations if/when necessary
     ' during the above eControl.UpdateAgainstCurrentTheme step.  This translation step only handles the form caption (which must be
     ' set specially), and some other oddities like menus, which have not been replaced yet.
     ' TODO 6.8: once all controls are migrated, consider killing this step entirely, and moving the specialized translation bits here.
-    If g_Language.TranslationActive And dstForm.Enabled Then
-        g_Language.ApplyTranslations dstForm, useDoEvents
+    If g_Language.TranslationActive Then
+        If dstForm.Enabled Then g_Language.ApplyTranslations dstForm, useDoEvents
     End If
     
     'If this is the main form, we need to reassign menu icon, because they are inadvertently dropped whenever menu captions change.

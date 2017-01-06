@@ -158,6 +158,10 @@ Private m_TTX As Single, m_TTY As Single
 Private m_TTCaptionEn As String, m_TTTitleEn As String
 Private m_TTCaption As String, m_TTTitle As String
 
+'Theme ID at the last UpdateAgainstCurrentTheme request.  If this ID has not changed, we don't need to redraw anything.
+' (Note that this ID describes both the current *theme* and the current *language*; a change to either initiates a redraw.)
+Private m_LastThemeID As String
+
 'pd2DPaint classes, for generic fill/stroke capabilities
 Private m_Painter As pd2DPainter
 
@@ -563,7 +567,7 @@ End Sub
 Private Sub AskForARepaint(ByVal askForLayoutUpdateToo As Boolean, Optional ByVal forceEventRegardless As Boolean = False)
     
     'If the control is visible, raise the event immediately.  Otherwise, suppress it, and update the suppressed draw count.
-    If m_Visibility Or forceEventRegardless Then
+    If (m_Visibility Or forceEventRegardless) Then
         RaiseEvent RepaintRequired(askForLayoutUpdateToo)
         m_RedrawRequestCount = 0
     Else
@@ -575,7 +579,7 @@ End Sub
 'Cache the current dimensions of the underlying UC.  Returns TRUE if dimensions were retrieved successfully.
 Private Function CacheWindowDimensions() As Boolean
     
-    If Not (m_MoveSize Is Nothing) Then
+    If (Not m_MoveSize Is Nothing) Then
         m_Width = m_MoveSize.GetWidth
         m_Height = m_MoveSize.GetHeight
         CacheWindowDimensions = True
@@ -639,7 +643,7 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
     Dim bufferWasResized As Boolean
     bufferWasResized = False
     
-    If (m_BackBuffer.GetDIBWidth <> m_Width) Or (m_BackBuffer.GetDIBHeight <> m_Height) Then
+    If ((m_BackBuffer.GetDIBWidth <> m_Width) Or (m_BackBuffer.GetDIBHeight <> m_Height)) Then
         m_BackBuffer.CreateBlank m_Width, m_Height, 32, , 255
         bufferWasResized = True
     End If
@@ -820,7 +824,7 @@ Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As L
         SyncBackBufferSize True
         
         'Let the caller know about the change
-        If Not m_ResizeEventsSuspended Then
+        If (Not m_ResizeEventsSuspended) Then
         
             RaiseEvent WindowResize(newWidth, newHeight)
         
@@ -1191,30 +1195,49 @@ Private Sub UpdateColorList()
     
 End Sub
 
+'Child controls can query us to see the ID of the last theme ID we updated against.  If this ID hasn't changed, we don't
+' need to redraw anything to match.  (Note that the ID contains data about both the UI theme and the current language;
+' changing either should initiate a full redraw.)
+Friend Function ThemeUpdateRequired() As Boolean
+    If (Len(m_LastThemeID) = 0) Then
+        ThemeUpdateRequired = True
+    Else
+        ThemeUpdateRequired = CBool(StrComp(m_LastThemeID, Interface.GetCurrentInterfaceID, vbBinaryCompare) <> 0)
+    End If
+End Function
+
 'Whenever the caller user control receives an UpdateAgainstTheme/Language request, it needs to relay that to this support
 ' class as well.  We'll update things like the tooltip and text caption (if any) to match the new settings.
 Friend Sub UpdateAgainstThemeAndLanguage()
     
     If g_IsProgramRunning Then
         
-        'Tooltips must be refreshed (in case the active language has changed)
-        If g_Language.TranslationActive() Then
-            m_TTCaption = g_Language.TranslateMessage(m_TTCaptionEn)
-            m_TTTitle = g_Language.TranslateMessage(m_TTTitleEn)
-        Else
-            m_TTCaption = m_TTCaptionEn
-            m_TTTitle = m_TTTitleEn
+        If Me.ThemeUpdateRequired Then
+        
+            'Tooltips must be refreshed (in case the active language has changed)
+            If g_Language.TranslationActive() Then
+                m_TTCaption = g_Language.TranslateMessage(m_TTCaptionEn)
+                m_TTTitle = g_Language.TranslateMessage(m_TTTitleEn)
+            Else
+                m_TTCaption = m_TTCaptionEn
+                m_TTTitle = m_TTTitleEn
+            End If
+            
+            'This control requires some colors from the central themer; update its color cache now
+            UpdateColorList
+            
+            'The caption manager will also refresh itself
+            If m_Caption.IsCaptionActive Then m_Caption.UpdateAgainstCurrentTheme
+            
+            'After a theme change, the caller needs to repaint everything from scratch.
+            SyncBackBufferSize True
+            AskForARepaint True
+            
+            'Make a note of the current theme+language ID.  If this function gets called again but this ID hasn't changed,
+            ' we can skip additional redraws.
+            m_LastThemeID = Interface.GetCurrentInterfaceID
+            
         End If
-        
-        'This control requires some colors from the central themer; update its color cache now
-        UpdateColorList
-        
-        'The caption manager will also refresh itself
-        If m_Caption.IsCaptionActive Then m_Caption.UpdateAgainstCurrentTheme
-        
-        'After a theme change, the caller needs to repaint everything from scratch.
-        SyncBackBufferSize True
-        AskForARepaint True
         
     End If
     

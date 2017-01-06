@@ -937,7 +937,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 If pdImages(g_CurrentImage).selectionActive Then
                 
                     'Check the mouse coordinates of this click.
-                    sCheck = findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+                    sCheck = FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                     
                     'If a point of interest was clicked, initiate a transform
                     If (sCheck <> -1) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> sPolygon) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> sRaster) Then
@@ -976,7 +976,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                                     
                                     'Add the new point
                                     If pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints = 0 Then
-                                        Selection_Handler.initSelectionByPoint imgX, imgY
+                                        Selection_Handler.InitSelectionByPoint imgX, imgY
                                     Else
                                         
                                         If (sCheck = -1) Or (sCheck = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints) Then
@@ -1000,7 +1000,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                             End If
                             
                         Else
-                            Selection_Handler.initSelectionByPoint imgX, imgY
+                            Selection_Handler.InitSelectionByPoint imgX, imgY
                         End If
                         
                     End If
@@ -1008,7 +1008,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 'If a selection is not active, start a new one
                 Else
                     
-                    Selection_Handler.initSelectionByPoint imgX, imgY
+                    Selection_Handler.InitSelectionByPoint imgX, imgY
                     
                     'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
                     ' transform mode, because dragging the mouse will simply move the newly created point.
@@ -1021,7 +1021,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             
             'Magic wand selections are easy.  They never transform - they only generate anew
             Case SELECT_WAND
-                Selection_Handler.initSelectionByPoint imgX, imgY
+                Selection_Handler.InitSelectionByPoint imgX, imgY
                 Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                 
             'Text layer behavior varies depending on whether the current layer is a text layer or not
@@ -1165,7 +1165,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Pass new points to the active selection
                     pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                    syncTextToCurrentSelection g_CurrentImage
+                    SyncTextToCurrentSelection g_CurrentImage
                                         
                 End If
                 
@@ -1323,7 +1323,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((clickEventAlsoFiring) And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    If ((clickEventAlsoFiring) And (FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
                         
                         If (g_CurrentTool <> SELECT_WAND) Then
                             Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
@@ -1339,7 +1339,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
 
                             pdImages(g_CurrentImage).mainSelection.RequestSquare (Shift And vbShiftMask)
                             pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                            syncTextToCurrentSelection g_CurrentImage
+                            SyncTextToCurrentSelection g_CurrentImage
                             
                         End If
                     
@@ -1402,7 +1402,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 End If
                 
                 'Synchronize the selection text box values with the final selection
-                syncTextToCurrentSelection g_CurrentImage
+                SyncTextToCurrentSelection g_CurrentImage
                 
             
             'As usual, polygon selections have some special considerations.
@@ -1412,7 +1412,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 If pdImages(g_CurrentImage).selectionActive Then
                 
                     'Check to see if the selection is locked in.  If it is, we need to check for an "erase selection" click.
-                    If pdImages(g_CurrentImage).mainSelection.GetPolygonClosedState And clickEventAlsoFiring And (findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1) Then
+                    If pdImages(g_CurrentImage).mainSelection.GetPolygonClosedState And clickEventAlsoFiring And (FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1) Then
                         Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                     
                     Else
@@ -1420,7 +1420,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         'If the polygon is already closed, we want to lock in the newly modified polygon
                         If pdImages(g_CurrentImage).mainSelection.GetPolygonClosedState Then
                         
-                            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+                            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                             
                                 Case pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints
                                     Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
@@ -2200,7 +2200,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' 6 - S edge
             ' 7 - W edge
             ' 8 - interior of selection, not near a corner or edge
-            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 Case -1
                     CanvasView.RequestCursor_System IDC_ARROW
@@ -2233,7 +2233,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' -1 - Cursor is not near an endpoint
             ' 0 - Near x1/y1
             ' 1 - Near x2/y2
-            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 Case -1
                     CanvasView.RequestCursor_System IDC_ARROW
@@ -2246,7 +2246,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         
          Case SELECT_POLYGON
             
-            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 '-1: mouse is outside the lasso selection area
                 Case -1
@@ -2268,7 +2268,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         
         Case SELECT_LASSO
             
-            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 '-1: mouse is outside the lasso selection area
                 Case -1
@@ -2287,7 +2287,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
         Case SELECT_WAND
         
-            Select Case findNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
             
                 '-1: mouse is outside the lasso selection area
                 Case -1
@@ -2406,37 +2406,41 @@ End Sub
 ' and/or retranslating all button captions against the current language.
 Public Sub UpdateAgainstCurrentTheme()
     
-    Debug.Print "(the primary canvas is retheming itself - watch for excessive invocations!)"
-    
-    'Suspend redraws until all theme updates are complete
-    Me.SetRedrawSuspension True
-    
-    UpdateColorList
-    ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-    UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-    CanvasView.UpdateAgainstCurrentTheme
-    StatusBar.UpdateAgainstCurrentTheme
-    ImageStrip.UpdateAgainstCurrentTheme
-    
-    'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
-    Dim centerButtonIconSize As Long
-    centerButtonIconSize = FixDPI(14)
-    cmdCenter.AssignImage "zoom_center", , , , centerButtonIconSize, centerButtonIconSize
-    cmdCenter.AssignTooltip "Center the image inside the viewport"
-    cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)
-    cmdCenter.UpdateAgainstCurrentTheme
-    
-    hScroll.UpdateAgainstCurrentTheme
-    vScroll.UpdateAgainstCurrentTheme
-    
-    'Any controls that utilize a custom background color must now be updated to match *our* background color.
-    Dim sbBackColor As Long
-    sbBackColor = m_Colors.RetrieveColor(PDC_StatusBar, Me.Enabled)
-    
-    Me.UpdateCanvasLayout
-    
-    'Restore redraw capabilities
-    Me.SetRedrawSuspension False
+    If ucSupport.ThemeUpdateRequired Then
         
+        Debug.Print "(the primary canvas is retheming itself - watch for excessive invocations!)"
+        
+        'Suspend redraws until all theme updates are complete
+        Me.SetRedrawSuspension True
+        
+        UpdateColorList
+        ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        CanvasView.UpdateAgainstCurrentTheme
+        StatusBar.UpdateAgainstCurrentTheme
+        ImageStrip.UpdateAgainstCurrentTheme
+        
+        'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
+        Dim centerButtonIconSize As Long
+        centerButtonIconSize = FixDPI(14)
+        cmdCenter.AssignImage "zoom_center", , , , centerButtonIconSize, centerButtonIconSize
+        cmdCenter.AssignTooltip "Center the image inside the viewport"
+        cmdCenter.BackColor = m_Colors.RetrieveColor(PDC_SpecialButtonBackground, Me.Enabled)
+        cmdCenter.UpdateAgainstCurrentTheme
+        
+        hScroll.UpdateAgainstCurrentTheme
+        vScroll.UpdateAgainstCurrentTheme
+        
+        'Any controls that utilize a custom background color must now be updated to match *our* background color.
+        Dim sbBackColor As Long
+        sbBackColor = m_Colors.RetrieveColor(PDC_StatusBar, Me.Enabled)
+        
+        Me.UpdateCanvasLayout
+        
+        'Restore redraw capabilities
+        Me.SetRedrawSuspension False
+    
+    End If
+    
 End Sub
 

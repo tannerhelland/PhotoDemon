@@ -71,6 +71,9 @@ Option Explicit
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
+'To avoid nested resize calls, trackers are used
+Private m_ResizeInProgress As Boolean
+
 Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
     
     'If the clrVariant control is where the color was actually changed (and it's not just syncing itself to some
@@ -97,30 +100,36 @@ End Sub
 
 Private Sub Form_Load()
     
+    m_ResizeInProgress = True
+    
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.SetParentForm Me
     lastUsedSettings.LoadAllControlValues
     
-    'Update everything against the current theme.  This will also set tooltips for various controls.
+    'Update everything against the current theme.  This will also set tooltips for various controls,
+    ' and reflow the interface to match.
     UpdateAgainstCurrentTheme
     
-    'Reflow the interface to match its current size
-    ReflowInterface
+    m_ResizeInProgress = False
     
 End Sub
 
 'Whenever this panel is resized, we must reflow all objects to fit the available space.
 Private Sub ReflowInterface()
 
-    'Failsafe to prevent IDE errors
-    If (Me.ScaleWidth > 10) Then
+    Dim curFormWidth As Long, curFormHeight As Long
+    curFormWidth = Me.ScaleWidth
+    curFormHeight = Me.ScaleHeight
     
+    'Failsafe to prevent IDE errors
+    If (curFormWidth > 10) Then
+        
         'Right-align the color wheel
-        clrWheel.Move Me.ScaleWidth - (Me.ScaleHeight + FixDPI(10)), 0, Me.ScaleHeight, Me.ScaleHeight
+        clrWheel.SetPositionAndSize curFormWidth - (curFormHeight + FixDPI(10)), 0, curFormHeight, curFormHeight
         
         'Fit the variant selector into the remaining area
-        clrVariants.Move 0, 0, clrWheel.Left - FixDPI(10), Me.ScaleHeight
+        clrVariants.SetPositionAndSize 0, 0, clrWheel.GetLeft - FixDPI(10), curFormHeight
         
     End If
 
@@ -154,7 +163,11 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 Private Sub Form_Resize()
-    ReflowInterface
+    If (Not m_ResizeInProgress) Then
+        m_ResizeInProgress = True
+        ReflowInterface
+        m_ResizeInProgress = False
+    End If
 End Sub
 
 Public Function GetCurrentColor()

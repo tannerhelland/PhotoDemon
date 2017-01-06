@@ -555,15 +555,10 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    
-    'Because we paint our own captions, we must update our own internal color cache
-    UpdateColorList
-    
-    'The support class handles the rest of this for us
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    
-    'If theme changes require us to redraw our control, the support class will raise additional paint events for us.
-    
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    End If
 End Sub
 
 'Post-translation, we can request an immediate refresh

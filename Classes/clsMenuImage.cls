@@ -716,23 +716,23 @@ AddImageFromStream_Error:
 End Function
 
 Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean) As Boolean
+    
     Dim hGraphics As Long
     Dim imgWidth As Single
     Dim imgHeight As Single
     Dim Index As Long
-    Dim OldhDib As Long
-
+    Dim oldhDib As Long
     
     If (hImage <> 0) Then
     
         Index = CreateNewDib()
         
-        If Index <> -1 Then
+        If (Index <> -1) Then
             
             Dim tmpDC As Long
             tmpDC = GDI.GetMemoryDC()
             
-            OldhDib = SelectObject(tmpDC, mDIB(Index).hDIB)
+            oldhDib = SelectObject(tmpDC, mDIB(Index).hDIB)
         
             GdipCreateFromHDC tmpDC, hGraphics
         
@@ -764,7 +764,7 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
             GdipDisposeImage hImage
             GdipDeleteGraphics hGraphics
             
-            Call SelectObject(tmpDC, OldhDib)
+            Call SelectObject(tmpDC, oldhDib)
             GDI.FreeMemoryDC tmpDC
             
             pvAddImagen = True

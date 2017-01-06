@@ -94,7 +94,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
         Dim baseColorValue As Long
         
         'If the program is running, try to retrieve a matching color from PD's central theme manager.
-        If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
+        If g_IsProgramRunning And (Not g_Themer Is Nothing) Then
             
             'Start by seeing if the central themer has already cached a value for this color
             If g_Themer.RetrieveColorFromCache(m_ObjectName, colorName, m_ColorList(colorIndex)) Then
@@ -109,10 +109,10 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
                 colorString = g_Themer.LookUpColor(m_ObjectName, colorName)
                 
                 'If the color lookup was successful, colorString will be non-null.
-                If Len(colorString) <> 0 Then
+                If (Len(colorString) <> 0) Then
                     
                     'Attempt to convert the string into an RGB long
-                    colorLookupSuccessful = Colors.GetColorFromString(colorString, baseColorValue)
+                    colorLookupSuccessful = Colors.GetColorFromString(colorString, baseColorValue, ColorHex)
                     If colorLookupSuccessful Then
                         
                         'Store the base color value.  We'll use this as the basis for all subsequent color calculations.
@@ -144,7 +144,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
         End If
         
         'If the program is not running, or if color lookup failed, fall back to the "IDE default" value
-        If Not colorLookupSuccessful Then
+        If (Not colorLookupSuccessful) Then
             
             colorLookupSuccessful = Colors.GetColorFromString(IDE_FailsafeColor, baseColorValue)
             If colorLookupSuccessful Then
@@ -182,8 +182,8 @@ Private Sub FillInColorVariant(ByRef objectName As String, ByRef colorName As St
     Dim colorString As String
     colorString = g_Themer.LookUpColor(objectName, colorVariantName)
     
-    If Len(colorString) <> 0 Then
-        If Not Colors.GetColorFromString(colorString, dstColor) Then
+    If (Len(colorString) <> 0) Then
+        If (Not Colors.GetColorFromString(colorString, dstColor)) Then
             dstColor = failsafeColor
         End If
     End If

@@ -953,42 +953,46 @@ End Sub
 ' and/or retranslating all button captions against the current language.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
-    If g_IsProgramRunning Then
+    If ucSupport.ThemeUpdateRequired Then
         
-        'See if translations are necessary.
-        Dim isTranslationActive As Boolean
+        'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
+        If g_IsProgramRunning Then
             
-        If Not (g_Language Is Nothing) Then
-            If g_Language.TranslationActive Then
-                isTranslationActive = True
+            'See if translations are necessary.
+            Dim isTranslationActive As Boolean
+                
+            If Not (g_Language Is Nothing) Then
+                If g_Language.TranslationActive Then
+                    isTranslationActive = True
+                Else
+                    isTranslationActive = False
+                End If
             Else
                 isTranslationActive = False
             End If
-        Else
-            isTranslationActive = False
+            
+            'Apply the new translations, if any.
+            Dim i As Long
+            For i = 0 To m_numOfButtons - 1
+                If isTranslationActive Then
+                    m_Buttons(i).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(i).btCaptionEn)
+                Else
+                    m_Buttons(i).btCaptionTranslated = m_Buttons(i).btCaptionEn
+                End If
+            Next i
+            
         End If
         
-        'Apply the new translations, if any.
-        Dim i As Long
-        For i = 0 To m_numOfButtons - 1
-            If isTranslationActive Then
-                m_Buttons(i).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(i).btCaptionEn)
-            Else
-                m_Buttons(i).btCaptionTranslated = m_Buttons(i).btCaptionEn
-            End If
-        Next i
+        'Update all text managed by the support class (e.g. tooltips)
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+        'This control requests quite a few colors from the central themer; update its color cache now
+        UpdateColorList
+        
+        'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button
+        UpdateControlLayout
         
     End If
-    
-    'Update all text managed by the support class (e.g. tooltips)
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    
-    'This control requests quite a few colors from the central themer; update its color cache now
-    UpdateColorList
-    
-    'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button
-    UpdateControlLayout
     
 End Sub
 
@@ -1063,4 +1067,3 @@ Private Sub SynchronizeToolTipToIndex(Optional ByVal srcIndex As Long = 0)
     End If
 
 End Sub
-

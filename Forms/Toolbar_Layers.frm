@@ -188,7 +188,7 @@ Private Sub Form_Load()
     m_lastUsedSettings.LoadAllControlValues
     
     'Theme everything
-    UpdateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme True
     
     'Technically, we would now want to call ReflowInterface() to make sure everything is correctly aligned.
     ' However, UpdateAgainstCurrentTheme now calls that function automatically.
@@ -305,7 +305,7 @@ End Sub
 ' 3) ApplyThemeAndTranslations is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal isFirstLoad As Boolean = False)
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -318,10 +318,12 @@ Public Sub UpdateAgainstCurrentTheme()
         lnSeparatorLeft.borderColor = vbHighlight
     End If
     
-    'TODO: pass along the request to any active child forms.
-    If Not (layerpanel_Navigator) Is Nothing Then layerpanel_Navigator.UpdateAgainstCurrentTheme
-    If Not (layerpanel_Colors) Is Nothing Then layerpanel_Colors.UpdateAgainstCurrentTheme
-    If Not (layerpanel_Layers) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
+    'Pass the theme update request to any active child forms.
+    ' (Note that we don't have to do this on our initial load, because the panels will automatically
+    ' theme themselves.)
+    If ((Not layerpanel_Navigator Is Nothing) And (Not isFirstLoad)) Then layerpanel_Navigator.UpdateAgainstCurrentTheme
+    If ((Not layerpanel_Colors Is Nothing) And (Not isFirstLoad)) Then layerpanel_Colors.UpdateAgainstCurrentTheme
+    If ((Not layerpanel_Layers Is Nothing) And (Not isFirstLoad)) Then layerpanel_Layers.UpdateAgainstCurrentTheme
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
     ReflowInterface

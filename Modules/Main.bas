@@ -584,7 +584,7 @@ Public Sub ContinueLoadingProgram()
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Prep menus"
+        perfCheck.MarkEvent "Prep developer menus"
     #End If
     
     LoadMessage "Preparing program menus..."
@@ -599,9 +599,17 @@ Public Sub ContinueLoadingProgram()
         FormMain.mnuTool(9).Visible = False
         FormMain.mnuTool(10).Visible = False
     End If
-        
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Prep accelerators"
+    #End If
+    
     'Create all manual shortcuts (ones VB isn't capable of generating itself)
     LoadAccelerators
+            
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Prep MRU menus"
+    #End If
             
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
     ' CHANGING: Using pdMRUManager instead of pdRecentFiles
@@ -612,9 +620,17 @@ Public Sub ContinueLoadingProgram()
     Set g_RecentMacros = New pdMRUManager
     g_RecentMacros.InitList New pdMRURecentMacros
     g_RecentMacros.MRU_LoadFromFile
-            
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Load all menu icons"
+    #End If
+    
     'Load and draw all menu icons
     Icons_and_Cursors.LoadMenuIcons
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Final interface sync"
+    #End If
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     SyncInterfaceToCurrentImage

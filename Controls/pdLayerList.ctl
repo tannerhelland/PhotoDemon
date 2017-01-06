@@ -292,13 +292,6 @@ End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
 Private Sub RedrawBackBuffer()
-        
-'    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-'    Dim bufferDC As Long
-'    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDLL_Background, Me.Enabled))
-'
-'    'Paint the final result to the screen, as relevant
-'    ucSupport.RequestRepaint
     
 End Sub
 
@@ -315,10 +308,12 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal forceLayoutUpdate As Boolean
     
     If forceLayoutUpdate Then UpdateControlLayout
     
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    lbView.UpdateAgainstCurrentTheme
-    vScroll.UpdateAgainstCurrentTheme
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        lbView.UpdateAgainstCurrentTheme
+        vScroll.UpdateAgainstCurrentTheme
+    End If
     
 End Sub
 

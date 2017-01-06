@@ -100,7 +100,7 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
         'See if this resource exists in the collection.  (It may not, as I'm still in the process of migrating
         ' all image resources to the new resource format.)
         Dim nodeIndex As Long
-        nodeIndex = m_Resources.GetNodeIndexFromName(imgResName)
+        nodeIndex = m_Resources.GetNodeIndexFromName(imgResName, vbBinaryCompare)
         
         '-1 is returned if the node doesn't exist in the collection
         If (nodeIndex >= 0) Then

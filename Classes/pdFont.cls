@@ -731,7 +731,7 @@ Public Function DoesFontExist(ByVal fontNameToCheck As String, Optional ByRef fo
     tmpFont.Size = nearestFontSize
     
     'See if the font object has the same name.  Windows will automatically substitute a new font if the requested one can't be found.
-    If StrComp(fontNameToCheck, tmpFont.Name, vbTextCompare) = 0 Then DoesFontExist = True Else DoesFontExist = False
+    DoesFontExist = CBool(StrComp(fontNameToCheck, tmpFont.Name, vbTextCompare) = 0)
     
     'Not sure if helpful, but return the replacement font name and nearest supported size
     fontSubstitute = tmpFont.Name

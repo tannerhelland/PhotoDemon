@@ -692,93 +692,97 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
 
-    UpdateColorList
-    
-    If g_IsProgramRunning Then
+    If ucSupport.ThemeUpdateRequired Then
         
-        Dim buttonIconSize As Long
-        buttonIconSize = FixDPI(16)
+        UpdateColorList
         
-        cmdZoomFit.AssignImage "zoom_fit", , , , buttonIconSize, buttonIconSize
-        cmdZoomIn.AssignImage "zoom_in", , , , buttonIconSize, buttonIconSize
-        cmdZoomOut.AssignImage "zoom_out", , , , buttonIconSize, buttonIconSize
-        cmdImgSize.AssignImage "generic_imageportrait", , , , buttonIconSize, buttonIconSize
+        If g_IsProgramRunning Then
+            
+            Dim buttonIconSize As Long
+            buttonIconSize = FixDPI(16)
+            
+            cmdZoomFit.AssignImage "zoom_fit", , , , buttonIconSize, buttonIconSize
+            cmdZoomIn.AssignImage "zoom_in", , , , buttonIconSize, buttonIconSize
+            cmdZoomOut.AssignImage "zoom_out", , , , buttonIconSize, buttonIconSize
+            cmdImgSize.AssignImage "generic_imageportrait", , , , buttonIconSize, buttonIconSize
+            
+            'Load various status bar icons from the resource file
+            If (sbIconCoords Is Nothing) Then Set sbIconCoords = New pdDIB
+            If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
+            LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
+            LoadResourceToDIB "generic_network", sbIconNetwork
+            
+        End If
         
-        'Load various status bar icons from the resource file
-        If (sbIconCoords Is Nothing) Then Set sbIconCoords = New pdDIB
-        If (sbIconNetwork Is Nothing) Then Set sbIconNetwork = New pdDIB
-        LoadResourceToDIB "generic_cursor", sbIconCoords, buttonIconSize, buttonIconSize
-        LoadResourceToDIB "generic_network", sbIconNetwork
+        'Rebuild all drop-down boxes (so that translations can be applied)
+        Dim backupZoomIndex As Long, backupSizeIndex As Long
+        backupZoomIndex = cmbZoom.ListIndex
+        backupSizeIndex = cmbSizeUnit.ListIndex
+        
+        'Repopulate zoom dropdown text
+        If Not (g_Zoom Is Nothing) Then g_Zoom.InitializeViewportEngine
+        If Not (g_Zoom Is Nothing) Then g_Zoom.PopulateZoomComboBox cmbZoom, backupZoomIndex
+        Me.PopulateSizeUnits
+        
+        'Auto-size the newly populated combo boxes, according to the width of their longest entries
+        cmbZoom.SetWidthAutomatically
+        cmbSizeUnit.SetWidthAutomatically
+        
+        cmdZoomFit.AssignTooltip "Fit the image on-screen"
+        cmdZoomIn.AssignTooltip "Zoom in"
+        cmdZoomOut.AssignTooltip "Zoom out"
+        cmdImgSize.AssignTooltip "Resize image"
+        cmbZoom.AssignTooltip "Change viewport zoom"
+        cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
+        
+        Dim sbBackColor As Long
+        sbBackColor = m_Colors.RetrieveColor(PDSB_Background, Me.Enabled)
+        UserControl.BackColor = sbBackColor
+        
+        lblCoordinates.BackColor = sbBackColor
+        lblImgSize.BackColor = sbBackColor
+        lblMessages.BackColor = sbBackColor
+        
+        cmdZoomFit.BackColor = sbBackColor
+        cmdZoomIn.BackColor = sbBackColor
+        cmdZoomOut.BackColor = sbBackColor
+        cmdImgSize.BackColor = sbBackColor
+        cmbZoom.BackgroundColor = sbBackColor
+        cmbSizeUnit.BackgroundColor = sbBackColor
+        
+        lblCoordinates.UpdateAgainstCurrentTheme
+        lblImgSize.UpdateAgainstCurrentTheme
+        lblMessages.UpdateAgainstCurrentTheme
+        
+        cmdZoomFit.UpdateAgainstCurrentTheme
+        cmdZoomIn.UpdateAgainstCurrentTheme
+        cmdZoomOut.UpdateAgainstCurrentTheme
+        cmdImgSize.UpdateAgainstCurrentTheme
+        
+        cmbZoom.UpdateAgainstCurrentTheme
+        cmbSizeUnit.UpdateAgainstCurrentTheme
+        
+        ucSupport.UpdateAgainstThemeAndLanguage
+        
+        'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
+        cmbZoom.Top = (UserControl.ScaleHeight - cmbZoom.GetHeight) \ 2
+        cmbSizeUnit.Top = (UserControl.ScaleHeight - cmbSizeUnit.GetHeight) \ 2
+        
+        'Restore zoom and size unit indices
+        cmbZoom.ListIndex = backupZoomIndex
+        cmbSizeUnit.ListIndex = backupSizeIndex
+        
+        'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
+        If g_OpenImageCount > 0 Then
+            DisplayImageSize pdImages(g_CurrentImage), False
+        Else
+            DisplayImageSize Nothing, True
+        End If
+        
+        DisplayCanvasCoordinates 0, 0, True
+        FitMessageArea
         
     End If
-    
-    'Rebuild all drop-down boxes (so that translations can be applied)
-    Dim backupZoomIndex As Long, backupSizeIndex As Long
-    backupZoomIndex = cmbZoom.ListIndex
-    backupSizeIndex = cmbSizeUnit.ListIndex
-    
-    'Repopulate zoom dropdown text
-    If Not (g_Zoom Is Nothing) Then g_Zoom.InitializeViewportEngine
-    If Not (g_Zoom Is Nothing) Then g_Zoom.PopulateZoomComboBox cmbZoom, backupZoomIndex
-    Me.PopulateSizeUnits
-    
-    'Auto-size the newly populated combo boxes, according to the width of their longest entries
-    cmbZoom.SetWidthAutomatically
-    cmbSizeUnit.SetWidthAutomatically
-    
-    cmdZoomFit.AssignTooltip "Fit the image on-screen"
-    cmdZoomIn.AssignTooltip "Zoom in"
-    cmdZoomOut.AssignTooltip "Zoom out"
-    cmdImgSize.AssignTooltip "Resize image"
-    cmbZoom.AssignTooltip "Change viewport zoom"
-    cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
-    
-    Dim sbBackColor As Long
-    sbBackColor = m_Colors.RetrieveColor(PDSB_Background, Me.Enabled)
-    UserControl.BackColor = sbBackColor
-    
-    lblCoordinates.BackColor = sbBackColor
-    lblImgSize.BackColor = sbBackColor
-    lblMessages.BackColor = sbBackColor
-    
-    cmdZoomFit.BackColor = sbBackColor
-    cmdZoomIn.BackColor = sbBackColor
-    cmdZoomOut.BackColor = sbBackColor
-    cmdImgSize.BackColor = sbBackColor
-    cmbZoom.BackgroundColor = sbBackColor
-    cmbSizeUnit.BackgroundColor = sbBackColor
-    
-    lblCoordinates.UpdateAgainstCurrentTheme
-    lblImgSize.UpdateAgainstCurrentTheme
-    lblMessages.UpdateAgainstCurrentTheme
-    
-    cmdZoomFit.UpdateAgainstCurrentTheme
-    cmdZoomIn.UpdateAgainstCurrentTheme
-    cmdZoomOut.UpdateAgainstCurrentTheme
-    cmdImgSize.UpdateAgainstCurrentTheme
-    
-    cmbZoom.UpdateAgainstCurrentTheme
-    cmbSizeUnit.UpdateAgainstCurrentTheme
-    
-    ucSupport.UpdateAgainstThemeAndLanguage
-    
-    'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
-    cmbZoom.Top = (UserControl.ScaleHeight - cmbZoom.GetHeight) \ 2
-    cmbSizeUnit.Top = (UserControl.ScaleHeight - cmbSizeUnit.GetHeight) \ 2
-    
-    'Restore zoom and size unit indices
-    cmbZoom.ListIndex = backupZoomIndex
-    cmbSizeUnit.ListIndex = backupSizeIndex
-    
-    'Note that we don't actually move the last line status bar; that is handled by DisplayImageCoordinates itself
-    If g_OpenImageCount > 0 Then
-        DisplayImageSize pdImages(g_CurrentImage), False
-    Else
-        DisplayImageSize Nothing, True
-    End If
-    
-    DisplayCanvasCoordinates 0, 0, True
-    FitMessageArea
     
 End Sub
 

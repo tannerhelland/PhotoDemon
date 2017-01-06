@@ -169,6 +169,7 @@ End Sub
 'Given an index in the availableLanguages array, mark that as the new language (including saving it to the preferences file)
 Public Sub ActivateNewLanguage(ByVal newLangIndex As Long, Optional ByVal useDoEvents As Boolean = False)
     curLanguage = newLangIndex
+    Interface.GenerateInterfaceID
     WriteLanguagePreferencesToFile
     ApplyLanguage useDoEvents
 End Sub
@@ -847,23 +848,27 @@ End Sub
 
 'Translate a form caption
 Public Sub TranslateFormCaption(ByRef srcForm As Form)
-
-    Dim searchString As String, newString As String
     
-    If TranslationActive Then
-        searchString = srcForm.Caption
-        newString = GetTranslationTagFromCaption(searchString)
-    Else
-        newString = srcForm.Caption
-    End If
+    If (Len(srcForm.Caption) <> 0) Then
     
-    'If a new string was found, apply it to the object's caption
-    If Len(newString) <> 0 Then
-        If Not (g_WindowManager Is Nothing) Then
-            g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
+        Dim searchString As String, newString As String
+        
+        If TranslationActive Then
+            searchString = srcForm.Caption
+            newString = GetTranslationTagFromCaption(searchString)
         Else
-            srcForm.Caption = " " & newString
+            newString = srcForm.Caption
         End If
+        
+        'If a new string was found, apply it to the object's caption
+        If (Len(newString) <> 0) Then
+            If (Not g_WindowManager Is Nothing) Then
+                g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
+            Else
+                srcForm.Caption = " " & newString
+            End If
+        End If
+        
     End If
     
 End Sub
@@ -962,28 +967,6 @@ Public Sub ApplyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             
             'Note that we do not re-append the accelerator here.  This is handled by a subsequent function
             ' (required because menu icons must be reapplied as well).
-            
-        End If
-        
-        'If this is a list box or combo box, replacing the text involves a bit of work
-        If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
-            
-            'Enumerate through each entry in the control (if any are present!)
-            If eControl.ListCount > 0 Then
-            
-                For i = 0 To eControl.ListCount - 1
-                    tmpString = Trim$(eControl.List(i))
-                    If (Len(tmpString) <> 0) Then
-                        If (Not IsNumeric(tmpString)) Then
-                            eControl.List(i) = TranslateMessage(tmpString)
-                        End If
-                    End If
-                Next i
-                
-            End If
-            
-            'If present, translate the tooltip as well
-            If (Len(Trim$(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
             
         End If
         

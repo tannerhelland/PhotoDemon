@@ -507,7 +507,7 @@ Private Sub cmdAction_Click(Index As Integer)
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -527,7 +527,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Automatically validate all relevant controls on the parent object.  This is a huge perk, because it saves us
     ' from having to write validation code individually.
@@ -1256,44 +1256,48 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'When running, we can assign images and tooltips to the image-only command buttons
-    If g_IsProgramRunning Then
-        Dim cmdButtonImageSize As Long
-        cmdButtonImageSize = FixDPI(24)
-        cmdAction(0).AssignImage "generic_reset", , , , cmdButtonImageSize, cmdButtonImageSize
-        cmdAction(1).AssignImage "generic_random", , , , cmdButtonImageSize, cmdButtonImageSize
-        cmdAction(2).AssignImage "generic_savepreset", , , , cmdButtonImageSize, cmdButtonImageSize
+    If ucSupport.ThemeUpdateRequired Then
+    
+        'When running, we can assign images and tooltips to the image-only command buttons
+        If g_IsProgramRunning Then
+            Dim cmdButtonImageSize As Long
+            cmdButtonImageSize = FixDPI(24)
+            cmdAction(0).AssignImage "generic_reset", , , , cmdButtonImageSize, cmdButtonImageSize
+            cmdAction(1).AssignImage "generic_random", , , , cmdButtonImageSize, cmdButtonImageSize
+            cmdAction(2).AssignImage "generic_savepreset", , , , cmdButtonImageSize, cmdButtonImageSize
+        End If
+        
+        cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
+        cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
+        cmdAction(0).AssignTooltip "Reset all settings to their default values.", "Reset"
+        cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
+        cmdAction(2).AssignTooltip "Save the current settings as a new preset.", "Save preset"
+        cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
+        
+        'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
+        ' colors are loaded FIRST
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+        Dim cbBackgroundColor As Long
+        cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)
+        
+        'Synchronize the background color of individual controls against the command bar's backcolor
+        cmdOK.BackgroundColor = cbBackgroundColor
+        cmdCancel.BackgroundColor = cbBackgroundColor
+        cmdOK.UpdateAgainstCurrentTheme
+        cmdCancel.UpdateAgainstCurrentTheme
+        
+        cboPreset.BackgroundColor = cbBackgroundColor
+        cboPreset.UpdateAgainstCurrentTheme
+        
+        Dim i As Long
+        For i = cmdAction.lBound To cmdAction.UBound
+            cmdAction(i).BackColor = cbBackgroundColor
+            cmdAction(i).UpdateAgainstCurrentTheme
+        Next i
+        
     End If
-    
-    cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
-    cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
-    cmdAction(0).AssignTooltip "Reset all settings to their default values.", "Reset"
-    cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
-    cmdAction(2).AssignTooltip "Save the current settings as a new preset.", "Save preset"
-    cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
-    
-    'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
-    ' colors are loaded FIRST
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    
-    Dim cbBackgroundColor As Long
-    cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)
-    
-    'Synchronize the background color of individual controls against the command bar's backcolor
-    cmdOK.BackgroundColor = cbBackgroundColor
-    cmdCancel.BackgroundColor = cbBackgroundColor
-    cmdOK.UpdateAgainstCurrentTheme
-    cmdCancel.UpdateAgainstCurrentTheme
-    
-    cboPreset.BackgroundColor = cbBackgroundColor
-    cboPreset.UpdateAgainstCurrentTheme
-    
-    Dim i As Long
-    For i = cmdAction.lBound To cmdAction.UBound
-        cmdAction(i).BackColor = cbBackgroundColor
-        cmdAction(i).UpdateAgainstCurrentTheme
-    Next i
     
 End Sub
 

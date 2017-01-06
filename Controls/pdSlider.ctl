@@ -634,12 +634,12 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    pdssPrimary.UpdateAgainstCurrentTheme
-    tudPrimary.UpdateAgainstCurrentTheme
-    ucSupport.UpdateAgainstThemeAndLanguage
-    
-    'Update the control's layout to account for new translations and/or theme changes
-    UpdateControlLayout
+    If ucSupport.ThemeUpdateRequired Then
+        pdssPrimary.UpdateAgainstCurrentTheme
+        tudPrimary.UpdateAgainstCurrentTheme
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        UpdateControlLayout
+    End If
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.

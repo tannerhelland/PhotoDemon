@@ -138,7 +138,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -161,7 +161,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Let the caller know that OK was pressed
     RaiseEvent OKClick
@@ -326,20 +326,24 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
-    ' colors are loaded FIRST
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    
-    Dim cbBackgroundColor As Long
-    cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)
-    
-    'Synchronize the background color of individual controls against the command bar's backcolor
-    cmdOK.BackgroundColor = cbBackgroundColor
-    cmdCancel.BackgroundColor = cbBackgroundColor
-    cmdOK.UseCustomBackgroundColor = True
-    cmdCancel.UseCustomBackgroundColor = True
-    cmdOK.UpdateAgainstCurrentTheme
-    cmdCancel.UpdateAgainstCurrentTheme
+    If ucSupport.ThemeUpdateRequired Then
+        
+        'Because all controls on the command bar are synchronized against a non-standard backcolor, we need to make sure any new
+        ' colors are loaded FIRST
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+        Dim cbBackgroundColor As Long
+        cbBackgroundColor = m_Colors.RetrieveColor(PDCB_Background, Me.Enabled)
+        
+        'Synchronize the background color of individual controls against the command bar's backcolor
+        cmdOK.BackgroundColor = cbBackgroundColor
+        cmdCancel.BackgroundColor = cbBackgroundColor
+        cmdOK.UseCustomBackgroundColor = True
+        cmdCancel.UseCustomBackgroundColor = True
+        cmdOK.UpdateAgainstCurrentTheme
+        cmdCancel.UpdateAgainstCurrentTheme
+        
+    End If
     
 End Sub
