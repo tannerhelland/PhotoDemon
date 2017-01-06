@@ -655,13 +655,13 @@ Public Sub ResetMenuIcons()
     AddMenuIcon "PREVIMAGE", 9, 8       'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
-    If Not (g_RecentFiles Is Nothing) Then
+    If (Not g_RecentFiles Is Nothing) Then
     
         Dim numOfMRUFiles As Long
         numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
         
         'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
-        If Not g_IsVistaOrLater Then
+        If (Not g_IsVistaOrLater) Then
             AddMenuIcon "LOADALL", 0, 2, numOfMRUFiles + 1
             AddMenuIcon "CLEARRECENT", 0, 2, numOfMRUFiles + 2
         End If
@@ -722,7 +722,6 @@ Public Sub ResetMenuIcons()
         If g_IsVistaOrLater Then
             cMRUIcons.AddImageFromStream LoadResData("LOADALLLRG", "CUSTOM")
             cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 2
-            
             cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
             cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 2
         End If

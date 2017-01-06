@@ -1184,10 +1184,12 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    UpdateColorList
-    listSupport.UpdateAgainstCurrentTheme
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    lbPrimary.UpdateAgainstCurrentTheme
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        listSupport.UpdateAgainstCurrentTheme
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        lbPrimary.UpdateAgainstCurrentTheme
+    End If
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
@@ -1238,5 +1240,4 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
-
 

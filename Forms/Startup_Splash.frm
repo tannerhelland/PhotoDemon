@@ -88,14 +88,11 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
     m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("PDLOGOBLACK", m_shadowDIB)
     
-    If FixDPIFloat(1) = 1 Then
+    If (FixDPIFloat(1) = 1) Then
         QuickBlurDIB m_shadowDIB, 7, False
     Else
         QuickBlurDIB m_shadowDIB, 7 * (1 / FixDPIFloat(1)), False
     End If
-    
-    'Set the StretchBlt mode of the underlying form in advance
-    SetStretchBltMode Me.hDC, STRETCHBLT_HALFTONE
     
 End Sub
 

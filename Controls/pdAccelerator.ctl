@@ -296,7 +296,7 @@ Public Function AddAccelerator(ByVal vKeyCode As KeyCodeConstants, ByVal Shift A
     Dim failsafeCheck As Long
     failsafeCheck = GetAcceleratorIndex(vKeyCode, Shift)
     
-    If failsafeCheck >= 0 Then
+    If (failsafeCheck >= 0) Then
         AddAccelerator = failsafeCheck
         Exit Function
     End If

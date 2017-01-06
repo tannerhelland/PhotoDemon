@@ -787,9 +787,8 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 
 Private Sub bsText_BrushChanged()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -816,9 +815,8 @@ End Sub
 
 Private Sub bsTextBackground_BrushChanged()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -845,9 +843,8 @@ End Sub
 
 Private Sub btnFontStyles_Click(Index As Integer)
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -884,7 +881,7 @@ End Sub
 Private Sub btnFontStyles_GotFocusAPI(Index As Integer)
     
     'Non-destructive effects are obviously not tracked if no images are loaded
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     
     'Set Undo/Redo markers for whichever button was toggled
     Select Case Index
@@ -966,9 +963,8 @@ End Sub
 
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -995,9 +991,8 @@ End Sub
 
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1024,9 +1019,8 @@ End Sub
 
 Private Sub cboCharCase_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1053,9 +1047,8 @@ End Sub
 
 Private Sub cboCharMirror_Click()
 
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1082,9 +1075,8 @@ End Sub
 
 Private Sub cboTextFontFace_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1111,9 +1103,8 @@ End Sub
 
 Private Sub cboTextRenderingHint_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1140,9 +1131,8 @@ End Sub
 
 Private Sub cboWordWrap_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1169,9 +1159,8 @@ End Sub
 
 Private Sub chkBackground_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1198,9 +1187,8 @@ End Sub
 
 Private Sub chkBackgroundBorder_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1227,9 +1215,8 @@ End Sub
 
 Private Sub chkFillText_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1256,9 +1243,8 @@ End Sub
 
 Private Sub chkHinting_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1285,9 +1271,8 @@ End Sub
 
 Private Sub chkOutlineText_Click()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1435,9 +1420,8 @@ End Sub
 
 Private Sub psText_PenChanged()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1464,9 +1448,8 @@ End Sub
 
 Private Sub psTextBackground_PenChanged()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1493,9 +1476,8 @@ End Sub
 
 Private Sub sltCharInflation_Change()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1522,9 +1504,8 @@ End Sub
 
 Private Sub sltCharOrientation_Change()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1551,9 +1532,8 @@ End Sub
 
 Private Sub sltCharSpacing_Change()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1580,9 +1560,8 @@ End Sub
 
 Private Sub tudJitter_Change(Index As Integer)
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1609,9 +1588,8 @@ End Sub
 
 Private Sub tudLineSpacing_Change()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1638,9 +1616,8 @@ End Sub
 
 Private Sub tudMargin_Change(Index As Integer)
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1718,9 +1695,8 @@ End Sub
 
 Private Sub tudTextFontSize_Change()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1737,7 +1713,7 @@ Private Sub tudTextFontSize_Change()
 End Sub
 
 Private Sub tudTextFontSize_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
@@ -1747,9 +1723,8 @@ End Sub
 
 Private Sub txtTextTool_Change()
     
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
+    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
     Tool_Support.SetToolBusyState True
@@ -1773,6 +1748,22 @@ End Sub
 Private Sub txtTextTool_LostFocusAPI()
     If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
+
+'Most objects on this form can avoid doing any work if the current layer is not a text layer.
+Private Function CurrentLayerIsText() As Boolean
+    
+    CurrentLayerIsText = False
+    
+    'Changing UI elements does nothing if no images are loaded
+    If (g_OpenImageCount = 0) Then Exit Function
+    
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+        If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+            CurrentLayerIsText = pdImages(g_CurrentImage).GetActiveLayer.IsLayerText
+        End If
+    End If
+    
+End Function
 
 'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-typography text layer of
 ' some type (e.g. basic text), an option will be displayed to convert the layer.

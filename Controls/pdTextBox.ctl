@@ -594,19 +594,17 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    
-    'Update any theme-related colors
-    UpdateColorList
-    ucSupport.UpdateAgainstThemeAndLanguage
-    
-    If g_IsProgramRunning Then UpdateControlLayout
-    
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        ucSupport.UpdateAgainstThemeAndLanguage
+        If g_IsProgramRunning Then UpdateControlLayout
+    End If
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    If Not (m_EditBox Is Nothing) Then
+    If (Not m_EditBox Is Nothing) Then
         Dim targetHwnd As Long
         If m_EditBox.hWnd = 0 Then targetHwnd = UserControl.hWnd Else targetHwnd = m_EditBox.hWnd
         ucSupport.AssignTooltip targetHwnd, newTooltip, newTooltipTitle, newTooltipIcon

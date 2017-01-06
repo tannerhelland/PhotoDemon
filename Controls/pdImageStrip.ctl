@@ -1248,17 +1248,21 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    UpdateColorList
-    UserControl.BackColor = m_Colors.RetrieveColor(PDIS_Background, Me.Enabled)
     
-    'Reset any resource DIBs, which will force us to regenerate them against new theme settings the
-    ' next time we need to render them.
-    Set m_CloseIconRed = Nothing
-    Set m_CloseIconGray = Nothing
-    Set m_CloseIconShadow = Nothing
-    Set m_ModifiedIcon = Nothing
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        UserControl.BackColor = m_Colors.RetrieveColor(PDIS_Background, Me.Enabled)
     
-    ucSupport.UpdateAgainstThemeAndLanguage
+        'Reset any resource DIBs, which will force us to regenerate them against new theme settings the
+        ' next time we need to render them.
+        Set m_CloseIconRed = Nothing
+        Set m_CloseIconGray = Nothing
+        Set m_CloseIconShadow = Nothing
+        Set m_ModifiedIcon = Nothing
+        
+        ucSupport.UpdateAgainstThemeAndLanguage
+    End If
+    
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

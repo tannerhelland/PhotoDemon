@@ -136,6 +136,18 @@ Private m_UniversalColors As pdThemeColors
 ' color changes in Form_Load - as it does for us)
 Private m_Subclass As cSelfSubHookCallback
 
+'Each theme is assigned a custom ID when it is loaded.  This ID can be used by external objects to see if they
+' need to re-theme themselves.  (If the program's theme hasn't changed since the last time they re-themed,
+' they can safely ignore UpdateAgainstCurrentTheme requests.)
+'
+'Note that UI elements should not generally query this value directly; instead, they should use the Interface
+' module to do it, because it appends a language ID to this value.
+Private m_CurrentThemeID As String
+
+Public Function GetCurrentThemeID() As String
+    GetCurrentThemeID = m_CurrentThemeID
+End Function
+
 'Pull the current default PD theme from the user preferences file, and attempt to load it.  If the theme can't be loaded,
 ' we'll fall back to PD's default light-on-dark theme.
 Public Sub LoadDefaultPDTheme()
@@ -169,6 +181,10 @@ Public Sub LoadDefaultPDTheme()
     Else
         If g_IsProgramRunning Then RaiseThemingError "failed to load theme file: " & themeFilename
     End If
+    
+    'Notify the UI manager that a new theme is active.  Individual controls need to check this to know if
+    ' they require a redraw to match any new theme settings.
+    Interface.GenerateInterfaceID
     
     'Theme colors are loaded on-demand, so we have no further work to do here
     
@@ -371,7 +387,13 @@ Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
         
         'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
         ' on the theme folder.
-        If (Not LoadThemeFile) Then
+        If LoadThemeFile Then
+            If (Len(overrideColorDefinitionFilename) <> 0) Then
+                m_CurrentThemeID = themeFilename & "-" & overrideColorDefinitionFilename
+            Else
+                m_CurrentThemeID = themeFilename
+            End If
+        Else
             RaiseThemingError "Default theme failed to load!  Catastrophic failure imminent!"
             ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
         End If
@@ -397,7 +419,7 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
     Const DEFAULT_NAMESPACE As String = "Default"
     Dim objectNameExists As Boolean
     objectNameExists = m_XML.DoesTagExist(objectName)
-    If Not objectNameExists Then
+    If (Not objectNameExists) Then
         objectName = DEFAULT_NAMESPACE
         objectNameExists = m_XML.DoesTagExist(objectName)
     End If
@@ -411,13 +433,13 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
         
         'If we retrieved any valid string, attempt to resolve it to an actual color value.  (At this point, the color
         ' may just be a variable instead of an actual hex value.)
-        If Len(colorDescription) <> 0 Then
+        If (Len(colorDescription) <> 0) Then
             finalColor = ResolveColor(colorDescription)
         
         'If we used a custom object name, but no color is defined for that value, try a new retrieval from
         ' the "Default" namespace.  (Empty colors are still valid, as long as their Default variant is defined.)
         Else
-            If StrComp(objectName, DEFAULT_NAMESPACE, vbBinaryCompare) <> 0 Then
+            If (StrComp(objectName, DEFAULT_NAMESPACE, vbBinaryCompare) <> 0) Then
                 objectName = DEFAULT_NAMESPACE
                 If m_XML.DoesTagExist(objectName) Then
                     colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName)
@@ -481,7 +503,7 @@ Friend Sub AddColorToCache(ByRef objectName As String, ByRef colorName As String
     m_ColorCache(m_NumColorsCached).OrigColorValues = srcColorEntry
     
     m_NumColorsCached = m_NumColorsCached + 1
-    If m_NumColorsCached > UBound(m_ColorCache) Then ReDim Preserve m_ColorCache(0 To m_NumColorsCached * 2 - 1) As PDCachedColor
+    If (m_NumColorsCached > UBound(m_ColorCache)) Then ReDim Preserve m_ColorCache(0 To m_NumColorsCached * 2 - 1) As PDCachedColor
     
 End Sub
 
@@ -493,8 +515,8 @@ Friend Function RetrieveColorFromCache(ByRef objectName As String, ByRef colorNa
     
     Dim i As Long
     For i = 0 To m_NumColorsCached - 1
-        If StrComp(objectName, m_ColorCache(i).OrigObjectName, vbBinaryCompare) = 0 Then
-            If StrComp(colorName, m_ColorCache(i).OrigColorName, vbBinaryCompare) = 0 Then
+        If (StrComp(objectName, m_ColorCache(i).OrigObjectName, vbBinaryCompare) = 0) Then
+            If (StrComp(colorName, m_ColorCache(i).OrigColorName, vbBinaryCompare) = 0) Then
                 RetrieveColorFromCache = True
                 dstColorEntry = m_ColorCache(i).OrigColorValues
                 Exit For

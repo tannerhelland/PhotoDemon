@@ -2690,12 +2690,12 @@ Private Sub Form_Load()
     'DO NOT CHECK FOR AUTOSAVE DATA if another PhotoDemon session is active.
     If (Not App.PrevInstance) Then
     
-        If Not Autosave_Handler.WasLastShutdownClean Then
+        If (Not Autosave_Handler.WasLastShutdownClean) Then
         
             'Oh no!  Something went horribly wrong with the last PD session.
                                     
             'See if there's any image autosave data worth recovering.
-            If Autosave_Handler.SaveableImagesPresent > 0 Then
+            If (Autosave_Handler.SaveableImagesPresent > 0) Then
             
                 'Autosave data was found!  Present it to the user.
                 Dim userWantsAutosaves As VbMsgBoxResult
@@ -2745,7 +2745,7 @@ Private Sub Form_Load()
     
     Message "Checking command line..."
     
-    If Len(g_CommandLine) <> 0 Then
+    If (Len(g_CommandLine) <> 0) Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Command line might contain images.  Here's what I found:"

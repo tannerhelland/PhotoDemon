@@ -484,8 +484,10 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    UpdateColorList
-    UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-    If (g_OpenImageCount = 0) Then Me.ClearCanvas
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        If (g_OpenImageCount = 0) Then Me.ClearCanvas
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    End If
 End Sub

@@ -530,7 +530,7 @@ End Sub
 ' step must also be called if/when PD's visual theme settings change.
 Private Sub UpdateColorList()
     
-    If m_Colors Is Nothing Then InitializeColorCache
+    If (m_Colors Is Nothing) Then InitializeColorCache
     
     'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
     ' It will build an internal hash table of the colors we request, which makes rendering much faster.
@@ -549,13 +549,8 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then
     
         Dim isTranslationActive As Boolean
-            
-        If Not (g_Language Is Nothing) Then
-            If g_Language.TranslationActive Then
-                isTranslationActive = True
-            Else
-                isTranslationActive = False
-            End If
+        If (Not g_Language Is Nothing) Then
+            isTranslationActive = g_Language.TranslationActive
         Else
             isTranslationActive = False
         End If
@@ -572,11 +567,11 @@ Public Sub UpdateAgainstCurrentTheme()
     End If
     
     'If our translated caption has changed, the new text may overflow its container, so we need to run size heuristics.
-    If StrComp(oldTranslatedText, m_CaptionTranslated, vbBinaryCompare) <> 0 Then m_FontSizeVerified = False
+    If (StrComp(oldTranslatedText, m_CaptionTranslated, vbBinaryCompare) <> 0) Then m_FontSizeVerified = False
     
     'Theme changes may also affect caption coloring; update the relevant color now
     m_CaptionColor = -1
     UpdateColorList
-        
+    
 End Sub
 

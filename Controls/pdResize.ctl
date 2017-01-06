@@ -1043,36 +1043,40 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    'Add the "lock aspect ratio" button
-    If g_IsProgramRunning Then
-        Dim buttonImageSize As Long
-        buttonImageSize = FixDPI(32)
-        cmdAspectRatio.AssignImage "generic_unlock", , , , buttonImageSize, buttonImageSize
-        cmdAspectRatio.AssignImage_Pressed "generic_lock", , , , buttonImageSize, buttonImageSize
+    If ucSupport.ThemeUpdateRequired Then
+        
+        'Add the "lock aspect ratio" button
+        If g_IsProgramRunning Then
+            Dim buttonImageSize As Long
+            buttonImageSize = FixDPI(32)
+            cmdAspectRatio.AssignImage "generic_unlock", , , , buttonImageSize, buttonImageSize
+            cmdAspectRatio.AssignImage_Pressed "generic_lock", , , , buttonImageSize, buttonImageSize
+        End If
+        
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+        'Manually update all sub-controls
+        lblWidth.UpdateAgainstCurrentTheme
+        lblHeight.UpdateAgainstCurrentTheme
+        lblResolution.UpdateAgainstCurrentTheme
+        
+        lblDimensions(0).UpdateAgainstCurrentTheme
+        lblDimensions(1).UpdateAgainstCurrentTheme
+        lblAspectRatio(0).UpdateAgainstCurrentTheme
+        lblAspectRatio(1).UpdateAgainstCurrentTheme
+        
+        tudWidth.UpdateAgainstCurrentTheme
+        tudHeight.UpdateAgainstCurrentTheme
+        tudResolution.UpdateAgainstCurrentTheme
+        
+        cmdAspectRatio.UpdateAgainstCurrentTheme
+        
+        cmbWidthUnit.UpdateAgainstCurrentTheme
+        cmbHeightUnit.UpdateAgainstCurrentTheme
+        cmbResolution.UpdateAgainstCurrentTheme
+        
     End If
-    
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    
-    'Manually update all sub-controls
-    lblWidth.UpdateAgainstCurrentTheme
-    lblHeight.UpdateAgainstCurrentTheme
-    lblResolution.UpdateAgainstCurrentTheme
-    
-    lblDimensions(0).UpdateAgainstCurrentTheme
-    lblDimensions(1).UpdateAgainstCurrentTheme
-    lblAspectRatio(0).UpdateAgainstCurrentTheme
-    lblAspectRatio(1).UpdateAgainstCurrentTheme
-    
-    tudWidth.UpdateAgainstCurrentTheme
-    tudHeight.UpdateAgainstCurrentTheme
-    tudResolution.UpdateAgainstCurrentTheme
-    
-    cmdAspectRatio.UpdateAgainstCurrentTheme
-    
-    cmbWidthUnit.UpdateAgainstCurrentTheme
-    cmbHeightUnit.UpdateAgainstCurrentTheme
-    cmbResolution.UpdateAgainstCurrentTheme
     
 End Sub
 

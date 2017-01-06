@@ -345,15 +345,19 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    UpdateColorList
-    
-    If g_IsProgramRunning Then
-        m_NewCaptionTranslated = g_Language.TranslateMessage("new:")
-        m_OldCaptionTranslated = g_Language.TranslateMessage("original:")
-        ucSupport.UpdateAgainstThemeAndLanguage
-    Else
-        m_NewCaptionTranslated = "new:"
-        m_OldCaptionTranslated = "original:"
+    If ucSupport.ThemeUpdateRequired Then
+        
+        UpdateColorList
+        
+        If g_IsProgramRunning Then
+            m_NewCaptionTranslated = g_Language.TranslateMessage("new:")
+            m_OldCaptionTranslated = g_Language.TranslateMessage("original:")
+            ucSupport.UpdateAgainstThemeAndLanguage
+        Else
+            m_NewCaptionTranslated = "new:"
+            m_OldCaptionTranslated = "original:"
+        End If
+        
     End If
     
 End Sub

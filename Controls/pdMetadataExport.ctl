@@ -319,23 +319,27 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    UpdateColorList
-    
-    ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
-    UserControl.BackColor = m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
-    
-    lblTitle.UpdateAgainstCurrentTheme
-    chkMetadata.UpdateAgainstCurrentTheme
-    chkAnonymize.UpdateAgainstCurrentTheme
-    hplReviewMetadata.UpdateAgainstCurrentTheme
-    chkThumbnail.UpdateAgainstCurrentTheme
-    
-    Dim i As Long
-    For i = lblInfo.lBound To lblInfo.UBound
-        lblInfo(i).UpdateAgainstCurrentTheme
-    Next i
-    
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    If ucSupport.ThemeUpdateRequired Then
+        
+        UpdateColorList
+        
+        ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
+        UserControl.BackColor = m_Colors.RetrieveColor(PDME_Background, Me.Enabled)
+        
+        lblTitle.UpdateAgainstCurrentTheme
+        chkMetadata.UpdateAgainstCurrentTheme
+        chkAnonymize.UpdateAgainstCurrentTheme
+        hplReviewMetadata.UpdateAgainstCurrentTheme
+        chkThumbnail.UpdateAgainstCurrentTheme
+        
+        Dim i As Long
+        For i = lblInfo.lBound To lblInfo.UBound
+            lblInfo(i).UpdateAgainstCurrentTheme
+        Next i
+        
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+    End If
     
 End Sub
 

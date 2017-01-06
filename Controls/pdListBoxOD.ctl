@@ -427,7 +427,7 @@ Private Sub UpdateControlLayout()
         vScroll.Max = lbView.ScrollMax
         vScroll.Value = lbView.ScrollValue
     End If
-            
+                
 End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
@@ -455,10 +455,12 @@ Public Sub UpdateAgainstCurrentTheme(Optional ByVal forceLayoutUpdate As Boolean
     
     If forceLayoutUpdate Then UpdateControlLayout
     
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    lbView.UpdateAgainstCurrentTheme
-    vScroll.UpdateAgainstCurrentTheme
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        lbView.UpdateAgainstCurrentTheme
+        vScroll.UpdateAgainstCurrentTheme
+    End If
     
 End Sub
 

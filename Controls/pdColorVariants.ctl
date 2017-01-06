@@ -190,6 +190,47 @@ Public Property Let WheelShape(ByVal newShape As COLOR_WHEEL_SHAPE)
     End If
 End Property
 
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long)
+    ucSupport.RequestNewPosition newLeft, newTop, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
     If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then NotifyColorManagementChange
 End Sub
@@ -812,9 +853,11 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating any text against the current language.
 Public Sub UpdateAgainstCurrentTheme()
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    UpdateControlLayout
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        UpdateControlLayout
+    End If
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.

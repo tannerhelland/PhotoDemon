@@ -172,6 +172,47 @@ Public Property Let WheelWidth(ByVal newWidth As Single)
     End If
 End Property
 
+'To support high-DPI settings properly, we expose specialized move+size functions
+Public Function GetLeft() As Long
+    GetLeft = ucSupport.GetControlLeft
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    ucSupport.RequestNewPosition newLeft, , True
+End Sub
+
+Public Function GetTop() As Long
+    GetTop = ucSupport.GetControlTop
+End Function
+
+Public Sub SetTop(ByVal newTop As Long)
+    ucSupport.RequestNewPosition , newTop, True
+End Sub
+
+Public Function GetWidth() As Long
+    GetWidth = ucSupport.GetControlWidth
+End Function
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    ucSupport.RequestNewSize newWidth, , True
+End Sub
+
+Public Function GetHeight() As Long
+    GetHeight = ucSupport.GetControlHeight
+End Function
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    ucSupport.RequestNewSize , newHeight, True
+End Sub
+
+Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long)
+    ucSupport.RequestNewPosition newLeft, newTop, True
+End Sub
+
+Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
     If (wMsg = WM_PD_COLOR_MANAGEMENT_CHANGE) Then NotifyColorManagementChange
 End Sub
@@ -530,13 +571,19 @@ Private Sub CreateColorWheel()
     CopyMemory ByVal VarPtrArray(hPixels()), VarPtr(hueSA), 4
     
     Dim x As Long, y As Long
-    Dim r As Long, g As Long, b As Long, a As Long, aFloat As Single
+    Dim r As Double, g As Double, b As Double, a As Long, aFloat As Single
     
     Dim nX As Double, nY As Double, pxAngle As Double
     
     Dim loopWidth As Long, loopHeight As Long
     loopWidth = (m_WheelBuffer.GetDIBWidth - 1) * 4
     loopHeight = (m_WheelBuffer.GetDIBHeight - 1)
+    
+    Dim fLookup() As Single
+    ReDim fLookup(0 To 255) As Single
+    For x = 0 To 255
+        fLookup(x) = CSng(x) / 255
+    Next x
     
     For y = 0 To loopHeight
     For x = 0 To loopWidth Step 4
@@ -546,7 +593,7 @@ Private Sub CreateColorWheel()
         b = hPixels(x, y)
         
         'If this pixel is black, it will be forced to full transparency.  Apply that now.
-        If b = 0 Then
+        If (b = 0) Then
             hPixels(x, y) = 0
             hPixels(x + 1, y) = 0
             hPixels(x + 2, y) = 0
@@ -568,11 +615,11 @@ Private Sub CreateColorWheel()
             pxAngle = (pxAngle + PI) / PI_DOUBLE
             
             'Calculate an RGB triplet that corresponds to this hue (with max value and saturation)
-            Colors.HSVtoRGB pxAngle, 1#, 1#, r, g, b
+            Colors.fHSVtoRGB pxAngle, 1#, 1#, r, g, b
             
             'Retrieve the "alpha" clue for this pixel
             a = hPixels(x, y)
-            aFloat = CDbl(a) / 255
+            aFloat = fLookup(a)
             
             'Premultiply alpha
             r = r * aFloat
@@ -580,9 +627,9 @@ Private Sub CreateColorWheel()
             b = b * aFloat
             
             'Store the new color values
-            hPixels(x, y) = b
-            hPixels(x + 1, y) = g
-            hPixels(x + 2, y) = r
+            hPixels(x, y) = b * 255
+            hPixels(x + 1, y) = g * 255
+            hPixels(x + 2, y) = r * 255
             hPixels(x + 3, y) = a
             
         End If
@@ -643,14 +690,19 @@ Private Sub CreateSVSquare()
     ' (They are constant for each line.)
     Dim xPresets() As Double
     ReDim xPresets(0 To loopWidth) As Double
+    
+    Dim xMultiplier As Double, yMultiplier As Double
+    If (loopWidth <> 0#) Then xMultiplier = 1 / loopWidth Else xMultiplier = 1#
+    If (loopHeight <> 0#) Then yMultiplier = 1 / loopHeight Else yMultiplier = 1#
+    
     For x = 0 To loopWidth Step xPxWidth
-        xPresets(x) = (loopWidth - x) / loopWidth
+        xPresets(x) = (loopWidth - x) * xMultiplier
     Next x
     
     For y = 0 To loopHeight
         
         'Y-values are (obviously) consistent for each y-position
-        lineValue = (loopHeight - y) / loopHeight
+        lineValue = (loopHeight - y) * yMultiplier
         lineValue = Sqr(lineValue)
         
     For x = 0 To loopWidth Step xPxWidth
@@ -892,9 +944,11 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating any text against the current language.
 Public Sub UpdateAgainstCurrentTheme()
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    UpdateControlLayout
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        UpdateControlLayout
+    End If
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

@@ -1268,16 +1268,20 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     
     'Load all hover UI image resources
-    If g_IsProgramRunning Then
-        Dim iconSize As Long
-        iconSize = FixDPI(16)
-        LoadResourceToDIB "generic_visible", img_EyeOpen, iconSize, iconSize
-        LoadResourceToDIB "generic_invisible", img_EyeClosed, iconSize, iconSize
-    End If
+    If ucSupport.ThemeUpdateRequired Then
     
-    UpdateColorList
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    txtLayerName.UpdateAgainstCurrentTheme
+        If g_IsProgramRunning Then
+            Dim iconSize As Long
+            iconSize = FixDPI(16)
+            LoadResourceToDIB "generic_visible", img_EyeOpen, iconSize, iconSize
+            LoadResourceToDIB "generic_invisible", img_EyeClosed, iconSize, iconSize
+        End If
+        
+        UpdateColorList
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        txtLayerName.UpdateAgainstCurrentTheme
+        
+    End If
     
 End Sub
 

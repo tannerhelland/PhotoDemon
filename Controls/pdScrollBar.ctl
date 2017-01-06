@@ -1307,9 +1307,11 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    UpdatePopupText
-    UpdateColorList
-    ucSupport.UpdateAgainstThemeAndLanguage
+    If ucSupport.ThemeUpdateRequired Then
+        UpdatePopupText
+        UpdateColorList
+        ucSupport.UpdateAgainstThemeAndLanguage
+    End If
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

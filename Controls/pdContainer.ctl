@@ -178,10 +178,12 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
-    UpdateColorList
-    ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-    UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
-    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    If ucSupport.ThemeUpdateRequired Then
+        UpdateColorList
+        ucSupport.SetCustomBackColor m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        UserControl.BackColor = m_Colors.RetrieveColor(PDC_Background, Me.Enabled)
+        If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+    End If
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

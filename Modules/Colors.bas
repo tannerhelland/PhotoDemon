@@ -478,7 +478,7 @@ End Sub
 Public Sub fHSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
 
     'If saturation is 0, RGB are calculated identically
-    If s = 0 Then
+    If (s = 0) Then
         r = v
         g = v
         b = v
@@ -491,7 +491,7 @@ Public Sub fHSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, By
         var_H = h * 6
         
         'To keep our math simple, limit hue to [0, 5.9999999]
-        If var_H >= 6 Then var_H = 0
+        If (var_H >= 6) Then var_H = 0
         
         Dim var_I As Long
         var_I = Int(var_H)
@@ -667,34 +667,29 @@ End Function
 Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
     'To make things simpler, remove variability from the source string
-    If InStr(1, srcHex, "#") > 0 Then srcHex = Replace(srcHex, "#", "")
+    If (InStr(1, srcHex, "#", vbBinaryCompare) <> 0) Then srcHex = Right$(srcHex, Len(srcHex) - 1)
     srcHex = LCase(srcHex)
     
-    'Make sure the length is 1, 3, or 6.  Each case is handled specially.
-    Select Case Len(srcHex)
+    Dim txtLen As Long
+    txtLen = Len(srcHex)
     
-        'One character is treated as a shade of gray; extend it to six characters.
-        Case 1
-            srcHex = String$(6, srcHex)
-        
+    'If short-hand length is in use, expand it to 6 chars now
+    If (txtLen = 6) Then
+        '6 characters is what we want; do nothing
+    ElseIf (txtLen = 3) Then
         'Three characters is standard shorthand hex; expand each character as a pair
-        Case 3
-            srcHex = Left$(srcHex, 1) & Left$(srcHex, 1) & Mid$(srcHex, 2, 1) & Mid$(srcHex, 2, 1) & Right$(srcHex, 1) & Right$(srcHex, 1)
-        
-        'Six characters is already valid, so no need to screw with it further.
-        Case 6
-        
+        srcHex = Left$(srcHex, 1) & Left$(srcHex, 1) & Mid$(srcHex, 2, 1) & Mid$(srcHex, 2, 1) & Right$(srcHex, 1) & Right$(srcHex, 1)
+    ElseIf (txtLen = 1) Then
+        'One character is treated as a shade of gray; extend it to six characters.
+        srcHex = String$(6, srcHex)
+    Else
         'We can't handle this character string!
-        Case Else
-            Debug.Print "WARNING! Invalid hex passed to getRGBLongFromHex: " & srcHex
-            Exit Function
-    
-    End Select
-    
-    'In the future, it might be helpful to know the individual RGB components, so let's parse them out individually.
-    Dim r As Long, g As Long, b As Long
+        Debug.Print "WARNING! Invalid hex passed to getRGBLongFromHex: " & srcHex
+        Exit Function
+    End If
     
     'Parse the string to calculate actual numeric values; we can use VB's Val() function for this.
+    Dim r As Long, g As Long, b As Long
     r = Val("&H" & Left$(srcHex, 2))
     g = Val("&H" & Mid$(srcHex, 3, 2))
     b = Val("&H" & Right$(srcHex, 2))
@@ -728,26 +723,30 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
     Dim testString As String, validChars As String
     
     'Hex validation is fairly easy: is the string prepended with a hash?
-    If StrComp(Left$(srcString, 1), "#", vbBinaryCompare) = 0 Then
+    If (StrComp(Left$(srcString, 1), "#", vbBinaryCompare) = 0) Then
+        
+        dstColorType = ColorHex
         
         'Trim out the non-hash characters
         testString = Right$(srcString, Len(srcString) - 1)
-        
+
         'Is the string 1/3/6 chars long?
         If (Len(testString) = 1) Or (Len(testString) = 3) Or (Len(testString) = 6) Then
-        
+
             'Does the string only consist of the chars 0-9 and A-F?
             validChars = "0123456789abcdef"
             If Text_Support.ValidateCharacters(testString, validChars, True) Then
                 'We can convert this into a hex color value
                 dstColorType = ColorHex
             End If
+
         End If
+        
     End If
     '/End hex validation
     
     'TODO 6.8: if the color is still unkown, continue checking other color possibilities
-    If dstColorType = ColorUnknown Then
+    If (dstColorType = ColorUnknown) Then
         'TODO: additional checks
     End If
     
