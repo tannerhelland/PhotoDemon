@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2149</langversion>
+<langversion>6.8.2191</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2715,6 +2715,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdEditBoxW.cls-->
 
+<!-- BEGIN text for pdEdgeDetector.cls -->
+
+<!-- pdEdgeDetector.cls contains 0 phrases. -->
+
+<!-- END text for pdEdgeDetector.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3311,6 +3317,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
+
+<!-- BEGIN text for pdResources.cls -->
+
+<!-- pdResources.cls contains 0 phrases. -->
+
+<!-- END text for pdResources.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -5526,6 +5538,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>Outline</original>
+<translation>Rangka</translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation>Portrait cahaya</translation>
 </phrase>
@@ -6377,7 +6394,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 186 were duplicates of existing phrases, so only 381 new phrases were written to file. -->
+<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10092,6 +10109,22 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Outline.frm (FormOutlineEffect) -->
+
+<phrase>
+<original>edge type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating image outline</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Outline.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -12074,12 +12107,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation></translation>
+<translation>Menderma kepada pembangunan PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon adalah Copyright 2017 oleh Tanner Helland dan Penyumbang</translation>
 </phrase>
 
 <phrase>
@@ -12089,37 +12122,37 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation></translation>
+<translation>Mengambil bahagian dalam pembangunan, reka bentuk, atau kerja-kerja terjemahan</translation>
 </phrase>
 
 <phrase>
 <original>Contact the author</original>
-<translation></translation>
+<translation>Hubungi penulis</translation>
 </phrase>
 
 <phrase>
 <original>Download program source code</original>
-<translation></translation>
+<translation>Muat turun kod sumber program</translation>
 </phrase>
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation></translation>
+<translation>program kajian dan lesen plugin</translation>
 </phrase>
 
 <phrase>
 <original>Latest news</original>
-<translation></translation>
+<translation>Berita terkini</translation>
 </phrase>
 
 <phrase>
 <original>About</original>
-<translation></translation>
+<translation>Mengenai</translation>
 </phrase>
 
 <phrase>
 <original>Contributors</original>
-<translation></translation>
+<translation>penyumbang</translation>
 </phrase>
 
 <!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13250,12 +13283,23 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <phrase>
 <original>flow</original>
-<translation></translation>
+<translation>mengalir</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
+
+<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
+
+<phrase>
+<original>antialiased</original>
+<translation>antialias</translation>
+</phrase>
+
+<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Toolpanel_Pencil.frm-->
 
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
@@ -13343,11 +13387,6 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <phrase>
 <original>Lightbox</original>
 <translation>Lightbox</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Rangka</translation>
 </phrase>
 
 <phrase>
@@ -13470,7 +13509,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14933,29 +14972,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdResources.cls -->
-
-<!-- pdResources.cls contains 0 phrases. -->
-
-<!-- END text for pdResources.cls-->
-
-<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
-
-<phrase>
-<original>antialiased</original>
-<translation>antialias</translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Toolpanel_Pencil.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4461 phrases. -->
-<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12620 total words. -->
+<!-- As of this build, PhotoDemon contains 4472 phrases. -->
+<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12625 total words. -->
 
 </pdData>

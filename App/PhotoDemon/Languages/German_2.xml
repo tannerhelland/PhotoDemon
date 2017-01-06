@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2149</langversion>
+<langversion>6.8.2191</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1606,7 +1606,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen 
 Please make sure the device is turned on and ready for use.</original>
 <translation>Ausgewählter Scanner oder ausgewählte Digitalkamera reagieren nicht.
 
-Stellen Sie bitte sicher, dass das Gerät eingeschaltet und zur Verwendung bereit ist.</translation>
+Stellen Sie bitte sicher, dass das Gerät eingeschaltet und zum Gebrauch bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -1655,7 +1655,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Unbekannter Fehler aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zur Verwendung bereit ist.</translation>
+<translation>Unbekannter Fehler aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zum Gebrauch bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -1907,7 +1907,7 @@ Beschreibung: %2
 Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
 <translation>Vielen Dank für das Einreichen eines Fehlerberichts! Um sicherzustellen, dass Ihr Fehler schnellstmöglich adressiert wird, benötigt PhotoDemon von Ihnen Antwort auf eine weitere Frage:
 
-Haben Sie einen Account bei GitHub? (Wenn Sie keine Idee davon haben, was dies bedeutet, antworten Sie "Nein".)</translation>
+Haben Sie einen Account bei GitHub? (Wenn Sie keine Idee davon haben, was dies bedeutet, antworten Sie mit "Nein".)</translation>
 </phrase>
 
 <phrase>
@@ -2715,6 +2715,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <!-- END text for pdEditBoxW.cls-->
 
+<!-- BEGIN text for pdEdgeDetector.cls -->
+
+<!-- pdEdgeDetector.cls contains 0 phrases. -->
+
+<!-- END text for pdEdgeDetector.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3311,6 +3317,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
+
+<!-- BEGIN text for pdResources.cls -->
+
+<!-- pdResources.cls contains 0 phrases. -->
+
+<!-- END text for pdResources.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -5526,6 +5538,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
+<original>Outline</original>
+<translation>Umriss</translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation>Portrait-Glühen</translation>
 </phrase>
@@ -5812,7 +5829,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Support PhotoDemon with a small donation (thank you!)</original>
-<translation>Unterstützen Sie PhotoDemon mit einer kleinen Spende (Vielen Dank!)</translation>
+<translation>PhotoDemon mit einer kleinen Spende unterstützen (Vielen Dank!)</translation>
 </phrase>
 
 <phrase>
@@ -6189,7 +6206,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
 <translation>Vielen Dank für das Einreichen eines Fehlerberichts. Um sicherzustellen, dass Ihr Fehler schnellstmöglich adressiert wird, muss PhotoDemon wissen, wohin er gesendet wird.
 
-Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies bedeutet, antworten Sie "Nein".)</translation>
+Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies bedeutet, antworten Sie mit "Nein".)</translation>
 </phrase>
 
 <phrase>
@@ -6377,7 +6394,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 186 were duplicates of existing phrases, so only 381 new phrases were written to file. -->
+<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10092,6 +10109,22 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Outline.frm (FormOutlineEffect) -->
+
+<phrase>
+<original>edge type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating image outline</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Outline.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -11142,7 +11175,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Please be respectful of copyrights when downloading images.  Even if an image is available online, it may not be licensed for use outside a specific website. Thanks!</original>
-<translation>Respektieren Sie beim Herunterladen von Bildern bitte die Copyrights. Auch wenn ein Bild online verfügbar ist, kann die Verwendung außerhalb einer spezifischen Website nicht lizenziert sein. Danke!</translation>
+<translation>Beachten und respektieren Sie bitte die Copyrights, wenn Sie Bilder herunterladen. Auch wenn ein Bild online verfügbar ist, kann es zum Gebrauch außerhalb einer spezifischen Website nicht lizenziert sein. Danke!</translation>
 </phrase>
 
 <phrase>
@@ -12072,12 +12105,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation></translation>
+<translation>Spenden Sie für die Entwicklung von PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>Das Copyright 2017 von PhotoDemon liegt bei Tanner Helland und den Mitwirkenden</translation>
 </phrase>
 
 <phrase>
@@ -12087,37 +12120,37 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation></translation>
+<translation>Beteiligen Sie sich an Entwicklungs-, Design- oder Übersetzungsarbeiten</translation>
 </phrase>
 
 <phrase>
 <original>Contact the author</original>
-<translation></translation>
+<translation>Kontaktieren Sie den Autor</translation>
 </phrase>
 
 <phrase>
 <original>Download program source code</original>
-<translation></translation>
+<translation>Laden Sie den Quellcode des Programms herunter</translation>
 </phrase>
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation></translation>
+<translation>Sehen Sie Programm- und Pluginlizenzen nochmals durch</translation>
 </phrase>
 
 <phrase>
 <original>Latest news</original>
-<translation></translation>
+<translation>Aktuelle News</translation>
 </phrase>
 
 <phrase>
 <original>About</original>
-<translation></translation>
+<translation>Über</translation>
 </phrase>
 
 <phrase>
 <original>Contributors</original>
-<translation></translation>
+<translation>Mitwirkende</translation>
 </phrase>
 
 <!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13248,12 +13281,23 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 
 <phrase>
 <original>flow</original>
-<translation></translation>
+<translation>Fluss</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
+
+<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
+
+<phrase>
+<original>antialiased</original>
+<translation>Mit Antialiasing</translation>
+</phrase>
+
+<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Toolpanel_Pencil.frm-->
 
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
@@ -13341,11 +13385,6 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <phrase>
 <original>Lightbox</original>
 <translation>Lightbox</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Umriss</translation>
 </phrase>
 
 <phrase>
@@ -13468,7 +13507,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei F
 <translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14931,29 +14970,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdResources.cls -->
-
-<!-- pdResources.cls contains 0 phrases. -->
-
-<!-- END text for pdResources.cls-->
-
-<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
-
-<phrase>
-<original>antialiased</original>
-<translation>Mit Antialiasing</translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Toolpanel_Pencil.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4461 phrases. -->
-<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12620 total words. -->
+<!-- As of this build, PhotoDemon contains 4472 phrases. -->
+<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12625 total words. -->
 
 </pdData>
