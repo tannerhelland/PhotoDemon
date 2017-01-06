@@ -38,12 +38,12 @@ End Enum
 'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
 ' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
 ' returnValue variable.
-Public Function displaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef ReturnValue As Double) As VbMsgBoxResult
+Public Function DisplaySelectionDialog(ByVal typeOfDialog As SelectionDialogType, ByRef ReturnValue As Double) As VbMsgBoxResult
 
     Load FormSelectionDialogs
     FormSelectionDialogs.ShowDialog typeOfDialog
     
-    displaySelectionDialog = FormSelectionDialogs.DialogResult
+    DisplaySelectionDialog = FormSelectionDialogs.DialogResult
     ReturnValue = FormSelectionDialogs.paramValue
     
     Unload FormSelectionDialogs
@@ -67,7 +67,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     If cParam.GetLong(1) = sLasso Then pdImages(g_CurrentImage).mainSelection.SetLassoClosedState True
     
     'Synchronize all user-facing controls to match
-    syncTextToCurrentSelection g_CurrentImage
+    SyncTextToCurrentSelection g_CurrentImage
     
     'Draw the new selection to the screen
     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -85,7 +85,7 @@ Public Sub RemoveCurrentSelection()
     pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
     
     'Synchronize all user-facing controls to match
-    syncTextToCurrentSelection g_CurrentImage
+    SyncTextToCurrentSelection g_CurrentImage
         
     'Redraw the image (with selection removed)
     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -107,7 +107,7 @@ Public Sub SelectWholeImage()
     pdImages(g_CurrentImage).selectionActive = True
     
     'Synchronize all user-facing controls to match
-    syncTextToCurrentSelection g_CurrentImage
+    SyncTextToCurrentSelection g_CurrentImage
     
     'Draw the new selection to the screen
     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -170,7 +170,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         pdImages(g_CurrentImage).selectionActive = True
         
         'Synchronize all user-facing controls to match
-        syncTextToCurrentSelection g_CurrentImage
+        SyncTextToCurrentSelection g_CurrentImage
                 
         'Draw the new selection to the screen
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -350,7 +350,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
 End Function
 
 'Use this to populate the text boxes on the main form with the current selection values.  Note that this does not cause a screen refresh, by design.
-Public Sub syncTextToCurrentSelection(ByVal formID As Long)
+Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
 
     Dim i As Long
     
@@ -362,7 +362,7 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         'Selection coordinate toolboxes appear on three different selection subpanels: rect, ellipse, and line.
         ' To access their indicies properly, we must calculate an offset.
         Dim subpanelOffset As Long
-        subpanelOffset = Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID)) * 4
+        subpanelOffset = Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID)) * 4
         
         'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
         If pdImages(formID).mainSelection.isTransformable Then
@@ -396,8 +396,8 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
         'Next, sync all non-coordinate information
         If (pdImages(formID).mainSelection.GetSelectionShape <> sRaster) And (pdImages(formID).mainSelection.GetSelectionShape <> sWand) Then
-            toolpanel_Selections.cboSelArea(Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID))).ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_AREA)
-            toolpanel_Selections.sltSelectionBorder(Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(formID))).Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_BORDER_WIDTH)
+            toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID))).ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_AREA)
+            toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID))).Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_BORDER_WIDTH)
         End If
         
         If toolpanel_Selections.cboSelSmoothing.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_SMOOTHING) Then toolpanel_Selections.cboSelSmoothing.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_SMOOTHING)
@@ -456,17 +456,17 @@ End Sub
 '
 'Note that the x and y values this function is passed are assumed to already be in the IMAGE coordinate space, not the SCREEN or CANVAS
 ' coordinate space.
-Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As Long
+Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As Long
     
     'If the current selection is of raster-type, return 0.
     If srcImage.mainSelection.GetSelectionShape = sRaster Then
-        findNearestSelectionCoordinates = -1
+        FindNearestSelectionCoordinates = -1
         Exit Function
     End If
     
     'If the current selection is NOT active, return 0.
     If Not srcImage.selectionActive Then
-        findNearestSelectionCoordinates = -1
+        FindNearestSelectionCoordinates = -1
         Exit Function
     End If
         
@@ -525,7 +525,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             
             'Was a close point found? If yes, then return that value
             If closestPoint <> -1 Then
-                findNearestSelectionCoordinates = closestPoint
+                FindNearestSelectionCoordinates = closestPoint
                 Exit Function
             End If
         
@@ -560,16 +560,16 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             
             'Was a close point found? If yes, then return that value.
             If closestPoint <> -1 Then
-                findNearestSelectionCoordinates = closestPoint
+                FindNearestSelectionCoordinates = closestPoint
                 Exit Function
             End If
         
             'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
             ' image's boundaries, and if it is, return the "move selection" ID, then exit.
             If (imgX > tLeft) And (imgX < tRight) And (imgY > tTop) And (imgY < tBottom) Then
-                findNearestSelectionCoordinates = 8
+                FindNearestSelectionCoordinates = 8
             Else
-                findNearestSelectionCoordinates = -1
+                FindNearestSelectionCoordinates = -1
             End If
             
         Case sLine
@@ -590,7 +590,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             If (secondDist <= minDistance) Then closestPoint = 1
             
             'Was a close point found? If yes, then return that value.
-            findNearestSelectionCoordinates = closestPoint
+            FindNearestSelectionCoordinates = closestPoint
             Exit Function
         
         Case sPolygon
@@ -603,7 +603,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             
             'Was a close point found? If yes, then return that value
             If closestPoint <> -1 Then
-                findNearestSelectionCoordinates = closestPoint
+                FindNearestSelectionCoordinates = closestPoint
                 Exit Function
             End If
             
@@ -619,7 +619,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             'Release the GDI+ region
             GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
             
-            If gdipHitCheck Then findNearestSelectionCoordinates = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints Else findNearestSelectionCoordinates = -1
+            If gdipHitCheck Then FindNearestSelectionCoordinates = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints Else FindNearestSelectionCoordinates = -1
         
         Case sLasso
             'Create a GDI+ region from the current selection points
@@ -631,7 +631,7 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             'Release the GDI+ region
             GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
             
-            If gdipHitCheck Then findNearestSelectionCoordinates = 0 Else findNearestSelectionCoordinates = -1
+            If gdipHitCheck Then FindNearestSelectionCoordinates = 0 Else FindNearestSelectionCoordinates = -1
         
         Case sWand
             closestPoint = -1
@@ -642,11 +642,11 @@ Public Function findNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             If (firstDist <= minDistance) Then closestPoint = 0
             
             'Was a close point found? If yes, then return that value.
-            findNearestSelectionCoordinates = closestPoint
+            FindNearestSelectionCoordinates = closestPoint
             Exit Function
         
         Case Else
-            findNearestSelectionCoordinates = -1
+            FindNearestSelectionCoordinates = -1
             Exit Function
             
     End Select
@@ -656,7 +656,7 @@ End Function
 'Invert the current selection.  Note that this will make a transformable selection non-transformable - to maintain transformability, use
 ' the "exterior"/"interior" options on the main form.
 ' TODO: swap exterior/interior automatically, if a valid option
-Public Sub invertCurrentSelection()
+Public Sub InvertCurrentSelection()
 
     'Unselect any existing selection
     pdImages(g_CurrentImage).mainSelection.LockRelease
@@ -666,7 +666,7 @@ Public Sub invertCurrentSelection()
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim QuickVal As Long
+    Dim quickVal As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -683,13 +683,16 @@ Public Sub invertCurrentSelection()
     Dim progBarCheck As Long
     progBarCheck = FindBestProgBarValue()
     
+    Dim selMaskDepth As Long
+    selMaskDepth = pdImages(g_CurrentImage).mainSelection.selMask.GetDIBColorDepth \ 8
+    
     'After all that work, the Invert code itself is very small and unexciting!
     For x = 0 To maskWidth
-        QuickVal = x * 3
+        quickVal = x * selMaskDepth
     For y = 0 To maskHeight
-        selMaskData(QuickVal, y) = 255 - selMaskData(QuickVal, y)
-        selMaskData(QuickVal + 1, y) = 255 - selMaskData(QuickVal + 1, y)
-        selMaskData(QuickVal + 2, y) = 255 - selMaskData(QuickVal + 2, y)
+        selMaskData(quickVal, y) = 255 - selMaskData(quickVal, y)
+        selMaskData(quickVal + 1, y) = 255 - selMaskData(quickVal + 1, y)
+        selMaskData(quickVal + 2, y) = 255 - selMaskData(quickVal + 2, y)
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
@@ -716,13 +719,13 @@ Public Sub invertCurrentSelection()
 End Sub
 
 'Feather the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub featherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal featherRadius As Double = 0#)
+Public Sub FeatherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal featherRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If ShowDialog Then
         
         Dim retRadius As Double
-        If displaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
+        If DisplaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
             Process "Feather selection", False, Str(retRadius), UNDO_SELECTION
         End If
         
@@ -758,13 +761,13 @@ Public Sub featherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal f
 End Sub
 
 'Sharpen (un-feather?) the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sharpenRadius As Double = 0#)
+Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sharpenRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If ShowDialog Then
         
         Dim retRadius As Double
-        If displaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK Then
+        If DisplaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK Then
             Process "Sharpen selection", False, Str(retRadius), UNDO_SELECTION
         End If
         
@@ -803,8 +806,8 @@ Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
-        qvDepth = 3
+        Dim quickVal As Long, qvDepth As Long
+        qvDepth = pdImages(g_CurrentImage).mainSelection.selMask.GetDIBColorDepth \ 8
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
@@ -831,18 +834,18 @@ Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = 0 To iWidth
-            QuickVal = x * 3
+            quickVal = x * qvDepth
         For y = 0 To iHeight
                 
             'Retrieve the original image's pixels
-            r = selMaskData(QuickVal + 2, y)
-            g = selMaskData(QuickVal + 1, y)
-            b = selMaskData(QuickVal, y)
+            r = selMaskData(quickVal + 2, y)
+            g = selMaskData(quickVal + 1, y)
+            b = selMaskData(quickVal, y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(QuickVal + 2, y)
-            g2 = srcImageData(QuickVal + 1, y)
-            b2 = srcImageData(QuickVal, y)
+            r2 = srcImageData(quickVal + 2, y)
+            g2 = srcImageData(quickVal + 1, y)
+            b2 = srcImageData(quickVal, y)
             
             tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
                 
@@ -864,9 +867,9 @@ Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
             newG = BlendColors(newG, g, blendVal)
             newB = BlendColors(newB, b, blendVal)
             
-            selMaskData(QuickVal + 2, y) = newR
-            selMaskData(QuickVal + 1, y) = newG
-            selMaskData(QuickVal, y) = newB
+            selMaskData(quickVal + 2, y) = newR
+            selMaskData(quickVal + 1, y) = newG
+            selMaskData(quickVal, y) = newB
                     
         Next y
             If (x And progBarCheck) = 0 Then SetProgBarVal x
@@ -901,13 +904,13 @@ Public Sub sharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
 End Sub
 
 'Grow the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub growCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal growSize As Double = 0#)
+Public Sub GrowCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal growSize As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If ShowDialog Then
         
         Dim retSize As Double
-        If displaySelectionDialog(SEL_GROW, retSize) = vbOK Then
+        If DisplaySelectionDialog(SEL_GROW, retSize) = vbOK Then
             Process "Grow selection", False, Str(retSize), UNDO_SELECTION
         End If
         
@@ -948,13 +951,13 @@ Public Sub growCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal grow
 End Sub
 
 'Shrink the current selection.  Note that this will make a transformable selection non-transformable.
-Public Sub shrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal shrinkSize As Double = 0#)
+Public Sub ShrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal shrinkSize As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If ShowDialog Then
         
         Dim retSize As Double
-        If displaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
+        If DisplaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
             Process "Shrink selection", False, Str(retSize), UNDO_SELECTION
         End If
         
@@ -996,13 +999,13 @@ Public Sub shrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sh
 End Sub
 
 'Convert the current selection to border-type.  Note that this will make a transformable selection non-transformable.
-Public Sub borderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
+Public Sub BorderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal borderRadius As Double = 0#)
 
     'If a dialog has been requested, display one to the user.  Otherwise, proceed with the feathering.
     If ShowDialog Then
         
         Dim retSize As Double
-        If displaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
+        If DisplaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
             Process "Border selection", False, Str(retSize), UNDO_SELECTION
         End If
         
@@ -1059,7 +1062,7 @@ Public Sub borderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal bo
 End Sub
 
 'Erase the currently selected area (LAYER ONLY!).  Note that this will not modify the current selection in any way.
-Public Sub eraseSelectedArea(ByVal targetLayerIndex As Long)
+Public Sub EraseSelectedArea(ByVal targetLayerIndex As Long)
 
     pdImages(g_CurrentImage).EraseProcessedSelection targetLayerIndex
     
@@ -1072,37 +1075,37 @@ End Sub
 ' created/edited at any given time).  This function is called whenever the selection engine needs to correlate the
 ' current tool with a selection shape.  This allows us to easily switch between a rectangle and circle selection,
 ' for example, without forcing the user to recreate the selection from scratch.
-Public Function getSelectionShapeFromCurrentTool() As PD_SELECTION_SHAPE
+Public Function GetSelectionShapeFromCurrentTool() As PD_SELECTION_SHAPE
 
     Select Case g_CurrentTool
     
         Case SELECT_RECT
-            getSelectionShapeFromCurrentTool = sRectangle
+            GetSelectionShapeFromCurrentTool = sRectangle
             
         Case SELECT_CIRC
-            getSelectionShapeFromCurrentTool = sCircle
+            GetSelectionShapeFromCurrentTool = sCircle
         
         Case SELECT_LINE
-            getSelectionShapeFromCurrentTool = sLine
+            GetSelectionShapeFromCurrentTool = sLine
             
         Case SELECT_POLYGON
-            getSelectionShapeFromCurrentTool = sPolygon
+            GetSelectionShapeFromCurrentTool = sPolygon
             
         Case SELECT_LASSO
-            getSelectionShapeFromCurrentTool = sLasso
+            GetSelectionShapeFromCurrentTool = sLasso
             
         Case SELECT_WAND
-            getSelectionShapeFromCurrentTool = sWand
+            GetSelectionShapeFromCurrentTool = sWand
             
         Case Else
-            getSelectionShapeFromCurrentTool = -1
+            GetSelectionShapeFromCurrentTool = -1
     
     End Select
     
 End Function
 
 'The inverse of "getSelectionShapeFromCurrentTool", above
-Public Function getRelevantToolFromSelectShape() As PDTools
+Public Function GetRelevantToolFromSelectShape() As PDTools
 
     If (g_OpenImageCount > 0) Then
 
@@ -1111,34 +1114,34 @@ Public Function getRelevantToolFromSelectShape() As PDTools
             Select Case pdImages(g_CurrentImage).mainSelection.GetSelectionShape
             
                 Case sRectangle
-                    getRelevantToolFromSelectShape = SELECT_RECT
+                    GetRelevantToolFromSelectShape = SELECT_RECT
                     
                 Case sCircle
-                    getRelevantToolFromSelectShape = SELECT_CIRC
+                    GetRelevantToolFromSelectShape = SELECT_CIRC
                 
                 Case sLine
-                    getRelevantToolFromSelectShape = SELECT_LINE
+                    GetRelevantToolFromSelectShape = SELECT_LINE
                 
                 Case sPolygon
-                    getRelevantToolFromSelectShape = SELECT_POLYGON
+                    GetRelevantToolFromSelectShape = SELECT_POLYGON
                     
                 Case sLasso
-                    getRelevantToolFromSelectShape = SELECT_LASSO
+                    GetRelevantToolFromSelectShape = SELECT_LASSO
                     
                 Case sWand
-                    getRelevantToolFromSelectShape = SELECT_WAND
+                    GetRelevantToolFromSelectShape = SELECT_WAND
                 
                 Case Else
-                    getRelevantToolFromSelectShape = -1
+                    GetRelevantToolFromSelectShape = -1
             
             End Select
             
         Else
-            getRelevantToolFromSelectShape = -1
+            GetRelevantToolFromSelectShape = -1
         End If
             
     Else
-        getRelevantToolFromSelectShape = -1
+        GetRelevantToolFromSelectShape = -1
     End If
 
 End Function
@@ -1174,31 +1177,31 @@ Public Function GetSelectionSubPanelFromCurrentTool() As Long
     
 End Function
 
-Public Function getSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage) As Long
+Public Function GetSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage) As Long
 
     Select Case srcImage.mainSelection.GetSelectionShape
     
         Case sRectangle
-            getSelectionSubPanelFromSelectionShape = 0
+            GetSelectionSubPanelFromSelectionShape = 0
             
         Case sCircle
-            getSelectionSubPanelFromSelectionShape = 1
+            GetSelectionSubPanelFromSelectionShape = 1
         
         Case sLine
-            getSelectionSubPanelFromSelectionShape = 2
+            GetSelectionSubPanelFromSelectionShape = 2
             
         Case sPolygon
-            getSelectionSubPanelFromSelectionShape = 3
+            GetSelectionSubPanelFromSelectionShape = 3
             
         Case sLasso
-            getSelectionSubPanelFromSelectionShape = 4
+            GetSelectionSubPanelFromSelectionShape = 4
             
         Case sWand
-            getSelectionSubPanelFromSelectionShape = 5
+            GetSelectionSubPanelFromSelectionShape = 5
         
         Case Else
             'Debug.Print "WARNING!  Selection_Handler.getSelectionSubPanelFromSelectionShape() was called, despite a selection not being active!"
-            getSelectionSubPanelFromSelectionShape = -1
+            GetSelectionSubPanelFromSelectionShape = -1
     
     End Select
     
@@ -1206,7 +1209,7 @@ End Function
 
 'Selections can be initiated several different ways.  To cut down on duplicated code, all new selection instances are referred
 ' to this function.  Initial X/Y values are required.
-Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
+Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
 
     'Activate the attached image's primary selection
     pdImages(g_CurrentImage).selectionActive = True
@@ -1214,25 +1217,25 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     
     'Populate a variety of selection attributes using a single shorthand declaration.  A breakdown of these
     ' values and what they mean can be found in the corresponding pdSelection.initFromParamString function
-    Select Case getSelectionShapeFromCurrentTool()
+    Select Case GetSelectionShapeFromCurrentTool()
     
         Case sRectangle, sCircle, sLine
-            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(GetSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, 0, 0, 0, 0)
         
         Case sPolygon
-            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltPolygonCurvature.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(GetSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltPolygonCurvature.Value, 0, 0, 0)
             
         Case sLasso
-            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltSmoothStroke.Value, 0, 0, 0)
+            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(GetSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, toolpanel_Selections.sltSmoothStroke.Value, 0, 0, 0)
             
         Case sWand
-            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(getSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(0).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(0).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolpanel_Selections.sltWandTolerance.Value, toolpanel_Selections.btsWandMerge.ListIndex, toolpanel_Selections.btsWandArea.ListIndex, toolpanel_Selections.cboWandCompare.ListIndex)
+            pdImages(g_CurrentImage).mainSelection.InitFromParamString BuildParams(GetSelectionShapeFromCurrentTool(), toolpanel_Selections.cboSelArea(0).ListIndex, toolpanel_Selections.cboSelSmoothing.ListIndex, toolpanel_Selections.sltSelectionFeathering.Value, toolpanel_Selections.sltSelectionBorder(0).Value, toolpanel_Selections.sltCornerRounding.Value, toolpanel_Selections.sltSelectionLineWidth.Value, 0, 0, 0, 0, x, y, toolpanel_Selections.sltWandTolerance.Value, toolpanel_Selections.btsWandMerge.ListIndex, toolpanel_Selections.btsWandArea.ListIndex, toolpanel_Selections.cboWandCompare.ListIndex)
         
     End Select
     
     'Set the first two coordinates of this selection to this mouseclick's location
     pdImages(g_CurrentImage).mainSelection.SetInitialCoordinates x, y
-    syncTextToCurrentSelection g_CurrentImage
+    SyncTextToCurrentSelection g_CurrentImage
     pdImages(g_CurrentImage).mainSelection.RequestNewMask
     
     'Make the selection tools visible
