@@ -563,7 +563,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint 'True
+    ucSupport.RequestRepaint
     
 End Sub
 

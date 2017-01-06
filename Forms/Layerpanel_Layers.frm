@@ -474,7 +474,7 @@ End Sub
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
 Public Sub UpdateAgainstCurrentTheme()
-    
+        
     'Add images to the layer action buttons at the bottom of the toolbox
     Dim buttonSize As Long
     buttonSize = FixDPI(26)
@@ -482,19 +482,19 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdLayerAction(1).AssignImage "layer_delete", , , , buttonSize, buttonSize
     cmdLayerAction(2).AssignImage "layer_up", , , , buttonSize, buttonSize
     cmdLayerAction(3).AssignImage "layer_down", , , , buttonSize, buttonSize
-    
+        
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
-    
+        
     'Recreate tooltips (necessary to support run-time language changes)
     'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
     cmdLayerAction(0).AssignTooltip "Add a blank layer to the image.", "New layer"
     cmdLayerAction(1).AssignTooltip "Delete the currently selected layer.", "Delete layer"
     cmdLayerAction(2).AssignTooltip "Move the current layer upward in the layer stack.", "Move layer up"
     cmdLayerAction(3).AssignTooltip "Move the current layer downward in the layer stack.", "Move layer down"
-    
+        
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
     ReflowInterface
-    
+        
 End Sub

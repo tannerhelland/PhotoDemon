@@ -602,6 +602,7 @@ End Sub
 
 Private Sub Class_Initialize()
     Set m_XML = New pdXML
+    m_XML.SetTextCompareMode vbBinaryCompare
     Set m_UniversalColors = New pdThemeColors
 End Sub
 

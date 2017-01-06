@@ -309,7 +309,7 @@ Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    If Not m_InternalResizeState Then UpdateControlLayout
+    If (Not m_InternalResizeState) Then UpdateControlLayout
     RaiseEvent Resize
 End Sub
 
@@ -586,7 +586,7 @@ End Sub
 'When this control has special knowledge of a state change that affects the edit box's visual appearance, call this function.
 ' It will relay the relevant themed colors to the edit box class.
 Private Sub RelayUpdatedColorsToEditBox()
-    If Not (m_EditBox Is Nothing) Then
+    If (Not m_EditBox Is Nothing) Then
         m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
         m_EditBox.textColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
     End If

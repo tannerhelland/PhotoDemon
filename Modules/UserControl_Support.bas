@@ -381,7 +381,7 @@ End Sub
 Public Sub AddMessageRecipient(ByVal targetHwnd As Long, ByVal wMsg As Long)
     
     'Prep the storage structure, as necessary.
-    If m_windowMsgCount = 0 Then
+    If (m_windowMsgCount = 0) Then
         ReDim m_windowList(0 To INITIAL_WINDOW_MESSAGE_LIST_SIZE - 1) As Long
         ReDim m_wMsgList(0 To INITIAL_WINDOW_MESSAGE_LIST_SIZE - 1) As Long
     ElseIf m_windowMsgCount > UBound(m_windowList) Then

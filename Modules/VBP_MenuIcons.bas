@@ -182,8 +182,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
         
     'File Menu
-    'AddMenuIcon "NEWIMAGE", 0, 0      'New
-    'AddMenuIcon "OPENIMG", 0, 1       'Open Image
     AddMenuIcon "file_new", 0, 0      'New
     AddMenuIcon "file_open", 0, 1       'Open Image
     
@@ -196,14 +194,7 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         AddMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
         AddMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
     
-    'AddMenuIcon "CLOSE", 0, 5         'Close
-    'AddMenuIcon "CLOSE", 0, 6         'Close All
-    'AddMenuIcon "SAVE", 0, 8          'Save
-    'AddMenuIcon "SAVECOPY", 0, 9      'Save copy
-    'AddMenuIcon "SAVEAS", 0, 10       'Save As...
-    
     AddMenuIcon "file_close", 0, 5         'Close
-    'AddMenuIcon "file_close", 0, 6         'Close All
     AddMenuIcon "file_save", 0, 8          'Save
     AddMenuIcon "file_savedup", 0, 9      'Save copy
     AddMenuIcon "file_saveas", 0, 10       'Save As...
@@ -218,8 +209,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
         
     'Edit Menu
-    'AddMenuIcon "UNDO", 1, 0           'Undo
-    'AddMenuIcon "REDO", 1, 1           'Redo
     AddMenuIcon "edit_undo", 1, 0           'Undo
     AddMenuIcon "edit_redo", 1, 1           'Redo
     AddMenuIcon "UNDOHISTORY", 1, 2    'Undo history browser
@@ -638,8 +627,6 @@ End Sub
 Public Sub ResetMenuIcons()
         
     'Redraw the Undo/Redo menus
-    'AddMenuIcon "UNDO", 1, 0     'Undo
-    'AddMenuIcon "REDO", 1, 1     'Redo
     AddMenuIcon "edit_undo", 1, 0     'Undo
     AddMenuIcon "edit_redo", 1, 1     'Redo
     

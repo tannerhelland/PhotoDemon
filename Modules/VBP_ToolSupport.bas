@@ -71,6 +71,10 @@ Public Sub SetCustomToolState(ByVal newState As Long)
     m_CustomToolMarker = newState
 End Sub
 
+Public Function IsSelectionToolActive() As Boolean
+    IsSelectionToolActive = CBool((g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_WAND))
+End Function
+
 'When a tool is finished processing, it can call this function to release all tool tracking variables
 Public Sub TerminateGenericToolTracking()
     

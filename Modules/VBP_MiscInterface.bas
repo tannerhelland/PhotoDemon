@@ -500,7 +500,7 @@ End Sub
 'Whenever PD returns to a "no images loaded" state, this function should be called.  (There are a number of specialized UI decisions
 ' required by this this state, and it's important to keep those options in one place.)
 Private Sub SetUIMode_NoImages()
-    
+        
     'Start by forcibly disabling every conceivable UI group that requires an underlying image
     SetUIGroupState PDUI_Save, False
     SetUIGroupState PDUI_SaveAs, False
@@ -516,9 +516,11 @@ Private Sub SetUIMode_NoImages()
     SetUIGroupState PDUI_Redo, False
     
     'Disable various layer-related toolbox options as well
-    toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
-    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
-        
+    If (g_CurrentTool = NAV_MOVE) Then
+        toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
+        toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
+    End If
+    
     'Multiple edit menu items must also be disabled
     FormMain.MnuEdit(2).Enabled = False     'Undo history
     FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
@@ -532,15 +534,15 @@ Private Sub SetUIMode_NoImages()
     Else
         FormMain.Caption = Update_Support.GetPhotoDemonNameAndVersion()
     End If
-    
+        
     'Ask the canvas to reset itself.  Note that this also covers the status bar area and the image tabstrip, if they were
     ' previously visible.
     FormMain.mainCanvas(0).ClearCanvas
-    
+        
     'Restore the default taskbar and titlebar icons and clear the custom icon cache
     Icons_and_Cursors.ResetAppIcons
     Icons_and_Cursors.DestroyAllIcons
-    
+        
     'With all menus reset to their default values, we can now redraw all associated menu icons.
     ' (IMPORTANT: this function must be called whenever menu captions change, because icons are associated by caption.)
     ResetMenuIcons
@@ -567,7 +569,7 @@ Private Sub SetUIMode_NoImages()
     
     'Forcibly blank out the current message if no images are loaded
     Message ""
-    
+        
 End Sub
 
 'Whenever PD enters an "at least one valid image loaded" state, this function should be called.  Note that this function does not
@@ -652,7 +654,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Save (left-hand panel button(s) AND menu item)
         Case PDUI_Save
-            If FormMain.MnuFile(8).Enabled <> newState Then
+            If (FormMain.MnuFile(8).Enabled <> newState) Then
                 toolbar_Toolbox.cmdFile(FILE_SAVE).Enabled = newState
                 FormMain.MnuFile(8).Enabled = newState      'Save
                 FormMain.MnuFile(11).Enabled = newState     'Revert
@@ -661,7 +663,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'Save As (menu item only).  Note that Save Copy is also tied to Save As functionality, because they use the same rules
         ' for enablement (e.g. disabled if no images are loaded, always enabled otherwise)
         Case PDUI_SaveAs
-            If FormMain.MnuFile(10).Enabled <> newState Then
+            If (FormMain.MnuFile(10).Enabled <> newState) Then
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = newState
                 toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = newState
                 FormMain.MnuFile(9).Enabled = newState      'Save as
@@ -670,7 +672,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Close (and Close All)
         Case PDUI_Close
-            If FormMain.MnuFile(5).Enabled <> newState Then
+            If (FormMain.MnuFile(5).Enabled <> newState) Then
                 FormMain.MnuFile(5).Enabled = newState
                 FormMain.MnuFile(6).Enabled = newState
                 toolbar_Toolbox.cmdFile(FILE_CLOSE).Enabled = newState
@@ -680,7 +682,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         ' because that operates directly on previously saved Undo data.
         Case PDUI_Undo
         
-            If FormMain.MnuEdit(0).Enabled <> newState Then
+            If (FormMain.MnuEdit(0).Enabled <> newState) Then
                 toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = newState
                 FormMain.MnuEdit(0).Enabled = newState
             End If
@@ -699,7 +701,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Redo (left-hand panel button AND menu item)
         Case PDUI_Redo
-            If FormMain.MnuEdit(1).Enabled <> newState Then
+            If (FormMain.MnuEdit(1).Enabled <> newState) Then
                 toolbar_Toolbox.cmdFile(FILE_REDO).Enabled = newState
                 FormMain.MnuEdit(1).Enabled = newState
             End If
@@ -718,19 +720,19 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Copy (menu item only)
         Case PDUI_EditCopyCut
-            If FormMain.MnuEdit(7).Enabled <> newState Then FormMain.MnuEdit(7).Enabled = newState
-            If FormMain.MnuEdit(8).Enabled <> newState Then FormMain.MnuEdit(8).Enabled = newState
-            If FormMain.MnuEdit(9).Enabled <> newState Then FormMain.MnuEdit(9).Enabled = newState
-            If FormMain.MnuEdit(10).Enabled <> newState Then FormMain.MnuEdit(10).Enabled = newState
-            If FormMain.MnuEdit(12).Enabled <> newState Then FormMain.MnuEdit(12).Enabled = newState
+            If (FormMain.MnuEdit(7).Enabled <> newState) Then FormMain.MnuEdit(7).Enabled = newState
+            If (FormMain.MnuEdit(8).Enabled <> newState) Then FormMain.MnuEdit(8).Enabled = newState
+            If (FormMain.MnuEdit(9).Enabled <> newState) Then FormMain.MnuEdit(9).Enabled = newState
+            If (FormMain.MnuEdit(10).Enabled <> newState) Then FormMain.MnuEdit(10).Enabled = newState
+            If (FormMain.MnuEdit(12).Enabled <> newState) Then FormMain.MnuEdit(12).Enabled = newState
             
         'View (top-menu level)
         Case PDUI_View
-            If FormMain.MnuView.Enabled <> newState Then FormMain.MnuView.Enabled = newState
+            If (FormMain.MnuView.Enabled <> newState) Then FormMain.MnuView.Enabled = newState
         
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
         Case PDUI_ImageMenu
-            If FormMain.MnuImageTop.Enabled <> newState Then
+            If (FormMain.MnuImageTop.Enabled <> newState) Then
                 FormMain.MnuSelectTop.Enabled = newState
                 FormMain.MnuImageTop.Enabled = newState
                 FormMain.MnuLayerTop.Enabled = newState
@@ -741,7 +743,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Macro (within the Tools menu)
         Case PDUI_Macros
-            If FormMain.mnuTool(3).Enabled <> newState Then
+            If (FormMain.mnuTool(3).Enabled <> newState) Then
                 FormMain.mnuTool(3).Enabled = newState
                 FormMain.mnuTool(4).Enabled = newState
                 FormMain.mnuTool(5).Enabled = newState
@@ -750,22 +752,28 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'Selections in general
         Case PDUI_Selections
             
-            'If selections are not active, clear all the selection value textboxes
-            If Not newState Then
+            'If selections are not active, clear all the selection value textboxes.
+            ' (Note: as of 7.0, PD unloads tool panels when it's done using them.  That means that we only need to
+            '  update this information if the given panel is actually visible.)
+            If Tool_Support.IsSelectionToolActive Then
+            
+                If (Not newState) Then
+                    For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                        toolpanel_Selections.tudSel(i).Value = 0
+                    Next i
+                End If
+                
+                'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
+                ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
+                ' draw a selection, it already has the attributes they want.
                 For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                    toolpanel_Selections.tudSel(i).Value = 0
+                    toolpanel_Selections.tudSel(i).Enabled = newState
                 Next i
+                
             End If
             
-            'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
-            ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
-            ' draw a selection, it already has the attributes they want.
-            For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                toolpanel_Selections.tudSel(i).Enabled = newState
-            Next i
-            
             'En/disable all selection menu items that rely on an existing selection to operate
-            If FormMain.MnuSelect(2).Enabled <> newState Then
+            If (FormMain.MnuSelect(2).Enabled <> newState) Then
                 
                 'Select none, invert selection
                 FormMain.MnuSelect(1).Enabled = newState
@@ -788,24 +796,28 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             End If
                                     
             'Selection enabling/disabling also affects the two Crop to Selection commands (one in the Image menu, one in the Layer menu)
-            If FormMain.MnuImage(9).Enabled <> newState Then FormMain.MnuImage(9).Enabled = newState
-            If FormMain.MnuLayer(9).Enabled <> newState Then FormMain.MnuLayer(9).Enabled = newState
+            If (FormMain.MnuImage(9).Enabled <> newState) Then FormMain.MnuImage(9).Enabled = newState
+            If (FormMain.MnuLayer(9).Enabled <> newState) Then FormMain.MnuLayer(9).Enabled = newState
             
         'Transformable selection controls specifically
         Case PDUI_SelectionTransforms
-        
-            'Under certain circumstances, it is desirable to disable only the selection location boxes
-            For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                If (Not newState) Then toolpanel_Selections.tudSel(i).Value = 0
-                toolpanel_Selections.tudSel(i).Enabled = newState
-            Next i
+            
+            If Tool_Support.IsSelectionToolActive Then
+            
+                'Under certain circumstances, it is desirable to disable only the selection location boxes
+                For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                    If (Not newState) Then toolpanel_Selections.tudSel(i).Value = 0
+                    toolpanel_Selections.tudSel(i).Enabled = newState
+                Next i
+                
+            End If
                 
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
         ' reading/browsing/writing metadata.)
         Case PDUI_Metadata
         
             If g_ExifToolEnabled Then
-                If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
+                If (FormMain.MnuMetadata(0).Enabled <> newState) Then FormMain.MnuMetadata(0).Enabled = newState
             Else
                 If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
             End If
@@ -814,7 +826,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         Case PDUI_GPSMetadata
         
             If g_ExifToolEnabled Then
-                If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
+                If (FormMain.MnuMetadata(3).Enabled <> newState) Then FormMain.MnuMetadata(3).Enabled = newState
             Else
                 If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
             End If
@@ -848,32 +860,36 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             Tool_Support.SetToolBusyState True
             
             'Enable/disable all UI elements as necessary
-            For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
-                If (toolpanel_MoveSize.tudLayerMove(i).Enabled <> newState) Then toolpanel_MoveSize.tudLayerMove(i).Enabled = newState
-            Next i
-            
-            'Where relevant, also update control bounds
-            If newState Then
+            If (g_CurrentTool = NAV_MOVE) Then
             
                 For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
-                    
-                    'Even-numbered indices correspond to width; odd-numbered to height
-                    If (i Mod 2 = 0) Then
-                        
-                        If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Width) Then
-                            toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Width
-                            toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Width
-                        End If
-                        
-                    Else
-                    
-                        If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Height) Then
-                            toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Height
-                            toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Height
-                        End If
-                    
-                    End If
+                    If (toolpanel_MoveSize.tudLayerMove(i).Enabled <> newState) Then toolpanel_MoveSize.tudLayerMove(i).Enabled = newState
                 Next i
+                
+                'Where relevant, also update control bounds
+                If newState Then
+                
+                    For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
+                        
+                        'Even-numbered indices correspond to width; odd-numbered to height
+                        If (i Mod 2 = 0) Then
+                            
+                            If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Width) Then
+                                toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Width
+                                toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Width
+                            End If
+                            
+                        Else
+                        
+                            If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Height) Then
+                                toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Height
+                                toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Height
+                            End If
+                        
+                        End If
+                    Next i
+                    
+                End If
                 
             End If
             
@@ -882,56 +898,60 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case PDUI_NonDestructiveFX
-        
-            If newState Then
-                
-                'Start by enabling all non-destructive FX controls
-                For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-                    If Not toolpanel_NDFX.sltQuickFix(i).Enabled Then toolpanel_NDFX.sltQuickFix(i).Enabled = True
-                Next i
-                
-                'Quick fix buttons are only relevant if the current image has some non-destructive events applied
-                If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+            
+            If (g_CurrentTool = QUICK_FIX_LIGHTING) Then
+            
+                If newState Then
                     
-                    With toolpanel_NDFX
+                    'Start by enabling all non-destructive FX controls
+                    For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
+                        If (Not toolpanel_NDFX.sltQuickFix(i).Enabled) Then toolpanel_NDFX.sltQuickFix(i).Enabled = True
+                    Next i
                     
-                        .SetNDFXControlState False
+                    'Quick fix buttons are only relevant if the current image has some non-destructive events applied
+                    If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
                         
-                        If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState() Then
-                            For i = 0 To .cmdQuickFix.Count - 1
-                                .cmdQuickFix(i).Enabled = True
-                            Next i
-                        Else
-                            For i = 0 To .cmdQuickFix.Count - 1
-                                .cmdQuickFix(i).Enabled = False
-                            Next i
-                        End If
+                        With toolpanel_NDFX
                         
-                        'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
-                        For i = 0 To .sltQuickFix.Count - 1
-                            .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXValue(i)
+                            .SetNDFXControlState False
+                            
+                            If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState() Then
+                                For i = 0 To .cmdQuickFix.Count - 1
+                                    .cmdQuickFix(i).Enabled = True
+                                Next i
+                            Else
+                                For i = 0 To .cmdQuickFix.Count - 1
+                                    .cmdQuickFix(i).Enabled = False
+                                Next i
+                            End If
+                            
+                            'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
+                            For i = 0 To .sltQuickFix.Count - 1
+                                .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXValue(i)
+                            Next i
+                            
+                            .SetNDFXControlState True
+                            
+                        End With
+                        
+                    Else
+                        For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
+                            toolpanel_NDFX.sltQuickFix(i).Value = 0
                         Next i
-                        
-                        .SetNDFXControlState True
-                        
-                    End With
+                    End If
                     
                 Else
+                    
+                    'Disable all non-destructive FX controls
                     For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-                        toolpanel_NDFX.sltQuickFix(i).Value = 0
+                        If toolpanel_NDFX.sltQuickFix(i).Enabled Then toolpanel_NDFX.sltQuickFix(i).Enabled = False
                     Next i
+                    
+                    For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
+                        If toolpanel_NDFX.cmdQuickFix(i).Enabled Then toolpanel_NDFX.cmdQuickFix(i).Enabled = False
+                    Next i
+                    
                 End If
-                
-            Else
-                
-                'Disable all non-destructive FX controls
-                For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-                    If toolpanel_NDFX.sltQuickFix(i).Enabled Then toolpanel_NDFX.sltQuickFix(i).Enabled = False
-                Next i
-                
-                For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
-                    If toolpanel_NDFX.cmdQuickFix(i).Enabled Then toolpanel_NDFX.cmdQuickFix(i).Enabled = False
-                Next i
                 
             End If
             
@@ -1305,6 +1325,16 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not g_IsProgramRunning) Then Exit Sub
     
+    'Want to measure time on this function?  Use this line to isolate specific forms for further analysis.
+    'Dim debugTest As Boolean
+    'If (StrComp(dstForm.Name, "layerpanel_Layers", vbBinaryCompare) = 0) Then debugTest = True
+    'Dim timeDict As pdDictionary
+    'Set timeDict = New pdDictionary
+    'Static firstCheck As Long
+    
+    'This function can be a rather egregious time hog, so I profile it from time-to-time to check for regressions
+    Dim startTime As Currency
+    
     'FORM STEP 1: apply any form-level changes (like backcolor), as child controls may pull this automatically
     dstForm.BackColor = g_Themer.GetGenericUIColor(UI_Background)
     g_Themer.AddWindowPainter dstForm.hWnd
@@ -1317,6 +1347,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     Dim eControl As Control
     
     For Each eControl In dstForm.Controls
+        
+        VB_Hacks.GetHighResTime startTime
         
         'This is a bit weird, but PD still uses generic picture boxes in various places.  Picture boxes get confused
         ' by all the weird run-time UI APIs we call, so to ensure that their cursors work properly, we use the API
@@ -1433,12 +1465,22 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
             
         End If
         
-    Next
+        'Want to measure time on a per-control basis?  Use this line to do so
+        'timeDict.AddEntry eControl.Name, VB_Hacks.GetTimerDifferenceNow(startTime)
         
-    'FORM STEP 3: translate the form (and all controls on it)
-    ' Note that this step is not as relevant as it used to be, because all PD controls apply their own translations if/when necessary
-    ' during the above eControl.UpdateAgainstCurrentTheme step.  This translation step only handles the form caption (which must be
-    ' set specially), and some other oddities like menus, which have not been replaced yet.
+    Next
+    
+    'Report timing results here:
+'    If (debugTest And (firstCheck = 0)) Then
+'        Dim i As Long
+'        For i = 0 To timeDict.GetNumOfEntries - 1
+'            Debug.Print timeDict.GetKeyByIndex(i) & ": " & timeDict.GetValueByIndex(i)
+'        Next i
+'        firstCheck = 1
+'    End If
+    
+    'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption and any menus
+    ' on the form.
     ' TODO 6.8: once all controls are migrated, consider killing this step entirely, and moving the specialized translation bits here.
     If g_Language.TranslationActive Then
         If dstForm.Enabled Then g_Language.ApplyTranslations dstForm, useDoEvents

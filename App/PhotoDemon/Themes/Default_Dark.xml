@@ -440,7 +440,7 @@
 				<ButtonFill-hover>BackgroundDefault</ButtonFill-hover>
 				<ButtonArrow-hover>AccentDefault</ButtonArrow-hover>
 				<ThumbBorder>GrayLight</ThumbBorder>
-				<ThumbFill>Graylight</ThumbFill>
+				<ThumbFill>GrayLight</ThumbFill>
 				<ThumbBorder-disabled>GrayDefault</ThumbBorder-disabled>
 				<ThumbFill-disabled>GrayDefault</ThumbFill-disabled>
 				<ThumbBorder-active>AccentDefault</ThumbBorder-active>
