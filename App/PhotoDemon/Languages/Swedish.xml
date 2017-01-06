@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2149</langversion>
+<langversion>6.8.2191</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2710,6 +2710,12 @@ Please ange ett numeriskt värde.</translation>
 
 <!-- END text for pdEditBoxW.cls-->
 
+<!-- BEGIN text for pdEdgeDetector.cls -->
+
+<!-- pdEdgeDetector.cls contains 0 phrases. -->
+
+<!-- END text for pdEdgeDetector.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3306,6 +3312,12 @@ Please ange ett numeriskt värde.</translation>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
+
+<!-- BEGIN text for pdResources.cls -->
+
+<!-- pdResources.cls contains 0 phrases. -->
+
+<!-- END text for pdResources.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -5521,6 +5533,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>Outline</original>
+<translation>Outline</translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation>porträtt glöd</translation>
 </phrase>
@@ -6372,7 +6389,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 186 were duplicates of existing phrases, so only 381 new phrases were written to file. -->
+<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10087,6 +10104,22 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Outline.frm (FormOutlineEffect) -->
+
+<phrase>
+<original>edge type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating image outline</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Outline.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -12068,12 +12101,12 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation></translation>
+<translation>Donera till PhotoDemon utveckling</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon är Copyright 2017 av Tanner Helland och bidragande</translation>
 </phrase>
 
 <phrase>
@@ -12083,37 +12116,37 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation></translation>
+<translation>Delta i utveckling, konstruktion, eller översättningsarbete</translation>
 </phrase>
 
 <phrase>
 <original>Contact the author</original>
-<translation></translation>
+<translation>Kontakta författaren</translation>
 </phrase>
 
 <phrase>
 <original>Download program source code</original>
-<translation></translation>
+<translation>Download program källkod</translation>
 </phrase>
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation></translation>
+<translation>Granskningsprogrammet  och plugin licenser</translation>
 </phrase>
 
 <phrase>
 <original>Latest news</original>
-<translation></translation>
+<translation>Senaste nytt</translation>
 </phrase>
 
 <phrase>
 <original>About</original>
-<translation></translation>
+<translation>Handla om</translation>
 </phrase>
 
 <phrase>
 <original>Contributors</original>
-<translation></translation>
+<translation>bidragsgivare </translation>
 </phrase>
 
 <!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13244,12 +13277,23 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 
 <phrase>
 <original>flow</original>
-<translation></translation>
+<translation>flöde</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
+
+<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
+
+<phrase>
+<original>antialiased</original>
+<translation>kantutjämnade </translation>
+</phrase>
+
+<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Toolpanel_Pencil.frm-->
 
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
@@ -13337,11 +13381,6 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <phrase>
 <original>Lightbox</original>
 <translation>ljus</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Outline</translation>
 </phrase>
 
 <phrase>
@@ -13464,7 +13503,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation>Det här alternativet styr vilka kriterier trollspö använder för att avgöra om en pixel bör läggas till den aktuella markeringen.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14927,29 +14966,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdResources.cls -->
-
-<!-- pdResources.cls contains 0 phrases. -->
-
-<!-- END text for pdResources.cls-->
-
-<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
-
-<phrase>
-<original>antialiased</original>
-<translation>kantutjämnade </translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Toolpanel_Pencil.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4461 phrases. -->
-<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12620 total words. -->
+<!-- As of this build, PhotoDemon contains 4472 phrases. -->
+<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12625 total words. -->
 
 </pdData>

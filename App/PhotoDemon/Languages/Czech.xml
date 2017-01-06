@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2149</langversion>
+<langversion>6.8.2191</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2704,6 +2704,12 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdEditBoxW.cls-->
 
+<!-- BEGIN text for pdEdgeDetector.cls -->
+
+<!-- pdEdgeDetector.cls contains 0 phrases. -->
+
+<!-- END text for pdEdgeDetector.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3300,6 +3306,12 @@ Please enter a numeric value.</original>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
+
+<!-- BEGIN text for pdResources.cls -->
+
+<!-- pdResources.cls contains 0 phrases. -->
+
+<!-- END text for pdResources.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -5513,6 +5525,11 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
+<original>Outline</original>
+<translation>Obrys</translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation>portrét záře</translation>
 </phrase>
@@ -6361,7 +6378,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Odstraňte alfa kanálu</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 186 were duplicates of existing phrases, so only 381 new phrases were written to file. -->
+<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10076,6 +10093,22 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Outline.frm (FormOutlineEffect) -->
+
+<phrase>
+<original>edge type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating image outline</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Outline.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -12057,12 +12090,12 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation></translation>
+<translation>Přispějte na vývoj PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon je Copyright 2017 by Tanner Helland a přispěvatelů</translation>
 </phrase>
 
 <phrase>
@@ -12072,37 +12105,37 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation></translation>
+<translation>Podílet se na vývoj, projektování, nebo překladů</translation>
 </phrase>
 
 <phrase>
 <original>Contact the author</original>
-<translation></translation>
+<translation>Obraťte se na autora</translation>
 </phrase>
 
 <phrase>
 <original>Download program source code</original>
-<translation></translation>
+<translation>Ke stažení zdrojový kód programu</translation>
 </phrase>
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation></translation>
+<translation>Program přezkoumání a pluginů licence</translation>
 </phrase>
 
 <phrase>
 <original>Latest news</original>
-<translation></translation>
+<translation>Poslední zprávy</translation>
 </phrase>
 
 <phrase>
 <original>About</original>
-<translation></translation>
+<translation>O</translation>
 </phrase>
 
 <phrase>
 <original>Contributors</original>
-<translation></translation>
+<translation>Přispěvatelé</translation>
 </phrase>
 
 <!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13233,12 +13266,23 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 
 <phrase>
 <original>flow</original>
-<translation></translation>
+<translation>tok</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
+
+<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
+
+<phrase>
+<original>antialiased</original>
+<translation>Antialiasing</translation>
+</phrase>
+
+<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Toolpanel_Pencil.frm-->
 
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
@@ -13326,11 +13370,6 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 <phrase>
 <original>Lightbox</original>
 <translation>Světelný box</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Obrys</translation>
 </phrase>
 
 <phrase>
@@ -13453,7 +13492,7 @@ To povolit podporu pro tuto funkci, zkopírujte prosím soubor FreeImage.dll do 
 <translation>Tato volba řídí, jaká kritéria kouzelná hůlka používá k určení, zda pixel by měly být přidány do aktuálního výběru.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14910,29 +14949,12 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdResources.cls -->
-
-<!-- pdResources.cls contains 0 phrases. -->
-
-<!-- END text for pdResources.cls-->
-
-<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
-
-<phrase>
-<original>antialiased</original>
-<translation>Antialiasing</translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Toolpanel_Pencil.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4461 phrases. -->
-<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12620 total words. -->
+<!-- As of this build, PhotoDemon contains 4472 phrases. -->
+<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12625 total words. -->
 
 </pdData>

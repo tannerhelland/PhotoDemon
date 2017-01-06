@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.230</langversion>
+<langversion>6.7.231</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2705,6 +2705,12 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for pdEditBoxW.cls-->
 
+<!-- BEGIN text for pdEdgeDetector.cls -->
+
+<!-- pdEdgeDetector.cls contains 0 phrases. -->
+
+<!-- END text for pdEdgeDetector.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3301,6 +3307,12 @@ Geef een numerieke waarde.</translation>
 <!-- pdRedEye.cls contains 0 phrases. -->
 
 <!-- END text for pdRedEye.cls-->
+
+<!-- BEGIN text for pdResources.cls -->
+
+<!-- pdResources.cls contains 0 phrases. -->
+
+<!-- END text for pdResources.cls-->
 
 <!-- BEGIN text for pdSeamCarving.cls -->
 
@@ -5516,6 +5528,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Outline</original>
+<translation>Schets</translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation></translation>
 </phrase>
@@ -6367,7 +6384,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 186 were duplicates of existing phrases, so only 381 new phrases were written to file. -->
+<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10082,6 +10099,22 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Outline.frm (FormOutlineEffect) -->
+
+<phrase>
+<original>edge type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating image outline</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Outline.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -13245,6 +13278,17 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
+<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
+
+<phrase>
+<original>antialiased</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Toolpanel_Pencil.frm-->
+
 <!-- BEGIN text for Toolpanel_QuickFix.frm (toolpanel_NDFX) -->
 
 <phrase>
@@ -13331,11 +13375,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <phrase>
 <original>Lightbox</original>
 <translation>Lightbox</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Schets</translation>
 </phrase>
 
 <phrase>
@@ -13458,7 +13497,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14921,29 +14960,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdResources.cls -->
-
-<!-- pdResources.cls contains 0 phrases. -->
-
-<!-- END text for pdResources.cls-->
-
-<!-- BEGIN text for Toolpanel_Pencil.frm (toolpanel_Pencil) -->
-
-<phrase>
-<original>antialiased</original>
-<translation></translation>
-</phrase>
-
-<!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Toolpanel_Pencil.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2529</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4461 phrases. -->
-<!-- 1934 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12620 total words. -->
+<!-- As of this build, PhotoDemon contains 4472 phrases. -->
+<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
+<!-- These 2529 phrases contain approximately 12625 total words. -->
 
 </pdData>
