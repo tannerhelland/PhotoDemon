@@ -323,7 +323,3 @@ End Sub
 Private Sub sltDistance_Change()
     UpdatePreview
 End Sub
-
-
-
-

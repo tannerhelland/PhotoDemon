@@ -30,9 +30,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   5
       Top             =   120
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   4895
-      Caption         =   "edge detection technique"
+      _extentx        =   10610
+      _extenty        =   4895
+      caption         =   "edge detection technique"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -41,8 +41,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   0
       Top             =   5775
       Width           =   12195
-      _ExtentX        =   21511
-      _ExtentY        =   1323
+      _extentx        =   21511
+      _extenty        =   1323
    End
    Begin PhotoDemon.pdCheckBox chkInvert 
       Height          =   330
@@ -50,9 +50,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   3
       Top             =   5040
       Width           =   5610
-      _ExtentX        =   9895
-      _ExtentY        =   582
-      Caption         =   "use black background"
+      _extentx        =   9895
+      _extenty        =   582
+      caption         =   "use black background"
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -60,8 +60,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
@@ -70,9 +70,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   1
       Top             =   3360
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   582
-      Caption         =   "horizontal"
+      _extentx        =   9922
+      _extenty        =   582
+      caption         =   "horizontal"
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
@@ -81,9 +81,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   4
       Top             =   3840
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   582
-      Caption         =   "vertical"
+      _extentx        =   9922
+      _extenty        =   582
+      caption         =   "vertical"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -91,11 +91,11 @@ Begin VB.Form FormFindEdges
       Left            =   6000
       Top             =   4560
       Width           =   5970
-      _ExtentX        =   10530
-      _ExtentY        =   503
-      Caption         =   "other options"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   10530
+      _extenty        =   503
+      caption         =   "other options"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -103,11 +103,11 @@ Begin VB.Form FormFindEdges
       Left            =   6000
       Top             =   3000
       Width           =   5955
-      _ExtentX        =   10504
-      _ExtentY        =   503
-      Caption         =   "detection direction(s)"
-      FontSize        =   12
-      ForeColor       =   4210752
+      _extentx        =   10504
+      _extenty        =   503
+      caption         =   "detection direction(s)"
+      fontsize        =   12
+      forecolor       =   4210752
    End
 End
 Attribute VB_Name = "FormFindEdges"
@@ -166,7 +166,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Find edges", , BuildParams(lstEdgeOptions.ListIndex, getDirectionality(), CBool(chkInvert.Value)), UNDO_LAYER
+    Process "Find edges", , BuildParams(lstEdgeOptions.ListIndex, GetDirectionality(), CBool(chkInvert.Value)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -201,14 +201,14 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     tmpParamString = tmpParamString & Trim$(Str$(Not blackBackground)) & "|"
     
     '2a) Retrieve the relevant convolution matrix for this filter
-    convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, edgeDirectionality)
+    convolutionMatrixString = GetParamStringForEdgeDetector(edgeDetectionType, edgeDirectionality)
     
     '2b) Merge the retrieved convolution matrix string with our name and invert params
     tmpParamString = tmpParamString & convolutionMatrixString
     
     '3a) If the function is single-pass compatible (e.g. it does not require us to traverse the image multiple times, then
     '     blend the edge detection results), supply the compiled param string to PD's central convolution function and exit
-    If isEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
+    If IsEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
         ApplyConvolutionFilter tmpParamString, toPreview, dstPic
         Exit Sub
     End If
@@ -245,7 +245,7 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     
     tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
     tmpParamString = tmpParamString & Trim$(Str$(Not blackBackground)) & "|"
-    convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
+    convolutionMatrixString = GetParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
     tmpParamString = tmpParamString & convolutionMatrixString
     
     'Use the central ConvolveDIB function to apply the new convolution to workingDIB
@@ -303,7 +303,7 @@ End Function
 
 'Given an edge detection type and a direction, return TRUE if the requested edge detector can be applied in a single pass.
 ' Return FALSE if the function requires multiple image passes.
-Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As Boolean
+Private Function IsEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As Boolean
 
     'Convolution matrix strings are assembled in two or three steps:
     ' 1) Add divisor and offset values
@@ -312,43 +312,43 @@ Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
     Select Case edgeDetectionType
         
         Case PD_EDGE_ARTISTIC_CONTOUR
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
     
         'Hilite detection (doesn't support directionality)
         Case PD_EDGE_HILITE
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
         
         'Laplacian is unique because it supports a different operator for all directionalities, so even horizontal/vertical can
         ' be done in a single pass.
         Case PD_EDGE_LAPLACIAN
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
                 
         'PhotoDemon edge detection (doesn't support directionality)
         Case PD_EDGE_PHOTODEMON
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
         
         'Prewitt edge detection is unidirectional
         Case PD_EDGE_PREWITT
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
-                isEdgeDetectionSinglePass = True
+                IsEdgeDetectionSinglePass = True
             Else
-                isEdgeDetectionSinglePass = False
+                IsEdgeDetectionSinglePass = False
             End If
             
         'Roberts cross edge detection is unidirectional
         Case PD_EDGE_ROBERTS
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
-                isEdgeDetectionSinglePass = True
+                IsEdgeDetectionSinglePass = True
             Else
-                isEdgeDetectionSinglePass = False
+                IsEdgeDetectionSinglePass = False
             End If
         
         'Sobel edge detection is unidirectional
         Case PD_EDGE_SOBEL
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
-                isEdgeDetectionSinglePass = True
+                IsEdgeDetectionSinglePass = True
             Else
-                isEdgeDetectionSinglePass = False
+                IsEdgeDetectionSinglePass = False
             End If
         
     End Select
@@ -356,7 +356,7 @@ Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
 End Function
 
 'Given an internal edge detection type (and optionally, a direction), calculate a matching convolution matrix and return it
-Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As String
+Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As String
 
     Dim convoString As String
     convoString = ""
@@ -496,7 +496,7 @@ Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
     
     End Select
     
-    getParamStringForEdgeDetector = convoString
+    GetParamStringForEdgeDetector = convoString
 
 End Function
 
@@ -563,25 +563,25 @@ Private Sub LstEdgeOptions_Click()
     Select Case lstEdgeOptions.ListIndex
     
         Case PD_EDGE_ARTISTIC_CONTOUR
-            changeCheckboxActivation False
+            ChangeCheckboxActivation False
         
         Case PD_EDGE_HILITE
-            changeCheckboxActivation False
+            ChangeCheckboxActivation False
         
         Case PD_EDGE_LAPLACIAN
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
         
         Case PD_EDGE_PHOTODEMON
-            changeCheckboxActivation False
+            ChangeCheckboxActivation False
         
         Case PD_EDGE_PREWITT
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
         
         Case PD_EDGE_ROBERTS
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
             
         Case PD_EDGE_SOBEL
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
     
     End Select
     
@@ -592,7 +592,7 @@ End Sub
 
 'Dis/enable the directionality checkboxes to match the request; when checkboxes are disabled, their value is automatically
 ' forced to TRUE.
-Private Sub changeCheckboxActivation(ByVal toEnable As Boolean)
+Private Sub ChangeCheckboxActivation(ByVal toEnable As Boolean)
 
     If toEnable Then
     
@@ -613,14 +613,14 @@ Private Sub changeCheckboxActivation(ByVal toEnable As Boolean)
 End Sub
 
 'Convert the directionality checkboxes to PD's internal edge detection definitions
-Private Function getDirectionality() As PD_EDGE_DETECTION_DIRECTION
+Private Function GetDirectionality() As PD_EDGE_DETECTION_DIRECTION
 
     If CBool(chkDirection(0)) And Not CBool(chkDirection(1)) Then
-        getDirectionality = PD_EDGE_DIR_HORIZONTAL
+        GetDirectionality = PD_EDGE_DIR_HORIZONTAL
     ElseIf CBool(chkDirection(1)) And Not CBool(chkDirection(0)) Then
-        getDirectionality = PD_EDGE_DIR_VERTICAL
+        GetDirectionality = PD_EDGE_DIR_VERTICAL
     Else
-        getDirectionality = PD_EDGE_DIR_ALL
+        GetDirectionality = PD_EDGE_DIR_ALL
     End If
 
 End Function
@@ -629,7 +629,7 @@ End Function
 Private Sub UpdatePreview()
     
     If cmdBar.PreviewsAllowed Then
-        ApplyEdgeDetection lstEdgeOptions.ListIndex, getDirectionality(), CBool(chkInvert.Value), True, pdFxPreview
+        ApplyEdgeDetection lstEdgeOptions.ListIndex, GetDirectionality(), CBool(chkInvert.Value), True, pdFxPreview
     End If
     
 End Sub
@@ -638,4 +638,3 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-

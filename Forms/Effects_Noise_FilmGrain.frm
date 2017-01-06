@@ -341,5 +341,3 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-
-

@@ -358,7 +358,3 @@ End Sub
 Private Sub sltOffset_Change()
     UpdatePreview
 End Sub
-
-
-
-

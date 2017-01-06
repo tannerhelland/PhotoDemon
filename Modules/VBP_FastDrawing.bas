@@ -305,7 +305,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     ' happens, we have to do some extra handling to render a correct image; basically, we must null-pad
     ' the current layer DIB to the size of the image, then extract the relevant bits after the fact.
     Dim tmpLayer As pdLayer
-    If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then Set tmpLayer = New pdLayer
+    If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then Set tmpLayer = New pdLayer
     
     'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window.
     Dim dstWidth As Double, dstHeight As Double
@@ -321,7 +321,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         'Check for an active selection; if one is present, use that instead of the full DIB.  Note that no special processing is
         ' applied to the selected area - a full rectangle is passed to the source function, with no accounting for non-rectangular
         ' boundaries or feathering.  All that work is handled *after* the processing is complete.
-        If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+        If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
             
             'Before proceeding further, null-pad the layer in question.  This will allow any possible selection to work,
             ' regardless of the layer's actual area.
@@ -365,7 +365,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             'The full image is being previewed.  Retrieve the entire thing.
             If previewTarget.ViewportFitFullImage Then
             
-                If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+                If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
                     srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
                     srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
                 Else
@@ -381,7 +381,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 
                 'If a selection is active, and the selected area is smaller than the preview window, constrain the source area
                 ' to the selection boundaries.
-                If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+                If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
                 
                     If (pdImages(g_CurrentImage).mainSelection.boundWidth < srcWidth) Then
                         srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
@@ -452,7 +452,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                     hOffset = previewTarget.offsetX
                     vOffset = previewTarget.offsetY
                     
-                    If workingDIB.GetDIBWidth <> newWidth Or workingDIB.GetDIBHeight <> newHeight Then
+                    If ((workingDIB.GetDIBWidth <> newWidth) Or (workingDIB.GetDIBHeight <> newHeight)) Then
                         workingDIB.CreateBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
                     Else
                         workingDIB.ResetDIB
@@ -495,7 +495,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             End If
             
             'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
-            If Not previewTarget.HasOriginalImage Then previewTarget.SetOriginalImage workingDIB
+            If (Not previewTarget.HasOriginalImage) Then previewTarget.SetOriginalImage workingDIB
             
             'We're also going to apply the requested alpha premultiplication in advance, which saves us some time on
             ' subsequent requests (assuming the caller always wants the same alpha state for a given filter).
