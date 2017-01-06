@@ -177,19 +177,19 @@ Private Sub Form_Load()
     Load layerpanel_Colors
     m_WindowSync.SynchronizeWindows ctlContainer(1).hWnd, layerpanel_Colors.hWnd
     layerpanel_Colors.Show
-    
+        
     Load layerpanel_Layers
     m_WindowSync.SynchronizeWindows ctlContainer(ctlContainer.UBound).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
-    
+        
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
     m_lastUsedSettings.SetParentForm Me
     m_lastUsedSettings.LoadAllControlValues
-    
+        
     'Theme everything
     UpdateAgainstCurrentTheme True
-    
+        
     'Technically, we would now want to call ReflowInterface() to make sure everything is correctly aligned.
     ' However, UpdateAgainstCurrentTheme now calls that function automatically.
     
@@ -405,13 +405,8 @@ End Sub
 'Note that a layerID of -1 means multiple/all layers have changed, while a value >= 0 tells you which layer changed,
 ' perhaps sparing the amount of redraw work required.
 Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
-
-    'Optimizing the layer listbox is TODO!
     If ttlPanel(2).Value Then layerpanel_Layers.ForceRedraw True, layerID
-    
-    'Redraw the navigator to match
     If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
-
 End Sub
 
 'If the current viewport position and/or size changes, this toolbar will be notified.  At present, the only subpanel

@@ -54,14 +54,14 @@ Public Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRe
     'First, make sure the target object exists in the theme file.  If it doesn't, there's not much we can do.
     ' (Note that this step will fail inside the IDE; a workaround is provided.)
     m_ObjectName = srcObjectName
-    If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
+    If g_IsProgramRunning And (Not g_Themer Is Nothing) Then
         InitializeColorList = g_Themer.VerifyThemeObject(srcObjectName)
     Else
         InitializeColorList = True
     End If
     
     'Prep the internal color list
-    If numOfRequiredColors > 0 Then
+    If (numOfRequiredColors > 0) Then
         m_NumOfColors = numOfRequiredColors
         ReDim m_ColorList(0 To m_NumOfColors - 1) As PDThemeColor
     Else

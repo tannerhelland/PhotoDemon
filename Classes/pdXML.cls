@@ -238,7 +238,7 @@ End Function
 Public Function DoesTagExist(ByVal tagName As String, Optional ByVal attributeName As String = "", Optional ByVal attributeValue As String = "") As Boolean
 
     'If an attribute is provided, finding the tag is a bit messier
-    If Len(attributeName) <> 0 Then
+    If (Len(attributeName) <> 0) Then
     
         If InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode) Then
             DoesTagExist = True

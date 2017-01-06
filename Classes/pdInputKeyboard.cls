@@ -244,7 +244,7 @@ End Function
 Public Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
     
     'See comments in the previous function (createKeyboardTracker) for details
-    If UBound(listOfKeys) >= LBound(listOfKeys) Then
+    If (UBound(listOfKeys) >= LBound(listOfKeys)) Then
         
         Dim curKeyIndex As Long
         curKeyIndex = m_NumOfTrackedKeys
@@ -256,7 +256,7 @@ Public Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
         Dim i As Variant
         
         For Each i In listOfKeys
-            If CLng(i) <> 0 Then
+            If (CLng(i) <> 0) Then
                 m_TrackedKeys(curKeyIndex) = CLng(i)
                 curKeyIndex = curKeyIndex + 1
             End If

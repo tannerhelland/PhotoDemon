@@ -703,15 +703,15 @@ Private Sub UserControl_Initialize()
     ReDim m_LayerThumbnails(0 To m_NumOfThumbnails) As LayerThumbDisplay
     m_MouseOverLayerBox = False
     m_LayerRearrangingMode = False
-    UpdateHoveredLayer -1
+    m_CurLayerHover = -1
     m_MouseX = -1
     m_MouseY = -1
     m_ScrollValue = 0
     m_ScrollMax = 0
-    
+
     'Update the control size parameters at least once
     UpdateControlLayout
-    
+
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -906,28 +906,6 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Cache colors in advance, so we can simply reuse them in the inner loop
-    Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
-    Dim itemColorSelectedBorderHover As Long, itemColorSelectedFillHover As Long
-    Dim itemColorUnselectedBorder As Long, itemColorUnselectedFill As Long
-    Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
-    Dim fontColorSelected As Long, fontColorSelectedHover As Long
-    Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
-    
-    itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
-    itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
-    itemColorUnselectedFill = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, False)
-    itemColorUnselectedFillHover = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, True)
-    itemColorSelectedBorder = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, False)
-    itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
-    itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
-    itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
-        
-    fontColorSelected = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, False)
-    fontColorSelectedHover = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, True)
-    fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
-    fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
-    
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDLB_Background, enabledState))
@@ -965,7 +943,29 @@ Private Sub RedrawBackBuffer()
         
         'If we are not in "zero layers" mode, proceed with drawing the various list items
         If (Not zeroLayers) Then
-        
+            
+            'Cache colors in advance, so we can simply reuse them in the inner loop
+            Dim itemColorSelectedBorder As Long, itemColorSelectedFill As Long
+            Dim itemColorSelectedBorderHover As Long, itemColorSelectedFillHover As Long
+            Dim itemColorUnselectedBorder As Long, itemColorUnselectedFill As Long
+            Dim itemColorUnselectedBorderHover As Long, itemColorUnselectedFillHover As Long
+            Dim fontColorSelected As Long, fontColorSelectedHover As Long
+            Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
+            
+            itemColorUnselectedBorder = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, False)
+            itemColorUnselectedBorderHover = m_Colors.RetrieveColor(PDLB_UnselectedItemBorder, enabledState, False, True)
+            itemColorUnselectedFill = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, False)
+            itemColorUnselectedFillHover = m_Colors.RetrieveColor(PDLB_UnselectedItemFill, enabledState, False, True)
+            itemColorSelectedBorder = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, False)
+            itemColorSelectedBorderHover = m_Colors.RetrieveColor(PDLB_SelectedItemBorder, enabledState, False, True)
+            itemColorSelectedFill = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, False)
+            itemColorSelectedFillHover = m_Colors.RetrieveColor(PDLB_SelectedItemFill, enabledState, False, True)
+                
+            fontColorSelected = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, False)
+            fontColorSelectedHover = m_Colors.RetrieveColor(PDLB_SelectedItemText, enabledState, False, True)
+            fontColorUnselected = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, False)
+            fontColorUnselectedHover = m_Colors.RetrieveColor(PDLB_UnselectedItemText, enabledState, False, True)
+            
             'Loop through the current layer list, drawing layers as we go
             Dim i As Long
             For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
@@ -974,7 +974,7 @@ Private Sub RedrawBackBuffer()
                 ' we need to convert our For loop index into a matching layer index
                 layerIndex = (pdImages(g_CurrentImage).GetNumOfLayers - 1) - i
                 offsetX = m_ListRect.Left
-                offsetY = m_ListRect.Top + Interface.FixDPI(i * LAYER_BLOCK_HEIGHT) - scrollOffset  'FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
+                offsetY = m_ListRect.Top + Interface.FixDPI(i * LAYER_BLOCK_HEIGHT) - scrollOffset
                 
                 'Start by figuring out if this layer is even visible in the current box; if it isn't,
                 ' skip drawing entirely
@@ -1071,10 +1071,6 @@ Private Sub RedrawBackBuffer()
                         'Next comes the layer name
                         Dim drawString As String
                         drawString = tmpLayerRef.GetLayerName
-                        
-                        'If this layer is invisible, mark it as such.
-                        ' NOTE: not sold on this behavior, but I'm leaving it for a bit to see how it affects workflow.
-                        'If (Not tmpLayerRef.GetLayerVisibility) Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
                         
                         'Retrieve a matching font object from the UI font cache, and prep it with the proper display settings
                         Set layerFont = Font_Management.GetMatchingUIFont(10, False, False, False)
@@ -1269,7 +1265,7 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Load all hover UI image resources
     If ucSupport.ThemeUpdateRequired Then
-    
+        
         If g_IsProgramRunning Then
             Dim iconSize As Long
             iconSize = FixDPI(16)
@@ -1290,4 +1286,3 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-

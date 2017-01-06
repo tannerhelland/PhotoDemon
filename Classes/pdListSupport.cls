@@ -1004,16 +1004,24 @@ Public Sub CalculateRenderMetrics()
 End Sub
 
 Public Sub UpdateAgainstCurrentTheme()
-
-    If (m_NumOfItems > 0) And (StrComp(m_LanguageAtLastCheck, g_Language.GetCurrentLanguage, vbBinaryCompare) <> 0) Then
-        m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
-        
-        Dim i As Long
-        For i = 0 To m_NumOfItems - 1
-            m_Items(i).textTranslated = g_Language.TranslateMessage(m_Items(i).textEn)
-        Next i
     
-        m_RenderDataCorrect = False
+    If (Not g_Language Is Nothing) Then
+        If g_Language.TranslationActive Then
+        
+            If (m_NumOfItems > 0) And (StrComp(m_LanguageAtLastCheck, g_Language.GetCurrentLanguage, vbBinaryCompare) <> 0) Then
+                
+                m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
+                
+                Dim i As Long
+                For i = 0 To m_NumOfItems - 1
+                    m_Items(i).textTranslated = g_Language.TranslateMessage(m_Items(i).textEn)
+                Next i
+            
+                m_RenderDataCorrect = False
+                
+            End If
+            
+        End If
     End If
 
 End Sub

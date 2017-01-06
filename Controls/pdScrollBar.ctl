@@ -1261,24 +1261,28 @@ Private Sub UpdatePopupText()
     
     'The text of the scroll bar context menu changes depending on orientation.  We match the verbiage and layout
     ' of the default Windows context menu.
-    If g_IsProgramRunning And Not (g_Language Is Nothing) Then
-    
-        If m_OrientationHorizontal Then
-            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
-            MnuScroll(2).Caption = g_Language.TranslateMessage("Left edge")
-            MnuScroll(3).Caption = g_Language.TranslateMessage("Right edge")
-            MnuScroll(5).Caption = g_Language.TranslateMessage("Page left")
-            MnuScroll(6).Caption = g_Language.TranslateMessage("Page right")
-            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll left")
-            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll right")
-        Else
-            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
-            MnuScroll(2).Caption = g_Language.TranslateMessage("Top")
-            MnuScroll(3).Caption = g_Language.TranslateMessage("Bottom")
-            MnuScroll(5).Caption = g_Language.TranslateMessage("Page up")
-            MnuScroll(6).Caption = g_Language.TranslateMessage("Page down")
-            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll up")
-            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll down")
+    If g_IsProgramRunning And (Not g_Language Is Nothing) Then
+        
+        If g_Language.TranslationActive Then
+        
+            If m_OrientationHorizontal Then
+                MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
+                MnuScroll(2).Caption = g_Language.TranslateMessage("Left edge")
+                MnuScroll(3).Caption = g_Language.TranslateMessage("Right edge")
+                MnuScroll(5).Caption = g_Language.TranslateMessage("Page left")
+                MnuScroll(6).Caption = g_Language.TranslateMessage("Page right")
+                MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll left")
+                MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll right")
+            Else
+                MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
+                MnuScroll(2).Caption = g_Language.TranslateMessage("Top")
+                MnuScroll(3).Caption = g_Language.TranslateMessage("Bottom")
+                MnuScroll(5).Caption = g_Language.TranslateMessage("Page up")
+                MnuScroll(6).Caption = g_Language.TranslateMessage("Page down")
+                MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll up")
+                MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll down")
+            End If
+            
         End If
         
     End If
@@ -1292,7 +1296,7 @@ Private Sub UpdateColorList()
     'The color list for this control varies based on the control's "m_VisualStyle" setting.  (Canvas scrollbars are rendered
     ' differently from non-canvas scrollbars.)
     Dim colorTag As String
-    If m_VisualStyle = SBVS_Standard Then colorTag = vbNullString Else colorTag = "CanvasMode"
+    If (m_VisualStyle = SBVS_Standard) Then colorTag = vbNullString Else colorTag = "CanvasMode"
     
     With m_Colors
         .LoadThemeColor PDS_Track, "Track" & colorTag, IDE_WHITE

@@ -635,13 +635,13 @@ End Function
 
 'Change the edit box position and size in one fell swoop.  Coordinates are RELATIVE TO THE PARENT WINDOW.
 Public Sub Move(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
-    If m_EditBoxHwnd <> 0 Then MoveWindow m_EditBoxHwnd, newLeft, newTop, newWidth, newHeight, 1&
+    If (m_EditBoxHwnd <> 0) Then MoveWindow m_EditBoxHwnd, newLeft, newTop, newWidth, newHeight, 1&
 End Sub
 
 'This function actually does two things: makes the edit box the foreground window, then assigns it keyboard focus.
 ' By design, all non-multiline edit boxes in PD select all their own text upon an initial click.
 Public Sub SetFocusToEditBox()
-    If m_EditBoxHwnd <> 0 Then
+    If (m_EditBoxHwnd <> 0) Then
         SetForegroundWindow m_EditBoxHwnd
         SetFocus m_EditBoxHwnd
     End If

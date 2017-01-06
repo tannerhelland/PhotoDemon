@@ -730,14 +730,14 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
     'If no translation was found, return the original message as the "translation".  This allows the program to still be usable
     ' even if translation text is missing.
-    If Len(newString) = 0 Then
+    If (Len(newString) = 0) Then
         
         'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
         If TranslationActive And (InStr(1, searchString, vbCrLf) > 0) Then
             
             newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf))
             
-            If Len(newString) = 0 Then
+            If (Len(newString) = 0) Then
                 newString = srcMessage
             Else
             
@@ -755,7 +755,7 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     'newString now contains the translated message (or the original text, if no translation was found).
     
     'The last step is to replace any optional parameters in the text
-    If UBound(ExtraText) >= LBound(ExtraText) Then
+    If (UBound(ExtraText) >= LBound(ExtraText)) Then
     
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
