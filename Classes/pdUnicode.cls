@@ -183,7 +183,7 @@ Public Function UTF8BytesToString(ByRef Utf8() As Byte) As String
     lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), UBound(Utf8) + 1, 0, 0)
     
     'If the returned length is 0, MultiByteToWideChar failed.  This typically only happens if totally invalid characters are found.
-    If lenWideString = 0 Then
+    If (lenWideString = 0) Then
         
         Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar did not return a valid buffer length.)"
         Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
@@ -193,20 +193,17 @@ Public Function UTF8BytesToString(ByRef Utf8() As Byte) As String
     Else
     
         'Prep a temporary string buffer
-        Dim strWide As String
-        strWide = String$(lenWideString, 0)
+        UTF8BytesToString = String$(lenWideString, 0)
         
         'Use the API to perform the actual conversion
-        lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), UBound(Utf8) + 1, StrPtr(strWide), lenWideString)
+        lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), UBound(Utf8) + 1, StrPtr(UTF8BytesToString), lenWideString)
         
         'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
         ' fail here, but better safe than sorry.)
-        If lenWideString = 0 Then
+        If (lenWideString = 0) Then
             Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length.)"
             Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
             UTF8BytesToString = ""
-        Else
-            UTF8BytesToString = strWide
         End If
         
     End If
@@ -333,7 +330,7 @@ Public Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
     ' made to detect UTF-32, due to its extreme rarity.  (That said, heursitics for it are simple; see http://stackoverflow.com/questions/4520184/how-to-detect-the-character-encoding-of-a-text-file/4522251#4522251)
     
     'First, check for BOM 0xFFFE, which indicates little-endian UTF-16 (e.g. VB's internal format)
-    If srcBytes(0) = 255 And srcBytes(1) = 254 Then
+    If (srcBytes(0) = 255) And (srcBytes(1) = 254) Then
         
         'Cast the byte array straight into a string, then remove the BOM.
         tmpString = srcBytes
@@ -341,7 +338,7 @@ Public Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
         'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
     
     'Next, check for big-endian UTF-16 (0xFEFF)
-    ElseIf srcBytes(0) = 254 And srcBytes(1) = 255 Then
+    ElseIf (srcBytes(0) = 254) And (srcBytes(1) = 255) Then
       
         'Swap all byte pairs in the incoming array
         Dim tmpSwap As Byte, i As Long

@@ -1255,7 +1255,7 @@ Public Function LoadFileAsByteArray(ByRef srcFile As String, ByRef dstArray() As
     On Error GoTo StopFileLoad
     
     'Before doing anything else, make sure the file exists
-    If Not FileExist(srcFile) Then
+    If (Not FileExist(srcFile)) Then
         Debug.Print "WARNING! pdFSO.LoadFileAsByteArray can't find " & srcFile & ".  Abandoning load."
         LoadFileAsByteArray = False
         Exit Function
@@ -1272,7 +1272,7 @@ Public Function LoadFileAsByteArray(ByRef srcFile As String, ByRef dstArray() As
         
         'Retrieve the full file contents
         Dim tmpVerify As Long
-        If ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0 Then
+        If (ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0) Then
             LoadFileAsByteArray = True
         Else
             #If DEBUGMODE = 1 Then
@@ -1374,10 +1374,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
     'Use a wrapper function to dump the file's contents into a byte array.
     Dim fileBytes() As Byte
     If LoadFileAsByteArray(srcFile, fileBytes) Then
-    
         LoadTextFileAsString = m_Unicode.ConvertUnknownBytesToString(fileBytes, dstString, forceWindowsLineEndings)
-        
-    'The file could not be loaded into a byte array; abandon ship
     Else
         LoadTextFileAsString = False
     End If
