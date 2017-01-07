@@ -72,16 +72,7 @@ End Sub
 'PhotoDemon-specific XML files are required to encode a data type (filter, macro, etc).  This function can be used to quickly
 ' retrieve that type, allowing the calling function to determine if a proper filetype has been loaded for their operation.
 Public Function IsPDDataType(ByVal expectedType As String) As Boolean
-    
-    Dim reportedType As String
-    reportedType = GetTextBetweenTags("pdDataType")
-    
-    If StrComp(reportedType, expectedType, m_TextCompareMode) = 0 Then
-        IsPDDataType = True
-    Else
-        IsPDDataType = False
-    End If
-    
+    IsPDDataType = (StrComp(GetTextBetweenTags("pdDataType"), expectedType, m_TextCompareMode) = 0)
 End Function
 
 'Write a blank line into the XML file.  This has no practical purpose, but I like pretty XML output, so PD occasionally uses
@@ -531,27 +522,16 @@ End Function
 
 'Load an XML file into memory.  This function will also do some basic validation to ensure the requested file is actually XML.
 ' Returns: TRUE if file found, loaded, and validated successfully.  FALSE otherwise.
-Public Function LoadXMLFile(ByVal xmlPath As String) As Boolean
+Public Function LoadXMLFile(ByRef xmlPath As String) As Boolean
     
-    If m_File.FileExist(xmlPath) Then
-    
-        'Load the file's contents into a string
-        If m_File.LoadTextFileAsString(xmlPath, m_xmlContents) Then
+    If m_File.LoadTextFileAsString(xmlPath, m_xmlContents) Then
             
-            'Remove all tabs from the source file.  (These pad the XML data unnecessarily, so we erase them when loading XML, and restore
-            ' them when writing XML.)
-            If InStr(1, m_xmlContents, vbTab, vbBinaryCompare) <> 0 Then m_xmlContents = Replace$(m_xmlContents, vbTab, "", , , vbBinaryCompare)
-            
-            'Check for an XML header
-            If VerifyXMLHeader(m_xmlContents) Then
-                LoadXMLFile = True
-            Else
-                LoadXMLFile = False
-            End If
-            
-        Else
-            LoadXMLFile = False
-        End If
+        'Remove all tabs from the source file.  (These pad the XML data unnecessarily, so we erase them when loading XML, and restore
+        ' them when writing XML.)
+        If (InStr(1, m_xmlContents, vbTab, vbBinaryCompare) <> 0) Then m_xmlContents = Replace$(m_xmlContents, vbTab, vbNullString, , , vbBinaryCompare)
+        
+        'Check for an XML header
+        LoadXMLFile = VerifyXMLHeader(m_xmlContents)
     
     Else
         LoadXMLFile = False
@@ -563,33 +543,8 @@ End Function
 Private Function VerifyXMLHeader(ByRef fileContents As String) As Boolean
         
     'Check for "<?xml" in the file.  We don't care about encoding, etc - just check "<?xml" to keep things quick.
-    If InStr(1, fileContents, "<?xml", m_TextCompareMode) > 0 Then
-        VerifyXMLHeader = True
-    Else
-        VerifyXMLHeader = False
-    End If
+    VerifyXMLHeader = CBool(InStr(1, fileContents, "<?xml", m_TextCompareMode) <> 0)
 
-End Function
-
-'Retrieve an entire file and return it as a string.
-Private Function GetFileAsString(ByVal fName As String) As String
-    
-    Dim tmpFileContents As String
-    
-    'Ensure that the file exists before attempting to load it
-    If m_File.FileExist(fName) Then
-        
-        m_File.LoadTextFileAsString fName, tmpFileContents
-            
-        'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to our own XML processing)
-        If InStr(1, tmpFileContents, vbTab) <> 0 Then tmpFileContents = Replace(tmpFileContents, vbTab, "")
-        
-        GetFileAsString = tmpFileContents
-    
-    Else
-        GetFileAsString = ""
-    End If
-    
 End Function
 
 'Given an XML string, apply basic indentation
