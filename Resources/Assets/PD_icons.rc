@@ -431,7 +431,7 @@ LRGCANCEL    CUSTOM  MOVEABLE        LOADONCALL      cross_red_32.png
 LRGACCEPT    CUSTOM  MOVEABLE        LOADONCALL      check_green_32.png
 LRGDELAY     CUSTOM  MOVEABLE        LOADONCALL      calendar_blue_32.png
 LRGUPDATE    CUSTOM  MOVEABLE        LOADONCALL      software_update_32.png
-CLIPBOARDCPY CUSTOM  MOVEABLE        LOADONCALL      clipboard_export_32.png
+//CLIPBOARDCPY CUSTOM  MOVEABLE        LOADONCALL      clipboard_export_32.png
 
 //Arrow icons for the "canvas size" anchor function
 IMGMEDIUM    CUSTOM  MOVEABLE        LOADONCALL      image_medium.png
@@ -494,14 +494,14 @@ RSZ_FITEX    CUSTOM  MOVEABLE        LOADONCALL      resize_fit_exclusive.png
 //CLOSE_MINI_GRAY  CUSTOM  MOVEABLE       LOADONCALL      close_gray_16.png
 
 //Preferences dialog button images
-PREF_ADVANCED    CUSTOM  MOVEABLE       LOADONCALL      pref_advanced.png
-PREF_COLOR       CUSTOM  MOVEABLE       LOADONCALL      pref_color.png
-PREF_FORMATS     CUSTOM  MOVEABLE       LOADONCALL      pref_formats.png
-PREF_INTERFACE   CUSTOM  MOVEABLE       LOADONCALL      pref_interface.png
-PREF_LOADING     CUSTOM  MOVEABLE       LOADONCALL      pref_folder.png
-PREF_NETWORK     CUSTOM  MOVEABLE       LOADONCALL      pref_network.png
-PREF_PERFORMANCE CUSTOM  MOVEABLE       LOADONCALL      pref_performance.png
-PREF_SAVING      CUSTOM  MOVEABLE       LOADONCALL      pref_floppy.png
+//PREF_ADVANCED    CUSTOM  MOVEABLE       LOADONCALL      pref_advanced.png
+//PREF_COLOR       CUSTOM  MOVEABLE       LOADONCALL      pref_color.png
+//PREF_FORMATS     CUSTOM  MOVEABLE       LOADONCALL      pref_formats.png
+//PREF_INTERFACE   CUSTOM  MOVEABLE       LOADONCALL      pref_interface.png
+//PREF_LOADING     CUSTOM  MOVEABLE       LOADONCALL      pref_folder.png
+//PREF_NETWORK     CUSTOM  MOVEABLE       LOADONCALL      pref_network.png
+//PREF_PERFORMANCE CUSTOM  MOVEABLE       LOADONCALL      pref_performance.png
+//PREF_SAVING      CUSTOM  MOVEABLE       LOADONCALL      pref_floppy.png
 
 //Color selector 
 //CS_FROM_SCREEN   CUSTOM  MOVEABLE       LOADONCALL      color_selector_from_screen.png
