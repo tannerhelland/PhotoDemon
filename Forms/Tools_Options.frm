@@ -1776,7 +1776,9 @@ Private Sub Form_Load()
     LoadAllPreferences
     
     'Load custom command button images
-    cmdCopyReportClipboard.AssignImage "CLIPBOARDCPY"
+    Dim copyButtonSize As Long
+    copyButtonSize = FixDPI(28)
+    cmdCopyReportClipboard.AssignImage "pref_copyclipboard", , , , copyButtonSize, copyButtonSize
     
     'Prep the category button strip
     With btsvCategory
@@ -1800,13 +1802,15 @@ Private Sub Form_Load()
         .AssignTooltip "Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.", "Advanced Options", , 6
         
         'Next, add images to each button
-        .AssignImageToItem 0, "PREF_INTERFACE"
-        .AssignImageToItem 1, "PREF_LOADING"
-        .AssignImageToItem 2, "PREF_SAVING"
-        .AssignImageToItem 3, "PREF_PERFORMANCE"
-        .AssignImageToItem 4, "PREF_COLOR"
-        .AssignImageToItem 5, "PREF_NETWORK"
-        .AssignImageToItem 6, "PREF_ADVANCED"
+        Dim prefButtonSize As Long
+        prefButtonSize = FixDPI(32)
+        .AssignImageToItem 0, "pref_interface", , prefButtonSize, prefButtonSize
+        .AssignImageToItem 1, "pref_loading", , prefButtonSize, prefButtonSize
+        .AssignImageToItem 2, "pref_saving", , prefButtonSize, prefButtonSize
+        .AssignImageToItem 3, "pref_performance", , prefButtonSize, prefButtonSize
+        .AssignImageToItem 4, "pref_colormanagement", , prefButtonSize, prefButtonSize
+        .AssignImageToItem 5, "pref_updates", , prefButtonSize, prefButtonSize
+        .AssignImageToItem 6, "pref_advanced", , prefButtonSize, prefButtonSize
         
         'Finally, synchronize the tooltip manager against the current theme
         .UpdateAgainstCurrentTheme
