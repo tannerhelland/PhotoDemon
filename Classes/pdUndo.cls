@@ -177,7 +177,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     #End If
     
     'If the caller is okay with us coalescing this into the previous entry, test for coalescence acceptability
-    If coalescenceAllowed And (undoNum > 0) Then
+    If (coalescenceAllowed And (undoNum > 0)) Then
         
         'If this processID and layerID match the previous ones, we are okay to just overwrite that entry with this one.
         If (StrComp(processID, undoStack(undoNum - 1).processID, vbBinaryCompare) = 0) And (targetLayerID = undoStack(undoNum - 1).undoLayerID) Then

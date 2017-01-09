@@ -131,6 +131,10 @@ Private m_refreshOutsideProgressBar As Boolean
 'PD's default large and small application icons.  These are cached for the duration of the current session.
 Private m_DefaultIconLarge As Long, m_DefaultIconSmall As Long
 
+'Size of the icons in the "Recent Files" menu.  This size is larger on Vista+ because it allows each menu to have its
+' own image size (vs XP, where they must all match).
+Private m_RecentFileIconSize As Long
+
 'Load all the menu icons from PhotoDemon's embedded resource file
 Public Sub LoadMenuIcons()
 
@@ -166,11 +170,8 @@ Public Sub LoadMenuIcons()
         
     '...and initialize the separate MRU icon handler.
     Set cMRUIcons = New clsMenuImage
-    If g_IsVistaOrLater Then
-        cMRUIcons.Init FormMain.hWnd, FixDPI(64), FixDPI(64)
-    Else
-        cMRUIcons.Init FormMain.hWnd, FixDPI(16), FixDPI(16)
-    End If
+    If g_IsVistaOrLater Then m_RecentFileIconSize = FixDPI(64) Else m_RecentFileIconSize = FixDPI(16)
+    cMRUIcons.Init FormMain.hWnd, m_RecentFileIconSize, m_RecentFileIconSize
         
 End Sub
 
@@ -185,7 +186,7 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "file_new", 0, 0      'New
     AddMenuIcon "file_open", 0, 1       'Open Image
     
-    AddMenuIcon "OPENREC", 0, 2       'Open recent
+    'AddMenuIcon "OPENREC", 0, 2       'Open recent
     AddMenuIcon "IMPORT", 0, 3        'Import
         '--> Import sub-menu
         AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
@@ -582,21 +583,7 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     If (Not iconAlreadyLoaded) Then
         
         If (Not cMenuImage Is Nothing) Then
-            
-            'Attempt to load the image from our internal resource manager
-            Dim loadedInternally As Boolean: loadedInternally = False
-            If (Not g_Resources Is Nothing) Then
-                If g_Resources.AreResourcesAvailable Then
-                    Dim tmpDIB As pdDIB
-                    loadedInternally = g_Resources.LoadImageResource(resID, tmpDIB, 16, 16, 0.5, True)
-                    If loadedInternally Then cMenuImage.AddImageFromDIB tmpDIB
-                End If
-            End If
-            
-            If (Not loadedInternally) Then
-                cMenuImage.AddImageFromStream LoadResData(resID, "CUSTOM")
-            End If
-            
+            AddImageResourceToClsMenu resID, cMenuImage
             iconNames(curIcon) = resID
             iconLocation = curIcon
             curIcon = curIcon + 1
@@ -649,15 +636,15 @@ Public Sub ResetMenuIcons()
         
         'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
         If (Not g_IsVistaOrLater) Then
-            AddMenuIcon "LOADALL", 0, 2, numOfMRUFiles + 1
-            AddMenuIcon "CLEARRECENT", 0, 2, numOfMRUFiles + 2
+            AddMenuIcon "generic_imagefolder", 0, 2, numOfMRUFiles + 1
+            AddMenuIcon "file_close", 0, 2, numOfMRUFiles + 2
         End If
         
         'Repeat the same steps for the Recent Macro list.  Note that a larger icon is never used for this list, because we don't have
         ' large thumbnail images present.
         Dim numOfMRUFiles_Macro As Long
         numOfMRUFiles_Macro = g_RecentMacros.MRU_ReturnCount
-        AddMenuIcon "CLEARRECENT", 8, 5, numOfMRUFiles_Macro + 1
+        AddMenuIcon "file_close", 8, 5, numOfMRUFiles_Macro + 1
         
     End If
     
@@ -671,7 +658,7 @@ Public Sub ResetMenuIcons()
         Dim tmpFilename As String
         
         'Load a placeholder image for missing MRU entries
-        cMRUIcons.AddImageFromStream LoadResData("MRUHOLDER", "CUSTOM")
+        AddImageResourceToClsMenu "generic_imagemissing", cMRUIcons, m_RecentFileIconSize
         
         'This counter will be used to track the current position of loaded thumbnail images into the icon collection
         Dim iconLocation As Long
@@ -707,14 +694,37 @@ Public Sub ResetMenuIcons()
             
         'Vista+ users now get their nice, large "load all recent files" and "clear list" icons.
         If g_IsVistaOrLater Then
-            cMRUIcons.AddImageFromStream LoadResData("LOADALLLRG", "CUSTOM")
+            Dim largePadding As Single
+            largePadding = (m_RecentFileIconSize / 5)
+            AddImageResourceToClsMenu "generic_imagefolder", cMRUIcons, m_RecentFileIconSize, largePadding
             cMRUIcons.PutImageToVBMenu iconLocation + 1, numOfMRUFiles + 1, 0, 2
-            cMRUIcons.AddImageFromStream LoadResData("CLEARRECLRG", "CUSTOM")
+            largePadding = (m_RecentFileIconSize / 3)
+            AddImageResourceToClsMenu "file_close", cMRUIcons, m_RecentFileIconSize, largePadding
             cMRUIcons.PutImageToVBMenu iconLocation + 2, numOfMRUFiles + 2, 0, 2
         End If
         
     End If
         
+End Sub
+
+Private Sub AddImageResourceToClsMenu(ByRef srcResID As String, ByRef targetMenuObject As clsMenuImage, Optional ByVal desiredSize As Long = 0, Optional ByVal desiredPadding As Single = 0.5)
+
+    'First, attempt to load the image from our internal resource manager
+    Dim loadedInternally As Boolean: loadedInternally = False
+    If (Not g_Resources Is Nothing) Then
+        If g_Resources.AreResourcesAvailable Then
+            Dim tmpDIB As pdDIB
+            If (desiredSize = 0) Then desiredSize = FixDPI(16)
+            loadedInternally = g_Resources.LoadImageResource(srcResID, tmpDIB, desiredSize, desiredSize, desiredPadding, True)
+            If loadedInternally Then targetMenuObject.AddImageFromDIB tmpDIB
+        End If
+    End If
+    
+    'If that fails, use the legacy resource instead
+    If (Not loadedInternally) Then
+        targetMenuObject.AddImageFromStream LoadResData(srcResID, "CUSTOM")
+    End If
+    
 End Sub
 
 'Convert a DIB - any DIB! - to an icon via CreateIconIndirect.  Transparency will be preserved, and by default, the icon will be created
@@ -725,7 +735,7 @@ End Sub
 ' the function without FreeImage's help, but frankly don't consider it worth the trouble.
 Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long = 0, Optional ByVal flipVertically As Boolean = False) As Long
 
-    If Not g_ImageFormats.FreeImageEnabled Then
+    If (Not g_ImageFormats.FreeImageEnabled) Then
         GetIconFromDIB = 0
         Exit Function
     End If
@@ -768,7 +778,7 @@ Public Function GetIconFromDIB(ByRef srcDIB As pdDIB, Optional iconSize As Long 
     End If
     
     'Release FreeImage's copy of the source DIB
-    If fi_DIB <> 0 Then FreeImage_UnloadEx fi_DIB
+    If (fi_DIB <> 0) Then FreeImage_UnloadEx fi_DIB
     
 End Function
 

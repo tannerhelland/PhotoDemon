@@ -465,9 +465,9 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         loadSuccessful = False
         
         'Deactivate the (now useless) pdImage and pdDIB objects, which will forcibly unload whatever resources they may have claimed
-        If Not (targetDIB Is Nothing) Then Set targetDIB = Nothing
+        If (Not targetDIB Is Nothing) Then Set targetDIB = Nothing
         
-        If Not (targetImage Is Nothing) Then
+        If (Not targetImage Is Nothing) Then
             targetImage.DeactivateImage
             Set targetImage = Nothing
         End If

@@ -171,7 +171,7 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     End If
                     
                     dstDIB.SetInitialAlphaPremultiplicationState True
-                    GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_tmpDIB, 0, 0, imgWidth, imgHeight, , GP_IM_HighQualityBicubic, , , , True
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, desiredBorders, desiredBorders, desiredWidth - desiredBorders * 2, desiredHeight - desiredBorders * 2, m_tmpDIB, 0, 0, imgWidth, imgHeight, , GP_IM_HighQualityBicubic, , True, , True
                     
                     'Now, we use a hierarchy of settings to determine how to color this particular icon.
                     
