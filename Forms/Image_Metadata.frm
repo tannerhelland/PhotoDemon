@@ -641,10 +641,10 @@ Private Sub Form_Load()
     
     Dim buttonSize As Long
     buttonSize = FixDPI(32)
-    btnTagOptions(MDTB_Remove).AssignImage "generic_trash", , , , buttonSize, buttonSize
-    btnTagOptions(MDTB_Reset).AssignImage "generic_reset", , , , buttonSize, buttonSize
-    btnGroupOptions(MDTB_Remove).AssignImage "generic_trash", , , , buttonSize, buttonSize
-    btnGroupOptions(MDTB_Reset).AssignImage "generic_reset", , , , buttonSize, buttonSize
+    btnTagOptions(MDTB_Remove).AssignImage "generic_trash", , buttonSize, buttonSize
+    btnTagOptions(MDTB_Reset).AssignImage "generic_reset", , buttonSize, buttonSize
+    btnGroupOptions(MDTB_Remove).AssignImage "generic_trash", , buttonSize, buttonSize
+    btnGroupOptions(MDTB_Reset).AssignImage "generic_reset", , buttonSize, buttonSize
     
     btnTagOptions(MDTB_Remove).AssignTooltip "Mark this tag for removal"
     btnTagOptions(MDTB_Reset).AssignTooltip "Reset tag to its original value"

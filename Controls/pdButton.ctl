@@ -358,12 +358,12 @@ End Sub
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
+Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0)
     
     'Load the requested resource DIB, as necessary
-    If (Len(resName) <> 0) Or Not (srcDIB Is Nothing) Then
+    If (Len(resName) <> 0) Or (Not srcDIB Is Nothing) Then
     
-        If Len(resName) <> 0 Then LoadResourceToDIB resName, srcDIB
+        If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight
         
         'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
         ' (We also check for these != 0 to verify that an image was successfully loaded.)
@@ -384,11 +384,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
         tmpDIB.CreateFromExistingDIB srcDIB
         
         'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
-        If customGlowWhenHovered = 0 Then
-            ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
-        Else
-            ScaleDIBRGBValues tmpDIB, customGlowWhenHovered, True
-        End If
+        ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
         
         'Copy this DIB into position #2, beneath the base DIB
         BitBlt m_Images.GetDIBDC, 0, m_ImageHeight, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -396,14 +392,13 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
         'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
         tmpDIB.CreateFromExistingDIB srcDIB
         GrayscaleDIB tmpDIB, True
-        If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues tmpDIB, scalePixelsWhenDisabled, True
         
         'Place it into position #3, beneath the previous two DIBs
         BitBlt m_Images.GetDIBDC, 0, m_ImageHeight * 2, m_ImageWidth, m_ImageHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
-        If Len(resName) <> 0 Then Set srcDIB = Nothing
+        If (Len(resName) <> 0) Then Set srcDIB = Nothing
         
     'If no DIB is provided, remove any existing images
     Else

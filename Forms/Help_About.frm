@@ -350,11 +350,11 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
     
     If g_IsProgramRunning Then
     
-        Dim textColor As Long
+        Dim txtColor As Long
         If itemIsClickable Then
-            textColor = g_Themer.GetGenericUIColor(UI_TextClickable, , , itemIsHovered)
+            txtColor = g_Themer.GetGenericUIColor(UI_TextClickable, , , itemIsHovered)
         Else
-            textColor = g_Themer.GetGenericUIColor(UI_TextReadOnly)
+            txtColor = g_Themer.GetGenericUIColor(UI_TextReadOnly)
         End If
         
         'Prep various default rendering values (including retrieval of the boundary rect from the list box manager)
@@ -385,7 +385,7 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
         'Offset text slightly to make it look better
         Dim offsetY As Single, offsetX As Single
         tmpFont.AttachToDC bufferDC
-        tmpFont.SetFontColor textColor
+        tmpFont.SetFontColor txtColor
         
         Dim targetRect As RECT
         With targetRect

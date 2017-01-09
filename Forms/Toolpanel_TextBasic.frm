@@ -779,10 +779,10 @@ Public Sub UpdateAgainstCurrentTheme()
     Dim buttonSize As Long
     buttonSize = FixDPI(24)
     
-    btnFontStyles(0).AssignImage "format_bold", , , , buttonSize, buttonSize
-    btnFontStyles(1).AssignImage "format_italic", , , , buttonSize, buttonSize
-    btnFontStyles(2).AssignImage "format_underline", , , , buttonSize, buttonSize
-    btnFontStyles(3).AssignImage "format_strikethrough", , , , buttonSize, buttonSize
+    btnFontStyles(0).AssignImage "format_bold", , buttonSize, buttonSize
+    btnFontStyles(1).AssignImage "format_italic", , buttonSize, buttonSize
+    btnFontStyles(2).AssignImage "format_underline", , buttonSize, buttonSize
+    btnFontStyles(3).AssignImage "format_strikethrough", , buttonSize, buttonSize
     
     btsHAlignment.AssignImageToItem 0, "format_alignleft", , buttonSize, buttonSize
     btsHAlignment.AssignImageToItem 1, "format_aligncenter", , buttonSize, buttonSize

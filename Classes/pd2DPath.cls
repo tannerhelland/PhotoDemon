@@ -172,6 +172,14 @@ Public Sub AddLine(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, B
     End Select
 End Sub
 
+Public Sub AddLines(ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long)
+    If (m_PathHandle = 0) Then CreatePath
+    Select Case m_PathBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            GDI_Plus.GDIPlus_PathAddLines m_PathHandle, ptrToPtFArray, numOfPoints
+    End Select
+End Sub
+
 Friend Sub AddArc(ByRef ellipseBoundRect As RECTF, ByVal startAngle As Single, ByVal sweepAngle As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend

@@ -1914,11 +1914,11 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
         'Red, green, and blue channel icons are all created similarly.
         Case PDRUID_CHANNEL_RED, PDRUID_CHANNEL_GREEN, PDRUID_CHANNEL_BLUE
             
-            If dibType = PDRUID_CHANNEL_RED Then
+            If (dibType = PDRUID_CHANNEL_RED) Then
                 paintColor = g_Themer.GetGenericUIColor(UI_ChannelRed)
-            ElseIf dibType = PDRUID_CHANNEL_GREEN Then
+            ElseIf (dibType = PDRUID_CHANNEL_GREEN) Then
                 paintColor = g_Themer.GetGenericUIColor(UI_ChannelGreen)
-            ElseIf dibType = PDRUID_CHANNEL_BLUE Then
+            ElseIf (dibType = PDRUID_CHANNEL_BLUE) Then
                 paintColor = g_Themer.GetGenericUIColor(UI_ChannelBlue)
             End If
             
@@ -1935,11 +1935,57 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelBlue), True, 210
             GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelGreen), True, 210
             GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.GetDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetGenericUIColor(UI_ChannelRed), True, 210
+            
+        'Arrows are all drawn using the same code
+        Case PRDUID_ARROW_UP, PRDUID_ARROW_UPR, PRDUID_ARROW_RIGHT, PRDUID_ARROW_DOWNR, PRDUID_ARROW_DOWN, PRDUID_ARROW_DOWNL, PRDUID_ARROW_LEFT, PRDUID_ARROW_UPL
+        
+            'Calculate button points.  (Note that these are calculated uniformly for all arrow directions.)
+            Dim buttonPts() As POINTFLOAT
+            ReDim buttonPts(0 To 2) As POINTFLOAT
+            
+            buttonPts(0).x = dibSize / 6
+            buttonPts(0).y = (dibSize / 3) * 2
+        
+            buttonPts(2).x = dibSize - buttonPts(0).x
+            buttonPts(2).y = buttonPts(0).y
+        
+            buttonPts(1).x = buttonPts(0).x + (buttonPts(2).x - buttonPts(0).x) / 2
+            buttonPts(1).y = dibSize / 3
+            
+            'Add those points to a generic path object
+            Dim tmpPath As pd2DPath
+            Set tmpPath = New pd2DPath
+            tmpPath.AddPolygon 3, VarPtr(buttonPts(0)), True
+            
+            'Rotate the path, as necessary
+            If (dibType = PRDUID_ARROW_UPR) Then
+                tmpPath.RotatePathAroundItsCenter 45#
+            ElseIf (dibType = PRDUID_ARROW_RIGHT) Then
+                tmpPath.RotatePathAroundItsCenter 90#
+            ElseIf (dibType = PRDUID_ARROW_DOWNR) Then
+                tmpPath.RotatePathAroundItsCenter 135#
+            ElseIf (dibType = PRDUID_ARROW_DOWN) Then
+                tmpPath.RotatePathAroundItsCenter 180#
+            ElseIf (dibType = PRDUID_ARROW_DOWNL) Then
+                tmpPath.RotatePathAroundItsCenter 225#
+            ElseIf (dibType = PRDUID_ARROW_LEFT) Then
+                tmpPath.RotatePathAroundItsCenter 270#
+            ElseIf (dibType = PRDUID_ARROW_UPL) Then
+                tmpPath.RotatePathAroundItsCenter 315#
+            End If
+            
+            'Render the path
+            Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+            Drawing2D.QuickCreatePainter cPainter
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, GetRuntimeUIDIB.GetDIBDC, True
+            Drawing2D.QuickCreateSolidBrush cBrush, g_Themer.GetGenericUIColor(UI_GrayDark)
+            cPainter.FillPath cSurface, cBrush, tmpPath
+            Set cBrush = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
     
     End Select
     
     'If the user requested any padding, apply it now
-    If dibPadding > 0 Then padDIB GetRuntimeUIDIB, dibPadding
+    If (dibPadding > 0) Then padDIB GetRuntimeUIDIB, dibPadding
     
 End Function
 

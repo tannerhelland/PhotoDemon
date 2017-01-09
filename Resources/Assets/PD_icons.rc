@@ -434,15 +434,15 @@ LRGUPDATE    CUSTOM  MOVEABLE        LOADONCALL      software_update_32.png
 //CLIPBOARDCPY CUSTOM  MOVEABLE        LOADONCALL      clipboard_export_32.png
 
 //Arrow icons for the "canvas size" anchor function
-IMGMEDIUM    CUSTOM  MOVEABLE        LOADONCALL      image_medium.png
-MARROWUP     CUSTOM  MOVEABLE        LOADONCALL      arrow_090_medium.png
-MARROWUPR    CUSTOM  MOVEABLE        LOADONCALL      arrow_045_medium.png
-MARROWUPL    CUSTOM  MOVEABLE        LOADONCALL      arrow_135_medium.png
-MARROWLEFT   CUSTOM  MOVEABLE        LOADONCALL      arrow_180_medium.png
-MARROWRIGHT  CUSTOM  MOVEABLE        LOADONCALL      arrow_000_medium.png
-MARROWDOWN   CUSTOM  MOVEABLE        LOADONCALL      arrow_270_medium.png
-MARROWDOWNR  CUSTOM  MOVEABLE        LOADONCALL      arrow_315_medium.png
-MARROWDOWNL  CUSTOM  MOVEABLE        LOADONCALL      arrow_225_medium.png
+//IMGMEDIUM    CUSTOM  MOVEABLE        LOADONCALL      image_medium.png
+//MARROWUP     CUSTOM  MOVEABLE        LOADONCALL      arrow_090_medium.png
+//MARROWUPR    CUSTOM  MOVEABLE        LOADONCALL      arrow_045_medium.png
+//MARROWUPL    CUSTOM  MOVEABLE        LOADONCALL      arrow_135_medium.png
+//MARROWLEFT   CUSTOM  MOVEABLE        LOADONCALL      arrow_180_medium.png
+//MARROWRIGHT  CUSTOM  MOVEABLE        LOADONCALL      arrow_000_medium.png
+//MARROWDOWN   CUSTOM  MOVEABLE        LOADONCALL      arrow_270_medium.png
+//MARROWDOWNR  CUSTOM  MOVEABLE        LOADONCALL      arrow_315_medium.png
+//MARROWDOWNL  CUSTOM  MOVEABLE        LOADONCALL      arrow_225_medium.png
 
 //Image toolbar notifications
 //NTFY_UNSAVED CUSTOM  MOVEABLE        LOADONCALL      asterisk.png

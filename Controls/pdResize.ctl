@@ -1049,8 +1049,8 @@ Public Sub UpdateAgainstCurrentTheme()
         If g_IsProgramRunning Then
             Dim buttonImageSize As Long
             buttonImageSize = FixDPI(32)
-            cmdAspectRatio.AssignImage "generic_unlock", , , , buttonImageSize, buttonImageSize
-            cmdAspectRatio.AssignImage_Pressed "generic_lock", , , , buttonImageSize, buttonImageSize
+            cmdAspectRatio.AssignImage "generic_unlock", , buttonImageSize, buttonImageSize
+            cmdAspectRatio.AssignImage_Pressed "generic_lock", , buttonImageSize, buttonImageSize
         End If
         
         UpdateColorList

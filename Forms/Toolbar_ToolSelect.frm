@@ -736,7 +736,7 @@ Private Sub NewToolSelected()
                 
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
-                If (g_CurrentTool = Selection_Handler.getRelevantToolFromSelectShape()) Then
+                If (g_CurrentTool = Selection_Handler.GetRelevantToolFromSelectShape()) Then
                     SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
                 
                 'A selection is already active, and it doesn't match the current tool type!
@@ -896,7 +896,7 @@ Public Sub ResetToolButtonStates()
         
     'If a selection tool is active, we will also need activate a specific subpanel
     Dim activeSelectionSubpanel As Long
-    If (getSelectionShapeFromCurrentTool > -1) Then
+    If (GetSelectionShapeFromCurrentTool > -1) Then
     
         activeSelectionSubpanel = Selection_Handler.GetSelectionSubPanelFromCurrentTool
         
@@ -913,15 +913,15 @@ Public Sub ResetToolButtonStates()
     'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
     ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
     ' to a *different* selection tool, however, then we *do* want to erase the current selection.
-    If SelectionsAllowed(False) And (getRelevantToolFromSelectShape() <> g_CurrentTool) And (getSelectionShapeFromCurrentTool > -1) Then
+    If SelectionsAllowed(False) And (GetRelevantToolFromSelectShape() <> g_CurrentTool) And (GetSelectionShapeFromCurrentTool > -1) Then
         
         'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
         If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sRectangle) Or _
             (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sCircle) Then
             
             'Simply update the shape and redraw the viewport
-            pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selection_Handler.getSelectionShapeFromCurrentTool
-            syncTextToCurrentSelection g_CurrentImage
+            pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selection_Handler.GetSelectionShapeFromCurrentTool
+            SyncTextToCurrentSelection g_CurrentImage
             Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
         Else
@@ -931,7 +931,7 @@ Public Sub ResetToolButtonStates()
     End If
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
-    If (getSelectionShapeFromCurrentTool > -1) Then toolpanel_Selections.UpdateSelectionPanelLayout
+    If (GetSelectionShapeFromCurrentTool > -1) Then toolpanel_Selections.UpdateSelectionPanelLayout
     
     'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
     ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.
@@ -1147,57 +1147,33 @@ Public Sub UpdateAgainstCurrentTheme()
     buttonImageSize = FixDPI(buttonImageSize)
     
     'Initialize file tool button images
-    'cmdFile(FILE_NEW).AssignImage "TF_NEW", , , , buttonImageSize, buttonImageSize
-    'cmdFile(FILE_OPEN).AssignImage "TF_OPEN", , , 10, buttonImageSize, buttonImageSize
-    'cmdFile(FILE_CLOSE).AssignImage "TF_CLOSE", , 100, , buttonImageSize, buttonImageSize
-    'cmdFile(FILE_SAVE).AssignImage "TF_SAVE", , 50, , buttonImageSize, buttonImageSize
-    'cmdFile(FILE_SAVEAS_LAYERS).AssignImage "TF_SAVEPDI", , 50, , buttonImageSize, buttonImageSize
-    'cmdFile(FILE_SAVEAS_FLAT).AssignImage "TF_SAVEAS", , 50, , buttonImageSize, buttonImageSize
-    'cmdFile(FILE_UNDO).AssignImage "TF_UNDO", , 50, , buttonImageSize, buttonImageSize
-    'cmdFile(FILE_REDO).AssignImage "TF_REDO", , , , buttonImageSize, buttonImageSize
-    'cmdTools(NAV_DRAG).AssignImage "T_HAND", , , , buttonImageSize, buttonImageSize
-    'cmdTools(NAV_MOVE).AssignImage "T_MOVE", , , , buttonImageSize, buttonImageSize
-    'cmdTools(QUICK_FIX_LIGHTING).AssignImage "T_NDFX", , , , buttonImageSize, buttonImageSize
-    'cmdTools(SELECT_RECT).AssignImage "T_SELRECT", , , , buttonImageSize, buttonImageSize
-    'cmdTools(SELECT_CIRC).AssignImage "T_SELCIRCLE", , , , buttonImageSize, buttonImageSize
-    'cmdTools(SELECT_LINE).AssignImage "T_SELLINE", , , , buttonImageSize, buttonImageSize
-    'cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON", , , , buttonImageSize, buttonImageSize
-    'cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO", , , , buttonImageSize, buttonImageSize
-    'cmdTools(SELECT_WAND).AssignImage "T_SELWAND", , , , buttonImageSize, buttonImageSize
-    'cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50, buttonImageSize, buttonImageSize
-    'cmdTools(VECTOR_FANCYTEXT).AssignImage "TV_FANCYTEXT", , , 50, buttonImageSize, buttonImageSize
-    'cmdTools(PAINT_BASICBRUSH).AssignImage "PNT_SOFTBRUSH", , , , buttonImageSize, buttonImageSize
-    'cmdTools(PAINT_SOFTBRUSH).AssignImage "PNT_BASICBRUSH", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_NEW).AssignImage "file_new", , buttonImageSize, buttonImageSize
+    cmdFile(FILE_OPEN).AssignImage "file_open", , buttonImageSize, buttonImageSize
+    cmdFile(FILE_CLOSE).AssignImage "file_close", , buttonImageSize, buttonImageSize
+    cmdFile(FILE_SAVE).AssignImage "file_save", , buttonImageSize, buttonImageSize
+    cmdFile(FILE_SAVEAS_LAYERS).AssignImage "file_savedup", , buttonImageSize, buttonImageSize
+    cmdFile(FILE_SAVEAS_FLAT).AssignImage "file_saveas", , buttonImageSize, buttonImageSize
     
-    cmdFile(FILE_NEW).AssignImage "file_new", , , , buttonImageSize, buttonImageSize
-    cmdFile(FILE_OPEN).AssignImage "file_open", , , , buttonImageSize, buttonImageSize
-    cmdFile(FILE_CLOSE).AssignImage "file_close", , , , buttonImageSize, buttonImageSize
-    cmdFile(FILE_SAVE).AssignImage "file_save", , , , buttonImageSize, buttonImageSize
-    cmdFile(FILE_SAVEAS_LAYERS).AssignImage "file_savedup", , , , buttonImageSize, buttonImageSize
-    cmdFile(FILE_SAVEAS_FLAT).AssignImage "file_saveas", , , , buttonImageSize, buttonImageSize
-    
-    cmdFile(FILE_UNDO).AssignImage "edit_undo", , , , buttonImageSize, buttonImageSize
-    cmdFile(FILE_REDO).AssignImage "edit_redo", , , , buttonImageSize, buttonImageSize
+    cmdFile(FILE_UNDO).AssignImage "edit_undo", , buttonImageSize, buttonImageSize
+    cmdFile(FILE_REDO).AssignImage "edit_redo", , buttonImageSize, buttonImageSize
     
     'Initialize canvas tool button images
-    cmdTools(NAV_DRAG).AssignImage "nd_hand", , , , buttonImageSize, buttonImageSize
-    cmdTools(NAV_MOVE).AssignImage "nd_move", , , , buttonImageSize, buttonImageSize
-    cmdTools(QUICK_FIX_LIGHTING).AssignImage "nd_quickfix", , , , buttonImageSize, buttonImageSize
+    cmdTools(NAV_DRAG).AssignImage "nd_hand", , buttonImageSize, buttonImageSize
+    cmdTools(NAV_MOVE).AssignImage "nd_move", , buttonImageSize, buttonImageSize
+    cmdTools(QUICK_FIX_LIGHTING).AssignImage "nd_quickfix", , buttonImageSize, buttonImageSize
     
-    cmdTools(SELECT_RECT).AssignImage "select_rect", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_CIRC).AssignImage "select_circle", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_LINE).AssignImage "select_line", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_POLYGON).AssignImage "select_polygon", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_LASSO).AssignImage "select_lasso", , , , buttonImageSize, buttonImageSize
-    cmdTools(SELECT_WAND).AssignImage "select_wand", , , , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_RECT).AssignImage "select_rect", , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_CIRC).AssignImage "select_circle", , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_LINE).AssignImage "select_line", , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_POLYGON).AssignImage "select_polygon", , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_LASSO).AssignImage "select_lasso", , buttonImageSize, buttonImageSize
+    cmdTools(SELECT_WAND).AssignImage "select_wand", , buttonImageSize, buttonImageSize
     
-    cmdTools(VECTOR_TEXT).AssignImage "text_basic", , , , buttonImageSize, buttonImageSize
-    cmdTools(VECTOR_FANCYTEXT).AssignImage "text_fancy", , , , buttonImageSize, buttonImageSize
+    cmdTools(VECTOR_TEXT).AssignImage "text_basic", , buttonImageSize, buttonImageSize
+    cmdTools(VECTOR_FANCYTEXT).AssignImage "text_fancy", , buttonImageSize, buttonImageSize
     
-    'TODO: these icons were mistakenly reversed in the resource file... we'll fix it when we move to
-    ' a custom resource file format
-    cmdTools(PAINT_BASICBRUSH).AssignImage "paint_pencil", , , , buttonImageSize, buttonImageSize
-    cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , , , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_BASICBRUSH).AssignImage "paint_pencil", , buttonImageSize, buttonImageSize
+    cmdTools(PAINT_SOFTBRUSH).AssignImage "paint_softbrush", , buttonImageSize, buttonImageSize
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

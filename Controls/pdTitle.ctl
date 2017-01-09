@@ -420,13 +420,13 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    Dim textColor As Long, arrowColor As Long, ctlTopLineColor As Long
+    Dim txtColor As Long, arrowColor As Long, ctlTopLineColor As Long
     arrowColor = m_Colors.RetrieveColor(PDT_Arrow, Me.Enabled, , ucSupport.IsMouseInside)
     ctlTopLineColor = m_Colors.RetrieveColor(PDT_Border, Me.Enabled, ucSupport.DoIHaveFocus, ucSupport.IsMouseInside)
-    textColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, , ucSupport.IsMouseInside)
+    txtColor = m_Colors.RetrieveColor(PDT_Caption, Me.Enabled, , ucSupport.IsMouseInside)
     
     If ucSupport.IsCaptionActive Then
-        ucSupport.SetCaptionCustomColor textColor
+        ucSupport.SetCaptionCustomColor txtColor
         ucSupport.PaintCaptionManually
     End If
     

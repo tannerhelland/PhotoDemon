@@ -154,8 +154,8 @@ Attribute VB_Exposed = False
 'Canvas Size Handler
 'Copyright 2013-2017 by Tanner Helland
 'Created: 13/June/13
-'Last updated: 20/May/16
-'Last update: remove "fill blank area" setting; after the move to layers, this is always handled with transparency
+'Last updated: 09/January/17
+'Last update: overhaul anchor point code to use arrows rendered at run-time (instead of fixed resources)
 '
 'This form handles canvas resizing.  You may wonder why it took me over a decade to implement this tool, when it's such a
 ' trivial one algorithmically.  The answer is that a number of user-interface support functions are necessary to build
@@ -180,24 +180,24 @@ Private m_ArrowLocations() As String
 Private Sub FillArrowLocations(ByRef aLocations() As String)
 
     'Start with the current position.  It's the easiest one to fill
-    aLocations(m_CurrentAnchor) = "IMGMEDIUM"
+    aLocations(m_CurrentAnchor) = "generic_image"
     
     'Next, fill in upward arrows as necessary
-    If m_CurrentAnchor > 2 Then
-        aLocations(m_CurrentAnchor - 3) = "MARROWUP"
-        If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 4) = "MARROWUPL"
-        If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 2) = "MARROWUPR"
+    If (m_CurrentAnchor > 2) Then
+        aLocations(m_CurrentAnchor - 3) = "arrow_up"
+        If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 4) = "arrow_upl"
+        If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 2) = "arrow_upr"
     End If
     
     'Next, fill in left/right arrows as necessary
-    If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 1) = "MARROWRIGHT"
-    If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 1) = "MARROWLEFT"
+    If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 1) = "arrow_right"
+    If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 1) = "arrow_left"
     
     'Finally, fill in downward arrows as necessary
-    If m_CurrentAnchor < 6 Then
-        aLocations(m_CurrentAnchor + 3) = "MARROWDOWN"
-        If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 2) = "MARROWDOWNL"
-        If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 4) = "MARROWDOWNR"
+    If (m_CurrentAnchor < 6) Then
+        aLocations(m_CurrentAnchor + 3) = "arrow_down"
+        If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 2) = "arrow_downl"
+        If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 4) = "arrow_downr"
     End If
     
 End Sub
@@ -213,13 +213,45 @@ Private Sub UpdateAnchorButtons()
     ReDim m_ArrowLocations(0 To 8) As String
     FillArrowLocations m_ArrowLocations
     
+    Dim dibSize As Long
+    dibSize = FixDPI(24)
+                
     'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
     For i = 0 To 8
-        If Len(m_ArrowLocations(i)) <> 0 Then
-            cmdAnchor(i).AssignImage m_ArrowLocations(i)
+    
+        If (Len(m_ArrowLocations(i)) <> 0) Then
+            If (StrComp(m_ArrowLocations(i), "generic_image", vbBinaryCompare) = 0) Then
+                cmdAnchor(i).AssignImage m_ArrowLocations(i), , dibSize, dibSize
+            Else
+                
+                Dim tmpDIB As pdDIB
+                
+                If (StrComp(m_ArrowLocations(i), "arrow_up", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_UP, dibSize)
+                ElseIf (StrComp(m_ArrowLocations(i), "arrow_upr", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_UPR, dibSize)
+                ElseIf (StrComp(m_ArrowLocations(i), "arrow_right", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_RIGHT, dibSize)
+                ElseIf (StrComp(m_ArrowLocations(i), "arrow_downr", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWNR, dibSize)
+                ElseIf (StrComp(m_ArrowLocations(i), "arrow_down", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWN, dibSize)
+                ElseIf (StrComp(m_ArrowLocations(i), "arrow_downl", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_DOWNL, dibSize)
+                ElseIf (StrComp(m_ArrowLocations(i), "arrow_left", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_LEFT, dibSize)
+                ElseIf (StrComp(m_ArrowLocations(i), "arrow_upl", vbBinaryCompare) = 0) Then
+                    Set tmpDIB = Interface.GetRuntimeUIDIB(PRDUID_ARROW_UPL, dibSize)
+                End If
+                
+                cmdAnchor(i).AssignImage vbNullString, tmpDIB, dibSize, dibSize
+                    
+            End If
+            
         Else
-            cmdAnchor(i).AssignImage "", Nothing
+            cmdAnchor(i).AssignImage vbNullString, Nothing
         End If
+        
     Next i
     
 End Sub
@@ -265,6 +297,7 @@ End Sub
 
 'The saved anchor must be custom-loaded, as the command bar won't handle it automatically
 Private Sub cmdBar_ReadCustomPresetData()
+    ucResize.LockAspectRatio = False
     m_CurrentAnchor = CLng(cmdBar.RetrievePresetData("currentAnchor"))
 End Sub
 
@@ -277,7 +310,7 @@ Private Sub cmdBar_ResetClick()
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.UnitOfMeasurement = MU_PIXELS
     ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
-    ucResize.LockAspectRatio = True
+    ucResize.LockAspectRatio = False
         
     'Set the middle position as the anchor
     m_CurrentAnchor = 4
