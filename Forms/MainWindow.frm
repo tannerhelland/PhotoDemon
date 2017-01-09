@@ -4015,11 +4015,7 @@ Private Sub MnuLoadAllMRU_Click()
         listOfFiles.AddString g_RecentFiles.getSpecificMRU(i)
     Next i
     
-    Loading.LoadMultipleImageFiles listOfFiles, False
-    
-    'Bring the last-loaded image to the foreground.
-    ' (TODO 7.0: thanks to the new window manager, this should no longer be necessary)
-    ' If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "finished loading all recent images"
+    Loading.LoadMultipleImageFiles listOfFiles, True
     
 End Sub
 
