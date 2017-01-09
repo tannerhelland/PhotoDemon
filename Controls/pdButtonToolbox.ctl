@@ -232,7 +232,7 @@ End Property
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
+Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
     'This is a temporary workaround for AssignImage calls that do not supply the desired width/height.
     ' (As of 7.0, callers must *always* specify a desired size at 100% DPI, because resources are stored
@@ -265,11 +265,11 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
         BitBlt m_ButtonImages.GetDIBDC, 0, 0, m_ButtonWidth, m_ButtonHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
         
         'A separate function will automatically generate "glowy hovered" and "grayscale disabled" versions for us
-        GenerateVariantButtonImages customGlowWhenHovered, scalePixelsWhenDisabled
+        GenerateVariantButtonImages
         
         'Reset alpha premultiplication
         m_ButtonImages.SetAlphaPremultiplication True
-        If Len(resName) = 0 Then
+        If (Len(resName) = 0) Then
             If initAlphaState Then srcDIB.SetAlphaPremultiplication True
         End If
         
@@ -282,9 +282,7 @@ End Sub
 
 'After loading the initial button DIB and creating a matching spritesheet, call this function to fill the rest of
 ' the spritesheet with the "glowy hovered" and "grayscale disabled" button image variants.
-Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long = 0, Optional ByVal disabledGlowAmount As Long = 0)
-
-    If (hoverGlowAmount = 0) Then hoverGlowAmount = UC_HOVER_BRIGHTNESS
+Private Sub GenerateVariantButtonImages()
     
     'Start by building two lookup tables: one for the hovered image, and a second one for the disabled image
     Dim hLookup() As Byte
@@ -292,7 +290,7 @@ Private Sub GenerateVariantButtonImages(Optional ByVal hoverGlowAmount As Long =
     
     Dim newPxColor As Long, x As Long, y As Long
     For x = 0 To 255
-        newPxColor = x + hoverGlowAmount
+        newPxColor = x + UC_HOVER_BRIGHTNESS
         If (newPxColor > 255) Then newPxColor = 255
         hLookup(x) = newPxColor
     Next x
@@ -364,7 +362,7 @@ End Sub
 '
 'Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).  No preprocessing is currently
 ' applied to DIBs loaded as a resource, but in the future we will need to deal with high-DPI concerns.
-Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
+Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal useImgWidth As Long = 0, Optional ByVal useImgHeight As Long = 0, Optional ByVal imgBorderSizeIfAny As Long = 0)
     
     'This is a temporary workaround for AssignImage calls that do not supply the desired width/height.
     ' (As of 7.0, callers must *always* specify a desired size at 100% DPI, because resources are stored
@@ -383,11 +381,7 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, 
     'Also create a "glowy" hovered version of the DIB for hover state
     Set btImageHover_Pressed = New pdDIB
     btImageHover_Pressed.CreateFromExistingDIB btImage_Pressed
-    If (customGlowWhenHovered = 0) Then
-        ScaleDIBRGBValues btImageHover_Pressed, UC_HOVER_BRIGHTNESS, True
-    Else
-        ScaleDIBRGBValues btImageHover_Pressed, customGlowWhenHovered, True
-    End If
+    ScaleDIBRGBValues btImageHover_Pressed, UC_HOVER_BRIGHTNESS, True
     
     'If the control is currently pressed, request a redraw
     If Value Then RedrawBackBuffer

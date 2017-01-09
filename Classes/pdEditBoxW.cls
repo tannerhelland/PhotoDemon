@@ -466,11 +466,11 @@ Public Property Let Text(ByRef newString As String)
     
 End Property
 
-Public Property Get textColor() As Long
-    textColor = m_TextColor
+Public Property Get TextColor() As Long
+    TextColor = m_TextColor
 End Property
 
-Public Property Let textColor(ByVal newTextColor As Long)
+Public Property Let TextColor(ByVal newTextColor As Long)
     newTextColor = Colors.ConvertSystemColor(newTextColor)
     If newTextColor <> m_TextColor Then
         m_TextColor = newTextColor
@@ -1118,7 +1118,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.textColor
+                SetTextColor wParam, Me.TextColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 
@@ -1136,7 +1136,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             If lParam = m_EditBoxHwnd Then
             
                 'Assign colors directly, using the API
-                SetTextColor wParam, Me.textColor
+                SetTextColor wParam, Me.TextColor
                 SetBkMode wParam, SBKM_OPAQUE
                 SetBkColor wParam, Me.BackColor
                 

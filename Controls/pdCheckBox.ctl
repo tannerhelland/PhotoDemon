@@ -412,11 +412,11 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     
     'Populate colors from the master theme object
-    Dim chkBoxColorBorder As Long, chkBoxColorFill As Long, chkColor As Long, textColor As Long
+    Dim chkBoxColorBorder As Long, chkBoxColorFill As Long, chkColor As Long, txtColor As Long
     chkBoxColorBorder = m_Colors.RetrieveColor(PDCB_ButtonBorder, Me.Enabled, m_Value, m_MouseInsideClickableRect)
     chkBoxColorFill = m_Colors.RetrieveColor(PDCB_ButtonFill, Me.Enabled, m_Value, m_MouseInsideClickableRect)
     chkColor = m_Colors.RetrieveColor(PDCB_Checkmark, Me.Enabled, m_Value, m_MouseInsideClickableRect)
-    textColor = m_Colors.RetrieveColor(PDCB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect)
+    txtColor = m_Colors.RetrieveColor(PDCB_Caption, Me.Enabled, m_Value, m_MouseInsideClickableRect)
     
     If g_IsProgramRunning Then
         
@@ -448,9 +448,9 @@ Private Sub RedrawBackBuffer()
     
     'Render the text, appending ellipses as necessary
     If m_FitFailure Then
-        ucSupport.PaintCaptionManually_Clipped m_CaptionRect.Left, m_CaptionRect.Top, m_CaptionRect.Width, m_CaptionRect.Height, textColor, True
+        ucSupport.PaintCaptionManually_Clipped m_CaptionRect.Left, m_CaptionRect.Top, m_CaptionRect.Width, m_CaptionRect.Height, txtColor, True
     Else
-        ucSupport.PaintCaptionManually m_CaptionRect.Left, m_CaptionRect.Top, textColor
+        ucSupport.PaintCaptionManually m_CaptionRect.Left, m_CaptionRect.Top, txtColor
     End If
     
     'Paint the final result to the screen, as relevant

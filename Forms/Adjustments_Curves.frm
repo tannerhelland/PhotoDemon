@@ -572,10 +572,13 @@ Private Sub Form_Load()
     btsChannel.AddItem "blue", 2
     btsChannel.AddItem "RGB", 3
     
-    btsChannel.AssignImageToItem 0, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
-    btsChannel.AssignImageToItem 1, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
-    btsChannel.AssignImageToItem 2, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
-    btsChannel.AssignImageToItem 3, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, 24, 2)
+    Dim btnImageSize As Long, btnImageSizeGroup As Long
+    btnImageSize = FixDPI(16)
+    btnImageSizeGroup = FixDPI(24)
+    btsChannel.AssignImageToItem 0, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 1, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 2, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, btnImageSize, 2), btnImageSize, btnImageSize
+    btsChannel.AssignImageToItem 3, , Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, btnImageSizeGroup, 2), btnImageSizeGroup, btnImageSizeGroup
     
     'Populate the histogram display options
     btsHistogram.AddItem "none", 0

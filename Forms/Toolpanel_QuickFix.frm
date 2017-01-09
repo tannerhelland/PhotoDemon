@@ -330,8 +330,8 @@ Public Sub UpdateAgainstCurrentTheme()
     'UI icons must be updated against theme-specific colors
     Dim buttonSize As Long
     buttonSize = FixDPI(32)
-    cmdQuickFix(0).AssignImage "generic_reset", , , , buttonSize, buttonSize
-    cmdQuickFix(1).AssignImage "generic_commit", , , , buttonSize, buttonSize
+    cmdQuickFix(0).AssignImage "generic_reset", , buttonSize, buttonSize
+    cmdQuickFix(1).AssignImage "generic_commit", , buttonSize, buttonSize
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

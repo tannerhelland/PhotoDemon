@@ -630,8 +630,8 @@ Public Sub UpdateAgainstCurrentTheme()
     'UI images must be updated against theme-specific colors
     Dim buttonSize As Long
     buttonSize = FixDPI(32)
-    cmdLayerMove(0).AssignImage "generic_commit", , , , buttonSize, buttonSize
-    cmdLayerAffinePermanent.AssignImage "generic_commit", , , , buttonSize, buttonSize
+    cmdLayerMove(0).AssignImage "generic_commit", , buttonSize, buttonSize
+    cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
     
     ApplyThemeAndTranslations Me
     

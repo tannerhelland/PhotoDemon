@@ -701,10 +701,10 @@ Public Sub UpdateAgainstCurrentTheme()
             Dim buttonIconSize As Long
             buttonIconSize = FixDPI(16)
             
-            cmdZoomFit.AssignImage "zoom_fit", , , , buttonIconSize, buttonIconSize
-            cmdZoomIn.AssignImage "zoom_in", , , , buttonIconSize, buttonIconSize
-            cmdZoomOut.AssignImage "zoom_out", , , , buttonIconSize, buttonIconSize
-            cmdImgSize.AssignImage "generic_imageportrait", , , , buttonIconSize, buttonIconSize
+            cmdZoomFit.AssignImage "zoom_fit", , buttonIconSize, buttonIconSize
+            cmdZoomIn.AssignImage "zoom_in", , buttonIconSize, buttonIconSize
+            cmdZoomOut.AssignImage "zoom_out", , buttonIconSize, buttonIconSize
+            cmdImgSize.AssignImage "generic_imageportrait", , buttonIconSize, buttonIconSize
             
             'Load various status bar icons from the resource file
             If (sbIconCoords Is Nothing) Then Set sbIconCoords = New pdDIB

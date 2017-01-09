@@ -478,10 +478,10 @@ Public Sub UpdateAgainstCurrentTheme()
     'Add images to the layer action buttons at the bottom of the toolbox
     Dim buttonSize As Long
     buttonSize = FixDPI(26)
-    cmdLayerAction(0).AssignImage "layer_add", , , , buttonSize, buttonSize
-    cmdLayerAction(1).AssignImage "layer_delete", , , , buttonSize, buttonSize
-    cmdLayerAction(2).AssignImage "layer_up", , , , buttonSize, buttonSize
-    cmdLayerAction(3).AssignImage "layer_down", , , , buttonSize, buttonSize
+    cmdLayerAction(0).AssignImage "layer_add", , buttonSize, buttonSize
+    cmdLayerAction(1).AssignImage "layer_delete", , buttonSize, buttonSize
+    cmdLayerAction(2).AssignImage "layer_up", , buttonSize, buttonSize
+    cmdLayerAction(3).AssignImage "layer_down", , buttonSize, buttonSize
         
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)

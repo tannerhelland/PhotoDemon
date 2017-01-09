@@ -1778,7 +1778,7 @@ Private Sub Form_Load()
     'Load custom command button images
     Dim copyButtonSize As Long
     copyButtonSize = FixDPI(28)
-    cmdCopyReportClipboard.AssignImage "pref_copyclipboard", , , , copyButtonSize, copyButtonSize
+    cmdCopyReportClipboard.AssignImage "pref_copyclipboard", , copyButtonSize, copyButtonSize
     
     'Prep the category button strip
     With btsvCategory

@@ -851,8 +851,8 @@ Private Sub RedrawBackBuffer()
         halfPadding = 1
         
         Dim borderWidth As Single
-        If (Not (m_EditBox Is Nothing)) Then
-            If m_EditBox.HasFocus Or m_MouseOverEditBox Then borderWidth = 3 Else borderWidth = 1
+        If (Not m_EditBox Is Nothing) Then
+            If (m_EditBox.HasFocus Or m_MouseOverEditBox) Then borderWidth = 3 Else borderWidth = 1
         Else
             borderWidth = 1
         End If
@@ -1101,7 +1101,7 @@ End Sub
 Private Sub RelayUpdatedColorsToEditBox()
     If (Not (m_EditBox Is Nothing)) Then
         m_EditBox.BackColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
-        m_EditBox.textColor = m_Colors.RetrieveColor(PDS_Text, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
+        m_EditBox.TextColor = m_Colors.RetrieveColor(PDS_Text, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
     End If
 End Sub
 
