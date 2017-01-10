@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2192</langversion>
+<langversion>6.8.2193</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -12110,11 +12110,6 @@ I Iskreno se ispričavamo zbog neugodnosti, ali na žalost ne postoji ništa %2 
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon je Copyright 2017 by Tanner Helland i suradnicima</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>brz i besplatan, prijenosni foto urednik</translation>
 </phrase>
@@ -12154,7 +12149,12 @@ I Iskreno se ispričavamo zbog neugodnosti, ali na žalost ne postoji ništa %2 
 <translation>Suradnici</translation>
 </phrase>
 
-<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14144,41 +14144,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Disclaimer naseljeno na vrijeme izvođenja)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>ažuriranje jezičnih datoteka neovisno</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatski pretražuje ažuriranja</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>ažuriranje dodataka samostalno</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>omogućiti ažuriranja od tih pjesama</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>opcije ažuriranje</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>Obavijesti me kada ažuriranje bude spreman</translation>
-</phrase>
-
-<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Maksimalni broj nedavnih datoteka unosa</translation>
 </phrase>
@@ -14391,6 +14356,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>početi ispočetka</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Disclaimer naseljeno na vrijeme izvođenja)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>ažuriranje jezičnih datoteka neovisno</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatski pretražuje ažuriranja</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>ažuriranje dodataka samostalno</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>omogućiti ažuriranja od tih pjesama</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>opcije ažuriranje</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>Obavijesti me kada ažuriranje bude spreman</translation>
 </phrase>
 
 <phrase>
@@ -14771,7 +14771,7 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 <translation>Ova nova lokacija privremenu mapu neće stupiti na snagu dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 

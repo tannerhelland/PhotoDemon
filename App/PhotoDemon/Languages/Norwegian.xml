@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2192</langversion>
+<langversion>6.8.2193</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -12110,11 +12110,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon er Copyright 2017 av Tanner Helland og bidragsytere</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>rask, gratis, bærbar photo editor</translation>
 </phrase>
@@ -12154,7 +12149,12 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>bidragsytere</translation>
 </phrase>
 
-<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14144,41 +14144,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Ansvarsfraskrivelse befolket under kjøring)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>oppdatering språkfiler  uavhengig</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>se etter oppdateringer automatisk</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>oppdatere plugins uavhengig</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>tillate oppdateringer fra disse sporene</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>oppdateringsalternativer </translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>varsle meg når en oppdatering er klar</translation>
-</phrase>
-
-<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Maksimalt antall siste filoppføringer</translation>
 </phrase>
@@ -14391,6 +14356,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>begynne på nytt</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Ansvarsfraskrivelse befolket under kjøring)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>oppdatering språkfiler  uavhengig</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>se etter oppdateringer automatisk</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>oppdatere plugins uavhengig</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>tillate oppdateringer fra disse sporene</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>oppdateringsalternativer </translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>varsle meg når en oppdatering er klar</translation>
 </phrase>
 
 <phrase>
@@ -14771,7 +14771,7 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 <translation>Denne nye midlertidige mappen vil ikke tre i kraft før du starter programmet.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2192</langversion>
+<langversion>6.8.2193</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -12111,11 +12111,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation>PhotoDemon adalah Copyright 2017 oleh Tanner Helland dan Penyumbang</translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>, percuma, editor foto mudah alih yang cepat</translation>
 </phrase>
@@ -12155,7 +12150,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>penyumbang</translation>
 </phrase>
 
-<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14145,41 +14145,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(penafian penduduk di jangka masa)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>bahasa kemas kini fail secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>secara automatik menyemak kemas kini</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>plugin kemas kini bebas</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>membolehkan kemas kini daripada trek ini</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>pilihan kemas kini</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>memberitahu saya apabila kemas kini bersedia</translation>
-</phrase>
-
-<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
 </phrase>
@@ -14392,6 +14357,41 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>start over</original>
 <translation>mula semula</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(penafian penduduk di jangka masa)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>bahasa kemas kini fail secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>secara automatik menyemak kemas kini</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>plugin kemas kini bebas</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>membolehkan kemas kini daripada trek ini</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>pilihan kemas kini</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>memberitahu saya apabila kemas kini bersedia</translation>
 </phrase>
 
 <phrase>
@@ -14772,7 +14772,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>lokasi folder sementara yang baru ini tidak akan berfungsi sehingga anda memulakan semula program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
