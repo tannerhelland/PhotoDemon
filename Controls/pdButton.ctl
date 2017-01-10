@@ -358,12 +358,12 @@ End Sub
 'Assign a DIB to this button.  Matching disabled and hover state DIBs are automatically generated.
 ' Note that you can supply an existing DIB, or a resource name.  You must supply one or the other (obviously).
 ' No preprocessing is currently applied to DIBs loaded as a resource.
-Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0)
+Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal useCustomColor As Long = -1)
     
     'Load the requested resource DIB, as necessary
     If (Len(resName) <> 0) Or (Not srcDIB Is Nothing) Then
     
-        If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight
+        If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, , useCustomColor
         
         'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
         ' (We also check for these != 0 to verify that an image was successfully loaded.)
