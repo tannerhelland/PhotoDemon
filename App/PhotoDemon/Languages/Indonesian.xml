@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.173</langversion>
+<langversion>6.6.174</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -14139,6 +14139,41 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Sangkalan Populasi di jangka waktu)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>Perbarui Bahasa Berkas secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>secara Otomatis Mengecek Pembaruan</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>Perbarui Plugin secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>membolehkan Memperbarui pada trek ini</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Pilihan Perbarui</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>memberitahu saya apabila Perbarui bersedia</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Bilangan maksimum penyertaan Berkas baru-baru ini</translation>
 </phrase>
@@ -14279,11 +14314,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>apabila menghitung nilai warna</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>apabila menghias unsur-unsur antara muka</translation>
 </phrase>
@@ -14296,11 +14326,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>apabila menjadikan Gambar kanvas</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>Manajemen warna</translation>
 </phrase>
 
 <phrase>
@@ -14361,41 +14386,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>start over</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Sangkalan Populasi di jangka waktu)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>Perbarui Bahasa Berkas secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>secara Otomatis Mengecek Pembaruan</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>Perbarui Plugin secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>membolehkan Memperbarui pada trek ini</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Pilihan Perbarui</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>memberitahu saya apabila Perbarui bersedia</translation>
 </phrase>
 
 <phrase>
@@ -14588,11 +14578,6 @@ anda pasti mau meneruskan?</translation>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Seperti editor foto, PhotoDemon sering mengubah warna antara ruang referensi yang berbeda. Keakuratan konversi ini dapat dibatasi untuk meningkatkan kinerja.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Beberapa elemen antarmuka menerima dekorasi kustom (seperti drop bayangan). Pada PC yang lebih tua, dekorasi ini dapat ditangguhkan untuk meningkatkan kinerja kecil.</translation>
 </phrase>
@@ -14772,76 +14757,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>Pilihan antara muka termasuk tetapan untuk antara muka PhotoDemon utama, termasuk hal-hal seperti tetapan kanvas, pemilihan font, dan kedudukan.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Pilihan antara muka</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Pilihan beban membolehkan anda untuk menyesuaikan cara permohonan memasukkan berkas gambar.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Muat Pilihan Beban (Impor)</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Simpan pilihan membolehkan anda untuk menyesuaikan cara Berkas Gambar meninggalkan permohonan.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Simpan Pilihan (Ekspor)</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>pilihan Prestasi membolehkan anda untuk mengawal sama ada PhotoDemon menekankan kelajuan atau kualitas apabila melakukan tugas-tugas tertentu.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Pilihan prestasi</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Pilihan Perbarui mengawal berapa kerap PhotoDemon cek untuk Perbarui Versi, dan bagaimana ia mengendalikan Unduhan plugin hilang.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Pilihan perbarui</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Pilihan lanjutan boleh diambil dengan selamat diabaikan oleh pengguna biasa. Penguji dan pengembang boleh, bagaimanapun, mencari tetapan ini berguna.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Pilihan Advanced</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation></translation>
 </phrase>
@@ -14851,7 +14766,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14968,10 +14883,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

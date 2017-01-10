@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2191</langversion>
+<langversion>6.8.2192</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -14131,6 +14131,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Feragat çalışma anında doldurulur)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>Güncelleştirme dili bağımsız dosyaları</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>güncellemeleri otomatik olarak kontrol</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>bağımsız güncelleme eklentileri</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>Bu parça güncellemeleri izin</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>güncelleme seçenekleri</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>Bir güncelleme hazır olduğunda bana bildir</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>son dosya girişlerin sayısı</translation>
 </phrase>
@@ -14271,11 +14306,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>renk değerlerini hesaplarken</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>arabirimi öğeleri dekorasyon zaman</translation>
 </phrase>
@@ -14288,11 +14318,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>Görüntü tuval işlerken</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>renk yönetimi</translation>
 </phrase>
 
 <phrase>
@@ -14353,41 +14378,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>baştan başlamak</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Feragat çalışma anında doldurulur)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>Güncelleştirme dili bağımsız dosyaları</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>güncellemeleri otomatik olarak kontrol</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>bağımsız güncelleme eklentileri</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>Bu parça güncellemeleri izin</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>güncelleme seçenekleri</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>Bir güncelleme hazır olduğunda bana bildir</translation>
 </phrase>
 
 <phrase>
@@ -14579,11 +14569,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Herhangi bir fotoğraf editörü gibi, PhotoDemon sık sık farklı referans alanlar arasındaki renkleri dönüştürür. Bu dönüşümlerin doğruluğu performansını artırmak için sınırlanabilir.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Bazı arabirimi öğeleri (gölge gibi) özel süslemeleri alırsınız. Eski PC'lerde, bu süslemeler, küçük bir performans artışı için askıya alınabilir.</translation>
 </phrase>
@@ -14763,76 +14748,6 @@ If yamalı vardır.</translation>
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>Arayüz seçenekleri tuval ayarları font seçimi ve konumlandırma gibi şeyler de dahil olmak üzere ana PhotoDemon arayüzü ayarlarını içerir.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>arabirim Seçenekleri</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Yük seçenekleri görüntü dosyaları uygulamasını girmek şekilde özelleştirmek için izin verir.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Yük (İthalat) Seçenekler</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Kaydet seçenekleri görüntü dosyaları uygulamasını terk şekilde özelleştirmek için izin verir.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>(Export) kaydetmek için Seçenek</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>Performans seçenekleri belirli görevleri yerine getirirken PhotoDemon hızını veya kalitesini vurgulayan olmadığını kontrol etmek için izin verir.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>performans Seçenekleri</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation>Renk yönetimi seçenekleri, PhotoDemon'un görüntü dosyaları ve aygıtları için ICC profillerini nasıl kullandığını denetler.</translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation>Renk Yönetimi Seçenekleri</translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Güncelleme seçenekleri güncellenmiş sürümleri için ne sıklıkta PhotoDemon kontrolleri kontrol ve eksik eklentileri indir nasıl işleyeceğini.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>güncelleme Seçenekleri</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Gelişmiş seçenekler güvenle normal kullanıcılar tarafından göz ardı edilebilir. Test Cihazları ve geliştiriciler, ancak bu ayarları kullanışlı olabilir.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Gelişmiş seçenekler</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>UYARI: Bu klasör (erişim yasak) geçersiz. geçerli bir klasör belirtin. Yeni bir klasör sağlanmazsa, PhotoDemon sistem geçici klasörü kullanır.</translation>
 </phrase>
@@ -14842,7 +14757,7 @@ If yamalı vardır.</translation>
 <translation>Programı yeniden başlatana kadar bu yeni geçici klasör konumu etkili olmaz.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14959,10 +14874,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

@@ -120,7 +120,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) And (Not g_ProgramShuttingDown) Then ucSupport.RequestRepaint False
 End Sub
 
 Public Sub NotifyTooltipSettings(ByRef ttCaption As String, ByRef ttTitle As String, ByVal internalPadding As Single, ByVal titlePadding As Single)
@@ -153,12 +153,12 @@ Private Sub RedrawBackBuffer()
         If (g_Themer Is Nothing) Then Exit Sub
     End If
     
-    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-    Dim bufferDC As Long
-    bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDTT_Background, True))
-    
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If g_IsProgramRunning Then
+    
+        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+        Dim bufferDC As Long
+        bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDTT_Background, True))
         
         'Start by rendering a border around the outside of the form
         Dim cSurface As pd2DSurface, cPen As pd2DPen, cBrush As pd2DBrush
@@ -200,10 +200,10 @@ Private Sub RedrawBackBuffer()
         
         Set ttFont = Nothing
         
+        'Paint the final result to the screen, as relevant
+        ucSupport.RequestRepaint
+        
     End If
-    
-    'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint
     
 End Sub
 

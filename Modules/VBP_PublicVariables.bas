@@ -189,7 +189,6 @@ Public g_SessionID As String
 ' constantly pulled on-demand from file, which is unacceptably slow for performance-sensitive pipelines).
 Public g_ViewportPerformance As PD_PERFORMANCE_SETTING
 Public g_InterfacePerformance As PD_PERFORMANCE_SETTING
-Public g_ColorPerformance As PD_PERFORMANCE_SETTING
 
 'As of v6.4, PhotoDemon allows the user to specify compression settings for Undo/Redo data.  By default, Undo/Redo data is
 ' uncompressed, which takes up a lot of (cheap) disk space but provides excellent performance.  The user can modify this

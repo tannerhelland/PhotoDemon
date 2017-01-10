@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.234</langversion>
+<langversion>6.7.235</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -14134,6 +14134,41 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer poblada en tiempo de ejecución)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>idioma archivos de actualización de forma independiente</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>verificar automáticamente las actualizaciones</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>actualización de plugins de forma independiente</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>permitir actualizaciones de estas pistas</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>opciones de actualización</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>notificarme cuando una actualización está lista</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>número máximo de entradas de archivos recientes</translation>
 </phrase>
@@ -14274,11 +14309,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>al calcular los valores de color</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>la hora de decorar elementos de la interfaz</translation>
 </phrase>
@@ -14291,11 +14321,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>al representar el lienzo de la imagen</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>gestión del color</translation>
 </phrase>
 
 <phrase>
@@ -14356,41 +14381,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <phrase>
 <original>start over</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer poblada en tiempo de ejecución)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>idioma archivos de actualización de forma independiente</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>verificar automáticamente las actualizaciones</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>actualización de plugins de forma independiente</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>permitir actualizaciones de estas pistas</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>opciones de actualización</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>notificarme cuando una actualización está lista</translation>
 </phrase>
 
 <phrase>
@@ -14583,11 +14573,6 @@ Are ¿Seguro que quieres continuar?</translation>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Como cualquier editor de fotos, PhotoDemon con frecuencia convierte colores entre espacios de referencia diferente. La exactitud de estas conversiones puede ser limitada para mejorar el rendimiento.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Algunos elementos de la interfaz reciben decoraciones personalizadas (como sombras paralelas). En equipos antiguos, estas decoraciones pueden ser suspendidos por un pequeño aumento de rendimiento.</translation>
 </phrase>
@@ -14767,76 +14752,6 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>Las opciones de interfaz incluyen ajustes para la interfaz principal PhotoDemon, incluyendo cosas como los ajustes de lona, ??selección de fuentes, y el posicionamiento.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Opciones de interfaz</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Opciones de carga le permiten personalizar la forma de archivos de imagen entran en la aplicación.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Cargar opciones (Import)</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Guarda opciones le permiten personalizar la forma de archivos de imagen abandonan la aplicación.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Ahorra Opciones (Exportación)</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>Opciones de rendimiento le permiten controlar si PhotoDemon importancia a la velocidad o la calidad al realizar ciertas tareas.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Opciones de rendimiento</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Opciones de actualización de control de la frecuencia con PhotoDemon cheques por versiones actualizadas, y cómo se maneja la descarga de los plugins que faltan.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Opciones de actualización</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Opciones avanzadas pueden ser ignorados por los usuarios regulares. Testers y desarrolladores pueden, sin embargo, encontrar estos ajustes útiles.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Opciones avanzadas</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation></translation>
 </phrase>
@@ -14846,7 +14761,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14963,10 +14878,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

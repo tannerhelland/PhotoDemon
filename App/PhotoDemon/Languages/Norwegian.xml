@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2191</langversion>
+<langversion>6.8.2192</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -14144,6 +14144,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Ansvarsfraskrivelse befolket under kjøring)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>oppdatering språkfiler  uavhengig</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>se etter oppdateringer automatisk</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>oppdatere plugins uavhengig</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>tillate oppdateringer fra disse sporene</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>oppdateringsalternativer </translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>varsle meg når en oppdatering er klar</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Maksimalt antall siste filoppføringer</translation>
 </phrase>
@@ -14284,11 +14319,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>Ved beregning av fargeverdier </translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>når dekorere grensesnittelementer </translation>
 </phrase>
@@ -14301,11 +14331,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>ved gjengivelse på biletet</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>fargestyring</translation>
 </phrase>
 
 <phrase>
@@ -14366,41 +14391,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>begynne på nytt</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Ansvarsfraskrivelse befolket under kjøring)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>oppdatering språkfiler  uavhengig</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>se etter oppdateringer automatisk</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>oppdatere plugins uavhengig</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>tillate oppdateringer fra disse sporene</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>oppdateringsalternativer </translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>varsle meg når en oppdatering er klar</translation>
 </phrase>
 
 <phrase>
@@ -14593,11 +14583,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Som enhver photo editor, PhotoDemon konverterer ofte farger mellom forskjellige referanseområder. Nøyaktigheten av disse konverteringene kan begrenses for å forbedre ytelsen.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Noen grensesnittelementer  motta tilpassede dekorasjoner (som skygger). På eldre PCer, kan disse dekorasjoner bli suspendert for en liten ytelsesforbedring.</translation>
 </phrase>
@@ -14777,76 +14762,6 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>Grensesnittet alternativene inkluderer innstillinger for hoved PhotoDemon grensesnitt, inkludert ting som lerret innstillinger, skriftvalg, og posisjonering.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Interface Options</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Laste alternativer kan du tilpasse måten bildefiler  gå inn i programmet.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Load (Import) Opsjoner</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Lagre alternativer kan du tilpasse måten bildefiler  forlate programmet.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Lagre (eksport) Alternativer</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>Ytelsesalternativer  lar deg kontrollere om PhotoDemon streker hastighet eller kvalitet når du utfører visse oppgaver.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>performance Options</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation>Color ledelse alternativer kontrollere hvordan PhotoDemon bruker ICC-profiler for bildefiler  og enheter.</translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation>Fargebehandling  alternativer</translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Oppdateringsalternativer  kontrollere hvor ofte PhotoDemon sjekker for oppdaterte versjoner, og hvordan den håndterer nedlasting av manglende  plugins.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Oppdater alternativer</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Avanserte alternativer kan trygt ignoreres av vanlige brukere. Testere og utviklere kan imidlertid finne disse innstillingene nyttig.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Avanserte alternativer</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>ADVARSEL: Denne mappen er ugyldig (tilgang forbudt). Vennligst oppgi en gyldig mappe. Hvis en ny mappe ikke er gitt, vil PhotoDemon bruke systemet temp-mappen.</translation>
 </phrase>
@@ -14856,7 +14771,7 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 <translation>Denne nye midlertidige mappen vil ikke tre i kraft før du starter programmet.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14973,10 +14888,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

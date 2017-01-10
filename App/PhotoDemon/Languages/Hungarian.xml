@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2191</langversion>
+<langversion>6.8.2192</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -14121,6 +14121,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Disclaimer lakott futási időben)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>frissítés nyelvi fájlokat önállóan</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatikusan ellenőrzi a frissítéseket</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>frissítés plugins függetlenül</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>lehetővé teszi a frissítéseket ezeket a számokat</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>frissítési lehetőségek</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>értesítsen, ha egy frissítés kész</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>maximális száma az elmúlt fájlbejegyzésekhez</translation>
 </phrase>
@@ -14261,11 +14296,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>kiszámításakor színértékeket</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>amikor díszítő felület elemei</translation>
 </phrase>
@@ -14278,11 +14308,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>amikor teszi a képvászon</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>színkezelés</translation>
 </phrase>
 
 <phrase>
@@ -14343,41 +14368,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>elölről kezdeni</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Disclaimer lakott futási időben)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>frissítés nyelvi fájlokat önállóan</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatikusan ellenőrzi a frissítéseket</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>frissítés plugins függetlenül</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>lehetővé teszi a frissítéseket ezeket a számokat</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>frissítési lehetőségek</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>értesítsen, ha egy frissítés kész</translation>
 </phrase>
 
 <phrase>
@@ -14569,11 +14559,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Mint egy képszerkesztő, PhotoDemon gyakran konvertálja a színeket a különböző referencia terek. A pontosság konverziók lehet korlátozni a teljesítmény javítása érdekében.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Néhány felület elemeit tartalmazó egyéni dekorációk (például árnyékok). A régebbi PC-k, ezek a díszítések is fel kell függeszteni egy kis teljesítmény növekedést.</translation>
 </phrase>
@@ -14753,76 +14738,6 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>Az interfész opciók beállításait fő PhotoDemon felület, beleértve a dolgok, mint a vászon beállítások betűtípus választás, és a helymeghatározás.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>interface Options</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Terhelés beállítások segítségével testre szabható az út képfájlokat írja be a kérelmet.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Load (Import) opciók</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Save opció lehetővé teszi, hogy megszokott módon képfájlokat hagyja a kérelmet.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Save (Export) beállítások</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>Teljesítmény beállítások lehetővé teszik annak ellenőrzését, hogy PhotoDemon hangsúlyozza sebességének vagy minőségének amikor bizonyos feladatok ellátásában.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Performance Options</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation>Színkezelés a beállítások a PhotoDemon használ ICC profilok képfájlokat és eszközök.</translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation>Color Management Options</translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Frissítés a beállítások a gyakran PhotoDemon ellenőrzi a frissített verzió, és hogyan kezeli a letöltés, a hiányzó bővítmények.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>frissítési beállítások</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Speciális beállítások figyelmen kívül hagyhatja a rendes felhasználók. Tesztelők és a fejlesztők azonban megtaláljuk ezeket a beállításokat hasznos.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Haladó beállítások</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>FIGYELEM: ez a mappa érvénytelen (hozzáférés tilos). Kérjük, adjon meg egy érvényes mappát. Ha új mappát nem áll rendelkezésre, PhotoDemon fogja használni a rendszer temp mappa.</translation>
 </phrase>
@@ -14832,7 +14747,7 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 <translation>Ez az új ideiglenes mappa helyét nem lép érvénybe, amíg újra nem indítja a programot.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14949,10 +14864,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

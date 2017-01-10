@@ -5,8 +5,9 @@ Begin VB.Form FormPreferences
    Caption         =   " PhotoDemon Options"
    ClientHeight    =   7620
    ClientLeft      =   45
-   ClientTop       =   285
+   ClientTop       =   390
    ClientWidth     =   11505
+   DrawStyle       =   5  'Transparent
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,10 +17,10 @@ Begin VB.Form FormPreferences
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   MousePointer    =   99  'Custom
    ScaleHeight     =   508
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   767
@@ -28,7 +29,7 @@ Begin VB.Form FormPreferences
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   37
+      TabIndex        =   36
       Top             =   6870
       Width           =   11505
       _ExtentX        =   20294
@@ -37,7 +38,7 @@ Begin VB.Form FormPreferences
    Begin PhotoDemon.pdButtonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
-      TabIndex        =   33
+      TabIndex        =   32
       Top             =   120
       Width           =   2625
       _ExtentX        =   4630
@@ -54,7 +55,7 @@ Begin VB.Form FormPreferences
       _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboMRUCaption 
          Height          =   810
-         Left            =   240
+         Left            =   180
          TabIndex        =   1
          Top             =   1800
          Width           =   7800
@@ -65,7 +66,7 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdDropDown cboImageCaption 
          Height          =   810
-         Left            =   240
+         Left            =   180
          TabIndex        =   2
          Top             =   360
          Width           =   7800
@@ -76,7 +77,7 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdSpinner tudRecentFiles 
          Height          =   345
-         Left            =   3900
+         Left            =   3840
          TabIndex        =   5
          Top             =   2640
          Width           =   1935
@@ -89,7 +90,7 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdLabel lblRecentFileCount 
          Height          =   240
-         Left            =   240
+         Left            =   180
          Top             =   2670
          Width           =   3480
          _ExtentX        =   6138
@@ -124,8 +125,8 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdDropDown cboAlphaCheckSize 
          Height          =   810
-         Left            =   240
-         TabIndex        =   45
+         Left            =   180
+         TabIndex        =   44
          Top             =   4530
          Width           =   5895
          _ExtentX        =   10398
@@ -135,8 +136,8 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdDropDown cboAlphaCheck 
          Height          =   795
-         Left            =   240
-         TabIndex        =   46
+         Left            =   180
+         TabIndex        =   45
          Top             =   3660
          Width           =   5895
          _ExtentX        =   10398
@@ -147,7 +148,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdColorSelector csAlphaOne 
          Height          =   435
          Left            =   6240
-         TabIndex        =   47
+         TabIndex        =   46
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -157,7 +158,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdColorSelector csAlphaTwo 
          Height          =   435
          Left            =   7320
-         TabIndex        =   48
+         TabIndex        =   47
          Top             =   3990
          Width           =   945
          _ExtentX        =   1667
@@ -188,8 +189,8 @@ Begin VB.Form FormPreferences
       _ExtentY        =   0
       Begin PhotoDemon.pdDropDown cboDisplayRenderIntent 
          Height          =   735
-         Left            =   240
-         TabIndex        =   44
+         Left            =   180
+         TabIndex        =   43
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -200,7 +201,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdColorProfilePath 
          Height          =   375
          Left            =   7380
-         TabIndex        =   34
+         TabIndex        =   33
          Top             =   2760
          Width           =   810
          _ExtentX        =   1429
@@ -231,7 +232,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdRadioButton optColorManagement 
          Height          =   330
          Index           =   0
-         Left            =   240
+         Left            =   180
          TabIndex        =   11
          Top             =   480
          Width           =   7920
@@ -243,7 +244,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdRadioButton optColorManagement 
          Height          =   330
          Index           =   1
-         Left            =   240
+         Left            =   180
          TabIndex        =   12
          Top             =   840
          Width           =   7920
@@ -277,8 +278,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdRadioButton optColorManagement 
          Height          =   330
          Index           =   2
-         Left            =   240
-         TabIndex        =   43
+         Left            =   180
+         TabIndex        =   42
          Top             =   1200
          Width           =   7920
          _ExtentX        =   13970
@@ -297,7 +298,7 @@ Begin VB.Form FormPreferences
       _ExtentY        =   0
       Begin PhotoDemon.pdCheckBox chkConfirmUnsaved 
          Height          =   330
-         Left            =   240
+         Left            =   180
          TabIndex        =   14
          Top             =   360
          Width           =   7920
@@ -307,7 +308,7 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdDropDown cboDefaultSaveFormat 
          Height          =   690
-         Left            =   240
+         Left            =   180
          TabIndex        =   15
          Top             =   2775
          Width           =   7980
@@ -318,7 +319,7 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdDropDown cboSaveBehavior 
          Height          =   690
-         Left            =   240
+         Left            =   180
          TabIndex        =   16
          Top             =   1365
          Width           =   7980
@@ -377,8 +378,8 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdCheckBox chkMetadataListPD 
          Height          =   375
-         Left            =   240
-         TabIndex        =   42
+         Left            =   180
+         TabIndex        =   41
          Top             =   4200
          Width           =   7935
          _ExtentX        =   13996
@@ -397,7 +398,7 @@ Begin VB.Form FormPreferences
       _ExtentY        =   0
       Begin PhotoDemon.pdCheckBox chkToneMapping 
          Height          =   330
-         Left            =   240
+         Left            =   180
          TabIndex        =   17
          Top             =   360
          Width           =   7920
@@ -407,7 +408,7 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdCheckBox chkLoadingOrientation 
          Height          =   330
-         Left            =   240
+         Left            =   180
          TabIndex        =   18
          Top             =   3360
          Width           =   7920
@@ -417,7 +418,7 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdDropDown cboLargeImages 
          Height          =   690
-         Left            =   240
+         Left            =   180
          TabIndex        =   19
          Top             =   4320
          Width           =   7980
@@ -429,7 +430,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdLabel lblInterfaceTitle 
          Height          =   285
          Index           =   3
-         Left            =   60
+         Left            =   0
          Top             =   3000
          Width           =   8100
          _ExtentX        =   14288
@@ -441,7 +442,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdLabel lblInterfaceTitle 
          Height          =   285
          Index           =   6
-         Left            =   60
+         Left            =   0
          Top             =   0
          Width           =   8115
          _ExtentX        =   14314
@@ -453,7 +454,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdLabel lblInterfaceTitle 
          Height          =   285
          Index           =   5
-         Left            =   60
+         Left            =   0
          Top             =   3960
          Width           =   8145
          _ExtentX        =   14367
@@ -465,7 +466,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdLabel lblInterfaceTitle 
          Height          =   285
          Index           =   0
-         Left            =   60
+         Left            =   0
          Top             =   960
          Width           =   8265
          _ExtentX        =   14579
@@ -476,8 +477,8 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdCheckBox chkMetadataBinary 
          Height          =   330
-         Left            =   240
-         TabIndex        =   38
+         Left            =   180
+         TabIndex        =   37
          Top             =   2400
          Width           =   7920
          _ExtentX        =   13970
@@ -487,8 +488,8 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdCheckBox chkMetadataJPEG 
          Height          =   330
-         Left            =   240
-         TabIndex        =   39
+         Left            =   180
+         TabIndex        =   38
          Top             =   1680
          Width           =   7920
          _ExtentX        =   13970
@@ -497,8 +498,8 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdCheckBox chkMetadataUnknown 
          Height          =   330
-         Left            =   240
-         TabIndex        =   40
+         Left            =   180
+         TabIndex        =   39
          Top             =   2040
          Width           =   7920
          _ExtentX        =   13970
@@ -508,8 +509,8 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdCheckBox chkMetadataDuplicates 
          Height          =   330
-         Left            =   240
-         TabIndex        =   41
+         Left            =   180
+         TabIndex        =   40
          Top             =   1320
          Width           =   7920
          _ExtentX        =   13970
@@ -528,9 +529,9 @@ Begin VB.Form FormPreferences
       _ExtentY        =   0
       Begin PhotoDemon.pdSlider sltUndoCompression 
          Height          =   765
-         Left            =   240
+         Left            =   180
          TabIndex        =   20
-         Top             =   5370
+         Top             =   4170
          Width           =   7980
          _ExtentX        =   14076
          _ExtentY        =   873
@@ -538,7 +539,9 @@ Begin VB.Form FormPreferences
          FontSizeCaption =   10
          Max             =   9
          SliderTrackStyle=   1
+         Value           =   1
          NotchPosition   =   2
+         NotchValueCustom=   1
       End
       Begin PhotoDemon.pdDropDown cboPerformance 
          Height          =   690
@@ -549,7 +552,7 @@ Begin VB.Form FormPreferences
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   1217
-         Caption         =   "when calculating color values:"
+         Caption         =   "when decorating interface elements:"
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdDropDown cboPerformance 
@@ -561,7 +564,7 @@ Begin VB.Form FormPreferences
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   1217
-         Caption         =   "when decorating interface elements:"
+         Caption         =   "when generating image and layer thumbnail images:"
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdDropDown cboPerformance 
@@ -569,19 +572,7 @@ Begin VB.Form FormPreferences
          Index           =   2
          Left            =   180
          TabIndex        =   23
-         Top             =   2880
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   1217
-         Caption         =   "when generating image and layer thumbnail images:"
-         FontSizeCaption =   10
-      End
-      Begin PhotoDemon.pdDropDown cboPerformance 
-         Height          =   690
-         Index           =   3
-         Left            =   180
-         TabIndex        =   24
-         Top             =   4110
+         Top             =   2850
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   1217
@@ -590,21 +581,9 @@ Begin VB.Form FormPreferences
       End
       Begin PhotoDemon.pdLabel lblPerformanceTitle 
          Height          =   285
-         Index           =   4
-         Left            =   0
-         Top             =   0
-         Width           =   8100
-         _ExtentX        =   14288
-         _ExtentY        =   503
-         Caption         =   "color management"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblPerformanceTitle 
-         Height          =   285
          Index           =   3
          Left            =   0
-         Top             =   1260
+         Top             =   0
          Width           =   8220
          _ExtentX        =   14499
          _ExtentY        =   503
@@ -615,8 +594,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdLabel lblPNGCompression 
          Height          =   240
          Index           =   3
-         Left            =   360
-         Top             =   6240
+         Left            =   300
+         Top             =   5040
          Width           =   3465
          _ExtentX        =   6112
          _ExtentY        =   503
@@ -627,8 +606,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdLabel lblPNGCompression 
          Height          =   240
          Index           =   2
-         Left            =   4020
-         Top             =   6240
+         Left            =   3960
+         Top             =   5040
          Width           =   3255
          _ExtentX        =   5741
          _ExtentY        =   503
@@ -641,7 +620,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   2
          Left            =   0
-         Top             =   4980
+         Top             =   3780
          Width           =   8175
          _ExtentX        =   14420
          _ExtentY        =   503
@@ -653,7 +632,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   1
          Left            =   0
-         Top             =   2520
+         Top             =   1260
          Width           =   8130
          _ExtentX        =   14340
          _ExtentY        =   503
@@ -665,7 +644,7 @@ Begin VB.Form FormPreferences
          Height          =   285
          Index           =   0
          Left            =   0
-         Top             =   3750
+         Top             =   2490
          Width           =   8115
          _ExtentX        =   14314
          _ExtentY        =   503
@@ -686,7 +665,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   6000
          Width           =   7935
          _ExtentX        =   13996
@@ -696,7 +675,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdTmpPath 
          Height          =   450
          Left            =   7680
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   435
          Width           =   525
          _ExtentX        =   926
@@ -706,7 +685,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButtonToolbox cmdCopyReportClipboard 
          Height          =   570
          Left            =   7650
-         TabIndex        =   31
+         TabIndex        =   30
          Top             =   3315
          Width           =   570
          _ExtentX        =   1005
@@ -716,7 +695,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtHardware 
          Height          =   1785
          Left            =   240
-         TabIndex        =   25
+         TabIndex        =   24
          Top             =   2040
          Width           =   7335
          _ExtentX        =   12938
@@ -727,7 +706,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdTextBox txtTempPath 
          Height          =   315
          Left            =   240
-         TabIndex        =   26
+         TabIndex        =   25
          Top             =   510
          Width           =   7335
          _ExtentX        =   12938
@@ -841,8 +820,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
          Index           =   0
-         Left            =   240
-         TabIndex        =   27
+         Left            =   180
+         TabIndex        =   26
          Top             =   2280
          Width           =   7935
          _ExtentX        =   13996
@@ -852,8 +831,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboUpdates 
          Height          =   735
          Index           =   0
-         Left            =   240
-         TabIndex        =   28
+         Left            =   180
+         TabIndex        =   27
          Top             =   480
          Width           =   7935
          _ExtentX        =   13996
@@ -864,8 +843,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
          Index           =   1
-         Left            =   240
-         TabIndex        =   29
+         Left            =   180
+         TabIndex        =   28
          Top             =   2760
          Width           =   7935
          _ExtentX        =   13996
@@ -875,8 +854,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdDropDown cboUpdates 
          Height          =   735
          Index           =   1
-         Left            =   240
-         TabIndex        =   30
+         Left            =   180
+         TabIndex        =   29
          Top             =   1350
          Width           =   7935
          _ExtentX        =   13996
@@ -899,8 +878,8 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdCheckBox chkUpdates 
          Height          =   330
          Index           =   2
-         Left            =   240
-         TabIndex        =   32
+         Left            =   180
+         TabIndex        =   31
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -946,7 +925,7 @@ Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
     Dim catID As Long
     For catID = 0 To btsvCategory.ListCount - 1
         
-        If catID = buttonIndex Then
+        If (catID = buttonIndex) Then
             picContainer(catID).Visible = True
             If Me.Visible Then picContainer(catID).SetFocus
         Else
@@ -1045,7 +1024,7 @@ Private Sub cmdBarMini_OKClick()
     For Each eControl In FormPreferences.Controls
         
         'Obviously, we can only validate our own custom objects that have built-in auto-validate functions.
-        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Or (TypeOf eControl Is pdResize) Then
+        If (TypeOf eControl Is pdSlider) Or (TypeOf eControl Is pdSpinner) Then
             
             'Finally, ask the control to validate itself
             If (Not eControl.IsValid) Then
@@ -1092,7 +1071,7 @@ Private Sub cmdBarMini_OKClick()
         'START MRU caption length
         
             'Check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
-            If cboMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0) Then mruNeedsToBeRebuilt = True
+            If (cboMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)) Then mruNeedsToBeRebuilt = True
             g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cboMRUCaption.ListIndex
             
         'END MRU caption length
@@ -1108,7 +1087,7 @@ Private Sub cmdBarMini_OKClick()
             End If
             
             'If the max number of recent files has changed, update the MRU list to match
-            If newMaxRecentFiles <> g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then mruNeedsToBeRebuilt = True
+            If (newMaxRecentFiles <> g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then mruNeedsToBeRebuilt = True
             g_UserPreferences.SetPref_Long "Interface", "Recent Files Limit", tudRecentFiles.Value
             
         'END maximum MRU count
@@ -1192,22 +1171,18 @@ Private Sub cmdBarMini_OKClick()
     SetProgBarVal 4
     
     'START Performance preferences
-    
-        'START/END color management performance
-            g_UserPreferences.SetPref_Long "Performance", "Color Performance", cboPerformance(0).ListIndex
-            g_ColorPerformance = cboPerformance(0).ListIndex
-    
+        
         'START/END interface decoration performance
-            g_UserPreferences.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(1).ListIndex
-            g_InterfacePerformance = cboPerformance(1).ListIndex
+            g_UserPreferences.SetPref_Long "Performance", "Interface Decoration Performance", cboPerformance(0).ListIndex
+            g_InterfacePerformance = cboPerformance(0).ListIndex
         
         'START/END thumbnail render performance
-            g_UserPreferences.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(2).ListIndex
-            g_UserPreferences.SetThumbnailPerformancePref cboPerformance(2).ListIndex
+            g_UserPreferences.SetPref_Long "Performance", "Thumbnail Performance", cboPerformance(1).ListIndex
+            g_UserPreferences.SetThumbnailPerformancePref cboPerformance(1).ListIndex
         
         'START/END viewport render performance
-            g_UserPreferences.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(3).ListIndex
-            g_ViewportPerformance = cboPerformance(3).ListIndex
+            g_UserPreferences.SetPref_Long "Performance", "Viewport Render Performance", cboPerformance(2).ListIndex
+            g_ViewportPerformance = cboPerformance(2).ListIndex
             
         'START/END undo/redo data compression
             g_UserPreferences.SetPref_Long "Performance", "Undo Compression", sltUndoCompression.Value
@@ -1269,7 +1244,7 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Advanced preferences
     
         'START/END store the temporary path (but only if it's changed)
-            If LCase(txtTempPath) <> LCase(g_UserPreferences.GetTempPath) Then g_UserPreferences.SetTempPath txtTempPath
+            If (LCase$(txtTempPath) <> LCase$(g_UserPreferences.GetTempPath)) Then g_UserPreferences.SetTempPath txtTempPath
     
     'END Advanced preferences
     
@@ -1281,6 +1256,7 @@ Private Sub cmdBarMini_OKClick()
     'All user preferences have now been written out to file
     
     'Because some preferences affect the program's interface, redraw the active image.
+    FormMain.Enabled = True
     FormMain.UpdateMainLayout
         
     'TODO: the image tabstrip should be handled by the program canvas as of 7.0's release.  See if we can remove this line.
@@ -1288,7 +1264,6 @@ Private Sub cmdBarMini_OKClick()
     
     SetProgBarVal 0
     ReleaseProgressBar
-    FormMain.Enabled = True
     
     Message "Preferences updated."
         
@@ -1536,15 +1511,6 @@ Private Sub LoadAllPreferences()
     '***************************************************************************
     
     'START Performance preferences
-    
-        'Previously, this section was used for "tools" preferences.  PhotoDemon no longer provides dedicated tool preferences
-        ' in this dialog; instead, this section is used for Performance preferences.  I have left the old Tool preference code
-        ' and text here so it can be re-used in the future if tool preferences are reinstated.
-        
-        'START Clear selections after "Crop to Selection"
-            'If g_UserPreferences.GetPref_Boolean("Tools", "Clear Selection After Crop", True) Then chkSelectionClearCrop.Value = vbChecked Else chkSelectionClearCrop.Value = vbUnchecked
-            'chkSelectionClearCrop.ToolTipText = g_Language.TranslateMessage("When the ""Crop to Selection"" command is used, the resulting image will always contain a selection the same size as the full image.  There is generally no need to retain this, so PhotoDemon can automatically clear it for you.")
-        'END Clear selections after "Crop to Selection"
         
         'We can shortcut a bit of initialization here by populating all quality drop-downs with the same values.
         Dim i As Long
@@ -1556,28 +1522,23 @@ Private Sub LoadAllPreferences()
             cboPerformance(i).AddItem " maximize performance", 2
         Next i
         
-        'START Color management accuracy v performance
-            cboPerformance(0).ListIndex = g_ColorPerformance
-            cboPerformance(0).AssignTooltip "Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance."
-        'END Color management accuracy v performance
-        
         'START Interface decorations performance
-            cboPerformance(1).ListIndex = g_InterfacePerformance
-            cboPerformance(1).AssignTooltip "Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost."
+            cboPerformance(0).ListIndex = g_InterfacePerformance
+            cboPerformance(0).AssignTooltip "Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost."
         'END Interface decorations performance
         
         'START Thumbnail rendering performance
-            cboPerformance(2).ListIndex = g_UserPreferences.GetThumbnailPerformancePref()
-            cboPerformance(2).AssignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
+            cboPerformance(1).ListIndex = g_UserPreferences.GetThumbnailPerformancePref()
+            cboPerformance(1).AssignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
         'END Thumbnail rendering performance
         
         'START Viewport rendering performance
-            cboPerformance(3).ListIndex = g_ViewportPerformance
-            cboPerformance(3).AssignTooltip "Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance."
+            cboPerformance(2).ListIndex = g_ViewportPerformance
+            cboPerformance(2).AssignTooltip "Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance."
         'END Viewport rendering performance
         
         'START Undo data compression
-            sltUndoCompression.ToolTipText = g_Language.TranslateMessage("By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)")
+            sltUndoCompression.AssignTooltip "By default, PhotoDemon's undo data is not compressed.  This makes undo operations very fast, but increases disk space usage.  Compressing undo data will reduce disk space usage, at some cost to performance.  (Note that undo data is erased when PhotoDemon exits, so this setting only affects disk space usage while PhotoDemon is running.)"
             sltUndoCompression.Value = g_UndoCompressionLevel
         'END Undo data compression
         
@@ -1664,7 +1625,7 @@ Private Sub LoadAllPreferences()
             ' previous version, automatically convert that preference to the new "never (not recommended)" value.
             If g_UserPreferences.DoesValueExist("Updates", "Check For Updates") Then
                 
-                If Not g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True) Then
+                If (Not g_UserPreferences.GetPref_Boolean("Updates", "Check For Updates", True)) Then
                     
                     'Write a matching preference in the new format.
                     g_UserPreferences.SetPref_Long "Updates", "Update Frequency", PDUF_NEVER
@@ -1720,7 +1681,7 @@ Private Sub LoadAllPreferences()
             txtTempPath.Text = g_UserPreferences.GetTempPath
     
         'Display what we know about this PC's hardware acceleration capabilities
-            txtHardware = cSysInfo.GetDeviceCapsString()
+            txtHardware.Text = cSysInfo.GetDeviceCapsString()
             
         '...and give the "copy to clipboard" button a tooltip
             cmdCopyReportClipboard.AssignTooltip "Copy the report to the system clipboard"
@@ -1728,7 +1689,7 @@ Private Sub LoadAllPreferences()
         'Display what we know about PD's memory usage
             lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(cSysInfo.GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
             lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(cSysInfo.GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
-            If Not g_IsProgramCompiled Then
+            If (Not g_IsProgramCompiled) Then
                 lblMemoryUsageCurrent.Caption = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
                 lblMemoryUsageMax.Caption = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
             End If
@@ -1792,15 +1753,6 @@ Private Sub Form_Load()
         .AddItem "Updates", 5
         .AddItem "Advanced", 6
         
-        'Next, add tooltips to each button
-        .AssignTooltip "Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.", "Interface Options", , 0
-        .AssignTooltip "Load options allow you to customize the way image files enter the application.", "Load (Import) Options", , 1
-        .AssignTooltip "Save options allow you to customize the way image files leave the application.", "Save (Export) Options", , 2
-        .AssignTooltip "Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.", "Performance Options", , 3
-        .AssignTooltip "Color management options control how PhotoDemon uses ICC profiles for image files and devices.", "Color Management Options", , 4
-        .AssignTooltip "Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.", "Update Options", , 5
-        .AssignTooltip "Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.", "Advanced Options", , 6
-        
         'Next, add images to each button
         Dim prefButtonSize As Long
         prefButtonSize = FixDPI(32)
@@ -1811,9 +1763,6 @@ Private Sub Form_Load()
         .AssignImageToItem 4, "pref_colormanagement", , prefButtonSize, prefButtonSize
         .AssignImageToItem 5, "pref_updates", , prefButtonSize, prefButtonSize
         .AssignImageToItem 6, "pref_advanced", , prefButtonSize, prefButtonSize
-        
-        'Finally, synchronize the tooltip manager against the current theme
-        .UpdateAgainstCurrentTheme
         
     End With
     

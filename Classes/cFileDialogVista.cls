@@ -859,20 +859,20 @@ Public Function DialogGetFilterIndex() As Long
     End If
 End Function
 
-Public Property Get DialogHWND() As Long
+Public Function DialogGetHWnd() As Long
     ' Returns the dialog's window handle should you need to subclass any controls on it
     ' May want to call this in your callback DialogOnInit event. Run-time only
-    If Not m_FDlg Is Nothing Then
+    If (Not m_FDlg Is Nothing) Then
         Const IID_OleWindow As String = "{00000114-0000-0000-C000-000000000046}"
         Dim aGuid(0 To 3) As Long, pOLE As Long
         IIDFromString StrPtr(IID_OleWindow), VarPtr(aGuid(0))
         pvCallFunction_COM ObjPtr(m_FDlg), ifUnknown_QueryInterface, VarPtr(aGuid(0)), VarPtr(pOLE)
         If pOLE Then
-            pvCallFunction_COM pOLE, ifOleWindow_GetWindow, VarPtr(DialogHWND)
+            pvCallFunction_COM pOLE, ifOleWindow_GetWindow, VarPtr(DialogGetHWnd)
             pvCallFunction_COM pOLE, ifUnknown_Release
         End If
     End If
-End Property
+End Function
 
 Public Function Customize_CreateContainer(ByVal Key As String, ByVal Label As String) As Boolean
 ' All future Customize_Create[xxx] methods are applied to this container until Customize_CloseContainer called

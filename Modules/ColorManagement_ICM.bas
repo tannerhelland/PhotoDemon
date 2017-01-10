@@ -1469,10 +1469,9 @@ Public Function RequestProfileTransform_WindowsCMS(ByVal srcProfile As Long, ByV
     intentMatrix(1) = preferredIntent
     
     'We can now use our profile matrix to generate a transformation object, which we will use on the DIB itself.
-    ' Note: the quality of the transform will affect the speed of the resulting transformation.  Windows supports 3 quality levels
-    '       on the range [1, 3].  We map our internal g_ColorPerformance preference on the range [0, 2] to that range, and use it
-    '       to transparently adjust the quality of the transform.
-    RequestProfileTransform_WindowsCMS = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, (2 - g_ColorPerformance) + 1, INDEX_DONT_CARE)
+    ' Note: the quality of the transform affects the speed of the resulting transformation.  Windows supports 3 quality levels
+    '       on the range [1, 3].  As this function only exists as a backup, we always default to quality [2].
+    RequestProfileTransform_WindowsCMS = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, 2&, INDEX_DONT_CARE)
     
     If (RequestProfileTransform_WindowsCMS = 0) Then
         Debug.Print "Requested color transformation could not be generated (Error #" & Err.LastDllError & ")."
