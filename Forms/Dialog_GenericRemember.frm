@@ -218,8 +218,10 @@ End Sub
 Private Sub Form_Load()
     
     'Prep button icons at load-time
-    cmdAnswer(0).AssignImage "LRGACCEPT"
-    cmdAnswer(1).AssignImage "LRGCANCEL"
+    Dim buttonIconSize As Long
+    buttonIconSize = FixDPI(32)
+    cmdAnswer(0).AssignImage "generic_ok", , buttonIconSize, buttonIconSize
+    cmdAnswer(1).AssignImage "generic_cancel", , buttonIconSize, buttonIconSize
     
 End Sub
 

@@ -145,7 +145,7 @@ Private Sub Form_Load()
     'Set the release announcement URL
     Dim raURL As String
     raURL = Update_Support.GetReleaseAnnouncementURL
-    If Len(raURL) <> 0 Then
+    If (Len(raURL) <> 0) Then
         lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in %1", Update_Support.GetUpdateVersion_Friendly)
         lblReleaseAnnouncement.Visible = True
         lblReleaseAnnouncement.URL = raURL
@@ -155,7 +155,7 @@ Private Sub Form_Load()
     End If
     
     'Disable the restart option inside the IDE
-    If Not g_IsProgramCompiled Then
+    If (Not g_IsProgramCompiled) Then
         cmdUpdate(0).Caption = g_Language.TranslateMessage("(Sorry, but automatic restarts don't work inside the IDE.)")
         cmdUpdate(0).Enabled = False
     End If

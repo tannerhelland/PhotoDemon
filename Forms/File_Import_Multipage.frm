@@ -109,10 +109,14 @@ End Property
 Public Sub ShowDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
-    cmdAnswer(0).AssignImage "LRGIMGMULTI"
-    cmdAnswer(1).AssignImage "LRGIMGSMALL"
+    ' TODO 7.0: this prompt is currently suspended, and multi-page images are automatically loaded using a
+    ' "one page per layer" system.  This prompt needs to be revisited to deal with that, but it has some
+    ' tricky complications with the central loading function - so for now, it's disabled.  Note that the
+    ' old resource IDs no longer exist, so new IDs will need to be created inside the new resource file.
+    'cmdAnswer(0).AssignImage "LRGIMGMULTI"
+    'cmdAnswer(1).AssignImage "LRGIMGSMALL"
     
-    If Screen.MousePointer = vbHourglass Then
+    If (Screen.MousePointer = vbHourglass) Then
         restoreCursor = True
         Screen.MousePointer = vbNormal
     Else
@@ -182,5 +186,3 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
-
-
