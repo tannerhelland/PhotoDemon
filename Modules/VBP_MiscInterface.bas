@@ -200,7 +200,7 @@ Public Sub SyncInterfaceToCurrentImage()
     ' while others (Undo and Redo) are only enabled if the current image requires it.
     Else
         
-        If Not (pdImages(g_CurrentImage) Is Nothing) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then
         
             'Start with controls that are *always* enabled if at least one image is active.  These controls only need to be addressed when
             ' we move between the "no images" and "at least one image" state.
@@ -315,13 +315,13 @@ Private Sub SyncUI_MultipleLayerSettings()
     End If
 
     'Merge up/down are not available for layers at the top and bottom of the image
-    If IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, False) <> -1 Then
+    If (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, False) <> -1) Then
         FormMain.MnuLayer(3).Enabled = True
     Else
         FormMain.MnuLayer(3).Enabled = False
     End If
     
-    If IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, True) <> -1 Then
+    If (IsLayerAllowedToMergeAdjacent(pdImages(g_CurrentImage).GetActiveLayerIndex, True) <> -1) Then
         FormMain.MnuLayer(4).Enabled = True
     Else
         FormMain.MnuLayer(4).Enabled = False
@@ -330,8 +330,8 @@ Private Sub SyncUI_MultipleLayerSettings()
     'Within the order menu, certain items are disabled based on layer position.  Note that "move up" and
     ' "move to top" are both disabled for top images (similarly for bottom images and "move down/bottom"),
     ' so we can mirror the same enabled state for both options.
-    If pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1 Then
-        If Not FormMain.MnuLayerOrder(0).Enabled Then
+    If (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1) Then
+        If (Not FormMain.MnuLayerOrder(0).Enabled) Then
             FormMain.MnuLayerOrder(0).Enabled = True
             FormMain.MnuLayerOrder(3).Enabled = True    '"raise to top" mirrors "raise layer"
         End If
@@ -342,8 +342,8 @@ Private Sub SyncUI_MultipleLayerSettings()
         End If
     End If
     
-    If pdImages(g_CurrentImage).GetActiveLayerIndex > 0 Then
-        If Not FormMain.MnuLayerOrder(1).Enabled Then
+    If (pdImages(g_CurrentImage).GetActiveLayerIndex > 0) Then
+        If (Not FormMain.MnuLayerOrder(1).Enabled) Then
             FormMain.MnuLayerOrder(1).Enabled = True
             FormMain.MnuLayerOrder(4).Enabled = True    '"lower to bottom" mirrors "lower layer"
         End If
@@ -356,15 +356,15 @@ Private Sub SyncUI_MultipleLayerSettings()
     
     
     'Flatten is only available if one or more layers are actually *visible*
-    If pdImages(g_CurrentImage).GetNumOfVisibleLayers > 0 Then
-        If Not FormMain.MnuLayer(15).Enabled Then FormMain.MnuLayer(15).Enabled = True
+    If (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 0) Then
+        If (Not FormMain.MnuLayer(15).Enabled) Then FormMain.MnuLayer(15).Enabled = True
     Else
         FormMain.MnuLayer(15).Enabled = False
     End If
     
     'Merge visible is only available if *two* or more layers are visible
-    If pdImages(g_CurrentImage).GetNumOfVisibleLayers > 1 Then
-        If Not FormMain.MnuLayer(16).Enabled Then FormMain.MnuLayer(16).Enabled = True
+    If (pdImages(g_CurrentImage).GetNumOfVisibleLayers > 1) Then
+        If (Not FormMain.MnuLayer(16).Enabled) Then FormMain.MnuLayer(16).Enabled = True
     Else
         FormMain.MnuLayer(16).Enabled = False
     End If
@@ -387,11 +387,12 @@ Private Sub SyncUI_CurrentLayerSettings()
     End If
     
     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
-    If FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive Then FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
-    toolpanel_MoveSize.cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (FormMain.MnuLayerSize(0).Enabled <> nonDestructiveResizeActive) Then FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
     
-    'Similar logic is used for other non-destructive affine transforms
-    toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (g_CurrentTool = NAV_MOVE) Then
+        toolpanel_MoveSize.cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+        toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    End If
     
     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
     SetUIGroupState PDUI_NonDestructiveFX, True
@@ -414,9 +415,9 @@ Private Sub SyncUI_CurrentImageSettings()
     
     'Because Undo/Redo changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
     ResetMenuIcons
-            
+    
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
+    If (Not pdImages(g_CurrentImage).imgMetadata Is Nothing) Then
         SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).imgMetadata.HasMetadata
         SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).imgMetadata.HasGPSMetadata()
     Else
@@ -425,7 +426,7 @@ Private Sub SyncUI_CurrentImageSettings()
     End If
     
     'Display the image's path in the title bar.
-    If Not (g_WindowManager Is Nothing) Then
+    If (Not g_WindowManager Is Nothing) Then
         g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(pdImages(g_CurrentImage))
     Else
         FormMain.Caption = Interface.GetWindowCaption(pdImages(g_CurrentImage))
@@ -1294,7 +1295,7 @@ Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form,
     FormWait.lblWaitTitle.Caption = waitTitle
     FormWait.lblWaitTitle.Visible = True
     
-    If Len(descriptionText) > 0 Then
+    If (Len(descriptionText) <> 0) Then
         FormWait.lblWaitDescription.Caption = descriptionText
         FormWait.lblWaitDescription.Visible = True
     Else
@@ -1621,7 +1622,7 @@ End Function
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByRef srcImage As pdImage)
     
-    If Not (srcImage Is Nothing) Then
+    If (Not srcImage Is Nothing) Then
         
         FormMain.mainCanvas(0).DisplayImageSize srcImage
         
@@ -1642,14 +1643,18 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
             m_LastUILimitingSize_Small = newLimitingSize_Small
             m_LastUILimitingSize_Large = newLimitingSize_Large
             
-            'Certain selection tools are size-limited by the current image; update those now!
-            toolpanel_Selections.sltCornerRounding.Max = m_LastUILimitingSize_Small
-            toolpanel_Selections.sltSelectionLineWidth.Max = m_LastUILimitingSize_Large
-        
-            Dim i As Long
-            For i = 0 To toolpanel_Selections.sltSelectionBorder.Count - 1
-                toolpanel_Selections.sltSelectionBorder(i).Max = m_LastUILimitingSize_Small
-            Next i
+            If Tool_Support.IsSelectionToolActive Then
+            
+                'Certain selection tools are size-limited by the current image; update those now!
+                toolpanel_Selections.sltCornerRounding.Max = m_LastUILimitingSize_Small
+                toolpanel_Selections.sltSelectionLineWidth.Max = m_LastUILimitingSize_Large
+            
+                Dim i As Long
+                For i = 0 To toolpanel_Selections.sltSelectionBorder.Count - 1
+                    toolpanel_Selections.sltSelectionBorder(i).Max = m_LastUILimitingSize_Small
+                Next i
+                
+            End If
             
         End If
     

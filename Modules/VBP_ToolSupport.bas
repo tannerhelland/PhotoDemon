@@ -571,9 +571,9 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
             Else
             
                 'Hide the "convert to different type of text panel" prompts
-                If g_CurrentTool = VECTOR_TEXT Then
+                If (g_CurrentTool = VECTOR_TEXT) Then
                     toolpanel_Text.UpdateAgainstCurrentLayer
-                ElseIf g_CurrentTool = VECTOR_FANCYTEXT Then
+                ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
                     toolpanel_FancyText.UpdateAgainstCurrentLayer
                 End If
             

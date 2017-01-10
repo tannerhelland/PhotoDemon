@@ -355,7 +355,7 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
     Dim i As Long
     
     'Only synchronize the text boxes if a selection is active
-    If (g_OpenImageCount > 0) And pdImages(formID).selectionActive And (Not pdImages(formID).mainSelection Is Nothing) Then
+    If Selection_Handler.SelectionsAllowed(False) Then
         
         pdImages(formID).mainSelection.rejectRefreshRequests = True
         
@@ -364,69 +364,73 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
         Dim subpanelOffset As Long
         subpanelOffset = Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID)) * 4
         
-        'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
-        If pdImages(formID).mainSelection.isTransformable Then
+        If Tool_Support.IsSelectionToolActive Then
+        
+            'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
+            If pdImages(formID).mainSelection.isTransformable Then
+                
+                'Different types of selections will display size and position differently
+                Select Case pdImages(formID).mainSelection.GetSelectionShape
+                
+                    'Rectangular and elliptical selections display left, top, width and height
+                    Case sRectangle, sCircle
+                        toolpanel_Selections.tudSel(subpanelOffset + 0).Value = pdImages(formID).mainSelection.selLeft
+                        toolpanel_Selections.tudSel(subpanelOffset + 1).Value = pdImages(formID).mainSelection.selTop
+                        toolpanel_Selections.tudSel(subpanelOffset + 2).Value = pdImages(formID).mainSelection.selWidth
+                        toolpanel_Selections.tudSel(subpanelOffset + 3).Value = pdImages(formID).mainSelection.selHeight
+                        
+                    'Line selections display x1, y1, x2, y2
+                    Case sLine
+                        toolpanel_Selections.tudSel(subpanelOffset + 0).Value = pdImages(formID).mainSelection.x1
+                        toolpanel_Selections.tudSel(subpanelOffset + 1).Value = pdImages(formID).mainSelection.y1
+                        toolpanel_Selections.tudSel(subpanelOffset + 2).Value = pdImages(formID).mainSelection.x2
+                        toolpanel_Selections.tudSel(subpanelOffset + 3).Value = pdImages(formID).mainSelection.y2
             
-            'Different types of selections will display size and position differently
+                End Select
+                
+            Else
+            
+                For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                    If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+                Next i
+                
+            End If
+            
+            'Next, sync all non-coordinate information
+            If (pdImages(formID).mainSelection.GetSelectionShape <> sRaster) And (pdImages(formID).mainSelection.GetSelectionShape <> sWand) Then
+                toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID))).ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_AREA)
+                toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID))).Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_BORDER_WIDTH)
+            End If
+            
+            If toolpanel_Selections.cboSelSmoothing.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_SMOOTHING) Then toolpanel_Selections.cboSelSmoothing.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_SMOOTHING)
+            If toolpanel_Selections.sltSelectionFeathering.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_FEATHERING_RADIUS) Then toolpanel_Selections.sltSelectionFeathering.Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
+            
+            'Finally, sync any shape-specific information
             Select Case pdImages(formID).mainSelection.GetSelectionShape
             
-                'Rectangular and elliptical selections display left, top, width and height
-                Case sRectangle, sCircle
-                    toolpanel_Selections.tudSel(subpanelOffset + 0).Value = pdImages(formID).mainSelection.selLeft
-                    toolpanel_Selections.tudSel(subpanelOffset + 1).Value = pdImages(formID).mainSelection.selTop
-                    toolpanel_Selections.tudSel(subpanelOffset + 2).Value = pdImages(formID).mainSelection.selWidth
-                    toolpanel_Selections.tudSel(subpanelOffset + 3).Value = pdImages(formID).mainSelection.selHeight
-                    
-                'Line selections display x1, y1, x2, y2
+                Case sRectangle
+                    If toolpanel_Selections.sltCornerRounding.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) Then toolpanel_Selections.sltCornerRounding.Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS)
+                
+                Case sCircle
+                
                 Case sLine
-                    toolpanel_Selections.tudSel(subpanelOffset + 0).Value = pdImages(formID).mainSelection.x1
-                    toolpanel_Selections.tudSel(subpanelOffset + 1).Value = pdImages(formID).mainSelection.y1
-                    toolpanel_Selections.tudSel(subpanelOffset + 2).Value = pdImages(formID).mainSelection.x2
-                    toolpanel_Selections.tudSel(subpanelOffset + 3).Value = pdImages(formID).mainSelection.y2
-        
+                    If toolpanel_Selections.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_LINE_WIDTH) Then toolpanel_Selections.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_LINE_WIDTH)
+                    
+                Case sLasso
+                    If toolpanel_Selections.sltSmoothStroke.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_SMOOTH_STROKE) Then toolpanel_Selections.sltSmoothStroke.Value = pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_SMOOTH_STROKE)
+                    
+                Case sPolygon
+                    If toolpanel_Selections.sltPolygonCurvature.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_POLYGON_CURVATURE) Then toolpanel_Selections.sltPolygonCurvature.Value = pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                    
+                Case sWand
+                    If toolpanel_Selections.btsWandArea.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SEARCH_MODE) Then toolpanel_Selections.btsWandArea.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SEARCH_MODE)
+                    If toolpanel_Selections.btsWandMerge.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SAMPLE_MERGED) Then toolpanel_Selections.btsWandMerge.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SAMPLE_MERGED)
+                    If toolpanel_Selections.sltWandTolerance.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_WAND_TOLERANCE) Then toolpanel_Selections.sltWandTolerance.Value = pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_WAND_TOLERANCE)
+                    If toolpanel_Selections.cboWandCompare.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_COMPARE_METHOD) Then toolpanel_Selections.cboWandCompare.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
+            
             End Select
             
-        Else
-        
-            For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
-            Next i
-            
         End If
-        
-        'Next, sync all non-coordinate information
-        If (pdImages(formID).mainSelection.GetSelectionShape <> sRaster) And (pdImages(formID).mainSelection.GetSelectionShape <> sWand) Then
-            toolpanel_Selections.cboSelArea(Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID))).ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_AREA)
-            toolpanel_Selections.sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(formID))).Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_BORDER_WIDTH)
-        End If
-        
-        If toolpanel_Selections.cboSelSmoothing.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_SMOOTHING) Then toolpanel_Selections.cboSelSmoothing.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_SMOOTHING)
-        If toolpanel_Selections.sltSelectionFeathering.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_FEATHERING_RADIUS) Then toolpanel_Selections.sltSelectionFeathering.Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-        
-        'Finally, sync any shape-specific information
-        Select Case pdImages(formID).mainSelection.GetSelectionShape
-        
-            Case sRectangle
-                If toolpanel_Selections.sltCornerRounding.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) Then toolpanel_Selections.sltCornerRounding.Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS)
-            
-            Case sCircle
-            
-            Case sLine
-                If toolpanel_Selections.sltSelectionLineWidth.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_LINE_WIDTH) Then toolpanel_Selections.sltSelectionLineWidth.Value = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_LINE_WIDTH)
-                
-            Case sLasso
-                If toolpanel_Selections.sltSmoothStroke.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_SMOOTH_STROKE) Then toolpanel_Selections.sltSmoothStroke.Value = pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_SMOOTH_STROKE)
-                
-            Case sPolygon
-                If toolpanel_Selections.sltPolygonCurvature.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_POLYGON_CURVATURE) Then toolpanel_Selections.sltPolygonCurvature.Value = pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_POLYGON_CURVATURE)
-                
-            Case sWand
-                If toolpanel_Selections.btsWandArea.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SEARCH_MODE) Then toolpanel_Selections.btsWandArea.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SEARCH_MODE)
-                If toolpanel_Selections.btsWandMerge.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SAMPLE_MERGED) Then toolpanel_Selections.btsWandMerge.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_SAMPLE_MERGED)
-                If toolpanel_Selections.sltWandTolerance.Value <> pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_WAND_TOLERANCE) Then toolpanel_Selections.sltWandTolerance.Value = pdImages(formID).mainSelection.GetSelectionProperty_Double(SP_WAND_TOLERANCE)
-                If toolpanel_Selections.cboWandCompare.ListIndex <> pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_COMPARE_METHOD) Then toolpanel_Selections.cboWandCompare.ListIndex = pdImages(formID).mainSelection.GetSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
-        
-        End Select
         
         pdImages(formID).mainSelection.rejectRefreshRequests = False
         
@@ -434,9 +438,12 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
         
         SetUIGroupState PDUI_Selections, False
         SetUIGroupState PDUI_SelectionTransforms, False
-        For i = 0 To toolpanel_Selections.tudSel.Count - 1
-            If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
-        Next i
+        
+        If Tool_Support.IsSelectionToolActive Then
+            For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
+            Next i
+        End If
         
     End If
     
@@ -666,7 +673,7 @@ Public Sub InvertCurrentSelection()
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim quickVal As Long
+    Dim QuickVal As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -688,11 +695,11 @@ Public Sub InvertCurrentSelection()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = 0 To maskWidth
-        quickVal = x * selMaskDepth
+        QuickVal = x * selMaskDepth
     For y = 0 To maskHeight
-        selMaskData(quickVal, y) = 255 - selMaskData(quickVal, y)
-        selMaskData(quickVal + 1, y) = 255 - selMaskData(quickVal + 1, y)
-        selMaskData(quickVal + 2, y) = 255 - selMaskData(quickVal + 2, y)
+        selMaskData(QuickVal, y) = 255 - selMaskData(QuickVal, y)
+        selMaskData(QuickVal + 1, y) = 255 - selMaskData(QuickVal + 1, y)
+        selMaskData(QuickVal + 2, y) = 255 - selMaskData(QuickVal + 2, y)
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
@@ -806,7 +813,7 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
+        Dim QuickVal As Long, qvDepth As Long
         qvDepth = pdImages(g_CurrentImage).mainSelection.selMask.GetDIBColorDepth \ 8
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -834,18 +841,18 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = 0 To iWidth
-            quickVal = x * qvDepth
+            QuickVal = x * qvDepth
         For y = 0 To iHeight
                 
             'Retrieve the original image's pixels
-            r = selMaskData(quickVal + 2, y)
-            g = selMaskData(quickVal + 1, y)
-            b = selMaskData(quickVal, y)
+            r = selMaskData(QuickVal + 2, y)
+            g = selMaskData(QuickVal + 1, y)
+            b = selMaskData(QuickVal, y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(quickVal + 2, y)
-            g2 = srcImageData(quickVal + 1, y)
-            b2 = srcImageData(quickVal, y)
+            r2 = srcImageData(QuickVal + 2, y)
+            g2 = srcImageData(QuickVal + 1, y)
+            b2 = srcImageData(QuickVal, y)
             
             tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
                 
@@ -867,9 +874,9 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
             newG = BlendColors(newG, g, blendVal)
             newB = BlendColors(newB, b, blendVal)
             
-            selMaskData(quickVal + 2, y) = newR
-            selMaskData(quickVal + 1, y) = newG
-            selMaskData(quickVal, y) = newB
+            selMaskData(QuickVal + 2, y) = newR
+            selMaskData(QuickVal + 1, y) = newG
+            selMaskData(QuickVal, y) = newB
                     
         Next y
             If (x And progBarCheck) = 0 Then SetProgBarVal x
