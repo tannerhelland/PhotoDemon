@@ -183,6 +183,7 @@ Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     End If
     
 End Sub
+
 Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, pdFxPreview
 End Sub
@@ -201,7 +202,4 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
 
