@@ -969,46 +969,46 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Modify the existing selection in some way
         Case "Invert selection"
-            Selection_Handler.invertCurrentSelection
+            Selection_Handler.InvertCurrentSelection
             
         Case "Grow selection"
             If ShowDialog Then
-                Selection_Handler.growCurrentSelection True
+                Selection_Handler.GrowCurrentSelection True
             Else
-                Selection_Handler.growCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.GrowCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Shrink selection"
             If ShowDialog Then
-                Selection_Handler.shrinkCurrentSelection True
+                Selection_Handler.ShrinkCurrentSelection True
             Else
-                Selection_Handler.shrinkCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.ShrinkCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Feather selection"
             If ShowDialog Then
-                Selection_Handler.featherCurrentSelection True
+                Selection_Handler.FeatherCurrentSelection True
             Else
-                Selection_Handler.featherCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.FeatherCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Sharpen selection"
             If ShowDialog Then
-                Selection_Handler.sharpenCurrentSelection True
+                Selection_Handler.SharpenCurrentSelection True
             Else
-                Selection_Handler.sharpenCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.SharpenCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Border selection"
             If ShowDialog Then
-                Selection_Handler.borderCurrentSelection True
+                Selection_Handler.BorderCurrentSelection True
             Else
-                Selection_Handler.borderCurrentSelection False, cParams.GetDouble(1)
+                Selection_Handler.BorderCurrentSelection False, cParams.GetDouble(1)
             End If
         
         'Erase selected area (from layer)
         Case "Erase selected area"
-            Selection_Handler.eraseSelectedArea cParams.GetLong(1)
+            Selection_Handler.EraseSelectedArea cParams.GetLong(1)
         
         'Load/save selection from/to file
         Case "Load selection"
@@ -2539,7 +2539,7 @@ Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal change
         'Make a note of the window that has keyboard focus, then forcibly remove it
         If maintainFocus Then
             m_FocusHWnd = g_WindowManager.GetFocusAPI()
-            If m_FocusHWnd <> 0 Then g_WindowManager.SetFocusAPI 0&
+            If (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI 0&
         End If
         
         'Change the cursor to a busy state (but ONLY if explicitly requested - this is important)

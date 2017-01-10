@@ -465,7 +465,7 @@ Public Function GetDeviceCapsString() As String
 
 End Function
 
-'Helper function for getDeviceCapsString, above; used to append text to the start of a new device caps section
+'Helper function for GetDeviceCapsString, above; used to append text to the start of a new device caps section
 Private Sub StartDevCapsSection(ByRef srcString As String, ByRef getDevCapsReturn As Long, ByVal gdcSection As DeviceChecks, ByRef sectionTitle As String)
     
     Dim tmpDC As Long
@@ -496,7 +496,7 @@ Private Sub EndDevCapsSection(ByRef srcString As String, ByRef supportedCaps As 
     
 End Sub
 
-'Helper function for getDeviceCapsString, above; used to automatically check a given GetDeviceCaps return value, and append the
+'Helper function for GetDeviceCapsString, above; used to automatically check a given GetDeviceCaps return value, and append the
 ' results to a user-friendly string
 Private Sub AddToDeviceCapsString(ByVal devCapsReturn As Long, ByVal paramToCheck As Long, ByRef stringIfSupported As String, ByRef stringIfNotSupported As String, ByRef capName As String, ByRef supportedCount As Long, ByRef totalCount As Long)
     

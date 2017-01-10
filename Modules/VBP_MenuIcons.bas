@@ -649,9 +649,6 @@ Public Sub ResetMenuIcons()
     End If
     
     'Clear the current MRU icon cache.
-    ' (Note added 01 Jan 2014 - RR has reported an IDE error on the following line, which means this function is somehow being
-    '  triggered before loadMenuIcons above.  I cannot reproduce this behavior, so instead, we now perform a single initialization
-    '  check before attempting to load MRU icons.)
     If (Not cMRUIcons Is Nothing) Then
         
         cMRUIcons.Clear
@@ -886,10 +883,10 @@ Public Function CreateIconFromResource(ByVal resTitle As String) As Long
     If Not (IStream Is Nothing) Then
         
         'Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine
-        If GdipLoadImageFromStream(IStream, hBitmap) = 0 Then
+        If (GdipLoadImageFromStream(IStream, hBitmap) = 0) Then
         
             'hBitmap now contains the PNG file as an hBitmap (obviously).  Now we need to convert it to icon format.
-            If GdipCreateHICONFromBitmap(hBitmap, hIcon) = 0 Then
+            If (GdipCreateHICONFromBitmap(hBitmap, hIcon) = 0) Then
                 CreateIconFromResource = hIcon
             Else
                 CreateIconFromResource = 0
@@ -923,7 +920,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
         '       need to standardize their size and layout before implementing a universal "resize per DPI" check.
         '       The proper way to do this would be to retrieve cursor size from the system, then resize anything
         '       that isn't already that size - I've made a note to do this eventually.
-        If FixDPI(96) <> 96 Then
+        If (FixDPI(96) <> 96) Then
         
             'Create a temporary copy of the image
             Dim dpiDIB As pdDIB
@@ -1050,7 +1047,7 @@ Public Function RequestCustomCursor(ByVal CursorName As String, Optional ByVal c
     
         For i = 0 To numOfCustomCursors - 1
         
-            If customCursorNames(i) = CursorName Then
+            If (customCursorNames(i) = CursorName) Then
                 cursorAlreadyLoaded = True
                 cursorLocation = i
                 Exit For
