@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.233</langversion>
+<langversion>6.7.234</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6071,16 +6071,6 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
-<original>Previous shutdown was clean (no autosave data found).</original>
-<translation>Arrêt précédent était propre (pas de données enregistrées automatiquement trouvés).</translation>
-</phrase>
-
-<phrase>
-<original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
-<translation>Multiples sessions de PhotoDemon actives; chèque de sauvegarde automatique abandonné.</translation>
-</phrase>
-
-<phrase>
 <original>Checking command line</original>
 <translation>Vérification de la ligne de commande</translation>
 </phrase>
@@ -6384,7 +6374,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14878,10 +14868,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2512</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4455 phrases. -->
-<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
-<!-- These 2512 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1943 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 12452 total words. -->
 
 </pdData>

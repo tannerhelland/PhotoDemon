@@ -438,8 +438,8 @@ Private Sub CreateNewPreferencesFile()
     
     'Write out the "color management" block of preferences:
     m_XMLEngine.WriteTag "ColorManagement", "", True
-        m_XMLEngine.WriteTag "Display CM Mode", Trim$(Str(DCM_NoManagement))
-        m_XMLEngine.WriteTag "Display Rendering Intent", Trim$(Str(INTENT_PERCEPTUAL))
+        m_XMLEngine.WriteTag "DisplayCMMode", Trim$(Str(DCM_NoManagement))
+        m_XMLEngine.WriteTag "DisplayRenderingIntent", Trim$(Str(INTENT_PERCEPTUAL))
     m_XMLEngine.closeTag "ColorManagement"
     m_XMLEngine.WriteBlankLine
     

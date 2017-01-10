@@ -25,12 +25,37 @@ Begin VB.Form dialog_AutosaveWarning
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   611
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picWarning 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      ForeColor       =   &H80000008&
+      Height          =   615
+      Left            =   240
+      ScaleHeight     =   41
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   49
+      TabIndex        =   4
+      Top             =   240
+      Width           =   735
+   End
+   Begin PhotoDemon.pdListBox lstAutosaves 
+      Height          =   3450
+      Left            =   240
+      TabIndex        =   3
+      Top             =   2400
+      Width           =   3615
+      _ExtentX        =   6376
+      _ExtentY        =   6085
+   End
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   735
-      Left            =   2280
+      Left            =   1800
       TabIndex        =   0
       Top             =   6060
-      Width           =   3300
+      Width           =   3540
       _ExtentX        =   5821
       _ExtentY        =   1296
       Caption         =   "Restore selected autosaves"
@@ -58,31 +83,12 @@ Begin VB.Form dialog_AutosaveWarning
       Top             =   2430
       Width           =   4980
    End
-   Begin VB.ListBox lstAutosaves 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   3420
-      IntegralHeight  =   0   'False
-      Left            =   240
-      Sorted          =   -1  'True
-      Style           =   1  'Checkbox
-      TabIndex        =   2
-      Top             =   2430
-      Width           =   3615
-   End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   735
-      Left            =   5640
-      TabIndex        =   3
+      Left            =   5400
+      TabIndex        =   2
       Top             =   6060
-      Width           =   3300
+      Width           =   3540
       _ExtentX        =   5821
       _ExtentY        =   1296
       Caption         =   "Discard all autosaves"
@@ -141,8 +147,8 @@ Attribute VB_Exposed = False
 'Autosave (unsafe shutdown) Prompt/Dialog
 'Copyright 2014-2017 by Tanner Helland
 'Created: 19/January/14
-'Last updated: 21/May/14
-'Last update: rewrote the entire dialog against the new Undo/Redo engine
+'Last updated: 10/January/17
+'Last update: implement better theming support
 '
 'PhotoDemon now provides AutoSave functionality.  If the program terminates unexpectedly, this dialog will be raised,
 ' which gives the user an option to restore any in-progress image edits.
@@ -164,32 +170,14 @@ Private m_numOfXMLFound As Long
 Private m_XmlEntries() As AutosaveXML
 
 'When this dialog finally closes, the calling function can use this sub to retrieve the entries the user wants saved.
-Friend Sub fillArrayWithSaveResults(ByRef dstArray() As AutosaveXML)
+Friend Sub FillArrayWithSaveResults(ByRef dstArray() As AutosaveXML)
     
-    Dim numOfEntriesBeingSaved As Long
-    numOfEntriesBeingSaved = 0
+    ReDim dstArray(0 To m_numOfXMLFound - 1) As AutosaveXML
     
-    'Count how many entries the user is saving
     Dim i As Long
-    For i = 0 To lstAutosaves.ListCount - 1
-        If lstAutosaves.Selected(i) Then numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
+    For i = 0 To m_numOfXMLFound - 1
+        dstArray(i) = m_XmlEntries(i)
     Next i
-    
-    'Prepare the destination array
-    If numOfEntriesBeingSaved > 0 Then
-    
-        ReDim dstArray(0 To numOfEntriesBeingSaved - 1) As AutosaveXML
-    
-        'Fill the array with all selected entries
-        numOfEntriesBeingSaved = 0
-        For i = 0 To lstAutosaves.ListCount - 1
-            If lstAutosaves.Selected(i) Then
-                dstArray(numOfEntriesBeingSaved) = m_XmlEntries(lstAutosaves.itemData(i))
-                numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
-            End If
-        Next i
-        
-    End If
     
 End Sub
 
@@ -199,11 +187,18 @@ End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog()
-
-    'Automatically draw a warning icon using the system icon set
-    Dim iconY As Long
-    iconY = FixDPI(20)
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(22), iconY
+    
+    'Draw a warning icon
+    Dim warningIconSize As Long
+    warningIconSize = FixDPI(32)
+    Dim warningDIB As pdDIB
+    If Icons_and_Cursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
+        picWarning.BackColor = g_Themer.GetGenericUIColor(UI_Background)
+        warningDIB.AlphaBlendToDC picWarning.hDC, , (picWarning.ScaleWidth - warningDIB.GetDIBWidth) \ 2, (picWarning.ScaleHeight - warningDIB.GetDIBHeight) \ 2
+        picWarning.Picture = picWarning.Image
+    Else
+        picWarning.Visible = False
+    End If
     
     'Display a brief explanation of the dialog at the top of the window
     lblWarning(1).Caption = g_Language.TranslateMessage("A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?")
@@ -212,14 +207,16 @@ Public Sub ShowDialog()
     userAnswer = vbNo
     
     'Load command button images
-    cmdOK.AssignImage "LRGACCEPT"
-    cmdCancel.AssignImage "LRGCANCEL"
+    Dim buttonIconSize As Long
+    buttonIconSize = FixDPI(32)
+    cmdOK.AssignImage "generic_ok", , buttonIconSize, buttonIconSize
+    cmdCancel.AssignImage "generic_cancel", , buttonIconSize, buttonIconSize
     
     'Apply any custom styles to the form
     ApplyThemeAndTranslations Me
 
     'Populate the AutoSave entry list box
-    displayAutosaveEntries
+    DisplayAutosaveEntries
 
     'Display the form
     ShowPDDialog vbModal, Me, True
@@ -232,7 +229,7 @@ Private Sub CmdCancel_Click()
     Dim msgReturn As VbMsgBoxResult
     msgReturn = PDMsgBox("If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?", vbApplicationModal + vbInformation + vbYesNo, "Warning: autosave data will be deleted")
     
-    If msgReturn = vbYes Then
+    If (msgReturn = vbYes) Then
         userAnswer = vbNo
         Me.Hide
     End If
@@ -241,25 +238,8 @@ End Sub
 
 'OK button
 Private Sub CmdOK_Click()
-    
-    Dim numOfEntriesBeingSaved As Long
-    numOfEntriesBeingSaved = 0
-    
-    'Count how many entries the user is saving
-    Dim i As Long
-    For i = 0 To lstAutosaves.ListCount - 1
-        If lstAutosaves.Selected(i) Then numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
-    Next i
-    
-    'If the user has selected at least one file to restore, return YES; otherwise, NO.
-    If numOfEntriesBeingSaved > 0 Then
-        userAnswer = vbYes
-    Else
-        userAnswer = vbNo
-    End If
-    
+    userAnswer = vbYes
     Me.Hide
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -286,7 +266,7 @@ Private Sub UpdatePreview(ByVal srcImagePath As String)
 End Sub
 
 'Fill the AutoSave entries list with any images found from the Autosave engine
-Private Function displayAutosaveEntries() As Boolean
+Private Function DisplayAutosaveEntries() As Boolean
 
     'Because we've arrived at this point, we know that the Autosave engine has found at least *some* usable image data.
     ' Our goal now is to present that image data to the user, so they can select which images (if any) they want us
@@ -294,31 +274,30 @@ Private Function displayAutosaveEntries() As Boolean
     
     'The Autosave_Handler module will already contain a list of all Undo XML files found by the Autosave engine.
     ' It has stored this data in its private m_XmlEntries() array.  We can request a copy of this array as follows:
-    Autosave_Handler.getXMLAutosaveEntries m_XmlEntries(), m_numOfXMLFound
+    Autosave_Handler.GetXMLAutosaveEntries m_XmlEntries(), m_numOfXMLFound
     
     'All XML entries will now have been matched up with their latest Undo entry.  Fill the listbox with their data,
     ' ignoring any entries that do not have binary image data attached.
+    lstAutosaves.SetAutomaticRedraws False
     lstAutosaves.Clear
     
     Dim i As Long
     For i = 0 To m_numOfXMLFound - 1
         lstAutosaves.AddItem m_XmlEntries(i).friendlyName
-        lstAutosaves.itemData(lstAutosaves.newIndex) = i
-        lstAutosaves.Selected(lstAutosaves.newIndex) = True
     Next i
     
     'Select the entry at the top of the list by default
     lstAutosaves.ListIndex = 0
+    lstAutosaves.SetAutomaticRedraws True, True
     
 End Function
 
 Private Sub lstAutosaves_Click()
     
     'PD always saves a thumbnail of the latest image state to the same Undo path as the XML file, but with
-    ' the rather wordy "pdasi" extension, which in this case means "PD autosave image."
+    ' the "pdasi" extension (which represents "PD autosave image").
     Dim previewPath As String
-    previewPath = m_XmlEntries(lstAutosaves.itemData(lstAutosaves.ListIndex)).xmlPath & ".pdasi"
+    previewPath = m_XmlEntries(lstAutosaves.ListIndex).xmlPath & ".pdasi"
     UpdatePreview previewPath
     
 End Sub
-

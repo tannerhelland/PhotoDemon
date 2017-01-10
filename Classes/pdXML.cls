@@ -291,17 +291,17 @@ End Function
 Public Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, Optional ByVal sectionName As String = "", Optional ByVal sectionAttribute As String = "", Optional ByVal sectionAttributeValue As String = "", Optional ByVal createIfMissing As Boolean = True) As Boolean
 
     'Create a start and end tag to search for, which will vary contingent on the presence of a section request
-    Dim startTag As String, closeTag As String
+    Dim startTag As String, closingTag As String
     If (Len(sectionName) <> 0) Then
         If (Len(sectionAttribute) <> 0) Then
             startTag = "<" & sectionName & " " & sectionAttribute & "=""" & sectionAttributeValue & """>"
         Else
             startTag = "<" & sectionName & ">"
         End If
-        closeTag = "</" & sectionName & ">"
+        closingTag = "</" & sectionName & ">"
     Else
         startTag = ROOT_TAG
-        closeTag = ROOT_TAG_CLOSE
+        closingTag = ROOT_TAG_CLOSE
     End If
     
     Dim sectionLocation As Long, sectionStartLocation As Long
@@ -315,7 +315,7 @@ Public Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, 
         sectionStartLocation = InStr(1, m_xmlContents, startTag, m_TextCompareMode)
         
         If (sectionStartLocation > 0) Then
-            sectionLocation = InStr(sectionStartLocation, m_xmlContents, closeTag, m_TextCompareMode)
+            sectionLocation = InStr(sectionStartLocation, m_xmlContents, closingTag, m_TextCompareMode)
         Else
             
             'If the section tag was not found, and createIfMissing is TRUE, create the section for the user.
@@ -324,7 +324,7 @@ Public Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, 
                 
                 'Find the start location again
                 sectionStartLocation = InStr(1, m_xmlContents, startTag, m_TextCompareMode)
-                sectionLocation = InStr(sectionStartLocation, m_xmlContents, closeTag, m_TextCompareMode)
+                sectionLocation = InStr(sectionStartLocation, m_xmlContents, closingTag, m_TextCompareMode)
                 
             Else
                 UpdateTag = False
@@ -337,16 +337,16 @@ Public Function UpdateTag(ByVal tagName As String, ByVal tagContents As String, 
     
         If (Len(sectionName) <> 0) Then
             
-            sectionLocation = InStrRev(m_xmlContents, closeTag, , m_TextCompareMode)
+            sectionLocation = InStrRev(m_xmlContents, closingTag, , m_TextCompareMode)
             
             'If the section wasn't found, add it
             If (sectionLocation = 0) Then
                 WriteNewSection sectionName
-                sectionLocation = InStrRev(m_xmlContents, closeTag, , m_TextCompareMode)
+                sectionLocation = InStrRev(m_xmlContents, closingTag, , m_TextCompareMode)
             End If
             
         Else
-            sectionLocation = InStrRev(m_xmlContents, closeTag, , m_TextCompareMode)
+            sectionLocation = InStrRev(m_xmlContents, closingTag, , m_TextCompareMode)
         End If
         
     End If
@@ -443,7 +443,7 @@ Public Function WriteTagWithAttribute(ByVal tagName As String, ByVal tagAttribut
 End Function
 
 'Close a tag that has been previously left open
-Public Function closeTag(ByVal tagName As String) As Boolean
+Public Function CloseTag(ByVal tagName As String) As Boolean
     
     'Find the </pdData> tag that signifies the end of PD-compatible XML data
     Dim tagLocation As Long
@@ -458,9 +458,9 @@ Public Function closeTag(ByVal tagName As String) As Boolean
         'Reassemble the primary string with the closing tag inserted
         m_xmlContents = topHalf & "</" & tagName & ">" & vbCrLf & bottomHalf
         
-        closeTag = True
+        CloseTag = True
     Else
-        closeTag = False
+        CloseTag = False
     End If
     
 End Function

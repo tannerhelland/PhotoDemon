@@ -320,14 +320,14 @@ Public Sub RevertToLastSavedState()
     
     Dim targetUndoPoint As Long
     
-    If undoNumAtLastSave_Flat > undoNumAtLastSave_PDI Then
+    If (undoNumAtLastSave_Flat > undoNumAtLastSave_PDI) Then
         targetUndoPoint = undoNumAtLastSave_Flat
     Else
         targetUndoPoint = undoNumAtLastSave_PDI
     End If
     
     'Failsafe check to make sure the specified index is valid
-    If targetUndoPoint < 1 Then targetUndoPoint = 1
+    If (targetUndoPoint < 1) Then targetUndoPoint = 1
     
     MoveToSpecificUndoPoint targetUndoPoint
     
@@ -348,7 +348,7 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     
     'From this point, we now want to advance the Undo stack to the requested index by applying successive diff entries
     ' until the final index is reached.
-    If undoIndex > 1 Then
+    If (undoIndex > 1) Then
     
         Dim i As Long
         For i = 1 To undoIndex - 1

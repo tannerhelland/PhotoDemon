@@ -234,7 +234,7 @@ Private m_ProfileCache() As ICCProfileCache
 Private m_PreAlphaManagementRequired As Boolean
 
 Public Function GetDisplayColorManagementPreference() As DISPLAY_COLOR_MANAGEMENT
-    GetDisplayColorManagementPreference = g_UserPreferences.GetPref_Long("ColorManagement", "Display CM Mode", DCM_NoManagement)
+    GetDisplayColorManagementPreference = g_UserPreferences.GetPref_Long("ColorManagement", "DisplayCMMode", DCM_NoManagement)
     
     'Past PD versions used a true/false system to control this setting.  The old setting will be "-1" if the system
     ' color profile is in use.
@@ -242,15 +242,15 @@ Public Function GetDisplayColorManagementPreference() As DISPLAY_COLOR_MANAGEMEN
 End Function
 
 Public Sub SetDisplayColorManagementPreference(ByVal newPref As DISPLAY_COLOR_MANAGEMENT)
-    g_UserPreferences.SetPref_Long "ColorManagement", "Display CM Mode", newPref
+    g_UserPreferences.SetPref_Long "ColorManagement", "DisplayCMMode", newPref
 End Sub
 
 Public Function GetDisplayRenderingIntentPref() As LCMS_RENDERING_INTENT
-    GetDisplayRenderingIntentPref = g_UserPreferences.GetPref_Long("ColorManagement", "Display Rendering Intent", INTENT_PERCEPTUAL)
+    GetDisplayRenderingIntentPref = g_UserPreferences.GetPref_Long("ColorManagement", "DisplayRenderingIntent", INTENT_PERCEPTUAL)
 End Function
 
 Public Sub SetDisplayRenderingIntentPref(Optional ByVal newPref As LCMS_RENDERING_INTENT = INTENT_PERCEPTUAL)
-    g_UserPreferences.SetPref_Long "ColorManagement", "Display Rendering Intent", newPref
+    g_UserPreferences.SetPref_Long "ColorManagement", "DisplayRenderingIntent", newPref
 End Sub
 
 Public Function GetSRGBProfileIndex() As Long

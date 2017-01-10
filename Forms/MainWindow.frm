@@ -2686,57 +2686,7 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     
     Message "Checking for old autosave data..."
-    
-    'DO NOT CHECK FOR AUTOSAVE DATA if another PhotoDemon session is active.
-    If (Not App.PrevInstance) Then
-    
-        If (Not Autosave_Handler.WasLastShutdownClean) Then
-        
-            'Oh no!  Something went horribly wrong with the last PD session.
-                                    
-            'See if there's any image autosave data worth recovering.
-            If (Autosave_Handler.SaveableImagesPresent > 0) Then
-            
-                'Autosave data was found!  Present it to the user.
-                Dim userWantsAutosaves As VbMsgBoxResult
-                Dim listOfFilesToSave() As AutosaveXML
-                
-                userWantsAutosaves = DisplayAutosaveWarning(listOfFilesToSave)
-                
-                'If the user wants to restore old Autosave data, do so now.
-                If (userWantsAutosaves = vbYes) Then
-                
-                    'listOfFilesToSave contains the list of Autosave files the user wants restored.
-                    ' Hand them off to the autosave handler, which will load and restore each file in turn.
-                    Autosave_Handler.LoadTheseAutosaveFiles listOfFilesToSave
-                    
-                    'Synchronize the interface to the restored files
-                    SyncInterfaceToCurrentImage
-                                
-                Else
-                    
-                    'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
-                    ' up in future AutoSave searches.
-                    Autosave_Handler.PurgeOldAutosaveData
-                
-                End If
-                
-            
-            'There's not any AutoSave data worth recovering.  Ask the user to submit a bug report??
-            Else
-            
-                'TODO
-            
-            End If
-        
-        Else
-            Message "Previous shutdown was clean (no autosave data found)."
-        End If
-        
-    Else
-        Message "Multiple PhotoDemon sessions active; autosave check abandoned."
-    End If
-    
+    Autosave_Handler.InitializeAutosave
     
     
     '*************************************************************************************************************************************
