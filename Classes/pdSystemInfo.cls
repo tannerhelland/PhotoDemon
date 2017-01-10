@@ -355,11 +355,7 @@ End Function
 Public Function GetDeviceCapsString() As String
 
     Dim fullString As String
-    fullString = ""
-    
     Dim hwYes As String, hwNo As String
-    hwYes = ""
-    hwNo = ""
     
     Dim supportedCount As Long, totalCount As Long
     supportedCount = 0
@@ -472,7 +468,10 @@ End Function
 'Helper function for getDeviceCapsString, above; used to append text to the start of a new device caps section
 Private Sub StartDevCapsSection(ByRef srcString As String, ByRef getDevCapsReturn As Long, ByVal gdcSection As DeviceChecks, ByRef sectionTitle As String)
     
-    getDevCapsReturn = GetDeviceCaps(GetDC(GetDesktopWindow), gdcSection)
+    Dim tmpDC As Long
+    tmpDC = GetDC(GetDesktopWindow())
+    getDevCapsReturn = GetDeviceCaps(tmpDC, gdcSection)
+    ReleaseDC GetDesktopWindow(), tmpDC
     
     srcString = srcString & sectionTitle & vbCrLf
     
@@ -481,8 +480,8 @@ End Sub
 'Helper function for getDeviceCapsString, above; used to append text to the end of a device caps section
 Private Sub EndDevCapsSection(ByRef srcString As String, ByRef supportedCaps As String, ByRef unsupportedCaps As String)
     
-    If Len(supportedCaps) = 0 Then supportedCaps = g_Language.TranslateMessage("none")
-    If Len(unsupportedCaps) = 0 Then unsupportedCaps = g_Language.TranslateMessage("none")
+    If (Len(supportedCaps) = 0) Then supportedCaps = g_Language.TranslateMessage("none")
+    If (Len(unsupportedCaps) = 0) Then unsupportedCaps = g_Language.TranslateMessage("none")
     
     srcString = srcString & "    " & g_Language.TranslateMessage("accelerated: ") & supportedCaps & vbCrLf
     srcString = srcString & "    " & g_Language.TranslateMessage("not accelerated: ") & unsupportedCaps & vbCrLf
@@ -492,8 +491,8 @@ Private Sub EndDevCapsSection(ByRef srcString As String, ByRef supportedCaps As 
     
     srcString = srcString & headerLine & vbCrLf
     
-    supportedCaps = ""
-    unsupportedCaps = ""
+    supportedCaps = vbNullString
+    unsupportedCaps = vbNullString
     
 End Sub
 
@@ -515,7 +514,7 @@ End Sub
 'Helper function for addToDeviceCapsString, above; simply appends text to a list with a comma, as necessary
 Private Sub AppendCapToString(ByRef oldPart As String, ByRef newPart As String)
 
-    If Len(oldPart) = 0 Then
+    If (Len(oldPart) = 0) Then
         oldPart = newPart
     Else
         oldPart = oldPart & ", " & newPart
