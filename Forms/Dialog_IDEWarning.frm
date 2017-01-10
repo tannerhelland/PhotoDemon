@@ -25,6 +25,22 @@ Begin VB.Form dialog_IDEWarning
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picWarning 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      DrawStyle       =   5  'Transparent
+      ForeColor       =   &H80000008&
+      Height          =   615
+      Left            =   330
+      ScaleHeight     =   41
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   41
+      TabIndex        =   2
+      Top             =   240
+      Width           =   615
+   End
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   750
       Left            =   1125
@@ -49,7 +65,7 @@ Begin VB.Form dialog_IDEWarning
       Height          =   885
       Index           =   3
       Left            =   360
-      Top             =   3240
+      Top             =   3210
       Width           =   8175
       _ExtentX        =   0
       _ExtentY        =   0
@@ -89,6 +105,7 @@ Begin VB.Form dialog_IDEWarning
       Width           =   7695
       _ExtentX        =   0
       _ExtentY        =   0
+      Alignment       =   2
       Caption         =   "You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended."
       ForeColor       =   2105376
       Layout          =   1
@@ -125,17 +142,26 @@ End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub ShowDialog()
-
-    'Automatically draw a warning icon using the system icon set
-    Dim iconY As Long
-    iconY = FixDPI(20)
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(22), iconY
+    
+    'Draw a warning icon
+    Dim warningIconSize As Long
+    warningIconSize = FixDPI(32)
+    Dim warningDIB As pdDIB
+    If Icons_and_Cursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
+        picWarning.BackColor = g_Themer.GetGenericUIColor(UI_Background)
+        warningDIB.AlphaBlendToDC picWarning.hDC, , (picWarning.ScaleWidth - warningDIB.GetDIBWidth) \ 2, (picWarning.ScaleHeight - warningDIB.GetDIBHeight) \ 2
+        picWarning.Picture = picWarning.Image
+    Else
+        picWarning.Visible = False
+    End If
     
     lblWarning(1).Caption = g_Language.TranslateMessage("Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.")
     lblWarning(2).Caption = g_Language.TranslateMessage("Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.")
     lblWarning(3).Caption = g_Language.TranslateMessage("If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.")
     
-    cmdOK.AssignImage "LRGACCEPT"
+    Dim buttonIconSize As Long
+    buttonIconSize = FixDPI(32)
+    cmdOK.AssignImage "generic_ok", , buttonIconSize, buttonIconSize
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbOK
@@ -156,5 +182,3 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
-
-

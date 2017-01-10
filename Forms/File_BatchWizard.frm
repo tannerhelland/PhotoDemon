@@ -1520,8 +1520,10 @@ Private Sub Form_Load()
     cmbOutputOptions.ListIndex = 0
         
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
-    cmdNext.AssignImage "ARROWRIGHT"
-    cmdPrevious.AssignImage "ARROWLEFT"
+    Dim btnIconSize As Long
+    btnIconSize = FixDPI(32)
+    cmdNext.AssignImage "generic_next", , btnIconSize, btnIconSize
+    cmdPrevious.AssignImage "generic_previous", , btnIconSize, btnIconSize
     
     'Set the current page number to 0
     m_CurrentPage = 0
