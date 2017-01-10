@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2193</langversion>
+<langversion>6.8.2194</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -6080,16 +6080,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Previous shutdown was clean (no autosave data found).</original>
-<translation>Prethodna shutdown bio čist (nema pronađenih Automatsko spremanje podataka).</translation>
-</phrase>
-
-<phrase>
-<original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
-<translation>Više PhotoDemon sjednice aktivni; automatsko spremanje provjera napušten.</translation>
-</phrase>
-
-<phrase>
 <original>Checking command line</original>
 <translation>Provjera komandne linije</translation>
 </phrase>
@@ -6393,7 +6383,7 @@ Do imate GitHub račun? (Ako nemate pojma što to znači, odgovor "ne".)</transl
 <translation>Uklonite alfa kanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14888,10 +14878,10 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2512</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4455 phrases. -->
-<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
-<!-- These 2512 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1943 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 12452 total words. -->
 
 </pdData>

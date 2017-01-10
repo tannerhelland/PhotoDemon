@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.233</langversion>
+<langversion>6.7.234</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6071,16 +6071,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>Previous shutdown was clean (no autosave data found).</original>
-<translation>Vorige shutdown was schoon (geen autosave gegevens gevonden).</translation>
-</phrase>
-
-<phrase>
-<original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
-<translation>Meerdere PhotoDemon sessies actief; autosave controle verlaten.</translation>
-</phrase>
-
-<phrase>
 <original>Checking command line</original>
 <translation>Controle van command line</translation>
 </phrase>
@@ -6384,7 +6374,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14877,10 +14867,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2512</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4455 phrases. -->
-<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
-<!-- These 2512 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1943 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 12452 total words. -->
 
 </pdData>

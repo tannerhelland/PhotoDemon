@@ -3,9 +3,8 @@ Attribute VB_Name = "Autosave_Handler"
 'Image Autosave Handler
 'Copyright 2014-2017 by Tanner Helland
 'Created: 18/January/14
-'Last updated: 08/August/14
-'Last update: forcibly mark Autosaved images as "unsaved".  After recovery, the user should treat all images as unsaved,
-'              regardless of their actual save state, in case the program went down mid-save (or something similarly odd).
+'Last updated: 10/January/17
+'Last update: update against latest 7.0 changes to imageID values
 '
 'PhotoDemon's Autosave engine is closely tied to the pdUndo class, so some understanding of that class is necessary
 ' to appreciate how this module operates.
@@ -48,9 +47,9 @@ Private m_numOfXMLFound As Long
 Private m_XmlEntries() As AutosaveXML
 
 'If a function wants to quickly check for previous unclean shutdowns, but *not* generate a new safe shutdown file, use this
-' function instead of wasLastShutdownClean(), below.  Note that this function should only be used during Loading stages,
+' function instead of WasLastShutdownClean(), below.  Note that this function should only be used during Loading stages,
 ' because once PD has been loaded, the function will no longer be accurate.
-Public Function peekLastShutdownClean() As Boolean
+Public Function PeekLastShutdownClean() As Boolean
 
     Dim safeShutdownPath As String
     safeShutdownPath = g_UserPreferences.GetPresetPath & "SafeShutdown.xml"
@@ -58,8 +57,7 @@ Public Function peekLastShutdownClean() As Boolean
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    
-    If cFile.FileExist(safeShutdownPath) Then peekLastShutdownClean = False Else peekLastShutdownClean = True
+    PeekLastShutdownClean = (Not cFile.FileExist(safeShutdownPath))
 
 End Function
 
@@ -117,6 +115,67 @@ Public Sub NotifyCleanShutdown()
 
 End Sub
 
+'During program initialization, FormMain will call this sub to handle any startup behavior related to old AutoSave data.
+Public Sub InitializeAutosave()
+
+    'DO NOT CHECK FOR AUTOSAVE DATA if another PhotoDemon session is active.
+    If (Not App.PrevInstance) Then
+        
+        'If our last shutdown was clean, skip further processing
+        If (Not Autosave_Handler.WasLastShutdownClean) Then
+            
+            'Oh no!  Something went horribly wrong with the last PD session.
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Previous shutdown was *not* clean (autosave data found)."
+            #End If
+                                    
+            'See if there's any image autosave data worth recovering.
+            If (Autosave_Handler.SaveableImagesPresent > 0) Then
+            
+                'Autosave data was found!  Present it to the user.
+                Dim userWantsAutosaves As VbMsgBoxResult
+                Dim listOfFilesToSave() As AutosaveXML
+                
+                userWantsAutosaves = DisplayAutosaveWarning(listOfFilesToSave)
+                
+                'If the user wants to restore old Autosave data, do so now.
+                If (userWantsAutosaves = vbYes) Then
+                
+                    'listOfFilesToSave contains the list of Autosave files the user wants restored.
+                    ' Hand them off to the autosave handler, which will load and restore each file in turn.
+                    Autosave_Handler.LoadTheseAutosaveFiles listOfFilesToSave
+                    SyncInterfaceToCurrentImage
+                                
+                Else
+                    
+                    'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
+                    ' up in future AutoSave searches.
+                    Autosave_Handler.PurgeOldAutosaveData
+                
+                End If
+                
+            
+            'There's not any AutoSave data worth recovering.  Ask the user to submit a bug report??
+            Else
+            
+                'TODO 7.0
+            
+            End If
+        
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Previous shutdown was clean (no autosave data found)."
+            #End If
+        End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Multiple PhotoDemon sessions active; autosave check abandoned."
+        #End If
+    End If
+    
+End Sub
+
 'After an unclean shutdown is detected, this function can be called to search the temp directory for saveable Undo/Redo data.
 ' It will return a value larger than 0 if Undo/Redo data was found.
 Public Function SaveableImagesPresent() As Long
@@ -124,13 +183,8 @@ Public Function SaveableImagesPresent() As Long
     'Search the temporary folder for any files matching PhotoDemon's Undo/Redo file pattern.  Because PD's Undo/Redo engine
     ' is awesome, it automatically saves very nice Undo XML files that contain key data for each pdImage opened by the program.
     ' In the event of an unsafe shutdown, these XML files help us easily reconstruct any "lost" images.
-    
-    'Note: as of July '14, the pattern of PhotoDemon's Undo XML summary files is:
-    ' g_UserPreferences.GetTempPath & "~PDU_StackSummary_" & parentPDImage.imageID & "_.pdtmp"
-    
-    'Reset our XML detection arrays
     m_numOfXMLFound = 0
-    ReDim m_XmlEntries(0 To 9) As AutosaveXML
+    ReDim m_XmlEntries(0 To 3) As AutosaveXML
     
     'We'll use PD's standard XML engine to validate any discovered autosave entries
     Dim xmlEngine As pdXML
@@ -164,9 +218,7 @@ Public Function SaveableImagesPresent() As Long
                 
                 'Increment the "number found" counter and resize the array as necessary
                 m_numOfXMLFound = m_numOfXMLFound + 1
-                If m_numOfXMLFound > UBound(m_XmlEntries) Then
-                    ReDim Preserve m_XmlEntries(0 To (UBound(m_XmlEntries) + 1) * 2) As AutosaveXML
-                End If
+                If (m_numOfXMLFound > UBound(m_XmlEntries)) Then ReDim Preserve m_XmlEntries(0 To (UBound(m_XmlEntries) + 1) * 2) As AutosaveXML
                 
             End If
             
@@ -195,7 +247,7 @@ Public Function SaveableImagesPresent() As Long
     ' are assigned out, they never inadvertently overwrite another autosave image's original ID value.  (This works because ID values
     ' are assigned in ascending order, so as long as the Autosave files are also loaded in ascending order, no new image ID will
     ' ever overwrite an old image's ID.)
-    If m_numOfXMLFound > 0 Then sortAutosaveEntries
+    If (m_numOfXMLFound > 0) Then SortAutosaveEntries
     
     'Return the number of images found
     SaveableImagesPresent = m_numOfXMLFound
@@ -203,25 +255,21 @@ Public Function SaveableImagesPresent() As Long
 End Function
 
 'Sort the m_XmlEntries() array in ascending order, using original image ID as the sort parameter
-Private Sub sortAutosaveEntries()
+Private Sub SortAutosaveEntries()
 
     Dim i As Long, j As Long
     
     'Loop through all entries in the autosave array, sorting them as we go
     For i = 0 To m_numOfXMLFound - 1
         For j = 0 To m_numOfXMLFound - 1
-            
-            'Compare two image ID values, and if one is less than the other, swap them
-            If m_XmlEntries(i).parentImageID < m_XmlEntries(j).parentImageID Then
-                swapAutosaveData m_XmlEntries(i), m_XmlEntries(j)
-            End If
+            If (m_XmlEntries(i).parentImageID < m_XmlEntries(j).parentImageID) Then SwapAutosaveData m_XmlEntries(i), m_XmlEntries(j)
         Next j
     Next i
 
 End Sub
 
 'Swap the values of two Autosave entries
-Private Sub swapAutosaveData(ByRef asOne As AutosaveXML, ByRef asTwo As AutosaveXML)
+Private Sub SwapAutosaveData(ByRef asOne As AutosaveXML, ByRef asTwo As AutosaveXML)
     Dim asTmp As AutosaveXML
     asTmp = asOne
     asOne = asTwo
@@ -231,7 +279,7 @@ End Sub
 'If the user declines to restore old AutoSave data, purge it from the system (to prevent it from showing up in future searches).
 Public Sub PurgeOldAutosaveData()
     
-    If m_numOfXMLFound > 0 Then
+    If (m_numOfXMLFound > 0) Then
     
         Message "Purging old autosave data..."
         
@@ -280,7 +328,7 @@ Public Sub PurgeOldAutosaveData()
 End Sub
 
 'External functions can retrieve a copy of the XML autosave entries we've found by using this function.
-Public Function getXMLAutosaveEntries(ByRef autosaveArray() As AutosaveXML, ByRef autosaveCount As Long) As Boolean
+Public Function GetXMLAutosaveEntries(ByRef autosaveArray() As AutosaveXML, ByRef autosaveCount As Long) As Boolean
 
     ReDim autosaveArray(0 To m_numOfXMLFound - 1) As AutosaveXML
     autosaveCount = m_numOfXMLFound
@@ -290,7 +338,7 @@ Public Function getXMLAutosaveEntries(ByRef autosaveArray() As AutosaveXML, ByRe
         autosaveArray(i) = m_XmlEntries(i)
     Next i
     
-    getXMLAutosaveEntries = True
+    GetXMLAutosaveEntries = True
     
 End Function
 
@@ -300,7 +348,7 @@ Public Sub AlignLoadedImageWithAutosave(ByRef srcPDImage As pdImage)
 
     Dim i As Long
     
-    If Not (srcPDImage Is Nothing) Then
+    If (Not srcPDImage Is Nothing) Then
         If srcPDImage.IsActive Then
         
             'Find a corresponding Autosave XML file for this image (if one exists)
@@ -351,10 +399,10 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         ' PD assigns image IDs sequentially in each session, starting with image ID #1.  Because the image ID is immutable
         ' (it corresponds to the image's location in the master pdImages() array), we cannot simply change it to match
         ' the ID of the Undo files - instead, we must rename the Undo files to match the new image ID.
-        newImageID = i + 1
+        newImageID = Image_Canvas_Handler.GetProvisionalImageID()
         oldImageID = fullXMLList(i).parentImageID
         
-        renameAllUndoFiles fullXMLList(i), newImageID, oldImageID
+        RenameAllUndoFiles fullXMLList(i), newImageID, oldImageID
         
         'Make a copy of the current Undo XML file for this image, as it will be overwritten as soon as we load the first
         ' Undo entry as a new image.
@@ -367,7 +415,7 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         'It is possible, but extraordinarily rare, for the LoadFileAsNewImage function to fail (for example, if the user removed
         ' a portable drive containing Autosave data in the midst of the load).  We can identify a fail state by the expected pdImage
         ' object being freed prematurely.
-        If Not (pdImages(g_CurrentImage) Is Nothing) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then
         
             'The new image has been successfully noted, but we must now overwrite some of the data PD has assigned it with
             ' its original data (such as its "location on disk", which should reflect its original location - not its
@@ -405,7 +453,7 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
 End Sub
 
 'loadTheseAutosaveFiles(), above, uses this function to rename Undo files so that they match a new image ID.
-Private Sub renameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImageID As Long, ByVal oldImageID As Long)
+Private Sub RenameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImageID As Long, ByVal oldImageID As Long)
 
     Dim oldFilename As String, newFilename As String
     

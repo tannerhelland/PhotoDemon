@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2051</langversion>
+<langversion>6.8.2052</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -6070,16 +6070,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Previous shutdown was clean (no autosave data found).</original>
-<translation>上一次正常关机（没有发现自动保存数据）。</translation>
-</phrase>
-
-<phrase>
-<original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
-<translation>打开了多个PhotoDemon，取消自动保存检查。</translation>
-</phrase>
-
-<phrase>
 <original>Checking command line</original>
 <translation>检查命令行</translation>
 </phrase>
@@ -6382,7 +6372,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14874,10 +14864,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2512</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4455 phrases. -->
-<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
-<!-- These 2512 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1943 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 12452 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.236</langversion>
+<langversion>6.7.237</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -6072,16 +6072,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>Previous shutdown was clean (no autosave data found).</original>
-<translation>Apagado anterior estaba limpio (no encontraron datos de guardado automático).</translation>
-</phrase>
-
-<phrase>
-<original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
-<translation>Múltiples sesiones PhotoDemon activos; cheque de autoguardado abandonado.</translation>
-</phrase>
-
-<phrase>
 <original>Checking command line</original>
 <translation>Comprobación de la línea de comandos</translation>
 </phrase>
@@ -6385,7 +6375,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 187 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14878,10 +14868,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2512</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4455 phrases. -->
-<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
-<!-- These 2512 phrases contain approximately 12467 total words. -->
+<!-- As of this build, PhotoDemon contains 4453 phrases. -->
+<!-- 1943 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 12452 total words. -->
 
 </pdData>
