@@ -513,13 +513,13 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_Terminate()
     'As a failsafe, immediately release the popup box.  (If we don't do this, PD will crash.)
     If m_PopUpVisible Then HideListBox
-    If Not (m_SubclassReleaseTimer Is Nothing) Then m_SubclassReleaseTimer.StopTimer
+    If (Not m_SubclassReleaseTimer Is Nothing) Then m_SubclassReleaseTimer.StopTimer
     SafelyRemoveSubclass
 End Sub
 
@@ -569,11 +569,11 @@ Private Sub RaiseListBox()
     ' many items theoretically appear in the current list, because we want to make sure that at least a certain amount are
     ' visible in the dropdown, if possible.)  These are purposefully declared as singles, as you'll see in subsequent steps.
     Dim amtPreceding As Single, amtTrailing As Single
-    If Me.ListIndex > 0 Then amtPreceding = Me.ListIndex Else amtPreceding = 0
+    If (Me.ListIndex > 0) Then amtPreceding = Me.ListIndex Else amtPreceding = 0
     
-    If Me.ListIndex >= (Me.ListCount - 1) Then
+    If (Me.ListIndex >= (Me.ListCount - 1)) Then
         amtTrailing = 0
-    ElseIf Me.ListIndex < 0 Then
+    ElseIf (Me.ListIndex < 0) Then
         amtTrailing = Me.ListCount - 1
     Else
         amtTrailing = (Me.ListCount - 1) - Me.ListIndex
@@ -582,7 +582,7 @@ Private Sub RaiseListBox()
     'If the *total* possible amount of items is larger than the previously set NUM_ITEMS_VISIBLE constant, reduce the
     ' numbers proportionally.
     Dim amtToReduceList As Long
-    If amtPreceding + amtTrailing > NUM_ITEMS_VISIBLE Then
+    If (amtPreceding + amtTrailing > NUM_ITEMS_VISIBLE) Then
     
         amtToReduceList = (amtPreceding + amtTrailing) - NUM_ITEMS_VISIBLE
         
@@ -593,10 +593,10 @@ Private Sub RaiseListBox()
         ' If (1) is reached before (2), we switch to reducing both groups by one element on each iteration
         Do
         
-            If amtPreceding > amtTrailing Then
+            If (amtPreceding > amtTrailing) Then
                 amtPreceding = amtPreceding - 1
                 amtToReduceList = amtToReduceList - 1
-            ElseIf amtTrailing > amtPreceding Then
+            ElseIf (amtTrailing > amtPreceding) Then
                 amtTrailing = amtTrailing - 1
                 amtToReduceList = amtToReduceList - 1
             Else
@@ -614,7 +614,7 @@ Private Sub RaiseListBox()
     
     'Convert the preceding and trailing list item counts into pixel measurements, and add them to our target rect.
     Dim sizeChange As Single, i As Long
-    If amtPreceding > 0 Then
+    If (amtPreceding > 0) Then
         sizeChange = amtPreceding * listSupport.DefaultItemHeight
         
         'If separators are active, add any separator sizes to our total
@@ -628,7 +628,7 @@ Private Sub RaiseListBox()
         popupRect.Height = popupRect.Height + sizeChange
     End If
     
-    If amtTrailing > 0 Then
+    If (amtTrailing > 0) Then
         sizeChange = amtTrailing * listSupport.DefaultItemHeight
         
         If listSupport.GetInternalSizeMode = PDLH_SEPARATORS Then
@@ -642,7 +642,7 @@ Private Sub RaiseListBox()
     
     'We now want to make sure the popup box doesn't lie off-screen.  Check each dimension in turn, and note that changing
     ' the vertical position of the listbox also changes the pixel-based position of the active .ListIndex within the box.
-    If popupRect.Top < g_Displays.GetDesktopTop Then
+    If (popupRect.Top < g_Displays.GetDesktopTop) Then
         sizeChange = g_Displays.GetDesktopTop - popupRect.Top
         popupRect.Top = g_Displays.GetDesktopTop
         topOfListIndex = topOfListIndex + sizeChange
@@ -651,7 +651,7 @@ Private Sub RaiseListBox()
         Dim estimatedDesktopBottom As Long
         estimatedDesktopBottom = (g_Displays.GetDesktopTop + g_Displays.GetDesktopHeight) - g_Displays.GetTaskbarHeight
         
-        If popupRect.Top + popupRect.Height > estimatedDesktopBottom Then
+        If (popupRect.Top + popupRect.Height > estimatedDesktopBottom) Then
             sizeChange = (popupRect.Top + popupRect.Height) - estimatedDesktopBottom
             popupRect.Top = popupRect.Top - sizeChange
             topOfListIndex = topOfListIndex - sizeChange
@@ -659,10 +659,10 @@ Private Sub RaiseListBox()
         
     End If
 
-    If popupRect.Left < g_Displays.GetDesktopLeft Then
+    If (popupRect.Left < g_Displays.GetDesktopLeft) Then
         sizeChange = g_Displays.GetDesktopLeft - popupRect.Left
         popupRect.Left = g_Displays.GetDesktopLeft
-    ElseIf popupRect.Left + popupRect.Width > g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth Then
+    ElseIf (popupRect.Left + popupRect.Width > g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth) Then
         sizeChange = (popupRect.Left + popupRect.Width) - (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)
         popupRect.Left = popupRect.Left - sizeChange
     End If
@@ -769,6 +769,7 @@ Private Sub HideListBox()
         If (m_OriginalWindowBits <> 0) Then g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, m_OriginalWindowBits, , , True
         If (m_OriginalWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_PopUpHwnd, m_OriginalWindowBits, , True, True
         g_WindowManager.SetVisibilityByHWnd m_PopUpHwnd, False
+        
         m_PopUpHwnd = 0
         
         'If Aero theming is not active, hiding the list box may cause windows beneath the current one to render incorrectly.

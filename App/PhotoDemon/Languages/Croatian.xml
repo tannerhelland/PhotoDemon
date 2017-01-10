@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2191</langversion>
+<langversion>6.8.2192</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -14144,6 +14144,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Disclaimer naseljeno na vrijeme izvođenja)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>ažuriranje jezičnih datoteka neovisno</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatski pretražuje ažuriranja</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>ažuriranje dodataka samostalno</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>omogućiti ažuriranja od tih pjesama</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>opcije ažuriranje</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>Obavijesti me kada ažuriranje bude spreman</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Maksimalni broj nedavnih datoteka unosa</translation>
 </phrase>
@@ -14284,11 +14319,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>pri izračunu vrijednosti boja</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>kad uređenje elemenata sučelja</translation>
 </phrase>
@@ -14301,11 +14331,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>pri donošenju platno slike</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>upravljanje bojama</translation>
 </phrase>
 
 <phrase>
@@ -14366,41 +14391,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>početi ispočetka</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Disclaimer naseljeno na vrijeme izvođenja)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>ažuriranje jezičnih datoteka neovisno</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatski pretražuje ažuriranja</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>ažuriranje dodataka samostalno</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>omogućiti ažuriranja od tih pjesama</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>opcije ažuriranje</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>Obavijesti me kada ažuriranje bude spreman</translation>
 </phrase>
 
 <phrase>
@@ -14593,11 +14583,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Kao i svaki foto urednik, PhotoDemon često pretvara boje između različitih referentnih mjesta. Točnost tih pretvorbi može se ograničiti za poboljšanje performansi.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Neki elemenata sučelja primati prilagođene ukrase (kao što su pad sjene). Na starijim računalima, ovi ukrasi mogu biti suspendiran za malu performanse.</translation>
 </phrase>
@@ -14777,76 +14762,6 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>sučelje opcija uključuju postavke za glavnu PhotoDemon sučelja, uključujući i stvari kao što su postavke platnu, odabir fonta i pozicioniranje.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>sučelje opcija</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Učitaj opcije omogućuju vam da prilagodite način slikovne datoteke ulazak u program.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Opterećenje (Uvoz) Mogućnosti</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Spremi opcije omogućuju vam da prilagodite način slikovne datoteke napustiti aplikaciju.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Uštedite (izvoz) Opcije</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>Mogućnosti performansi omogućuju kontrolu da li PhotoDemon ističe brzine ili kvalitete pri obavljanju određenih zadataka.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Mogućnosti za izvedbu</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation>Opcije upravljanja bojama kontrolirati kako PhotoDemon koristi ICC profile za slikovnih datoteka i uređaja.</translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation>Mogućnosti upravljanja bojama</translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Ažuriranje mogućnosti kontrolirati koliko često PhotoDemon provjere za ažurirane verzije, i kako se to obrađuje preuzimanje dodataka koji nedostaju.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Ažuriranje Mogućnosti</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Napredne opcije mogu se sigurno ignorirati redovitim korisnicima. Testeri i programeri mogu, međutim, smatraju da ove vrijednosti koristan.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Napredne opcije</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>UPOZORENJE: ova mapa je nevažeća (pristup zabranjen). Navedite važeći mapu. Ako nova mapa nije predviđeno, PhotoDemon će koristiti mapu sustava temp.</translation>
 </phrase>
@@ -14856,7 +14771,7 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 <translation>Ova nova lokacija privremenu mapu neće stupiti na snagu dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14973,10 +14888,10 @@ If dalje onemogućite ažuriranja, ne zaboravite posjetiti photodemon.org s vrem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

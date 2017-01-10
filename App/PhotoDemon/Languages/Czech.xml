@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2191</langversion>
+<langversion>6.8.2192</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -14123,6 +14123,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Disclaimer osídlené za běhu)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>Aktualizace jazykové soubory nezávisle</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automaticky kontrolovat aktualizace</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>aktualizovat pluginy nezávisle</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>dovolit aktualizace z těchto stop</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>možnosti aktualizace</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>oznámí mi, když aktualizace je připravena</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Maximální počet posledních záznamů souboru</translation>
 </phrase>
@@ -14263,11 +14298,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>Při výpočtu hodnot barev</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>Při zdobení prvky uživatelského rozhraní</translation>
 </phrase>
@@ -14280,11 +14310,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>Při vykreslování obrazu plátno</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>správa barev</translation>
 </phrase>
 
 <phrase>
@@ -14345,41 +14370,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>začít znovu</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Disclaimer osídlené za běhu)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>Aktualizace jazykové soubory nezávisle</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automaticky kontrolovat aktualizace</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>aktualizovat pluginy nezávisle</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>dovolit aktualizace z těchto stop</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>možnosti aktualizace</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>oznámí mi, když aktualizace je připravena</translation>
 </phrase>
 
 <phrase>
@@ -14571,11 +14561,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Jako každá foto editor, PhotoDemon často převádí barvy mezi rozdílnými referenčními prostorech. Přesnost těchto konverzí může být omezena na zvýšení výkonu.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Některé prvky rozhraní přijímat vlastní dekorace (jako stíny). U starších počítačů, tyto ozdoby mohou být zavěšeny na malém zvýšení výkonu.</translation>
 </phrase>
@@ -14755,76 +14740,6 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>možnosti rozhraní zahrnují nastavení pro hlavní PhotoDemon rozhraní, včetně věcí, jako je nastavení plátno, výběr písma a polohování.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Možnosti rozhraní</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Možnosti zatížení umožňují přizpůsobit způsob, jakým obrazové soubory vstoupit do aplikace.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Load (import) Možnosti</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Uložit možnosti umožňují přizpůsobit způsob, jakým obrazové soubory opustit aplikaci.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Uložení (export) Opce</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>Možnosti výkonu vám umožní kontrolovat, zda PhotoDemon klade důraz na rychlost nebo kvalitu při provádění určitých úkolů.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Možnosti výkonu</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation>Možnosti správy barev určují, jak PhotoDemon používá profily ICC pro obrazové soubory a zařízení.</translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation>Možnosti správy barev</translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Možnosti aktualizace kontrolovat, jak často PhotoDemon šeky aktualizovaných verzí, a jak to zvládá stahování chybějících zásuvných modulů.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Možnosti aktualizace</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Pokročilé volby lze bezpečně ignorovat pravidelnými uživateli. Testery a vývojáři však mohou najít toto nastavení užitečné.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Pokročilé možnosti</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>POZOR: tato složka je neplatný (přístup zakázán). Uveďte platnou složku. Je-li nová složka není k dispozici, PhotoDemon bude používat systémové složky temp.</translation>
 </phrase>
@@ -14834,7 +14749,7 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 <translation>Tato nová umístění dočasné složky se projeví až po restartování programu.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14951,10 +14866,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

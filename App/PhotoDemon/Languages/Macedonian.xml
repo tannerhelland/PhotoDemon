@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.27</langversion>
+<langversion>1.0.28</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -14144,6 +14144,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Одрекување населени во времето на извршување)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>ажурирање јазик датотеки независно</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>автоматски да проверува за ажурирања</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>ажурирање додатоци независно</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>дозволуваат надградби од овие песни</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>ажурирање опции</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>Извести ме кога ажурирање е подготвена</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>максималниот број на неодамна записи за датотеки</translation>
 </phrase>
@@ -14284,11 +14319,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>при пресметување на вредностите за боја</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>кога украсување елементи на интерфејсот</translation>
 </phrase>
@@ -14301,11 +14331,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>при прикажување на платно сликата</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>управување со боја</translation>
 </phrase>
 
 <phrase>
@@ -14366,41 +14391,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>во текот на проектот</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Одрекување населени во времето на извршување)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>ажурирање јазик датотеки независно</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>автоматски да проверува за ажурирања</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>ажурирање додатоци независно</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>дозволуваат надградби од овие песни</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>ажурирање опции</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>Извести ме кога ажурирање е подготвена</translation>
 </phrase>
 
 <phrase>
@@ -14593,11 +14583,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Како и секоја слика уредник, PhotoDemon често се претвора бои помеѓу различни референтни простори. Точноста на овие конверзии може да се ограничи за да се подобри перформанси.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Некои елементи на интерфејсот добие сопствен декорации (како капка сенки). На постарите компјутери, овие украси може да биде суспендиран за мал поттик.</translation>
 </phrase>
@@ -14777,76 +14762,6 @@ If сеуште изберете да го исклучите ажурирања
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>интерфејс опции вклучуваат нагодувања за главната PhotoDemon интерфејс, вклучително и работи како подесувања платно, фонт селекција, и позиционирање.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>интерфејс опции</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>ги опциите ви овозможи да се прилагодите на начинот на датотеки со слики влезе во примена.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Оптоварување (увоз) Опции</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Зачувај опции ќе ви овозможи да се прилагодите на начинот на датотеки со слики напушти апликација.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Зачувај (извоз) Опции</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>перформанси опции ќе ви овозможи да се контролира дали PhotoDemon нагласува брзината или квалитетот при извршување на одредени задачи.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>изведба Опции</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>опции ажурирање контролираат колку често PhotoDemon проверки за новите верзии, и како таа се справува со преземањето на исчезнатите приклучоци.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Опции за ажурирање</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Напредни опции може безбедно да се игнорира од страна на редовни корисници. Тестери и програмери, сепак, може да се најдат овие поставувања корисни.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>напредни опции</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>Предупредување: Оваа папка е валиден (пристап забрането). Ве молиме внесете валидна папка. Ако нова папка не е предвидено, PhotoDemon ќе го користи системот папка Temp.</translation>
 </phrase>
@@ -14856,7 +14771,7 @@ If сеуште изберете да го исклучите ажурирања
 <translation>Оваа нова локација привремена папка нема да се случи се додека не рестартирам програмата.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14973,10 +14888,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

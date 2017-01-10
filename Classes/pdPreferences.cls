@@ -367,7 +367,6 @@ Public Sub LoadUserSettings()
     
     'For performance reasons, cache any performance-related settings.  (This is much faster than reading the preferences from file
     ' every time they're needed.)
-    g_ColorPerformance = g_UserPreferences.GetPref_Long("Performance", "ColorPerformance", PD_PERF_BALANCED)
     g_InterfacePerformance = g_UserPreferences.GetPref_Long("Performance", "InterfaceDecorationPerformance", PD_PERF_BALANCED)
     Me.SetThumbnailPerformancePref g_UserPreferences.GetPref_Long("Performance", "ThumbnailPerformance", PD_PERF_BALANCED)
     g_ViewportPerformance = g_UserPreferences.GetPref_Long("Performance", "ViewportRenderPerformance", PD_PERF_BALANCED)
@@ -499,7 +498,6 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Performance", "", True
-        m_XMLEngine.WriteTag "ColorPerformance", "1"
         m_XMLEngine.WriteTag "InterfaceDecorationPerformance", "1"
         m_XMLEngine.WriteTag "ThumbnailPerformance", "1"
         m_XMLEngine.WriteTag "ViewportRenderPerformance", "1"

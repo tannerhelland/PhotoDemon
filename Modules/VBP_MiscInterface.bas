@@ -993,8 +993,8 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     'Retrieve and cache the hWnd; we need access to this even if the form is unloaded, so we can properly deregister it
     ' with the window manager.
-    Dim DialogHWND As Long
-    DialogHWND = dialogForm.hWnd
+    Dim dialogHWnd As Long
+    dialogHWnd = dialogForm.hWnd
     
     'Get the rect of the main form, which we will use to calculate a center position
     Dim ownerRect As winRect
@@ -1007,7 +1007,7 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     
     'Get the rect of the child dialog
     Dim dialogRect As winRect
-    GetWindowRect DialogHWND, dialogRect
+    GetWindowRect dialogHWnd, dialogRect
     
     'Determine an upper-left point for the dialog based on its size
     Dim newLeft As Long, newTop As Long
@@ -1020,18 +1020,18 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     If newTop + (dialogRect.y2 - dialogRect.y1) > g_Displays.GetDesktopBottom Then newTop = g_Displays.GetDesktopBottom - (dialogRect.y2 - dialogRect.y1)
     
     'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
-    MoveWindow DialogHWND, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
+    MoveWindow dialogHWnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
     
     'Mirror the current run-time window icons to the dialog; this allows the icons to appear in places like Alt+Tab
     ' on older OSes, even though a toolbox window has focus.
-    Interface.FixPopupWindow DialogHWND, True
+    Interface.FixPopupWindow dialogHWnd, True
     
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
     dialogForm.Show dialogModality, FormMain
     
     'Now that the dialog has finished, we must replace the windows icons with its original ones - otherwise, VB will mistakenly
     ' unload our custom icons with the window!
-    Interface.FixPopupWindow DialogHWND, False
+    Interface.FixPopupWindow dialogHWnd, False
     
     'Release our reference to this dialog
     If isSecondaryDialog Then

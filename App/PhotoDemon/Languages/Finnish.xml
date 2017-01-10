@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2191</langversion>
+<langversion>6.8.2192</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -14138,6 +14138,41 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Vastuuvapauslauseke asutuilla ajon aikana)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>päivitys kieli tiedostoja itsenäisesti</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>tarkistaa päivitykset automaattisesti</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>päivitys plugins itsenäisesti</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>sallia päivitykset näiltä raiteilta</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>päivitys vaihtoehtoja</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>ilmoita, kun päivitys on valmis</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>enimmäismäärä viime tiedostomerkintää</translation>
 </phrase>
@@ -14278,11 +14313,6 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>laskettaessa väriarvot</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>Kun koristelu käyttöliittymän elementit</translation>
 </phrase>
@@ -14295,11 +14325,6 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>vastineiden kuva kankaalle</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>värinhallinta</translation>
 </phrase>
 
 <phrase>
@@ -14360,41 +14385,6 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 <phrase>
 <original>start over</original>
 <translation>aloittaa alusta</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Vastuuvapauslauseke asutuilla ajon aikana)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>päivitys kieli tiedostoja itsenäisesti</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>tarkistaa päivitykset automaattisesti</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>päivitys plugins itsenäisesti</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>sallia päivitykset näiltä raiteilta</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>päivitys vaihtoehtoja</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>ilmoita, kun päivitys on valmis</translation>
 </phrase>
 
 <phrase>
@@ -14587,11 +14577,6 @@ Oletko varma, että haluat jatkaa?</translation>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>Kuten kaikki kuvatoimittaja, PhotoDemon usein muuntaa värejä eri viite tiloihin. Tarkkuus tunnetaan, voidaan rajoittaa suorituskyvyn parantamiseksi.</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>Jotkin käyttöliittymän elementit saavat mukautetun koristeet (kuten varjoja). Vanhemmissa tietokoneissa, nämä koristeet voidaan keskeyttää pientä suorituskyvyn lisäämiseksi.</translation>
 </phrase>
@@ -14771,76 +14756,6 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>Interface vaihtoehtoja ovat asetukset tärkein PhotoDemon liitäntä, mukaan lukien asiat, kuten kangas asetukset, fontin valinta, ja paikannus.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>liitäntä Asetukset</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Load vaihtoehtojen avulla voit muokata tapaa kuvatiedostot tulevat sovelluksen.</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Kuorma (Tuo) Vaihtoehdot</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Tallenna vaihtoehtojen avulla voit muokata tapaa kuvatiedostot jättää sovelluksen.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Save (Export) Vaihtoehdot</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>Suorituskyky vaihtoehtojen avulla voit hallita, PhotoDemon painottaa tai -laadun suoritettaessa tiettyjä tehtäviä.</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Performance Options</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation>Väri hoitovaihtoehtojen hallita PhotoDemon käyttää ICC-profiileja kuvatiedostoja ja laitteita.</translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation>Color-asetukset</translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>Päivitys vaihtoehdot hallita usein PhotoDemon tarkistaa päivitettyjä versioita, ja miten se käsittelee ladata puuttuvien lisäosia.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Update Options</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>Lisäasetukset voidaan turvallisesti jättää huomiotta säännöllisiä käyttäjiä. Testaajat ja kehittäjät voivat kuitenkin löytää nämä asetukset hyödyllinen.</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Edistyneet asetukset</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>VAROITUS: tämä kansio on virheellinen (pääsy kielletty). Anna kelvollinen kansio. Jos uusi kansio ei ole säädetty, PhotoDemon käyttää järjestelmää Temp-kansioon.</translation>
 </phrase>
@@ -14850,7 +14765,7 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <translation>Tämä uusi väliaikainen kansio sijainti ei tule voimaan ennen kuin käynnistät ohjelman.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14967,10 +14882,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>

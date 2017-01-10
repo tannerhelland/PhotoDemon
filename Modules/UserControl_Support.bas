@@ -456,15 +456,13 @@ End Function
 Public Function GetSharedGDIBrush(ByVal requestedColor As Long) As Long
     
     'First things first: if this is the first brush requested by the system, initialize the shared brush list
-    If m_numOfSharedBrushes = 0 Then
-        ReDim m_SharedBrushes(0 To INIT_SIZE_OF_BRUSH_CACHE - 1) As SharedGDIBrush
-    End If
+    If (m_numOfSharedBrushes = 0) Then ReDim m_SharedBrushes(0 To INIT_SIZE_OF_BRUSH_CACHE - 1) As SharedGDIBrush
     
     'Next, look for the requested color in our current cache.  If it exists, we don't want to recreate it.
     Dim brushExists As Boolean, brushIndex As Long, i As Long
     brushExists = False
     
-    If m_numOfSharedBrushes > 0 Then
+    If (m_numOfSharedBrushes > 0) Then
             
         For i = 0 To m_numOfSharedBrushes - 1
             If (m_SharedBrushes(i).brushColor = requestedColor) And (m_SharedBrushes(i).brushHandle <> 0) Then
@@ -490,7 +488,7 @@ Public Function GetSharedGDIBrush(ByVal requestedColor As Long) As Long
     Else
     
         'If the cache is too small, resize it
-        If m_numOfSharedBrushes > UBound(m_SharedBrushes) Then ReDim Preserve m_SharedBrushes(0 To m_numOfSharedBrushes * 2 - 1) As SharedGDIBrush
+        If (m_numOfSharedBrushes > UBound(m_SharedBrushes)) Then ReDim Preserve m_SharedBrushes(0 To m_numOfSharedBrushes * 2 - 1) As SharedGDIBrush
         
         'Update the cache entry with new stats (including the created brush)
         m_SharedBrushes(m_numOfSharedBrushes).brushColor = requestedColor
@@ -511,7 +509,7 @@ End Function
 Public Sub ReleaseSharedGDIBrushByColor(ByVal requestedColor As Long)
 
     'If the cache is empty, ignore this request
-    If m_numOfSharedBrushes = 0 Then
+    If (m_numOfSharedBrushes = 0) Then
         Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIBrush() received a release request, but no shared brushes exist."
         Exit Sub
     
@@ -521,11 +519,11 @@ Public Sub ReleaseSharedGDIBrushByColor(ByVal requestedColor As Long)
         Dim i As Long
         For i = 0 To m_numOfSharedBrushes - 1
             
-            If m_SharedBrushes(i).brushColor = requestedColor Then
+            If (m_SharedBrushes(i).brushColor = requestedColor) Then
                 m_SharedBrushes(i).numOfOwners = m_SharedBrushes(i).numOfOwners - 1
                 
                 'Brushes with a count of 0 are immediately killed.
-                If m_SharedBrushes(i).numOfOwners = 0 Then
+                If (m_SharedBrushes(i).numOfOwners = 0) Then
                     DeleteObject m_SharedBrushes(i).brushHandle
                     m_SharedBrushes(i).brushHandle = 0
                     m_SharedBrushes(i).brushColor = 0
@@ -542,15 +540,15 @@ End Sub
 
 Public Sub ReleaseSharedGDIBrushByHandle(ByVal requestedHandle As Long)
 
-    If m_numOfSharedBrushes = 0 Then
+    If (m_numOfSharedBrushes = 0) Then
         Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIBrushByHandle() received a release request, but no shared brushes exist."
         Exit Sub
     Else
         Dim i As Long
         For i = 0 To m_numOfSharedBrushes - 1
-            If m_SharedBrushes(i).brushHandle = requestedHandle Then
+            If (m_SharedBrushes(i).brushHandle = requestedHandle) Then
                 m_SharedBrushes(i).numOfOwners = m_SharedBrushes(i).numOfOwners - 1
-                If m_SharedBrushes(i).numOfOwners = 0 Then
+                If (m_SharedBrushes(i).numOfOwners = 0) Then
                     DeleteObject m_SharedBrushes(i).brushHandle
                     m_SharedBrushes(i).brushHandle = 0
                     m_SharedBrushes(i).brushColor = 0
@@ -567,7 +565,7 @@ End Sub
 Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
     
     'First things first: if this is the first font requested by the system, initialize the shared font list
-    If m_numOfSharedFonts = 0 Then
+    If (m_numOfSharedFonts = 0) Then
         ReDim m_SharedFonts(0 To INIT_SIZE_OF_FONT_CACHE - 1) As SharedGDIFont
     End If
     
@@ -575,10 +573,10 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
     Dim fontExists As Boolean, fontIndex As Long, i As Long
     fontExists = False
     
-    If m_numOfSharedFonts > 0 Then
+    If (m_numOfSharedFonts > 0) Then
             
         For i = 0 To m_numOfSharedFonts - 1
-            If m_SharedFonts(i).FontSize = requestedSize Then
+            If (m_SharedFonts(i).FontSize = requestedSize) Then
             
                 'As a failsafe, make sure the owner count is valid too
                 If (m_SharedFonts(i).numOfOwners > 0) And (m_SharedFonts(i).fontHandle <> 0) Then
@@ -601,7 +599,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
     Else
     
         'If the cache is too small, resize it
-        If m_numOfSharedFonts > UBound(m_SharedFonts) Then ReDim Preserve m_SharedFonts(0 To m_numOfSharedFonts * 2 - 1) As SharedGDIFont
+        If (m_numOfSharedFonts > UBound(m_SharedFonts)) Then ReDim Preserve m_SharedFonts(0 To m_numOfSharedFonts * 2 - 1) As SharedGDIFont
         
         'Font creation is cumbersome, but PD provides some helper functions to simplify it
         Dim tmpLogFont As LOGFONTW
@@ -612,7 +610,7 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         'Update the cache entry with new stats (including the created font)
         m_SharedFonts(m_numOfSharedFonts).FontSize = requestedSize
         m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
-        If Not Font_Management.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle) Then
+        If (Not Font_Management.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle)) Then
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  UserControl_Support.GetSharedGDIFont() failed to create a new UI font handle."
             #End If
@@ -628,15 +626,15 @@ End Function
 
 Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
 
-    If m_numOfSharedFonts = 0 Then
+    If (m_numOfSharedFonts = 0) Then
         Debug.Print "FYI: UserControl_Support.ReleaseSharedGDIFontByHandle() received a release request, but no shared fonts exist."
         Exit Sub
     Else
         Dim i As Long
         For i = 0 To m_numOfSharedFonts - 1
-            If m_SharedFonts(i).fontHandle = requestedHandle Then
+            If (m_SharedFonts(i).fontHandle = requestedHandle) Then
                 m_SharedFonts(i).numOfOwners = m_SharedFonts(i).numOfOwners - 1
-                If m_SharedFonts(i).numOfOwners = 0 Then
+                If (m_SharedFonts(i).numOfOwners = 0) Then
                     Font_Management.DeleteGDIFont m_SharedFonts(i).fontHandle
                     m_SharedFonts(i).fontHandle = 0
                     m_SharedFonts(i).FontSize = 0
@@ -651,7 +649,7 @@ End Sub
 'Return a unique, non-zero control ID.  Limited to the size of a VB Long (32-bytes), so don't call more than ~4 billion times.
 Public Function GetUniqueControlID() As Long
     
-    If m_UniqueIDTracker = LONG_MAX Then
+    If (m_UniqueIDTracker = LONG_MAX) Then
         m_UniqueIDTracker = -1 * LONG_MAX
     Else
         m_UniqueIDTracker = m_UniqueIDTracker + 1
@@ -698,6 +696,8 @@ Public Sub PDControlReceivedFocus(ByVal controlHWnd As Long)
         If (m_CurrentDropDownHWnd <> controlHWnd) And (m_CurrentDropDownListHWnd <> controlHWnd) Then
             SetParent m_CurrentDropDownListHWnd, m_CurrentDropDownHWnd
             g_WindowManager.SetVisibilityByHWnd m_CurrentDropDownListHWnd, False
+            m_CurrentDropDownHWnd = 0
+            m_CurrentDropDownListHWnd = 0
         End If
     
     End If
@@ -961,7 +961,7 @@ End Sub
 Private Sub HideTTImmediately(Optional ByVal useAnimation As Boolean = True)
 
     If (Not m_TimerEventSink Is Nothing) Then m_TimerEventSink.StopTTTimer
-        
+    
     If m_TTActive And (m_TTHwnd <> 0) Then
         
         'Hide (but do not unload!) the tooltip window.  The commented out code is for a non-animated approach.
@@ -1008,12 +1008,13 @@ Public Sub FinalTooltipUnload()
         If (m_OriginalTTWindowBitsEx <> 0) Then g_WindowManager.SetWindowLongWrapper m_TTHwnd, m_OriginalTTWindowBits, , True, True
         
         'Windows caches window longs; ensure that our changes are applied immediately
-        SetWindowPos m_TTHwnd, 0&, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_FRAMECHANGED Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
-    
+        SetWindowPos m_TTHwnd, 0&, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_HIDEWINDOW Or SWP_NOSENDCHANGING
+        
         'With all original settings restored, we can safely unload the tooltip window
-        tool_Tooltip.Visible = False
         Unload tool_Tooltip
         Set tool_Tooltip = Nothing
+        
+        m_TTHwnd = 0
         
     End If
     

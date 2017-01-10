@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2049</langversion>
+<langversion>6.8.2050</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -14131,6 +14131,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>（免责声明显示在运行时）</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>只更新语言文件</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>自动检查更新</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>插件单独更新</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>选择更新版本</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>更新选项</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>有更新时通知我</translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>最近文件项的最大数目</translation>
 </phrase>
@@ -14271,11 +14306,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>when calculating color values</original>
-<translation>计算颜色值时</translation>
-</phrase>
-
-<phrase>
 <original>when decorating interface elements</original>
 <translation>装饰界面元素时</translation>
 </phrase>
@@ -14288,11 +14318,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>when rendering the image canvas</original>
 <translation>渲染图像画布时</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>色彩管理</translation>
 </phrase>
 
 <phrase>
@@ -14353,41 +14378,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>重置为默认值：</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>（免责声明显示在运行时）</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>只更新语言文件</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>自动检查更新</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>插件单独更新</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>选择更新版本</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>更新选项</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>有更新时通知我</translation>
 </phrase>
 
 <phrase>
@@ -14580,11 +14570,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance.</original>
-<translation>像任何照片编辑器，PhotoDemon经常转换不同的参照空间之间的颜色。这些转换的精确度可以被限制，以提高性能。</translation>
-</phrase>
-
-<phrase>
 <original>Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost.</original>
 <translation>一些界面元素接收自定义的装饰（如阴影）。在较旧的电脑上，这些装饰物可用于小的性能提升。</translation>
 </phrase>
@@ -14763,76 +14748,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
-<translation>界面选项包括的主要PhotoDemon界面设置，包括像画布设置，字体选择、定位。</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>接口选项</translation>
-</phrase>
-
-<phrase>
-<original>Load options allow you to customize the way image files enter the application.</original>
-<translation>加载选项允许您自定义图像文件输入的方式。</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>加载(导入)选项</translation>
-</phrase>
-
-<phrase>
-<original>Save options allow you to customize the way image files leave the application.</original>
-<translation>保存选项允许您自定义图像文件离开应用程序的方式。</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>保存（导出）选项</translation>
-</phrase>
-
-<phrase>
-<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation>性能选项允许你控制PhotoDemon是否执行某些任务时强调速度或质量。</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>性能选项</translation>
-</phrase>
-
-<phrase>
-<original>Color management options control how PhotoDemon uses ICC profiles for image files and devices.</original>
-<translation>颜色管理选项控制PhotoDemon如何为图像文件和设备使用ICC配置文件。</translation>
-</phrase>
-
-<phrase>
-<original>Color Management Options</original>
-<translation>颜色管理选项</translation>
-</phrase>
-
-<phrase>
-<original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
-<translation>更新选项控制PhotoDemon如何经常检查更新版本，以及它如何处理缺少插件的下载。</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>更新选项</translation>
-</phrase>
-
-<phrase>
-<original>Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.</original>
-<translation>高级选项。测试人员和开发人员可用，但是，找到这些设置非常有用。</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>高级选项</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If a new folder is not provided, PhotoDemon will use the system temp folder.</original>
 <translation>警告：这个文件夹无效（禁止访问）。请提供一个有效的文件夹。如果没有提供一个新的有效文件夹，PhotoDemon将使用系统临时文件夹。</translation>
 </phrase>
@@ -14842,7 +14757,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹的位置将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 183 phrases. 41 were duplicates of existing phrases, so only 142 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14959,10 +14874,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2529</phrasecount>
+<phrasecount>2512</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4472 phrases. -->
-<!-- 1943 are duplicates, so only 2529 unique phrases have been written to file. -->
-<!-- These 2529 phrases contain approximately 12625 total words. -->
+<!-- As of this build, PhotoDemon contains 4455 phrases. -->
+<!-- 1943 are duplicates, so only 2512 unique phrases have been written to file. -->
+<!-- These 2512 phrases contain approximately 12467 total words. -->
 
 </pdData>
