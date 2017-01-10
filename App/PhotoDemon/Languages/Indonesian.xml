@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.174</langversion>
+<langversion>6.6.175</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -12105,11 +12105,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>Cepat,Mudah , Editor Photo Portable</translation>
 </phrase>
@@ -12149,7 +12144,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14139,41 +14139,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Sangkalan Populasi di jangka waktu)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>Perbarui Bahasa Berkas secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>secara Otomatis Mengecek Pembaruan</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>Perbarui Plugin secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>membolehkan Memperbarui pada trek ini</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Pilihan Perbarui</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>memberitahu saya apabila Perbarui bersedia</translation>
-</phrase>
-
-<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Bilangan maksimum penyertaan Berkas baru-baru ini</translation>
 </phrase>
@@ -14386,6 +14351,41 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>start over</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Sangkalan Populasi di jangka waktu)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>Perbarui Bahasa Berkas secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>secara Otomatis Mengecek Pembaruan</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>Perbarui Plugin secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>membolehkan Memperbarui pada trek ini</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Pilihan Perbarui</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>memberitahu saya apabila Perbarui bersedia</translation>
 </phrase>
 
 <phrase>
@@ -14766,7 +14766,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation></translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 

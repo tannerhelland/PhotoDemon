@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2050</langversion>
+<langversion>6.8.2051</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -12096,11 +12096,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>PhotoDemon is Copyright 2017 by Tanner Helland and Contributors</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>the fast, free, portable photo editor</original>
 <translation>快速，免费的，便携式照片编辑器</translation>
 </phrase>
@@ -12140,7 +12135,12 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation></translation>
 </phrase>
 
-<!-- Help_About.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<phrase>
+<original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
+<translation></translation>
+</phrase>
+
+<!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -14131,41 +14131,6 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>（免责声明显示在运行时）</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>只更新语言文件</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>自动检查更新</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>插件单独更新</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>选择更新版本</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>更新选项</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>有更新时通知我</translation>
-</phrase>
-
-<phrase>
 <original>maximum number of recent file entries</original>
 <translation>最近文件项的最大数目</translation>
 </phrase>
@@ -14378,6 +14343,41 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 <phrase>
 <original>start over</original>
 <translation>重置为默认值：</translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>（免责声明显示在运行时）</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>只更新语言文件</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>自动检查更新</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>插件单独更新</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>选择更新版本</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>更新选项</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>有更新时通知我</translation>
 </phrase>
 
 <phrase>
@@ -14757,7 +14757,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation>新的临时文件夹的位置将在重新启动程序后生效。</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 166 phrases. 41 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 

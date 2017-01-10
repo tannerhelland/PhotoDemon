@@ -73,7 +73,7 @@ Begin VB.Form FormAbout
          Width           =   9255
          _ExtentX        =   16325
          _ExtentY        =   661
-         Caption         =   "PhotoDemon is Copyright 2017 by Tanner Helland and Contributors"
+         Caption         =   ""
       End
       Begin PhotoDemon.pdLabel lblAbout 
          Height          =   495
@@ -230,6 +230,7 @@ Private Sub Form_Load()
     UpdateVisiblePanel
     
     'Fill any custom "About" panel text
+    lblAbout(0).Caption = g_Language.TranslateMessage("PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors", ChrW$(169))
     lblAbout(1).Caption = GetPhotoDemonNameAndVersion()
     
     'Fill the "Contributor" panel text
