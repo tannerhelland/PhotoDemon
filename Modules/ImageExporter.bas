@@ -42,7 +42,7 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
     
     'If the incoming image is already 24-bpp, we can skip the alpha-processing steps entirely.  However, it is not
     ' necessary for the caller to do this.  PD will provide correct results either way.
-    If srcDIB.GetDIBColorDepth = 24 Then
+    If (srcDIB.GetDIBColorDepth = 24) Then
         currentAlphaStatus = PDAS_NoAlpha
         colorCheckSuccessful = AutoDetectColors_24BPPSource(srcDIB, uniqueColorCount, isGrayscale, isMonochrome)
         isTrueColor = CBool(uniqueColorCount > 256)
@@ -147,10 +147,18 @@ Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstForma
                 
                 'Non-truecolor images are less pleasant to work with, as the presence of alpha complicates everything.
                 Else
+                
+                    'If the image contains meaningful alpha channel data, we have two output options
                     If (currentAlphaStatus <> PDAS_NoAlpha) Then
                         
-                        If currentAlphaStatus = PDAS_ComplicatedAlpha Then
+                        'If the alpha is "complicated" (meaning it contains more values than just 0 or 255), we must fall back to
+                        ' 32-bpp output modes, regardless of color status.  (PNG supports more fine-grained results than this,
+                        ' but FreeImage does not, so our hands are tied.)
+                        If (currentAlphaStatus = PDAS_ComplicatedAlpha) Then
                             AutoDetectOutputColorDepth = 32
+                        
+                        'If the alpha is *not* complicated - meaning it consists of only 0 or 255 values - we can use
+                        ' an 8-bpp output mode, with a designated transparent color.
                         Else
                             AutoDetectOutputColorDepth = 8
                         End If
@@ -1260,13 +1268,17 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         Dim outputColorModel As String
         outputColorModel = cParams.GetString("PNGColorModel", "Auto")
         
+        'If the output color model is "gray", note that we will apply a forcible grayscale conversion prior to export
         Dim forceGrayscale As Boolean
         forceGrayscale = CBool(StrComp(LCase$(outputColorModel), "gray", vbBinaryCompare) = 0)
         
+        'If we are forcibly outputting a grayscale image, set the bit-depth to 8-bpp to match.
         Dim outputColorDepth As Long, outputPaletteSize As Long
         If forceGrayscale Then outputColorDepth = cParams.GetLong("PNGBitDepth", 8) Else outputColorDepth = cParams.GetLong("PNGBitDepth", 24)
         outputPaletteSize = cParams.GetLong("PNGPaletteSize", 256)
         
+        'PD supports multiple alpha output modes; some of these modes (like "binary" alpha, which consists of only 0 or 255 values),
+        ' require additional settings.  We always retrieve all values, even if we don't plan on using them.
         Dim outputAlphaModel As String
         outputAlphaModel = cParams.GetString("PNGAlphaModel", "Auto")
         
@@ -1288,7 +1300,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             currentAlphaStatus = PDAS_ComplicatedAlpha
         End If
         
-        'From the automatic values, construct matching output values as relevant
+        'From the automatic values, construct matching output values
         If autoColorModeActive Then
             outputColorDepth = autoColorDepth
             forceGrayscale = isGrayscale
@@ -1316,11 +1328,20 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         ' depth that correctly represents the combination of color depth + alpha depth.  Note that this also requires
         ' us to workaround some FreeImage deficiencies, so these depths may not match what PNG formally supports.
         If ParamsEqual(outputAlphaModel, "full") Then
+        
             desiredAlphaStatus = PDAS_ComplicatedAlpha
-            If (Not forceGrayscale) Then
-                If outputColorDepth = 24 Then outputColorDepth = 32
-                If outputColorDepth = 48 Then outputColorDepth = 64
+            
+            'PNG supports 8-bpp grayscale + 8-bpp alpha as a valid channel combination.  Unfortunately, FreeImage has
+            ' no way of generating such an image.  Unfortunately, we must fall back to 32-bpp mode for that
+            ' particular combination.
+            If forceGrayscale Then
+                outputColorDepth = 32
+                forceGrayscale = False
+            Else
+                If (outputColorDepth = 24) Then outputColorDepth = 32
+                If (outputColorDepth = 48) Then outputColorDepth = 64
             End If
+            
         ElseIf ParamsEqual(outputAlphaModel, "none") Then
             desiredAlphaStatus = PDAS_NoAlpha
             If (Not forceGrayscale) Then
@@ -2141,6 +2162,7 @@ ExportWebPError:
     
 End Function
 
+'Basic case-insensitive string comparison function
 Private Function ParamsEqual(ByVal param1 As String, ByVal param2 As String) As Boolean
     ParamsEqual = CBool(StrComp(LCase$(param1), LCase$(param2), vbBinaryCompare) = 0)
 End Function
