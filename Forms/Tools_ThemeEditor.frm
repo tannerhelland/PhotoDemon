@@ -615,7 +615,7 @@ Private Sub SaveWorkingFile()
             
                 cXML.WriteTag CStr(numResourcesWritten + 1), vbNullString, True
                 
-                With m_Resources(numResourcesWritten)
+                With m_Resources(i)
                     cXML.WriteTag "Name", .ResourceName
                     cXML.WriteTag "FileLocation", .ResFileLocation
                     cXML.WriteTag "Type", .ResType
@@ -628,13 +628,16 @@ Private Sub SaveWorkingFile()
                     If .ResCustomMenuColor Then cXML.WriteTag "ColorMenu", .ResColorMenu
                 End With
                 
-                cXML.closeTag CStr(numResourcesWritten + 1)
+                cXML.CloseTag CStr(numResourcesWritten + 1)
                 
                 numResourcesWritten = numResourcesWritten + 1
                 
             End If
             
         Next i
+        
+        'Update the final tag count with the amount of resources we actually wrote to file
+        cXML.UpdateTag "ResourceCount", numResourcesWritten
         
         If (Not cXML.WriteXMLToFile(txtResourcePath.Text)) Then Debug.Print "WARNING!  Save to file failed!!"
     
@@ -763,6 +766,7 @@ Private Sub LoadResourceFromFile()
                 Next i
                 
                 m_LastResourceIndex = cXML.GetUniqueTag_Long("LastEditedResource")
+                If (m_LastResourceIndex > lstResources.ListCount - 1) Then m_LastResourceIndex = lstResources.ListCount - 1
                 SyncUIAgainstCurrentResource
                 
                 lstResources.ListIndex = m_LastResourceIndex
