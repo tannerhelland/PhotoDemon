@@ -564,6 +564,9 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         
         Case NAV_MOVE
             layerToolActive = True
+            
+        Case QUICK_FIX_LIGHTING
+            layerToolActive = True
         
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
             If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
@@ -598,7 +601,12 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         Select Case g_CurrentTool
         
             Case NAV_MOVE
-            
+                
+                Interface.SetUIGroupState PDUI_LayerTools, True
+                
+                'Reset tool busy state (because it will be reset by the Interface module call, above)
+                Tool_Support.SetToolBusyState True
+                
                 'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
                 toolpanel_MoveSize.tudLayerMove(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetX
                 toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetY
@@ -614,6 +622,13 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAngle
                 toolpanel_MoveSize.sltLayerShearX.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearX
                 toolpanel_MoveSize.sltLayerShearY.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearY
+                
+            Case QUICK_FIX_LIGHTING
+            
+                Interface.SetUIGroupState PDUI_NonDestructiveFX, True
+                
+                'Reset tool busy state (because it will be reset by the Interface module call, above)
+                Tool_Support.SetToolBusyState True
             
             Case VECTOR_TEXT
                 

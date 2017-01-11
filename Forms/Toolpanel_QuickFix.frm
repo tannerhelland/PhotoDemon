@@ -251,19 +251,25 @@ End Sub
 
 Private Sub Form_Load()
 
+    Tool_Support.SetToolBusyState True
+
     cmdQuickFix(0).AssignTooltip "Reset all quick-fix adjustment values"
     cmdQuickFix(1).AssignTooltip "Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance."
     
     'Load any last-used settings for this form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.SetParentForm Me
-    lastUsedSettings.LoadAllControlValues
+    'NOTE: last-used settings are not currently relevant, as all settings on this form are auto-synchronized
+    ' against the active layer.
+    'Set lastUsedSettings = New pdLastUsedSettings
+    'lastUsedSettings.SetParentForm Me
+    'lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
     
     'Allow non-destructive effects
     m_NonDestructiveFXAllowed = True
+    
+    Tool_Support.SetToolBusyState False
     
 End Sub
 

@@ -397,7 +397,9 @@ Private Sub cmdLayerMove_Click(Index As Integer)
 End Sub
 
 Private Sub Form_Load()
-        
+    
+    Tool_Support.SetToolBusyState True
+    
     'Initialize move tool panels
     btsMoveOptions.AddItem "size and position", 0
     btsMoveOptions.AddItem "angle and shear", 1
@@ -416,12 +418,15 @@ Private Sub Form_Load()
     cboLayerResizeQuality.ListIndex = 1
         
     'Load any last-used settings for this form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.SetParentForm Me
-    lastUsedSettings.LoadAllControlValues
+    'NOTE: this is currently disabled, as all settings on this form are synched to the active layer
+    'Set lastUsedSettings = New pdLastUsedSettings
+    'lastUsedSettings.SetParentForm Me
+    'lastUsedSettings.LoadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
+    
+    Tool_Support.SetToolBusyState False
     
 End Sub
 
