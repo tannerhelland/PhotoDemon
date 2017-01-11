@@ -52,7 +52,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
+    Dim QuickVal As Long, qvDepth As Long
     'qvDepth = pdImages(g_CurrentImage).mainDIB.getDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -82,8 +82,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'Scan the image, starting at the top-left and moving right
     For y = 0 To finalY
     For x = 0 To finalX
-        quickVal = x * qvDepth
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        QuickVal = x * qvDepth
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -126,10 +126,10 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     SetProgBarVal 1
     
     For x = 0 To finalX
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -148,15 +148,15 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     
     Message "Analyzing right edge of image..."
-    quickVal = finalX * qvDepth
-    initColor = gLookUp(CLng(srcImageData(quickVal, initY)) + CLng(srcImageData(quickVal + 1, 0)) + CLng(srcImageData(quickVal + 2, 0)))
+    QuickVal = finalX * qvDepth
+    initColor = gLookUp(CLng(srcImageData(QuickVal, initY)) + CLng(srcImageData(QuickVal + 1, 0)) + CLng(srcImageData(QuickVal + 2, 0)))
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
-        quickVal = x * qvDepth
+        QuickVal = x * qvDepth
     For y = initY To finalY
     
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -175,16 +175,16 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     colorFails = False
     initX = newLeft
     finalX = newRight
-    quickVal = initX * qvDepth
-    initColor = gLookUp(CLng(srcImageData(quickVal, finalY)) + CLng(srcImageData(quickVal + 1, finalY)) + CLng(srcImageData(quickVal + 2, finalY)))
+    QuickVal = initX * qvDepth
+    initColor = gLookUp(CLng(srcImageData(QuickVal, finalY)) + CLng(srcImageData(QuickVal + 1, finalY)) + CLng(srcImageData(QuickVal + 2, finalY)))
     
     Message "Analyzing bottom edge of image..."
     SetProgBarVal 3
     
     For y = finalY To initY Step -1
     For x = initX To finalX
-        quickVal = x * qvDepth
-        curColor = gLookUp(CLng(srcImageData(quickVal, y)) + CLng(srcImageData(quickVal + 1, y)) + CLng(srcImageData(quickVal + 2, y)))
+        QuickVal = x * qvDepth
+        curColor = gLookUp(CLng(srcImageData(QuickVal, y)) + CLng(srcImageData(QuickVal + 1, y)) + CLng(srcImageData(QuickVal + 2, y)))
         
         'If pixel color DOES NOT match the baseline, keep scanning.  Otherwise, note that we have found a mismatched color
         ' and exit the loop.
@@ -243,7 +243,7 @@ End Sub
 Public Sub SeeIfCropCanBeAppliedNonDestructively()
     
     'First, make sure there is an active selection
-    If Not pdImages(g_CurrentImage).selectionActive Then
+    If (Not pdImages(g_CurrentImage).selectionActive) Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -267,12 +267,12 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
         If selectionIsPureRectangle Then
         
             'A pure rectangle is in use!  Request a non-destructive crop operation.
-            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_IMAGEHEADER
+            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_EVERYTHING 'UNDO_IMAGEHEADER
             
         Else
         
             'A complex shape is in use.  Request a destructive crop operation.
-            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_IMAGE
+            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_EVERYTHING 'UNDO_IMAGE
         
         End If
         
@@ -1075,7 +1075,7 @@ Public Sub TrimImage()
     finalY = pdImages(g_CurrentImage).Height - 1
             
     'These values will help us access locations in the array more quickly.
-    Dim quickVal As Long
+    Dim QuickVal As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -1132,10 +1132,10 @@ Public Sub TrimImage()
     SetProgBarVal 1
     
     For x = 0 To finalX
-        quickVal = x * 4
+        QuickVal = x * 4
     For y = initY To finalY
     
-        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
+        If srcImageData(QuickVal + 3, y) > 0 Then colorFails = True
         If colorFails Then Exit For
         
     Next y
@@ -1152,10 +1152,10 @@ Public Sub TrimImage()
     SetProgBarVal 2
     
     For x = finalX To 0 Step -1
-        quickVal = x * 4
+        QuickVal = x * 4
     For y = initY To finalY
     
-        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
+        If srcImageData(QuickVal + 3, y) > 0 Then colorFails = True
         If colorFails Then Exit For
         
     Next y

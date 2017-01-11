@@ -862,33 +862,43 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'Enable/disable all UI elements as necessary
             If (g_CurrentTool = NAV_MOVE) Then
-            
+                
+                'First, enable all move/size panels
                 For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
                     If (toolpanel_MoveSize.tudLayerMove(i).Enabled <> newState) Then toolpanel_MoveSize.tudLayerMove(i).Enabled = newState
                 Next i
                 
-                'Where relevant, also update control bounds
+                'Where relevant, also update control bounds and values
                 If newState Then
                 
                     For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
                         
                         'Even-numbered indices correspond to width; odd-numbered to height
                         If (i Mod 2 = 0) Then
-                            
-                            If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Width) Then
-                                toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Width
-                                toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Width
-                            End If
-                            
+                            toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Width
+                            toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Width
                         Else
-                        
-                            If (toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Height) Then
-                                toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Height
-                                toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Height
-                            End If
-                        
+                            toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Height
+                            toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Height
                         End If
+                        
                     Next i
+                    
+                    'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
+                    toolpanel_MoveSize.tudLayerMove(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetX
+                    toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetY
+                    toolpanel_MoveSize.tudLayerMove(2).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth
+                    toolpanel_MoveSize.tudLayerMove(3).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight
+                    toolpanel_MoveSize.tudLayerMove(2).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
+                    toolpanel_MoveSize.tudLayerMove(3).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
+                    
+                    'The layer resize quality combo box also needs to be synched
+                    toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerResizeQuality
+                    
+                    'Layer angle and shear are newly available as of 7.0
+                    toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAngle
+                    toolpanel_MoveSize.sltLayerShearX.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearX
+                    toolpanel_MoveSize.sltLayerShearY.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearY
                     
                 End If
                 
@@ -901,21 +911,24 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         Case PDUI_NonDestructiveFX
             
             If (g_CurrentTool = QUICK_FIX_LIGHTING) Then
-            
+                
+                'Enable/disable all non-destructive FX controls to match the new state
+                For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
+                    toolpanel_NDFX.sltQuickFix(i).Enabled = newState
+                Next i
+                
+                'Further synching is only relevant if the panel is being *activated*
                 If newState Then
                     
-                    'Start by enabling all non-destructive FX controls
-                    For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-                        If (Not toolpanel_NDFX.sltQuickFix(i).Enabled) Then toolpanel_NDFX.sltQuickFix(i).Enabled = True
-                    Next i
-                    
-                    'Quick fix buttons are only relevant if the current image has some non-destructive events applied
-                    If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
+                    'Failsafe check for layer existence.  (This check should never fail; if it does, something is horribly wrong.)
+                    If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
                         
                         With toolpanel_NDFX
                         
                             .SetNDFXControlState False
                             
+                            'Quick fix buttons (e.g. "commit fixes") are only relevant if the current layer actually has
+                            ' active non-destructive events.
                             If pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXState() Then
                                 For i = 0 To .cmdQuickFix.Count - 1
                                     .cmdQuickFix(i).Enabled = True
@@ -926,7 +939,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                                 Next i
                             End If
                             
-                            'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
+                            'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.
+                            ' (This is by design.)
                             For i = 0 To .sltQuickFix.Count - 1
                                 .sltQuickFix(i).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerNonDestructiveFXValue(i)
                             Next i
@@ -942,16 +956,9 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
                     End If
                     
                 Else
-                    
-                    'Disable all non-destructive FX controls
-                    For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
-                        If toolpanel_NDFX.sltQuickFix(i).Enabled Then toolpanel_NDFX.sltQuickFix(i).Enabled = False
-                    Next i
-                    
                     For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
                         If toolpanel_NDFX.cmdQuickFix(i).Enabled Then toolpanel_NDFX.cmdQuickFix(i).Enabled = False
                     Next i
-                    
                 End If
                 
             End If
