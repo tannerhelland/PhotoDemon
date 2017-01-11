@@ -641,13 +641,14 @@ End Sub
 Private Sub cboSelRender_Click()
 
     'Show or hide the color selector, as appropriate
-    If cboSelRender.ListIndex = SELECTION_RENDER_HIGHLIGHT Then
+    If (cboSelRender.ListIndex = SELECTION_RENDER_HIGHLIGHT) Then
         csSelectionHighlight.Visible = True
     Else
         csSelectionHighlight.Visible = False
     End If
     
     'Redraw the viewport
+    Selection_Handler.NotifySelectionRenderSettingChange
     If SelectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
@@ -668,7 +669,7 @@ End Sub
 Private Sub cboWandCompare_Click()
     
     'Limit the accuracy of the tolerance for certain comparison methods.
-    If cboWandCompare.ListIndex > 1 Then
+    If (cboWandCompare.ListIndex > 1) Then
         sltWandTolerance.SigDigits = 0
     Else
         sltWandTolerance.SigDigits = 1
@@ -685,11 +686,19 @@ End Sub
 Private Sub csSelectionHighlight_ColorChanged()
     
     'Redraw the viewport
+    Selection_Handler.NotifySelectionRenderSettingChange
     If SelectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
 Private Sub Form_Load()
+    
+    'Suspend any visual updates while the form is being loaded
+    Dim suspendActive As Boolean
+    If (g_OpenImageCount > 0) Then
+        suspendActive = True
+        pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = True
+    End If
     
     'Initialize various selection tool settings
     
@@ -743,6 +752,13 @@ Private Sub Form_Load()
     lastUsedSettings.SetParentForm Me
     lastUsedSettings.LoadAllControlValues
     
+    If suspendActive Then pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
+    
+    'If a selection is already active, synchronize all UI elements to match
+    If suspendActive Then
+        If pdImages(g_CurrentImage).selectionActive Then Selection_Handler.SyncTextToCurrentSelection g_CurrentImage
+    End If
+    
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
 
@@ -751,7 +767,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    If Not (lastUsedSettings Is Nothing) Then
+    If (Not lastUsedSettings Is Nothing) Then
         lastUsedSettings.SaveAllControlValues
         lastUsedSettings.SetParentForm Nothing
     End If
@@ -863,7 +879,6 @@ Private Sub sltWandTolerance_Change()
     End If
 End Sub
 
-
 'When the selection text boxes are updated, change the scrollbars to match
 Private Sub tudSel_Change(Index As Integer)
     UpdateSelectionsValuesViaText
@@ -915,8 +930,3 @@ Public Sub UpdateAgainstCurrentTheme()
     cboWandCompare.AssignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
 
 End Sub
-
-
-
-
-

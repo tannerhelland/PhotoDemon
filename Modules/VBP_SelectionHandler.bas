@@ -35,6 +35,10 @@ End Enum
     Const SEL_SHARPEN = 4
 #End If
 
+'This module caches the current selection mode and/or color, and the viewport pipeline retrieves these cached values as necessary
+' during rendering.
+Private m_CurSelectionMode As SelectionRender, m_CurSelectionColor As Long
+
 'Present a selection-related dialog box (grow, shrink, feather, etc).  This function will return a msgBoxResult value so
 ' the calling function knows how to proceed, and if the user successfully selected a value, it will be stored in the
 ' returnValue variable.
@@ -1281,4 +1285,19 @@ Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Bool
         SelectionsAllowed = False
     End If
     
+End Function
+
+'Whenever a selection render setting changes (like switching between outline and highlight mode), you must call this function
+' so that we can cache the new render settings.
+Public Sub NotifySelectionRenderSettingChange()
+    m_CurSelectionMode = toolpanel_Selections.cboSelRender.ListIndex
+    m_CurSelectionColor = toolpanel_Selections.csSelectionHighlight.Color
+End Sub
+
+Public Function GetCurrentSelectionRenderMode() As SelectionRender
+    GetCurrentSelectionRenderMode = m_CurSelectionMode
+End Function
+
+Public Function GetCurrentSelectionRenderColor() As Long
+    GetCurrentSelectionRenderColor = m_CurSelectionColor
 End Function

@@ -466,7 +466,7 @@ Public Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindo
         If (m_ToolPanelDictionary Is Nothing) Then Set m_ToolPanelDictionary = New pdDictionary
         
         'First, make the form a child of the options panel form
-        If GetParent(m_CurrentToolPanelHwnd) <> optionWindowHwnd Then
+        If (GetParent(m_CurrentToolPanelHwnd) <> optionWindowHwnd) Then
         
             'Cache the current window style settings.  We will restore these at exit time, to prevent issues with VB's unload process
             m_ToolPanelDictionary.AddEntry m_CurrentToolPanelHwnd, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE)
@@ -499,7 +499,7 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
     ' However, the caller can specify a custom hWnd if they so desire.  (PD uses this when the program is closing,
     ' so the window manager can reset all necessary window bits, allowing VB to close the window normally.)
     Dim targetHwnd As Long
-    If useCustomHwnd = 0 Then targetHwnd = m_CurrentToolPanelHwnd Else targetHwnd = useCustomHwnd
+    If (useCustomHwnd = 0) Then targetHwnd = m_CurrentToolPanelHwnd Else targetHwnd = useCustomHwnd
     
     'Release the parent reference for the previous activated tool panel
     If (targetHwnd <> 0) Then
@@ -729,7 +729,7 @@ Public Function SaveAllWindowLocations() As Boolean
         If Not xmlEngine.DoesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
         
             xmlEngine.WriteTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
-            xmlEngine.closeTag "windowEntry"
+            xmlEngine.CloseTag "windowEntry"
             xmlEngine.WriteBlankLine
         
         End If

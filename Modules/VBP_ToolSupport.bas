@@ -540,13 +540,16 @@ Public Sub InitializeToolsDependentOnImage()
 End Sub
 
 'When the active layer changes, call this function.  It synchronizes various layer-specific tool panels against the
-' currently active layer.
+' currently active layer.  (Note that you also need to call this whenever a new tool panel is selected, as the newly
+' loaded panel will reflect default values otherwise.)
 Public Sub SyncToolOptionsUIToCurrentLayer()
     
-    'Before doing anything else, make sure canvas tool operations are allowed
+    'Before doing anything else, make sure canvas tool operations are allowed.  (They are disallowed if no images
+    ' are loaded, for example.)
     If (Not CanvasToolsAllowed(False, False)) Then
         
-        'Some panels may redraw their contents if no images are loaded
+        'Some panels may still wish to redraw their contents, even if no images are loaded.  (Text panels use this
+        ' opportunity to hide the "convert typography to text or vice-versa" panels that are visible by default.)
         If (g_CurrentTool = VECTOR_TEXT) Then
             toolpanel_Text.UpdateAgainstCurrentLayer
         ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
@@ -558,6 +561,8 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         
     End If
     
+    'Next, figure out if the current tool is a type that requires syncing.  (Some tools, like paintbrushes, don't need
+    ' to be synched against layer changes.  Others, like the move/size tool, obviously do.)
     Dim layerToolActive As Boolean
     
     Select Case g_CurrentTool
@@ -568,12 +573,13 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         Case QUICK_FIX_LIGHTING
             layerToolActive = True
         
+        'Text layers only require a sync if the current layer is a text layer.
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
             If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
                 layerToolActive = True
             Else
             
-                'Hide the "convert to different type of text panel" prompts
+                'Hide the "convert to different type of text" panel prompts
                 If (g_CurrentTool = VECTOR_TEXT) Then
                     toolpanel_Text.UpdateAgainstCurrentLayer
                 ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
@@ -587,13 +593,14 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         
     End Select
     
-    'To improve performance, we'll only sync the UI if a layer-specific tool is active, and the tool options panel is
-    ' currently visible.
+    'To improve performance, only continue with a UI sync if a layer-specific tool is active, and the tool options
+    ' panel is visible.  (The user can choose to disable this panel... though why they would, I don't know.)
     If (Not toolbar_Options.Visible) And (Not layerToolActive) Then Exit Sub
     
     If layerToolActive Then
         
-        'Mark the tool engine as busy; this prevents each change from triggering viewport redraws
+        'Mark the tool engine as busy; this prevents things like changing control values from triggering automatic
+        ' viewport redraws.
         Tool_Support.SetToolBusyState True
         
         'Start iterating various layer properties, and reflecting them across their corresponding UI elements.
@@ -602,26 +609,11 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         
             Case NAV_MOVE
                 
+                'The interface module actually has a nice function that already handles this
                 Interface.SetUIGroupState PDUI_LayerTools, True
                 
                 'Reset tool busy state (because it will be reset by the Interface module call, above)
                 Tool_Support.SetToolBusyState True
-                
-                'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
-                toolpanel_MoveSize.tudLayerMove(0).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetX
-                toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOffsetY
-                toolpanel_MoveSize.tudLayerMove(2).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth
-                toolpanel_MoveSize.tudLayerMove(3).Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight
-                toolpanel_MoveSize.tudLayerMove(2).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False)
-                toolpanel_MoveSize.tudLayerMove(3).DefaultValue = pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False)
-                
-                'The layer resize quality combo box also needs to be synched
-                toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).GetActiveLayer.GetLayerResizeQuality
-                
-                'Layer angle and shear are newly available as of 7.0
-                toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerAngle
-                toolpanel_MoveSize.sltLayerShearX.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearX
-                toolpanel_MoveSize.sltLayerShearY.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerShearY
                 
             Case QUICK_FIX_LIGHTING
             

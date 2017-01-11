@@ -711,7 +711,7 @@ Public Sub UpdateAgainstCurrentLayer()
         If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
         
             'Check for non-basic-text layers.
-            If pdImages(g_CurrentImage).GetActiveLayer.GetLayerType <> PDL_TEXT Then
+            If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerType <> PDL_TEXT) Then
             
                 Select Case pdImages(g_CurrentImage).GetActiveLayer.GetLayerType
                 
