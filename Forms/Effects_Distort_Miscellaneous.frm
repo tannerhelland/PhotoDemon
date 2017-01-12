@@ -266,64 +266,54 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
             
             'Next, map them to polar coordinates
             radius = Sqr(nX * nX + nY * nY)
-            theta = Atan2(nY, nX)
+            theta = Math_Functions.Atan2_Fastest(nY, nX)
             
-            Select Case distortStyle
+            'Emphasize center
+            If (distortStyle = 0) Then
+                nX = 2 * Asin(nX) / PI
+                nY = 2 * Asin(nY) / PI
                 
-                'Emphasize center
-                Case 0
-                    nX = 2 * Asin(nX) / PI
-                    nY = 2 * Asin(nY) / PI
-                
-                'Flatten corners
-                Case 1
-                    nX = Sin(nX)
-                    nY = Sin(nY)
+            'Flatten corners
+            ElseIf (distortStyle = 1) Then
+                nX = Sin(nX)
+                nY = Sin(nY)
                     
-                'Inside-out
-                Case 2
-                    If radius > 0 Then radius = 1 - radius Else radius = -1 - radius
-                    nX = radius * Cos(theta)
-                    nY = radius * Sin(theta)
-                    
-                'Pull in
-                Case 3
-                    radius = Sqr(radius)
-                    nX = radius * Cos(theta)
-                    nY = radius * Sin(theta)
+            'Inside-out
+            ElseIf (distortStyle = 2) Then
+                If radius > 0 Then radius = 1 - radius Else radius = -1 - radius
+                nX = radius * Cos(theta)
+                nY = radius * Sin(theta)
                 
-                'Push out
-                Case 4
-                    radius = radius * radius
-                    nX = radius * Cos(theta)
-                    nY = radius * Sin(theta)
+            'Pull in
+            ElseIf (distortStyle = 3) Then
+                radius = Sqr(radius)
+                nX = radius * Cos(theta)
+                nY = radius * Sin(theta)
                 
-                'Rounding
-                Case 5
-                    If nX < 0 Then
-                        nX = -1 * nX * nX
-                    Else
-                        nX = nX * nX
-                    End If
-                    If nY < 0 Then
-                        nY = -1 * nY * nY
-                    Else
-                        nY = nY * nY
-                    End If
-                    
-                'Twist edges
-                Case 6
-                    radius = Sin(PI * radius / 2)
-                    nX = radius * Cos(theta)
-                    nY = radius * Sin(theta)
-                    
-                'Wormhole
-                Case 7
-                    If radius = 0 Then radius = 0 Else radius = Sin(1 / radius)
-                    nX = radius * Cos(theta)
-                    nY = radius * Sin(theta)
+            'Push out
+            ElseIf (distortStyle = 4) Then
+                radius = radius * radius
+                nX = radius * Cos(theta)
+                nY = radius * Sin(theta)
                 
-            End Select
+            'Rounding
+            ElseIf (distortStyle = 5) Then
+                If (nX < 0) Then nX = -1 * nX * nX Else nX = nX * nX
+                If (nY < 0) Then nY = -1 * nY * nY Else nY = nY * nY
+            
+            'Twist edges
+            ElseIf (distortStyle = 6) Then
+                radius = Sin(PI * radius / 2)
+                nX = radius * Cos(theta)
+                nY = radius * Sin(theta)
+            
+            'Wormhole
+            ElseIf (distortStyle = 7) Then
+                If (radius = 0) Then radius = 0 Else radius = Sin(1 / radius)
+                nX = radius * Cos(theta)
+                nY = radius * Sin(theta)
+                
+            End If
             
             'Convert the recalculated coordinates back to the Cartesian plane
             srcX = (tWidth * (nX + 1)) / 2

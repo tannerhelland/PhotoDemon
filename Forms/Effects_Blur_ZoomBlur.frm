@@ -245,7 +245,7 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
         prevDistance = sDistance
         
         'Calculate theta and precalculate expensive trig functions
-        theta = Atan2(nY, nX)
+        theta = Math_Functions.Atan2_Fastest(nY, nX)
         cosTheta = Cos(theta)
         sinTheta = Sin(theta)
         

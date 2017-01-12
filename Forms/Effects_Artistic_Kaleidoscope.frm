@@ -309,7 +309,7 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
         sDistance = Sqr((nX * nX) + (nY * nY))
                 
         'Calculate theta
-        theta = Atan2(nY, nX) - primaryAngle - secondaryAngle
+        theta = Math_Functions.Atan2_Fastest(nY, nX) - primaryAngle - secondaryAngle
         theta = convertTriangle((theta / PI) * numMirrors * 0.5)
                 
         'Calculate remapped x and y values

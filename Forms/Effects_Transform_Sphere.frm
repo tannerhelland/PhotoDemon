@@ -202,7 +202,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -349,7 +349,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
             
             'Next, map them to polar coordinates and apply the spherification
             radius = Sqr(nX * nX + nY * nY)
-            theta = Atan2(nY, nX)
+            theta = Math_Functions.Atan2_Fastest(nY, nX)
             
             radius = Asin(radius) * twoDivByPI
             
@@ -364,10 +364,10 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             If useRays Then
-                fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+                fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
             Else
                 If radius <= 1 Then
-                    fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+                    fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
                 Else
                     r = 0
                     g = 0

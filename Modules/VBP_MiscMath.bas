@@ -3,8 +3,8 @@ Attribute VB_Name = "Math_Functions"
 'Specialized Math Routines
 'Copyright 2013-2017 by Tanner Helland and Audioglider
 'Created: 13/June/13
-'Last updated: 22/May/14
-'Last update: fixed ConvertToFraction() function to work with non-English locales
+'Last updated: 12/January/16
+'Last update: added two optimized Atan2() variants, each with trade-offs between accuracy and performance.
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June '13.  This module is now used to store all the random bits of specialized math required by the program.
@@ -21,6 +21,8 @@ Public Const PI As Double = 3.14159265358979
 Public Const PI_HALF As Double = 1.5707963267949
 Public Const PI_DOUBLE As Double = 6.28318530717958
 Public Const PI_DIV_180 As Double = 0.017453292519943
+Public Const PI_14 As Double = 0.785398163397448
+Public Const PI_34 As Double = 2.35619449019234
 
 Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RECTL, ByVal x As Long, ByVal y As Long) As Long
@@ -312,28 +314,81 @@ End Function
 Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
  
     If (y = 0) And (x = 0) Then
-        Atan2 = 0
+        Atan2 = 0#
         Exit Function
     End If
  
-    If y > 0 Then
-        If x >= y Then
+    If (y > 0) Then
+        If (x >= y) Then
             Atan2 = Atn(y / x)
-        ElseIf x <= -y Then
+        ElseIf (x <= -y) Then
             Atan2 = Atn(y / x) + PI
         Else
             Atan2 = PI_HALF - Atn(x / y)
         End If
     Else
-        If x >= -y Then
+        If (x >= -y) Then
             Atan2 = Atn(y / x)
-        ElseIf x <= y Then
+        ElseIf (x <= y) Then
             Atan2 = Atn(y / x) - PI
         Else
             Atan2 = -Atn(x / y) - PI_HALF
         End If
     End If
  
+End Function
+
+'Estimation optimization of Atan2, using Hastings optimizations (https://lists.apple.com/archives/perfoptimization-dev/2005/Jan/msg00051.html)
+' Stated absolute error is expected to be < 0.005, which is more than good enough for most PD tasks.
+' This function is reliably faster than the "perfect" Atan2() function, above, and valid for all quadrants.
+Public Function Atan2_Faster(ByVal y As Double, ByVal x As Double) As Double
+    
+    If (x = 0#) Then
+       If (y > 0) Then
+           Atan2_Faster = PI_HALF
+       ElseIf (y = 0#) Then
+           Atan2_Faster = 0#
+       Else
+           Atan2_Faster = -PI_HALF
+       End If
+    Else
+       Dim z As Double
+       z = y / x
+       If (Abs(z) < 1#) Then
+           Atan2_Faster = z / (1# + 0.28 * z * z)
+           If (x < 0#) Then
+               If (y < 0#) Then
+                   Atan2_Faster = Atan2_Faster - PI
+               Else
+                   Atan2_Faster = Atan2_Faster + PI
+               End If
+           End If
+       Else
+           Atan2_Faster = PI_HALF - z / (z * z + 0.28)
+           If (y < 0#) Then Atan2_Faster = Atan2_Faster - PI
+       End If
+    End If
+    
+End Function
+
+'Attempted estimation optimization of Atan2, using self-normalization (https://web.archive.org/web/20090519203600/http://www.dspguru.com:80/comp.dsp/tricks/alg/fxdatan2.htm)
+' Stated worst-case error is expected to be < 0.07, which is good enough for certain PD tasks (e.g. image distort filters).
+' This function is reliably faster than the "perfect" Atan2() function, above, as well as the Atan2_Faster() function,
+' while remaining valid for all quadrants.
+Public Function Atan2_Fastest(ByVal y As Double, ByVal x As Double) As Double
+    
+    'Cheap non-branching workaround for the case y = 0.0
+    Dim absY As Double
+    absY = Abs(y) + 0.0000000001
+    
+    If (x >= 0#) Then
+        Atan2_Fastest = PI_14 - PI_14 * (x - absY) / (x + absY)
+    Else
+        Atan2_Fastest = PI_34 - PI_14 * (x + absY) / (absY - x)
+    End If
+    
+    If (y < 0) Then Atan2_Fastest = -Atan2_Fastest
+    
 End Function
 
 'Arcsine function
