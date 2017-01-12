@@ -185,7 +185,7 @@ Private Sub AssembleNightlyBuild()
     
     'For the /App subfolder, we forcibly restrict which extensions are allowed, to avoid copying any backup files
     ' or other unwanted entries.
-    m_File.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\App\", nightlyList, True, False, "exe|txt|TXT|dll"
+    m_File.retrieveAllFiles "C:\PhotoDemon v4\PhotoDemon\App\", nightlyList, True, False, "exe|txt|TXT|dll|xml|pdrc"
     
     'Assemble the corresponding pdPackage
     Dim nightlyPackage As pdPackager
@@ -253,24 +253,24 @@ Private Sub MakeVersionFile()
     
     'For each build, we're going to generate some key pieces of information.  Start with the stable build.
     xmlOutput.writeTagWithAttribute "update", "track", "stable", "", True
-    addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\stable\"
+    AddVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\stable\"
     xmlOutput.closeTag "update"
     xmlOutput.writeBlankLine
     
     'Next comes beta (which is often the same as the stable release)
     xmlOutput.writeTagWithAttribute "update", "track", "beta", "", True
-    addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\beta\"
+    AddVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\beta\"
     xmlOutput.closeTag "update"
     xmlOutput.writeBlankLine
     
     'Last comes nightly.  Note that the nightly files will be out of date unless Step 1 (AssembleNightlyBuild) has been run during this session.
     xmlOutput.writeTagWithAttribute "update", "track", "nightly", "", True
-    addVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\nightly\"
+    AddVersionGroupToXML xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\nightly\"
     xmlOutput.closeTag "update"
     xmlOutput.writeBlankLine
     
     'Also, write out release announcement links.  These are stored in a custom local XML file.
-    addReleaseAnnouncementLinks xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\release_announcements.xml"
+    AddReleaseAnnouncementLinks xmlOutput, "C:\PhotoDemon v4\PhotoDemon\no_sync\PD_updates\release_announcements.xml"
     
     'Write the XML out to file
     Dim dstFile As String
@@ -281,7 +281,7 @@ Private Sub MakeVersionFile()
 End Sub
 
 'Given a path to the release announcement URL file, copy those links into the master language version XML file
-Private Sub addReleaseAnnouncementLinks(ByRef xmlOutput As pdXML, ByRef srcPath As String)
+Private Sub AddReleaseAnnouncementLinks(ByRef xmlOutput As pdXML, ByRef srcPath As String)
 
     'Create an XML engine to parse the source document
     Dim xmlSource As pdXML
@@ -304,7 +304,7 @@ Private Sub addReleaseAnnouncementLinks(ByRef xmlOutput As pdXML, ByRef srcPath 
 End Sub
 
 'Helpful wrapper to add version and checksum data to an output XML object
-Private Sub addVersionGroupToXML(ByRef xmlOutput As pdXML, ByRef srcPath As String)
+Private Sub AddVersionGroupToXML(ByRef xmlOutput As pdXML, ByRef srcPath As String)
     
     'A pdPackage instance is used to generate checksums
     Dim cPackager As pdPackager
@@ -317,7 +317,7 @@ Private Sub addVersionGroupToXML(ByRef xmlOutput As pdXML, ByRef srcPath As Stri
     Set buildFiles = New pdStringStack
     
     'Note that XML files are currently ignored, as they're handled by the separate language file update protocol
-    m_File.retrieveAllFiles srcPath, buildFiles, True, False, , "xml"
+    m_File.retrieveAllFiles srcPath, buildFiles, True, False
     
     Dim curFile As String, vString As String
     
@@ -325,10 +325,10 @@ Private Sub addVersionGroupToXML(ByRef xmlOutput As pdXML, ByRef srcPath As Stri
     Do While buildFiles.PopString(curFile)
         
         'Retrieve the file's version (if any)
-        vString = getFileVersion_Modified(curFile)
+        vString = GetFileVersion_Modified(curFile)
         
         'If version isn unavailable, we must fall back to checksums for updating files.
-        If StrComp(vString, "unknown", vbBinaryCompare) <> 0 Then
+        If (StrComp(vString, "unknown", vbBinaryCompare) <> 0) Then
             xmlOutput.writeTagWithAttribute "version", "component", m_File.GenerateRelativePath(srcPath, curFile), vString
         End If
         
@@ -342,18 +342,17 @@ Private Sub addVersionGroupToXML(ByRef xmlOutput As pdXML, ByRef srcPath As Stri
 End Sub
 
 'Small convenience wrapper, so we can plug in "unknown" when the version number is, actually, unknown
-Private Function getFileVersion_Modified(ByRef srcFilename As String, Optional ByVal useThisIfVersionDoesntExist As String = "unknown") As String
+Private Function GetFileVersion_Modified(ByRef srcFilename As String, Optional ByVal useThisIfVersionDoesntExist As String = "unknown") As String
     
     Dim vString As String
     
     If m_File.GetFileVersionAsString(srcFilename, vString) Then
-        getFileVersion_Modified = vString
+        GetFileVersion_Modified = vString
     Else
-        getFileVersion_Modified = useThisIfVersionDoesntExist
+        GetFileVersion_Modified = useThisIfVersionDoesntExist
     End If
     
 End Function
-
 
 Private Sub Form_Load()
     

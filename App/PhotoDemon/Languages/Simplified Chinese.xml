@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2052</langversion>
+<langversion>6.8.2249</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -17,7 +17,7 @@
 
 <phrase>
 <original>Detecting Windows® version</original>
-<translation>检测 Windows® 版本</translation>
+<translation>检测Windows版本</translation>
 </phrase>
 
 <phrase>
@@ -1568,7 +1568,7 @@ In version 6.0, PhotoDemon macro files were redesigned to support new features, 
 
 <phrase>
 <original>BSD license</original>
-<translation></translation>
+<translation>BSD许可证</translation>
 </phrase>
 
 <phrase>
@@ -3173,7 +3173,7 @@ Please enter a numeric value.</original>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>你选择的图像的数量超过了什么的Windows®允许单个加载操作。请一组选定的图像较小再试一次。</translation>
+<translation>选择的图像数量超出Windows允许的最大数，请重新选择。</translation>
 </phrase>
 
 <phrase>
@@ -10092,12 +10092,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>边缘类型</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>生成图像轮廓</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12082,7 +12082,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Donate to PhotoDemon development</original>
-<translation></translation>
+<translation>捐赠PhotoDemon发展</translation>
 </phrase>
 
 <phrase>
@@ -12092,42 +12092,42 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>Participate in development, design, or translation work</original>
-<translation></translation>
+<translation>参与开发、设计或翻译工作</translation>
 </phrase>
 
 <phrase>
 <original>Contact the author</original>
-<translation></translation>
+<translation>联系作者</translation>
 </phrase>
 
 <phrase>
 <original>Download program source code</original>
-<translation></translation>
+<translation>下载程序源代码</translation>
 </phrase>
 
 <phrase>
 <original>Review program and plugin licenses</original>
-<translation></translation>
+<translation>审查程序和插件许可证</translation>
 </phrase>
 
 <phrase>
 <original>Latest news</original>
-<translation></translation>
+<translation>最新消息</translation>
 </phrase>
 
 <phrase>
 <original>About</original>
-<translation></translation>
+<translation>关于</translation>
 </phrase>
 
 <phrase>
 <original>Contributors</original>
-<translation></translation>
+<translation>贡献者</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon  Copyright %1 2001-2017  版权属于 Tanner Helland 和贡献者</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13134,12 +13134,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>Pencil (hard-tipped brush)</original>
-<translation></translation>
+<translation>铅笔（硬刷）</translation>
 </phrase>
 
 <phrase>
 <original>Paintbrush (soft-tipped brush)</original>
-<translation></translation>
+<translation>画笔（软刷）</translation>
 </phrase>
 
 <!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
@@ -13256,12 +13256,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>hardness</original>
-<translation></translation>
+<translation>硬度</translation>
 </phrase>
 
 <phrase>
 <original>flow</original>
-<translation></translation>
+<translation>连续性</translation>
 </phrase>
 
 <!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -13272,7 +13272,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <phrase>
 <original>antialiased</original>
-<translation></translation>
+<translation>反锯齿</translation>
 </phrase>
 
 <!-- Toolpanel_Pencil.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -14861,6 +14861,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <!-- Tools_PluginManager.frm contains 39 phrases. 18 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for Menus.bas -->
+
+<!-- Menus.bas contains 0 phrases. -->
+
+<!-- END text for Menus.bas-->
 
 <!-- Automatic text extraction complete. -->
 

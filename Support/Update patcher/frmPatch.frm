@@ -122,7 +122,7 @@ Private Sub Form_Load()
     Me.Show
     
     'Check relevant command-line params; this function returns TRUE if the command line contains parameters
-    If parseCommandLine() Then
+    If ParseCommandLine() Then
         
         'Wait for PD to close; when it does, the timer will initiate the rest of the patch process.
         txtOut.Text = "Waiting for PhotoDemon to terminate..."
@@ -132,9 +132,9 @@ Private Sub Form_Load()
     'If the command line is empty, the user somehow ran this independent of PD.  Terminate immediately.
     Else
     
-        textOut "It appears that something other than PhotoDemon launched this program.", False
-        textOut "For security reasons, this update patcher will not run unless started by PhotoDemon itself.", False
-        textOut "(You may close this window now.)", False
+        TextOut "It appears that something other than PhotoDemon launched this program.", False
+        TextOut "For security reasons, this update patcher will not run unless started by PhotoDemon itself.", False
+        TextOut "(You may close this window now.)", False
         
     End If
     
@@ -142,7 +142,7 @@ End Sub
 
 'Parse the command line for all relevant instructions.  PD handles some update tasks for us, and it relays its findings through
 ' the command line.
-Private Function parseCommandLine() As Boolean
+Private Function ParseCommandLine() As Boolean
     
     Dim cUnicode As pdUnicode
     Set cUnicode = New pdUnicode
@@ -152,9 +152,9 @@ Private Function parseCommandLine() As Boolean
     allParams = Split(cUnicode.CommandW, " ")
     
     'Check for an empty command line
-    If UBound(allParams) <= LBound(allParams) Then
-        textOut "WARNING! Input parameters invalid (" & cUnicode.CommandW & ").", False
-        parseCommandLine = False
+    If (UBound(allParams) <= LBound(allParams)) Then
+        TextOut "WARNING! Input parameters invalid (" & cUnicode.CommandW & ").", False
+        ParseCommandLine = False
     
     'Retrieve all parameters
     Else
@@ -188,7 +188,7 @@ Private Function parseCommandLine() As Boolean
             
         Loop
         
-        parseCommandLine = True
+        ParseCommandLine = True
         
     End If
     
@@ -246,14 +246,14 @@ Private Sub tmrCheck_Timer()
         CloseHandle hSnapshot
     
         'If PD was found, do nothing.  Otherwise, start patching the program.
-        If Not pdFound Then
+        If (Not pdFound) Then
             
             'Disable this timer
             tmrCheck.Enabled = False
             
             'Start the patch process
             m_PDClosed = True
-            startPatching
+            StartPatching
             
         End If
     
@@ -263,19 +263,19 @@ Private Sub tmrCheck_Timer()
     
 PDDetectionError:
 
-    textOut "Unknown error occurred while waiting for PhotoDemon to close.  Checking again..."
+    TextOut "Unknown error occurred while waiting for PhotoDemon to close.  Checking again..."
 
 End Sub
 
 'Start the patch process
-Private Function startPatching() As Boolean
+Private Function StartPatching() As Boolean
     
-    textOut "PhotoDemon shutdown detected.  Starting patch process."
+    TextOut "PhotoDemon shutdown detected.  Starting patch process."
     
     'This update patcher will have been extracted to PD's root folder.
     m_PDPath = App.Path
     
-    If StrComp(Right$(m_PDPath, 1), "\", vbBinaryCompare) <> 0 Then m_PDPath = m_PDPath & "\"
+    If (StrComp(Right$(m_PDPath, 1), "\", vbBinaryCompare) <> 0) Then m_PDPath = m_PDPath & "\"
     m_PDUpdatePath = m_PDPath & "Data\Updates\"
     m_PluginPath = m_PDPath & "App\PhotoDemon\Plugins\"
     
@@ -335,13 +335,17 @@ Private Function startPatching() As Boolean
                             CopyMemory ByVal StrPtr(newFilename), ByVal VarPtr(newFilenameArray(0)), UBound(newFilenameArray) + 1
                             
                             'Ignore the update patcher itself
-                            If Not StringsEqual(newFilename, "PD_Update_Patcher.exe") Then
+                            If (Not StringsEqual(newFilename, "PD_Update_Patcher.exe")) Then
                             
                                 'Retrieve the secondary failsafe checksum for this file
-                                failsafeChecksum = getFailsafeChecksum(xmlEngine, newFilename)
+                                failsafeChecksum = GetFailsafeChecksum(xmlEngine, newFilename)
+                                
+                                'Only compare checksums if the returned value is non-zero
+                                Dim checksumOkay As Boolean
+                                If (failsafeChecksum = 0) Then checksumOkay = True Else checksumOkay = CBool(failsafeChecksum = cPackage.checkSumArbitraryArray(rawNewFile))
                                 
                                 'Before proceeding with the write, compare the temp file array to our stored checksum
-                                If failsafeChecksum = cPackage.checkSumArbitraryArray(rawNewFile) Then
+                                If checksumOkay Then
                         
                                     'Checksums match!  We now want to overwrite the old binary file with its new copy.
                                      
@@ -360,29 +364,29 @@ Private Function startPatching() As Boolean
                                     
                                         'Use a special patch function to replace the binary file in question
                                         Dim patchResult As FILE_PATCH_RESULT
-                                        patchResult = patchArbitraryFile(dstFilename, m_PDUpdatePath & tmpFilename, , True, failsafeChecksum, cPackage)
+                                        patchResult = PatchArbitraryFile(dstFilename, m_PDUpdatePath & tmpFilename, , True, failsafeChecksum, cPackage)
                                         
                                         If patchResult = FPR_SUCCESS Then
                                         
-                                            textOut "Successfully patched " & newFilename, False
+                                            TextOut "Successfully patched " & newFilename, False
                                             
                                         Else
                                         
-                                            textOut "WARNING! patchProgramFiles failed to patch " & newFilename
+                                            TextOut "WARNING! patchProgramFiles failed to patch " & newFilename
                                                 
                                             Select Case patchResult
                                             
                                                 Case FPR_FAIL_NOTHING_CHANGED
-                                                    textOut "(However, patchProgramFiles was able to restore everything to its initial state.)"
+                                                    TextOut "(However, patchProgramFiles was able to restore everything to its initial state.)"
                                                     
                                                 Case FPR_FAIL_BOTH_FILES_REMOVED
-                                                    textOut "WARNING! Somehow, patchProgramFiles managed to kill both files while it was at it."
+                                                    TextOut "WARNING! Somehow, patchProgramFiles managed to kill both files while it was at it."
                                                 
                                                 Case FPR_FAIL_NEW_FILE_REMOVED
-                                                    textOut "WARNING! Somehow, patchProgramFiles managed to kill the new file while it was at it."
+                                                    TextOut "WARNING! Somehow, patchProgramFiles managed to kill the new file while it was at it."
                                                 
                                                 Case FPR_FAIL_OLD_FILE_REMOVED
-                                                    textOut "WARNING! Somehow, patchProgramFiles managed to kill the old file while it was at it."
+                                                    TextOut "WARNING! Somehow, patchProgramFiles managed to kill the old file while it was at it."
                                                 
                                             End Select
                                             
@@ -392,18 +396,26 @@ Private Function startPatching() As Boolean
                                         End If
                                     
                                     'End writing temp file success
+                                    Else
+                                        TextOut "WARNING!  Failed to write temp file copy of " & newFilename
                                     End If
                                     
                                 'End secondary checksum failsafe
+                                Else
+                                    TextOut "WARNING!  Checksum validation failed on: " & newFilename & ", (expected: " & failsafeChecksum & ", actual: " & cPackage.checkSumArbitraryArray(rawNewFile) & ")"
                                 End If
                                 
                             'End ignoring the update patch program itself
                             End If
                         
                         'End node header data retrieval success
+                        Else
+                            TextOut "WARNING!  Failed to retrieve header node for #" & i
                         End If
                     
                     'End node data retrieval success
+                    Else
+                        TextOut "WARNING!  Failed to retrieve data node for #" & i
                     End If
                 
                 Next i
@@ -411,46 +423,46 @@ Private Function startPatching() As Boolean
                 m_PatchSuccessful = allFilesSuccessful
                 
             Else
-                textOut "Patch file is missing or corrupted.  Patching cannot proceed.", False
+                TextOut "Patch file is missing or corrupted.  Patching cannot proceed.", False
                 m_PatchSuccessful = False
             End If
             
         Else
-            textOut "Update XML file doesn't contain patch data.  Patching cannot proceed.", False
+            TextOut "Update XML file doesn't contain patch data.  Patching cannot proceed.", False
             m_PatchSuccessful = False
         End If
         
     Else
-        textOut "Update XML file wasn't found.  Patching cannot proceed.", False
+        TextOut "Update XML file wasn't found.  Patching cannot proceed.", False
         m_PatchSuccessful = False
     End If
     
     'Regardless of outcome, perform some clean-up afterward.
-    finishPatching
+    FinishPatching
     
 End Function
 
 'When patching program files, we double-check checksums of both the temp files and the final binary copies.  This prevents hijackers from
 ' intercepting the files mid-transit, and replacing them with their own.
-Private Function getFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePath As String) As Long
+Private Function GetFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePath As String) As Long
 
     'Find the position of this file's checksum
     Dim pdTagPosition As Long
     pdTagPosition = xmlEngine.getLocationOfTagPlusAttribute("checksum", "component", relativePath, m_TrackStartPosition)
     
     'Make sure the tag position is within the valid range.  (This should always be TRUE, but it doesn't hurt to check.)
-    If (pdTagPosition >= m_TrackStartPosition) And (pdTagPosition <= m_TrackEndPosition) Then
+    If ((pdTagPosition >= m_TrackStartPosition) And (pdTagPosition <= m_TrackEndPosition)) Then
     
         'This is the checksum tag we want!  Retrieve its value.
         Dim thisChecksum As String
         thisChecksum = xmlEngine.getTagValueAtPreciseLocation(pdTagPosition)
         
         'Convert the checksum to a long and return it
-        getFailsafeChecksum = thisChecksum
+        GetFailsafeChecksum = thisChecksum
         
     'If the checksum doesn't exist in the file, return 0
     Else
-        getFailsafeChecksum = 0
+        GetFailsafeChecksum = 0
     End If
     
     'Debug.Print pdTagPosition & " (" & m_TrackStartPosition & ", " & m_TrackEndPosition & "): " & relativePath
@@ -468,7 +480,7 @@ End Function
 '          nothing hijacked the replacement process.
 '
 'Returns a FILE_PATCH_RESULT enum.  (FPR_SUCCESS means success; all other returns are various failures.)
-Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "", Optional ByVal handleBackupsForMe As Boolean = True, Optional ByVal srcChecksum As Long = 0, Optional ByRef srcPackage As pdPackager = Nothing) As FILE_PATCH_RESULT
+Public Function PatchArbitraryFile(ByVal oldFile As String, ByVal newFile As String, Optional ByVal customBackupFile As String = "", Optional ByVal handleBackupsForMe As Boolean = True, Optional ByVal srcChecksum As Long = 0, Optional ByRef srcPackage As pdPackager = Nothing) As FILE_PATCH_RESULT
     
     'Create a pdFSO instance
     Dim cFile As pdFSO
@@ -487,14 +499,14 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
         If cFile.FileExist(oldFile) Then
         
             'Compare old and new checksums
-            If srcPackage.checkSumArbitraryFile(oldFile) = srcChecksum Then
+            If (srcPackage.checkSumArbitraryFile(oldFile) = srcChecksum) Then
                 
                 'Checksums are identical.  Patching is not required.  Report TRUE and exit now.
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "patchArbitraryFile skipped patching of " & oldFile & " because it's identical to the new file."
                 #End If
                 
-                patchArbitraryFile = FPR_SUCCESS
+                PatchArbitraryFile = FPR_SUCCESS
                 Exit Function
                 
             End If
@@ -509,34 +521,54 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
         'We use the standard Data/Updates folder for backups when patching files
         customBackupFile = m_PDUpdatePath & Left$(cHash.SHA256(cFile.getFilename(oldFile) & CStr(Timer)), 16) & ".tmp"
         
-        'Copy the contents of newFile to Backup file
-        If cFile.CopyFile(oldFile, customBackupFile) Then
+        'Copy the contents of newFile to Backup file.  (Note that we can skip this step if the old file doesn't exist.)
+        Dim copySuccess As Boolean
+        If cFile.FileExist(oldFile) Then
+            copySuccess = cFile.CopyFile(oldFile, customBackupFile)
+        Else
+            copySuccess = True
+        End If
+        
+        If copySuccess Then
         
             'With a backup successfully created, lean on the API to perform the actual patching
             Dim patchResult As FILE_PATCH_RESULT
-            patchResult = cFile.ReplaceFile(oldFile, newFile)
+            If cFile.FileExist(oldFile) Then
+                patchResult = cFile.ReplaceFile(oldFile, newFile)
+            Else
+                If cFile.CopyFile(newFile, oldFile) Then
+                    patchResult = FPR_SUCCESS
+                    cFile.KillFile newFile
+                Else
+                    patchResult = FPR_FAIL_NOTHING_CHANGED
+                End If
+            End If
             
             'If the patch succeeds, great!
-            If patchResult = FPR_SUCCESS Then
+            If (patchResult = FPR_SUCCESS) Then
             
-                patchArbitraryFile = FPR_SUCCESS
+                PatchArbitraryFile = FPR_SUCCESS
                 
             'If the patch does not succeed, restore our backup as necessary
             Else
             
                 'If the old file still exists, kill our backup, then return the appropriate fail state
                 If cFile.FileExist(oldFile) Then
-                    patchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
+                    PatchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
                 
                 'The old file is missing.  Restore it from our backup.
                 Else
                     
-                    If cFile.CopyFile(customBackupFile, oldFile) Then
-                        patchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
+                    If cFile.FileExist(customBackupFile) Then
+                        If cFile.CopyFile(customBackupFile, oldFile) Then
+                            PatchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
+                        Else
+                            PatchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
+                        End If
                     
                     'If we can't restore our backup, things are really messed up.  We have no choice but to exit.
                     Else
-                        patchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
+                        PatchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
                     End If
                     
                 End If
@@ -547,21 +579,21 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
         ' but it's better than nothing.
         Else
             
-            textOut "WARNING! patchArbitraryFile was unable to create a manual backup prior to patching.", False
+            TextOut "WARNING! patchArbitraryFile was unable to create a manual backup prior to patching.", False
             
             'Leave it to the API from here...
-            patchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
+            PatchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
             
         End If
         
     'If the caller doesn't want us to handle backups, its up to them to
     Else
-        patchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
+        PatchArbitraryFile = cFile.ReplaceFile(oldFile, newFile, customBackupFile)
     End If
     
     'If we made it all the way here, the replace operation completed.  If it thinks it was successful, and a checksum was provided, perform a final
     ' failsafe checksum verification on the new file.
-    If (srcChecksum <> 0) And (patchArbitraryFile = FPR_SUCCESS) Then
+    If (srcChecksum <> 0) And (PatchArbitraryFile = FPR_SUCCESS) Then
     
         'Validate the oldFile (which now contains the contents of newFile)
         If srcPackage.checkSumArbitraryFile(oldFile) <> srcChecksum Then
@@ -570,16 +602,16 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
             If cFile.ReplaceFile(oldFile, customBackupFile) = FPR_SUCCESS Then
             
                 'Any damage was undone.  Report a matching fail state.
-                patchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
+                PatchArbitraryFile = FPR_FAIL_NOTHING_CHANGED
             
             Else
                 
                 'We couldn't undo the damage.  This is an impossible outcome, IMO, but catch it anyway.
                 cFile.KillFile oldFile
-                patchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
+                PatchArbitraryFile = FPR_FAIL_OLD_FILE_REMOVED
                 
-                textOut "WARNING! patchArbitraryFile detected a checksum mismatch, but it was unable to restore the backup file.", False
-                textOut "WARNING! (File in question is " & oldFile & ")", False
+                TextOut "WARNING! patchArbitraryFile detected a checksum mismatch, but it was unable to restore the backup file.", False
+                TextOut "WARNING! (File in question is " & oldFile & ")", False
                 
             End If
         
@@ -592,18 +624,18 @@ Public Function patchArbitraryFile(ByVal oldFile As String, ByVal newFile As Str
     ' - A failed replacement operation, but everything has been restored to its original state.
     
     'Regardless of outcome, we no longer need our backup file, so kill it
-    cFile.KillFile customBackupFile
+    If cFile.FileExist(customBackupFile) Then cFile.KillFile customBackupFile
     
 End Function
 
 'Regardless of patch success or failure, this function is called.  If the user wants us to restart PD, we do so now.
-Private Sub finishPatching()
+Private Sub FinishPatching()
     
-    textOut "Update process complete.  Applying final validation to all updated files."
+    TextOut "Update process complete.  Applying final validation to all updated files."
     
     If m_RestartWhenDone Then
         
-        textOut "Restarting PhotoDemon, as requested."
+        TextOut "Restarting PhotoDemon, as requested."
         
         Dim actionString As String, fileString As String, pathString As String, paramString As String
         actionString = "open"
@@ -615,13 +647,19 @@ Private Sub finishPatching()
     
     End If
     
-    textOut "Validation passed.  Shutting down update patcher.", False
+    TextOut "Validation passed.  Writing final log and shutting down update patcher.", False
+    
+    On Error Resume Next
+    
+    Dim cFile As pdFSO: Set cFile = New pdFSO
+    cFile.SaveStringToTextFile txtOut.Text, m_PDUpdatePath & "update_log.txt"
+    
     Unload Me
 
 End Sub
 
 'Display basic update text
-Public Sub textOut(ByVal newText As String, Optional ByVal appendEllipses As Boolean = True)
+Public Sub TextOut(ByVal newText As String, Optional ByVal appendEllipses As Boolean = True)
     
     If appendEllipses Then
     

@@ -4,7 +4,7 @@ Attribute VB_Name = "Math_Functions"
 'Copyright 2013-2017 by Tanner Helland and Audioglider
 'Created: 13/June/13
 'Last updated: 22/May/14
-'Last update: fixed convertToFraction() function to work with non-English locales
+'Last update: fixed ConvertToFraction() function to work with non-English locales
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
 ' until June '13.  This module is now used to store all the random bits of specialized math required by the program.
@@ -135,7 +135,7 @@ Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcR
 End Sub
 
 'Given an arbitrary output range and input range, convert a value from the input range to the output range
-' Thank you to expert coder audioglider for contributing this function.
+' Thank you to expert coder Audioglider for contributing this function.
 Public Function ConvertRange(ByVal originalStart As Double, ByVal originalEnd As Double, ByVal newStart As Double, ByVal newEnd As Double, ByVal Value As Double) As Double
     Dim dScale As Double
     dScale = (newEnd - newStart) / (originalEnd - originalStart)
@@ -147,7 +147,7 @@ End Function
 ' You can download the original at this link (good as of 13 June 2014): http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=61596&lngWId=1
 Public Sub ConvertToFraction(ByVal v As Double, w As Double, n As Double, d As Double, Optional ByVal maxDenomDigits As Byte, Optional ByVal Accuracy As Double = 100#)
 
-    Const MaxTerms As Integer = 50          'Limit to prevent infinite loop
+    Const MaxTerms As Long = 50          'Limit to prevent infinite loop
     Const MinDivisor As Double = 1E-16      'Limit to prevent divide by zero
     Const MaxError As Double = 1E-50        'How close is enough
     Dim f As Double                         'Fraction being converted
