@@ -182,31 +182,36 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
 
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
     
-    'File Menu
-    AddMenuIcon "file_new", 0, 0      'New
-    AddMenuIcon "file_open", 0, 1       'Open Image
+    'I am currently in the process of migrating menu initialization to a dedicated module.  That module will
+    ' maintain menu icons (among other menu properties).  As such, this sub is gradually shrinking.
+    Menus.ApplyIconsToMenus
     
-    'AddMenuIcon "OPENREC", 0, 2       'Open recent
-    'AddMenuIcon "IMPORT", 0, 3        'Import
-        '--> Import sub-menu
-        AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
-        AddMenuIcon "SCANNER", 0, 3, 2     'Scan Image
-        AddMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
-        AddMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
-        AddMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
     
-    AddMenuIcon "file_close", 0, 5         'Close
-    AddMenuIcon "file_save", 0, 8          'Save
-    AddMenuIcon "file_savedup", 0, 9      'Save copy
-    AddMenuIcon "file_saveas", 0, 10       'Save As...
-    
-    'AddMenuIcon "REVERT", 0, 11       'Revert
-    AddMenuIcon "file_batch", 0, 13     'Batch operations
-        '--> Batch sub-menu
-        AddMenuIcon "file_batch", 0, 13, 0    'Batch process
-        AddMenuIcon "file_repair", 0, 13, 1    'Batch repair
-    AddMenuIcon "file_print", 0, 15        'Print
-    'AddMenuIcon "file_quit", 0, 17         'Exit
+'    'File Menu
+'    AddMenuIcon "file_new", 0, 0      'New
+'    AddMenuIcon "file_open", 0, 1       'Open Image
+'
+'    'AddMenuIcon "OPENREC", 0, 2       'Open recent
+'    'AddMenuIcon "IMPORT", 0, 3        'Import
+'        '--> Import sub-menu
+'        AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
+'        AddMenuIcon "SCANNER", 0, 3, 2     'Scan Image
+'        AddMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
+'        AddMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
+'        AddMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
+'
+'    AddMenuIcon "file_close", 0, 5         'Close
+'    AddMenuIcon "file_save", 0, 8          'Save
+'    AddMenuIcon "file_savedup", 0, 9      'Save copy
+'    AddMenuIcon "file_saveas", 0, 10       'Save As...
+'
+'    'AddMenuIcon "REVERT", 0, 11       'Revert
+'    AddMenuIcon "file_batch", 0, 13     'Batch operations
+'        '--> Batch sub-menu
+'        AddMenuIcon "file_batch", 0, 13, 0    'Batch process
+'        AddMenuIcon "file_repair", 0, 13, 1    'Batch repair
+'    AddMenuIcon "file_print", 0, 15        'Print
+'    'AddMenuIcon "file_quit", 0, 17         'Exit
     
         
     'Edit Menu
@@ -558,7 +563,7 @@ End Sub
 'This new, simpler technique for adding menu icons requires only the menu location (including sub-menus) and the icon's identifer
 ' in the resource file.  If the icon has already been loaded, it won't be loaded again; instead, the function will check the list
 ' of loaded icons and automatically fill in the numeric identifier as necessary.
-Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
+Public Sub AddMenuIcon(ByRef resID As String, ByVal topMenu As Long, ByVal subMenu As Long, Optional ByVal subSubMenu As Long = -1)
     
     On Error GoTo MenuIconNotFound
     
@@ -569,6 +574,8 @@ Private Sub AddMenuIcon(ByVal resID As String, ByVal topMenu As Long, ByVal subM
     iconAlreadyLoaded = False
     
     'Loop through all icons that have been loaded, and see if this one has been requested already.
+    ' (This is necessary because some menus reuse the same icons, and it's a waste of resources to maintain
+    '  two copies of said icons.)
     For i = 0 To curIcon
     
         If (iconNames(i) = resID) Then
