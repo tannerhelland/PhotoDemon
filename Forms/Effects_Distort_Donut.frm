@@ -293,7 +293,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -412,7 +412,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
             nY = k + ssY(sampleIndex)
             
             'Calculate theta, and use it to calculate a source X position
-            theta = Math_Functions.Atan2(-nY, -nX) + initialAngle
+            theta = Math_Functions.Atan2_Fastest(-nY, -nX) + initialAngle
             theta = Math_Functions.Modulo(theta, PI_DOUBLE)
             srcX = theta * spreadCalc
             
@@ -421,7 +421,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
             srcY = finalY * (1 - (radius - interiorRadius) / heightCalc)
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.

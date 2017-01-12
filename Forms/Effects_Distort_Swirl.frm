@@ -224,7 +224,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -331,7 +331,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
             sDistance = (nX * nX) + (nY * nY)
                     
             'Calculate remapped x and y values
-            If sDistance > sRadius2 Then
+            If (sDistance > sRadius2) Then
                 srcX = x
                 srcY = y
             Else
@@ -339,7 +339,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
                 sDistance = Sqr(sDistance)
                 
                 'Calculate theta
-                theta = Atan2(nY, nX) + swirlAngle * ((sRadius - sDistance) / sRadius)
+                theta = Math_Functions.Atan2_Fastest(nY, nX) + swirlAngle * ((sRadius - sDistance) / sRadius)
             
                 srcX = midX + (sDistance * Cos(theta))
                 srcY = midY + (sDistance * Sin(theta))
@@ -347,7 +347,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
             End If
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.

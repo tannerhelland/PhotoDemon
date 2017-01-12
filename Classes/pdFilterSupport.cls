@@ -38,7 +38,7 @@ Private m_Interpolate As Boolean
 Private m_DstX As Long, m_DstY As Long
 
 'A function may want to force parts of an image to a certain color.  This simplified function can be used to do that.
-Public Sub forcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
+Public Sub ForcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
 
     Dim QuickVal As Long
     QuickVal = x * m_ColorDepth
@@ -54,7 +54,7 @@ End Sub
 ' do something with the colors from those various positions.
 '
 'Said another way, the caller need only calculate srcX and srcY, then this class will do the rest!
-Public Sub getColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, Optional ByRef origX As Long, Optional ByRef origY As Long)
+Public Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, Optional ByRef origX As Long, Optional ByRef origY As Long)
     
     'Cache the original x/y values as necessary
     If m_EdgeMethod = EDGE_ORIGINAL Then
@@ -80,10 +80,10 @@ Public Sub getColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long
         'Interpolate a new pixel value
         If m_Interpolate Then
             
-            b = pInterpolate(srcX, srcY, srcData, 0)
-            g = pInterpolate(srcX, srcY, srcData, 1)
-            r = pInterpolate(srcX, srcY, srcData, 2)
-            If m_ColorDepth = 4 Then a = pInterpolate(srcX, srcY, srcData, 3)
+            b = PInterpolate(srcX, srcY, srcData, 0)
+            g = PInterpolate(srcX, srcY, srcData, 1)
+            r = PInterpolate(srcX, srcY, srcData, 2)
+            If m_ColorDepth = 4 Then a = PInterpolate(srcX, srcY, srcData, 3)
         
         'Round to the nearest coordinate value
         Else
@@ -104,7 +104,7 @@ End Sub
 
 'After a transform has generate a set of reverse-mapped pixel coordinates, they are passed to this function.
 ' Based on already established parameters (such as interpolation, edge handling, etc), new pixel values are set.
-Public Sub setPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
+Public Sub SetPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
 
     If m_EdgeMethod = EDGE_ORIGINAL Then
         m_DstX = x
@@ -129,7 +129,7 @@ Public Sub setPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByR
     Else
         If m_Interpolate Then
             For i = 0 To m_ColorDepthLoop
-                dstData(QuickVal + i, y) = pInterpolate(srcX, srcY, srcData, i)
+                dstData(QuickVal + i, y) = PInterpolate(srcX, srcY, srcData, i)
             Next i
         Else
     
@@ -145,7 +145,7 @@ End Sub
 
 'When this support class is first initialized by a function, a number of parameters are specified.  It is much faster
 ' to set these once and store them instead of passing them every time a pixel needs to be handled.
-Public Sub setDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As EDGE_OPERATOR, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
+Public Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As EDGE_OPERATOR, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
     
     m_ColorDepth = imgColorDepth
     m_ColorDepthLoop = m_ColorDepth - 1
@@ -245,7 +245,7 @@ End Function
 
 'This function takes an x and y value - as floating-point - and uses their position to calculate an interpolated value
 ' for an imaginary pixel in that location.  Offset (r/g/b/alpha) and image color depth are also required.
-Private Function pInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long) As Byte
+Private Function PInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long) As Byte
         
     'Retrieve the four surrounding pixel values
     Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
@@ -314,6 +314,6 @@ Private Function pInterpolate(ByVal x1 As Double, ByVal y1 As Double, ByRef iDat
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
     'Blend in the y-direction
-    pInterpolate = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
+    PInterpolate = bottomRowColor * yBlend + topRowColor * (1 - yBlend)
 
 End Function
