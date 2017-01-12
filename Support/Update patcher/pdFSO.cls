@@ -243,7 +243,7 @@ Public Function CopyFile(ByVal srcFilename As String, ByVal dstFilename As Strin
 
     'If the source file doesn't exist, fail in advance
     If FileExist(srcFilename) Then
-    
+        
         Dim copyResult As Long
         copyResult = CopyFileW(StrPtr(srcFilename), StrPtr(dstFilename), 0)
         

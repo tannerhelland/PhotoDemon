@@ -181,13 +181,13 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     m_refreshOutsideProgressBar = useDoEvents
 
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)
-        
+    
     'File Menu
     AddMenuIcon "file_new", 0, 0      'New
     AddMenuIcon "file_open", 0, 1       'Open Image
     
     'AddMenuIcon "OPENREC", 0, 2       'Open recent
-    AddMenuIcon "IMPORT", 0, 3        'Import
+    'AddMenuIcon "IMPORT", 0, 3        'Import
         '--> Import sub-menu
         AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
         AddMenuIcon "SCANNER", 0, 3, 2     'Scan Image
@@ -200,13 +200,13 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "file_savedup", 0, 9      'Save copy
     AddMenuIcon "file_saveas", 0, 10       'Save As...
     
-    AddMenuIcon "REVERT", 0, 11       'Revert
-    AddMenuIcon "BCONVERT", 0, 13     'Batch operations
+    'AddMenuIcon "REVERT", 0, 11       'Revert
+    AddMenuIcon "file_batch", 0, 13     'Batch operations
         '--> Batch sub-menu
-        AddMenuIcon "BCONVERT", 0, 13, 0    'Batch process
-        'AddMenuIcon "BCONVERT", 0, 13, 1    'Batch repair
-    AddMenuIcon "PRINT", 0, 15        'Print
-    AddMenuIcon "EXIT", 0, 17         'Exit
+        AddMenuIcon "file_batch", 0, 13, 0    'Batch process
+        AddMenuIcon "file_repair", 0, 13, 1    'Batch repair
+    AddMenuIcon "file_print", 0, 15        'Print
+    'AddMenuIcon "file_quit", 0, 17         'Exit
     
         
     'Edit Menu

@@ -306,7 +306,7 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     
     'Initialize the destination stack as necessary.  Note that nothing happens if dstFiles is already initialized; this is by design, so the caller
     ' can concatenate multiple search results together if desired.
-    If dstFiles Is Nothing Then Set dstFiles = New pdStringStack
+    If (dstFiles Is Nothing) Then Set dstFiles = New pdStringStack
     
     'This function was first used in PD as part of pdPackage's zip-like interface.  The goal was to create a convenient way
     ' to generate a folder-preserved list of files.  Consider a file tree like the following:
