@@ -910,7 +910,7 @@ Public Sub MenuCountColors()
     Dim tmpSA As SAFEARRAY2D
     FastDrawing.PrepSafeArray tmpSA, tmpImageComposite
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-            
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim qvDepth As Long

@@ -82,17 +82,23 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     Set m_shadowDIB = New pdDIB
     
     'Load the logo DIB, and calculate an aspect ratio (important if high-DPI settings are in use)
-    m_dibsLoadedSuccessfully = LoadResourceToDIB("PDLOGOWHITE", m_logoDIB)
+    Dim origLogoWidth As Long, origLogoHeight As Long
+    origLogoWidth = FixDPI(779)
+    origLogoHeight = FixDPI(220)
+    m_dibsLoadedSuccessfully = LoadResourceToDIB("pd_logo_white", m_logoDIB, origLogoWidth, origLogoHeight)
     m_logoAspectRatio = CDbl(m_logoDIB.GetDIBWidth) / CDbl(m_logoDIB.GetDIBHeight)
     
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
-    m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("PDLOGOBLACK", m_shadowDIB)
+    m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("pd_logo_black", m_shadowDIB, origLogoWidth, origLogoHeight)
     
-    If (FixDPIFloat(1) = 1) Then
-        QuickBlurDIB m_shadowDIB, 7, False
+    Dim blurRadius As Long
+    If (FixDPIFloat(1) = 1#) Or (FixDPIFloat(1) = 0#) Then
+        blurRadius = 7
     Else
-        QuickBlurDIB m_shadowDIB, 7 * (1 / FixDPIFloat(1)), False
+        blurRadius = 7 * (1 / FixDPIFloat(1))
     End If
+    
+    If m_dibsLoadedSuccessfully Then QuickBlurDIB m_shadowDIB, blurRadius, False
     
 End Sub
 

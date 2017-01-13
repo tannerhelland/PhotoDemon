@@ -147,9 +147,40 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                         LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, VarPtr(srcBytes(0, 0)))
                         If LoadImageResource Then LoadImageResource = DIB_Support.ApplyTransparencyTable(m_tmpDIB, srcBytes)
                     Else
-                        Dim tmpDIBPointer As Long, tmpDIBLength As Long
-                        m_tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
-                        LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, tmpDIBPointer)
+                        
+                        'See if the DIB was stored using a palette system
+                        If cXML.GetUniqueTag_Boolean("uses-palette", False) Then
+                        
+                            'Retrieve the palette count, and prep a palette and 8-bpp array
+                            Dim numColors As Long
+                            numColors = cXML.GetUniqueTag_Long("palette-size")
+                            
+                            If (numColors > 0) Then
+                                
+                                Dim tmpPalette() As RGBQUAD, tmpPixels() As Byte
+                                ReDim tmpPalette(0 To numColors - 1) As RGBQUAD
+                                ReDim tmpPixels(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
+                                
+                                Dim origData() As Byte
+                                If m_Resources.GetNodeDataByIndex(nodeIndex, False, origData, False) Then
+                                    
+                                    'Copy the palette and pixel data into place
+                                    CopyMemory ByVal VarPtr(tmpPalette(0)), ByVal VarPtr(origData(0)), numColors * 4
+                                    CopyMemory ByVal VarPtr(tmpPixels(0, 0)), ByVal VarPtr(origData(numColors * 4)), imgWidth * imgHeight
+                                    
+                                    'Build a matching 32-bpp DIB from the palette and pixel data
+                                    LoadImageResource = DIB_Support.GetRGBADIB_FromPalette(m_tmpDIB, numColors, tmpPalette, tmpPixels)
+                                
+                                End If
+                                
+                            End If
+                        
+                        Else
+                            Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                            m_tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                            LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, tmpDIBPointer)
+                        End If
+                        
                     End If
                     
                     'At present, all resources contain premultiplied alpha, so force the corresponding state now

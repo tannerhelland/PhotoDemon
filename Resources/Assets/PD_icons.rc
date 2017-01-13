@@ -336,10 +336,6 @@ ABOUT        CUSTOM  MOVEABLE        LOADONCALL      about_pd.png
 
 //Special-purpose images
 
-//New program logo as of 6.6, with the goal of rendering as much of the logo at run-time as possible
-PDLOGOWHITE  CUSTOM  MOVEABLE        LOADONCALL      PD_white_logo_splash.png
-PDLOGOBLACK  CUSTOM  MOVEABLE        LOADONCALL      PD_black_logo_splash.png
-
 //Cursors
 HANDOPEN     CUSTOM  MOVEABLE        LOADONCALL      openhand.png
 HANDCLOSED   CUSTOM  MOVEABLE        LOADONCALL      closedhand.png

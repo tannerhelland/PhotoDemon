@@ -71,24 +71,24 @@ End Function
 ' which must also be freed post-load (in addition to the default handle returned by this function).
 '
 'On success, the target DIB object will also have its OriginalColorSpace member filled.
-Private Function FI_LoadImageU(ByVal srcFilename As String, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS, ByRef dstDIB As pdDIB, ByRef fi_multi_hDIB As Long, Optional ByVal pageToLoad As Long = 0&) As Long
+Private Function FI_LoadImageU(ByVal srcFilename As String, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS, ByRef dstDIB As pdDIB, ByRef fi_multi_hDIB As Long, Optional ByVal pageToLoad As Long = 0&, Optional ByVal suppressDebugData As Boolean = False) As Long
 
     'FreeImage uses separate import behavior for single-page and multi-page files.  As such, we may need to track
     ' multiple handles (e.g. a handle to the master image, and a handle to the current page).  If fi_multi_hDIB is non-zero,
     ' this is a multipage image.
     Dim fi_hDIB As Long
     If (pageToLoad <= 0) Then
-        FI_DebugMsg "Invoking FreeImage_LoadUInt..."
+        FI_DebugMsg "Invoking FreeImage_LoadUInt...", suppressDebugData
         fi_hDIB = FreeImage_LoadUInt(fileFIF, StrPtr(srcFilename), fi_ImportFlags)
     Else
         
         'Multipage support can be finicky, so it reports more debug info than PD usually prefers
         If (fileFIF = PDIF_GIF) Then
-            FI_DebugMsg "Importing frame # " & CStr(pageToLoad + 1) & " from animated GIF file..."
+            FI_DebugMsg "Importing frame # " & CStr(pageToLoad + 1) & " from animated GIF file...", suppressDebugData
         ElseIf (fileFIF = FIF_ICO) Then
-            FI_DebugMsg "Importing icon # " & CStr(pageToLoad + 1) & " from ICO file..."
+            FI_DebugMsg "Importing icon # " & CStr(pageToLoad + 1) & " from ICO file...", suppressDebugData
         Else
-            FI_DebugMsg "Importing page # " & CStr(pageToLoad + 1) & " from multipage TIFF file..."
+            FI_DebugMsg "Importing page # " & CStr(pageToLoad + 1) & " from multipage TIFF file...", suppressDebugData
         End If
         
         If (fileFIF = PDIF_GIF) Then
@@ -140,7 +140,7 @@ Private Function FI_LoadImageU(ByVal srcFilename As String, ByVal fileFIF As FRE
 End Function
 
 'Load an image via FreeImage.  It is assumed that the source file has already been vetted for things like "does it exist?"
-Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing) As PD_OPERATION_OUTCOME
+Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False) As PD_OPERATION_OUTCOME
 
     On Error GoTo FreeImageV5_Error
     
@@ -160,7 +160,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
-    FI_DebugMsg "Running filetype heuristics..."
+    FI_DebugMsg "Running filetype heuristics...", suppressDebugData
     
     Dim fileFIF As FREE_IMAGE_FORMAT
     fileFIF = FI_DetermineFiletype(srcFilename, dstDIB)
@@ -182,7 +182,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' Based on the detected format, prepare any necessary load flags
     '****************************************************************************
     
-    FI_DebugMsg "Preparing FreeImage import flags..."
+    FI_DebugMsg "Preparing FreeImage import flags...", suppressDebugData
     
     Dim fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS
     fi_ImportFlags = FI_DetermineImportFlags(srcFilename, fileFIF, Not showMessages)
@@ -196,11 +196,11 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' multiple handles (e.g. a handle to the master image, and a handle to the current page).  If fi_multi_hDIB is non-zero,
     ' this is a multipage image.
     Dim fi_hDIB As Long, fi_multi_hDIB As Long
-    fi_hDIB = FI_LoadImageU(srcFilename, fileFIF, fi_ImportFlags, dstDIB, fi_multi_hDIB, pageToLoad)
+    fi_hDIB = FI_LoadImageU(srcFilename, fileFIF, fi_ImportFlags, dstDIB, fi_multi_hDIB, pageToLoad, suppressDebugData)
     
     'If an empty handle is returned, abandon the import attempt.
     If (fi_hDIB = 0) Then
-        FI_DebugMsg "Import via FreeImage failed (blank handle)."
+        FI_DebugMsg "Import via FreeImage failed (blank handle).", suppressDebugData
         FI_LoadImage_V5 = PD_FAILURE_GENERIC
         Exit Function
     End If
@@ -213,7 +213,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     Dim fi_BPP As Long, fi_DataType As FREE_IMAGE_TYPE
     fi_BPP = FreeImage_GetBPP(fi_hDIB)
     fi_DataType = FreeImage_GetImageType(fi_hDIB)
-    FI_DebugMsg "Heuristics show image bit-depth: " & fi_BPP & ", pixel type: " & FI_GetImageTypeAsString(fi_DataType)
+    FI_DebugMsg "Heuristics show image bit-depth: " & fi_BPP & ", pixel type: " & FI_GetImageTypeAsString(fi_DataType), suppressDebugData
     
     dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB), True
     FI_LoadBackgroundColor fi_hDIB, dstDIB
@@ -247,7 +247,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     If (Not dstDIBFinished) And (FreeImage_GetColorType(fi_hDIB) = FIC_CMYK) Then
         
-        FI_DebugMsg "CMYK image detected.  Preparing transform into RGB space..."
+        FI_DebugMsg "CMYK image detected.  Preparing transform into RGB space...", suppressDebugData
         
         'Proper CMYK conversions require an ICC profile.  If this image doesn't have one, it's a pointless image
         ' (it's impossible to construct a "correct" copy since CMYK is device-specific), but we'll of course try
@@ -261,7 +261,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
         
         'If CMYK conversion failed, re-load the image and use FreeImage to apply the CMYK -> RGB transform.
         If (Not cmykConversionSuccessful) Then
-            FI_DebugMsg "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+            FI_DebugMsg "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion...", suppressDebugData
             FI_Unload fi_hDIB, fi_multi_hDIB
             fi_hDIB = FreeImage_LoadUInt(fileFIF, StrPtr(srcFilename), FILO_JPEG_ACCURATE Or FILO_JPEG_EXIFROTATE)
         End If
@@ -286,7 +286,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
         'If the image does not contain an embedded ICC profile, we have no choice but to use option (2)
         If (FreeImage_HasICCProfile(fi_hDIB) And dstDIB.ICCProfile.HasICCData) Then
             
-            FI_DebugMsg "HDR image identified.  ICC profile found; attempting to convert automatically..."
+            FI_DebugMsg "HDR image identified.  ICC profile found; attempting to convert automatically...", suppressDebugData
             hdrICCSuccess = GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB)
             
             'Some esoteric color-depths may require us to use a temporary FreeImage handle instead of copying
@@ -298,7 +298,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
                     new_hDIB = 0
                 End If
             Else
-                FI_DebugMsg "ICC transformation unsuccessful; dropping back to tone-mapping..."
+                FI_DebugMsg "ICC transformation unsuccessful; dropping back to tone-mapping...", suppressDebugData
             End If
         
         End If
@@ -306,7 +306,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
         'If we can't find an ICC profile, we have no choice but to use tone-mapping to generate a 24/32-bpp image
         If (Not hdrICCSuccess) Then
         
-            FI_DebugMsg "HDR image identified.  Raising tone-map dialog..."
+            FI_DebugMsg "HDR image identified.  Raising tone-map dialog...", suppressDebugData
             
             'Use the central tone-map handler to apply further tone-mapping
             Dim toneMappingOutcome As PD_OPERATION_OUTCOME
@@ -321,13 +321,13 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
                 'Replace the primary FI_DIB handle with the new one, then carry on with loading
                 If (new_hDIB <> fi_hDIB) Then FI_Unload fi_hDIB, fi_multi_hDIB
                 fi_hDIB = new_hDIB
-                FI_DebugMsg "Tone mapping complete."
+                FI_DebugMsg "Tone mapping complete.", suppressDebugData
                 
             'The tone-mapper will return 0 if it failed.  If this happens, we cannot proceed with loading.
             Else
                 FI_Unload fi_hDIB, fi_multi_hDIB
                 If (toneMappingOutcome <> PD_SUCCESS) Then FI_LoadImage_V5 = toneMappingOutcome Else FI_LoadImage_V5 = PD_FAILURE_GENERIC
-                FI_DebugMsg "Tone-mapping canceled due to user request or error.  Abandoning image import."
+                FI_DebugMsg "Tone-mapping canceled due to user request or error.  Abandoning image import.", suppressDebugData
                 Exit Function
             End If
             
@@ -356,7 +356,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
             'At present, we only cover grayscale ICC profiles in indexed images
             If ((FreeImage_GetColorType(fi_hDIB) = FIC_MINISBLACK) Or (FreeImage_GetColorType(fi_hDIB) = FIC_MINISWHITE)) Then
                 
-                FI_DebugMsg "8bpp grayscale image with ICC profile identified.  Applying color management now..."
+                FI_DebugMsg "8bpp grayscale image with ICC profile identified.  Applying color management now...", suppressDebugData
                 new_hDIB = 0
                 
                 If GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB) Then
@@ -399,7 +399,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     If (Not dstDIBFinished) And (dstDIB.ICCProfile.HasICCData) And (Not dstDIB.ICCProfile.HasProfileBeenApplied) Then
         
-        FI_DebugMsg "Applying final color management operation..."
+        FI_DebugMsg "Applying final color management operation...", suppressDebugData
         
         new_hDIB = 0
         If GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB) Then
@@ -476,7 +476,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' data still resides inside a FreeImage handle.
     If (Not dstDIBFinished) And (fi_hDIB <> 0) Then
     
-        FI_DebugMsg "Requesting memory for final image transfer..."
+        FI_DebugMsg "Requesting memory for final image transfer...", suppressDebugData
         
         'Get width and height from the file, and create a new DIB to match
         Dim fi_Width As Long, fi_Height As Long
@@ -491,10 +491,10 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
             Exit Function
         Else
             If dstDIB.CreateBlank(fi_Width, fi_Height, fi_BPP, 0, 0) Then
-                FI_DebugMsg "Memory secured.  Finalizing image load..."
+                FI_DebugMsg "Memory secured.  Finalizing image load...", suppressDebugData
                 SetDIBitsToDevice dstDIB.GetDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
             Else
-                FI_DebugMsg "Import via FreeImage failed (couldn't create DIB)."
+                FI_DebugMsg "Import via FreeImage failed (couldn't create DIB).", suppressDebugData
                 FI_Unload fi_hDIB, fi_multi_hDIB
                 FI_LoadImage_V5 = PD_FAILURE_GENERIC
                 Exit Function
@@ -508,7 +508,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     '****************************************************************************
     
     FI_Unload fi_hDIB, fi_multi_hDIB
-    FI_DebugMsg "Image load successful.  FreeImage handle released."
+    FI_DebugMsg "Image load successful.  FreeImage handle released.", suppressDebugData
     
     
     '****************************************************************************
@@ -518,7 +518,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     'If this image came from the clipboard, and its alpha state is unknown, we're going to force all alpha values
     ' to 255 to avoid potential driver-specific issues with the PrtScrn key.
     If specialClipboardHandlingRequired Then
-        FI_DebugMsg "Image came from the clipboard; finalizing alpha now..."
+        FI_DebugMsg "Image came from the clipboard; finalizing alpha now...", suppressDebugData
         dstDIB.ForceNewAlpha 255
     End If
     
@@ -541,7 +541,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
 FreeImageV5_Error:
     
-    FI_DebugMsg "VB-specific error occurred inside FI_LoadImage_V5.  Err #: " & Err.Number & ", " & Err.Description
+    FI_DebugMsg "VB-specific error occurred inside FI_LoadImage_V5.  Err #: " & Err.Number & ", " & Err.Description, suppressDebugData
     If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
     FI_Unload fi_hDIB, fi_multi_hDIB
     FI_LoadImage_V5 = PD_FAILURE_GENERIC
@@ -2932,8 +2932,8 @@ Public Sub ReleaseFreeImageObject(ByVal srcFIHandle As Long)
     FreeImage_Unload srcFIHandle
 End Sub
 
-Private Sub FI_DebugMsg(ByVal debugMsg As String)
+Private Sub FI_DebugMsg(ByVal debugMsg As String, Optional ByVal suppressDebugData As Boolean = False)
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction debugMsg, PDM_EXTERNAL_LIB
+        If (Not suppressDebugData) Then pdDebug.LogAction debugMsg, PDM_EXTERNAL_LIB
     #End If
 End Sub

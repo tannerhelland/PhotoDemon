@@ -520,7 +520,7 @@ End Function
 'That said, FreeImage/GDI+ are still used intelligently, so this function should reflect PD's full capacity for image format support.
 '
 'The function will return TRUE if successful; detailed load information is not available past that.
-Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True, Optional ByVal displayMessagesToUser As Boolean = True, Optional ByVal processColorProfiles As Boolean = True) As Boolean
+Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB As pdDIB, Optional ByVal applyUIChanges As Boolean = True, Optional ByVal displayMessagesToUser As Boolean = True, Optional ByVal processColorProfiles As Boolean = True, Optional ByVal suppressDebugData As Boolean = False) As Boolean
     
     Dim loadSuccessful As Boolean: loadSuccessful = False
     
@@ -575,7 +575,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'TMP files are internal PD temp files generated from a wide variety of use-cases (Clipboard is one example).  These are
         ' typically in BMP format, but this is not contractual.  A standard cascade of load functions is used.
         Case "TMP"
-            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = CBool(FI_LoadImage_V5(imagePath, targetDIB, , False) = PD_SUCCESS)
+            If g_ImageFormats.FreeImageEnabled Then loadSuccessful = CBool(FI_LoadImage_V5(imagePath, targetDIB, , False, , suppressDebugData) = PD_SUCCESS)
             If g_ImageFormats.GDIPlusEnabled And (Not loadSuccessful) Then loadSuccessful = LoadGDIPlusImage(imagePath, targetDIB)
             If (Not loadSuccessful) Then loadSuccessful = LoadVBImage(imagePath, targetDIB)
             If (Not loadSuccessful) Then loadSuccessful = LoadRawImageBuffer(imagePath, targetDIB, tmpPDImage)
@@ -591,7 +591,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
             
             'If FreeImage is available, use it to try and load the image.
             If g_ImageFormats.FreeImageEnabled Then
-                freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False)
+                freeImageReturn = FI_LoadImage_V5(imagePath, targetDIB, 0, False, , suppressDebugData)
                 loadSuccessful = CBool(freeImageReturn = PD_SUCCESS)
             End If
                 
