@@ -183,7 +183,6 @@ Public Sub ClearCanvas()
         placeholderImageSize = 256
         
         Dim iconLoadAnImage As pdDIB
-        Set iconLoadAnImage = New pdDIB
         LoadResourceToDIB "generic_imageplaceholder", iconLoadAnImage, placeholderImageSize, placeholderImageSize
 
         Dim notifyFont As pdFont
@@ -191,7 +190,7 @@ Public Sub ClearCanvas()
         notifyFont.SetFontFace g_InterfaceFont
 
         'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
-        If Not (g_Language Is Nothing) Then
+        If (Not g_Language Is Nothing) Then
             If g_Language.TranslationActive Then notifyFont.SetFontSize 13 Else notifyFont.SetFontSize 14
         Else
             notifyFont.SetFontSize 14

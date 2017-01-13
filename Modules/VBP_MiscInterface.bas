@@ -1256,7 +1256,7 @@ End Function
 ' So whenever TwipsPerPixelXFix/Y is required, use these functions instead.
 Public Function TwipsPerPixelXFix() As Double
     
-    If m_CurrentSystemDPI = 0 Then
+    If (m_CurrentSystemDPI = 0) Then
     
         If Screen.TwipsPerPixelX = 7 Then
             TwipsPerPixelXFix = 7.5

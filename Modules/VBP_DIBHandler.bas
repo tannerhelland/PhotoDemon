@@ -984,3 +984,239 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
     
 End Function
 
+'Return the number of unique RGBA entries used in a DIB.
+'
+'At present, this function is *not* well-optimized.  I only use it during resource file generation, so performance
+' isn't a big deal right now.
+'
+'RETURNS: number of unique RGBA entries in an image, capped at 256 (e.g. 257 is returned if the number of unique
+' entries is 257+).
+Public Function GetDIBColorCount_RGBA(ByRef srcDIB As pdDIB) As Long
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
+        
+        Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+        srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+        
+        Dim pxSize As Long
+        pxSize = srcDIB.GetDIBColorDepth \ 8
+        
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.GetDIBStride - 1
+        finalY = srcDIB.GetDIBHeight - 1
+        
+        Dim colorList() As RGBQUAD
+        ReDim colorList(0 To 255) As RGBQUAD
+        
+        'Always load the first color in advance; this lets us avoid branches in the inner loop
+        Dim numColors As Long
+        numColors = 1
+        With colorList(0)
+            .Blue = srcPixels(0, 0)
+            .Green = srcPixels(1, 0)
+            .Red = srcPixels(2, 0)
+            .alpha = srcPixels(3, 0)
+        End With
+        
+        Dim r As Long, g As Long, b As Long, a As Long, i As Long
+        Dim matchFound As Boolean
+        
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
+            
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
+            a = srcPixels(x + 3, y)
+            matchFound = False
+            
+            'Search the palette for a match
+            ' (TODO: optimize this with a hash table)
+            For i = 0 To numColors - 1
+                If (b = colorList(i).Blue) Then
+                    If (g = colorList(i).Green) Then
+                        If (r = colorList(i).Red) Then
+                            If (a = colorList(i).alpha) Then
+                                matchFound = True
+                                Exit For
+                            End If
+                        End If
+                    End If
+                End If
+            Next i
+            
+            'Add new colors to the list (until we reach 257; then bail)
+            If (Not matchFound) Then
+                If (numColors = 256) Then
+                    numColors = 257
+                    Exit For
+                End If
+                colorList(i).Blue = b
+                colorList(i).Green = g
+                colorList(i).Red = r
+                colorList(i).alpha = a
+                numColors = numColors + 1
+            End If
+            
+        Next x
+            If (numColors > 256) Then Exit For
+        Next y
+        
+        srcDIB.UnwrapArrayFromDIB srcPixels
+        
+        GetDIBColorCount_RGBA = numColors
+        
+    End If
+    
+End Function
+
+'Assuming a DIB has 256 colors or less (which you can confirm with the function above, if you need to), call this function
+' to return two arrays: a palette array, and a one-byte-per-pixel palette array (with dimensions matching the original image).
+'
+'At present, this function is *not* optimized.  A naive palette search is used.  Also, the destination palette is in
+' RGBA format (so alpha *does* matter when calculating colors.)
+'
+'RETURNS: number of colors in the destination palette (1-based).  If the return is 257, the function failed because there
+' are too many colors in the source image.  Reduce the number of colors, then try again.
+Public Function GetDIBAs8bpp_RGBA(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQUAD, ByRef dstPixels() As Byte) As Long
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) And (srcDIB.GetDIBColorDepth = 32) Then
+        
+        Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+        srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+        
+        Dim pxSize As Long
+        pxSize = srcDIB.GetDIBColorDepth \ 8
+        
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.GetDIBStride - 1
+        finalY = srcDIB.GetDIBHeight - 1
+        
+        ReDim dstPalette(0 To 255) As RGBQUAD
+        ReDim dstPixels(0 To srcDIB.GetDIBWidth - 1, 0 To srcDIB.GetDIBHeight - 1) As Byte
+        
+        'Always load the first color in advance; this lets us avoid branches in the inner loop
+        Dim numColors As Long
+        numColors = 1
+        With dstPalette(0)
+            .Blue = srcPixels(0, 0)
+            .Green = srcPixels(1, 0)
+            .Red = srcPixels(2, 0)
+            .alpha = srcPixels(3, 0)
+        End With
+        
+        dstPixels(0, 0) = 0
+        
+        Dim r As Long, g As Long, b As Long, a As Long, i As Long
+        Dim matchFound As Boolean
+        
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
+            
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
+            a = srcPixels(x + 3, y)
+            matchFound = False
+            
+            'Search the palette for a match
+            ' (TODO: optimize this with a hash table)
+            For i = 0 To numColors - 1
+                If (b = dstPalette(i).Blue) Then
+                    If (g = dstPalette(i).Green) Then
+                        If (r = dstPalette(i).Red) Then
+                            If (a = dstPalette(i).alpha) Then
+                                matchFound = True
+                                Exit For
+                            End If
+                        End If
+                    End If
+                End If
+            Next i
+            
+            'Add new colors to the list (until we reach 257; then bail)
+            If matchFound Then
+                dstPixels(x \ pxSize, y) = i
+            Else
+                If (numColors = 256) Then
+                    numColors = 257
+                    Exit For
+                End If
+                With dstPalette(numColors)
+                    .Blue = b
+                    .Green = g
+                    .Red = r
+                    .alpha = a
+                End With
+                dstPixels(x \ pxSize, y) = numColors
+                numColors = numColors + 1
+            End If
+            
+        Next x
+            If (numColors > 256) Then Exit For
+        Next y
+        
+        srcDIB.UnwrapArrayFromDIB srcPixels
+        
+        GetDIBAs8bpp_RGBA = numColors
+        
+    End If
+    
+End Function
+
+'Given a palette, color count, and source palette index array, construct a matching 32-bpp DIB.
+'
+'IMPORTANT NOTE!  The destination DIB needs to be already constructed to match the source data's width and height.
+' (Obviously, it needs to be 32-bpp too!)
+'
+'RETURNS: TRUE if successful; FALSE otherwise
+Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByRef colorCount As Long, ByRef srcPalette() As RGBQUAD, ByRef srcPixels() As Byte) As Boolean
+
+    If (dstDIB Is Nothing) Then Exit Function
+    
+    If (dstDIB.GetDIBDC <> 0) And (dstDIB.GetDIBWidth <> 0) And (dstDIB.GetDIBHeight <> 0) And (dstDIB.GetDIBColorDepth = 32) Then
+        
+        Dim dstPixels() As Byte, tmpSA As SAFEARRAY2D
+        dstDIB.WrapArrayAroundDIB dstPixels, tmpSA
+        
+        Dim pxSize As Long
+        pxSize = dstDIB.GetDIBColorDepth \ 8
+        
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = dstDIB.GetDIBStride - 1
+        finalY = dstDIB.GetDIBHeight - 1
+        
+        Dim colorIndex As Long
+        
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
+        
+            colorIndex = srcPixels(x \ 4, y)
+            
+            With srcPalette(colorIndex)
+                dstPixels(x, y) = .Blue
+                dstPixels(x + 1, y) = .Green
+                dstPixels(x + 2, y) = .Red
+                dstPixels(x + 3, y) = .alpha
+            End With
+            
+        Next x
+        Next y
+        
+        dstDIB.UnwrapArrayFromDIB dstPixels
+        
+        GetRGBADIB_FromPalette = True
+        
+    End If
+    
+End Function

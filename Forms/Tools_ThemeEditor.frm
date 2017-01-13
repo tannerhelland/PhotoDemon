@@ -465,9 +465,13 @@ Private Sub cmdExport_Click()
             If (m_Resources(i).ResType = PDRT_Image) Then
             
                 cXML.PrepareNewXML PD_RES_NODE_ID_IMG
-            
+                
+                Dim cCount As Long, testPalette() As RGBQUAD, testPixels() As Byte
+                
                 'Load the source image to a temporary DIB (so we can query various image attributes)
-                If Loading.QuickLoadImageToDIB(m_Resources(i).ResFileLocation, tmpDIB, False, False) Then
+                If Loading.QuickLoadImageToDIB(m_Resources(i).ResFileLocation, tmpDIB, False, False, False, True) Then
+                    
+                    Dim useImagePalette As Boolean: useImagePalette = False
                     
                     'Write the bare amount of information required to reconstruct the image at run-time
                     cXML.WriteTag "w", tmpDIB.GetDIBWidth
@@ -484,6 +488,20 @@ Private Sub cmdExport_Click()
                         End If
                     Else
                         cXML.WriteTag "rt-clr", "False"
+                        
+                        'See how many colors this DIB has.  If it's 256 or less, we can write it to file
+                        ' using a palette.
+                        cCount = DIB_Support.GetDIBAs8bpp_RGBA(tmpDIB, testPalette, testPixels)
+                        
+                        'If this image only has [0, 255] unique RGBA entries, we can store it as a paletted image
+                        ' and conserve a bunch of file space!
+                        If (cCount <= 256) Then
+                            useImagePalette = True
+                            cXML.WriteTag "uses-palette", "True"
+                            cXML.WriteTag "palette-size", Trim$(Str$(cCount))
+                            Debug.Print "Palette candidate found: " & cCount & " - " & m_Resources(i).ResFileLocation
+                        End If
+                        
                     End If
                     
                     'Write this data to the first half of the node
@@ -509,9 +527,25 @@ Private Sub cmdExport_Click()
                             cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(tmpBytes(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
                             
                         End If
+                    
                     Else
-                        tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
-                        cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                    
+                        'Paletted images are stored differently
+                        If useImagePalette Then
+                        
+                            'Build a combined palette + image bytes array
+                            Dim totalData() As Byte, totalDataSize As Long
+                            totalDataSize = (cCount * 4) + (tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight)
+                            ReDim totalData(0 To totalDataSize - 1) As Byte
+                            CopyMemory ByVal VarPtr(totalData(0)), ByVal VarPtr(testPalette(0)), 4 * cCount
+                            CopyMemory ByVal VarPtr(totalData(4 * cCount)), ByVal VarPtr(testPixels(0, 0)), tmpDIB.GetDIBWidth * tmpDIB.GetDIBHeight
+                            cPackage.AddNodeDataFromPointer nodeIndex, False, VarPtr(totalData(0)), totalDataSize, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                        
+                        Else
+                            tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBSize
+                            cPackage.AddNodeDataFromPointer nodeIndex, False, tmpDIBPointer, tmpDIBSize, resCompressionEngine, Compression.GetMaxCompressionLevel(resCompressionEngine)
+                        End If
+                        
                     End If
                     
                 End If
@@ -865,7 +899,7 @@ Private Sub UpdatePreview()
             End If
             picPreview.BackColor = newColor
             
-            If Loading.QuickLoadImageToDIB(m_Resources(m_LastResourceIndex).ResFileLocation, m_PreviewDIBOriginal, False, False) Then
+            If Loading.QuickLoadImageToDIB(m_Resources(m_LastResourceIndex).ResFileLocation, m_PreviewDIBOriginal, False, False, , True) Then
             
                 'If coloration is supported, apply it now
                 If m_Resources(m_LastResourceIndex).ResSupportsColoration Then
