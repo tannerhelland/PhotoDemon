@@ -56,8 +56,14 @@ Public Function LoadInitialResourceCollection() As Boolean
     
         'In debug builds, we load the resource from a static location instead of pulling it from the .exe
         Dim srcResFile As String
-        srcResFile = g_UserPreferences.GetThemePath & "Core_Icons.pdrc"
-        LoadInitialResourceCollection = LoadResourceFile(srcResFile)
+        srcResFile = "Core_Icons.pdrc"
+        LoadInitialResourceCollection = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
+        
+        'If the theme file doesn't exist, attempt to recover it
+        If (Not LoadInitialResourceCollection) Then
+            AttemptResourceRecovery srcResFile
+            LoadInitialResourceCollection = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
+        End If
         
     #End If
     
@@ -67,6 +73,60 @@ Public Function LoadInitialResourceCollection() As Boolean
     
     'TODO!  Someday we'll build the (finished) resource file directly into the .exe, but for now,
     ' load it from a static debug folder.
+    
+End Function
+
+Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolean
+
+    Dim resourceFilename As String
+    resourceFilename = g_UserPreferences.GetThemePath(False) & resourceFile
+    
+    'pdFSO is used for all file interactions
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    'See if the file exists.  If it does, great!  We can exit immediately.
+    If cFile.FileExist(resourceFilename) Then
+        AttemptResourceRecovery = True
+    
+    'The file is missing.  Let's see if we can find it.
+    Else
+    
+        pdDebug.LogAction "WARNING!  Resource file <" & resourceFile & "> is missing.  Scanning alternate folders..."
+        
+        'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
+        ' the PD .zip without folders preserved.
+        If cFile.FileExist(g_UserPreferences.GetProgramPath & resourceFile) Then
+            
+            pdDebug.LogAction "UPDATE!  Resource file found in the base PD folder.  Attempting to relocate..."
+            
+            'Move the file to the proper folder
+            If cFile.CopyFile(g_UserPreferences.GetProgramPath & resourceFile, g_UserPreferences.GetThemePath & resourceFile) Then
+                
+                pdDebug.LogAction "UPDATE!  Resource file relocated successfully."
+                
+                'Kill the old file instance
+                cFile.KillFile g_UserPreferences.GetProgramPath & resourceFile
+                
+                'Return success!
+                AttemptResourceRecovery = True
+            
+            'The file couldn't be moved.  There's probably write issues with the folder structure, in which case
+            ' this program session is pretty much doomed.  Exit now.
+            Else
+                pdDebug.LogAction "WARNING!  Resource file <" & resourceFile & "> could not be relocated.  Initialization abandoned."
+                AttemptResourceRecovery = False
+            End If
+        
+        'If the file doesn't exist in the base folder either, we're SOL.  Exit now.
+        ' (In the future, we'll want to try and recover a failsafe copy from the .exe resource section.)
+        ' TODO 7.0!
+        Else
+            pdDebug.LogAction "WARNING!  Resource file <" & resourceFile & "> wasn't found in alternate locations.  Initialization abandoned."
+            AttemptResourceRecovery = False
+        End If
+    
+    End If
     
 End Function
 

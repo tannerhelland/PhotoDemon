@@ -179,7 +179,28 @@ Public Sub LoadDefaultPDTheme()
     If themeLoadedCorrectly Then
         If g_IsProgramRunning Then RaiseThemingError "successfully loaded theme file: " & themeFilename, True
     Else
-        If g_IsProgramRunning Then RaiseThemingError "failed to load theme file: " & themeFilename
+        If g_IsProgramRunning Then
+            
+            RaiseThemingError "failed to load theme file: " & themeFilename & ".  Attempting theme recovery now...", True
+            AttemptThemeRecovery
+            RaiseThemingError "Best attempt at theme recovery was made.  Trying to load default theme now...", True
+            
+            m_ThemeClass = PDTC_Light
+            themeName = "Light"
+            themeFilename = "Default_Light.xml"
+            accentName = "Blue"
+            accentFilename = "Colors_Blue.xml"
+            themeLoadedCorrectly = Me.LoadThemeFile(themeFilename, accentFilename)
+            
+            'If this attempt fails, there's nothing left to try.  Pray to the programming gods that the
+            ' program will even load.  (It probably won't.)
+            If themeLoadedCorrectly Then
+                RaiseThemingError "Dodged a bullet there - theme recovery successful.  Proceeding normally.", True
+            Else
+                RaiseThemingError "Theme recovery failed.  This session is probably doomed.", True
+            End If
+            
+        End If
     End If
     
     'Notify the UI manager that a new theme is active.  Individual controls need to check this to know if
@@ -189,6 +210,94 @@ Public Sub LoadDefaultPDTheme()
     'Theme colors are loaded on-demand, so we have no further work to do here
     
 End Sub
+
+'Failed to load the user's requested theme at startup?  Call this function to attempt a recovery.
+' (Some users use stupid .zip file software that doesn't preserve folders, so themes may be spread across
+'  the root folder.  This sub will try to fix that.)
+Private Sub AttemptThemeRecovery()
+
+    'At present, there are six key theme files PD expects to exist (in the /App/PhotoDemon/Themes folder).
+    ' These files come in three types:
+    ' 1) Core theme files that describe most of the colors used by the program
+    ' 2) Theme "accent" files that describe a (much smaller) set of accent colors.  These can be plugged
+    '    into any base theme for a unique coloring scheme.
+    ' 3) A theme resource file, which contains all of the icons associated with a given theme.  (At present,
+    '    there is only one of these, built by me.)
+    
+    'If these files go missing, PD is liable to break.  Horribly.
+    ' In the future, if we can't recover the files in question, I intend to pull a failsafe copy from PD's
+    ' resource file, which should be enough for the user to at least use the program as-is.  For now,
+    ' however, there is no failsafe if the theme folder breaks, and PD is unlikely to be usable.
+    
+    'NOTE!  YOU MUST UPDATE THIS LIST if new theme files become required for basic program functionality.
+    DoesThemeFileExist "Colors_Blue.xml"
+    DoesThemeFileExist "Colors_Green.xml"
+    DoesThemeFileExist "Colors_Purple.xml"
+    DoesThemeFileExist "Default_Dark.xml"
+    DoesThemeFileExist "Default_Light.xml"
+    
+End Sub
+
+'This function performs several tasks:
+' 1) If the requested theme file exists in the target folder, great; it returns TRUE and exits.
+' 2) If the requested theme file does NOT exist in the target folder, it scans the program folder to see if it
+'     can find it there.
+' 3) If it finds a missing theme in the program folder, it will automatically move the file to the theme folder,
+'     where it belongs.
+' 4) If the move is successful, it will return TRUE and exit.
+Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
+    
+    Dim themeFilename As String
+    themeFilename = g_UserPreferences.GetThemePath(False) & themeFile
+    
+    'pdFSO is used for all file interactions
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    'See if the file exists.  If it does, great!  We can exit immediately.
+    If cFile.FileExist(themeFilename) Then
+        DoesThemeFileExist = True
+    
+    'The theme file is missing.  Let's see if we can find it.
+    Else
+    
+        pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> is missing.  Scanning alternate folders..."
+        
+        'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
+        ' the PD .zip without folders preserved.
+        If cFile.FileExist(g_UserPreferences.GetProgramPath & themeFile) Then
+            
+            pdDebug.LogAction "UPDATE!  Theme file found in the base PD folder.  Attempting to relocate..."
+            
+            'Move the file to the proper folder
+            If cFile.CopyFile(g_UserPreferences.GetProgramPath & themeFile, g_UserPreferences.GetThemePath & themeFile) Then
+                
+                pdDebug.LogAction "UPDATE!  Theme file relocated successfully."
+                
+                'Kill the old file instance
+                cFile.KillFile g_UserPreferences.GetProgramPath & themeFile
+                
+                'Return success!
+                DoesThemeFileExist = True
+            
+            'The file couldn't be moved.  There's probably write issues with the folder structure, in which case
+            ' this program session is pretty much doomed.  Exit now.
+            Else
+                pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> could not be relocated.  Initialization abandoned."
+                DoesThemeFileExist = False
+            End If
+        
+        'If the theme file doesn't exist in the base folder either, we're SOL.  Exit now.
+        ' (In the future, we'll want to try and recover a failsafe copy from the .exe resource file.)
+        ' TODO 7.0!
+        Else
+            pdDebug.LogAction "WARNING!  Theme file <" & themeFile & "> wasn't found in alternate locations.  Initialization abandoned."
+            DoesThemeFileExist = False
+        End If
+    
+    End If
+    
+End Function
 
 Public Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal accentColor As PD_THEME_ACCENT = PDTA_Undefined, Optional ByVal syncMenusToMatch As Boolean = False) As Boolean
     
