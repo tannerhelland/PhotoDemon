@@ -725,9 +725,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     'Processing past this point is contingent on whether or not the current action is a preview.
         
     'If this is not a preview, simply copy the processed data back into the active DIB
-    If Not isPreview Then
-        
-        Message "Rendering image to screen..."
+    If (Not isPreview) Then
         
         'If a selection is active, copy the processed area into its proper place.
         If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then

@@ -173,6 +173,10 @@ Private Sub cmdBar_ResetClick()
     UpdatePreview
 End Sub
 
+Private Sub Form_Activate()
+    UpdatePreview
+End Sub
+
 Private Sub Form_Load()
 
     'Suspend previews until the dialog has been fully initialized

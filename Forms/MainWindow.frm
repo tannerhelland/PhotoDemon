@@ -4356,11 +4356,11 @@ Private Sub MnuTest_Click()
 '    'Want to test a new dialog?  Call it here:
 '    showPDDialog vbModal, FormToTest
     
+    'A longer, more dedicated test function can be accessed in the MenuTest() sub.  It also contains rudimentary code for modifying
+    ' an image's pixel data, if you want to test any pixel-based code.
+    'MenuTest
     
-    
-'    'A longer, more dedicated test function can be accessed in the MenuTest() sub.  It also contains rudimentary code for modifying
-'    ' an image's pixel data, if you want to test any pixel-based code.
-'    MenuTest
+    'Filters_Miscellaneous.MenuApplyTestPalette
     
 '    'Current Gaussian Blur IIR tests:
 '    Dim tmpDIB As pdDIB
