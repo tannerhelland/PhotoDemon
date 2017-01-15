@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2195</langversion>
+<langversion>6.8.2196</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -271,16 +271,11 @@
 <!-- BEGIN text for VBP_FastDrawing.bas -->
 
 <phrase>
-<original>Rendering image to screen</original>
-<translation>Rendering image seuloa</translation>
-</phrase>
-
-<phrase>
 <original>Finished.</original>
 <translation>Valmiit.</translation>
 </phrase>
 
-<!-- VBP_FastDrawing.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- VBP_FastDrawing.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for VBP_FastDrawing.bas-->
 
@@ -1519,6 +1514,12 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 
 <!-- END text for VBP_MiscMath.bas-->
 
+<!-- BEGIN text for Menus.bas -->
+
+<!-- Menus.bas contains 0 phrases. -->
+
+<!-- END text for Menus.bas-->
+
 <!-- BEGIN text for VBP_Win7_Specific_Features.bas -->
 
 <!-- VBP_Win7_Specific_Features.bas contains 0 phrases. -->
@@ -1546,6 +1547,12 @@ In versio 6.0, PhotoDemon makrotiedostoja suunniteltiin uudelleen tukemaan uusia
 <!-- Paintbrush.bas contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Paintbrush.bas-->
+
+<!-- BEGIN text for Palettes.bas -->
+
+<!-- Palettes.bas contains 0 phrases. -->
+
+<!-- END text for Palettes.bas-->
 
 <!-- BEGIN text for Plugin_Management.bas -->
 
@@ -2645,6 +2652,18 @@ Please enter a numeric value.</original>
 
 <!-- END text for pdClipboardMain.cls-->
 
+<!-- BEGIN text for pdColorSearch.cls -->
+
+<!-- pdColorSearch.cls contains 0 phrases. -->
+
+<!-- END text for pdColorSearch.cls-->
+
+<!-- BEGIN text for pdColorSearchNode.cls -->
+
+<!-- pdColorSearchNode.cls contains 0 phrases. -->
+
+<!-- END text for pdColorSearchNode.cls-->
+
 <!-- BEGIN text for pdCompositor.cls -->
 
 <!-- pdCompositor.cls contains 0 phrases. -->
@@ -2859,6 +2878,12 @@ Please enter a numeric value.</original>
 <!-- pdMRURecentMacros.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for pdMRURecentMacros.cls-->
+
+<!-- BEGIN text for pdMedianCut.cls -->
+
+<!-- pdMedianCut.cls contains 0 phrases. -->
+
+<!-- END text for pdMedianCut.cls-->
 
 <!-- BEGIN text for pdMetadata.cls -->
 
@@ -14870,18 +14895,12 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Menus.bas -->
-
-<!-- Menus.bas contains 0 phrases. -->
-
-<!-- END text for Menus.bas-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2510</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4453 phrases. -->
-<!-- 1943 are duplicates, so only 2510 unique phrases have been written to file. -->
-<!-- These 2510 phrases contain approximately 12452 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1943 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12448 total words. -->
 
 </pdData>

@@ -1220,3 +1220,50 @@ Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByRef colorCount A
     End If
     
 End Function
+
+'This function returns a DIB, resized to meet a specific pixel count.  This is very helpful for things like image analysis,
+' where a full-sized image copy doesn't meaningfully improve heuristics (but requires a hell of a lot longer to analyze).
+'
+'This function always preserves aspect ratio, and it will return the original image if the image is smaller than the number of
+' pixels requested.  This simplifies outside functions, as you can always call this function prior to running heuristics.
+Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal numOfPixels As Long) As Boolean
+
+    If (Not srcDIB Is Nothing) Then
+        
+        If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+        
+        'Calculate current megapixel count
+        Dim srcWidth As Long, srcHeight As Long
+        srcWidth = srcDIB.GetDIBWidth
+        srcHeight = srcDIB.GetDIBHeight
+        
+        'If the source image has less megapixels than the requested amount, just return it as-is
+        If (srcWidth * srcHeight < numOfPixels) Then
+            dstDIB.CreateFromExistingDIB srcDIB
+            ResizeDIBByPixelCount = True
+        
+        'If the source image is larger than the destination (as it usually will be), calculate an aspect-ratio appropriate
+        ' resize that comes close to the target number of pixels
+        Else
+        
+            Dim pxCount As Long
+            pxCount = numOfPixels
+            
+            Dim aspectRatio As Single
+            aspectRatio = srcWidth / srcHeight
+            
+            'Using basic algebra, we can solve for new (x, y) parameters in terms of megapixel count
+            Dim newWidth As Long, newHeight As Long
+            newHeight = Sqr(numOfPixels / aspectRatio)
+            newWidth = aspectRatio * newHeight
+            
+            dstDIB.CreateBlank newWidth, newHeight, 32, 0, 0
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcWidth, srcHeight, , GP_IM_HighQualityBicubic, , True, , True
+            
+            ResizeDIBByPixelCount = True
+        
+        End If
+    
+    End If
+
+End Function

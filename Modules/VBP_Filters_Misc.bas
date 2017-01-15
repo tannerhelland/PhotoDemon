@@ -1039,3 +1039,43 @@ Public Sub MenuTest()
         
 End Sub
 
+'Placeholder function I'm using to remind myself how to best use the new palette generator functions.
+Public Sub MenuApplyTestPalette()
+
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    PrepImageData tmpSA
+    
+    Dim startTime As Currency
+    VB_Hacks.GetHighResTime startTime
+    
+    'Make a smaller, localized copy of the DIB.  (50k pixels is more than enough for accurate
+    ' palette generation, and using a fixed size guarantees roughly O(1) time for palette generation.)
+    Dim megapixelSize As Long
+    megapixelSize = 50000
+    Dim smallDIB As pdDIB
+    If DIB_Support.ResizeDIBByPixelCount(workingDIB, smallDIB, megapixelSize) Then
+        
+        'Construct an optimized palette based on the small image
+        Dim srcPalette() As RGBQUAD
+        If Palettes.GetOptimizedPalette(smallDIB, srcPalette, 256) Then
+        
+            'Apply the optimized palette to the full-sized DIB.
+            'Palettes.ApplyPaletteToImage workingDIB, srcPalette
+            'Palettes.ApplyPaletteToImage_SysAPI workingDIB, srcPalette
+            'Palettes.ApplyPaletteToImage_LossyHashTable workingDIB, srcPalette
+            Palettes.ApplyPaletteToImage_Octree workingDIB, srcPalette
+            
+        End If
+        
+    End If
+    
+    'Debug.Print "Finished: " & VB_Hacks.GetTimerDifferenceNow(startTime) * 1000
+    
+    'Pass control to finalizeImageData, which will handle the rest of the rendering
+    FinalizeImageData
+    
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
