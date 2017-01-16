@@ -249,6 +249,7 @@ Private Sub Form_Load()
     GenerateContributor "Boban Gjerasimoski", "https://www.behance.net/Boban_Gjerasimoski"
     GenerateContributor "Bonnie West", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=74264&lngWId=1"
     GenerateContributor "Carles P.V.", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1"
+    GenerateContributor "ChenLin"
     GenerateContributor "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
     GenerateContributor "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control"

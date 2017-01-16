@@ -27,6 +27,8 @@ Attribute VB_Exposed = False
 '
 'For Google Translate's Terms of Use, please visit http://www.google.com/policies/terms/
 '
+'Thank you to everyone who has contributed fixes for different locales, including ChenLin and Zhu JinYong.
+'
 '(Note from Tanner: this class relies on Google to provide its translation with very specific formatting.
 ' Google may change its code at any time, rendering this class ineffective.  Thus I cannot guarantee that
 ' this code will always work.  Sorry!)
@@ -137,8 +139,16 @@ Public Function GetGoogleTranslation(ByVal srcText As String, Optional ByRef cop
         
 RetryTranslation:
         
-        'Use the ie scripting object to access Google translate
-        m_IE.navigate "http://translate.google.com/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
+        'Use the ie scripting object to access Google translate.  Note that special care must be taken for
+        ' Chinese languages, if the user originates in China; we must use the .cn URL there or Google will fail.
+        Dim useChineseEngine As Boolean: useChineseEngine = False
+        useChineseEngine = CBool(InStr(1, LCase$(m_dstLanguage), "zh", vbBinaryCompare) <> 0) Or CBool(InStr(1, LCase$(m_dstLanguage), "cn", vbBinaryCompare) <> 0)
+        
+        If useChineseEngine Then
+            m_IE.navigate "http://translate.google.cn/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
+        Else
+            m_IE.navigate "http://translate.google.com/#" & m_srcLanguage & "/" & m_dstLanguage & "/" & srcText
+        End If
         
         'Loop until the ie object has received the translation from Google.  The amount of time this requires is
         ' obviously dependent on this PC's Internet connection.
