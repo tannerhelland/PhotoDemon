@@ -671,7 +671,7 @@ Private Sub ReconstructMouseMoveHistory(ByVal Button As PDMouseButtonConstants, 
     
     'Retrieve the mouse movement history.  The return value of the function is the number of points filled.
     Dim numPoints As Long
-    numPoints = GetMouseMovePointsEx(Len(curMouseMovePoint), curMouseMovePoint, VarPtr(m_MouseHistory(0)), MAX_MOUSE_HISTORY, GMMP_USE_DISPLAY_POINTS)
+    numPoints = GetMouseMovePointsEx(Len(curMouseMovePoint), curMouseMovePoint, VarPtr(m_MouseHistory(0)), MAX_MOUSE_HISTORY, curTrackingResolution)
         
     'If one or more valid points were returned, carry on
     If (numPoints > 0) Then

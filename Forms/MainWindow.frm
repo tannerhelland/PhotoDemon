@@ -395,16 +395,8 @@ Begin VB.Form FormMain
          Index           =   15
       End
       Begin VB.Menu MnuImage 
-         Caption         =   "Indexed color..."
-         Index           =   16
-      End
-      Begin VB.Menu MnuImage 
-         Caption         =   "-"
-         Index           =   17
-      End
-      Begin VB.Menu MnuImage 
          Caption         =   "Metadata"
-         Index           =   18
+         Index           =   16
          Begin VB.Menu MnuMetadata 
             Caption         =   "Edit metadata..."
             Index           =   0
@@ -1273,24 +1265,28 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Outline..."
+            Caption         =   "Indexed color..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Portrait glow..."
+            Caption         =   "Outline..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Solarize..."
+            Caption         =   "Portrait glow..."
             Index           =   4
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Twins..."
+            Caption         =   "Solarize..."
             Index           =   5
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Vignetting..."
+            Caption         =   "Twins..."
             Index           =   6
+         End
+         Begin VB.Menu MnuStylize 
+            Caption         =   "Vignetting..."
+            Index           =   7
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3863,15 +3859,8 @@ Private Sub MnuImage_Click(Index As Integer)
         '<separator>
         Case 15
         
-        'Indexed color
-        Case 16
-            Process "Reduce colors", True
-        
-        '<separator>
-        Case 17
-        
         'Metadata top-level
-        Case 18
+        Case 16
     
     End Select
 
@@ -4323,24 +4312,28 @@ Private Sub MnuStylize_Click(Index As Integer)
         Case 1
             Process "Diffuse", True
         
-        'Outline
+        'Indexed color
         Case 2
+            Process "Reduce colors", True
+            
+        'Outline
+        Case 3
             Process "Outline", True
             
         'Portrait glow
-        Case 3
+        Case 4
             Process "Portrait glow", True
         
         'Solarize
-        Case 4
+        Case 5
             Process "Solarize", True
 
         'Twins
-        Case 5
+        Case 6
             Process "Twins", True
             
         'Vignetting
-        Case 6
+        Case 7
             Process "Vignetting", True
     
     End Select

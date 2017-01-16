@@ -280,4 +280,3 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("style", btsStyle.ListIndex, "radius", sltRadius.Value, "exposure", sltBoost.Value, "strength", sltStrength.Value)
 End Function
-

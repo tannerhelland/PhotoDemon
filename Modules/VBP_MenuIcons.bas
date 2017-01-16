@@ -255,13 +255,11 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     AddMenuIcon "MIRROR", 3, 13        'Mirror
     AddMenuIcon "FLIP", 3, 14          'Flip
     'addMenuIcon "ISOMETRIC", 3, 12     'Isometric      'NOTE: isometric was removed in v6.4.
-    AddMenuIcon "REDUCECOLORS", 3, 16  'Indexed color (Reduce Colors)
-    If g_ImageFormats.FreeImageEnabled Then FormMain.MnuImage(16).Enabled = True Else FormMain.MnuImage(16).Enabled = False
-    AddMenuIcon "METADATA", 3, 18      'Metadata (top-level)
+    AddMenuIcon "METADATA", 3, 16      'Metadata (top-level)
         '--> Metadata sub-menu
-        AddMenuIcon "BROWSEMD", 3, 18, 0     'Browse metadata
-        AddMenuIcon "COUNTCOLORS", 3, 18, 2  'Count Colors
-        AddMenuIcon "MAPPHOTO", 3, 18, 3     'Map photo location
+        AddMenuIcon "BROWSEMD", 3, 16, 0     'Browse metadata
+        AddMenuIcon "COUNTCOLORS", 3, 16, 2  'Count Colors
+        AddMenuIcon "MAPPHOTO", 3, 16, 3     'Map photo location
     
     'Layer menu
     AddMenuIcon "layer_add", 4, 0        'Add layer (top-level)
@@ -488,9 +486,9 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         '--> Pixelate sub-menu
         'addMenuIcon "CLRHALFTONE", 7, 7, 0   'Color halftone (TODO)
         'addMenuIcon "CRYTALLIZE", 7, 7, 1    'Crystallize (TODO)
-        AddMenuIcon "FRAGMENT", 7, 7, 2      'Fragment
+        AddMenuIcon "FRAGMENT", 7, 7, 2       'Fragment
         'addMenuIcon "MEZZOTINT", 7, 7, 3     'Mezzotint (TODO)
-        AddMenuIcon "PIXELATE", 7, 7, 4      'Mosaic (formerly Pixelate)
+        AddMenuIcon "PIXELATE", 7, 7, 4       'Mosaic (formerly Pixelate)
     
     AddMenuIcon "SHARPEN", 7, 8         'Sharpen
         '--> Sharpen sub-menu
@@ -501,11 +499,12 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         '--> Stylize sub-menu
         AddMenuIcon "ANTIQUE", 7, 9, 0       'Antique (Sepia)
         AddMenuIcon "DIFFUSE", 7, 9, 1       'Diffuse
-        'addMenuIcon "OUTLINE", 7, 9, 2       'Outline
-        'addMenuIcon "PORTGLOW", 7, 9, 3      'Portrait glow
-        AddMenuIcon "SOLARIZE", 7, 9, 4      'Solarize
-        AddMenuIcon "TWINS", 7, 9, 5         'Twins
-        AddMenuIcon "VIGNETTE", 7, 9, 6      'Vignetting
+        AddMenuIcon "REDUCECOLORS", 7, 9, 2  'Indexed color (Reduce Colors)
+        'addMenuIcon "OUTLINE", 7, 9, 3       'Outline
+        'addMenuIcon "PORTGLOW", 7, 9, 4      'Portrait glow
+        AddMenuIcon "SOLARIZE", 7, 9, 5      'Solarize
+        AddMenuIcon "TWINS", 7, 9, 6         'Twins
+        AddMenuIcon "VIGNETTE", 7, 9, 7      'Vignetting
         
     AddMenuIcon "PANANDZOOM", 7, 10        'Transform
         '--> Transform sub-menu

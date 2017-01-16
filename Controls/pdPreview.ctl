@@ -230,7 +230,7 @@ End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     m_UniqueID = Timer
-    If (Not newVisibility) Then FastDrawing.ResetPreviewIDs
+    If (Not newVisibility) Then FastDrawing.ResetPreviewIDs Else RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -531,7 +531,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDPREVIEW_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDPreview", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If (Not g_IsProgramRunning) Then UpdateColorList
     
     m_ShowOriginalInstead = False
     m_curColor = 0
