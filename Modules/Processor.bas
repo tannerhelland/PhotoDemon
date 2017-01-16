@@ -747,9 +747,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         Case "Reduce colors"
             If ShowDialog Then
-                ShowPDDialog vbModal, FormReduceColors
+                ShowPDDialog vbModal, FormIndexedColor
             Else
-                FormReduceColors.ReduceImageColors_Auto processParameters
+                FormIndexedColor.ReduceImageColors_Auto processParameters
             End If
         
         

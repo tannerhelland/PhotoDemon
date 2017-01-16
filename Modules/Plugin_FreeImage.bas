@@ -2801,6 +2801,36 @@ Public Function GetFIDib_SpecificColorMode(ByRef srcDIB As pdDIB, ByVal outputCo
     
 End Function
 
+'Given an 8-bpp FreeImage handle, return said image's palette.
+' RETURNS: image's palette (inside the dstPalette() RGBQuad array), and the number of colors inside said palette.
+'          0 if the source image is not 8bpp.
+Public Function GetFreeImagePalette(ByVal srcFIHandle As Long, ByRef dstPalette() As RGBQUAD) As Long
+    
+    'Make sure the source image is using a palette
+    GetFreeImagePalette = FreeImage_GetColorsUsed(srcFIHandle)
+    If (GetFreeImagePalette <> 0) Then
+        
+        'Retrieve a pointer to the source palette
+        Dim ptrPalette As Long
+        ptrPalette = FreeImage_GetPalette(srcFIHandle)
+        
+        If (ptrPalette <> 0) Then
+        
+            'Copy the source palette into the destination array
+            ReDim dstPalette(0 To GetFreeImagePalette - 1) As RGBQUAD
+            CopyMemory ByVal VarPtr(dstPalette(0)), ByVal ptrPalette, (GetFreeImagePalette - 1) * 4
+            
+        Else
+            GetFreeImagePalette = 0
+            Erase dstPalette
+        End If
+        
+    Else
+        Erase dstPalette
+    End If
+    
+End Function
+
 Private Sub ResetExportPreviewDIB(ByRef trackerBool As Boolean, ByRef srcDIB As pdDIB)
     If (Not trackerBool) Then
         If (m_ExportPreviewDIB Is Nothing) Then Set m_ExportPreviewDIB = New pdDIB

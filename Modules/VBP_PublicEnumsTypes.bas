@@ -576,3 +576,13 @@ Public Type MOUSEMOVEPOINT
     dwExtraInfo As Long
 End Type
 
+'PD color quantization methods.  Some of these currently rely on the FreeImage plugin.
+Public Enum PD_COLOR_QUANTIZE
+    PDCQ_MedianCut = 0
+    PDCQ_Wu = 1
+    PDCQ_Neuquant = 2
+End Enum
+
+#If False Then
+    Private Const PDCQ_MedianCut = 0, PDCQ_Wu = 1, PDCQ_Neuquant = 2
+#End If
