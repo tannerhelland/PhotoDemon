@@ -745,11 +745,11 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         Case "Count image colors"
             MenuCountColors
             
-        Case "Reduce colors"
+        Case "Palettize"
             If ShowDialog Then
-                ShowPDDialog vbModal, FormIndexedColor
+                ShowPDDialog vbModal, FormPalettize
             Else
-                FormIndexedColor.ReduceImageColors_Auto processParameters
+                FormPalettize.ApplyPalettizeEffect processParameters
             End If
         
         

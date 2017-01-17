@@ -45,6 +45,7 @@ End Type
 Private Declare Function CreatePalette Lib "gdi32" (ByVal lpLogPalette As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function GetNearestPaletteIndex Lib "gdi32" (ByVal hPalette As Long, ByVal crColor As Long) As Long
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 
 'A specially designed QuickSort algorithm is used to sort the original palette.  This allows us to be
 ' flexible with sort criteria, and to also cache our sort criteria values so we can reuse them during
@@ -147,6 +148,120 @@ Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As
         GetOptimizedPalette = True
     End If
     
+End Function
+
+'Given a palette, make sure black and white exist.  This function scans the palette and replaces the darkest
+' entry with black, and the brightest entry with white.  (We use this approach so that we can accept palettes
+' from any source, even ones that have already contain 256 entries.)  No difference is made to the palette
+' if it already contains black and white.
+Public Function EnsureBlackAndWhiteInPalette(ByRef srcPalette() As RGBQUAD, Optional ByRef srcDIB As pdDIB = Nothing) As Boolean
+    
+    Dim minLuminance As Long, minLuminanceIndex As Long
+    Dim maxLuminance As Long, maxLuminanceIndex As Long
+    
+    Dim pBoundL As Long, pBoundU As Long
+    pBoundL = LBound(srcPalette)
+    pBoundU = UBound(srcPalette)
+    
+    If (pBoundL <> pBoundU) Then
+    
+        With srcPalette(pBoundL)
+            minLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
+            minLuminanceIndex = pBoundL
+            maxLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
+            maxLuminanceIndex = pBoundL
+        End With
+        
+        Dim testLuminance As Long
+        
+        Dim i As Long
+        For i = pBoundL + 1 To pBoundU
+        
+            With srcPalette(i)
+                testLuminance = Colors.GetHQLuminance(.Red, .Green, .Blue)
+            End With
+            
+            If (testLuminance > maxLuminance) Then
+                maxLuminance = testLuminance
+                maxLuminanceIndex = i
+            ElseIf (testLuminance < minLuminance) Then
+                minLuminance = testLuminance
+                minLuminanceIndex = i
+            End If
+            
+        Next i
+        
+        Dim preserveWhite As Boolean, preserveBlack As Boolean
+        preserveWhite = True
+        preserveBlack = True
+        
+        'If the caller passed us an image, see if the image contains black and/or white.  If it does *not*,
+        ' we won't worry about preserving that particular color
+        If (Not srcDIB Is Nothing) Then
+        
+            Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+            srcDIB.WrapArrayAroundDIB srcPixels, tmpSA
+            
+            Dim pxSize As Long
+            pxSize = srcDIB.GetDIBColorDepth \ 8
+            
+            Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+            initX = 0
+            initY = 0
+            finalX = srcDIB.GetDIBStride - 1
+            finalY = srcDIB.GetDIBHeight - 1
+            
+            Dim r As Long, g As Long, b As Long
+            Dim blackFound As Boolean, whiteFound As Boolean
+            
+            For y = 0 To finalY
+            For x = 0 To finalX Step pxSize
+                b = srcPixels(x, y)
+                g = srcPixels(x + 1, y)
+                r = srcPixels(x + 2, y)
+                
+                If (Not blackFound) Then
+                    If (r = 0) And (g = 0) And (b = 0) Then blackFound = True
+                End If
+                
+                If (Not whiteFound) Then
+                    If (r = 255) And (g = 255) And (b = 255) Then whiteFound = True
+                End If
+                
+                If (blackFound And whiteFound) Then Exit For
+            Next x
+                If (blackFound And whiteFound) Then Exit For
+            Next y
+            
+            srcDIB.UnwrapArrayFromDIB srcPixels
+            
+            preserveBlack = blackFound
+            preserveWhite = whiteFound
+    
+        End If
+        
+        If preserveBlack Then
+            With srcPalette(minLuminanceIndex)
+                .Red = 0
+                .Green = 0
+                .Blue = 0
+            End With
+        End If
+        
+        If preserveWhite Then
+            With srcPalette(maxLuminanceIndex)
+                .Red = 255
+                .Green = 255
+                .Blue = 255
+            End With
+        End If
+        
+        EnsureBlackAndWhiteInPalette = True
+        
+    Else
+        EnsureBlackAndWhiteInPalette = False
+    End If
+
 End Function
 
 'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
@@ -611,5 +726,545 @@ Public Function ApplyPaletteToImage_SysAPI(ByRef dstDIB As pdDIB, ByRef srcPalet
     If (hPal <> 0) Then DeleteObject hPal
     
     ApplyPaletteToImage_SysAPI = True
+    
+End Function
+
+'Given a source palette (ideally created by GetOptimizedPalette(), above), apply said palette to the target image.
+' Dithering *is* used.  Colors are matched using System APIs.
+Public Function ApplyPaletteToImage_Dithered(ByRef dstDIB As pdDIB, ByRef srcPalette() As RGBQUAD, Optional ByVal DitherMethod As PD_DITHER_METHOD = PDDM_FloydSteinberg, Optional ByVal reduceBleed As Boolean = False) As Boolean
+
+    Dim srcPixels() As Byte, tmpSA As SAFEARRAY2D
+    dstDIB.WrapArrayAroundDIB srcPixels, tmpSA
+    
+    Dim pxSize As Long
+    pxSize = dstDIB.GetDIBColorDepth \ 8
+    
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = dstDIB.GetDIBStride - 1
+    finalY = dstDIB.GetDIBHeight - 1
+    
+    'As with normal palette matching, we'll use basic RLE acceleration to try and skip palette
+    ' searching for contiguous matching colors.
+    Dim lastColor As Long: lastColor = -1
+    Dim minIndex As Long, lastPaletteColor As Long
+    Dim r As Long, g As Long, b As Long
+    
+    Dim tmpPalette As GDI_LOGPALETTE256
+    tmpPalette.palNumEntries = UBound(srcPalette) + 1
+    tmpPalette.palVersion = &H300
+    Dim i As Long, j As Long
+    For i = 0 To UBound(srcPalette)
+        tmpPalette.palEntry(i).peR = srcPalette(i).Red
+        tmpPalette.palEntry(i).peG = srcPalette(i).Green
+        tmpPalette.palEntry(i).peB = srcPalette(i).Blue
+    Next i
+    
+    Dim hPal As Long
+    hPal = CreatePalette(VarPtr(tmpPalette))
+    
+    'Prep a dither table that matches the requested setting.  Note that ordered dithers are handled separately.
+    Dim DitherTable() As Long
+    Dim orderedDitherInUse As Boolean
+    orderedDitherInUse = CBool(DitherMethod = PDDM_Ordered_Bayer4x4) Or CBool(DitherMethod = PDDM_Ordered_Bayer8x8)
+    
+    If orderedDitherInUse Then
+    
+        'Ordered dithers are handled specially, because we don't need to track running errors (e.g. no dithering
+        ' information is carried to neighboring pixels).  Instead, we simply use the dither tables to adjust our
+        ' threshold values on-the-fly.
+        Dim ditherRows As Long, ditherColumns As Long
+        
+        If (DitherMethod = PDDM_Ordered_Bayer4x4) Then
+            
+            'First, prepare a Bayer dither table
+            ditherRows = 3
+            ditherColumns = 3
+            ReDim DitherTable(0 To ditherRows, 0 To ditherColumns) As Long
+            
+            DitherTable(0, 0) = 1
+            DitherTable(0, 1) = 9
+            DitherTable(0, 2) = 3
+            DitherTable(0, 3) = 11
+            
+            DitherTable(1, 0) = 13
+            DitherTable(1, 1) = 5
+            DitherTable(1, 2) = 15
+            DitherTable(1, 3) = 7
+            
+            DitherTable(2, 0) = 4
+            DitherTable(2, 1) = 12
+            DitherTable(2, 2) = 2
+            DitherTable(2, 3) = 10
+            
+            DitherTable(3, 0) = 16
+            DitherTable(3, 1) = 8
+            DitherTable(3, 2) = 14
+            DitherTable(3, 3) = 6
+    
+            'Convert the dither entries to absolute offsets (meaning half are positive, half are negative)
+            For x = 0 To 3
+            For y = 0 To 3
+                DitherTable(x, y) = DitherTable(x, y) * 2 - 16
+            Next y
+            Next x
+            
+        ElseIf (DitherMethod = PDDM_Ordered_Bayer8x8) Then
+        
+            'First, prepare a Bayer dither table
+            ditherRows = 7
+            ditherColumns = 7
+            ReDim DitherTable(0 To ditherRows, 0 To ditherColumns) As Long
+            
+            DitherTable(0, 0) = 1
+            DitherTable(0, 1) = 49
+            DitherTable(0, 2) = 13
+            DitherTable(0, 3) = 61
+            DitherTable(0, 4) = 4
+            DitherTable(0, 5) = 52
+            DitherTable(0, 6) = 16
+            DitherTable(0, 7) = 64
+            
+            DitherTable(1, 0) = 33
+            DitherTable(1, 1) = 17
+            DitherTable(1, 2) = 45
+            DitherTable(1, 3) = 29
+            DitherTable(1, 4) = 36
+            DitherTable(1, 5) = 20
+            DitherTable(1, 6) = 48
+            DitherTable(1, 7) = 32
+            
+            DitherTable(2, 0) = 9
+            DitherTable(2, 1) = 57
+            DitherTable(2, 2) = 5
+            DitherTable(2, 3) = 53
+            DitherTable(2, 4) = 12
+            DitherTable(2, 5) = 60
+            DitherTable(2, 6) = 8
+            DitherTable(2, 7) = 56
+            
+            DitherTable(3, 0) = 41
+            DitherTable(3, 1) = 25
+            DitherTable(3, 2) = 37
+            DitherTable(3, 3) = 21
+            DitherTable(3, 4) = 44
+            DitherTable(3, 5) = 28
+            DitherTable(3, 6) = 40
+            DitherTable(3, 7) = 24
+            
+            DitherTable(4, 0) = 3
+            DitherTable(4, 1) = 51
+            DitherTable(4, 2) = 15
+            DitherTable(4, 3) = 63
+            DitherTable(4, 4) = 2
+            DitherTable(4, 5) = 50
+            DitherTable(4, 6) = 14
+            DitherTable(4, 7) = 62
+            
+            DitherTable(5, 0) = 35
+            DitherTable(5, 1) = 19
+            DitherTable(5, 2) = 47
+            DitherTable(5, 3) = 31
+            DitherTable(5, 4) = 34
+            DitherTable(5, 5) = 18
+            DitherTable(5, 6) = 46
+            DitherTable(5, 7) = 30
+    
+            DitherTable(6, 0) = 11
+            DitherTable(6, 1) = 59
+            DitherTable(6, 2) = 7
+            DitherTable(6, 3) = 55
+            DitherTable(6, 4) = 10
+            DitherTable(6, 5) = 58
+            DitherTable(6, 6) = 6
+            DitherTable(6, 7) = 54
+            
+            DitherTable(7, 0) = 43
+            DitherTable(7, 1) = 27
+            DitherTable(7, 2) = 39
+            DitherTable(7, 3) = 23
+            DitherTable(7, 4) = 42
+            DitherTable(7, 5) = 26
+            DitherTable(7, 6) = 38
+            DitherTable(7, 7) = 22
+            
+            'Convert the dither entries to 255-based values
+            For x = 0 To 7
+            For y = 0 To 7
+                DitherTable(x, y) = DitherTable(x, y) - 32
+            Next y
+            Next x
+        
+        End If
+        
+        'Apply the finished dither table to the image
+        Dim ditherAmt As Long
+        
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
+        
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
+            
+            'Add dither to each component
+            ditherAmt = DitherTable((x \ 4) And ditherRows, y And ditherColumns)
+            If reduceBleed Then ditherAmt = ditherAmt * 0.33
+            
+            r = r + ditherAmt
+            If (r > 255) Then
+                r = 255
+            ElseIf (r < 0) Then
+                r = 0
+            End If
+            
+            g = g + ditherAmt
+            If (g > 255) Then
+                g = 255
+            ElseIf (g < 0) Then
+                g = 0
+            End If
+            
+            b = b + ditherAmt
+            If (b > 255) Then
+                b = 255
+            ElseIf (b < 0) Then
+                b = 0
+            End If
+            
+            'Ask the system to find the nearest color
+            minIndex = GetNearestPaletteIndex(hPal, RGB(r, g, b))
+            
+            srcPixels(x, y) = srcPalette(minIndex).Blue
+            srcPixels(x + 1, y) = srcPalette(minIndex).Green
+            srcPixels(x + 2, y) = srcPalette(minIndex).Red
+            
+        Next x
+        Next y
+    
+    'All error-diffusion dither methods are handled similarly
+    Else
+        
+        Dim ditherTableI() As Byte
+        Dim xLeft As Long, xRight As Long, yDown As Long
+        Dim rError As Long, gError As Long, bError As Long
+        Dim errorMult As Single
+        Dim ditherDivisor As Single
+        
+        'Retrieve a hard-coded dithering table matching the requested dither type
+        Palettes.GetDitherTable DitherMethod, ditherTableI, ditherDivisor, xLeft, xRight, yDown
+        
+        'Next, build an error tracking array.  Some diffusion methods require three rows worth of others;
+        ' others require two.  Note that errors must be tracked separately for each color component.
+        Dim xWidth As Long
+        xWidth = workingDIB.GetDIBWidth - 1
+        Dim rErrors() As Single, gErrors() As Single, bErrors() As Single
+        ReDim rErrors(0 To xWidth, 0 To yDown) As Single
+        ReDim gErrors(0 To xWidth, 0 To yDown) As Single
+        ReDim bErrors(0 To xWidth, 0 To yDown) As Single
+        
+        Dim xNonStride As Long
+        Dim xQuickInner As Long, yQuick As Long
+        Dim newR As Long, newG As Long, newB As Long
+        
+        'Start calculating pixels.
+        For y = 0 To finalY
+        For x = 0 To finalX Step pxSize
+        
+            b = srcPixels(x, y)
+            g = srcPixels(x + 1, y)
+            r = srcPixels(x + 2, y)
+            
+            'Add our running errors to the original colors
+            xNonStride = x \ 4
+            newR = r + rErrors(xNonStride, 0)
+            newG = g + gErrors(xNonStride, 0)
+            newB = b + bErrors(xNonStride, 0)
+            
+            If (newR > 255) Then
+                newR = 255
+            ElseIf (newR < 0) Then
+                newR = 0
+            End If
+            
+            If (newG > 255) Then
+                newG = 255
+            ElseIf (newG < 0) Then
+                newG = 0
+            End If
+            
+            If (newB > 255) Then
+                newB = 255
+            ElseIf (newB < 0) Then
+                newB = 0
+            End If
+            
+            'Find the best palette match
+            minIndex = GetNearestPaletteIndex(hPal, RGB(newR, newG, newB))
+            
+            With srcPalette(minIndex)
+            
+                'Apply the closest discovered color to this pixel.
+                srcPixels(x, y) = .Blue
+                srcPixels(x + 1, y) = .Green
+                srcPixels(x + 2, y) = .Red
+            
+                'Calculate new errors
+                rError = r - CLng(.Red)
+                gError = g - CLng(.Green)
+                bError = b - CLng(.Blue)
+                
+            End With
+            
+            'Reduce color bleed, if specified
+            If reduceBleed Then
+                rError = rError * 0.33
+                gError = gError * 0.33
+                bError = bError * 0.33
+            End If
+            
+            'Spread any remaining error to neighboring pixels, using the precalculated dither table as our guide
+            For i = xLeft To xRight
+            For j = 0 To yDown
+                
+                'First, ignore already processed pixels
+                If (j = 0) And (i <= 0) Then GoTo NextDitheredPixel
+                    
+                'Second, ignore pixels that have a zero in the dither table
+                If (ditherTableI(i, j) = 0) Then GoTo NextDitheredPixel
+                    
+                xQuickInner = xNonStride + i
+                
+                'Next, ignore target pixels that are off the image boundary
+                If (xQuickInner < initX) Then
+                    GoTo NextDitheredPixel
+                ElseIf (xQuickInner > xWidth) Then
+                    GoTo NextDitheredPixel
+                End If
+                
+                'If we've made it all the way here, we are able to actually spread the error to this location
+                errorMult = CSng(ditherTableI(i, j)) / ditherDivisor
+                rErrors(xQuickInner, j) = rErrors(xQuickInner, j) + (rError * errorMult)
+                gErrors(xQuickInner, j) = gErrors(xQuickInner, j) + (gError * errorMult)
+                bErrors(xQuickInner, j) = bErrors(xQuickInner, j) + (bError * errorMult)
+                
+NextDitheredPixel:
+            Next j
+            Next i
+            
+        Next x
+        
+            'When moving to the next line, we need to "shift" all accumulated errors upward.
+            ' (Basically, what was previously the "next" line, is now the "current" line.
+            ' The last line of errors must also be zeroed-out.
+            CopyMemory ByVal VarPtr(rErrors(0, 0)), ByVal VarPtr(rErrors(0, 1)), (xWidth + 1) * 4
+            CopyMemory ByVal VarPtr(gErrors(0, 0)), ByVal VarPtr(gErrors(0, 1)), (xWidth + 1) * 4
+            CopyMemory ByVal VarPtr(bErrors(0, 0)), ByVal VarPtr(bErrors(0, 1)), (xWidth + 1) * 4
+            
+            If (yDown = 1) Then
+                FillMemory VarPtr(rErrors(0, 1)), (xWidth + 1) * 4, 0
+                FillMemory VarPtr(gErrors(0, 1)), (xWidth + 1) * 4, 0
+                FillMemory VarPtr(bErrors(0, 1)), (xWidth + 1) * 4, 0
+            Else
+                CopyMemory ByVal VarPtr(rErrors(0, 1)), ByVal VarPtr(rErrors(0, 2)), (xWidth + 1) * 4
+                CopyMemory ByVal VarPtr(gErrors(0, 1)), ByVal VarPtr(gErrors(0, 2)), (xWidth + 1) * 4
+                CopyMemory ByVal VarPtr(bErrors(0, 1)), ByVal VarPtr(bErrors(0, 2)), (xWidth + 1) * 4
+                
+                FillMemory VarPtr(rErrors(0, 2)), (xWidth + 1) * 4, 0
+                FillMemory VarPtr(gErrors(0, 2)), (xWidth + 1) * 4, 0
+                FillMemory VarPtr(bErrors(0, 2)), (xWidth + 1) * 4, 0
+            End If
+            
+        Next y
+    
+    End If
+    
+    dstDIB.UnwrapArrayFromDIB srcPixels
+    
+    If (hPal <> 0) Then DeleteObject hPal
+    
+    ApplyPaletteToImage_Dithered = True
+    
+End Function
+
+'Populate a dithering table and relevant markers based on a specific dithering type.
+' Returns: TRUE if successful; FALSE otherwise.  Note that some dither types (e.g. ordered dithers) do not
+' use this function; they are handled specially.
+Public Function GetDitherTable(ByVal ditherType As PD_DITHER_METHOD, ByRef dstDitherTable() As Byte, ByRef ditherDivisor As Single, ByRef xLeft As Long, ByRef xRight As Long, ByRef yDown As Long) As Boolean
+    
+    GetDitherTable = True
+    
+    Select Case ditherType
+    
+        Case PDDM_FalseFloydSteinberg
+        
+            ReDim dstDitherTable(0 To 1, 0 To 1) As Byte
+            
+            dstDitherTable(1, 0) = 3
+            dstDitherTable(0, 1) = 3
+            dstDitherTable(1, 1) = 2
+            
+            ditherDivisor = 8
+            
+            xLeft = 0
+            xRight = 1
+            yDown = 1
+            
+        Case PDDM_FloydSteinberg
+        
+            ReDim dstDitherTable(-1 To 1, 0 To 1) As Byte
+            
+            dstDitherTable(1, 0) = 7
+            dstDitherTable(-1, 1) = 3
+            dstDitherTable(0, 1) = 5
+            dstDitherTable(1, 1) = 1
+            
+            ditherDivisor = 16
+        
+            xLeft = -1
+            xRight = 1
+            yDown = 1
+            
+        Case PDDM_JarvisJudiceNinke
+        
+            ReDim dstDitherTable(-2 To 2, 0 To 2) As Byte
+            
+            dstDitherTable(1, 0) = 7
+            dstDitherTable(2, 0) = 5
+            dstDitherTable(-2, 1) = 3
+            dstDitherTable(-1, 1) = 5
+            dstDitherTable(0, 1) = 7
+            dstDitherTable(1, 1) = 5
+            dstDitherTable(2, 1) = 3
+            dstDitherTable(-2, 2) = 1
+            dstDitherTable(-1, 2) = 3
+            dstDitherTable(0, 2) = 5
+            dstDitherTable(1, 2) = 3
+            dstDitherTable(2, 2) = 1
+            
+            ditherDivisor = 48
+            
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        Case PDDM_Stucki
+        
+            ReDim dstDitherTable(-2 To 2, 0 To 2) As Byte
+            
+            dstDitherTable(1, 0) = 8
+            dstDitherTable(2, 0) = 4
+            dstDitherTable(-2, 1) = 2
+            dstDitherTable(-1, 1) = 4
+            dstDitherTable(0, 1) = 8
+            dstDitherTable(1, 1) = 4
+            dstDitherTable(2, 1) = 2
+            dstDitherTable(-2, 2) = 1
+            dstDitherTable(-1, 2) = 2
+            dstDitherTable(0, 2) = 4
+            dstDitherTable(1, 2) = 2
+            dstDitherTable(2, 2) = 1
+            
+            ditherDivisor = 42
+            
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        Case PDDM_Burkes
+        
+            ReDim dstDitherTable(-2 To 2, 0 To 1) As Byte
+            
+            dstDitherTable(1, 0) = 8
+            dstDitherTable(2, 0) = 4
+            dstDitherTable(-2, 1) = 2
+            dstDitherTable(-1, 1) = 4
+            dstDitherTable(0, 1) = 8
+            dstDitherTable(1, 1) = 4
+            dstDitherTable(2, 1) = 2
+            
+            ditherDivisor = 32
+            
+            xLeft = -2
+            xRight = 2
+            yDown = 1
+            
+        Case PDDM_Sierra3
+        
+            ReDim dstDitherTable(-2 To 2, 0 To 2) As Byte
+            
+            dstDitherTable(1, 0) = 5
+            dstDitherTable(2, 0) = 3
+            dstDitherTable(-2, 1) = 2
+            dstDitherTable(-1, 1) = 4
+            dstDitherTable(0, 1) = 5
+            dstDitherTable(1, 1) = 4
+            dstDitherTable(2, 1) = 2
+            dstDitherTable(-2, 2) = 0
+            dstDitherTable(-1, 2) = 2
+            dstDitherTable(0, 2) = 3
+            dstDitherTable(1, 2) = 2
+            dstDitherTable(2, 2) = 0
+            
+            ditherDivisor = 32
+            
+            xLeft = -2
+            xRight = 2
+            yDown = 2
+            
+        Case PDDM_SierraTwoRow
+            
+            ReDim dstDitherTable(-2 To 2, 0 To 1) As Byte
+            
+            dstDitherTable(1, 0) = 4
+            dstDitherTable(2, 0) = 3
+            dstDitherTable(-2, 1) = 1
+            dstDitherTable(-1, 1) = 2
+            dstDitherTable(0, 1) = 3
+            dstDitherTable(1, 1) = 2
+            dstDitherTable(2, 1) = 1
+            
+            ditherDivisor = 16
+            
+            xLeft = -2
+            xRight = 2
+            yDown = 1
+        
+        Case PDDM_SierraLite
+        
+            ReDim dstDitherTable(-1 To 1, 0 To 1) As Byte
+            
+            dstDitherTable(1, 0) = 2
+            dstDitherTable(-1, 1) = 1
+            dstDitherTable(0, 1) = 1
+            
+            ditherDivisor = 4
+            
+            xLeft = -1
+            xRight = 1
+            yDown = 1
+            
+        Case PDDM_Atkinson
+            
+            ReDim dstDitherTable(-1 To 2, 0 To 2) As Byte
+            
+            dstDitherTable(1, 0) = 1
+            dstDitherTable(2, 0) = 1
+            dstDitherTable(-1, 1) = 1
+            dstDitherTable(0, 1) = 1
+            dstDitherTable(1, 1) = 1
+            dstDitherTable(0, 2) = 1
+            
+            ditherDivisor = 8
+            
+            xLeft = -1
+            xRight = 2
+            yDown = 2
+            
+        Case Else
+            GetDitherTable = False
+    
+    End Select
     
 End Function

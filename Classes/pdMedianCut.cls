@@ -56,10 +56,14 @@ Option Explicit
 
 Private Const INITIAL_STACK_SIZE As Long = 256
 
-'Used for testing color weighting by human eye sensitivity
-Private Const CUSTOM_WEIGHT_RED As Single = 0.299
-Private Const CUSTOM_WEIGHT_GREEN As Single = 0.587
-Private Const CUSTOM_WEIGHT_BLUE As Single = 0.114
+'Used for testing color weighting by human eye sensitivity.  I haven't made up my mind on the best way to
+' handle this.  Using standard illuminants is great for photographs of humans, as it preferentially preserves
+' warm tones over cool ones - but blue is weighted *so* lightly that you lose all nuance in nature photography
+' involving water or skies.  For now, I'm using reduced versions of the illuminant modifiers, which provides
+' a "halfway" solution.
+Private Const CUSTOM_WEIGHT_RED As Single = 0.33     '0.299
+Private Const CUSTOM_WEIGHT_GREEN As Single = 0.42   '0.587
+Private Const CUSTOM_WEIGHT_BLUE As Single = 0.25    '0.114
 
 Private Type RGBStackItem
     Red As Byte
@@ -147,8 +151,8 @@ Friend Sub AddColor_RGB(ByVal srcR As Byte, ByVal srcG As Byte, ByVal srcB As By
         End If
         
     Else
-        m_Colors(m_NumOfColors - 1).Count = m_Colors(m_NumOfColors - 1).Count + 1
-        m_NumOfColorsAdded = m_NumOfColorsAdded + 1
+        m_Colors(m_NumOfColors - 1).Count = m_Colors(m_NumOfColors - 1).Count + cCount
+        m_NumOfColorsAdded = m_NumOfColorsAdded + cCount
     End If
     
 End Sub
@@ -287,6 +291,8 @@ Private Sub SplitB(ByRef dstStack As pdMedianCut, ByVal bMidpoint As Long)
     Next i
 End Sub
 
+'Return the average color of this stack.  Note that "average" always means "weighted average," as colors are weighted
+' by their prominence in the original image.
 Friend Sub GetAverageColor(ByRef r As Long, ByRef g As Long, ByRef b As Long)
     
     If (m_NumOfColors > 0) Then

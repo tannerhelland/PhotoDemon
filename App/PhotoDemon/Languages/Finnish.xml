@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2196</langversion>
+<langversion>6.8.2197</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4746,11 +4746,6 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>Indexed color</original>
-<translation>Indeksoitu väri</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>Metadata</translation>
 </phrase>
@@ -5561,6 +5556,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
+<original>Palettize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation>Portrait hehku</translation>
 </phrase>
@@ -6258,11 +6258,6 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 </phrase>
 
 <phrase>
-<original>Reduce colors</original>
-<translation>Vähennä värejä</translation>
-</phrase>
-
-<phrase>
 <original>Internet import</original>
 <translation>Internet tuonti</translation>
 </phrase>
@@ -6402,7 +6397,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Poista alfa-kanava</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10133,6 +10128,77 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <!-- END text for Effects_Stylize_Outline.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
+
+<phrase>
+<original>dithering</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reduce color bleed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>paletti koko</translation>
+</phrase>
+
+<phrase>
+<original>quantization method</original>
+<translation>kvantisointimenetelmän</translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>alfa cut-off</translation>
+</phrase>
+
+<phrase>
+<original>median cut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Xiaolin Wu</original>
+<translation>Xiaolin Wu</translation>
+</phrase>
+
+<phrase>
+<original>NeuQuant</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation>koko</translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation>binääri</translation>
+</phrase>
+
+<phrase>
+<original>Generating optimal palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying new palette to image</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Palettize.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -11666,11 +11732,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation>alfa cut-off</translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>läpinäkyvä väri (hiiren kakkospainikkeella kuvaa valita)</translation>
 </phrase>
@@ -11690,7 +11751,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>värin</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -11895,16 +11956,11 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>binääri</translation>
-</phrase>
-
-<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -11943,11 +11999,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <phrase>
 <original>lossless file size optimization (OptiPNG)</original>
 <translation>häviötön tiedostokoko optimointi (optipng)</translation>
-</phrase>
-
-<phrase>
-<original>palette size</original>
-<translation>paletti koko</translation>
 </phrase>
 
 <phrase>
@@ -12011,11 +12062,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation>koko</translation>
-</phrase>
-
-<phrase>
 <original>binary (by cut-off)</original>
 <translation>binary (by cut-off)</translation>
 </phrase>
@@ -12035,7 +12081,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Nämä häviöllinen optimointiasetuksia pienentää tiedostoa %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12203,61 +12249,6 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_ContentAwareResize.frm-->
-
-<!-- BEGIN text for Image_IndexedColor.frm (FormReduceColors) -->
-
-<phrase>
-<original>quantization method</original>
-<translation>kvantisointimenetelmän</translation>
-</phrase>
-
-<phrase>
-<original>Xiaolin Wu</original>
-<translation>Xiaolin Wu</translation>
-</phrase>
-
-<phrase>
-<original>NeuQuant neural network</original>
-<translation>NeuQuant neuroverkko</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage plugin is missing.  Please install it if you wish to use this tool.</original>
-<translation>Free Image liitännäinen puuttuu. Asenna se, jos haluat käyttää tätä työkalua.</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
-<translation>Huomaa: Tämä toimenpide litistää kuvan ennen muuntaa sen indeksoitu väritila.</translation>
-</phrase>
-
-<phrase>
-<original>Flattening image</original>
-<translation>madaltuminen kuva</translation>
-</phrase>
-
-<phrase>
-<original>Indexing colors</original>
-<translation>indeksointi värit</translation>
-</phrase>
-
-<phrase>
-<original>Image successfully quantized to %1 unique colors.</original>
-<translation>Image onnistuneesti kvantisoida %1 ainutlaatuisia värejä.</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.</original>
-<translation> FreeImage liitäntä plug-in (FreeImage.dll) oli merkitty kadonneeksi tai vammaiset kun ohjelma initialization.
-
-To käyttöön tuen tätä ominaisuutta, kopioi FreeImage.dll tiedosto plug-in hakemistoon ja lataa ohjelman.</translation>
-</phrase>
-
-<!-- Image_IndexedColor.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for Image_IndexedColor.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
 
@@ -14897,10 +14888,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2508</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1943 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12448 total words. -->
+<!-- As of this build, PhotoDemon contains 4466 phrases. -->
+<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
+<!-- These 2508 phrases contain approximately 12390 total words. -->
 
 </pdData>

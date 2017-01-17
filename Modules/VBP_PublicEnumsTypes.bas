@@ -586,3 +586,23 @@ End Enum
 #If False Then
     Private Const PDCQ_MedianCut = 0, PDCQ_Wu = 1, PDCQ_Neuquant = 2
 #End If
+
+'Dithering methods.  All of these are implemented internally.
+Public Enum PD_DITHER_METHOD
+    PDDM_None = 0
+    PDDM_Ordered_Bayer4x4 = 1
+    PDDM_Ordered_Bayer8x8 = 2
+    PDDM_FalseFloydSteinberg = 3
+    PDDM_FloydSteinberg = 4
+    PDDM_JarvisJudiceNinke = 5
+    PDDM_Stucki = 6
+    PDDM_Burkes = 7
+    PDDM_Sierra3 = 8
+    PDDM_SierraTwoRow = 9
+    PDDM_SierraLite = 10
+    PDDM_Atkinson = 11
+End Enum
+
+#If False Then
+    Private Const PDDM_None = 0, PDDM_Ordered_Bayer4x4 = 1, PDDM_Ordered_Bayer8x8 = 2, PDDM_FalseFloydSteinberg = 3, PDDM_FloydSteinberg = 4, PDDM_JarvisJudiceNinke = 5, PDDM_Stucki = 6, PDDM_Burkes = 7, PDDM_Sierra3 = 8, PDDM_SierraTwoRow = 9, PDDM_SierraLite = 10, PDDM_Atkinson = 11
+#End If
