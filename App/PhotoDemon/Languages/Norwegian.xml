@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2196</langversion>
+<langversion>6.8.2197</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4752,11 +4752,6 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Indexed color</original>
-<translation>begrensede farger</translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>metadata</translation>
 </phrase>
@@ -5567,6 +5562,11 @@ eller Fil> Åpne og Fil> Importer menyer.</translation>
 </phrase>
 
 <phrase>
+<original>Palettize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation>portrett glød</translation>
 </phrase>
@@ -6264,11 +6264,6 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 </phrase>
 
 <phrase>
-<original>Reduce colors</original>
-<translation>Reduser farger</translation>
-</phrase>
-
-<phrase>
 <original>Internet import</original>
 <translation>Internet import</translation>
 </phrase>
@@ -6408,7 +6403,7 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <translation>Fjern alfakanal </translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10139,6 +10134,77 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 
 <!-- END text for Effects_Stylize_Outline.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
+
+<phrase>
+<original>dithering</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reduce color bleed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>palett størrelse</translation>
+</phrase>
+
+<phrase>
+<original>quantization method</original>
+<translation>kvantiseringsfremgangsmåter</translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation>alpha cut-off</translation>
+</phrase>
+
+<phrase>
+<original>median cut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Xiaolin Wu</original>
+<translation>Xiaolin Wu</translation>
+</phrase>
+
+<phrase>
+<original>NeuQuant</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation>full</translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation>binær</translation>
+</phrase>
+
+<phrase>
+<original>Generating optimal palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying new palette to image</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Palettize.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -11672,11 +11738,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation>alpha cut-off</translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation>transparent farge (høyre-klikk på bildet for å velge)</translation>
 </phrase>
@@ -11696,7 +11757,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>etter farge</translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -11901,16 +11962,11 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation>binær</translation>
-</phrase>
-
-<phrase>
 <original>ASCII</original>
 <translation>ASCII</translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -11949,11 +12005,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <phrase>
 <original>lossless file size optimization (OptiPNG)</original>
 <translation>lossless  filstørrelse optimalisering (OptiPNG)</translation>
-</phrase>
-
-<phrase>
-<original>palette size</original>
-<translation>palett størrelse</translation>
 </phrase>
 
 <phrase>
@@ -12017,11 +12068,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation>full</translation>
-</phrase>
-
-<phrase>
 <original>binary (by cut-off)</original>
 <translation>binære (ved cut-off)</translation>
 </phrase>
@@ -12041,7 +12087,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>Disse lossy optimaliseringsinnstillingene  redusere filstørrelsen ved %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12209,61 +12255,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_ContentAwareResize.frm-->
-
-<!-- BEGIN text for Image_IndexedColor.frm (FormReduceColors) -->
-
-<phrase>
-<original>quantization method</original>
-<translation>kvantiseringsfremgangsmåter</translation>
-</phrase>
-
-<phrase>
-<original>Xiaolin Wu</original>
-<translation>Xiaolin Wu</translation>
-</phrase>
-
-<phrase>
-<original>NeuQuant neural network</original>
-<translation>NeuQuant nettverk</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage plugin is missing.  Please install it if you wish to use this tool.</original>
-<translation>The Free Image plugin mangler. Installer det hvis du ønsker å bruke dette verktøyet.</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
-<translation>Merk: Denne operasjonen vil flate ut biletet før du konverterer den til indeksert fargemodus.</translation>
-</phrase>
-
-<phrase>
-<original>Flattening image</original>
-<translation>utflating bilde</translation>
-</phrase>
-
-<phrase>
-<original>Indexing colors</original>
-<translation>indeksering farger</translation>
-</phrase>
-
-<phrase>
-<original>Image successfully quantized to %1 unique colors.</original>
-<translation>Bilde hell kvantisert til %1 unike farger.</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.</original>
-<translation>Den FreeImage grensesnitt plug-in (FreeImage.dll) ble merket som mangler eller deaktivert på programmet initialization.
-
-To aktivere støtte for denne funksjonen, kan du kopiere FreeImage.dll filen inn i plug-in-katalogen og laste programmet.</translation>
-</phrase>
-
-<!-- Image_IndexedColor.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for Image_IndexedColor.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
 
@@ -14903,10 +14894,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2508</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1943 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12448 total words. -->
+<!-- As of this build, PhotoDemon contains 4466 phrases. -->
+<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
+<!-- These 2508 phrases contain approximately 12390 total words. -->
 
 </pdData>

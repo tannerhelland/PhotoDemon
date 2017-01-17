@@ -497,13 +497,13 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         
     AddMenuIcon "STYLIZE", 7, 9        'Stylize
         '--> Stylize sub-menu
-        AddMenuIcon "ANTIQUE", 7, 9, 0       'Antique (Sepia)
-        AddMenuIcon "DIFFUSE", 7, 9, 1       'Diffuse
-        AddMenuIcon "REDUCECOLORS", 7, 9, 2  'Indexed color (Reduce Colors)
-        'addMenuIcon "OUTLINE", 7, 9, 3       'Outline
+        AddMenuIcon "ANTIQUE", 7, 9, 0        'Antique (Sepia)
+        AddMenuIcon "DIFFUSE", 7, 9, 1        'Diffuse
+        'addMenuIcon "OUTLINE", 7, 9, 2        'Outline
+        AddMenuIcon "REDUCECOLORS", 7, 9, 3   'Apply palette (reduce color count)
         'addMenuIcon "PORTGLOW", 7, 9, 4      'Portrait glow
-        AddMenuIcon "SOLARIZE", 7, 9, 5      'Solarize
-        AddMenuIcon "TWINS", 7, 9, 6         'Twins
+        AddMenuIcon "SOLARIZE", 7, 9, 5       'Solarize
+        AddMenuIcon "TWINS", 7, 9, 6          'Twins
         AddMenuIcon "VIGNETTE", 7, 9, 7      'Vignetting
         
     AddMenuIcon "PANANDZOOM", 7, 10        'Transform

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.236</langversion>
+<langversion>6.7.237</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -4742,11 +4742,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>Indexed color</original>
-<translation>Indizierte Farbe </translation>
-</phrase>
-
-<phrase>
 <original>Metadata</original>
 <translation>Metadaten</translation>
 </phrase>
@@ -5557,6 +5552,11 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
+<original>Palettize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Portrait glow</original>
 <translation></translation>
 </phrase>
@@ -6254,11 +6254,6 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
-<original>Reduce colors</original>
-<translation>Farben reduzieren</translation>
-</phrase>
-
-<phrase>
 <original>Internet import</original>
 <translation>Import aus dem Internet</translation>
 </phrase>
@@ -6398,7 +6393,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 187 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -10129,6 +10124,77 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Stylize_Outline.frm-->
 
+<!-- BEGIN text for Effects_Stylize_Palettize.frm (FormPalettize) -->
+
+<phrase>
+<original>dithering</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reduce color bleed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>quantization method</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>preserve white and black</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>median cut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Xiaolin Wu</original>
+<translation>Xiaolin Wu</translation>
+</phrase>
+
+<phrase>
+<original>NeuQuant</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Generating optimal palette</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying new palette to image</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_Palettize.frm-->
+
 <!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
 
 <phrase>
@@ -11660,11 +11726,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>alpha cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>transparent color (right-click image to select)</original>
 <translation></translation>
 </phrase>
@@ -11684,7 +11745,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation></translation>
 </phrase>
 
-<!-- File_Save_GIF.frm contains 19 phrases. 13 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_GIF.frm contains 19 phrases. 14 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_GIF.frm-->
 
@@ -11889,16 +11950,11 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>binary</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>ASCII</original>
 <translation></translation>
 </phrase>
 
-<!-- File_Save_Pixmap.frm contains 17 phrases. 11 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- File_Save_Pixmap.frm contains 17 phrases. 12 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_Save_Pixmap.frm-->
 
@@ -11936,11 +11992,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 
 <phrase>
 <original>lossless file size optimization (OptiPNG)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>palette size</original>
 <translation></translation>
 </phrase>
 
@@ -12005,11 +12056,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>binary (by cut-off)</original>
 <translation></translation>
 </phrase>
@@ -12029,7 +12075,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 37 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -12197,61 +12243,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <!-- Image_ContentAwareResize.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Image_ContentAwareResize.frm-->
-
-<!-- BEGIN text for Image_IndexedColor.frm (FormReduceColors) -->
-
-<phrase>
-<original>quantization method</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Xiaolin Wu</original>
-<translation>Xiaolin Wu</translation>
-</phrase>
-
-<phrase>
-<original>NeuQuant neural network</original>
-<translation>NeuQuant neuronales Netzwerk</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage plugin is missing.  Please install it if you wish to use this tool.</original>
-<translation>Das FreeImage-Plugin fehlt. Bitte installieren Sie es, wenn Sie dieses Werkzeug benutzen wollen.</translation>
-</phrase>
-
-<phrase>
-<original>Note: this operation will flatten the image before converting it to indexed color mode.</original>
-<translation>Hinweis: Hierdurch wird das Bild vor der Umwandlung in den indizierten Farbmodus auf eine einzige Ebene reduziert!</translation>
-</phrase>
-
-<phrase>
-<original>Flattening image</original>
-<translation>Ebenen zusammenführen</translation>
-</phrase>
-
-<phrase>
-<original>Indexing colors</original>
-<translation>Farben indizieren</translation>
-</phrase>
-
-<phrase>
-<original>Image successfully quantized to %1 unique colors.</original>
-<translation>Das Bild wurde auf %1 eindeutige Farben quantisiert.</translation>
-</phrase>
-
-<phrase>
-<original>The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization.
-
-To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.</original>
-<translation>Die FreeImage-Schnittstelle (Plugin "FreeImage.dll") wurde als fehlend erkannt oder beim Programmstart deaktiviert.
-
-Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeImage.dll" (Download unter http://freeimage.sourceforge.net/download.html) in das Plugin-Verzeichnis und starten Sie das Programm neu.</translation>
-</phrase>
-
-<!-- Image_IndexedColor.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for Image_IndexedColor.frm-->
 
 <!-- BEGIN text for Image_Metadata.frm (FormMetadata) -->
 
@@ -14891,10 +14882,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2508</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1943 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12448 total words. -->
+<!-- As of this build, PhotoDemon contains 4466 phrases. -->
+<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
+<!-- These 2508 phrases contain approximately 12390 total words. -->
 
 </pdData>

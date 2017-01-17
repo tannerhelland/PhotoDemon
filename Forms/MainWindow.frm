@@ -1265,11 +1265,11 @@ Begin VB.Form FormMain
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Indexed color..."
+            Caption         =   "Outline..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Outline..."
+            Caption         =   "Palettize..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
@@ -4311,14 +4311,14 @@ Private Sub MnuStylize_Click(Index As Integer)
         'Diffuse
         Case 1
             Process "Diffuse", True
-        
-        'Indexed color
-        Case 2
-            Process "Reduce colors", True
             
         'Outline
-        Case 3
+        Case 2
             Process "Outline", True
+        
+        'Palettize
+        Case 3
+            Process "Palettize", True
             
         'Portrait glow
         Case 4

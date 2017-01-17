@@ -385,8 +385,8 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     Dim xModQuick As Long
     Dim DitherTable() As Byte
     Dim xLeft As Long, xRight As Long, yDown As Long
-    Dim errorVal As Double
-    Dim dDivisor As Double
+    Dim errorVal As Single
+    Dim dDivisor As Single
     
     'Process the image based on the dither method requested
     Select Case DitherMethod
@@ -619,215 +619,52 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
                 End If
             Next x
         
+        'For all error-diffusion methods, precise dithering table coefficients are retrieved from the
+        ' /Modules/Palettes.bas file.  (We do this because other functions also need to retrieve these tables,
+        ' e.g. the Effects > Stylize > Palettize menu.)
+        
         'False Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 3
-        
-            'First, prepare a dither table
-            ReDim DitherTable(0 To 1, 0 To 1) As Byte
-            
-            DitherTable(1, 0) = 3
-            DitherTable(0, 1) = 3
-            DitherTable(1, 1) = 2
-            
-            dDivisor = 8
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = 0
-            xRight = 1
-            yDown = 1
+            Palettes.GetDitherTable PDDM_FalseFloydSteinberg, DitherTable, dDivisor, xLeft, xRight, yDown
             
         'Genuine Floyd-Steinberg.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 4
-        
-            'First, prepare a Floyd-Steinberg dither table
-            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
-            
-            DitherTable(1, 0) = 7
-            DitherTable(-1, 1) = 3
-            DitherTable(0, 1) = 5
-            DitherTable(1, 1) = 1
-            
-            dDivisor = 16
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -1
-            xRight = 1
-            yDown = 1
+            Palettes.GetDitherTable PDDM_FloydSteinberg, DitherTable, dDivisor, xLeft, xRight, yDown
             
         'Jarvis, Judice, Ninke.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 5
-        
-            'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
-            
-            DitherTable(1, 0) = 7
-            DitherTable(2, 0) = 5
-            
-            DitherTable(-2, 1) = 3
-            DitherTable(-1, 1) = 5
-            DitherTable(0, 1) = 7
-            DitherTable(1, 1) = 5
-            DitherTable(2, 1) = 3
-            
-            DitherTable(-2, 2) = 1
-            DitherTable(-1, 2) = 3
-            DitherTable(0, 2) = 5
-            DitherTable(1, 2) = 3
-            DitherTable(2, 2) = 1
-            
-            dDivisor = 48
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -2
-            xRight = 2
-            yDown = 2
+            Palettes.GetDitherTable PDDM_JarvisJudiceNinke, DitherTable, dDivisor, xLeft, xRight, yDown
             
         'Stucki.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 6
-        
-            'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
-            
-            DitherTable(1, 0) = 8
-            DitherTable(2, 0) = 4
-            
-            DitherTable(-2, 1) = 2
-            DitherTable(-1, 1) = 4
-            DitherTable(0, 1) = 8
-            DitherTable(1, 1) = 4
-            DitherTable(2, 1) = 2
-            
-            DitherTable(-2, 2) = 1
-            DitherTable(-1, 2) = 2
-            DitherTable(0, 2) = 4
-            DitherTable(1, 2) = 2
-            DitherTable(2, 2) = 1
-            
-            dDivisor = 42
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -2
-            xRight = 2
-            yDown = 2
+            Palettes.GetDitherTable PDDM_Stucki, DitherTable, dDivisor, xLeft, xRight, yDown
             
         'Burkes.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 7
-        
-            'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
-            
-            DitherTable(1, 0) = 8
-            DitherTable(2, 0) = 4
-            
-            DitherTable(-2, 1) = 2
-            DitherTable(-1, 1) = 4
-            DitherTable(0, 1) = 8
-            DitherTable(1, 1) = 4
-            DitherTable(2, 1) = 2
-            
-            dDivisor = 32
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -2
-            xRight = 2
-            yDown = 1
+            Palettes.GetDitherTable PDDM_Burkes, DitherTable, dDivisor, xLeft, xRight, yDown
             
         'Sierra-3.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 8
-        
-            'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 2) As Byte
-            
-            DitherTable(1, 0) = 5
-            DitherTable(2, 0) = 3
-            
-            DitherTable(-2, 1) = 2
-            DitherTable(-1, 1) = 4
-            DitherTable(0, 1) = 5
-            DitherTable(1, 1) = 4
-            DitherTable(2, 1) = 2
-            
-            DitherTable(-2, 2) = 0
-            DitherTable(-1, 2) = 2
-            DitherTable(0, 2) = 3
-            DitherTable(1, 2) = 2
-            DitherTable(2, 2) = 0
-            
-            dDivisor = 32
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -2
-            xRight = 2
-            yDown = 2
+            Palettes.GetDitherTable PDDM_Sierra3, DitherTable, dDivisor, xLeft, xRight, yDown
             
         'Sierra-2.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 9
-        
-            'First, prepare a dither table
-            ReDim DitherTable(-2 To 2, 0 To 1) As Byte
-            
-            DitherTable(1, 0) = 4
-            DitherTable(2, 0) = 3
-            
-            DitherTable(-2, 1) = 1
-            DitherTable(-1, 1) = 2
-            DitherTable(0, 1) = 3
-            DitherTable(1, 1) = 2
-            DitherTable(2, 1) = 1
-            
-            dDivisor = 16
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -2
-            xRight = 2
-            yDown = 1
+            Palettes.GetDitherTable PDDM_SierraTwoRow, DitherTable, dDivisor, xLeft, xRight, yDown
             
         'Sierra-2-4A.  Coefficients derived from http://www.efg2.com/Lab/Library/ImageProcessing/DHALF.TXT
         Case 10
-        
-            'First, prepare a dither table
-            ReDim DitherTable(-1 To 1, 0 To 1) As Byte
+            Palettes.GetDitherTable PDDM_SierraLite, DitherTable, dDivisor, xLeft, xRight, yDown
             
-            DitherTable(1, 0) = 2
-
-            DitherTable(-1, 1) = 1
-            DitherTable(0, 1) = 1
-            
-            dDivisor = 4
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -1
-            xRight = 1
-            yDown = 1
-            
-        'Bill Atkinson's original Hyperdither/HyperScan algorithm.  (Note: Bill invented MacPaint, QuickDraw, and HyperCard.)
-        ' This is the dithering algorithm used on the original Apple Macintosh.
+        'Bill Atkinson's original Hyperdither/HyperScan algorithm.  (Note: Bill invented MacPaint, QuickDraw,
+        ' and HyperCard.)  This is the dithering algorithm used on the original Apple Macintosh.
         ' Coefficients derived from http://gazs.github.com/canvas-atkinson-dither/
         Case 11
-        
-            'First, prepare a dither table
-            ReDim DitherTable(-1 To 2, 0 To 2) As Byte
-            
-            DitherTable(1, 0) = 1
-            DitherTable(2, 0) = 1
-            
-            DitherTable(-1, 1) = 1
-            DitherTable(0, 1) = 1
-            DitherTable(1, 1) = 1
-            
-            DitherTable(0, 2) = 1
-            
-            dDivisor = 8
-        
-            'Second, mark the size of the array in the left, right, and down directions
-            xLeft = -1
-            xRight = 2
-            yDown = 2
+            Palettes.GetDitherTable PDDM_Atkinson, DitherTable, dDivisor, xLeft, xRight, yDown
             
     End Select
     
     'If we have been asked to use a non-ordered dithering method, apply it now
-    If (DitherMethod >= 3) Then
+    If (DitherMethod >= PDDM_FalseFloydSteinberg) Then
     
         'First, we need a dithering table the same size as the image.  We make it of Single type to prevent rounding errors.
         ' (This uses a lot of memory, but on modern systems it shouldn't be a problem.)
