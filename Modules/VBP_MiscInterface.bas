@@ -1426,6 +1426,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
                 isPDControl = True
             ElseIf (TypeOf eControl Is pdResize) Then
                 isPDControl = True
+            ElseIf (TypeOf eControl Is pdColorDepth) Then
+                isPDControl = True
             ElseIf (TypeOf eControl Is pdCanvas) Then
                 isPDControl = True
             ElseIf (TypeOf eControl Is pdCanvasView) Then

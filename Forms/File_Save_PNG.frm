@@ -4,7 +4,7 @@ Begin VB.Form dialog_ExportPNG
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " PNG export options"
-   ClientHeight    =   7635
+   ClientHeight    =   8595
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   13110
@@ -21,18 +21,19 @@ Begin VB.Form dialog_ExportPNG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   509
+   ScaleHeight     =   573
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   874
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdButtonStrip btsMasterType 
-      Height          =   735
+      Height          =   1095
       Left            =   5880
       TabIndex        =   2
       Top             =   120
       Width           =   7095
       _ExtentX        =   12515
-      _ExtentY        =   1296
+      _ExtentY        =   1931
+      Caption         =   "PNG type"
       FontSize        =   12
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
@@ -40,55 +41,124 @@ Begin VB.Form dialog_ExportPNG
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   6885
+      Top             =   7845
       Width           =   13110
       _ExtentX        =   23125
       _ExtentY        =   1323
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
-      Height          =   6615
+      Height          =   7575
       Left            =   120
       TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   11668
-      ColorSelection  =   -1  'True
+      _ExtentY        =   13361
    End
    Begin PhotoDemon.pdContainer picCategory 
-      Height          =   5775
+      Height          =   6375
       Index           =   0
       Left            =   5880
       TabIndex        =   3
-      Top             =   960
+      Top             =   1320
       Width           =   7095
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButtonStrip btsCategory 
-         Height          =   615
-         Left            =   0
-         TabIndex        =   10
+      _ExtentX        =   12515
+      _ExtentY        =   11245
+      Begin PhotoDemon.pdTitle ttlStandard 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   22
          Top             =   0
-         Width           =   7095
-         _ExtentX        =   12515
-         _ExtentY        =   1085
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   661
+         Caption         =   "basic settings"
+         FontBold        =   -1  'True
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdTitle ttlStandard 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   23
+         Top             =   360
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   661
+         Caption         =   "advanced settings"
+         FontBold        =   -1  'True
+         FontSize        =   12
+         Value           =   0   'False
+      End
+      Begin PhotoDemon.pdTitle ttlStandard 
+         Height          =   375
+         Index           =   2
+         Left            =   120
+         TabIndex        =   24
+         Top             =   720
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   661
+         Caption         =   "metadata settings"
+         FontBold        =   -1  'True
+         FontSize        =   12
+         Value           =   0   'False
       End
       Begin PhotoDemon.pdContainer picContainer 
          Height          =   5175
-         Index           =   0
-         Left            =   0
-         TabIndex        =   13
-         Top             =   720
+         Index           =   1
+         Left            =   120
+         TabIndex        =   4
+         Top             =   1200
          Width           =   7095
-         _ExtentX        =   0
-         _ExtentY        =   0
+         _ExtentX        =   12515
+         _ExtentY        =   9128
+         Begin PhotoDemon.pdColorDepth clrDepth 
+            Height          =   5055
+            Left            =   360
+            TabIndex        =   25
+            Top             =   0
+            Width           =   6615
+            _ExtentX        =   11668
+            _ExtentY        =   8916
+         End
+      End
+      Begin PhotoDemon.pdContainer picContainer 
+         Height          =   3255
+         Index           =   2
+         Left            =   120
+         TabIndex        =   5
+         Top             =   1200
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   5741
+         Begin PhotoDemon.pdMetadataExport mtdManager 
+            Height          =   3255
+            Left            =   360
+            TabIndex        =   6
+            Top             =   0
+            Width           =   6495
+            _ExtentX        =   11456
+            _ExtentY        =   5741
+         End
+      End
+      Begin PhotoDemon.pdContainer picContainer 
+         Height          =   3255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1200
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   5741
          Begin PhotoDemon.pdLabel lblHint 
             Height          =   255
             Index           =   0
-            Left            =   180
-            Top             =   960
-            Width           =   2700
-            _ExtentX        =   4763
+            Left            =   480
+            Top             =   720
+            Width           =   2340
+            _ExtentX        =   4128
             _ExtentY        =   450
             Caption         =   "fast, larger file"
             FontItalic      =   -1  'True
@@ -96,23 +166,23 @@ Begin VB.Form dialog_ExportPNG
          End
          Begin PhotoDemon.pdCheckBox chkInterlace 
             Height          =   375
-            Left            =   120
-            TabIndex        =   15
-            Top             =   1440
-            Width           =   6975
-            _ExtentX        =   12303
+            Left            =   360
+            TabIndex        =   9
+            Top             =   2355
+            Width           =   6495
+            _ExtentX        =   11456
             _ExtentY        =   661
-            Caption         =   "use interlacing"
+            Caption         =   "write interlaced PNG"
             Value           =   0
          End
          Begin PhotoDemon.pdSlider sldCompression 
             Height          =   735
-            Left            =   0
-            TabIndex        =   14
-            Top             =   240
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   1720
+            Left            =   360
+            TabIndex        =   8
+            Top             =   0
+            Width           =   6615
+            _ExtentX        =   11668
+            _ExtentY        =   1296
             Caption         =   "compression level"
             Max             =   9
             Value           =   3
@@ -121,33 +191,34 @@ Begin VB.Form dialog_ExportPNG
             NotchValueCustom=   3
          End
          Begin PhotoDemon.pdColorSelector clsBackground 
-            Height          =   975
-            Left            =   0
-            TabIndex        =   17
-            Top             =   2160
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1720
-            Caption         =   "background color"
+            Height          =   375
+            Left            =   5400
+            TabIndex        =   10
+            Top             =   2760
+            Width           =   1455
+            _ExtentX        =   2566
+            _ExtentY        =   661
+            FontSize        =   10
+            ShowMainWindowColor=   0   'False
          End
          Begin PhotoDemon.pdCheckBox chkEmbedBackground 
             Height          =   375
-            Left            =   120
-            TabIndex        =   18
-            Top             =   3240
-            Width           =   6975
-            _ExtentX        =   12303
+            Left            =   360
+            TabIndex        =   11
+            Top             =   2790
+            Width           =   4935
+            _ExtentX        =   8705
             _ExtentY        =   661
-            Caption         =   "embed background color in file"
+            Caption         =   "embed background color (bKGD chunk)"
             Value           =   0
          End
          Begin PhotoDemon.pdLabel lblHint 
             Height          =   255
             Index           =   1
-            Left            =   3075
-            Top             =   960
-            Width           =   2655
-            _ExtentX        =   4683
+            Left            =   2880
+            Top             =   720
+            Width           =   2580
+            _ExtentX        =   4551
             _ExtentY        =   450
             Alignment       =   1
             Caption         =   "slow, smaller file"
@@ -156,148 +227,29 @@ Begin VB.Form dialog_ExportPNG
          End
          Begin PhotoDemon.pdButtonStrip btsStandardOptimize 
             Height          =   1095
-            Left            =   0
-            TabIndex        =   21
-            Top             =   3960
-            Width           =   7095
-            _ExtentX        =   12515
+            Left            =   360
+            TabIndex        =   13
+            Top             =   1110
+            Width           =   6615
+            _ExtentX        =   11668
             _ExtentY        =   1931
-            Caption         =   "lossless file size optimization (OptiPNG)"
-         End
-      End
-      Begin PhotoDemon.pdContainer picContainer 
-         Height          =   5175
-         Index           =   2
-         Left            =   0
-         TabIndex        =   11
-         Top             =   720
-         Width           =   7095
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Begin PhotoDemon.pdMetadataExport mtdManager 
-            Height          =   3255
-            Left            =   0
-            TabIndex        =   12
-            Top             =   0
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   5741
-         End
-      End
-      Begin PhotoDemon.pdContainer picContainer 
-         Height          =   5175
-         Index           =   1
-         Left            =   0
-         TabIndex        =   4
-         Top             =   720
-         Width           =   7095
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Begin PhotoDemon.pdSlider sldAlphaCutoff 
-            Height          =   855
-            Left            =   0
-            TabIndex        =   5
-            Top             =   4080
-            Width           =   7095
-            _ExtentX        =   12515
-            _ExtentY        =   1508
-            Caption         =   "alpha cut-off"
-            Max             =   254
-            SliderTrackStyle=   1
-            Value           =   64
-            GradientColorRight=   1703935
-            NotchPosition   =   2
-            NotchValueCustom=   64
-         End
-         Begin PhotoDemon.pdLabel lblColorCount 
-            Height          =   375
-            Left            =   4920
-            Top             =   2460
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   661
-            Caption         =   "palette size"
-         End
-         Begin PhotoDemon.pdSlider sldColorCount 
-            Height          =   375
-            Left            =   240
-            TabIndex        =   6
-            Top             =   2400
-            Width           =   4575
-            _ExtentX        =   8070
-            _ExtentY        =   661
-            Min             =   2
-            Max             =   256
-            Value           =   256
-            NotchPosition   =   2
-            NotchValueCustom=   256
-         End
-         Begin PhotoDemon.pdButtonStrip btsAlpha 
-            Height          =   1095
-            Left            =   0
-            TabIndex        =   7
-            Top             =   2880
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1931
-            Caption         =   "transparency"
-         End
-         Begin PhotoDemon.pdButtonStrip btsColorModel 
-            Height          =   1095
-            Left            =   0
-            TabIndex        =   8
-            Top             =   0
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1931
-            Caption         =   "color model"
-         End
-         Begin PhotoDemon.pdButtonStrip btsDepthColor 
-            Height          =   1095
-            Left            =   0
-            TabIndex        =   16
-            Top             =   1200
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1931
-            Caption         =   "depth"
-         End
-         Begin PhotoDemon.pdColorSelector clsAlphaColor 
-            Height          =   975
-            Left            =   0
-            TabIndex        =   9
-            Top             =   4080
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1720
-            Caption         =   "transparent color (right-click image to select)"
-            curColor        =   16711935
-         End
-         Begin PhotoDemon.pdButtonStrip btsDepthGrayscale 
-            Height          =   1095
-            Left            =   0
-            TabIndex        =   20
-            Top             =   1200
-            Width           =   7095
-            _ExtentX        =   15690
-            _ExtentY        =   1931
-            Caption         =   "depth"
+            Caption         =   "optimization (OptiPNG)"
          End
       End
    End
    Begin PhotoDemon.pdContainer picCategory 
-      Height          =   5895
+      Height          =   6375
       Index           =   1
       Left            =   5880
-      TabIndex        =   19
-      Top             =   960
+      TabIndex        =   12
+      Top             =   1320
       Width           =   7095
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   12515
+      _ExtentY        =   11245
       Begin PhotoDemon.pdButton cmdUpdateLossyPreview 
          Height          =   615
          Left            =   360
-         TabIndex        =   29
+         TabIndex        =   21
          Top             =   3480
          Width           =   6615
          _ExtentX        =   11668
@@ -308,18 +260,19 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   0
          Left            =   120
-         TabIndex        =   27
+         TabIndex        =   19
          Top             =   120
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   661
          Caption         =   "lossy optimization options"
+         FontBold        =   -1  'True
          FontSize        =   12
       End
       Begin PhotoDemon.pdCheckBox chkOptimizeDither 
          Height          =   375
          Left            =   360
-         TabIndex        =   25
+         TabIndex        =   17
          Top             =   1080
          Width           =   6495
          _ExtentX        =   11456
@@ -329,7 +282,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltTargetQuality 
          Height          =   735
          Left            =   360
-         TabIndex        =   23
+         TabIndex        =   15
          Top             =   1560
          Width           =   6615
          _ExtentX        =   11668
@@ -344,7 +297,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdCheckBox chkOptimizeLossy 
          Height          =   375
          Left            =   360
-         TabIndex        =   22
+         TabIndex        =   14
          Top             =   630
          Width           =   6735
          _ExtentX        =   12515
@@ -354,7 +307,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltLossyPerformance 
          Height          =   735
          Left            =   360
-         TabIndex        =   24
+         TabIndex        =   16
          Top             =   2310
          Width           =   6615
          _ExtentX        =   11668
@@ -368,7 +321,7 @@ Begin VB.Form dialog_ExportPNG
       Begin PhotoDemon.pdSlider sltLosslessPerformance 
          Height          =   735
          Left            =   360
-         TabIndex        =   26
+         TabIndex        =   18
          Top             =   4800
          Width           =   6615
          _ExtentX        =   11668
@@ -434,12 +387,13 @@ Begin VB.Form dialog_ExportPNG
          Height          =   375
          Index           =   1
          Left            =   120
-         TabIndex        =   28
+         TabIndex        =   20
          Top             =   4320
          Width           =   6975
          _ExtentX        =   12303
          _ExtentY        =   661
          Caption         =   "lossless optimization options"
+         FontBold        =   -1  'True
          FontSize        =   12
       End
    End
@@ -484,8 +438,8 @@ Private m_FormatParamString As String
 ' cannot write any BMP-specific data.
 Private m_MetadataParamString As String
 
-'Default alpha cut-off when "auto" is selected
-Private Const DEFAULT_ALPHA_CUTOFF As Long = 64
+'Used to avoid recursive setting changes
+Private m_PanelChangesActive As Boolean
 
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
@@ -500,110 +454,6 @@ Public Function GetMetadataParams() As String
     GetMetadataParams = m_MetadataParamString
 End Function
 
-Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
-    UpdateTransparencyOptions
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
-Private Sub UpdateTransparencyOptions()
-    
-    Select Case btsAlpha.ListIndex
-    
-        'auto, full alpha
-        Case 0, 1
-            sldAlphaCutoff.Visible = False
-            clsAlphaColor.Visible = False
-            pdFxPreview.AllowColorSelection = False
-        
-        'alpha by cut-off
-        Case 2
-            sldAlphaCutoff.Visible = True
-            clsAlphaColor.Visible = False
-            pdFxPreview.AllowColorSelection = False
-        
-        'alpha by color
-        Case 3
-            sldAlphaCutoff.Visible = False
-            clsAlphaColor.Visible = True
-            pdFxPreview.AllowColorSelection = True
-            
-        'no alpha
-        Case 4
-            sldAlphaCutoff.Visible = False
-            clsAlphaColor.Visible = False
-            pdFxPreview.AllowColorSelection = False
-    
-    End Select
-    
-    ReflowColorPanel
-    
-End Sub
-
-Private Sub btsCategory_Click(ByVal buttonIndex As Long)
-    UpdatePanelVisibility
-End Sub
-
-Private Sub UpdatePanelVisibility()
-    Dim i As Long
-    For i = 0 To btsCategory.ListCount - 1
-        picContainer(i).Visible = CBool(i = btsCategory.ListIndex)
-    Next i
-End Sub
-
-Private Sub btsColorModel_Click(ByVal buttonIndex As Long)
-    UpdateColorDepthVisibility
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
-Private Sub UpdateColorDepthVisibility()
-
-    Select Case btsColorModel.ListIndex
-    
-        'Auto
-        Case 0
-            btsDepthColor.Visible = False
-            btsDepthGrayscale.Visible = False
-        
-        'Color
-        Case 1
-            btsDepthColor.Visible = True
-            btsDepthGrayscale.Visible = False
-        
-        'Grayscale
-        Case 2
-            btsDepthColor.Visible = False
-            btsDepthGrayscale.Visible = True
-    
-    End Select
-
-    UpdateColorDepthOptions
-
-End Sub
-
-Private Sub UpdateColorDepthOptions()
-    
-    'Indexed color modes allow for variable palette sizes
-    If (btsDepthColor.Visible) Then
-        sldColorCount.Visible = CBool(btsDepthColor.ListIndex = 2)
-        lblColorCount.Visible = sldColorCount.Visible
-    
-    'Indexed grayscale mode also allows for variable palette sizes
-    ElseIf (btsDepthGrayscale.Visible) Then
-        sldColorCount.Visible = CBool(btsDepthGrayscale.ListIndex = 1)
-        lblColorCount.Visible = sldColorCount.Visible
-    
-    'Other modes do not expose palette settings
-    Else
-        sldColorCount.Visible = False
-        lblColorCount.Visible = False
-    End If
-    
-    ReflowColorPanel
-    
-End Sub
-
 Private Sub UpdateMasterPanelVisibility()
     Dim i As Long
     For i = picCategory.lBound To picCategory.UBound
@@ -611,52 +461,16 @@ Private Sub UpdateMasterPanelVisibility()
     Next i
 End Sub
 
-Private Sub ReflowColorPanel()
-
-    Dim yOffset As Long, yPadding As Long
-    yOffset = btsColorModel.GetTop + btsColorModel.GetHeight
-    yPadding = FixDPI(8)
-    yOffset = yOffset + yPadding
-    
-    If btsDepthColor.Visible Then
-        btsDepthColor.SetTop yOffset
-        yOffset = yOffset + btsDepthColor.GetHeight + yPadding
-    ElseIf btsDepthGrayscale.Visible Then
-        btsDepthGrayscale.SetTop yOffset
-        yOffset = yOffset + btsDepthGrayscale.GetHeight + yPadding
-    End If
-    
-    If sldColorCount.Visible Then
-        sldColorCount.SetTop yOffset
-        lblColorCount.SetTop (sldColorCount.GetTop + sldColorCount.GetHeight) - lblColorCount.GetHeight
-        yOffset = yOffset + sldColorCount.GetHeight + yPadding
-    End If
-    
-    btsAlpha.SetTop yOffset
-    yOffset = yOffset + btsAlpha.GetHeight + yPadding
-    
-    If sldAlphaCutoff.Visible Then
-        sldAlphaCutoff.SetTop yOffset
-    ElseIf clsAlphaColor.Visible Then
-        clsAlphaColor.SetTop yOffset
-    End If
-    
-End Sub
-
-Private Sub btsDepthColor_Click(ByVal buttonIndex As Long)
-    UpdateColorDepthOptions
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
-Private Sub btsDepthGrayscale_Click(ByVal buttonIndex As Long)
-    UpdateColorDepthOptions
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
 Private Sub btsMasterType_Click(ByVal buttonIndex As Long)
     UpdateMasterPanelVisibility
+End Sub
+
+Private Sub chkEmbedBackground_Click()
+    UpdateBkgdColorVisibility
+End Sub
+
+Private Sub UpdateBkgdColorVisibility()
+    clsBackground.Visible = CBool(chkEmbedBackground.Value)
 End Sub
 
 Private Sub chkOptimizeDither_Click()
@@ -687,9 +501,19 @@ Private Sub UpdatePreviewButtonText()
     End If
 End Sub
 
-Private Sub clsAlphaColor_ColorChanged()
+Private Sub clrDepth_Change()
     UpdatePreviewSource
     UpdatePreview
+End Sub
+
+Private Sub clrDepth_ColorSelectionRequired(ByVal selectState As Boolean)
+    pdFxPreview.AllowColorSelection = selectState
+End Sub
+
+Private Sub clrDepth_SizeChanged()
+    clrDepth.SyncToIdealSize
+    picContainer(1).SetHeight clrDepth.GetIdealSize
+    ttlStandard(2).SetTop picContainer(1).GetTop + picContainer(1).GetHeight + FixDPI(8)
 End Sub
 
 Private Sub clsBackground_ColorChanged()
@@ -748,16 +572,6 @@ Private Sub cmdBar_ResetClick()
         chkEmbedBackground.Value = vbUnchecked
     End If
     
-    'Color and transparency settings
-    btsColorModel.ListIndex = 0
-    btsDepthColor.ListIndex = 1
-    btsDepthGrayscale.ListIndex = 1
-    btsAlpha.ListIndex = 0
-    
-    sldColorCount.Value = 256
-    sldAlphaCutoff.Value = DEFAULT_ALPHA_CUTOFF
-    clsAlphaColor.Color = RGB(255, 0, 255)
-    
     'Web-optimized settings
     chkOptimizeLossy.Value = vbChecked
     sltTargetQuality.Value = sltTargetQuality.NotchValueCustom
@@ -787,45 +601,23 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsMasterType.AddItem "web-optimized PNG", 1
     btsMasterType.ListIndex = 0
     
-    'Populate the category button strip
-    btsCategory.AddItem "basic", 0
-    btsCategory.AddItem "advanced", 1
-    btsCategory.AddItem "metadata", 2
-    btsCategory.ListIndex = 0
+    'Standard settings are accessed via pdTitle controls.  Because the panels are so large, only one panel
+    ' is allowed open at a time.
+    Dim i As Long
+    For i = picContainer.lBound To picContainer.UBound
+        picContainer(i).SetLeft 0
+    Next i
     
-    'Populate standard model options
+    clrDepth.SyncToIdealSize
+    ttlStandard(0).Value = True
+    UpdateStandardTitlebars 0
+    
+    'Populate lossless optimization options
     btsStandardOptimize.AddItem "none", 0
     btsStandardOptimize.AddItem "basic (default)", 1
     btsStandardOptimize.AddItem "moderate", 2
     btsStandardOptimize.AddItem "maximum", 3
     btsStandardOptimize.ListIndex = 1
-    
-    'Color model and color depth are closely related; populate all button strips, then show/hide the relevant pairings
-    btsColorModel.AddItem "auto", 0
-    btsColorModel.AddItem "color", 1
-    btsColorModel.AddItem "grayscale", 2
-    btsColorModel.ListIndex = 0
-    
-    btsDepthColor.AddItem "HDR", 0
-    btsDepthColor.AddItem "standard", 1
-    btsDepthColor.AddItem "indexed", 2
-    btsDepthColor.ListIndex = 1
-    
-    btsDepthGrayscale.AddItem "HDR", 0
-    btsDepthGrayscale.AddItem "standard", 1
-    btsDepthGrayscale.AddItem "monochrome", 2
-    btsDepthGrayscale.ListIndex = 1
-    
-    UpdateColorDepthVisibility
-    
-    'PNGs also support a (ridiculous) amount of alpha settings
-    btsAlpha.AddItem "auto", 0
-    btsAlpha.AddItem "full", 1
-    btsAlpha.AddItem "binary (by cut-off)", 2
-    btsAlpha.AddItem "binary (by color)", 3
-    btsAlpha.AddItem "none", 4
-    
-    sldAlphaCutoff.NotchValueCustom = DEFAULT_ALPHA_CUTOFF
     
     'Populate web-optimized options
     EnableLossyOptimizationOptions
@@ -849,6 +641,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
         End If
     End If
     
+    UpdateBkgdColorVisibility
+    
     'Update the preview
     UpdatePreviewSource
     UpdatePreview
@@ -858,9 +652,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Many UI options are dynamically shown/hidden depending on other settings; make sure their initial state is correct
     UpdateMasterPanelVisibility
-    UpdatePanelVisibility
-    UpdateColorDepthVisibility
-    UpdateTransparencyOptions
+    UpdateStandardPanelVisibility
     ReflowWebOptimizePanel
     
     'Display the dialog
@@ -878,7 +670,7 @@ Private Sub cmdUpdateLossyPreview_Click()
     updateSuccess = False
     
     'Make sure a composite image was created successfully
-    If Not (m_CompositedImage Is Nothing) Then
+    If (Not m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
@@ -957,70 +749,7 @@ Private Function GetExportParamString() As String
         cParams.AddParam "PNGStandardOptimization", btsStandardOptimize.ListIndex
         
         'Next come all the messy color-depth possibilities
-        Dim outputColorModel As String
-        Select Case btsColorModel.ListIndex
-            Case 0
-                outputColorModel = "Auto"
-            Case 1
-                outputColorModel = "Color"
-            Case 2
-                outputColorModel = "Gray"
-        End Select
-        cParams.AddParam "PNGColorModel", outputColorModel
-        
-        'Which color depth we write is contingent on the color model, as color and gray use different button strips.
-        ' (Gray supports some depths that color does not, e.g. 1-bit and 4-bit.)
-        Dim outputColorDepth As String, outputPaletteSize As String
-        
-        'Color modes
-        If (btsColorModel.ListIndex = 1) Then
-            
-            Select Case btsDepthColor.ListIndex
-                Case 0
-                    outputColorDepth = "48"
-                Case 1
-                    outputColorDepth = "24"
-                Case 2
-                    outputColorDepth = "8"
-                    If sldColorCount.IsValid Then outputPaletteSize = CStr(sldColorCount.Value) Else outputPaletteSize = "256"
-            End Select
-            
-        'Gray modes
-        ElseIf (btsColorModel.ListIndex = 2) Then
-            
-            Select Case btsDepthGrayscale.ListIndex
-                Case 0
-                    outputColorDepth = "16"
-                Case 1
-                    outputColorDepth = "8"
-                    If sldColorCount.IsValid Then outputPaletteSize = CStr(sldColorCount.Value) Else outputPaletteSize = "256"
-                Case 2
-                    outputColorDepth = "1"
-            End Select
-        
-        End If
-        
-        If (Len(outputColorDepth) <> 0) Then cParams.AddParam "PNGBitDepth", outputColorDepth
-        If (Len(outputPaletteSize) <> 0) Then cParams.AddParam "PNGPaletteSize", outputPaletteSize
-        
-        'Next, we've got a bunch of possible alpha modes to deal with (uuuuuugh)
-        Dim outputAlphaModel As String
-        Select Case btsAlpha.ListIndex
-            Case 0
-                outputAlphaModel = "Auto"
-            Case 1
-                outputAlphaModel = "Full"
-            Case 2
-                outputAlphaModel = "ByCutoff"
-            Case 3
-                outputAlphaModel = "ByColor"
-            Case 4
-                outputAlphaModel = "None"
-        End Select
-        
-        cParams.AddParam "PNGAlphaModel", outputAlphaModel
-        If sldAlphaCutoff.IsValid Then cParams.AddParam "PNGAlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "PNGAlphaCutoff", DEFAULT_ALPHA_CUTOFF
-        cParams.AddParam "PNGAlphaColor", clsAlphaColor.Color
+        cParams.AddParam "PNGColorDepth", clrDepth.GetAllSettings
         
     'Remember: web-optimized parameters must not use any UI elements not visible from the web-optimization panel!
     Else
@@ -1042,7 +771,7 @@ Private Function GetExportParamString() As String
 End Function
 
 Private Sub pdFxPreview_ColorSelected()
-    clsAlphaColor.Color = pdFxPreview.SelectedColor
+    clrDepth.NotifyNewAlphaColor pdFxPreview.SelectedColor
 End Sub
 
 Private Sub pdFxPreview_ViewportChanged()
@@ -1055,7 +784,7 @@ End Sub
 ' need to call this function for format-specific changes (e.g. compression settings).
 Private Sub UpdatePreviewSource()
 
-    If (Not (m_CompositedImage Is Nothing)) Then
+    If (Not m_CompositedImage Is Nothing) Then
         
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
@@ -1067,32 +796,44 @@ Private Sub UpdatePreviewSource()
         Set cParams = New pdParamXML
         cParams.SetParamString GetExportParamString()
         
+        'The color-depth-specific options are embedded as a single option, so extract them into their
+        ' own parser.
+        Dim cParamsDepth As pdParamXML
+        Set cParamsDepth = New pdParamXML
+        cParamsDepth.SetParamString cParams.GetString("PNGColorDepth", vbNullString)
+        
         'Color and grayscale modes require different processing, so start there
         Dim forceGrayscale As Boolean
-        forceGrayscale = ParamsEqual(cParams.GetString("PNGColorModel", "Auto"), "Gray")
+        forceGrayscale = ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Gray")
         
         'For 8-bit modes, grab a palette size.  (This parameter will be ignored in other color modes.)
         Dim newPaletteSize As Long
-        newPaletteSize = cParams.GetLong("PNGPaletteSize", 256)
+        newPaletteSize = cParamsDepth.GetLong("ColorDepth_PaletteSize", 256)
         
+        'Convert the text-only descriptors of color depth into a meaningful bpp value
         Dim newColorDepth As Long
         
-        If ParamsEqual(cParams.GetString("PNGColorModel", "Auto"), "Auto") Then
+        If ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorModel", "Auto"), "Auto") Then
             newColorDepth = 32
         Else
             
             'HDR modes do not need to be previewed, so we forcibly downsample them here
             If forceGrayscale Then
-                newColorDepth = cParams.GetLong("PNGBitDepth", 8)
-                If newColorDepth > 8 Then newColorDepth = 8
-                If newColorDepth = 1 Then
+                
+                newColorDepth = 8
+                
+                If ParamsEqual(cParamsDepth.GetString("ColorDepth_GrayDepth", "Auto"), "Gray_Monochrome") Then
                     newPaletteSize = 2
-                    newColorDepth = 8
                 End If
+                
             Else
-                newColorDepth = cParams.GetLong("PNGBitDepth", 24)
-                If newColorDepth = 48 Then newColorDepth = 24
-                If newColorDepth = 64 Then newColorDepth = 32
+                
+                If ParamsEqual(cParamsDepth.GetString("ColorDepth_ColorDepth", "Color_Standard"), "Color_Indexed") Then
+                    newColorDepth = 8
+                Else
+                    newColorDepth = 32
+                End If
+                
             End If
         
         End If
@@ -1100,20 +841,20 @@ Private Sub UpdatePreviewSource()
         'Next comes transparency, which is somewhat messy because PNG alpha behavior deviates significantly from normal alpha behavior.
         Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
         
-        If ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "Auto") Or ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "Full") Then
+        If ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Auto") Or ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "Full") Then
             desiredAlphaMode = PDAS_ComplicatedAlpha
             If newColorDepth = 24 Then newColorDepth = 32
-        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "None") Then
+        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "None") Then
             desiredAlphaMode = PDAS_NoAlpha
             If newColorDepth = 32 Then newColorDepth = 24
             desiredAlphaCutoff = 0
-        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "ByCutoff") Then
+        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByCutoff") Then
             desiredAlphaMode = PDAS_BinaryAlpha
-            desiredAlphaCutoff = cParams.GetLong("PNGAlphaCutoff", DEFAULT_ALPHA_CUTOFF)
+            desiredAlphaCutoff = cParamsDepth.GetLong("PNGAlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
             If newColorDepth = 24 Then newColorDepth = 32
-        ElseIf ParamsEqual(cParams.GetString("PNGAlphaModel", "Auto"), "ByColor") Then
+        ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByColor") Then
             desiredAlphaMode = PDAS_NewAlphaFromColor
-            desiredAlphaCutoff = cParams.GetLong("PNGAlphaColor", vbWhite)
+            desiredAlphaCutoff = cParamsDepth.GetLong("PNGAlphaColor", vbWhite)
             If newColorDepth = 24 Then newColorDepth = 32
         End If
         
@@ -1130,7 +871,7 @@ End Function
 
 Private Sub UpdatePreview()
 
-    If (cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And sldColorCount.IsValid And (Not m_SrcImage Is Nothing)) Then
+    If (cmdBar.PreviewsAllowed And g_ImageFormats.FreeImageEnabled And clrDepth.IsValid And (Not m_SrcImage Is Nothing)) Then
         
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource
@@ -1145,22 +886,64 @@ Private Sub UpdatePreview()
     
 End Sub
 
-Private Sub sldAlphaCutoff_Change()
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
-Private Sub sldColorCount_Change()
-    UpdatePreviewSource
-    UpdatePreview
-End Sub
-
 Private Sub sltLossyPerformance_Change()
     UpdatePreviewButtonText
 End Sub
 
 Private Sub sltTargetQuality_Change()
     UpdatePreviewButtonText
+End Sub
+
+Private Sub ttlStandard_Click(Index As Integer, ByVal newState As Boolean)
+    If (Not m_PanelChangesActive) Then
+        If newState Then UpdateStandardTitlebars Index Else UpdateStandardPanelVisibility
+    End If
+End Sub
+
+Private Sub UpdateStandardTitlebars(ByVal selectedIndex As Long)
+    
+    m_PanelChangesActive = True
+    
+    '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
+    Dim i As Long
+    For i = ttlStandard.lBound To ttlStandard.UBound
+        ttlStandard(i).Value = CBool(i = selectedIndex)
+    Next i
+    
+    UpdateStandardPanelVisibility
+    
+    m_PanelChangesActive = False
+    
+End Sub
+
+Private Sub UpdateStandardPanelVisibility()
+    
+    Dim i As Long
+    For i = ttlStandard.lBound To ttlStandard.UBound
+        picContainer(i).Visible = ttlStandard(i).Value
+    Next i
+    
+    'Reflow the interface to match
+    Dim yPos As Long, yPadding As Long
+    yPos = 0
+    yPadding = FixDPI(8)
+    
+    For i = ttlStandard.lBound To ttlStandard.UBound
+        ttlStandard(i).SetTop yPos
+        yPos = yPos + ttlStandard(i).GetHeight + yPadding
+        If ttlStandard(i).Value Then
+            
+            If (i = 1) Then
+                clrDepth.SyncToIdealSize
+                picContainer(i).SetHeight clrDepth.GetIdealSize
+            End If
+            
+            picContainer(i).SetTop yPos
+            yPos = yPos + picContainer(i).GetHeight + yPadding
+            
+        End If
+    Next i
+    
 End Sub
 
 Private Sub ttlWebOptimize_Click(Index As Integer, ByVal newState As Boolean)
