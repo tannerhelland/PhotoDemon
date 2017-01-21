@@ -217,9 +217,6 @@ Private m_FormatParamString As String
 ' cannot write any BMP-specific data.
 Private m_MetadataParamString As String
 
-'Default alpha cut-off when "auto" is selected
-Private Const DEFAULT_ALPHA_CUTOFF As Long = 64
-
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
@@ -255,7 +252,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsAlpha.AddItem "by cut-off", 2
     btsAlpha.AddItem "by color", 3
     
-    sldAlphaCutoff.NotchValueCustom = DEFAULT_ALPHA_CUTOFF
+    sldAlphaCutoff.NotchValueCustom = PD_DEFAULT_ALPHA_CUTOFF
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
@@ -405,7 +402,7 @@ Private Sub cmdBar_ResetClick()
     sldColorCount.Value = 256
     clsBackground.Color = vbWhite
     btsAlpha.ListIndex = 0
-    sldAlphaCutoff.Value = DEFAULT_ALPHA_CUTOFF
+    sldAlphaCutoff.Value = PD_DEFAULT_ALPHA_CUTOFF
     clsAlphaColor.Color = RGB(255, 0, 255)
 End Sub
 
@@ -450,7 +447,7 @@ Private Function GetExportParamString() As String
     'If "auto" mode is selected, we currently enforce a hard-coded cut-off value.  There may be a better way to do this,
     ' but I'm not currently aware of it!
     Dim outputAlphaCutoff As Long
-    If (btsAlpha.ListIndex = 0) Or (Not sldAlphaCutoff.IsValid) Then outputAlphaCutoff = DEFAULT_ALPHA_CUTOFF Else outputAlphaCutoff = sldAlphaCutoff.Value
+    If (btsAlpha.ListIndex = 0) Or (Not sldAlphaCutoff.IsValid) Then outputAlphaCutoff = PD_DEFAULT_ALPHA_CUTOFF Else outputAlphaCutoff = sldAlphaCutoff.Value
     cParams.AddParam "GIFAlphaCutoff", outputAlphaCutoff
     
     Dim colorCount As Long
@@ -503,7 +500,7 @@ Private Sub UpdatePreviewSource()
         Dim desiredAlphaMode As PD_ALPHA_STATUS, desiredAlphaCutoff As Long
         If btsAlpha.ListIndex = 0 Then
             desiredAlphaMode = PDAS_BinaryAlpha       'Auto
-            desiredAlphaCutoff = DEFAULT_ALPHA_CUTOFF
+            desiredAlphaCutoff = PD_DEFAULT_ALPHA_CUTOFF
         ElseIf btsAlpha.ListIndex = 1 Then
             desiredAlphaMode = PDAS_NoAlpha           'None
             desiredAlphaCutoff = 0

@@ -224,7 +224,7 @@ Public Sub ShowDialog()
 End Sub
 
 'If the user cancels, warn them that these image will be lost foreeeever.
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
 
     Dim msgReturn As VbMsgBoxResult
     msgReturn = PDMsgBox("If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?", vbApplicationModal + vbInformation + vbYesNo, "Warning: autosave data will be deleted")
@@ -237,7 +237,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     userAnswer = vbYes
     Me.Hide
 End Sub

@@ -82,7 +82,7 @@ Begin VB.Form FormPrint
       _ExtentY        =   582
       Caption         =   "center on page"
    End
-   Begin VB.CommandButton CmdOK 
+   Begin VB.CommandButton cmdOK 
       Caption         =   "&Print"
       Default         =   -1  'True
       Height          =   495
@@ -91,7 +91,7 @@ Begin VB.Form FormPrint
       Top             =   6030
       Width           =   1365
    End
-   Begin VB.CommandButton CmdCancel 
+   Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "&Cancel"
       Height          =   495
@@ -479,7 +479,7 @@ Private Sub Form_Load()
 End Sub
 
 'OK Button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
 
     On Error Resume Next
     
@@ -521,7 +521,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
