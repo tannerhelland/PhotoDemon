@@ -138,3 +138,6 @@ Public Const IDE_LIGHTBLUE As String = "#3cafe6"
 Public Const IDE_GRAY As String = "#404040"
 Public Const IDE_BLACK As String = "#000000"
 Public Const IDE_RED As String = "#0000ff"
+
+'Default alpha cut-off when "auto" is selected
+Public Const PD_DEFAULT_ALPHA_CUTOFF As Long = 64

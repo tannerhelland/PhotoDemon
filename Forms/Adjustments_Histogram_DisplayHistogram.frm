@@ -435,7 +435,7 @@ Private Sub chkSmooth_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     Unload Me
 End Sub
 

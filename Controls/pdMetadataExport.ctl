@@ -25,7 +25,7 @@ Begin VB.UserControl pdMetadataExport
       Height          =   375
       Index           =   0
       Left            =   0
-      Top             =   1200
+      Top             =   1080
       Width           =   5055
       _ExtentX        =   8916
       _ExtentY        =   661
@@ -33,13 +33,12 @@ Begin VB.UserControl pdMetadataExport
       FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   495
-      Left            =   120
-      Top             =   0
-      Width           =   4935
-      _ExtentX        =   8705
+      Height          =   450
+      Left            =   0
+      Top             =   90
+      Width           =   5055
+      _ExtentX        =   8916
       _ExtentY        =   873
-      Alignment       =   2
       Caption         =   ""
       FontBold        =   -1  'True
       FontSize        =   12
@@ -47,19 +46,18 @@ Begin VB.UserControl pdMetadataExport
    Begin PhotoDemon.pdHyperlink hplReviewMetadata 
       Height          =   375
       Left            =   120
-      Top             =   600
+      Top             =   540
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
-      Alignment       =   2
-      Caption         =   "click to review this image's metadata"
+      Caption         =   "review metadata before saving"
       RaiseClickEvent =   -1  'True
    End
    Begin PhotoDemon.pdCheckBox chkMetadata 
       Height          =   375
       Left            =   120
       TabIndex        =   0
-      Top             =   1680
+      Top             =   1560
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
@@ -69,7 +67,7 @@ Begin VB.UserControl pdMetadataExport
       Height          =   375
       Left            =   120
       TabIndex        =   1
-      Top             =   2160
+      Top             =   2040
       Width           =   4935
       _ExtentX        =   8705
       _ExtentY        =   661
@@ -79,7 +77,7 @@ Begin VB.UserControl pdMetadataExport
       Height          =   375
       Index           =   1
       Left            =   0
-      Top             =   2640
+      Top             =   2520
       Visible         =   0   'False
       Width           =   5055
       _ExtentX        =   8916
@@ -91,7 +89,7 @@ Begin VB.UserControl pdMetadataExport
       Height          =   375
       Left            =   120
       TabIndex        =   2
-      Top             =   3120
+      Top             =   3000
       Visible         =   0   'False
       Width           =   4935
       _ExtentX        =   8705
@@ -405,11 +403,12 @@ Private Sub EvaluatePresenceOfMetadata()
         If m_ImageCopy.imgMetadata.HasMetadata Then
             lblTitle.Caption = g_Language.TranslateMessage("This image contains metadata.")
             lblTitle.FontBold = True
-            hplReviewMetadata.Caption = g_Language.TranslateMessage("click to review this image's metadata")
+            hplReviewMetadata.Caption = g_Language.TranslateMessage("review metadata before saving")
         Else
             lblTitle.Caption = g_Language.TranslateMessage("This image does not contain metadata.")
             lblTitle.FontBold = False
-            hplReviewMetadata.Caption = g_Language.TranslateMessage("click to add metadata to this image")
+            'hplReviewMetadata.Caption = g_Language.TranslateMessage("click to add metadata to this image")
+            hplReviewMetadata.Visible = False
         End If
     End If
 End Sub
@@ -465,4 +464,3 @@ End Function
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-

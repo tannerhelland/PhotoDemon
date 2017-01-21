@@ -507,7 +507,7 @@ Private Sub cmdAction_Click(Index As Integer)
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -527,7 +527,7 @@ Private Sub CmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdOK_Click()
     
     'Automatically validate all relevant controls on the parent object.  This is a huge perk, because it saves us
     ' from having to write validation code individually.
@@ -907,6 +907,9 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
             Case "pdMetadataExport"
                 controlValue = eControl.GetMetadataSettings()
             
+            Case "pdColorDepth"
+                controlValue = eControl.GetAllSettings()
+            
             'History managers also provide their own XML string
             Case "pdHistory"
                 controlValue = eControl.GetHistoryAsString()
@@ -1096,6 +1099,9 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
                     'pdTitle is just a boolean
                     Case "pdTitle"
                         eControl.Value = CBool(controlValue)
+                    
+                    Case "pdColorDepth"
+                        eControl.SetAllSettings controlValue
                     
                     'PD's "smart resize" control has some special needs, on account of using multiple value properties
                     ' within a single control.  We now parse out those values from the control string.

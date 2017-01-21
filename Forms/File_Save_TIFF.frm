@@ -264,9 +264,6 @@ Private m_FormatParamString As String
 ' cannot write any BMP-specific data.
 Private m_MetadataParamString As String
 
-'Default alpha cut-off when "auto" is selected
-Private Const DEFAULT_ALPHA_CUTOFF As Long = 64
-
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
     GetDialogResult = m_UserDialogAnswer
@@ -470,7 +467,7 @@ Private Sub cmdBar_ResetClick()
     btsAlpha.ListIndex = 0
     
     sldColorCount.Value = 256
-    sldAlphaCutoff.Value = DEFAULT_ALPHA_CUTOFF
+    sldAlphaCutoff.Value = PD_DEFAULT_ALPHA_CUTOFF
     clsAlphaColor.Color = RGB(255, 0, 255)
     
     'Metadata settings
@@ -543,7 +540,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     btsAlpha.AddItem "binary (by color)", 3
     btsAlpha.AddItem "none", 4
     
-    sldAlphaCutoff.NotchValueCustom = DEFAULT_ALPHA_CUTOFF
+    sldAlphaCutoff.NotchValueCustom = PD_DEFAULT_ALPHA_CUTOFF
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
@@ -697,7 +694,7 @@ Private Function GetExportParamString() As String
     End Select
     
     cParams.AddParam "TIFFAlphaModel", outputAlphaModel
-    If sldAlphaCutoff.IsValid Then cParams.AddParam "TIFFAlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "TIFFAlphaCutoff", DEFAULT_ALPHA_CUTOFF
+    If sldAlphaCutoff.IsValid Then cParams.AddParam "TIFFAlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "TIFFAlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF
     cParams.AddParam "TIFFAlphaColor", clsAlphaColor.Color
     
     GetExportParamString = cParams.GetParamString
@@ -772,7 +769,7 @@ Private Sub UpdatePreviewSource()
             desiredAlphaCutoff = 0
         ElseIf ParamsEqual(cParams.GetString("TIFFAlphaModel", "Auto"), "ByCutoff") Then
             desiredAlphaMode = PDAS_BinaryAlpha
-            desiredAlphaCutoff = cParams.GetLong("TIFFAlphaCutoff", DEFAULT_ALPHA_CUTOFF)
+            desiredAlphaCutoff = cParams.GetLong("TIFFAlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
             If newColorDepth = 24 Then newColorDepth = 32
         ElseIf ParamsEqual(cParams.GetString("TIFFAlphaModel", "Auto"), "ByColor") Then
             desiredAlphaMode = PDAS_NewAlphaFromColor
