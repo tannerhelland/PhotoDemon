@@ -22,6 +22,46 @@ Begin VB.UserControl pdColorDepth
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   478
    ToolboxBitmap   =   "pdColorDepth.ctx":0000
+   Begin PhotoDemon.pdDropDown cboDepthGrayscale 
+      Height          =   735
+      Left            =   0
+      TabIndex        =   6
+      Top             =   840
+      Width           =   7095
+      _ExtentX        =   12515
+      _ExtentY        =   1296
+      Caption         =   "depth"
+   End
+   Begin PhotoDemon.pdDropDown cboDepthColor 
+      Height          =   735
+      Left            =   0
+      TabIndex        =   5
+      Top             =   840
+      Width           =   7095
+      _ExtentX        =   12515
+      _ExtentY        =   1085
+      Caption         =   "depth"
+   End
+   Begin PhotoDemon.pdDropDown cboAlphaModel 
+      Height          =   735
+      Left            =   0
+      TabIndex        =   4
+      Top             =   2880
+      Width           =   7095
+      _ExtentX        =   12515
+      _ExtentY        =   1296
+      Caption         =   "transparency"
+   End
+   Begin PhotoDemon.pdDropDown cboColorModel 
+      Height          =   735
+      Left            =   0
+      TabIndex        =   3
+      Top             =   0
+      Width           =   7095
+      _ExtentX        =   12515
+      _ExtentY        =   1508
+      Caption         =   "color model"
+   End
    Begin PhotoDemon.pdSlider sldAlphaCutoff 
       Height          =   855
       Left            =   0
@@ -61,56 +101,16 @@ Begin VB.UserControl pdColorDepth
       NotchPosition   =   2
       NotchValueCustom=   256
    End
-   Begin PhotoDemon.pdButtonStrip btsAlpha 
-      Height          =   1095
-      Left            =   0
-      TabIndex        =   2
-      Top             =   2880
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1931
-      Caption         =   "transparency"
-   End
-   Begin PhotoDemon.pdButtonStrip btsColorModel 
-      Height          =   1095
-      Left            =   0
-      TabIndex        =   3
-      Top             =   0
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1931
-      Caption         =   "color model"
-   End
-   Begin PhotoDemon.pdButtonStrip btsDepthColor 
-      Height          =   1095
-      Left            =   0
-      TabIndex        =   4
-      Top             =   1200
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1931
-      Caption         =   "depth"
-   End
    Begin PhotoDemon.pdColorSelector clsAlphaColor 
       Height          =   975
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   4080
       Width           =   7095
       _ExtentX        =   15690
       _ExtentY        =   1720
       Caption         =   "transparent color (right-click image to select)"
       curColor        =   16711935
-   End
-   Begin PhotoDemon.pdButtonStrip btsDepthGrayscale 
-      Height          =   1095
-      Left            =   0
-      TabIndex        =   6
-      Top             =   1200
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1931
-      Caption         =   "depth"
    End
 End
 Attribute VB_Name = "pdColorDepth"
@@ -203,10 +203,10 @@ End Sub
 
 Public Sub Reset()
 
-    btsColorModel.ListIndex = 0
-    btsDepthColor.ListIndex = 1
-    btsDepthGrayscale.ListIndex = 1
-    btsAlpha.ListIndex = 0
+    cboColorModel.ListIndex = 0
+    cboDepthColor.ListIndex = 1
+    cboDepthGrayscale.ListIndex = 1
+    cboAlphaModel.ListIndex = 0
     
     sldColorCount.Value = 256
     sldAlphaCutoff.Value = PD_DEFAULT_ALPHA_CUTOFF
@@ -222,7 +222,7 @@ Public Function GetAllSettings() As String
     
     'All entries use text to make it easier to pass changed/upgraded settings in the future
     Dim outputColorModel As String
-    Select Case btsColorModel.ListIndex
+    Select Case cboColorModel.ListIndex
         Case 0
             outputColorModel = "Auto"
         Case 1
@@ -236,7 +236,7 @@ Public Function GetAllSettings() As String
     ' (Gray supports some depths that color does not, e.g. 1-bit and 4-bit.)
     Dim colorColorDepth As String, grayColorDepth As String, outputPaletteSize As String
     
-    Select Case btsDepthColor.ListIndex
+    Select Case cboDepthColor.ListIndex
         Case 0
             colorColorDepth = "Color_HDR"
         Case 1
@@ -247,7 +247,7 @@ Public Function GetAllSettings() As String
     
     cParams.AddParam "ColorDepth_ColorDepth", colorColorDepth
         
-    Select Case btsDepthGrayscale.ListIndex
+    Select Case cboDepthGrayscale.ListIndex
         Case 0
             grayColorDepth = "Gray_HDR"
         Case 1
@@ -263,7 +263,7 @@ Public Function GetAllSettings() As String
     
     'Next, we've got a bunch of possible alpha modes to deal with (uuuuuugh)
     Dim outputAlphaModel As String
-    Select Case btsAlpha.ListIndex
+    Select Case cboAlphaModel.ListIndex
         Case 0
             outputAlphaModel = "Auto"
         Case 1
@@ -295,41 +295,41 @@ Public Sub SetAllSettings(ByVal newSettings As String)
     srcParam = cParams.GetString("ColorDepth_ColorModel", "Auto")
     
     If ParamsEqual(srcParam, "Color") Then
-        btsColorModel.ListIndex = 1
+        cboColorModel.ListIndex = 1
     ElseIf ParamsEqual(srcParam, "Gray") Then
-        btsColorModel.ListIndex = 2
+        cboColorModel.ListIndex = 2
     Else
-        btsColorModel.ListIndex = 0
+        cboColorModel.ListIndex = 0
     End If
     
     srcParam = cParams.GetString("ColorDepth_ColorDepth", "Color_Standard")
     
     If ParamsEqual(srcParam, "Color") Then
-        btsColorModel.ListIndex = 1
+        cboColorModel.ListIndex = 1
     ElseIf ParamsEqual(srcParam, "Gray") Then
-        btsColorModel.ListIndex = 2
+        cboColorModel.ListIndex = 2
     Else
-        btsColorModel.ListIndex = 0
+        cboColorModel.ListIndex = 0
     End If
     
     srcParam = cParams.GetString("ColorDepth_ColorDepth", "Color_Standard")
     
     If ParamsEqual(srcParam, "Color_HDR") Then
-        btsDepthColor.ListIndex = 0
+        cboDepthColor.ListIndex = 0
     ElseIf ParamsEqual(srcParam, "Color_Indexed") Then
-        btsDepthColor.ListIndex = 2
+        cboDepthColor.ListIndex = 2
     Else
-        btsDepthColor.ListIndex = 1
+        cboDepthColor.ListIndex = 1
     End If
     
     srcParam = cParams.GetString("ColorDepth_GrayDepth", "Gray_Standard")
     
     If ParamsEqual(srcParam, "Gray_HDR") Then
-        btsDepthGrayscale.ListIndex = 0
+        cboDepthGrayscale.ListIndex = 0
     ElseIf ParamsEqual(srcParam, "Gray_Monochrome") Then
-        btsDepthGrayscale.ListIndex = 2
+        cboDepthGrayscale.ListIndex = 2
     Else
-        btsDepthGrayscale.ListIndex = 1
+        cboDepthGrayscale.ListIndex = 1
     End If
     
     sldColorCount.Value = cParams.GetLong("ColorDepth_PaletteSize", 256)
@@ -337,15 +337,15 @@ Public Sub SetAllSettings(ByVal newSettings As String)
     srcParam = cParams.GetString("ColorDepth_AlphaModel", "Auto")
     
     If ParamsEqual(srcParam, "Full") Then
-        btsAlpha.ListIndex = 1
+        cboAlphaModel.ListIndex = 1
     ElseIf ParamsEqual(srcParam, "ByCutoff") Then
-        btsAlpha.ListIndex = 2
+        cboAlphaModel.ListIndex = 2
     ElseIf ParamsEqual(srcParam, "ByColor") Then
-        btsAlpha.ListIndex = 3
+        cboAlphaModel.ListIndex = 3
     ElseIf ParamsEqual(srcParam, "None") Then
-        btsAlpha.ListIndex = 4
+        cboAlphaModel.ListIndex = 4
     Else
-        btsAlpha.ListIndex = 0
+        cboAlphaModel.ListIndex = 0
     End If
     
     sldAlphaCutoff.Value = cParams.GetLong("ColorDepth_AlphaCutoff")
@@ -394,23 +394,23 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
-Private Sub btsAlpha_Click(ByVal buttonIndex As Long)
-    RaiseEvent ColorSelectionRequired(CBool(buttonIndex = 3))
+Private Sub cboAlphaModel_Click()
+    RaiseEvent ColorSelectionRequired(CBool(cboAlphaModel.ListIndex = 3))
     UpdateTransparencyOptions
     RaiseEvent Change
 End Sub
 
-Private Sub btsColorModel_Click(ByVal buttonIndex As Long)
+Private Sub cboColorModel_Click()
     UpdateColorDepthVisibility
     RaiseEvent Change
 End Sub
 
-Private Sub btsDepthColor_Click(ByVal buttonIndex As Long)
+Private Sub cboDepthColor_Click()
     UpdateColorDepthOptions
     RaiseEvent Change
 End Sub
 
-Private Sub btsDepthGrayscale_Click(ByVal buttonIndex As Long)
+Private Sub cboDepthGrayscale_Click()
     UpdateColorDepthOptions
     RaiseEvent Change
 End Sub
@@ -456,29 +456,30 @@ Private Sub UserControl_Initialize()
     ucSupport.RegisterControl UserControl.hWnd
     
     'Color model and color depth are closely related; populate all button strips, then show/hide the relevant pairings
-    btsColorModel.AddItem "auto", 0
-    btsColorModel.AddItem "color", 1
-    btsColorModel.AddItem "grayscale", 2
-    btsColorModel.ListIndex = 0
+    cboColorModel.AddItem "auto", 0
+    cboColorModel.AddItem "color", 1
+    cboColorModel.AddItem "grayscale", 2
+    cboColorModel.ListIndex = 0
     
-    btsDepthColor.AddItem "HDR", 0
-    btsDepthColor.AddItem "standard", 1
-    btsDepthColor.AddItem "indexed", 2
-    btsDepthColor.ListIndex = 1
+    cboDepthColor.AddItem "HDR", 0
+    cboDepthColor.AddItem "standard", 1
+    cboDepthColor.AddItem "indexed", 2
+    cboDepthColor.ListIndex = 1
     
-    btsDepthGrayscale.AddItem "HDR", 0
-    btsDepthGrayscale.AddItem "standard", 1
-    btsDepthGrayscale.AddItem "monochrome", 2
-    btsDepthGrayscale.ListIndex = 1
+    cboDepthGrayscale.AddItem "HDR", 0
+    cboDepthGrayscale.AddItem "standard", 1
+    cboDepthGrayscale.AddItem "monochrome", 2
+    cboDepthGrayscale.ListIndex = 1
     
     UpdateColorDepthVisibility
     
     'PNGs also support a (ridiculous) amount of alpha settings
-    btsAlpha.AddItem "auto", 0
-    btsAlpha.AddItem "full", 1
-    btsAlpha.AddItem "binary (by cut-off)", 2
-    btsAlpha.AddItem "binary (by color)", 3
-    btsAlpha.AddItem "none", 4
+    cboAlphaModel.AddItem "auto", 0
+    cboAlphaModel.AddItem "full", 1
+    cboAlphaModel.AddItem "binary (by cut-off)", 2
+    cboAlphaModel.AddItem "binary (by color)", 3
+    cboAlphaModel.AddItem "none", 4
+    cboAlphaModel.ListIndex = 0
     
     sldAlphaCutoff.NotchValueCustom = PD_DEFAULT_ALPHA_CUTOFF
     
@@ -502,22 +503,22 @@ End Sub
 
 Private Sub UpdateColorDepthVisibility()
 
-    Select Case btsColorModel.ListIndex
+    Select Case cboColorModel.ListIndex
     
         'Auto
         Case 0
-            btsDepthColor.Visible = False
-            btsDepthGrayscale.Visible = False
+            cboDepthColor.Visible = False
+            cboDepthGrayscale.Visible = False
         
         'Color
         Case 1
-            btsDepthColor.Visible = True
-            btsDepthGrayscale.Visible = False
+            cboDepthColor.Visible = True
+            cboDepthGrayscale.Visible = False
         
         'Grayscale
         Case 2
-            btsDepthColor.Visible = False
-            btsDepthGrayscale.Visible = True
+            cboDepthColor.Visible = False
+            cboDepthGrayscale.Visible = True
     
     End Select
 
@@ -528,13 +529,13 @@ End Sub
 Private Sub UpdateColorDepthOptions()
     
     'Indexed color modes allow for variable palette sizes
-    If (btsDepthColor.Visible) Then
-        sldColorCount.Visible = CBool(btsDepthColor.ListIndex = 2)
+    If (cboDepthColor.Visible) Then
+        sldColorCount.Visible = CBool(cboDepthColor.ListIndex = 2)
         lblColorCount.Visible = sldColorCount.Visible
     
     'Indexed grayscale mode also allows for variable palette sizes
-    ElseIf (btsDepthGrayscale.Visible) Then
-        sldColorCount.Visible = CBool(btsDepthGrayscale.ListIndex = 1)
+    ElseIf (cboDepthGrayscale.Visible) Then
+        sldColorCount.Visible = CBool(cboDepthGrayscale.ListIndex = 1)
         lblColorCount.Visible = sldColorCount.Visible
     
     'Other modes do not expose palette settings
@@ -549,7 +550,7 @@ End Sub
 
 Private Sub UpdateTransparencyOptions()
     
-    Select Case btsAlpha.ListIndex
+    Select Case cboAlphaModel.ListIndex
     
         'auto, full alpha
         Case 0, 1
@@ -589,16 +590,16 @@ Private Sub ReflowColorPanel()
     curHeight = ucSupport.GetBackBufferHeight
     
     Dim yOffset As Long, yPadding As Long
-    yOffset = btsColorModel.GetTop + btsColorModel.GetHeight
+    yOffset = cboColorModel.GetTop + cboColorModel.GetHeight
     yPadding = FixDPI(8)
     yOffset = yOffset + yPadding
     
-    If btsDepthColor.Visible Then
-        btsDepthColor.SetTop yOffset
-        yOffset = yOffset + btsDepthColor.GetHeight + yPadding
-    ElseIf btsDepthGrayscale.Visible Then
-        btsDepthGrayscale.SetTop yOffset
-        yOffset = yOffset + btsDepthGrayscale.GetHeight + yPadding
+    If cboDepthColor.Visible Then
+        cboDepthColor.SetTop yOffset
+        yOffset = yOffset + cboDepthColor.GetHeight + yPadding
+    ElseIf cboDepthGrayscale.Visible Then
+        cboDepthGrayscale.SetTop yOffset
+        yOffset = yOffset + cboDepthGrayscale.GetHeight + yPadding
     End If
     
     If sldColorCount.Visible Then
@@ -607,8 +608,8 @@ Private Sub ReflowColorPanel()
         yOffset = yOffset + sldColorCount.GetHeight + yPadding
     End If
     
-    btsAlpha.SetTop yOffset
-    yOffset = yOffset + btsAlpha.GetHeight + yPadding
+    cboAlphaModel.SetTop yOffset
+    yOffset = yOffset + cboAlphaModel.GetHeight + yPadding
     
     If sldAlphaCutoff.Visible Then
         sldAlphaCutoff.SetTop yOffset
@@ -633,10 +634,11 @@ Private Sub UpdateControlLayout()
     bHeight = ucSupport.GetBackBufferHeight
     
     'Sync all widths to match the current buffer width
-    btsColorModel.SetWidth bWidth - btsColorModel.GetLeft
-    btsDepthColor.SetWidth bWidth - btsDepthColor.GetLeft
+    cboColorModel.SetWidth bWidth - cboColorModel.GetLeft
+    cboDepthColor.SetWidth bWidth - cboDepthColor.GetLeft
+    cboDepthGrayscale.SetWidth bWidth - cboDepthGrayscale.GetLeft
     lblColorCount.SetWidth bWidth - lblColorCount.GetLeft
-    btsAlpha.SetWidth bWidth - btsAlpha.GetLeft
+    cboAlphaModel.SetWidth bWidth - cboAlphaModel.GetLeft
     sldAlphaCutoff.SetWidth bWidth - sldAlphaCutoff.GetLeft
     clsAlphaColor.SetWidth bWidth - clsAlphaColor.GetLeft
     
@@ -675,12 +677,12 @@ Public Sub UpdateAgainstCurrentTheme()
         If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
         
         'Manually update all sub-controls
-        btsColorModel.UpdateAgainstCurrentTheme
-        btsDepthColor.UpdateAgainstCurrentTheme
-        btsDepthGrayscale.UpdateAgainstCurrentTheme
+        cboColorModel.UpdateAgainstCurrentTheme
+        cboDepthColor.UpdateAgainstCurrentTheme
+        cboDepthGrayscale.UpdateAgainstCurrentTheme
         sldColorCount.UpdateAgainstCurrentTheme
         lblColorCount.UpdateAgainstCurrentTheme
-        btsAlpha.UpdateAgainstCurrentTheme
+        cboAlphaModel.UpdateAgainstCurrentTheme
         clsAlphaColor.UpdateAgainstCurrentTheme
         sldAlphaCutoff.UpdateAgainstCurrentTheme
         
