@@ -217,7 +217,9 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
     End With
     
     'If this is the first item, note the current translation language.  (If this changes, we need to re-translate the list.)
-    If (m_NumOfItems = 0) Then m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
+    If (m_NumOfItems = 0) Then
+        If (Not g_Language Is Nothing) Then m_LanguageAtLastCheck = g_Language.GetCurrentLanguage
+    End If
     
     'Increment the number of list entries
     m_NumOfItems = m_NumOfItems + 1

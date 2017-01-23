@@ -423,12 +423,12 @@ Public Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConsta
     'Check for duplicate cursor requests, and ignore them as necessary
     If (GetCursor() <> tmpCursorHandle) Then
         m_CursorHandle = tmpCursorHandle
-        ApplyCursorToHwnds False
+        ApplyCursor False
     End If
         
 End Sub
 
-'Assign a PNG cursor to the hWnd collection.  This function leans on the Icon and Cursor module to handle the actual
+'Assign a PNG cursor to the subclassed hWnd.  This function leans on the Icon and Cursor module to handle the actual
 ' retrieval, decompression, and assembly of the cursor.  We handle it there so that requested icons can be cached;
 ' there is a high probability of PNG icons being requested by more than one class in a given session, so rather than
 ' repeat all the steps for each request, we only do it once, then cache the results.  PD itself will handle unloading
@@ -440,7 +440,7 @@ Public Sub SetPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHo
     
     If (m_CursorHandle <> tmpCursorHandle) Then
         m_CursorHandle = tmpCursorHandle
-        ApplyCursorToHwnds False
+        ApplyCursor False
     End If
     
 End Sub
@@ -449,12 +449,12 @@ End Sub
 ' it is helpful to reset the class cursor definition so that Windows doesn't automatically raise WM_SETCURSOR messages
 ' every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class cursor and overwrite
 ' it with NULL.
-Private Sub ApplyCursorToHwnds(Optional ByVal removeExistingClassCursor As Boolean = False)
+Private Sub ApplyCursor(Optional ByVal removeExistingClassCursor As Boolean = False)
     If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_targetHwnd, GCL_HCURSOR, 0&)
     SetCursor m_CursorHandle
 End Sub
 
-'Partner to ApplyCursorToHwnds, above.  To be used only when the mouse leaves a cursor-controlled area.
+'Partner to ApplyCursor, above.  To be used only when the mouse leaves a cursor-controlled area.
 Private Sub ResetClassCursor()
     SetClassLong m_targetHwnd, GCL_HCURSOR, LoadCursor(0, IDC_DEFAULT) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via SetHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
     SetCursor LoadCursor(0, IDC_ARROW)      'Note that this MUST be IDC_ARROW; IDC_DEFAULT will show nothing on some controls
@@ -907,7 +907,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                         RequestMouseTrackingForHwnd
                         
                         'If cursor handling is enabled, reset the class cursor and re-apply any custom cursor now.
-                        If m_TrackCursor Then ApplyCursorToHwnds True
+                        If m_TrackCursor Then ApplyCursor True
                         
                         RaiseEvent MouseEnter(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
                         
@@ -1230,7 +1230,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
             Case WM_SETCURSOR
             
                 If m_TrackCursor Then
-                    ApplyCursorToHwnds False
+                    ApplyCursor False
                     bHandled = True
                     lReturn = 1
                 End If
