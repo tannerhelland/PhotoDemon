@@ -173,9 +173,10 @@ Attribute Value.VB_UserMemId = 0
 End Property
 
 Public Property Let Value(ByVal newState As Boolean)
-    If newState <> m_TitleState Then
+    If (newState <> m_TitleState) Then
         m_TitleState = newState
         RedrawBackBuffer
+        RaiseEvent Click(newState)
         PropertyChanged "Value"
     End If
 End Property
