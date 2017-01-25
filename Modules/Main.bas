@@ -214,10 +214,14 @@ Public Sub ContinueLoadingProgram()
     
     g_UserPreferences.InitializePaths
         
-    'Now, ask the preferences handler to load all other user settings from the preferences file
+    'Now, ask the preferences handler to load all other user settings from the preferences file.
+    ' IMPORTANTLY: note that loading all settings puts the preferences engine into "batch mode".  Normally, the preferences engine
+    ' immediately writes all changes out to file, which preserves things like "last-used settings" if the program goes down
+    ' prematurely (due to a crash or other problem).  Batch mode suspends this behavior.  At present, batch mode is turned off
+    ' after FormMain successfully loads, initializes, and displays.
     LoadMessage "Loading all user settings..."
     
-    g_UserPreferences.LoadUserSettings
+    g_UserPreferences.LoadUserSettings False
         
     'Mark the Macro recorder as "not recording"
     MacroStatus = MacroSTOP

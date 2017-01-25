@@ -331,13 +331,13 @@ Public Sub InitializePaths()
 End Sub
 
 'Load all user settings from file
-Public Sub LoadUserSettings()
+Public Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
     'If no preferences file exists, build a default one
-    If Not cFile.FileExist(m_PreferencesPath) Then CreateNewPreferencesFile
+    If (Not cFile.FileExist(m_PreferencesPath)) Then CreateNewPreferencesFile
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
@@ -375,7 +375,7 @@ Public Sub LoadUserSettings()
     'Initialize a few other settings to default values, despite them not coming from the preferences file
     
     'Terminate batch preference mode before exiting
-    EndBatchPreferenceMode
+    If endBatchModeWhenFinished Then EndBatchPreferenceMode
                 
 End Sub
 
@@ -425,7 +425,7 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteTag "Advanced", "", True
         'As of 6.4, there are no longer any Advanced preferences that need to be stored here.  There may be in the future,
         ' so I've left the creation code for this section of the preferences file.
-    m_XMLEngine.closeTag "Advanced"
+    m_XMLEngine.CloseTag "Advanced"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "BatchProcess", "", True
@@ -433,14 +433,14 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "InputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "ListFolder", GetWindowsFolder(CSIDL_MY_DOCUMENTS)
         m_XMLEngine.WriteTag "OutputFolder", GetWindowsFolder(CSIDL_MYPICTURES)
-    m_XMLEngine.closeTag "BatchProcess"
+    m_XMLEngine.CloseTag "BatchProcess"
     m_XMLEngine.WriteBlankLine
     
     'Write out the "color management" block of preferences:
     m_XMLEngine.WriteTag "ColorManagement", "", True
         m_XMLEngine.WriteTag "DisplayCMMode", Trim$(Str(DCM_NoManagement))
         m_XMLEngine.WriteTag "DisplayRenderingIntent", Trim$(Str(INTENT_PERCEPTUAL))
-    m_XMLEngine.closeTag "ColorManagement"
+    m_XMLEngine.CloseTag "ColorManagement"
     m_XMLEngine.WriteBlankLine
     
     'Write out the "core" block of preferences.  These are preferences that PD uses internally.  These are never directly
@@ -456,25 +456,25 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "LastWindowTop", "1"
         m_XMLEngine.WriteTag "LastWindowWidth", "1"
         m_XMLEngine.WriteTag "LastWindowHeight", "1"
-    m_XMLEngine.closeTag "Core"
+    m_XMLEngine.CloseTag "Core"
     m_XMLEngine.WriteBlankLine
     
     'Write out a blank "dialogs" block.  Dialogs that offer to remember the user's current choice will store the given choice here.
     ' We don't prepopulate it with all possible choices; instead, choices are added as the user encounters those dialogs.
     m_XMLEngine.WriteTag "Dialogs", "", True
-    m_XMLEngine.closeTag "Dialogs"
+    m_XMLEngine.CloseTag "Dialogs"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Interface", "", True
         m_XMLEngine.WriteTag "MRUCaptionLength", "0"
         m_XMLEngine.WriteTag "RecentFilesLimit", "10"
         m_XMLEngine.WriteTag "WindowCaptionLength", "0"
-    m_XMLEngine.closeTag "Interface"
+    m_XMLEngine.CloseTag "Interface"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Language", "", True
         m_XMLEngine.WriteTag "CurrentLanguageFile", ""
-    m_XMLEngine.closeTag "Language"
+    m_XMLEngine.CloseTag "Language"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Loading", "", True
@@ -485,7 +485,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "MetadataExtractUnknown", "False"
         m_XMLEngine.WriteTag "MetadataHideDuplicates", "True"
         m_XMLEngine.WriteTag "ToneMappingPrompt", "True"
-    m_XMLEngine.closeTag "Loading"
+    m_XMLEngine.CloseTag "Loading"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Paths", "", True
@@ -494,7 +494,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "SaveImage", GetWindowsFolder(CSIDL_MYPICTURES)
         m_XMLEngine.WriteTag "Macro", m_MacroPath
         m_XMLEngine.WriteTag "Selections", m_SelectionPath
-    m_XMLEngine.closeTag "Paths"
+    m_XMLEngine.CloseTag "Paths"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Performance", "", True
@@ -502,7 +502,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "ThumbnailPerformance", "1"
         m_XMLEngine.WriteTag "ViewportRenderPerformance", "1"
         m_XMLEngine.WriteTag "UndoCompression", "1"
-    m_XMLEngine.closeTag "Performance"
+    m_XMLEngine.CloseTag "Performance"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Plugins", "", True
@@ -514,7 +514,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "ForcePngQuantDisable", "False"
         m_XMLEngine.WriteTag "ForceZLibDisable", "False"
         m_XMLEngine.WriteTag "LastPluginPreferencesPage", "0"
-    m_XMLEngine.closeTag "Plugins"
+    m_XMLEngine.CloseTag "Plugins"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Saving", "", True
@@ -522,23 +522,23 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "OverwriteOrCopy", "0"
         m_XMLEngine.WriteTag "SuggestedFormat", "0"
         m_XMLEngine.WriteTag "MetadataListPD", "True"
-    m_XMLEngine.closeTag "Saving"
+    m_XMLEngine.CloseTag "Saving"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Themes", "", True
         m_XMLEngine.WriteTag "CurrentTheme", "Light"
         m_XMLEngine.WriteTag "CurrentAccent", "Blue"
-    m_XMLEngine.closeTag "Themes"
+    m_XMLEngine.CloseTag "Themes"
     m_XMLEngine.WriteBlankLine
     
     'Toolbox settings are automatically filled-in by the Toolboxes module
     m_XMLEngine.WriteTag "Toolbox", "", True
-    m_XMLEngine.closeTag "Toolbox"
+    m_XMLEngine.CloseTag "Toolbox"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Tools", "", True
         m_XMLEngine.WriteTag "ClearSelectionAfterCrop", "True"
-    m_XMLEngine.closeTag "Tools"
+    m_XMLEngine.CloseTag "Tools"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Transparency", "", True
@@ -546,7 +546,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
         m_XMLEngine.WriteTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
         m_XMLEngine.WriteTag "AlphaCheckSize", "1"
-    m_XMLEngine.closeTag "Transparency"
+    m_XMLEngine.CloseTag "Transparency"
     m_XMLEngine.WriteBlankLine
     
     m_XMLEngine.WriteTag "Updates", "", True
@@ -576,7 +576,7 @@ Private Sub CreateNewPreferencesFile()
         m_XMLEngine.WriteTag "UpdatePluginsIndependently", True
         m_XMLEngine.WriteTag "UpdateNotifications", True
         
-    m_XMLEngine.closeTag "Updates"
+    m_XMLEngine.CloseTag "Updates"
     m_XMLEngine.WriteBlankLine
     
     'With all tags successfully written, we can now close the XML data and write it out to file.
@@ -727,7 +727,7 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
         'Update the requested tag, and if it does not exist, write it out as a new tag at the end of the specified section
         If m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
             WritePreference = True
-            If Not m_BatchModeActive Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
+            If (Not m_BatchModeActive) Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
         Else
             
             'Update tag will fail if the requested preferences section doesn't exist (which may happen after the user upgrades from
@@ -738,7 +738,7 @@ Public Function WritePreference(strSectionHeader As String, strVariableName As S
                 'Try the write again
                 If m_XMLEngine.UpdateTag(strVariableName, strValue, strSectionHeader) Then
                     WritePreference = True
-                    If Not m_BatchModeActive Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
+                    If (Not m_BatchModeActive) Then m_XMLEngine.WriteXMLToFile m_PreferencesPath
                 Else
                     WritePreference = False
                 End If
