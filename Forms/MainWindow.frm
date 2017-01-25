@@ -2781,13 +2781,13 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
     ' Display any final messages and/or warnings
     '*************************************************************************************************************************************
-        
+    
     Message ""
+    g_UserPreferences.EndBatchPreferenceMode
     FormMain.Refresh
     DoEvents
     
-    'As of 18 March '16, I have added a warning to nightly builds.  Current work on image exporting means that saving
-    ' image files via PD is really not recommended.
+    'I occasionally add dire messages to nightly builds.  The line below is the best place to enable that, as necessary.
     'PDMsgBox "WARNING!  I am currently overhauling PhotoDemon's image export capabilities.  Because this work impacts the reliability of the File > Save and File > Save As commands, I DO NOT RECOMMEND using this build for serious work." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the last stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "7.0 Development Warning"
     
     
