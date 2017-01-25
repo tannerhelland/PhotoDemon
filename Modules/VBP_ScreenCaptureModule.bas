@@ -179,6 +179,7 @@ End Sub
 Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
     
     'Make sure the target DIB is the correct size
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     dstDIB.CreateBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32
     
     'BitBlt the relevant portion of the screen directly from the screen DC to the specified DIB

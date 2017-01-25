@@ -652,7 +652,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             'It may seem odd, but the Duplicate function can be found in the "Loading" module; I do this because
             ' we effectively LOAD a copy of the original image, so all loading operations (create a form, catalog
             ' metadata, initialize properties) have to be repeated.
-            DuplicateCurrentImage
+            Loading.DuplicateCurrentImage
             
         'Resize operations; note that prior to 6.4, "Resize" was used in place of "Resize image".  To preserve functionality of old macros,
         ' we add the old "Resize" operator here as well.

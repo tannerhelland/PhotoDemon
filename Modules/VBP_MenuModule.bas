@@ -367,7 +367,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     'dstFilename now contains the full path and filename where our image copy should go.  Save it!
     If g_ZLibEnabled Then
         Saving.BeginSaveProcess
-        MenuSaveLosslessCopy = SavePhotoDemonImage(srcImage, dstFilename, , , , False, , , PD_CE_Zstd)
+        MenuSaveLosslessCopy = SavePhotoDemonImage(srcImage, dstFilename, , , , False, True)
     Else
     
         'If zLib doesn't exist...
