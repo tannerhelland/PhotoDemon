@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2197</langversion>
+<langversion>6.8.2198</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3775,6 +3775,97 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <!-- END text for pdCheckBox.ctl-->
 
+<!-- BEGIN text for pdColorDepth.ctl -->
+
+<phrase>
+<original>compositing color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>depth</original>
+<translation>hloubka</translation>
+</phrase>
+
+<phrase>
+<original>transparency format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>velikost palety</translation>
+</phrase>
+
+<phrase>
+<original>transparent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>auto</translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>barva</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>ve stupních šedi</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>standard</original>
+<translation>Standard</translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation>indexovány</translation>
+</phrase>
+
+<phrase>
+<original>monochrome</original>
+<translation>černobílý</translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation>plný</translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation>binární (podle cut-off)</translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation>binární (podle barvy)</translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for pdColorDepth.ctl-->
+
 <!-- BEGIN text for pdColorSelector.ctl -->
 
 <phrase>
@@ -4129,8 +4220,8 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
-<original>click to review this image's metadata</original>
-<translation>kliknutím přezkoumat metadata Tento obrázek je</translation>
+<original>review metadata before saving</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4159,16 +4250,11 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
-<original>click to add metadata to this image</original>
-<translation>kliknutím přidání metadat k tomuto snímku</translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation>JPEG specifická nastavení</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -5162,11 +5248,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 <phrase>
 <original>Exposure</original>
 <translation>Expozice</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -6388,7 +6469,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Odstraňte alfa kanálu</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6557,11 +6638,6 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 </phrase>
 
 <phrase>
-<original>monochrome</original>
-<translation>černobílý</translation>
-</phrase>
-
-<phrase>
 <original>constant</original>
 <translation>konstantní</translation>
 </phrase>
@@ -6591,7 +6667,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Míchání barevných kanálů</translation>
 </phrase>
 
-<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_ChannelMixer.frm-->
 
@@ -6952,11 +7028,6 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 </phrase>
 
 <phrase>
-<original>standard</original>
-<translation>Standard</translation>
-</phrase>
-
-<phrase>
 <original>logarithmic</original>
 <translation>logaritmická</translation>
 </phrase>
@@ -7006,7 +7077,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>výstup</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 16 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7963,11 +8034,6 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>barva</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>barvy</translation>
 </phrase>
@@ -8027,7 +8093,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>diamant</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8837,16 +8903,11 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
-<original>depth</original>
-<translation>hloubka</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>Carving úleva image</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10132,11 +10193,6 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation>velikost palety</translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation>metoda kvantování</translation>
 </phrase>
@@ -10167,11 +10223,6 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation>plný</translation>
-</phrase>
-
-<phrase>
 <original>binary</original>
 <translation>dvojitý</translation>
 </phrase>
@@ -10186,7 +10237,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -11656,11 +11707,6 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 </phrase>
 
 <phrase>
-<original>auto</original>
-<translation>auto</translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation>průhlednost barva</translation>
 </phrase>
@@ -11668,11 +11714,6 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 <phrase>
 <original>color only</original>
 <translation>pouze barva</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>ve stupních šedi</translation>
 </phrase>
 
 <phrase>
@@ -11710,7 +11751,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 <translation>1bpp (monochromatický)</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -11962,13 +12003,33 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 </phrase>
 
 <phrase>
+<original>PNG type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>fast, larger file</original>
 <translation>rychlá, velký soubor</translation>
 </phrase>
 
 <phrase>
-<original>use interlacing</original>
-<translation>použijte prokládání</translation>
+<original>write interlaced PNG</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11977,8 +12038,8 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 </phrase>
 
 <phrase>
-<original>embed background color in file</original>
-<translation>vložit barvu pozadí v souboru</translation>
+<original>embed background color (bKGD chunk)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11987,8 +12048,8 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 </phrase>
 
 <phrase>
-<original>lossless file size optimization (OptiPNG)</original>
-<translation>Optimalizace bezztrátové velikost souboru (OptiPNG)</translation>
+<original>optimization (OptiPNG)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12047,21 +12108,6 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 </phrase>
 
 <phrase>
-<original>indexed</original>
-<translation>indexovány</translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation>binární (podle cut-off)</translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation>binární (podle barvy)</translation>
-</phrase>
-
-<phrase>
 <original>please wait while a new preview image is created</original>
 <translation>Počkejte prosím, než se vytvoří nový náhledový obrázek</translation>
 </phrase>
@@ -12071,7 +12117,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 <translation>Tyto ztrátové nastavení optimalizace zmenšit velikost souboru %1.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -14872,10 +14918,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2508</phrasecount>
+<phrasecount>2516</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
-<!-- These 2508 phrases contain approximately 12390 total words. -->
+<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 12398 total words. -->
 
 </pdData>

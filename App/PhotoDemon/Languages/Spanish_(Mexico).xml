@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.240</langversion>
+<langversion>6.7.241</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -3779,6 +3779,97 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for pdCheckBox.ctl-->
 
+<!-- BEGIN text for pdColorDepth.ctl -->
+
+<phrase>
+<original>compositing color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>depth</original>
+<translation>profundidad</translation>
+</phrase>
+
+<phrase>
+<original>transparency format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>de color</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>standard</original>
+<translation>estándar</translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochrome</original>
+<translation>monocromo</translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for pdColorDepth.ctl-->
+
 <!-- BEGIN text for pdColorSelector.ctl -->
 
 <phrase>
@@ -4133,7 +4224,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>click to review this image's metadata</original>
+<original>review metadata before saving</original>
 <translation></translation>
 </phrase>
 
@@ -4163,16 +4254,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>click to add metadata to this image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation></translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -5166,11 +5252,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <phrase>
 <original>Exposure</original>
 <translation>exposición</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -6395,7 +6476,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6564,11 +6645,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>monochrome</original>
-<translation>monocromo</translation>
-</phrase>
-
-<phrase>
 <original>constant</original>
 <translation>constante</translation>
 </phrase>
@@ -6598,7 +6674,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Mezclar canales de color</translation>
 </phrase>
 
-<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_ChannelMixer.frm-->
 
@@ -6959,11 +7035,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>standard</original>
-<translation>estándar</translation>
-</phrase>
-
-<phrase>
 <original>logarithmic</original>
 <translation>logarítmica</translation>
 </phrase>
@@ -7013,7 +7084,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>de salida</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 16 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7970,11 +8041,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>de color</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation></translation>
 </phrase>
@@ -8034,7 +8100,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation></translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8844,16 +8910,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>depth</original>
-<translation>profundidad</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>Grabado en relieve la imagen</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10139,11 +10200,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation></translation>
 </phrase>
@@ -10174,11 +10230,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>binary</original>
 <translation></translation>
 </phrase>
@@ -10193,7 +10244,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -11662,22 +11713,12 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>auto</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>color only</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
 <translation></translation>
 </phrase>
 
@@ -11716,7 +11757,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -11968,12 +12009,32 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
+<original>PNG type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>fast, larger file</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>use interlacing</original>
+<original>write interlaced PNG</original>
 <translation></translation>
 </phrase>
 
@@ -11983,7 +12044,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>embed background color in file</original>
+<original>embed background color (bKGD chunk)</original>
 <translation></translation>
 </phrase>
 
@@ -11993,7 +12054,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>lossless file size optimization (OptiPNG)</original>
+<original>optimization (OptiPNG)</original>
 <translation></translation>
 </phrase>
 
@@ -12053,21 +12114,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>indexed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>please wait while a new preview image is created</original>
 <translation></translation>
 </phrase>
@@ -12077,7 +12123,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -14884,10 +14930,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2508</phrasecount>
+<phrasecount>2516</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
-<!-- These 2508 phrases contain approximately 12390 total words. -->
+<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 12398 total words. -->
 
 </pdData>

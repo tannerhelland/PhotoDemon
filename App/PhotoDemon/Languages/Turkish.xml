@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2197</langversion>
+<langversion>6.8.2198</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3781,6 +3781,97 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <!-- END text for pdCheckBox.ctl-->
 
+<!-- BEGIN text for pdColorDepth.ctl -->
+
+<phrase>
+<original>compositing color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>depth</original>
+<translation>derinlik</translation>
+</phrase>
+
+<phrase>
+<original>transparency format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>palet boyutu</translation>
+</phrase>
+
+<phrase>
+<original>transparent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>Oto</translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>renk</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>gri tonlama</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>standard</original>
+<translation>standart</translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation>endeksli</translation>
+</phrase>
+
+<phrase>
+<original>monochrome</original>
+<translation>monokrom</translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation>tam</translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation>ikili (cut-off) tarafından</translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation>ikili (renge göre)</translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for pdColorDepth.ctl-->
+
 <!-- BEGIN text for pdColorSelector.ctl -->
 
 <phrase>
@@ -4135,8 +4226,8 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>click to review this image's metadata</original>
-<translation>Bu resmin meta gözden için tıklayın</translation>
+<original>review metadata before saving</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4165,16 +4256,11 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>click to add metadata to this image</original>
-<translation>Bu resim meta veri eklemek için tıklayın</translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation>JPEG özgü ayarları</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -5168,11 +5254,6 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 <phrase>
 <original>Exposure</original>
 <translation>Poz</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -6396,7 +6477,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Alfa kanalını kaldırın</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6565,11 +6646,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>monochrome</original>
-<translation>monokrom</translation>
-</phrase>
-
-<phrase>
 <original>constant</original>
 <translation>sabit</translation>
 </phrase>
@@ -6599,7 +6675,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>renk kanalları karıştırma</translation>
 </phrase>
 
-<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_ChannelMixer.frm-->
 
@@ -6960,11 +7036,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>standard</original>
-<translation>standart</translation>
-</phrase>
-
-<phrase>
 <original>logarithmic</original>
 <translation>logaritmik</translation>
 </phrase>
@@ -7014,7 +7085,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>çıktı</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 16 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7971,11 +8042,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>renk</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>renkler</translation>
 </phrase>
@@ -8035,7 +8101,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>elmas</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8845,16 +8911,11 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
-<original>depth</original>
-<translation>derinlik</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>Oyma resim kabartma</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10140,11 +10201,6 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation>palet boyutu</translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation>niceleme yöntemi</translation>
 </phrase>
@@ -10175,11 +10231,6 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation>tam</translation>
-</phrase>
-
-<phrase>
 <original>binary</original>
 <translation>ikili</translation>
 </phrase>
@@ -10194,7 +10245,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -11664,11 +11715,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>auto</original>
-<translation>Oto</translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation>renk saydamlık</translation>
 </phrase>
@@ -11676,11 +11722,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>color only</original>
 <translation>renk sadece</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>gri tonlama</translation>
 </phrase>
 
 <phrase>
@@ -11718,7 +11759,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>1bpp (monokrom)</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -11970,13 +12011,33 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
+<original>PNG type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>fast, larger file</original>
 <translation>hızlı, büyük dosya</translation>
 </phrase>
 
 <phrase>
-<original>use interlacing</original>
-<translation>taramaya kullanmak</translation>
+<original>write interlaced PNG</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11985,8 +12046,8 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>embed background color in file</original>
-<translation>dosyada embed arka plan rengi</translation>
+<original>embed background color (bKGD chunk)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11995,8 +12056,8 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>lossless file size optimization (OptiPNG)</original>
-<translation>kayıpsız dosya boyutu optimizasyonu (OptiPNG)</translation>
+<original>optimization (OptiPNG)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12055,21 +12116,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>indexed</original>
-<translation>endeksli</translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation>ikili (cut-off) tarafından</translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation>ikili (renge göre)</translation>
-</phrase>
-
-<phrase>
 <original>please wait while a new preview image is created</original>
 <translation>Yeni bir önizleme görüntüsü yaratılırken lütfen bekleyin</translation>
 </phrase>
@@ -12079,7 +12125,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>Bu kayıplı optimizasyon ayarları %1 dosya boyutunu azaltır.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -14880,10 +14926,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2508</phrasecount>
+<phrasecount>2516</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
-<!-- These 2508 phrases contain approximately 12390 total words. -->
+<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 12398 total words. -->
 
 </pdData>
