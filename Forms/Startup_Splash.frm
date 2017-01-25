@@ -53,7 +53,7 @@ Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef l
 
 'A logo, drop shadow and screen backdrop are used to generate the splash.  These DIBs are released once m_splashDIB (below)
 ' has been successfully assembled.
-Private m_logoDIB As pdDIB, m_screenDIB As pdDIB, m_shadowDIB As pdDIB
+Private m_logoDIB As pdDIB, m_shadowDIB As pdDIB
 Private m_splashDIB As pdDIB
 
 'We skip the entire display process if any of the DIBs can't be created
@@ -78,7 +78,6 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     m_dibsLoadedSuccessfully = False
     
     Set m_logoDIB = New pdDIB
-    Set m_screenDIB = New pdDIB
     Set m_shadowDIB = New pdDIB
     
     'Load the logo DIB, and calculate an aspect ratio (important if high-DPI settings are in use)
@@ -91,15 +90,6 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
     m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("pd_logo_black", m_shadowDIB, origLogoWidth, origLogoHeight)
     
-    Dim blurRadius As Long
-    If (FixDPIFloat(1) = 1#) Or (FixDPIFloat(1) = 0#) Then
-        blurRadius = 7
-    Else
-        blurRadius = 7 * (1 / FixDPIFloat(1))
-    End If
-    
-    If m_dibsLoadedSuccessfully Then QuickBlurDIB m_shadowDIB, blurRadius, False
-    
 End Sub
 
 'Load the form backdrop.  Note that this CANNOT BE DONE until the global monitor classes are initialized.
@@ -111,7 +101,7 @@ Public Sub PrepareRestOfSplash()
         ' transparency.  (It's faster, and works more smoothly than attempting to use layered Windows, especially on XP.)
         Dim captureRect As RECTL
         GetWindowRect Me.hWnd, captureRect
-        Screen_Capture.GetPartialDesktopAsDIB m_screenDIB, captureRect
+        Screen_Capture.GetPartialDesktopAsDIB m_splashDIB, captureRect
         
         Dim formLeft As Long, formTop As Long, formWidth As Long, formHeight As Long
         formLeft = captureRect.Left
@@ -121,13 +111,10 @@ Public Sub PrepareRestOfSplash()
         formHeight = captureRect.Bottom - captureRect.Top
         
         'Copy the screen background, shadow, and logo onto a single composite DIB
-        Set m_splashDIB = New pdDIB
-        m_splashDIB.CreateFromExistingDIB m_screenDIB
         m_shadowDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, , FixDPI(1), FixDPI(1), formWidth, formWidth / m_logoAspectRatio
         m_logoDIB.AlphaBlendToDC m_splashDIB.GetDIBDC, , 0, 0, formWidth, formWidth / m_logoAspectRatio
         
         'Free all intermediate DIBs
-        Set m_screenDIB = Nothing
         Set m_shadowDIB = Nothing
         Set m_logoDIB = Nothing
         
