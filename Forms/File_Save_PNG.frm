@@ -111,6 +111,7 @@ Begin VB.Form dialog_ExportPNG
          Left            =   120
          TabIndex        =   4
          Top             =   1200
+         Visible         =   0   'False
          Width           =   7095
          _ExtentX        =   12515
          _ExtentY        =   9128
@@ -130,6 +131,7 @@ Begin VB.Form dialog_ExportPNG
          Left            =   120
          TabIndex        =   5
          Top             =   1200
+         Visible         =   0   'False
          Width           =   7095
          _ExtentX        =   12515
          _ExtentY        =   5741
@@ -149,6 +151,7 @@ Begin VB.Form dialog_ExportPNG
          Left            =   120
          TabIndex        =   7
          Top             =   1200
+         Visible         =   0   'False
          Width           =   7095
          _ExtentX        =   12515
          _ExtentY        =   5741
@@ -624,7 +627,7 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     'Prep a preview (if any)
     Set m_SrcImage = srcImage
-    If Not (m_SrcImage Is Nothing) Then
+    If (Not m_SrcImage Is Nothing) Then
         m_SrcImage.GetCompositedImage m_CompositedImage, True
         pdFxPreview.NotifyNonStandardSource m_CompositedImage.GetDIBWidth, m_CompositedImage.GetDIBHeight
     End If
@@ -850,16 +853,16 @@ Private Sub UpdatePreviewSource()
             desiredAlphaCutoff = 0
         ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByCutoff") Then
             desiredAlphaMode = PDAS_BinaryAlpha
-            desiredAlphaCutoff = cParamsDepth.GetLong("PNGAlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
+            desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF)
             If newColorDepth = 24 Then newColorDepth = 32
         ElseIf ParamsEqual(cParamsDepth.GetString("ColorDepth_AlphaModel", "Auto"), "ByColor") Then
             desiredAlphaMode = PDAS_NewAlphaFromColor
-            desiredAlphaCutoff = cParamsDepth.GetLong("PNGAlphaColor", vbWhite)
+            desiredAlphaCutoff = cParamsDepth.GetLong("ColorDepth_AlphaColor", vbBlack)
             If newColorDepth = 24 Then newColorDepth = 32
         End If
         
         If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
-        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParams.GetLong("PNGBackgroundColor", vbWhite), forceGrayscale, newPaletteSize, , True)
+        m_FIHandle = Plugin_FreeImage.GetFIDib_SpecificColorMode(workingDIB, newColorDepth, desiredAlphaMode, PDAS_ComplicatedAlpha, desiredAlphaCutoff, cParamsDepth.GetLong("ColorDepth_CompositeColor", vbWhite), forceGrayscale, newPaletteSize, , True)
         
     End If
     
@@ -895,9 +898,13 @@ Private Sub sltTargetQuality_Change()
 End Sub
 
 Private Sub ttlStandard_Click(Index As Integer, ByVal newState As Boolean)
+    
+    picContainer(Index).Visible = newState
+    
     If (Not m_PanelChangesActive) Then
         If newState Then UpdateStandardTitlebars Index Else UpdateStandardPanelVisibility
     End If
+    
 End Sub
 
 Private Sub UpdateStandardTitlebars(ByVal selectedIndex As Long)
@@ -918,30 +925,30 @@ End Sub
 
 Private Sub UpdateStandardPanelVisibility()
     
-    Dim i As Long
-    For i = ttlStandard.lBound To ttlStandard.UBound
-        picContainer(i).Visible = ttlStandard(i).Value
-    Next i
-    
     'Reflow the interface to match
     Dim yPos As Long, yPadding As Long
     yPos = 0
     yPadding = FixDPI(8)
     
+    Dim i As Long
     For i = ttlStandard.lBound To ttlStandard.UBound
+    
         ttlStandard(i).SetTop yPos
         yPos = yPos + ttlStandard(i).GetHeight + yPadding
+        
+        picContainer(i).Visible = ttlStandard(i).Value
+        
+        'The "advanced settings" panel uses a specialized custom control whose height may vary at run-time
+        If (i = 1) Then
+            clrDepth.SyncToIdealSize
+            picContainer(i).SetHeight clrDepth.GetIdealSize
+        End If
+        
         If ttlStandard(i).Value Then
-            
-            If (i = 1) Then
-                clrDepth.SyncToIdealSize
-                picContainer(i).SetHeight clrDepth.GetIdealSize
-            End If
-            
             picContainer(i).SetTop yPos
             yPos = yPos + picContainer(i).GetHeight + yPadding
-            
         End If
+        
     Next i
     
 End Sub

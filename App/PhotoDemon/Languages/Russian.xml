@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2197</langversion>
+<langversion>6.8.2198</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3787,6 +3787,97 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdCheckBox.ctl-->
 
+<!-- BEGIN text for pdColorDepth.ctl -->
+
+<phrase>
+<original>compositing color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>depth</original>
+<translation>глубина</translation>
+</phrase>
+
+<phrase>
+<original>transparency format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>размер палитры</translation>
+</phrase>
+
+<phrase>
+<original>transparent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>авто</translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>цвет</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>оттенки серого</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>standard</original>
+<translation>стандарт</translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation>индексированный</translation>
+</phrase>
+
+<phrase>
+<original>monochrome</original>
+<translation>монохромный</translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation>полный</translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation>двоичный (пороговым)</translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation>двоичный (по цвету)</translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for pdColorDepth.ctl-->
+
 <!-- BEGIN text for pdColorSelector.ctl -->
 
 <phrase>
@@ -4141,8 +4232,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>click to review this image's metadata</original>
-<translation>нажмите чтобы просмотреть метаданные этого истукана</translation>
+<original>review metadata before saving</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4171,16 +4262,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>click to add metadata to this image</original>
-<translation>нажмите для добавления метаданных к этому изображению</translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation>JPEG-специфические настройки</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -5174,11 +5260,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Exposure</original>
 <translation>Воздействие</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -6403,7 +6484,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Удалить альфа-канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6572,11 +6653,6 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 </phrase>
 
 <phrase>
-<original>monochrome</original>
-<translation>монохромный</translation>
-</phrase>
-
-<phrase>
 <original>constant</original>
 <translation>постоянная</translation>
 </phrase>
@@ -6606,7 +6682,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Смешивание цветовых каналов</translation>
 </phrase>
 
-<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_ChannelMixer.frm-->
 
@@ -6967,11 +7043,6 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 </phrase>
 
 <phrase>
-<original>standard</original>
-<translation>стандарт</translation>
-</phrase>
-
-<phrase>
 <original>logarithmic</original>
 <translation>логарифмический</translation>
 </phrase>
@@ -7021,7 +7092,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>вывод</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 16 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7978,11 +8049,6 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>цвет</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>цвета</translation>
 </phrase>
@@ -8042,7 +8108,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>бриллиант</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8852,16 +8918,11 @@ If вы хотите сохранить его с другим именем фа
 </phrase>
 
 <phrase>
-<original>depth</original>
-<translation>глубина</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>рельефная резьба изображение</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10147,11 +10208,6 @@ If вы хотите сохранить его с другим именем фа
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation>размер палитры</translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation>метод квантования</translation>
 </phrase>
@@ -10182,11 +10238,6 @@ If вы хотите сохранить его с другим именем фа
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation>полный</translation>
-</phrase>
-
-<phrase>
 <original>binary</original>
 <translation>двоичный</translation>
 </phrase>
@@ -10201,7 +10252,7 @@ If вы хотите сохранить его с другим именем фа
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -11672,11 +11723,6 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>auto</original>
-<translation>авто</translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation>цветной диапозитив</translation>
 </phrase>
@@ -11684,11 +11730,6 @@ I искренние извинения за неудобства, но, к со
 <phrase>
 <original>color only</original>
 <translation>только цвет</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>оттенки серого</translation>
 </phrase>
 
 <phrase>
@@ -11726,7 +11767,7 @@ I искренние извинения за неудобства, но, к со
 <translation>1bpp (монохромный)</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -11978,13 +12019,33 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
+<original>PNG type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>fast, larger file</original>
 <translation>быстрый, большой файл</translation>
 </phrase>
 
 <phrase>
-<original>use interlacing</original>
-<translation>использовать переплетение</translation>
+<original>write interlaced PNG</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11993,8 +12054,8 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>embed background color in file</original>
-<translation>код вставки цвет фона в файле</translation>
+<original>embed background color (bKGD chunk)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12003,8 +12064,8 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>lossless file size optimization (OptiPNG)</original>
-<translation>Оптимизация без потерь размер файла (OptiPNG)</translation>
+<original>optimization (OptiPNG)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12063,21 +12124,6 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
-<original>indexed</original>
-<translation>индексированный</translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation>двоичный (пороговым)</translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation>двоичный (по цвету)</translation>
-</phrase>
-
-<phrase>
 <original>please wait while a new preview image is created</original>
 <translation>пожалуйста, подождите, пока новое изображение предварительного просмотра создается</translation>
 </phrase>
@@ -12087,7 +12133,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Эти настройки оптимизации с потерями уменьшить размер файла на 1%.</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -14894,10 +14940,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2508</phrasecount>
+<phrasecount>2516</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
-<!-- These 2508 phrases contain approximately 12390 total words. -->
+<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 12398 total words. -->
 
 </pdData>

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.UserControl pdColorDepth 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
-   ClientHeight    =   5175
+   ClientHeight    =   2655
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   7170
@@ -18,17 +18,27 @@ Begin VB.UserControl pdColorDepth
       Strikethrough   =   0   'False
    EndProperty
    HasDC           =   0   'False
-   ScaleHeight     =   345
+   ScaleHeight     =   177
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   478
    ToolboxBitmap   =   "pdColorDepth.ctx":0000
+   Begin PhotoDemon.pdColorSelector clsComposite 
+      Height          =   735
+      Left            =   3600
+      TabIndex        =   7
+      Top             =   1680
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   1296
+      Caption         =   "compositing color"
+   End
    Begin PhotoDemon.pdDropDown cboDepthGrayscale 
       Height          =   735
       Left            =   0
       TabIndex        =   6
       Top             =   840
-      Width           =   7095
-      _ExtentX        =   12515
+      Width           =   3495
+      _ExtentX        =   6165
       _ExtentY        =   1296
       Caption         =   "depth"
    End
@@ -37,40 +47,40 @@ Begin VB.UserControl pdColorDepth
       Left            =   0
       TabIndex        =   5
       Top             =   840
-      Width           =   7095
-      _ExtentX        =   12515
-      _ExtentY        =   1085
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   1296
       Caption         =   "depth"
    End
    Begin PhotoDemon.pdDropDown cboAlphaModel 
       Height          =   735
-      Left            =   0
+      Left            =   3600
       TabIndex        =   4
-      Top             =   2880
-      Width           =   7095
-      _ExtentX        =   12515
+      Top             =   0
+      Width           =   3375
+      _ExtentX        =   5953
       _ExtentY        =   1296
-      Caption         =   "transparency"
+      Caption         =   "transparency format"
    End
    Begin PhotoDemon.pdDropDown cboColorModel 
       Height          =   735
       Left            =   0
       TabIndex        =   3
       Top             =   0
-      Width           =   7095
-      _ExtentX        =   12515
-      _ExtentY        =   1508
-      Caption         =   "color model"
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   1296
+      Caption         =   "color format"
    End
    Begin PhotoDemon.pdSlider sldAlphaCutoff 
-      Height          =   855
-      Left            =   0
+      Height          =   735
+      Left            =   3600
       TabIndex        =   0
-      Top             =   4080
-      Width           =   7095
-      _ExtentX        =   12515
-      _ExtentY        =   1508
-      Caption         =   "alpha cut-off"
+      Top             =   840
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   1296
+      Caption         =   "transparency cut-off"
       Max             =   254
       SliderTrackStyle=   1
       Value           =   64
@@ -78,23 +88,15 @@ Begin VB.UserControl pdColorDepth
       NotchPosition   =   2
       NotchValueCustom=   64
    End
-   Begin PhotoDemon.pdLabel lblColorCount 
-      Height          =   375
-      Left            =   4920
-      Top             =   2460
-      Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   661
-      Caption         =   "palette size"
-   End
    Begin PhotoDemon.pdSlider sldColorCount 
-      Height          =   375
-      Left            =   240
+      Height          =   735
+      Left            =   0
       TabIndex        =   1
-      Top             =   2400
-      Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   661
+      Top             =   1680
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   1296
+      Caption         =   "palette size"
       Min             =   2
       Max             =   256
       Value           =   256
@@ -102,14 +104,14 @@ Begin VB.UserControl pdColorDepth
       NotchValueCustom=   256
    End
    Begin PhotoDemon.pdColorSelector clsAlphaColor 
-      Height          =   975
-      Left            =   0
+      Height          =   735
+      Left            =   3600
       TabIndex        =   2
-      Top             =   4080
-      Width           =   7095
-      _ExtentX        =   15690
-      _ExtentY        =   1720
-      Caption         =   "transparent color (right-click image to select)"
+      Top             =   840
+      Width           =   3375
+      _ExtentX        =   5953
+      _ExtentY        =   1296
+      Caption         =   "transparent color"
       curColor        =   16711935
    End
 End
@@ -279,6 +281,7 @@ Public Function GetAllSettings() As String
     cParams.AddParam "ColorDepth_AlphaModel", outputAlphaModel
     If sldAlphaCutoff.IsValid Then cParams.AddParam "ColorDepth_AlphaCutoff", sldAlphaCutoff.Value Else cParams.AddParam "ColorDepth_AlphaCutoff", PD_DEFAULT_ALPHA_CUTOFF
     cParams.AddParam "ColorDepth_AlphaColor", clsAlphaColor.Color
+    cParams.AddParam "ColorDepth_CompositeColor", clsComposite.Color
     
     GetAllSettings = cParams.GetParamString()
     
@@ -350,6 +353,7 @@ Public Sub SetAllSettings(ByVal newSettings As String)
     
     sldAlphaCutoff.Value = cParams.GetLong("ColorDepth_AlphaCutoff")
     clsAlphaColor.Color = cParams.GetLong("ColorDepth_AlphaColor")
+    clsComposite.Color = cParams.GetLong("ColorDepth_CompositeColor", vbWhite)
     
 End Sub
 
@@ -395,7 +399,6 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
 End Sub
 
 Private Sub cboAlphaModel_Click()
-    RaiseEvent ColorSelectionRequired(CBool(cboAlphaModel.ListIndex = 3))
     UpdateTransparencyOptions
     RaiseEvent Change
 End Sub
@@ -416,6 +419,10 @@ Private Sub cboDepthGrayscale_Click()
 End Sub
 
 Private Sub clsAlphaColor_ColorChanged()
+    RaiseEvent Change
+End Sub
+
+Private Sub clsComposite_ColorChanged()
     RaiseEvent Change
 End Sub
 
@@ -470,8 +477,6 @@ Private Sub UserControl_Initialize()
     cboDepthGrayscale.AddItem "standard", 1
     cboDepthGrayscale.AddItem "monochrome", 2
     cboDepthGrayscale.ListIndex = 1
-    
-    UpdateColorDepthVisibility
     
     'PNGs also support a (ridiculous) amount of alpha settings
     cboAlphaModel.AddItem "auto", 0
@@ -531,17 +536,14 @@ Private Sub UpdateColorDepthOptions()
     'Indexed color modes allow for variable palette sizes
     If (cboDepthColor.Visible) Then
         sldColorCount.Visible = CBool(cboDepthColor.ListIndex = 2)
-        lblColorCount.Visible = sldColorCount.Visible
-    
+        
     'Indexed grayscale mode also allows for variable palette sizes
     ElseIf (cboDepthGrayscale.Visible) Then
         sldColorCount.Visible = CBool(cboDepthGrayscale.ListIndex = 1)
-        lblColorCount.Visible = sldColorCount.Visible
-    
+        
     'Other modes do not expose palette settings
     Else
         sldColorCount.Visible = False
-        lblColorCount.Visible = False
     End If
     
     ReflowColorPanel
@@ -556,24 +558,28 @@ Private Sub UpdateTransparencyOptions()
         Case 0, 1
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = False
+            clsComposite.Visible = False
             If g_IsProgramRunning Then RaiseEvent ColorSelectionRequired(False)
             
         'alpha by cut-off
         Case 2
             sldAlphaCutoff.Visible = True
             clsAlphaColor.Visible = False
+            clsComposite.Visible = True
             If g_IsProgramRunning Then RaiseEvent ColorSelectionRequired(False)
         
         'alpha by color
         Case 3
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = True
+            clsComposite.Visible = True
             If g_IsProgramRunning Then RaiseEvent ColorSelectionRequired(True)
             
         'no alpha
         Case 4
             sldAlphaCutoff.Visible = False
             clsAlphaColor.Visible = False
+            clsComposite.Visible = True
             If g_IsProgramRunning Then RaiseEvent ColorSelectionRequired(False)
     
     End Select
@@ -586,13 +592,12 @@ End Sub
 ' instead, it relies on functions like UpdateColorDepthVisibility() to do that in advance.
 Private Sub ReflowColorPanel()
 
-    Dim curHeight As Long
+    Dim curHeight As Long, maxHeight As Long
     curHeight = ucSupport.GetBackBufferHeight
     
     Dim yOffset As Long, yPadding As Long
-    yOffset = cboColorModel.GetTop + cboColorModel.GetHeight
     yPadding = FixDPI(8)
-    yOffset = yOffset + yPadding
+    yOffset = cboColorModel.GetTop + cboColorModel.GetHeight + yPadding
     
     If cboDepthColor.Visible Then
         cboDepthColor.SetTop yOffset
@@ -604,12 +609,13 @@ Private Sub ReflowColorPanel()
     
     If sldColorCount.Visible Then
         sldColorCount.SetTop yOffset
-        lblColorCount.SetTop (sldColorCount.GetTop + sldColorCount.GetHeight) - lblColorCount.GetHeight
         yOffset = yOffset + sldColorCount.GetHeight + yPadding
     End If
     
-    cboAlphaModel.SetTop yOffset
-    yOffset = yOffset + cboAlphaModel.GetHeight + yPadding
+    maxHeight = yOffset
+    
+    'Now restart at the top, and perform the same steps for the "alpha settings column" of controls
+    yOffset = cboAlphaModel.GetTop + cboAlphaModel.GetHeight + yPadding
     
     If sldAlphaCutoff.Visible Then
         sldAlphaCutoff.SetTop yOffset
@@ -619,7 +625,12 @@ Private Sub ReflowColorPanel()
         yOffset = yOffset + clsAlphaColor.GetHeight + yPadding
     End If
     
-    m_IdealControlHeight = yOffset
+    If clsComposite.Visible Then
+        clsComposite.SetTop yOffset
+        yOffset = yOffset + clsComposite.GetHeight + yPadding
+    End If
+    
+    If (yOffset > maxHeight) Then m_IdealControlHeight = yOffset Else m_IdealControlHeight = maxHeight
     RaiseEvent SizeChanged
     
 End Sub
@@ -633,14 +644,23 @@ Private Sub UpdateControlLayout()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
+    'A lot of controls on this dialog sit "side-by-side", so set their width proportionally.
+    Dim halfWidth As Long, uiItemWidth As Long, pxPadding As Long
+    pxPadding = FixDPI(4)
+    halfWidth = bWidth \ 2
+    uiItemWidth = halfWidth - pxPadding * 2
+    
     'Sync all widths to match the current buffer width
-    cboColorModel.SetWidth bWidth - cboColorModel.GetLeft
-    cboDepthColor.SetWidth bWidth - cboDepthColor.GetLeft
-    cboDepthGrayscale.SetWidth bWidth - cboDepthGrayscale.GetLeft
-    lblColorCount.SetWidth bWidth - lblColorCount.GetLeft
-    cboAlphaModel.SetWidth bWidth - cboAlphaModel.GetLeft
-    sldAlphaCutoff.SetWidth bWidth - sldAlphaCutoff.GetLeft
-    clsAlphaColor.SetWidth bWidth - clsAlphaColor.GetLeft
+    cboColorModel.SetPositionAndSize pxPadding, cboColorModel.GetTop, uiItemWidth, cboColorModel.GetHeight
+    cboAlphaModel.SetPositionAndSize halfWidth + pxPadding, cboAlphaModel.GetTop, uiItemWidth, cboAlphaModel.GetHeight
+    
+    cboDepthColor.SetPositionAndSize pxPadding, cboDepthColor.GetTop, uiItemWidth, cboDepthColor.GetHeight
+    cboDepthGrayscale.SetPositionAndSize pxPadding, cboDepthGrayscale.GetTop, uiItemWidth, cboDepthGrayscale.GetHeight
+    sldColorCount.SetPositionAndSize pxPadding, sldColorCount.GetTop, uiItemWidth, sldColorCount.GetHeight
+    
+    sldAlphaCutoff.SetPositionAndSize halfWidth + pxPadding, sldAlphaCutoff.GetTop, uiItemWidth, sldAlphaCutoff.GetHeight
+    clsAlphaColor.SetPositionAndSize halfWidth + pxPadding, clsAlphaColor.GetTop, uiItemWidth, clsAlphaColor.GetHeight
+    clsComposite.SetPositionAndSize halfWidth + pxPadding, clsComposite.GetTop, uiItemWidth, clsComposite.GetHeight
     
     'As such, just repaint the control for now
     RedrawBackBuffer
@@ -681,10 +701,11 @@ Public Sub UpdateAgainstCurrentTheme()
         cboDepthColor.UpdateAgainstCurrentTheme
         cboDepthGrayscale.UpdateAgainstCurrentTheme
         sldColorCount.UpdateAgainstCurrentTheme
-        lblColorCount.UpdateAgainstCurrentTheme
+        
         cboAlphaModel.UpdateAgainstCurrentTheme
         clsAlphaColor.UpdateAgainstCurrentTheme
         sldAlphaCutoff.UpdateAgainstCurrentTheme
+        clsComposite.UpdateAgainstCurrentTheme
         
     End If
     

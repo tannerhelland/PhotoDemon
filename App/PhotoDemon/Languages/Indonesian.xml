@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.179</langversion>
+<langversion>6.6.180</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -3779,6 +3779,97 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <!-- END text for pdCheckBox.ctl-->
 
+<!-- BEGIN text for pdColorDepth.ctl -->
+
+<phrase>
+<original>compositing color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>depth</original>
+<translation>mendalam</translation>
+</phrase>
+
+<phrase>
+<original>transparency format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>warna</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>standard</original>
+<translation>standard</translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochrome</original>
+<translation>monokrom</translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation></translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for pdColorDepth.ctl-->
+
 <!-- BEGIN text for pdColorSelector.ctl -->
 
 <phrase>
@@ -4133,7 +4224,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>click to review this image's metadata</original>
+<original>review metadata before saving</original>
 <translation></translation>
 </phrase>
 
@@ -4163,16 +4254,11 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>click to add metadata to this image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation></translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -5171,11 +5257,6 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 <phrase>
 <original>Exposure</original>
 <translation>pencahayaan</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -6400,7 +6481,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6569,11 +6650,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>monochrome</original>
-<translation>monokrom</translation>
-</phrase>
-
-<phrase>
 <original>constant</original>
 <translation>berterusan</translation>
 </phrase>
@@ -6603,7 +6679,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>Mencampurkan saluran warna</translation>
 </phrase>
 
-<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_ChannelMixer.frm-->
 
@@ -6964,11 +7040,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>standard</original>
-<translation>standard</translation>
-</phrase>
-
-<phrase>
 <original>logarithmic</original>
 <translation>logaritma</translation>
 </phrase>
@@ -7018,7 +7089,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation>output</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 16 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7975,11 +8046,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>warna</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation></translation>
 </phrase>
@@ -8039,7 +8105,7 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 <translation></translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8849,16 +8915,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>depth</original>
-<translation>mendalam</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>Ukiran relief imej</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10144,11 +10205,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation></translation>
 </phrase>
@@ -10179,11 +10235,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>binary</original>
 <translation></translation>
 </phrase>
@@ -10198,7 +10249,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -11667,22 +11718,12 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>auto</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>color only</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
 <translation></translation>
 </phrase>
 
@@ -11721,7 +11762,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -11973,12 +12014,32 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>PNG type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>fast, larger file</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>use interlacing</original>
+<original>write interlaced PNG</original>
 <translation></translation>
 </phrase>
 
@@ -11988,7 +12049,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>embed background color in file</original>
+<original>embed background color (bKGD chunk)</original>
 <translation></translation>
 </phrase>
 
@@ -11998,7 +12059,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>lossless file size optimization (OptiPNG)</original>
+<original>optimization (OptiPNG)</original>
 <translation></translation>
 </phrase>
 
@@ -12058,21 +12119,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>indexed</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>please wait while a new preview image is created</original>
 <translation></translation>
 </phrase>
@@ -12082,7 +12128,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -14889,10 +14935,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2508</phrasecount>
+<phrasecount>2516</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
-<!-- These 2508 phrases contain approximately 12390 total words. -->
+<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 12398 total words. -->
 
 </pdData>

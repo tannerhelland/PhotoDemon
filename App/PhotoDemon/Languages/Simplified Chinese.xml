@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2251</langversion>
+<langversion>6.8.2252</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -3778,6 +3778,97 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdCheckBox.ctl-->
 
+<!-- BEGIN text for pdColorDepth.ctl -->
+
+<phrase>
+<original>compositing color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>depth</original>
+<translation>深度</translation>
+</phrase>
+
+<phrase>
+<original>transparency format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color format</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transparency cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>palette size</original>
+<translation>调色板大小</translation>
+</phrase>
+
+<phrase>
+<original>transparent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto</original>
+<translation>自动</translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>颜色</translation>
+</phrase>
+
+<phrase>
+<original>grayscale</original>
+<translation>灰度</translation>
+</phrase>
+
+<phrase>
+<original>HDR</original>
+<translation>HDR</translation>
+</phrase>
+
+<phrase>
+<original>standard</original>
+<translation>标准</translation>
+</phrase>
+
+<phrase>
+<original>indexed</original>
+<translation>索引</translation>
+</phrase>
+
+<phrase>
+<original>monochrome</original>
+<translation>单色</translation>
+</phrase>
+
+<phrase>
+<original>full</original>
+<translation>全部</translation>
+</phrase>
+
+<phrase>
+<original>binary (by cut-off)</original>
+<translation>二进制（截断）</translation>
+</phrase>
+
+<phrase>
+<original>binary (by color)</original>
+<translation>二进制（按颜色）</translation>
+</phrase>
+
+<!-- pdColorDepth.ctl contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for pdColorDepth.ctl-->
+
 <!-- BEGIN text for pdColorSelector.ctl -->
 
 <phrase>
@@ -4132,8 +4223,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>click to review this image's metadata</original>
-<translation>单击查看此图像的元数据</translation>
+<original>review metadata before saving</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4162,16 +4253,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>click to add metadata to this image</original>
-<translation>单击以添加该图像的元数据</translation>
-</phrase>
-
-<phrase>
 <original>JPEG-specific settings</original>
 <translation>JPEG特定设置</translation>
 </phrase>
 
-<!-- pdMetadataExport.ctl contains 16 phrases. 7 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdMetadataExport.ctl contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdMetadataExport.ctl-->
 
@@ -5165,11 +5251,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Exposure</original>
 <translation>曝光</translation>
-</phrase>
-
-<phrase>
-<original>HDR</original>
-<translation>HDR</translation>
 </phrase>
 
 <phrase>
@@ -6392,7 +6473,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 188 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6561,11 +6642,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>monochrome</original>
-<translation>单色</translation>
-</phrase>
-
-<phrase>
 <original>constant</original>
 <translation>常数</translation>
 </phrase>
@@ -6595,7 +6671,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>混合颜色通道</translation>
 </phrase>
 
-<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_ChannelMixer.frm contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_ChannelMixer.frm-->
 
@@ -6956,11 +7032,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>standard</original>
-<translation>标准</translation>
-</phrase>
-
-<phrase>
 <original>logarithmic</original>
 <translation>对数</translation>
 </phrase>
@@ -7010,7 +7081,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>输出</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 32 phrases. 16 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 32 phrases. 17 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7967,11 +8038,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>color</original>
-<translation>颜色</translation>
-</phrase>
-
-<phrase>
 <original>colors</original>
 <translation>颜色</translation>
 </phrase>
@@ -8031,7 +8097,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>钻石</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8842,16 +8908,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>depth</original>
-<translation>深度</translation>
-</phrase>
-
-<phrase>
 <original>Carving image relief</original>
 <translation>雕刻图像浮雕</translation>
 </phrase>
 
-<!-- Effects_Artistic_Relief.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_Relief.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_Relief.frm-->
 
@@ -10137,11 +10198,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>palette size</original>
-<translation>调色板大小</translation>
-</phrase>
-
-<phrase>
 <original>quantization method</original>
 <translation>量化方法</translation>
 </phrase>
@@ -10172,11 +10228,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>full</original>
-<translation>全部</translation>
-</phrase>
-
-<phrase>
 <original>binary</original>
 <translation>二进制</translation>
 </phrase>
@@ -10191,7 +10242,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Palettize.frm-->
 
@@ -11658,11 +11709,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>auto</original>
-<translation>自动</translation>
-</phrase>
-
-<phrase>
 <original>color + transparency</original>
 <translation>彩色 + 透明度</translation>
 </phrase>
@@ -11670,11 +11716,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>color only</original>
 <translation>仅彩色</translation>
-</phrase>
-
-<phrase>
-<original>grayscale</original>
-<translation>灰度</translation>
 </phrase>
 
 <phrase>
@@ -11712,7 +11753,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>1位色（黑白）</translation>
 </phrase>
 
-<!-- File_Save_BMP.frm contains 23 phrases. 3 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- File_Save_BMP.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Save_BMP.frm-->
 
@@ -11964,13 +12005,33 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>PNG type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>basic settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>advanced settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>metadata settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>fast, larger file</original>
 <translation>快速，更大的文件</translation>
 </phrase>
 
 <phrase>
-<original>use interlacing</original>
-<translation>使用交错</translation>
+<original>write interlaced PNG</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11979,8 +12040,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>embed background color in file</original>
-<translation>文件中的背景颜色</translation>
+<original>embed background color (bKGD chunk)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11989,8 +12050,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>lossless file size optimization (OptiPNG)</original>
-<translation>无损文件大小优化（使用OptiPNG）</translation>
+<original>optimization (OptiPNG)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12049,21 +12110,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>indexed</original>
-<translation>索引</translation>
-</phrase>
-
-<phrase>
-<original>binary (by cut-off)</original>
-<translation>二进制（截断）</translation>
-</phrase>
-
-<phrase>
-<original>binary (by color)</original>
-<translation>二进制（按颜色）</translation>
-</phrase>
-
-<phrase>
 <original>please wait while a new preview image is created</original>
 <translation>请稍候正在创建一个新的预览图像</translation>
 </phrase>
@@ -12073,7 +12119,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>这些有损优化设置减少了 %1 的文件大小。</translation>
 </phrase>
 
-<!-- File_Save_PNG.frm contains 62 phrases. 39 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- File_Save_PNG.frm contains 41 phrases. 17 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
 
 <!-- END text for File_Save_PNG.frm-->
 
@@ -14880,10 +14926,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2508</phrasecount>
+<phrasecount>2516</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1958 are duplicates, so only 2508 unique phrases have been written to file. -->
-<!-- These 2508 phrases contain approximately 12390 total words. -->
+<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
+<!-- These 2516 phrases contain approximately 12398 total words. -->
 
 </pdData>
