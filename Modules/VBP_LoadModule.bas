@@ -1016,7 +1016,7 @@ Public Sub DuplicateCurrentImage()
     'Ask the currently active image to write itself out to file
     Dim tmpDuplicationFile As String
     tmpDuplicationFile = g_UserPreferences.GetTempPath & "PDDuplicate.pdi"
-    SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, True, True, False
+    SavePhotoDemonImage pdImages(g_CurrentImage), tmpDuplicationFile, True, PD_CE_Lz4, PD_CE_Lz4, False
     
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
