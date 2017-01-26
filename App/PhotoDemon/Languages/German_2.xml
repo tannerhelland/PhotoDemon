@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2308</langversion>
+<langversion>6.8.2318</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1241,12 +1241,12 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Icon (%1x%2)</original>
-<translation>Icon (%1x%2)</translation>
+<translation>Icon (%1 x %2)</translation>
 </phrase>
 
 <phrase>
 <original>Icon (%1x%2, %3 bpp)</original>
-<translation>Icon (%1x%2, %3 bpp)</translation>
+<translation>Icon (%1 x %2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
@@ -1311,7 +1311,7 @@ Wenn dieses Bild sich ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk e
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!</original>
-<translation>Leider konnte PhotoDemon das folgende Bild nicht laden: 
+<translation>Leider konnte PhotoDemon folgendes Bild nicht laden: 
 
  %1
 
@@ -1329,7 +1329,7 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 %1
 
 Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!</original>
-<translation>Leider konnte PhotoDemon das folgende Bild nicht laden:
+<translation>Leider konnte PhotoDemon folgendes Bild nicht laden:
 
 %1
 
@@ -1361,7 +1361,7 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 
 %1
 Please verify that these image(s) exist, and that they use a supported image format (like JPEG or PNG).  Thanks!</original>
-<translation>Leider konnte PhotoDemon das folgende Bild bzw. die folgenden Bilder nicht laden:
+<translation>Leider konnte PhotoDemon folgende(s) Bild(er) nicht laden:
 
 %1
 Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütztes Bildformat verwenden (wie JPEG oder PNG). Danke!</translation>
@@ -1779,7 +1779,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Preparing image for printing</original>
-<translation>Bild für den Druck vorbereiten</translation>
+<translation>Bild wird für Druck vorbereitet</translation>
 </phrase>
 
 <phrase>
@@ -3248,7 +3248,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>WARNING!  Decompressed directory chunk size shows possible CRC error (</original>
-<translation>WARNUNG!  Dekomprimierte Verzeichnisstückgröße zeigt möglichen CRC-Fehler.</translation>
+<translation>WARNUNG!  Dekomprimierte Verzeichnisfragment-Größe zeigt möglichen CRC-Fehler.</translation>
 </phrase>
 
 <phrase>
@@ -3258,17 +3258,17 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Verzeichnisstück ist komprimiert, aber zLib fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
+<translation>Verzeichnisfragment ist komprimiert, aber zLib fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Datenstück ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Datenfragment ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Datenstück ist komprimiert, aber zLib-Plugin fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
+<translation>Datenfragment ist komprimiert, aber zLib-Plugin fehlt. Dekompression nicht möglich, Laden wird abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -3792,7 +3792,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>Compositing-Farbe</translation>
 </phrase>
 
 <phrase>
@@ -3802,17 +3802,17 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>Transparenzformat</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>Farbformat</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>Transparenz Cut-off</translation>
 </phrase>
 
 <phrase>
@@ -3822,7 +3822,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>Transparente Farbe</translation>
 </phrase>
 
 <phrase>
@@ -4229,12 +4229,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>general metadata settings</original>
-<translation>Allgemeine Metadateneinstellungen</translation>
+<translation>Allgemeine Metadaten-Einstellungen</translation>
 </phrase>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>Metadaten vor dem Speichern nochmals durchsehen</translation>
 </phrase>
 
 <phrase>
@@ -6178,7 +6178,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynchrone Metadatenprüfung fertiggestellt! Aktualisierung der Metadaten-Sammlung</translation>
+<translation>Asynchrone Metadaten-Prüfung fertiggestellt! Aktualisierung der Metadaten-Sammlung</translation>
 </phrase>
 
 <phrase>
@@ -7325,7 +7325,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>keep all colors in sync</original>
-<translation>Alle Farben synchron beibehalten</translation>
+<translation>Alle Farben synchron behalten</translation>
 </phrase>
 
 <phrase>
@@ -8533,7 +8533,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Keep working</original>
-<translation>Arbeit beibehalten</translation>
+<translation>Arbeit behalten</translation>
 </phrase>
 
 <phrase>
@@ -8563,7 +8563,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation>Wenn Sie in der Mitte von Etwas sind, können Sie Ihre Arbeit problemlos beibehalten. Der Update-Prozess wird automatisch abschließen, wann immer Sie das Programm das nächste Mal verwenden.</translation>
+<translation>Wenn Sie in der Mitte von Etwas sind, können Sie Ihre Arbeit problemlos behalten. Der Update-Prozess wird automatisch abschließen, wann immer Sie das Programm das nächste Mal verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -8997,7 +8997,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>keep both dimensions in sync</original>
-<translation>Beide Dimensionen in Sync. beibehalten</translation>
+<translation>Beide Dimensionen synchron behalten</translation>
 </phrase>
 
 <phrase>
@@ -10659,7 +10659,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 
 <phrase>
 <original>keep images in their original format</original>
-<translation>Bilder in deren Originalformat beibehalten</translation>
+<translation>Bilder in deren Originalformat behalten</translation>
 </phrase>
 
 <phrase>
@@ -10846,7 +10846,7 @@ Repaired files have been saved to the destination folder.  Unrepaired files rema
 <original>If you exit now, your batch list (the list of images to be processed) will be lost.  By saving your list, you can easily resume this batch operation at a later date.
 
 Would you like to save your batch list before exiting?</original>
-<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbei- tenden Bilder) verlorengehen. Sie können Ihre Liste aber jetzt speichern und diese Batchoperation zu einem späteren Zeitpunkt fortsetzen.
+<translation>Wenn Sie jetzt beenden, wird Ihre Batchliste (die Liste der zu verarbei- tenden Bilder) verlorengehen. Durch Speichern Ihrer Liste können Sie diese Batchoperation zu einem späteren Zeitpunkt fortsetzen.
 
 Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
@@ -10993,7 +10993,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Wenn "Bilder in deren Originalfor- mat beibehalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem originalen Format zu speichern. Wenn das Originalfor- mat nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
+<translation>Wenn "Bilder in deren Originalfor- mat behalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem originalen Format zu speichern. Wenn das Originalfor- mat nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
 </phrase>
 
 <phrase>
@@ -11103,7 +11103,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(speziell: JPEG mit 92% Qualität für Fotos und verlustfreies PNG für Nicht-Fotos)</translation>
+<translation>(speziell: JPEG mit 92 % Qualität für Fotos und verlustfreies PNG für Nicht-Fotos)</translation>
 </phrase>
 
 <phrase>
@@ -12019,22 +12019,22 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>PNG-Typ</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>Grundeinstellungen</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>Erweiterte Einstellungen</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>Metadaten-Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -12044,7 +12044,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>PNG mit Interlacing schreiben</translation>
 </phrase>
 
 <phrase>
@@ -12054,7 +12054,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>Hintergrundfarbe einbetten (bKGD-Fragment)</translation>
 </phrase>
 
 <phrase>
@@ -12064,7 +12064,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>Optimierung (OptiPNG)</translation>
 </phrase>
 
 <phrase>
@@ -12315,7 +12315,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>metadata groups in this image</original>
-<translation>Metadatengruppen in diesem Bild</translation>
+<translation>Metadaten-Gruppen in diesem Bild</translation>
 </phrase>
 
 <phrase>
@@ -12335,7 +12335,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Generate full metadata report (HTML)</original>
-<translation>Vollst. Metadatenbericht generieren (HTML)</translation>
+<translation>Vollst. Metadaten-Bericht generieren (HTML)</translation>
 </phrase>
 
 <phrase>
@@ -12702,7 +12702,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>keep current</original>
-<translation>Aktuell beibehalten</translation>
+<translation>Aktuelles behalten</translation>
 </phrase>
 
 <phrase>
@@ -12810,7 +12810,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>keep transparency</original>
-<translation>Transparenz beibehalten</translation>
+<translation>Transparenz behalten</translation>
 </phrase>
 
 <phrase>
@@ -13496,12 +13496,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
-<translation>Klicken Sie hier, um einzustellen, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf die Auswahlinhalte - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
+<translation>Klicken Sie hier, um einzustellen, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf Auswahlinhalte - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls how smoothly a selection blends with its surroundings.</original>
-<translation>Diese Option steuert, wie glatt eine Auswahl sich mit ihrer Umgebung vermischt.</translation>
+<translation>Diese Option steuert, wie weich eine Auswahl sich mit ihrer Umgebung vermischt.</translation>
 </phrase>
 
 <phrase>
@@ -14570,7 +14570,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature.</original>
-<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungsmetadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also falsch angezeigt werden, können Sie probieren, die Funktion zur automatischen Rotation zu deaktivieren.</translation>
+<translation>Die meisten Digitalfotos enthalten Rotationsinstruktionen (EXIF-Ausrichtungs-Metadaten), die PhotoDemon benutzt, um Fotos automatisch zu drehen. Einige ältere Smartphones und Kameras können diese Instruktionen nicht korrekt lesen, wenn ihre Fotos also falsch angezeigt werden, können Sie probieren, die Funktion zur automatischen Rotation zu deaktivieren.</translation>
 </phrase>
 
 <phrase>

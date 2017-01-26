@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Central Language and Translation Handler
 'Copyright 2012-2017 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
-'Last updated: 06/January/17
-'Last update: myriad performance improvements to match new PD user control capabilities
+'Last updated: 26/January/17
+'Last update: use a dedicate language file settings cache to greatly improve startup performance
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
@@ -89,6 +89,13 @@ Private m_ActiveLanguageWasPatched As Boolean
 
 'File interactions in this class are handled by pdFSO
 Private m_FSO As pdFSO
+
+'Language files are checksummed to improve startup time.  This class is not guaranteed to exist, so please review individual
+' functions before attempting to use the crypto object.
+Private m_Crypto As pdCrypto
+
+'The language file cache is handled inside this XML object.
+Private m_LangCacheXML As pdXML, m_LangCacheChanged As Boolean
 
 Public Sub RefreshAsRequired()
     
@@ -228,7 +235,7 @@ Public Sub DetermineLanguage()
     If g_IsFirstRun Then
     
         Dim curLangID As String
-        curLangID = "en-US" 'getDefaultUserLanguage()
+        curLangID = "en-US" 'GetDefaultUserLanguage()
                 
         'Compare the full language ID (language and region) against language files available in the Languages folder.
         ' If an exact match is found, present that as the default program language.
@@ -363,10 +370,10 @@ Private Function GetDefaultUserLanguage() As String
     Dim abbrLang As String, abbrRegion As String
     
     'Get the ISO 639 abbreviated language name (e.g. "en" for "English")
-    abbrLang = LCase(GetSpecificLocaleInfo(LOCALE_SISO639LANGNAME))
+    abbrLang = LCase$(GetSpecificLocaleInfo(LOCALE_SISO639LANGNAME))
     
     'Get the ISO 4166 abbreviated country/region name (e.g. "US" for "United States")
-    abbrRegion = LCase(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
+    abbrRegion = LCase$(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
     
     'Return the language codes
     GetDefaultUserLanguage = abbrLang & "-" & abbrRegion
@@ -388,7 +395,7 @@ End Function
 'Add all the language files in a given folder.  The function will return the number of languages found.
 ' Optionally, a language offset count can be provided.  This is required for any folders besides the first, as the
 ' function will use that as the array index where it can place found language file data.
-Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional ByVal langOffset As Long = 0, Optional ByVal langTypeForThisFolder As String = "") As Long
+Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional ByVal langOffset As Long = 0, Optional ByVal langTypeForThisFolder As String = vbNullString) As Long
 
     Dim nLanguages As Long
     nLanguages = langOffset
@@ -397,10 +404,9 @@ Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     Dim isOfficialFolder As Boolean
     isOfficialFolder = (StrComp(UCase(langTypeForThisFolder), "OFFICIAL", vbBinaryCompare) = 0)
     
-    'An XML class will be used to parse the various language files
+    'An XML class will be used to parse and validate language files, as needed.  (This class may not be instantiated
+    ' if the current language file list matches the list at last-run, because language values are cached.  Plan accordingly.)
     Dim tmpXMLEngine As pdXML
-    Set tmpXMLEngine = New pdXML
-    tmpXMLEngine.SetTextCompareMode vbBinaryCompare
     
     'Scan the translation folder for .xml files.  Ignore anything that isn't XML.
     Dim listOfFiles As pdStringStack
@@ -408,28 +414,79 @@ Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
     
     If m_FSO.RetrieveAllFiles(srcFolder, listOfFiles, False, False, "xml") Then
         
-        Dim chkFile As String
+        'We need to checksum various files, so prep a crypto object in advance
+        Set m_Crypto = New pdCrypto
+        
+        Dim chkFile As String, chkCachedValue As String, chkXMLName As String
+        Dim fileValidationRequired As Boolean
         
         Do While listOfFiles.PopString(chkFile)
             
-            'Use PD's XML engine to load the file
-            If tmpXMLEngine.LoadXMLFile(chkFile) Then
+            fileValidationRequired = True
             
-                'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
-                If tmpXMLEngine.IsPDDataType("Translation") Then
-                    
-                    'If this is a valid language file, get the language information (if available).
-                    FillLanguageInfo tmpXMLEngine, m_availableLanguages(nLanguages)
-                    m_availableLanguages(nLanguages).FileName = chkFile
-                    m_availableLanguages(nLanguages).LangType = langTypeForThisFolder
-                    m_availableLanguages(nLanguages).IsOfficial = isOfficialFolder
-                    nLanguages = nLanguages + 1
-                    
-                    'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
-                    If (nLanguages > UBound(m_availableLanguages)) Then ReDim Preserve m_availableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
+            'We now have two options for loading this file.  If this is the first time we've seen this language file,
+            ' we need to validate it (to make sure it's a usable PD language file).  But if we've seen this file before,
+            ' we should have checksummed it and stored the result inside the user's preferences file.  If checksums
+            ' match, we don't need to load and validate the file this time.
+            
+            'Look for an existing checksum
+            chkXMLName = m_LangCacheXML.GetXMLSafeTagName(m_FSO.GetFilename(chkFile, True))
+            chkCachedValue = Trim$(m_LangCacheXML.GetUniqueTag_String(chkXMLName))
+            If (Len(chkCachedValue) <> 0) Then
+            
+                'A checksum was found.  If it matches the file's current checksum, we can skip further validation.
+                fileValidationRequired = Not (StrComp(chkCachedValue, GetLangFileChecksum(chkFile), vbBinaryCompare) = 0)
                 
+                #If DEBUGMODE = 1 Then
+                    If fileValidationRequired Then pdDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
+                #End If
+                
+            End If
+            
+            'If validation is required, we need to load the file from scratch and run some checks on it
+            If fileValidationRequired Then
+                
+                If (tmpXMLEngine Is Nothing) Then
+                    Set tmpXMLEngine = New pdXML
+                    tmpXMLEngine.SetTextCompareMode vbBinaryCompare
                 End If
                 
+                'Use PD's XML engine to load the file
+                If tmpXMLEngine.LoadXMLFile(chkFile) Then
+                
+                    'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
+                    If tmpXMLEngine.IsPDDataType("Translation") Then
+                        
+                        'If this is a valid language file, get the language information (if available).
+                        FillLanguageInfo tmpXMLEngine, m_availableLanguages(nLanguages)
+                        m_availableLanguages(nLanguages).FileName = chkFile
+                        m_availableLanguages(nLanguages).LangType = langTypeForThisFolder
+                        m_availableLanguages(nLanguages).IsOfficial = isOfficialFolder
+                        
+                        'Because this is a valid language file, we want to cache its key properties in the
+                        ' master user preferences file.  This lets us skip validation on subsequent runs.
+                        m_LangCacheXML.UpdateTag chkXMLName, GetLangFileChecksum(chkFile)
+                        CacheLanguageInfo chkXMLName, m_availableLanguages(nLanguages)
+                        
+                        'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
+                        nLanguages = nLanguages + 1
+                        If (nLanguages > UBound(m_availableLanguages)) Then ReDim Preserve m_availableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
+                        
+                    End If
+                    
+                End If
+            
+            'If file validation is *not* required, pull previously cached values from the preference file
+            Else
+            
+                GetCachedLanguageInfo chkXMLName, m_availableLanguages(nLanguages)
+                m_availableLanguages(nLanguages).FileName = chkFile
+                m_availableLanguages(nLanguages).LangType = langTypeForThisFolder
+                m_availableLanguages(nLanguages).IsOfficial = isOfficialFolder
+                
+                nLanguages = nLanguages + 1
+                If (nLanguages > UBound(m_availableLanguages)) Then ReDim Preserve m_availableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
+            
             End If
             
         'Retrieve the next file and repeat
@@ -441,11 +498,44 @@ Private Function TallyLanguageFilesInFolder(ByVal srcFolder As String, Optional 
 
 End Function
 
+Private Function GetLangFileChecksum(ByRef srcFile As String) As String
+
+    'Mix together the filename, file last access date, and file size to arrive at a "good enough" unique string.
+    Dim strHashSource As String
+    strHashSource = srcFile & "|" & CStr(m_FSO.FileLenW(srcFile)) & "|" & CStr(m_FSO.GetFileTimeAsCurrency(srcFile, PDFT_WriteTime))
+    
+    'A dedicated crypto class handles the actual hashing
+    GetLangFileChecksum = m_Crypto.QuickHashString(strHashSource, 64)
+    
+End Function
+
 'Search the Languages folder, and make a list of all available languages
 Public Sub CheckAvailableLanguages()
     
     m_numOfLanguages = 0
     ReDim m_availableLanguages(0 To 99) As pdLanguageFile
+    
+    'Language file names and attributes are cached inside a dedicated language settings file.  This file lets
+    ' us bypass a lot of obnoxious and time-consuming validation steps.
+    Dim langCacheFilename As String
+    langCacheFilename = g_UserPreferences.GetLanguagePath(True) & "LangCache.xml"
+    
+    Dim cacheLoadedSuccessfully As Boolean: cacheLoadedSuccessfully = False
+    
+    Set m_LangCacheXML = New pdXML
+    m_LangCacheXML.SetTextCompareMode vbBinaryCompare
+    
+    If m_FSO.FileExist(langCacheFilename) Then
+        cacheLoadedSuccessfully = m_LangCacheXML.LoadXMLFile(langCacheFilename)
+    End If
+    
+    'If the cache exists, we won't write it back out to file unless it somehow changes during this session
+    ' (from a new language file being discovered, for example).  If it does *not* exist, we'll create it anew
+    ' and force it to write out to file at the end of this initiation.
+    If (Not cacheLoadedSuccessfully) Then
+        m_LangCacheXML.PrepareNewXML "PDLanguageCache"
+        m_LangCacheChanged = True
+    End If
     
     'Find all available OFFICIAL language files
     m_numOfLanguages = TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(False), 0, "Official")
@@ -480,6 +570,10 @@ Public Sub CheckAvailableLanguages()
             Exit For
         End If
     Next i
+    
+    'If the cached language data was modified during this session, write the updated cache out to file
+    If m_LangCacheChanged Then m_LangCacheXML.WriteXMLToFile langCacheFilename
+    Set m_LangCacheXML = Nothing
     
     'TESTING: display the info we retrieved
     'Dim i As Long
@@ -534,10 +628,33 @@ Private Sub FillLanguageInfo(ByRef srcXmlEngine As pdXML, ByRef targetLangHolder
         
 End Sub
 
+Private Sub GetCachedLanguageInfo(ByRef srcFilename As String, ByRef dstLangHolder As pdLanguageFile)
+    With dstLangHolder
+        .langID = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langid")
+        .LangName = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langname")
+        .langVersion = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langversion")
+        .LangStatus = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langstatus")
+        .Author = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langauthor")
+    End With
+End Sub
+
+'Cache key language information inside the user's preference file.  This allows for faster retrieval on future runs.
+Private Sub CacheLanguageInfo(ByRef srcFilename As String, ByRef srcLangHolder As pdLanguageFile)
+    With srcLangHolder
+        m_LangCacheXML.UpdateTag srcFilename & "-langid", .langID
+        m_LangCacheXML.UpdateTag srcFilename & "-langname", .LangName
+        m_LangCacheXML.UpdateTag srcFilename & "-langversion", .langVersion
+        m_LangCacheXML.UpdateTag srcFilename & "-langstatus", .LangStatus
+        m_LangCacheXML.UpdateTag srcFilename & "-langauthor", .Author
+    End With
+    m_LangCacheChanged = True
+End Sub
+
 'Sort the m_availableLanguages() array alphabetically, using language names as the sort parameter
 Private Sub SortLanguageData()
 
     Dim i As Long, j As Long
+    Dim langTmp As pdLanguageFile
     
     'Loop through all entries in the languages array, sorting them as we go
     For i = 0 To m_numOfLanguages - 1
@@ -545,20 +662,14 @@ Private Sub SortLanguageData()
             
             'Compare two language names, and if one is less (e.g. earlier alphabetically) than the other, swap them
             If (StrComp(m_availableLanguages(i).LangName, m_availableLanguages(j).LangName, vbTextCompare) = -1) Then
-                SwapLanguageData m_availableLanguages(i), m_availableLanguages(j)
+                langTmp = m_availableLanguages(i)
+                m_availableLanguages(i) = m_availableLanguages(j)
+                m_availableLanguages(j) = langTmp
             End If
             
         Next j
     Next i
 
-End Sub
-
-'Swap the values of two language file headers
-Private Sub SwapLanguageData(ByRef langOne As pdLanguageFile, ByRef langTwo As pdLanguageFile)
-    Dim langTmp As pdLanguageFile
-    langTmp = langOne
-    langOne = langTwo
-    langTwo = langTmp
 End Sub
 
 'External functions can use this retrieve the current pdLanguageFile contents for a given language ID.

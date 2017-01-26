@@ -175,6 +175,23 @@ End Type
 Private Const ERROR_SHARING_VIOLATION As Long = 32
 Private Declare Function GetFileAttributesW Lib "kernel32" (ByVal lpFileName As Long) As Long
 
+'Retrieve various types of "file times"
+Private Type WAPI_FILETIME
+    dwLowDateTime As Long
+    dwHighDateTime As Long
+End Type
+Private Declare Function GetFileTime Lib "kernel32" (ByVal hFile As Long, ByRef lpCreationTime As WAPI_FILETIME, ByRef lpLastAccessTime As WAPI_FILETIME, ByRef lpLastWriteTime As WAPI_FILETIME) As Long
+
+Public Enum PD_FILE_TIME
+    PDFT_CreateTime = 0
+    PDFT_AccessTime = 1
+    PDFT_WriteTime = 2
+End Enum
+
+#If False Then
+    Private Const PDFT_CreateTime = 0, PDFT_AccessTime = 1, PDFT_WriteTime = 2
+#End If
+
 'Much of this class's version-checking code used in this form was derived from http://allapi.mentalis.org/apilist/GetFileVersionInfo.shtml
 ' Many thanks to those authors for their work on demystifying some of these more obscure API calls
 Private Type VS_FIXEDFILEINFO
@@ -202,7 +219,7 @@ Private Declare Function GetFileSizeEx Lib "kernel32" (ByVal hFile As Long, ByRe
 Private Declare Function GetFileVersionInfo Lib "Version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
 Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
 Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
+Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 
 'Unicode-friendly App.Path replacement
 Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
@@ -277,10 +294,10 @@ Public Function KillFile(ByVal srcFilename As String, Optional ByVal attemptToKi
     ' (Note that the user can override this behavior, and attempt a kill regardless of FileExists's return value)
     If FileExist(srcFilename) Or attemptToKillEvenIfNotFound Then
     
-        Dim APIReturn As Long
-        APIReturn = DeleteFileW(StrPtr(srcFilename))
+        Dim apiReturn As Long
+        apiReturn = DeleteFileW(StrPtr(srcFilename))
         
-        If APIReturn <> 0 Then
+        If apiReturn <> 0 Then
             KillFile = True
         Else
             KillFile = False
@@ -684,15 +701,15 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
     ' caller goes out of scope, so its file handle will remain open.)  As a failsafe, any open file handles will be released
     ' when the class is closed, but it's not ideal to leave search handles open any longer than you need them.
 
-    'Start by applying some modifications to sParam.  FindFirstFile fails under conditions that VB's own Dir() doese not.
-    If Len(sParam) > 0 Then
+    'Start by applying some modifications to sParam.  FindFirstFile fails under conditions that VB's own Dir() does not.
+    If (Len(sParam) > 0) Then
     
         'First, prepend "\\?\" to sParam.  This enables long file paths.
-        If Not StringsEqual(Left$(sParam, 4), "\\?\") Then sParam = "\\?\" & sParam
+        If (Not StringsEqual(Left$(sParam, 4), "\\?\")) Then sParam = "\\?\" & sParam
     
         'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path, assume that they
         ' want to iterate all files and folders within that folder.
-        If StringsEqual(Right$(sParam, 1), "\") Or StringsEqual(Right$(sParam, 1), "/") Then
+        If (StringsEqual(Right$(sParam, 1), "\") Or StringsEqual(Right$(sParam, 1), "/")) Then
             sParam = sParam & "*"
         End If
         
@@ -702,20 +719,20 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
     ' vs no parameter (meaning iterate upon the previous search).
     
     'Parameter provided: initiate a new search
-    If Len(sParam) Then
+    If (Len(sParam) <> 0) Then
         
         'Close any previous searches
-        If m_SearchHandle <> 0 Then FindClose m_SearchHandle
+        If (m_SearchHandle <> 0) Then FindClose m_SearchHandle
         
         'Retrieve the first file in the new search; this returns the search handle we'll use for subsequent searches
         handleJustCreated = True
         m_SearchHandle = FindFirstFileW(StrPtr(sParam), m_FileDataReturnPtr)
         
         'Check for failure.  Failure can occur for multiple reasons: bad inputs, no files meeting the criteria, etc.
-        If m_SearchHandle = INVALID_HANDLE_VALUE Then
+        If (m_SearchHandle = INVALID_HANDLE_VALUE) Then
             
             'No files found is fine, but if the caller screwed up the input path, we want to print some debug info.
-            If Err.LastDllError <> ERROR_FILE_NOT_FOUND Then
+            If (Err.LastDllError <> ERROR_FILE_NOT_FOUND) Then
                 Debug.Print "WARNING! DirW was possibly handed a bad path (" & sParam & "). Please investigate."
             End If
             
@@ -728,7 +745,7 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
     'Now it's time to return an actual file to the caller.
     
     'Make sure a valid search handle exists
-    If m_SearchHandle <> 0 Then
+    If (m_SearchHandle <> 0) Then
         
         'Prepare to retrieve the next file.  Some extra work is required to cover the case of ".." and ".", which are
         ' not relevant for PD's purposes.
@@ -746,12 +763,12 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
                 retValue = FindNextFileW(m_SearchHandle, m_FileDataReturnPtr)
             End If
                 
-            If retValue <> 0 Then
+            If (retValue <> 0) Then
                 
                 'If the return value is "." or "..", ignore it and keep looking for the next file
                 retString = TrimNull(m_FileDataReturn.cFileName)
                 
-                If Len(retString) <= 2 Then
+                If (Len(retString) <= 2) Then
                     
                     If StringsEqual(retString, ".") Or StringsEqual(retString, "..") Then
                         keepSearching = True
@@ -779,7 +796,7 @@ Public Function DirW(Optional ByVal sParam As String = "") As String
             m_SearchHandle = 0
             
             'Check for unexpected errors
-            If Err.LastDllError <> ERROR_NO_MORE_FILES Then
+            If (Err.LastDllError <> ERROR_NO_MORE_FILES) Then
                 Debug.Print "WARNING! DirW terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate."
             End If
             
@@ -1074,7 +1091,7 @@ Public Function GetFileVersion(ByVal FullFileName As String, ByRef verMajor As L
             
             If VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen) Then
                 
-                CopyMemory udtVerBuffer, ByVal lVerPointer, Len(udtVerBuffer)
+                CopyMemory_Strict VarPtr(udtVerBuffer), lVerPointer, Len(udtVerBuffer)
                 
                 'Return file or product version number, depending on the optional getProductVersionInstead parameter.  Note that these do not currently
                 ' mask the integer return values, so they will provide bogus results for versions > 32767; I could fix this, but it's not relevant to
@@ -1852,7 +1869,7 @@ Public Function FileLengthLarge(ByVal hFile As Long) As Currency
     Dim tmpVal As Currency
     tmpVal = 0
     
-    If GetFileSizeEx(hFile, tmpVal) <> 0 Then
+    If (GetFileSizeEx(hFile, tmpVal) <> 0) Then
         FileLengthLarge = tmpVal * 10000
     Else
         #If DEBUGMODE = 1 Then
@@ -1872,15 +1889,55 @@ Friend Function SetFileLength(ByVal hFile As Long, ByVal newLength As Long) As B
     End If
 End Function
 
-'Use the API to retrieve a Unicode-friendly version of app.path
+'Return varies types of file times in currency format.  By default, WAPI functions return file times using a custom
+' FILETIME struct.  This can be converted to system time objects via helper functions.  At present, this function
+' simply collates the two values into a Currency and returns that, which is good enough for current PD usage
+' (checksums of changed files, mostly).
+'
+'RETURNS: non-zero value if successful.
+Friend Function GetFileTimeAsCurrency(ByRef srcFile As String, Optional ByVal typeOfTime As PD_FILE_TIME = PDFT_CreateTime) As Currency
+    
+    GetFileTimeAsCurrency = 0
+    
+    Dim hFile As Long
+    If CreateFileHandle(srcFile, hFile, True) Then
+        
+        Dim apiReturn As Long
+        
+        Dim createTime As WAPI_FILETIME, accessTime As WAPI_FILETIME, writeTime As WAPI_FILETIME
+        If (GetFileTime(hFile, createTime, accessTime, writeTime) <> 0) Then
+        
+            Dim srcTime As WAPI_FILETIME
+            
+            If (typeOfTime = PDFT_AccessTime) Then
+                srcTime = accessTime
+            ElseIf (typeOfTime = PDFT_WriteTime) Then
+                srcTime = writeTime
+            Else
+                srcTime = createTime
+            End If
+            
+            'At present, PD only needs file times for checksum purposes.  In the future, it would be nice to add
+            ' comparison functions, but for now, you have to deal with times being returned as currency.
+            CopyMemory_Strict VarPtr(GetFileTimeAsCurrency), VarPtr(srcTime.dwHighDateTime), 4&
+            CopyMemory_Strict VarPtr(GetFileTimeAsCurrency) + 4, VarPtr(srcTime.dwLowDateTime), 4&
+        
+        End If
+        
+        CloseHandle hFile
+    
+    End If
+
+End Function
+
+'Use the API to retrieve a Unicode-friendly version of App.Path
 Public Function AppPathW() As String
     
     'When running from the IDE, App.Path is our only option
-    If Not g_IsProgramCompiled Then
+    If (Not g_IsProgramCompiled) Then
         AppPathW = App.Path
         AppPathW = Me.EnforcePathSlash(AppPathW)
         Exit Function
-    
     Else
     
         'MAX_PATH no longer applies, but the docs are unclear on a reasonable buffer size.  Because buffer behavior is sketchy on XP
@@ -1892,7 +1949,7 @@ Public Function AppPathW() As String
         Dim tmpString As String
         tmpString = String$(TEMPORARY_LARGE_BUFFER, 0)
         
-        If GetModuleFileNameW(0&, StrPtr(tmpString), TEMPORARY_LARGE_BUFFER / 2) <> 0 Then
+        If (GetModuleFileNameW(0&, StrPtr(tmpString), TEMPORARY_LARGE_BUFFER \ 2) <> 0) Then
             
             AppPathW = Me.TrimNull(tmpString)
             AppPathW = Me.GetPathOnly(AppPathW)
@@ -1929,6 +1986,6 @@ End Sub
 Private Sub Class_Terminate()
     
     'If an active search is still in progress, terminate it now
-    If m_SearchHandle <> 0 Then FindClose m_SearchHandle
+    If (m_SearchHandle <> 0) Then FindClose m_SearchHandle
     
 End Sub
