@@ -651,14 +651,14 @@ Public Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName 
 End Sub
 
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As String) As String
+Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, Optional ByVal prefDefaultValue As String = vbNullString) As String
 
     'Get the requested value from the preferences file
     Dim tmpString As String
     tmpString = GetPreference(preferenceSection, preferenceName)
     
     'If the requested value DOES NOT exist, return the default value as supplied by the user
-    If Len(tmpString) = 0 Then
+    If (Len(tmpString) = 0) Then
         
         'To prevent future blank results, write out a default value
         'Debug.Print "Requested preference " & preferenceSection & ":" & preferenceName & " was not found.  Writing out a default value of " & prefDefaultValue

@@ -150,7 +150,7 @@ Friend Function QuickHashString(ByRef srcString As String, Optional ByVal strLen
                 QuickHashString = String$(strLength, "0")
                 
                 For i = 0 To (strLength \ 2) - 1
-                    If hashBytes(i) < &H10 Then
+                    If (hashBytes(i) < &H10) Then
                         Mid$(QuickHashString, i * 2 + 2, 1) = Hex$(hashBytes(i))
                     Else
                         Mid$(QuickHashString, i * 2 + 1, 2) = Hex$(hashBytes(i))
