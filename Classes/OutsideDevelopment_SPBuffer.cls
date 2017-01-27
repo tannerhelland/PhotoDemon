@@ -11,7 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.
+'Note: this file has been heavily modified for use within PhotoDemon.
 
 'This code was originally written by vbforums user "dilettante".
 
@@ -33,12 +33,11 @@ Option Explicit
 
 #Const SPB_DEBUG = False
 
-Private Const CHUNK_SIZE As Long = 1000
-Private Const CHUNK_SOFT_LIMIT As Long = CHUNK_SIZE * 10
+Private Const CHUNK_SIZE As Long = 32768
+Private Const CHUNK_SOFT_LIMIT As Long = CHUNK_SIZE * 4
 
 Private Buffer As String
 Private CharsInUse As Long
-Private mHasLine As Boolean
 
 'Note from Tanner: I've added a few failsafe checks to this function prior to invoking various string operations.
 ' I don't know if they can conceivably be triggered, but I'm running into random freezes on certain ExifTool interactions,
@@ -49,7 +48,7 @@ Public Sub Append(ByVal Text As String)
     Dim Temp As String
     
     TextLen = Len(Text)
-    If TextLen > 0 Then
+    If (TextLen > 0) Then
         BufferLen = Len(Buffer)
         
         If (TextLen + CharsInUse) > BufferLen Then
@@ -66,23 +65,9 @@ Public Sub Append(ByVal Text As String)
         
         If (CharsInUse + 1) + TextLen <= Len(Buffer) Then Mid$(Buffer, CharsInUse + 1, TextLen) = Text
         CharsInUse = CharsInUse + TextLen
-        mHasLine = mHasLine Or InStr(Text, vbCr) > 0
         
     End If
 End Sub
-
-Public Function Backspace(Optional ByVal Spaces As Long = 1) As Long
-    If Spaces > CharsInUse Then Spaces = CharsInUse
-    If Spaces > 0 Then
-        CharsInUse = CharsInUse - Spaces
-        If CharsInUse > 0 Then
-            mHasLine = InStrRev(Buffer, vbCr, CharsInUse) > 0
-        Else
-            mHasLine = False
-        End If
-    End If
-    Backspace = Spaces
-End Function
 
 Public Sub Clear()
     If Len(Buffer) > CHUNK_SOFT_LIMIT Then
@@ -91,7 +76,6 @@ Public Sub Clear()
         If Len(Buffer) > 0 Then Buffer = String$(Len(Buffer), 0)
     End If
     CharsInUse = 0
-    mHasLine = False
 End Sub
 
 Private Sub DeleteChars(ByVal Length As Long)
@@ -104,7 +88,6 @@ Private Sub DeleteChars(ByVal Length As Long)
     
     CharsInUse = Len(strRemainder)
     Mid$(Buffer, 1, CharsInUse) = strRemainder
-    mHasLine = InStr(strRemainder, vbCr) > 0
     
 End Sub
 
@@ -116,40 +99,17 @@ Public Sub DeleteData(ByVal MaxLen As Long)
 End Sub
 
 Public Function GetData(Optional ByVal MaxLen As Long = -1) As String
-    If MaxLen < 0 Then
+    If (MaxLen < 0) Then
         If (CharsInUse > 0) Then GetData = Left$(Buffer, CharsInUse)
         Clear
-    ElseIf MaxLen = 0 Then
+    ElseIf (MaxLen = 0) Then
         GetData = ""
     Else
-        If MaxLen > CharsInUse Then MaxLen = CharsInUse
-        If MaxLen <= Len(Buffer) Then GetData = Left$(Buffer, MaxLen)
+        If (MaxLen > CharsInUse) Then MaxLen = CharsInUse
+        If (MaxLen <= Len(Buffer)) Then GetData = Left$(Buffer, MaxLen)
         DeleteChars MaxLen
     End If
 End Function
-
-Public Function GetLine() As String
-    'A "line" is anything delimited by a CR, but also filter
-    'out any LF characters for cases where CRLF delimits lines.
-    'We see both conventions used in StdIO programs.
-    Dim lngLineEnd As Long
-    
-    If mHasLine Then
-        If Left$(Buffer, 1) = vbLf Then DeleteChars 1 'LF arrived late.
-        lngLineEnd = InStr(Buffer, vbCr)
-        GetLine = Left$(Buffer, lngLineEnd - 1)
-        DeleteChars lngLineEnd
-        If CharsInUse > 0 Then
-            If Left$(Buffer, 1) = vbLf Then DeleteChars 1 'LF on time.
-        End If
-    Else
-        GetLine = ""
-    End If
-End Function
-
-Public Property Get HasLine() As Boolean
-    HasLine = mHasLine
-End Property
 
 Public Property Get Length() As Long
     Length = CharsInUse

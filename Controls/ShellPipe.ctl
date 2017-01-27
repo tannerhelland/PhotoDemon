@@ -39,7 +39,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.
+'Note: this file has been heavily modified for use within PhotoDemon.  I do not recommend using it in your own project.
 
 'This code was originally written by vbforums user "dilettante".
 
@@ -51,7 +51,7 @@ Attribute VB_Exposed = False
 
 
 Option Explicit
-'
+
 'ShellPipe (version 7)
 '=========
 '
@@ -91,30 +91,10 @@ Option Explicit
 '        If NOT, then FinishChild() should be called as
 '        soon as possible.
 '
-'HasLine Boolean, read-only.
-'
-'        True if we have a buffered "line" from the child
-'        process OutPipe buffered.
-'
-'        Set appropriately by every call to GetData() and
-'        GetLine() as well as by DataArrival events so it
-'        is possible to loop on this property to retrieve
-'        lines of text.
-'
 'Length  Long, read-only.
 '
 '        Number of characters currently buffered from the
 '        child process OutPipe.
-'
-'ErrHasLine Boolean, read-only.
-'
-'        True if we have a buffered "line" from the child
-'        process ErrPipe buffered.
-'
-'        Set appropriately by every call to GetData() and
-'        GetLine() as well as by DataArrival events so it
-'        is possible to loop on this property to retrieve
-'        lines of text.
 '
 'ErrLength Long, read-only.
 '
@@ -182,17 +162,6 @@ Option Explicit
 '        available).  When MaxLen is -1 returns all
 '        available characters.  May return an empty string.
 '
-'GetLine() As String
-'
-'        Get a line of data from child process' OutPipe.
-'
-'        Should only be called when HasLine is True.
-'        May return an empty string.
-'
-'        A "line" is defined as text delimited by a CR, but
-'        if CRLF occurs the LFs are consumed as well.  Both
-'        conventions are used by StdIO programs.
-'
 'ErrGetData(Optional ByVal MaxLen As Long = -1) As String
 '
 '        Get data from child process' ErrPipe.
@@ -200,17 +169,6 @@ Option Explicit
 '        Returns MaxLen characters (or as many as are
 '        available).  When MaxLen is -1 returns all
 '        available characters.  May return an empty string.
-'
-'ErrGetLine() As String
-'
-'        Get a line of data from child process' ErrPipe.
-'
-'        Should only be called when HasLine is True.
-'        May return an empty string.
-'
-'        A "line" is defined as text delimited by a CR, but
-'        if CRLF occurs the LFs are consumed as well.  Both
-'        conventions are used by StdIO programs.
 '
 'Interrupt(Optional ByVal Break As Boolean = False)
 '
@@ -397,6 +355,18 @@ Private Declare Function CreateProcessA Lib "kernel32" _
      ByRef lpStartupInfo As STARTUPINFO, _
      ByRef lpProcessInformation As PROCESSINFO) As Long
 
+Private Declare Function CreateProcessW Lib "kernel32" _
+    (ByVal ptrToApplicationName As Long, _
+     ByVal ptrToCommandLine As Long, _
+     ByVal lpProcessAttributes As Long, _
+     ByVal lpThreadAttributes As Long, _
+     ByVal bInheritHandles As Long, _
+     ByVal dwCreationFlags As Long, _
+     ByVal lpEnvironment As Long, _
+     ByVal lpCurrentDirectory As Long, _
+     ByVal ptrToStartupInfo As Long, _
+     ByRef lpProcessInformation As PROCESSINFO) As Long
+     
 Private Declare Function GenerateConsoleCtrlEvent Lib "kernel32" _
     (ByVal dwCtrlEvent As Long, _
      ByVal dwProcessGroupId As Long) As Long
@@ -492,6 +462,14 @@ Public Event ChildFinished()
 ' this as an exposed property.
 Private m_AssumeUTF8Input As Boolean
 Private m_AssumeUTF8Output As Boolean
+Private m_Unicode As pdUnicode
+
+'Edit by Tanner:
+' When reading image metadata asynchronously, the chunks of data we receive can sometimes be very large (e.g. > 1 MB).  Because of this,
+' we don't want to keep allocating unique chunks of memory - instead, it makes much more sense to reuse a single input array, and simply
+' zero the memory between reads.
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+Private m_InputBuffer() As Byte
 
 Public Property Get Active() As Boolean
     If blnProcessActive Then 'Last we knew, it was active.
@@ -549,25 +527,9 @@ Public Function GetData(Optional ByVal MaxLen As Long = -1) As String
     GetData = BufferOut.GetData(MaxLen)
 End Function
 
-Public Function GetLine() As String
-    GetLine = BufferOut.GetLine()
-End Function
-
-Public Property Get HasLine() As Boolean
-    HasLine = BufferOut.HasLine
-End Property
-
 Public Function ErrGetData(Optional ByVal MaxLen As Long = -1) As String
     ErrGetData = BufferErr.GetData(MaxLen)
 End Function
-
-Public Function ErrGetLine() As String
-    ErrGetLine = BufferErr.GetLine()
-End Function
-
-Public Property Get ErrHasLine() As Boolean
-    ErrHasLine = BufferErr.HasLine
-End Property
 
 Public Sub Interrupt(Optional ByVal Break As Boolean = False)
     Dim lngEvent As Long
@@ -597,7 +559,7 @@ Public Property Get PollInterval() As Long
 End Property
 
 Public Property Let PollInterval(ByVal RHS As Long)
-    If 5 > RHS Or RHS > 65535 Then
+    If (5 > RHS) Or (RHS > 65535) Then
         Err.Raise &H80042B02, TypeName(Me), "PollInterval outside valid range 5-65535"
     End If
     tmrCheck.Interval = RHS
@@ -624,7 +586,13 @@ Public Function Run( _
         .bInheritHandle = WIN32TRUE
     End With
     
-    If CreatePipe(hChildOutPipeRd, hChildOutPipeWr, saPipe, 0&) = WIN32FALSE Then
+    'ExifTool may send us extremely large chunks of data (1+ MB are possible in a normal session).
+    ' To improve performance, ask for a particularly large chunk size.  Note that the size request may not be respected
+    ' by Windows; see https://msdn.microsoft.com/en-us/library/windows/desktop/aa365152(v=vs.85).aspx
+    Dim readPipeSize As Long
+    readPipeSize = 131072
+    
+    If CreatePipe(hChildOutPipeRd, hChildOutPipeWr, saPipe, readPipeSize) = WIN32FALSE Then
         Run = SP_CREATEPIPEFAILED
         Exit Function
     End If
@@ -666,17 +634,13 @@ Public Function Run( _
         .dwThreadID = 0
     End With
     
-    If Len(CurrentDir) <> 0 Then
-        AnsiCurrentDir = StrConv(CurrentDir, vbFromUnicode)
-        ReDim Preserve AnsiCurrentDir(UBound(AnsiCurrentDir) + 1) 'Add Nul.
-        pAnsiCurrentDir = VarPtr(AnsiCurrentDir(0))
-    'Else 'Happens implicitly anyway so we comment these lines out.
-    '    pAnsiCurrentDir = WIN32NULL
-    End If
+    'Edit by Tanner: the original code had some ANSI-specific handling here for the CurrentDir variable; we're using the
+    ' Unicode-friendly declaration, so I've just removed the code entirely.
         
-    If CreateProcessA(CommandLine, CommandLineParams, WIN32NULL, WIN32NULL, WIN32TRUE, _
-                      NORMAL_PRIORITY_CLASS, WIN32NULL, pAnsiCurrentDir, _
-                      siStart, piProc) = WIN32FALSE Then
+    'Edit by Tanner: use the Unicode-friendly declaration
+    If CreateProcessW(StrPtr(CommandLine), StrPtr(CommandLineParams), WIN32NULL, WIN32NULL, WIN32TRUE, _
+                      NORMAL_PRIORITY_CLASS, WIN32NULL, StrPtr(CurrentDir), _
+                      VarPtr(siStart), piProc) = WIN32FALSE Then
         blnProcessActive = False
         Run = SP_CREATEPROCFAILED
     Else
@@ -688,7 +652,12 @@ Public Function Run( _
         PipeOpenIn = True
         PipeOpenOut = True
         PipeOpenErr = True
-        If WaitForIdle > 0 Then WaitForInputIdle piProc.hProcess, WaitForIdle
+        
+        'PD uses this class purely to interact with ExifTool, and we don't care about waiting for ExifTool to idle.
+        ' (In fact, we prefer to let ExifTool initialize in the background, while PD continues loading.)
+        ' As such, this line should never be called.
+        If (WaitForIdle > 0) Then WaitForInputIdle piProc.hProcess, WaitForIdle
+        
         tmrCheck.Enabled = True
         Run = SP_SUCCESS
     End If
@@ -746,36 +715,41 @@ Private Sub ReadData()
     
     'Edit by Tanner: optional byte array, when UTF-8 interop is enabled
     Dim Buffer As String
-    Dim byteBuffer() As Byte
-    Dim uniHelper As pdUnicode
-    If m_AssumeUTF8Input Then Set uniHelper = New pdUnicode
-    
-    Dim AvailChars As Long
-    Dim CharsRead As Long
-    Dim ErrNum As Long
+    Dim availChars As Long, charsRead As Long, ErrNum As Long
     Dim Cancel As Boolean
     
     If PipeOpenOut Then
-        If PeekNamedPipe(hChildOutPipeRd, WIN32NULL, 0&, WIN32NULL, AvailChars, WIN32NULL) <> WIN32FALSE Then
-            If AvailChars > 0 Then
+        If (PeekNamedPipe(hChildOutPipeRd, WIN32NULL, 0&, WIN32NULL, availChars, WIN32NULL) <> WIN32FALSE) Then
+            If (availChars > 0) Then
             
                 'Edit by Tanner: split handling if UTF-8 interop is active
                 Dim rfReturn As Long
                 
-                ReDim byteBuffer(0 To AvailChars - 1) As Byte
-                rfReturn = ReadFile(hChildOutPipeRd, VarPtr(byteBuffer(0)), AvailChars, CharsRead, WIN32NULL)
-                
                 If m_AssumeUTF8Input Then
-                    Buffer = uniHelper.UTF8BytesToString(byteBuffer)
+                    
+                    Dim reqBounds As Long
+                    reqBounds = availChars + 4
+                    
+                    If (reqBounds > UBound(m_InputBuffer)) Then
+                        ReDim m_InputBuffer(0 To reqBounds) As Byte
+                    Else
+                        FillMemory VarPtr(m_InputBuffer(0)), reqBounds, 0
+                    End If
+                    
+                    rfReturn = ReadFile(hChildOutPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
+                    Buffer = m_Unicode.UTF8BytesToString(m_InputBuffer, charsRead)
+                    Buffer = m_Unicode.TrimNull(Buffer)
                 
                 'Original code follows:
                 Else
-                    Buffer = StrConv(byteBuffer, vbUnicode)
+                    ReDim m_InputBuffer(0 To availChars - 1) As Byte
+                    rfReturn = ReadFile(hChildOutPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
+                    Buffer = StrConv(m_InputBuffer, vbUnicode)
                 End If
                 
-                If rfReturn <> WIN32FALSE Then
-                    If CharsRead > 0 Then
-                        BufferOut.Append Left$(Buffer, CharsRead)
+                If (rfReturn <> WIN32FALSE) Then
+                    If (charsRead > 0) Then
+                        BufferOut.Append Left$(Buffer, charsRead)
                         RaiseEvent DataArrival(BufferOut.Length)
                     Else
                         RaiseEvent EOF(SPEOF_NORMAL)
@@ -788,7 +762,7 @@ Private Sub ReadData()
                         ClosePipeOut
                     Else
                         RaiseEvent Error(ErrNum, "ShellPipe.ReadData.ReadFile", Cancel)
-                        If Not Cancel Then
+                        If (Not Cancel) Then
                             Err.Raise ErrNum, TypeName(Me), "ReadData ReadFile error"
                         End If
                     End If
@@ -814,22 +788,22 @@ Private Sub ReadData()
     End If
     
     If PipeOpenErr Then
-        If PeekNamedPipe(hChildErrPipeRd, WIN32NULL, 0&, WIN32NULL, AvailChars, WIN32NULL) <> WIN32FALSE Then
-            If AvailChars > 0 Then
+        If PeekNamedPipe(hChildErrPipeRd, WIN32NULL, 0&, WIN32NULL, availChars, WIN32NULL) <> WIN32FALSE Then
+            If availChars > 0 Then
                 
                 'Edit by Tanner: same as above, rewrite pipe handling to operate on a byte array (to match our new function declaration),
                 ' but in this case we assume StdErr will always return ANSI data
-                ReDim byteBuffer(0 To AvailChars - 1) As Byte
-                If ReadFile(hChildErrPipeRd, VarPtr(byteBuffer(0)), AvailChars, CharsRead, WIN32NULL) <> WIN32FALSE Then
+                ReDim byteBuffer(0 To availChars - 1) As Byte
+                If ReadFile(hChildErrPipeRd, VarPtr(byteBuffer(0)), availChars, charsRead, WIN32NULL) <> WIN32FALSE Then
                 
                     Buffer = StrConv(byteBuffer, vbUnicode)
                     
-                    If CharsRead > 0 Then
+                    If charsRead > 0 Then
                         If mErrAsOut Then
-                            BufferOut.Append Left$(Buffer, CharsRead)
+                            BufferOut.Append Left$(Buffer, charsRead)
                             RaiseEvent DataArrival(BufferOut.Length)
                         Else
-                            BufferErr.Append Left$(Buffer, CharsRead)
+                            BufferErr.Append Left$(Buffer, charsRead)
                             RaiseEvent ErrDataArrival(BufferErr.Length)
                         End If
                     Else
@@ -884,9 +858,7 @@ Private Sub WriteData()
             Dim byteBuffer() As Byte
             
             If m_AssumeUTF8Output Then
-                Dim uniHelper As pdUnicode
-                Set uniHelper = New pdUnicode
-                uniHelper.StringToUTF8Bytes Buffer, byteBuffer
+                m_Unicode.StringToUTF8Bytes Buffer, byteBuffer
             Else
                 byteBuffer = StrConv(Buffer, vbFromUnicode)
             End If
@@ -916,9 +888,12 @@ Private Sub UserControl_Initialize()
     Set BufferErr = New SPBuffer
     Set BufferIn = New SPBuffer
     
-    'Edit by Tanner: test UTF-8 interop
+    'Edit by Tanner: we use UTF-8 interop with Exiftool; this behavior may break interactions with other software,
+    ' which is why I haven't passed the suggestion upstream.
     m_AssumeUTF8Input = True
     m_AssumeUTF8Output = True
+    Set m_Unicode = New pdUnicode
+    ReDim m_InputBuffer(0) As Byte
     
 End Sub
 

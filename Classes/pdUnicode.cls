@@ -175,12 +175,14 @@ Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As 
     
 End Function
 
-'Given a byte array containing UTF-8 data, return the data as a VB string.
-Public Function UTF8BytesToString(ByRef Utf8() As Byte) As String
+'Given a byte array containing UTF-8 data, return the data as a VB string.  A custom length can also be specified;
+' if it's missing, the full input array will be used.
+Public Function UTF8BytesToString(ByRef Utf8() As Byte, Optional ByVal customDataLength As Long = -1) As String
     
     'Use MultiByteToWideChar() to calculate the required size of the final string (e.g. UTF-8 expanded to VB's default wide character set).
     Dim lenWideString As Long
-    lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), UBound(Utf8) + 1, 0, 0)
+    If (customDataLength < 0) Then customDataLength = UBound(Utf8) + 1
+    lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), customDataLength, 0, 0)
     
     'If the returned length is 0, MultiByteToWideChar failed.  This typically only happens if totally invalid characters are found.
     If (lenWideString = 0) Then
@@ -196,7 +198,7 @@ Public Function UTF8BytesToString(ByRef Utf8() As Byte) As String
         UTF8BytesToString = String$(lenWideString, 0)
         
         'Use the API to perform the actual conversion
-        lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), UBound(Utf8) + 1, StrPtr(UTF8BytesToString), lenWideString)
+        lenWideString = MultiByteToWideChar(CP_UTF8, 0, VarPtr(Utf8(0)), customDataLength, StrPtr(UTF8BytesToString), lenWideString)
         
         'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
         ' fail here, but better safe than sorry.)

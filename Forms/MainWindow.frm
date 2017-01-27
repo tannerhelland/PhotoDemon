@@ -63,7 +63,8 @@ Begin VB.Form FormMain
       _ExtentX        =   635
       _ExtentY        =   635
       ErrAsOut        =   0   'False
-      PollInterval    =   5
+      PollInterval    =   100
+      WaitForIdle     =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
