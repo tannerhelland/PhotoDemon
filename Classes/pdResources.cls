@@ -53,7 +53,9 @@ Private m_ThemeIconColor As Long, m_ThemeIconColorMenu As Long, m_ThemeIconsMono
 Public Function LoadInitialResourceCollection() As Boolean
 
     #If DEBUGMODE = 1 Then
-    
+        
+        pdDebug.LogAction "Loading core resource collection..."
+        
         'In debug builds, we load the resource from a static location instead of pulling it from the .exe
         Dim srcResFile As String
         srcResFile = "Core_Icons.pdrc"

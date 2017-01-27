@@ -239,16 +239,17 @@ Public Sub ContinueLoadingProgram()
     Set g_ImageFormats = New pdFormats
     ImageImporter.ResetImageImportPreferenceCache
     
-        
+    
     '*************************************************************************************************************************************
-    ' Check for the presence of plugins (as other functions rely on these to initialize themselves)
+    ' Initialize the plugin manager and load any high-priority plugins (e.g. those required to start the program successfully)
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then
-        perfCheck.MarkEvent "Load plugins"
+        perfCheck.MarkEvent "Load high-priority plugins"
     #End If
     
-    PluginManager.LoadAllPlugins
+    PluginManager.InitializePluginManager
+    PluginManager.LoadPluginGroup True
     
     
     '*************************************************************************************************************************************
@@ -470,6 +471,17 @@ Public Sub ContinueLoadingProgram()
     
     
     '*************************************************************************************************************************************
+    ' Finish loading low-priority plugins
+    '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.MarkEvent "Load low-priority plugins"
+    #End If
+    
+    PluginManager.LoadPluginGroup False
+    PluginManager.ReportPluginLoadSuccess
+    
+    '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
     '*************************************************************************************************************************************
     
@@ -663,8 +675,8 @@ Public Sub ContinueLoadingProgram()
     #End If
     
     'Display the splash screen for at least a second or two
-    If (Timer - m_StartTime) < m_LoadTime Then
-        Do While (Timer - m_StartTime) < m_LoadTime
+    If ((Timer - m_StartTime) < m_LoadTime) Then
+        Do While ((Timer - m_StartTime) < m_LoadTime)
         Loop
     End If
     

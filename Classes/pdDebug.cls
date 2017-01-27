@@ -162,17 +162,9 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             For i = 0 To PluginManager.GetNumOfPlugins - 1
                 debugHeader = debugHeader & PluginManager.GetPluginName(i) & ": "
                 If PluginManager.IsPluginCurrentlyInstalled(i) Then
-                    If PluginManager.IsPluginCurrentlyEnabled(i) Then
-                        debugHeader = debugHeader & "installed and enabled"
-                    Else
-                        debugHeader = debugHeader & "installed + DISABLED"
-                    End If
+                    debugHeader = debugHeader & "available"
                 Else
-                    If PluginManager.IsPluginCurrentlyEnabled(i) Then
-                        debugHeader = debugHeader & "NOT INSTALLED + enabled"
-                    Else
-                        debugHeader = debugHeader & "NOT INSTALLED + DISABLED"
-                    End If
+                    debugHeader = debugHeader & "MISSING"
                 End If
                 debugHeader = debugHeader & vbCrLf
             Next i

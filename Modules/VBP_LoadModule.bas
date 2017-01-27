@@ -815,7 +815,7 @@ Public Sub LoadMessage(ByVal sMsg As String)
     #End If
     
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
-    If (Not (g_Language Is Nothing)) Then
+    If (Not g_Language Is Nothing) Then
         If g_Language.ReadyToTranslate Then
             If g_Language.TranslationActive Then sMsg = g_Language.TranslateMessage(sMsg)
         End If

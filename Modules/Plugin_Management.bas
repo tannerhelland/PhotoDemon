@@ -95,14 +95,9 @@ Public Function GetNumOfPlugins() As Long
     GetNumOfPlugins = CORE_PLUGIN_COUNT
 End Function
 
-'This subroutine handles the detection and installation of all core plugins. required for an optimal PhotoDemon
-' experience: zLib, EZTwain32, and FreeImage.  For convenience' sake, it also checks for GDI+ availability.
-Public Sub LoadAllPlugins()
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "LoadAllPlugins() called.  Attempting to initialize core plugins..."
-    #End If
-    
+'Before loading any program plugins, you must first call this function to initialize the plugin manager.
+Public Sub InitializePluginManager()
+
     'Reset all plugin trackers
     ReDim m_PluginExists(0 To CORE_PLUGIN_COUNT - 1) As Boolean
     ReDim m_PluginAllowed(0 To CORE_PLUGIN_COUNT - 1) As Boolean
@@ -114,7 +109,22 @@ Public Sub LoadAllPlugins()
     'Make sure the plugin path exists
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    If Not cFile.FolderExist(g_PluginPath) Then cFile.CreateFolder g_PluginPath, True
+    If (Not cFile.FolderExist(g_PluginPath)) Then cFile.CreateFolder g_PluginPath, True
+    
+End Sub
+
+'This subroutine handles the detection and installation of all core plugins. required for an optimal PhotoDemon
+' experience: zLib, EZTwain32, and FreeImage.  For convenience' sake, it also checks for GDI+ availability.
+Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = True)
+    
+    #If DEBUGMODE = 1 Then
+        If loadHighPriorityPlugins Then
+            pdDebug.LogAction "Initializing high-priority plugins..."
+        Else
+            pdDebug.LogAction "Initializing low-priority plugins..."
+        End If
+        Dim startTime As Currency
+    #End If
         
     'Plugin loading is handled in a loop.  This loop will call several helper functions, passing each sequential plugin
     ' index as defined by the CORE_PLUGINS enum (and matching CORE_PLUGIN_COUNT const).  Some initialization steps are
@@ -122,32 +132,51 @@ Public Sub LoadAllPlugins()
     ' This behavior is all carefully documented in the functions called by the initialization loop.
     Dim i As Long
     For i = 0 To CORE_PLUGIN_COUNT - 1
-    
-        'Before doing anything else, see if the plugin file actually exists.
-        m_PluginExists(i) = DoesPluginFileExist(i)
         
-        'If the plugin file exists, see if the user has forcibly disabled it.  If they have, we can skip initialization.
-        ' we can initialize it.  (Some plugins may not require this step; that's okay.)
-        If m_PluginExists(i) Then m_PluginAllowed(i) = IsPluginAllowed(i)
+        If (loadHighPriorityPlugins = IsPluginHighPriority(i)) Then
+            
+            #If DEBUGMODE = 1 Then
+                VB_Hacks.GetHighResTime startTime
+            #End If
         
-        'If the user has allowed a plugin's use, attempt to initialize it.
-        If m_PluginAllowed(i) Then m_PluginInitialized(i) = InitializePlugin(i)
-        
-        'We now know enough to set global initialization flags.  (This step is technically optional; see comments in the matching sub.)
-        SetGlobalPluginFlags i, m_PluginInitialized(i)
-                
-        'Finally, if a plugin affects UI or other user-exposed bits, that's the last thing we set before exiting.
-        ' (This step is optional; plugins do not need to support it.)
-        FinalizePluginInitialization i, m_PluginInitialized(i)
+            'Before doing anything else, see if the plugin file actually exists.
+            m_PluginExists(i) = DoesPluginFileExist(i)
+            
+            'If the plugin file exists, see if the user has forcibly disabled it.  If they have, we can skip initialization.
+            ' we can initialize it.  (Some plugins may not require this step; that's okay.)
+            If m_PluginExists(i) Then m_PluginAllowed(i) = IsPluginAllowed(i)
+            
+            'If the user has allowed a plugin's use, attempt to initialize it.
+            If m_PluginAllowed(i) Then m_PluginInitialized(i) = InitializePlugin(i)
+            
+            'We now know enough to set global initialization flags.  (This step is technically optional; see comments in the matching sub.)
+            SetGlobalPluginFlags i, m_PluginInitialized(i)
+                    
+            'Finally, if a plugin affects UI or other user-exposed bits, that's the last thing we set before exiting.
+            ' (This step is optional; plugins do not need to support it.)
+            FinalizePluginInitialization i, m_PluginInitialized(i)
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
+            #End If
+            
+        End If
         
     Next i
     
+End Sub
+
+'List the initialization state of all plugins.  This is currently only enabled in debug builds, and it is very helpful
+' for tracking down obscure 3rd-party library issues.
+Public Sub ReportPluginLoadSuccess()
+
     'Initialization complete!  In debug builds, write out some plugin debug information.
     #If DEBUGMODE = 1 Then
         
         Dim successfulPluginCount As Long
         successfulPluginCount = 0
         
+        Dim i As Long
         For i = 0 To CORE_PLUGIN_COUNT - 1
             If m_PluginInitialized(i) Then
                 successfulPluginCount = successfulPluginCount + 1
@@ -375,6 +404,32 @@ Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As CORE_PLUGINS) A
     IsPluginCurrentlyInstalled = cFile.FileExist(g_PluginPath & GetPluginFilename(pluginEnumID))
 End Function
 
+'PD loads plugins in two waves.  Before the splash screen appears, "high-priority" plugins are loaded.  These include the
+' decompression plugins required to decompress things like the splash screen image.  Much later in the load process,
+' we load the rest of the program's core plugins.  This function determines which wave a plugin is loaded during.
+Public Function IsPluginHighPriority(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
+    Select Case pluginEnumID
+        Case CCP_ExifTool
+            IsPluginHighPriority = False
+        Case CCP_EZTwain
+            IsPluginHighPriority = False
+        Case CCP_FreeImage
+            IsPluginHighPriority = True
+        Case CCP_LittleCMS
+            IsPluginHighPriority = True
+        Case CCP_lz4
+            IsPluginHighPriority = True
+        Case CCP_OptiPNG
+            IsPluginHighPriority = False
+        Case CCP_PNGQuant
+            IsPluginHighPriority = False
+        Case CCP_zLib
+            IsPluginHighPriority = True
+        Case CCP_zstd
+            IsPluginHighPriority = True
+    End Select
+End Function
+
 'Simplified function to return the expected version number of a plugin.  These numbers change with each PD release, and they can
 ' be helpful for seeing if a user has manually updated a plugin file to some new version (which is generally okay!)
 Public Function ExpectedPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
@@ -494,7 +549,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
             
             'Crashes (or IDE stop button use) can result in stranded ExifTool instances.  As a convenience to the caller, we attempt
             ' to kill any stranded instances before starting new ones.
-            If Not peekLastShutdownClean Then
+            If (Not PeekLastShutdownClean) Then
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
                 #End If

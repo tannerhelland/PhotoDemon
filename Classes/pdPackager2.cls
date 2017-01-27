@@ -373,7 +373,7 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_NumOfNodes - 1) Then
-        Debug.Print "Node index out of range - try again with a valid node index!"
+        InternalErrorMsg "Node index out of range - try again with a valid node index!"
         AddNodeDataFromPointer = False
         Exit Function
     End If
@@ -430,15 +430,11 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         
         'copyPtrToArray will return TRUE if the data was compressed; FALSE if it was not.  There is no error state for the function.
         If CopyPtrToArray(dataPointer, dataLength, m_CompressionBuffer, compressedSize, compressData, compressionLevel, False) Then
-            
             'For fun, supply some debug info on the compression.
             Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
-            
         Else
-            
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
             Debug.Print "Node compression failed; writing original uncompressed data to buffer instead..."
-        
         End If
         
         'Copy the contents of the compressedData() array into the buffer; note that even if zLib failed, copyPtrToArray will fill compressedData()
@@ -526,7 +522,7 @@ Public Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
         End If
     
     Else
-        Debug.Print "WARNING! pdPackage.AutoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
+        InternalErrorMsg "WARNING! pdPackage.AutoAddNodeFromFile could not load " & pathToFile & ". Abandoning request."
         AutoAddNodeFromFile = False
     End If
 
@@ -610,17 +606,15 @@ Public Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
         'Display some debug info if one or more nodes failed to add
         If (Not nodeAdditionSuccess) Then
             If recurseSubfolders Then
-                Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
+                InternalErrorMsg "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
             Else
-                Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
+                InternalErrorMsg "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
             End If
         End If
         
     Else
-        
-        Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
+        InternalErrorMsg "WARNING! pdPackager.AutoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
         AutoAddNodesFromFolder = False
-        
     End If
 
 End Function
@@ -692,7 +686,7 @@ Public Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
             End If
         
         Else
-            Debug.Print "WARNING!  pdPackager.autoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
+            InternalErrorMsg "WARNING!  pdPackager.AutoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
         End If
     
     Loop
@@ -851,13 +845,8 @@ Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal s
         WritePackageToFile = True
     
     Else
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
-        #End If
-        
+        InternalErrorMsg "WARNING!  pdPackager.WritePackageToFile failed to create a valid destination file handle.  Package was not written."
         WritePackageToFile = False
-    
     End If
         
     'TODO!  Add basic error handling.
@@ -924,7 +913,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     
     'Before doing anything else, make sure the file exists
     If (Not m_File.FileExist(srcFilename)) Then
-        Debug.Print "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
+        InternalErrorMsg "Requested pdPackage file doesn't exist.  Validate all paths before sending them to the pdPackage class!"
         GoTo StopPackageFileRead
     End If
     
@@ -987,10 +976,6 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
             'If the packed and original sizes do *not* match, the directory is compressed.  Attempt to decompress it now.
             Else
-                
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
-                #End If
                 
                 'Regardless of compression method, pull the raw bytes from file
                 ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizePacked - 1) As Byte
@@ -1074,16 +1059,14 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         
     Else
         ReadPackageFromFile = False
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
-        #End If
+        InternalErrorMsg "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
     End If
     
     Exit Function
     
 StopPackageFileRead:
     
-    Debug.Print "An error occurred in the pdPackager.readPackageFromFile function.  Additional data should have been supplied by the Message() function."
+    InternalErrorMsg "An internal error occurred in the pdPackager.ReadPackageFromFile function."
     If (hFile <> 0) Then m_File.CloseFileHandle hFile
     ReadPackageFromFile = False
     Exit Function
@@ -1108,7 +1091,7 @@ Public Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName 
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_NumOfNodes - 1) Then
-        Debug.Print "Node index out of range - try again with a valid node index!"
+        InternalErrorMsg "Node index out of range - try again with a valid node index!"
         GetNodeInfo = False
         Exit Function
     End If
@@ -1297,8 +1280,8 @@ Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
             End If
             
         Else
-            Debug.Print "WARNING! pdPackage.AutoExtractSingleFile() was unable to construct the output path for " & srcFilename & "."
-            Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
+            InternalErrorMsg "WARNING! pdPackage.AutoExtractSingleFile() was unable to construct the output path for " & srcFilename & "."
+            InternalErrorMsg "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
             AutoExtractSingleFile = False
         End If
         
@@ -1442,19 +1425,19 @@ Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                                 m_File.SaveByteArrayToFile retBytes, fullDestinationPath
                                 
                             Else
-                                Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."
+                                InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() could not extract file contents from an otherwise valid node.  Extraction abandoned."
                                 allNodesSuccessful = False
                             End If
                             
                         Else
-                            Debug.Print "WARNING! pdPackage.autoExtractAllFiles() was unable to construct the output path for " & strFilename & "."
-                            Debug.Print "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
+                            InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() was unable to construct the output path for " & strFilename & "."
+                            InternalErrorMsg "WARNING! As such, the file was not written.  (But one or more folders may have been constructed as part of the extraction.)"
                             allNodesSuccessful = False
                         End If
                         
                     Else
                         allNodesSuccessful = False
-                        Debug.Print "WARNING! pdPackage.autoExtractAllFiles() could not extract a filename from an otherwise valid node.  Extraction abandoned."
+                        InternalErrorMsg "WARNING! pdPackage.AutoExtractAllFiles() could not extract a filename from an otherwise valid node.  Extraction abandoned."
                     End If
                     
                 'This set of 3 EndIf's looks confusing, but they simply terminate all file node detection criteria blocks.
@@ -1793,7 +1776,7 @@ Private Sub SetBitFlag(ByVal flagPosition As Long, ByVal flagValue As Boolean, B
         End If
         
     Else
-        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+        InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Sub
@@ -1813,7 +1796,7 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
         GetBitFlag = ((srcLong And longMask) <> 0)
         
     Else
-        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+        InternalErrorMsg "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
     End If
 
 End Function

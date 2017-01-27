@@ -328,7 +328,7 @@ Private Sub cmdBarMini_OKClick()
     
     Dim i As Long
     For i = 0 To PluginManager.GetNumOfPlugins - 1
-        If PluginManager.IsPluginCurrentlyEnabled(i) <> m_PluginEnabled(i) Then
+        If (PluginManager.IsPluginCurrentlyEnabled(i) <> m_PluginEnabled(i)) Then
             PluginManager.SetPluginEnablement i, m_PluginEnabled(i)
             PluginManager.SetPluginAllowed i, m_PluginEnabled(i)
             settingsChanged = True
@@ -337,7 +337,9 @@ Private Sub cmdBarMini_OKClick()
     
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
     If settingsChanged Then
-        PluginManager.LoadAllPlugins
+        PluginManager.InitializePluginManager
+        PluginManager.LoadPluginGroup True
+        PluginManager.LoadPluginGroup False
         ApplyAllMenuIcons
         Icons_and_Cursors.ResetMenuIcons
         g_ImageFormats.GenerateInputFormats
@@ -364,7 +366,9 @@ Private Sub cmdReset_Click()
     Next i
     
     'Reload all plugins (which will also refresh all plugin-related settings)
-    PluginManager.LoadAllPlugins
+    PluginManager.InitializePluginManager
+    PluginManager.LoadPluginGroup True
+    PluginManager.LoadPluginGroup False
     
     'Reload the dialog
     LoadAllPluginSettings

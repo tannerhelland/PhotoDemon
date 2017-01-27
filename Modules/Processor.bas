@@ -1938,7 +1938,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         Dim timingString As String
         timingString = g_Language.TranslateMessage("Time taken")
-        timingString = timingString & ": " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(m_ProcessingTime)), "#0.0000") & " "
+        timingString = timingString & ": " & Format$(CStr(VB_Hacks.GetTimerDifferenceNow(m_ProcessingTime)), "#0.0000") & " "
         timingString = timingString & g_Language.TranslateMessage("seconds")
         
         Message timingString
