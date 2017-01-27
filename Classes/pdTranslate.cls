@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2012-2017 by Frank Donckers and Tanner Helland
 'Created: 21/December/12
 'Last updated: 26/January/17
-'Last update: use a dedicate language file settings cache to greatly improve startup performance
+'Last update: use a dedicated translation settings cache to greatly improve startup performance
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon now has a working translation engine.  Many
 ' thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but
