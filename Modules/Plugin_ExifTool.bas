@@ -476,7 +476,6 @@ Public Function IsMetadataFinished() As Boolean
             'Terminate the relevant mode
             If m_VerificationModeActive Then m_VerificationModeActive = False
             If m_DatabaseModeActive Then m_DatabaseModeActive = False
-            
             IsMetadataFinished = True
             
         Else
@@ -856,6 +855,7 @@ Public Function WriteTagDatabase() As Boolean
         cmdParams = cmdParams & "-f" & vbCrLf
         cmdParams = cmdParams & "-execute" & vbCrLf
         
+        'Send the data over to ExifTool.  It will handle the rest from here
         FormMain.shellPipeMain.SendData cmdParams
         
         WriteTagDatabase = True
