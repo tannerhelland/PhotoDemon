@@ -861,17 +861,13 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             srcDIB.WrapArrayAroundDIB iData, tmpSA
                 
             'Loop through the image, checking alphas as we go
+            finalX = finalX * 4
             For y = 0 To finalY
-            For x = 0 To finalX
-                
-                xLookup = x * 4
-                
-                chkA = iData(xLookup + 3, y)
-                
-                iData(xLookup, y) = bLookup(chkA)
-                iData(xLookup + 1, y) = gLookUp(chkA)
-                iData(xLookup + 2, y) = rLookup(chkA)
-                
+            For x = 0 To finalX Step 4
+                chkA = iData(x + 3, y)
+                iData(x, y) = bLookup(chkA)
+                iData(x + 1, y) = gLookUp(chkA)
+                iData(x + 2, y) = rLookup(chkA)
             Next x
             Next y
     

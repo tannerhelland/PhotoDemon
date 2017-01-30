@@ -936,7 +936,7 @@ Private Sub RedrawBackBuffer()
         'Determine if we're in "zero layer" mode.  "Zero layer" mode lets us skip a lot of rendering details.
         Dim zeroLayers As Boolean
         If ((Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0)) Then
-            zeroLayers = CBool(Not (pdImages(g_CurrentImage).GetNumOfLayers > 0))
+            zeroLayers = (Not (pdImages(g_CurrentImage).GetNumOfLayers > 0))
         Else
             zeroLayers = True
         End If

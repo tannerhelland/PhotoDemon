@@ -1328,7 +1328,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False)
+Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False, Optional ByVal suspendMainFormIconCheck As Boolean = False)
     
     'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If (Not g_IsProgramRunning) Then Exit Sub
@@ -1498,7 +1498,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'If this is the main form, we need to reassign menu icon, because they are inadvertently dropped whenever menu captions change.
     If (StrComp(dstForm.Name, "FormMain", vbBinaryCompare) = 0) Then
-        If FormMain.Visible Then ApplyAllMenuIcons
+        If (Not suspendMainFormIconCheck) And FormMain.Visible Then ApplyAllMenuIcons
     End If
     
 End Sub

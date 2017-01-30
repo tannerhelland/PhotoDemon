@@ -226,27 +226,18 @@ Public Function WriteNewSection(ByVal sectionName As String, Optional ByVal sect
 End Function
 
 'Simple - does a given tag exist?  Both simple and complex tags will be checked.
-Public Function DoesTagExist(ByVal tagName As String, Optional ByVal attributeName As String = "", Optional ByVal attributeValue As String = "") As Boolean
+Public Function DoesTagExist(ByRef tagName As String, Optional ByRef attributeName As String = vbNullString, Optional ByRef attributeValue As String = vbNullString, Optional ByRef foundPosition As Long = 0) As Boolean
 
     'If an attribute is provided, finding the tag is a bit messier
     If (Len(attributeName) <> 0) Then
-    
-        If InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode) Then
-            DoesTagExist = True
-        Else
-            DoesTagExist = False
-        End If
-    
+        foundPosition = InStr(1, m_xmlContents, "<" & tagName & " " & attributeName & "=""" & attributeValue & """>", m_TextCompareMode)
+        
     'If no attribute is provided, finding the tag is simple
     Else
-    
-        If InStr(1, m_xmlContents, "<" & tagName & ">", m_TextCompareMode) Then
-            DoesTagExist = True
-        Else
-            DoesTagExist = False
-        End If
-        
+        foundPosition = InStr(1, m_xmlContents, "<" & tagName & ">", m_TextCompareMode)
     End If
+    
+    DoesTagExist = (foundPosition <> 0)
 
 End Function
 
@@ -507,17 +498,8 @@ End Function
 'Load an XML file from a string.  This function will also do some basic validation to ensure the requested string actually contains XML.
 ' Returns: TRUE if string is successfully validated and loaded.  FALSE otherwise.
 Public Function LoadXMLFromString(ByRef xmlString As String) As Boolean
-    
-    'Make an internal copy of the string
     m_xmlContents = xmlString
-    
-    'Validate the XML header
-    If VerifyXMLHeader(m_xmlContents) Then
-        LoadXMLFromString = True
-    Else
-        LoadXMLFromString = False
-    End If
-    
+    LoadXMLFromString = VerifyXMLHeader(m_xmlContents)
 End Function
 
 'Load an XML file into memory.  This function will also do some basic validation to ensure the requested file is actually XML.
@@ -652,23 +634,25 @@ Public Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
-    If Len(xmlSection) <> 0 Then
+    If (Len(xmlSection) <> 0) Then
     
-        If Len(xmlSectionAttribute) <> 0 Then
+        If (Len(xmlSectionAttribute) <> 0) Then
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
         Else
             searchLocation = InStr(1, m_xmlContents, "<" & xmlSection & ">", m_TextCompareMode)
         End If
-        If searchLocation = 0 Then
+        
+        If (searchLocation = 0) Then
             GetUniqueTag_String = defaultReturn
             Exit Function
         End If
+        
     End If
     
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) <> 0 Then
+    If (Len(tmpString) <> 0) Then
         GetUniqueTag_String = Trim$(tmpString)
     Else
         GetUniqueTag_String = defaultReturn
@@ -676,12 +660,12 @@ Public Function GetUniqueTag_String(ByRef tagName As String, Optional ByVal defa
     
 End Function
 
-Public Function GetUniqueTag_Long(ByVal tagName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal searchLocation As Long = 1) As Long
+Public Function GetUniqueTag_Long(ByRef tagName As String, Optional ByVal defaultReturn As Long = 0, Optional ByVal searchLocation As Long = 1) As Long
     
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) <> 0 Then
+    If (Len(tmpString) <> 0) Then
         GetUniqueTag_Long = CLng(tmpString)
     Else
         GetUniqueTag_Long = defaultReturn
@@ -689,12 +673,12 @@ Public Function GetUniqueTag_Long(ByVal tagName As String, Optional ByVal defaul
     
 End Function
 
-Public Function GetUniqueTag_Boolean(ByVal tagName As String, Optional ByVal defaultReturn As Boolean = False, Optional ByVal searchLocation As Long = 1) As Boolean
+Public Function GetUniqueTag_Boolean(ByRef tagName As String, Optional ByVal defaultReturn As Boolean = False, Optional ByVal searchLocation As Long = 1) As Boolean
     
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) <> 0 Then
+    If (Len(tmpString) <> 0) Then
         GetUniqueTag_Boolean = CBool(tmpString)
     Else
         GetUniqueTag_Boolean = defaultReturn
@@ -702,12 +686,12 @@ Public Function GetUniqueTag_Boolean(ByVal tagName As String, Optional ByVal def
     
 End Function
 
-Public Function GetUniqueTag_Double(ByVal tagName As String, Optional ByVal defaultReturn As Double = 0, Optional ByVal searchLocation As Long = 1) As Double
+Public Function GetUniqueTag_Double(ByRef tagName As String, Optional ByVal defaultReturn As Double = 0, Optional ByVal searchLocation As Long = 1) As Double
     
     Dim tmpString As String
     tmpString = GetTextBetweenTags(tagName, searchLocation)
     
-    If Len(tmpString) <> 0 Then
+    If (Len(tmpString) <> 0) Then
         GetUniqueTag_Double = CDblCustom(tmpString)
     Else
         GetUniqueTag_Double = defaultReturn
@@ -717,28 +701,30 @@ End Function
 
 'The next block of functions returns non-unique tag values in a specified format.  "Non-unique" tags are those that may exist
 ' in multiple sections within a file.  A value will only be returned if the requested tag appears within the specified XML section.
-Public Function GetNonUniqueTag_String(ByRef tagName As String, ByVal xmlSection As String, Optional ByVal xmlSectionAttribute As String = vbNullString, Optional ByVal xmlSectionAttributeValue As String = vbNullString, Optional ByVal defaultReturn As String = vbNullString) As String
+Public Function GetNonUniqueTag_String(ByRef tagName As String, ByRef xmlSection As String, Optional ByRef xmlSectionAttribute As String = vbNullString, Optional ByRef xmlSectionAttributeValue As String = vbNullString, Optional ByRef defaultReturn As String = vbNullString, Optional ByVal defaultStartPosition As Long = 1) As String
         
     Dim searchStartLocation As Long, searchEndLocation As Long
     
     'If a section was provided, start our unique tag search there.  At present, we don't care if our search extends past
     ' that section, but only because we know it will never happen!
-    If Len(xmlSection) <> 0 Then
+    If (Len(xmlSection) <> 0) Then
     
-        If Len(xmlSectionAttribute) <> 0 Then
-            searchStartLocation = InStr(1, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
-            If searchStartLocation <> 0 Then searchEndLocation = InStr(searchStartLocation, m_xmlContents, "</" & xmlSection & ">", m_TextCompareMode)
+        If (Len(xmlSectionAttribute) <> 0) Then
+            searchStartLocation = InStr(defaultStartPosition, m_xmlContents, "<" & xmlSection & " " & xmlSectionAttribute & "=""" & xmlSectionAttributeValue & """>", m_TextCompareMode)
+            If (searchStartLocation <> 0) Then searchEndLocation = InStr(searchStartLocation, m_xmlContents, "</" & xmlSection & ">", m_TextCompareMode)
         Else
-            searchStartLocation = InStr(1, m_xmlContents, "<" & xmlSection & ">", m_TextCompareMode)
-            If searchStartLocation <> 0 Then searchEndLocation = InStr(searchStartLocation, m_xmlContents, "</" & xmlSection & ">", m_TextCompareMode)
+            searchStartLocation = InStr(defaultStartPosition, m_xmlContents, "<" & xmlSection & ">", m_TextCompareMode)
+            If (searchStartLocation <> 0) Then searchEndLocation = InStr(searchStartLocation, m_xmlContents, "</" & xmlSection & ">", m_TextCompareMode)
         End If
-        If searchStartLocation = 0 Then
+        
+        If (searchStartLocation = 0) Then
             GetNonUniqueTag_String = defaultReturn
             Exit Function
         End If
-        If searchEndLocation = 0 Then searchEndLocation = LONG_MAX
+        
+        If (searchEndLocation = 0) Then searchEndLocation = LONG_MAX
     Else
-        searchStartLocation = 1
+        searchStartLocation = defaultStartPosition
         searchEndLocation = LONG_MAX
     End If
     
@@ -904,24 +890,24 @@ Private Function GetTextBetweenTags(ByRef tagName As String, Optional ByVal sear
     tagStart = InStr(searchLocation, m_xmlContents, "<" & tagName & ">", m_TextCompareMode)
 
     'If the tag was not found, it's possible that the tag has an attribute inside it, making the previous check fail.  Try again now.
-    If tagStart = 0 Then
+    If (tagStart = 0) Then
         tagStart = InStr(searchLocation, m_xmlContents, "<" & tagName & " ", m_TextCompareMode)
     End If
 
     'If the tag was found in the file, we also need to find the closing tag.
-    If tagStart > 0 Then
+    If (tagStart > 0) Then
     
         tagEnd = InStr(tagStart, m_xmlContents, "</" & tagName & ">", m_TextCompareMode)
         
         'If the closing tag exists, return everything between that and the opening tag
-        If tagEnd > tagStart Then
+        If (tagEnd > tagStart) Then
             
             'Increment the tag start location by the length of the tag plus two (+1 for each bracket: <>)
             tagStart = tagStart + Len(tagName) + 2
             
             'If the user passed a long, they want to know where this tag was found - return the location just after the
             ' location where the closing tag was located.
-            If whereTagFound <> -1 Then whereTagFound = tagEnd + Len(tagName) + 2
+            If (whereTagFound <> -1) Then whereTagFound = tagEnd + Len(tagName) + 2
             GetTextBetweenTags = Mid$(m_xmlContents, tagStart, tagEnd - tagStart)
             
         Else
@@ -929,7 +915,7 @@ Private Function GetTextBetweenTags(ByRef tagName As String, Optional ByVal sear
         End If
         
     Else
-        GetTextBetweenTags = ""
+        GetTextBetweenTags = vbNullString
     End If
 
 End Function
@@ -944,20 +930,15 @@ Public Function GetXMLSafeTagName(ByRef srcText As String) As String
     
     'Create a string of valid numerical characters, based on the XML spec at http://www.w3.org/TR/1998/REC-xml-19980210.html#sec-common-syn
     Dim validChars As String
-    validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    validChars = validChars & "0123456789"
-    validChars = validChars & ".-_:"
+    validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_:"
     
     'Loop through the text box contents and remove any invalid characters
     Dim i As Long
-    
     For i = 1 To Len(goodString)
         
         'Compare a single character from the text against our list of valid characters. If a character is NOT found
         ' in the list of valid characters, replace it with an underscore.
-        If InStr(validChars, Mid$(goodString, i, 1)) = 0 Then
-            goodString = Left$(goodString, i - 1) & "_" & Right$(goodString, Len(goodString) - i)
-        End If
+        If (InStr(validChars, Mid$(goodString, i, 1)) = 0) Then Mid$(goodString, i, 1) = "_"
             
     Next i
     

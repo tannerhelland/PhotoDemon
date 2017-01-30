@@ -164,10 +164,8 @@ Public Sub RequestRedraw(Optional ByVal refreshThumbnailCache As Boolean = True,
     lbView.RequestRedraw refreshThumbnailCache, layerID
 End Sub
 
-'Layer kust-specific functions and subs.  Most of these simply relay the request to the embedded
+'Layer list-specific functions and subs.  Most of these simply relay the request to the embedded
 ' lbView object, and it will raise redraw requests as relevant.
-' (CURRENTLY EMPTY)
-
 Private Sub lbView_ScrollMaxChanged(ByVal newMax As Long)
     
     Dim scrollVisible As Boolean

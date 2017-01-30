@@ -279,7 +279,7 @@ Private isPDDeactivated As Boolean
 Private cSubclass As cSelfSubHookCallback
 
 'XML handling (used to save/load window locations) is handled through a specialized class
-Private xmlEngine As pdXML
+Private m_XML As pdXML
 Private windowDataPath As String
 
 'When the main form is being moved or resized, it will trigger the movement of all child forms to match.  We set this variable to TRUE
@@ -644,20 +644,20 @@ Public Function RestoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
     'Start by looking for this form's location data in the XML engine.
     
     'If an entry is found, restore the window to that location.
-    If xmlEngine.DoesTagExist("windowEntry", "id", pdWindows(windowIndex).windowName) Then
+    If m_XML.DoesTagExist("windowEntry", "id", pdWindows(windowIndex).windowName) Then
     
         'Retrieve this window's location data from the XML file.
         With pdWindows(windowIndex)
         
             'Window rect values
-            .LastPosition.x1 = CLng(xmlEngine.GetUniqueTag_String("windowLeft", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.y1 = CLng(xmlEngine.GetUniqueTag_String("windowTop", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.x2 = CLng(xmlEngine.GetUniqueTag_String("windowRight", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.y2 = CLng(xmlEngine.GetUniqueTag_String("windowBottom", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.x1 = CLng(m_XML.GetUniqueTag_String("windowLeft", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.y1 = CLng(m_XML.GetUniqueTag_String("windowTop", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.x2 = CLng(m_XML.GetUniqueTag_String("windowRight", 0, , "windowEntry", "id", .windowName))
+            .LastPosition.y2 = CLng(m_XML.GetUniqueTag_String("windowBottom", 0, , "windowEntry", "id", .windowName))
             
             'Window and border state
-            .lastWindowState = CLng(xmlEngine.GetUniqueTag_String("windowState", 0, , "windowEntry", "id", .windowName))
-            .lastWindowBorder = CLng(xmlEngine.GetUniqueTag_String("windowStyle", 0, , "windowEntry", "id", .windowName))
+            .lastWindowState = CLng(m_XML.GetUniqueTag_String("windowState", 0, , "windowEntry", "id", .windowName))
+            .lastWindowBorder = CLng(m_XML.GetUniqueTag_String("windowStyle", 0, , "windowEntry", "id", .windowName))
             
             'Apply those values to the window, starting with border style, then state, then coordinates
             .FormReference.BorderStyle = .lastWindowBorder
@@ -709,7 +709,11 @@ End Function
 Public Function LoadAllWindowLocations() As Boolean
     
     'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
-    If (Not xmlEngine.LoadXMLFile(windowDataPath)) Or Not (xmlEngine.IsPDDataType("Window locations")) Then
+    Dim windowLoadSuccessful As Boolean
+    windowLoadSuccessful = m_XML.LoadXMLFile(windowDataPath)
+    If windowLoadSuccessful Then windowLoadSuccessful = m_XML.IsPDDataType("Window locations")
+    
+    If (Not windowLoadSuccessful) Then
         Debug.Print "No window location data found.  A new window location file has been created."
         ResetXMLData
     End If
@@ -726,11 +730,11 @@ Public Function SaveAllWindowLocations() As Boolean
     For i = 0 To numOfPDWindows - 1
     
         'Check for this window preset in the file.  If it does not exist, add it now.
-        If Not xmlEngine.DoesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
+        If Not m_XML.DoesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
         
-            xmlEngine.WriteTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
-            xmlEngine.CloseTag "windowEntry"
-            xmlEngine.WriteBlankLine
+            m_XML.WriteTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
+            m_XML.CloseTag "windowEntry"
+            m_XML.WriteBlankLine
         
         End If
         
@@ -738,30 +742,30 @@ Public Function SaveAllWindowLocations() As Boolean
         With pdWindows(i)
         
             'Window rect values
-            xmlEngine.UpdateTag "windowLeft", .LastPosition.x1, "windowEntry", "id", .windowName
-            xmlEngine.UpdateTag "windowTop", .LastPosition.y1, "windowEntry", "id", .windowName
-            xmlEngine.UpdateTag "windowRight", .LastPosition.x2, "windowEntry", "id", .windowName
-            xmlEngine.UpdateTag "windowBottom", .LastPosition.y2, "windowEntry", "id", .windowName
+            m_XML.UpdateTag "windowLeft", .LastPosition.x1, "windowEntry", "id", .windowName
+            m_XML.UpdateTag "windowTop", .LastPosition.y1, "windowEntry", "id", .windowName
+            m_XML.UpdateTag "windowRight", .LastPosition.x2, "windowEntry", "id", .windowName
+            m_XML.UpdateTag "windowBottom", .LastPosition.y2, "windowEntry", "id", .windowName
             
             'Window and border state
-            xmlEngine.UpdateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
-            xmlEngine.UpdateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
+            m_XML.UpdateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
+            m_XML.UpdateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
             
         End With
         
     Next i
     
     'Write the data out to file
-    xmlEngine.WriteXMLToFile windowDataPath
+    m_XML.WriteXMLToFile windowDataPath
 
 End Function
 
 'Reset the XML engine.  Note that the XML object SHOULD ALREADY BE INSTANTIATED before calling this function.
 Private Function ResetXMLData()
-    xmlEngine.PrepareNewXML "Window locations"
-    xmlEngine.WriteBlankLine
-    xmlEngine.WriteComment "Everything past this point is window location data for various PhotoDemon dialogs."
-    xmlEngine.WriteBlankLine
+    m_XML.PrepareNewXML "Window locations"
+    m_XML.WriteBlankLine
+    m_XML.WriteComment "Everything past this point is window location data for various PhotoDemon dialogs."
+    m_XML.WriteBlankLine
 End Function
 
 'The window manager keeps a persistent list of last-known locations for every window it accesses.  Window locations are updated when:
@@ -875,7 +879,8 @@ Private Sub Class_Initialize()
     If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
     
     'Prepare the XML handler, and retrieve window location data from file (if it exists)
-    Set xmlEngine = New pdXML
+    Set m_XML = New pdXML
+    m_XML.SetTextCompareMode vbBinaryCompare
     windowDataPath = g_UserPreferences.GetPresetPath & "Program_WindowLocations.xml"
     LoadAllWindowLocations
     

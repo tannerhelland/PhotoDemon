@@ -242,7 +242,7 @@ End Sub
 'Whenever a layer is activated, we must re-determine which buttons the user has access to.  Move up/down are disabled for
 ' entries at either end, and the last layer of an image cannot be deleted.
 Private Sub CheckButtonEnablement()
-
+    
     'Make sure at least one image has been loaded
     If (Not pdImages(g_CurrentImage) Is Nothing) And (g_OpenImageCount > 0) Then
 
@@ -358,6 +358,8 @@ End Sub
 
 Private Sub Form_Load()
     
+    m_DisableRedraws = True
+    
     'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeDropDown cboBlendMode, BL_NORMAL
     Interface.PopulateAlphaModeDropDown cboAlphaMode, LA_NORMAL
@@ -370,6 +372,8 @@ Private Sub Form_Load()
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
     
+    m_DisableRedraws = False
+    
 End Sub
 
 Private Sub Form_Resize()
@@ -379,7 +383,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
     'Save all last-used settings to file
-    If Not (lastUsedSettings Is Nothing) Then
+    If (Not lastUsedSettings Is Nothing) Then
         lastUsedSettings.SaveAllControlValues
         lastUsedSettings.SetParentForm Nothing
     End If

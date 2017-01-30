@@ -50,10 +50,11 @@ Public Enum PD_DEBUG_MESSAGES
     PDM_PROCESSOR = 4
     PDM_EXTERNAL_LIB = 5
     PDM_STARTUP_MESSAGE = 6
+    PDM_TIMER_REPORT = 7
 End Enum
 
 #If False Then
-    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4, PDM_EXTERNAL_LIB = 5, PDM_STARTUP_MESSAGE = 6
+    Private Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4, PDM_EXTERNAL_LIB = 5, PDM_STARTUP_MESSAGE = 6, PDM_TIMER_REPORT = 7
 #End If
 
 'Has this instance been initialized?  This will be set to true if the InitializeDebugger function has executed successfully.
@@ -95,7 +96,7 @@ Private cFile As pdFSO
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
-Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False) As Boolean
+Friend Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False) As Boolean
     
     If writeLogDataToFile Then
         
@@ -272,7 +273,7 @@ End Function
 'Replace Debug.Print with this LogAction sub.  Basically it will mirror the output to the Immediate window, and add
 ' a new log line to the relevant debug file in the program's /Data folder.
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
-Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
+Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
     
     Dim curTime As String, prefixString As String
     
@@ -305,6 +306,9 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 
             Case PDM_EXTERNAL_LIB
                 prefixString = "!EXT!"
+                
+            Case PDM_TIMER_REPORT
+                prefixString = "/TMR/"
         
         End Select
         
@@ -429,6 +433,11 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     'If we've gone 25 events without a RAM check, provide one now
     If (m_NumLoggedEvents > (m_lastMemCheckEventNum + 25)) Then Me.LogAction "", PDM_MEM_REPORT
 
+End Sub
+
+'Shorcut function for logging timing results
+Friend Sub LogTiming(ByRef strDescription As String, ByVal timeTakenRaw As Double)
+    Me.LogAction "Timing report: " & strDescription & " - " & Format$(CStr(timeTakenRaw * 1000), "#####0") & " ms", PDM_TIMER_REPORT
 End Sub
 
 Private Sub Class_Initialize()

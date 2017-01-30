@@ -861,15 +861,17 @@ End Sub
 'Remove all icons generated since the program launched
 Public Sub DestroyAllIcons()
 
-    If (m_numOfIcons = 0) Then Exit Sub
+    If (m_numOfIcons > 0) Then
     
-    Dim i As Long
-    For i = 0 To m_numOfIcons - 1
-        If m_iconHandles(i) <> 0 Then ReleaseIcon m_iconHandles(i)
-    Next i
-    
-    'Reinitialize the icon handler, which will also reset the icon count and handle array
-    InitializeIconHandler
+        Dim i As Long
+        For i = 0 To m_numOfIcons - 1
+            If (m_iconHandles(i) <> 0) Then ReleaseIcon m_iconHandles(i)
+        Next i
+        
+        'Reinitialize the icon handler, which will also reset the icon count and handle array
+        InitializeIconHandler
+        
+    End If
 
 End Sub
 
