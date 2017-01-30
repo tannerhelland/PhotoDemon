@@ -30,6 +30,10 @@ Public Enum PD_COLOR_STRING
     ColorNamed = 6
 End Enum
 
+#If False Then
+    Private Const ColorInvalid = -1, ColorUnknown = 0, ColorHex = 1, ColorRGB = 2, ColorRGBA = 3, ColorHSL = 4, ColorHSLA = 5, ColorNamed = 6
+#End If
+
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
@@ -716,7 +720,7 @@ End Function
 
 'Given some string value, attempt to wring color information out of it.  The goal is to eventually support all valid CSS
 ' color descriptors (e.g. http://www.w3schools.com/cssref/css_colors_legal.asp), but for now PD primarily uses hex representations.
-Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColorType As PD_COLOR_STRING = ColorUnknown) As Boolean
+Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColorType As PD_COLOR_STRING = ColorUnknown, Optional ByVal validateActualColorValue As Boolean = True) As Boolean
     
     dstColorType = ColorUnknown
     
@@ -727,19 +731,28 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
         
         dstColorType = ColorHex
         
-        'Trim out the non-hash characters
-        testString = Right$(srcString, Len(srcString) - 1)
-
-        'Is the string 1/3/6 chars long?
-        If (Len(testString) = 1) Or (Len(testString) = 3) Or (Len(testString) = 6) Then
-
-            'Does the string only consist of the chars 0-9 and A-F?
-            validChars = "0123456789abcdef"
-            If Text_Support.ValidateCharacters(testString, validChars, True) Then
-                'We can convert this into a hex color value
-                dstColorType = ColorHex
+        'Only perform additional validation as requested
+        If validateActualColorValue Then
+        
+            'Trim out the non-hash characters
+            testString = Right$(srcString, Len(srcString) - 1)
+    
+            'Is the string 1/3/6 chars long?
+            If (Len(testString) = 1) Or (Len(testString) = 3) Or (Len(testString) = 6) Then
+    
+                'Does the string only consist of the chars 0-9 and A-F?
+                validChars = "0123456789abcdef"
+                If Text_Support.ValidateCharacters(testString, validChars, True) Then
+                    'We can convert this into a hex color value
+                    dstColorType = ColorHex
+                Else
+                    dstColorType = ColorUnknown
+                End If
+    
+            Else
+                dstColorType = ColorUnknown
             End If
-
+            
         End If
         
     End If

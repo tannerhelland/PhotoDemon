@@ -135,7 +135,7 @@ Public Sub PrepareRestOfSplash()
         
         'Non-production builds are tagged RED; normal builds, BLUE.  In the future, this may be tied to the theming engine.
         ' (It's not easy to do it at present, because the themer is loaded late in the program intialization process.)
-        If PD_BUILD_QUALITY <> PD_PRODUCTION Then
+        If (PD_BUILD_QUALITY <> PD_PRODUCTION) Then
             m_versionFont.SetFontColor RGB(255, 50, 50)
         Else
             m_versionFont.SetFontColor RGB(50, 127, 255)
@@ -207,4 +207,3 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     End If
 
 End Sub
-

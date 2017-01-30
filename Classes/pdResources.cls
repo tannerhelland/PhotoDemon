@@ -45,6 +45,10 @@ Private m_tmpDIB As pdDIB
 'Some theme-related settings are cached to improve performance
 Private m_ThemeIconColor As Long, m_ThemeIconColorMenu As Long, m_ThemeIconsMonochrome As Boolean
 
+'Individual resources are always stored as two chunks: a raw data chunk, and an XML chunk that describes resource attributes.
+' To improve performance, a dedicated XML parser is always created alongside this class.
+Private m_XML As pdXML
+
 'Called early in PD's startup, this function checks to see if we've already extracted PD's resource file to a
 ' separate working folder.  If we have, grab the data from there instead of from the .exe.  (This is helpful
 ' during debugging.)
@@ -175,14 +179,13 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                 retString = Space$(retSize \ 2)
                 CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                 
-                Dim cXML As pdXML: Set cXML = New pdXML
-                If cXML.LoadXMLFromString(retString) Then
+                If m_XML.LoadXMLFromString(retString) Then
                 
                     'Retrieve the image's dimensions
                     Dim imgWidth As Long, imgHeight As Long, imgBPP As Long
-                    imgWidth = cXML.GetUniqueTag_Long("w")
-                    imgHeight = cXML.GetUniqueTag_Long("h")
-                    imgBPP = cXML.GetUniqueTag_Long("bpp")
+                    imgWidth = m_XML.GetUniqueTag_Long("w")
+                    imgHeight = m_XML.GetUniqueTag_Long("h")
+                    imgBPP = m_XML.GetUniqueTag_Long("bpp")
                     
                     'Prep a temporary DIB (as we may need to resize the DIB to meet the user's request)
                     If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
@@ -203,7 +206,7 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     '    does *not* support run-time coloration.
                     ' 2) Pull the DIB's alpha channel only out of the file.  If this image *does* support
                     '    run-time coloration, there will not be any color data inside the file.
-                    If cXML.GetUniqueTag_Boolean("rt-clr") Then
+                    If m_XML.GetUniqueTag_Boolean("rt-clr") Then
                         Dim srcBytes() As Byte
                         ReDim srcBytes(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
                         LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, VarPtr(srcBytes(0, 0)))
@@ -211,11 +214,11 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     Else
                         
                         'See if the DIB was stored using a palette system
-                        If cXML.GetUniqueTag_Boolean("uses-palette", False) Then
+                        If m_XML.GetUniqueTag_Boolean("uses-palette", False) Then
                         
                             'Retrieve the palette count, and prep a palette and 8-bpp array
                             Dim numColors As Long
-                            numColors = cXML.GetUniqueTag_Long("palette-size")
+                            numColors = m_XML.GetUniqueTag_Long("palette-size")
                             
                             If (numColors > 0) Then
                                 
@@ -284,21 +287,21 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                         Else
                         
                             'If the image supports real-time coloration, apply it now (based on the currently selected theme).
-                            If cXML.GetUniqueTag_Boolean("rt-clr") Then
+                            If m_XML.GetUniqueTag_Boolean("rt-clr") Then
                             
                                 'Retrieve the image's color.  (NOTE: the specified color will be overridden with
                                 ' monochrome if the monochrome icon preference is active; see the branch above.)
                                 If dstIsMenu Then
-                                    If cXML.GetUniqueTag_Boolean("rt-clrmenu", False) Then
-                                        targetColor = cXML.GetUniqueTag_Long("clr-m")
+                                    If m_XML.GetUniqueTag_Boolean("rt-clrmenu", False) Then
+                                        targetColor = m_XML.GetUniqueTag_Long("clr-m")
                                     Else
-                                        targetColor = cXML.GetUniqueTag_Long("clr-l")
+                                        targetColor = m_XML.GetUniqueTag_Long("clr-l")
                                     End If
                                 Else
                                     If ((g_Themer.GetCurrentThemeClass = PDTC_Light) Or dstIsMenu) Then
-                                        targetColor = cXML.GetUniqueTag_Long("clr-l")
+                                        targetColor = m_XML.GetUniqueTag_Long("clr-l")
                                     ElseIf (g_Themer.GetCurrentThemeClass = PDTC_Dark) Then
-                                        targetColor = cXML.GetUniqueTag_Long("clr-d")
+                                        targetColor = m_XML.GetUniqueTag_Long("clr-d")
                                     End If
                                 End If
                                 
@@ -326,4 +329,6 @@ End Function
 
 Private Sub Class_Initialize()
     m_ResourcesAvailable = False
+    Set m_XML = New pdXML
+    m_XML.SetTextCompareMode vbBinaryCompare
 End Sub

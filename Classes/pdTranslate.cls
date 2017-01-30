@@ -441,6 +441,10 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
                     If fileValidationRequired Then pdDebug.LogAction "Note: a language file checksum didn't match (" & chkXMLName & ").  Manual validation will follow."
                 #End If
                 
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Note: no cache found for " & chkXMLName & ".  Validating language file manually..."
+                #End If
             End If
             
             'If validation is required, we need to load the file from scratch and run some checks on it
@@ -518,7 +522,7 @@ Public Sub CheckAvailableLanguages()
     'Language file names and attributes are cached inside a dedicated language settings file.  This file lets
     ' us bypass a lot of obnoxious and time-consuming validation steps.
     Dim langCacheFilename As String
-    langCacheFilename = g_UserPreferences.GetLanguagePath(True) & "LangCache.xml"
+    langCacheFilename = g_UserPreferences.GetPresetPath() & "LangCache.xml"
     
     Dim cacheLoadedSuccessfully As Boolean: cacheLoadedSuccessfully = False
     
@@ -533,6 +537,9 @@ Public Sub CheckAvailableLanguages()
     ' (from a new language file being discovered, for example).  If it does *not* exist, we'll create it anew
     ' and force it to write out to file at the end of this initiation.
     If (Not cacheLoadedSuccessfully) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Central language cache wasn't found.  Creating new cache now..."
+        #End If
         m_LangCacheXML.PrepareNewXML "PDLanguageCache"
         m_LangCacheChanged = True
     End If
@@ -831,16 +838,16 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     If (Len(newString) = 0) Then
         
         'If this string contains vbCrLf characters, replace them with plain vbLF characters and try again
-        If TranslationActive And (InStr(1, searchString, vbCrLf) > 0) Then
+        If TranslationActive And (InStr(1, searchString, vbCrLf, vbBinaryCompare) > 0) Then
             
-            newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf))
+            newString = GetTranslationTagFromCaption(Replace$(searchString, vbCrLf, vbLf, , , vbBinaryCompare))
             
             If (Len(newString) = 0) Then
                 newString = srcMessage
             Else
             
                 'Convert vbLf to vbCrLf, to ensure proper rendering.  Thanks to Frank Donckers for this fix!
-                newString = Replace$(newString, vbLf, vbCrLf)
+                newString = Replace$(newString, vbLf, vbCrLf, , , vbBinaryCompare)
             
             End If
             
@@ -857,7 +864,7 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
         Dim i As Long
         For i = LBound(ExtraText) To UBound(ExtraText)
-            newString = Replace$(newString, "%" & i + 1, ExtraText(i))
+            newString = Replace$(newString, "%" & i + 1, ExtraText(i), , , vbBinaryCompare)
         Next i
     
     End If

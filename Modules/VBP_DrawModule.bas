@@ -163,36 +163,45 @@ Public Sub CreateAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
     End Select
     
     'Resize the source DIB to fit a 2x2 block pattern of the requested checkerboard pattern
-    srcDIB.CreateBlank chkSize * 2, chkSize * 2
+    srcDIB.CreateBlank chkSize * 2, chkSize * 2, 32
     
-    'Point a temporary array directly at the source DIB's bitmap bits.
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    PrepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    'Fill the source DIB with the checkerboard pattern
-    Dim x As Long, y As Long, quickX As Long
-    For x = 0 To srcDIB.GetDIBWidth - 1
-        quickX = x * 3
-    For y = 0 To srcDIB.GetDIBHeight - 1
-         
-        If (((x \ chkSize) + (y \ chkSize)) And 1) = 0 Then
-            srcImageData(quickX + 2, y) = r1
-            srcImageData(quickX + 1, y) = g1
-            srcImageData(quickX, y) = b1
-        Else
-            srcImageData(quickX + 2, y) = r2
-            srcImageData(quickX + 1, y) = g2
-            srcImageData(quickX, y) = b2
-        End If
-        
-    Next y
+    Dim chkLookup() As Byte
+    ReDim chkLookup(0 To chkSize * 2) As Byte
+    Dim x As Long, y As Long
+    For x = 0 To chkSize * 2
+        chkLookup(x) = x \ chkSize
     Next x
     
-    'Release our temporary array and exit
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
+    'Point a temporary array directly at the source DIB's bitmap bits.
+    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+    srcDIB.WrapArrayAroundDIB srcImageData, srcSA
+    
+    'Fill the source DIB with the checkerboard pattern
+    Dim chkWidth As Long
+    chkWidth = srcDIB.GetDIBWidth - 1
+    
+    Dim xStride As Long
+    For y = 0 To chkWidth
+    For x = 0 To chkWidth
+    
+        xStride = x * 4
+        
+        If (((chkLookup(x) + chkLookup(y)) And 1) = 0) Then
+            srcImageData(xStride, y) = b1
+            srcImageData(xStride + 1, y) = g1
+            srcImageData(xStride + 2, y) = r1
+            srcImageData(xStride + 3, y) = 255
+        Else
+            srcImageData(xStride, y) = b2
+            srcImageData(xStride + 1, y) = g2
+            srcImageData(xStride + 2, y) = r2
+            srcImageData(xStride + 3, y) = 255
+        End If
+        
+    Next x
+    Next y
+    
+    srcDIB.UnwrapArrayFromDIB srcImageData
 
 End Sub
 

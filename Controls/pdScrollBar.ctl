@@ -302,15 +302,14 @@ End Property
 
 Public Property Let OrientationHorizontal(ByVal newState As Boolean)
     
-    If m_OrientationHorizontal <> newState Then
-        m_OrientationHorizontal = newState
+    If (m_OrientationHorizontal <> newState) Then
         
-        'Update the popup menu text to match the new layout
-        UpdatePopupText
+        m_OrientationHorizontal = newState
         
         'Update the positioning of the buttons, track, thumb, etc
         UpdateControlLayout
         PropertyChanged "OrientationHorizontal"
+        
     End If
     
 End Property
@@ -604,6 +603,9 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 'Cache the current (x, y) values, because the context menu needs them for the "scroll here" option
                 m_ContextMenuX = x
                 m_ContextMenuY = y
+                
+                'Make sure translations have been applied to the popup menu captions
+                UpdatePopupText
                 
                 UserControl.PopupMenu MnuScrollPopup, x:=x, y:=y
         
@@ -995,26 +997,26 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Next, initialize a whole bunch of color values
-    Dim thumbBorderColor As Long, thumbFillColor As Long
-    Dim upButtonBorderColor As Long, downButtonBorderColor As Long
-    Dim upButtonFillColor As Long, downButtonFillColor As Long
-    Dim upButtonArrowColor As Long, downButtonArrowColor As Long
-    
-    thumbBorderColor = m_Colors.RetrieveColor(PDS_ThumbBorder, enabledState, m_MouseDownThumb, m_MouseOverThumb)
-    thumbFillColor = m_Colors.RetrieveColor(PDS_ThumbFill, enabledState, m_MouseDownThumb, m_MouseOverThumb)
-    upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
-    upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
-    upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
-    downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
-    downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
-    downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
-    
-    'With colors decided (finally!), we can actually draw the damn thing
-    
     'Paint all backgrounds and borders first
     If g_IsProgramRunning Then
-                
+    
+        'Next, initialize a whole bunch of color values
+        Dim thumbBorderColor As Long, thumbFillColor As Long
+        Dim upButtonBorderColor As Long, downButtonBorderColor As Long
+        Dim upButtonFillColor As Long, downButtonFillColor As Long
+        Dim upButtonArrowColor As Long, downButtonArrowColor As Long
+        
+        thumbBorderColor = m_Colors.RetrieveColor(PDS_ThumbBorder, enabledState, m_MouseDownThumb, m_MouseOverThumb)
+        thumbFillColor = m_Colors.RetrieveColor(PDS_ThumbFill, enabledState, m_MouseDownThumb, m_MouseOverThumb)
+        upButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
+        upButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
+        upButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownUpButton, m_MouseOverUpButton)
+        downButtonBorderColor = m_Colors.RetrieveColor(PDS_ButtonBorder, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
+        downButtonFillColor = m_Colors.RetrieveColor(PDS_ButtonFill, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
+        downButtonArrowColor = m_Colors.RetrieveColor(PDS_ButtonArrow, enabledState, m_MouseDownDownButton, m_MouseOverDownButton)
+        
+        'With colors decided (finally!), we can actually draw the damn thing
+    
         'Up button
         GDI_Plus.GDIPlusFillRectLToDC bufferDC, upLeftRect, upButtonFillColor
         GDI_Plus.GDIPlusDrawRectLOutlineToDC bufferDC, upLeftRect, upButtonBorderColor, , , False
@@ -1024,7 +1026,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         GDI_Plus.GDIPlusDrawRectLOutlineToDC bufferDC, downRightRect, downButtonBorderColor, , , False
         
         'Thumb
-        If m_ThumbSize > 0 Then
+        If (m_ThumbSize > 0) Then
             GDI_Plus.GDIPlusFillRectFToDC bufferDC, thumbRect, thumbFillColor
             GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, thumbRect, thumbBorderColor
         End If
@@ -1083,7 +1085,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint 'redrawImmediately
+    ucSupport.RequestRepaint
     
 End Sub
 
@@ -1249,7 +1251,7 @@ Private Function GetValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
     End If
     
     'Just like the .Value property, for integer-only scroll bars, clamp values to their integer range
-    If m_SignificantDigits = 0 Then GetValueFromMouseCoords = Int(GetValueFromMouseCoords)
+    If (m_SignificantDigits = 0) Then GetValueFromMouseCoords = Int(GetValueFromMouseCoords)
     
 End Function
 
@@ -1263,26 +1265,22 @@ Private Sub UpdatePopupText()
     ' of the default Windows context menu.
     If g_IsProgramRunning And (Not g_Language Is Nothing) Then
         
-        If g_Language.TranslationActive Then
-        
-            If m_OrientationHorizontal Then
-                MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
-                MnuScroll(2).Caption = g_Language.TranslateMessage("Left edge")
-                MnuScroll(3).Caption = g_Language.TranslateMessage("Right edge")
-                MnuScroll(5).Caption = g_Language.TranslateMessage("Page left")
-                MnuScroll(6).Caption = g_Language.TranslateMessage("Page right")
-                MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll left")
-                MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll right")
-            Else
-                MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
-                MnuScroll(2).Caption = g_Language.TranslateMessage("Top")
-                MnuScroll(3).Caption = g_Language.TranslateMessage("Bottom")
-                MnuScroll(5).Caption = g_Language.TranslateMessage("Page up")
-                MnuScroll(6).Caption = g_Language.TranslateMessage("Page down")
-                MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll up")
-                MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll down")
-            End If
-            
+        If m_OrientationHorizontal Then
+            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
+            MnuScroll(2).Caption = g_Language.TranslateMessage("Left edge")
+            MnuScroll(3).Caption = g_Language.TranslateMessage("Right edge")
+            MnuScroll(5).Caption = g_Language.TranslateMessage("Page left")
+            MnuScroll(6).Caption = g_Language.TranslateMessage("Page right")
+            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll left")
+            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll right")
+        Else
+            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
+            MnuScroll(2).Caption = g_Language.TranslateMessage("Top")
+            MnuScroll(3).Caption = g_Language.TranslateMessage("Bottom")
+            MnuScroll(5).Caption = g_Language.TranslateMessage("Page up")
+            MnuScroll(6).Caption = g_Language.TranslateMessage("Page down")
+            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll up")
+            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll down")
         End If
         
     End If
@@ -1312,7 +1310,6 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     If ucSupport.ThemeUpdateRequired Then
-        UpdatePopupText
         UpdateColorList
         ucSupport.UpdateAgainstThemeAndLanguage
     End If
@@ -1323,4 +1320,3 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-

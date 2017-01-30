@@ -170,18 +170,40 @@ Private Sub Form_Load()
     'Prep a window synchronizer and add each subpanel to it
     Set m_WindowSync = New pdWindowSync
     
+    'It can take quite some time to load these panels, so during debugging, it's helpful to keep track
+    ' of any outliers that may hurt PD's startup time.
+    #If DEBUGMODE = 1 Then
+        Dim startTime As Currency
+        VB_Hacks.GetHighResTime startTime
+    #End If
+    
     Load layerpanel_Navigator
     m_WindowSync.SynchronizeWindows ctlContainer(0).hWnd, layerpanel_Navigator.hWnd
     layerpanel_Navigator.Show
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "right toolbox / navigator panel", VB_Hacks.GetTimerDifferenceNow(startTime)
+        VB_Hacks.GetHighResTime startTime
+    #End If
+    
     Load layerpanel_Colors
     m_WindowSync.SynchronizeWindows ctlContainer(1).hWnd, layerpanel_Colors.hWnd
     layerpanel_Colors.Show
-        
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "right toolbox / color panel", VB_Hacks.GetTimerDifferenceNow(startTime)
+        VB_Hacks.GetHighResTime startTime
+    #End If
+    
     Load layerpanel_Layers
     m_WindowSync.SynchronizeWindows ctlContainer(ctlContainer.UBound).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
-        
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "right toolbox / layers panel", VB_Hacks.GetTimerDifferenceNow(startTime)
+        VB_Hacks.GetHighResTime startTime
+    #End If
+    
     'Load any last-used settings for this form
     Set m_lastUsedSettings = New pdLastUsedSettings
     m_lastUsedSettings.SetParentForm Me
@@ -189,7 +211,11 @@ Private Sub Form_Load()
         
     'Theme everything
     UpdateAgainstCurrentTheme True
-        
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogTiming "right toolbox / everything else", VB_Hacks.GetTimerDifferenceNow(startTime)
+    #End If
+    
     'Technically, we would now want to call ReflowInterface() to make sure everything is correctly aligned.
     ' However, UpdateAgainstCurrentTheme now calls that function automatically.
     

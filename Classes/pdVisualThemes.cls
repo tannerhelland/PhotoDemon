@@ -79,6 +79,7 @@ Private m_UpdateRect As RECT
 
 'XML object for parsing theme files.
 Private m_XML As pdXML
+Private Const DEFAULT_NAMESPACE As String = "Default"
 
 'When colors are retrieved from the theme file, we cache them locally.  This spares us time on subsequent color requests,
 ' especially for generic colors (e.g. "Background") which are retrieved by multiple controls.
@@ -144,13 +145,13 @@ Private m_Subclass As cSelfSubHookCallback
 ' module to do it, because it appends a language ID to this value.
 Private m_CurrentThemeID As String
 
-Public Function GetCurrentThemeID() As String
+Friend Function GetCurrentThemeID() As String
     GetCurrentThemeID = m_CurrentThemeID
 End Function
 
 'Pull the current default PD theme from the user preferences file, and attempt to load it.  If the theme can't be loaded,
 ' we'll fall back to PD's default light-on-dark theme.
-Public Sub LoadDefaultPDTheme()
+Friend Sub LoadDefaultPDTheme()
 
     'By default, assume a light-on-dark theme.  (This will be overridden by a successful theme load.)
     m_ThemeClass = PDTC_Light
@@ -299,7 +300,7 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
     
 End Function
 
-Public Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal accentColor As PD_THEME_ACCENT = PDTA_Undefined, Optional ByVal syncMenusToMatch As Boolean = False) As Boolean
+Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal accentColor As PD_THEME_ACCENT = PDTA_Undefined, Optional ByVal syncMenusToMatch As Boolean = False) As Boolean
     
     Dim themeName As String
     Select Case themeClass
@@ -339,7 +340,7 @@ Public Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal a
 End Function
 
 'After theme changes are made, call this sub to synchronize the main window's theme menu to the current theme's properties
-Public Sub SynchronizeThemeMenus()
+Friend Sub SynchronizeThemeMenus()
     
     If g_IsProgramRunning Then
     
@@ -391,7 +392,7 @@ End Function
 '
 'Also, while this function does return success/failure status, if the load operation fails, PD will automatically
 ' fall back to its default theme to prevent the program from exploding.
-Public Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal overrideColorDefinitionFilename As String = vbNullString) As Boolean
+Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal overrideColorDefinitionFilename As String = vbNullString) As Boolean
     
     'Like most things in PD, themes can exist in two places:
     ' 1) The "untouchable" /App folder, which contains PD's core data
@@ -513,7 +514,7 @@ End Function
 
 'Call this function to verify that an object exists inside the current theme file.  If it doesn't, you should not
 ' proceed with color loading.
-Public Function VerifyThemeObject(ByRef objectName As String) As Boolean
+Friend Function VerifyThemeObject(ByRef objectName As String) As Boolean
     VerifyThemeObject = m_XML.DoesTagExist(objectName)
 End Function
 
@@ -521,16 +522,15 @@ End Function
 ' to the Default namespace as necessary.  Also, colors described by definition will automatically be tracked back to their
 ' source.  (Note, however, that this function has no way to deal with circular references, so please avoid that.)
 ' RETURNS: a color hexadecimal value if successful; a null-string otherwise.
-Public Function LookUpColor(ByVal objectName As String, ByRef colorName As String) As String
+Friend Function LookUpColor(ByVal objectName As String, ByRef colorName As String) As String
 
     'First things first: see if the object name exists in the theme file.  If it doesn't, we need to fall back to the
     ' "default" namespace.
-    Const DEFAULT_NAMESPACE As String = "Default"
-    Dim objectNameExists As Boolean
-    objectNameExists = m_XML.DoesTagExist(objectName)
+    Dim objectNameExists As Boolean, objPosition As Long
+    objectNameExists = m_XML.DoesTagExist(objectName, , , objPosition)
     If (Not objectNameExists) Then
         objectName = DEFAULT_NAMESPACE
-        objectNameExists = m_XML.DoesTagExist(objectName)
+        objectNameExists = m_XML.DoesTagExist(objectName, , , objPosition)
     End If
     
     'If the color exists in either the Default or object-specific namespace, we can proceed with parsing.
@@ -538,7 +538,7 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
         
         'Inside the current object's color definition block, retrieve the specified color
         Dim colorDescription As String, finalColor As String
-        colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName)
+        colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName, , , , objPosition)
         
         'If we retrieved any valid string, attempt to resolve it to an actual color value.  (At this point, the color
         ' may just be a variable instead of an actual hex value.)
@@ -550,9 +550,9 @@ Public Function LookUpColor(ByVal objectName As String, ByRef colorName As Strin
         Else
             If (StrComp(objectName, DEFAULT_NAMESPACE, vbBinaryCompare) <> 0) Then
                 objectName = DEFAULT_NAMESPACE
-                If m_XML.DoesTagExist(objectName) Then
-                    colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName)
-                    If Len(colorDescription) <> 0 Then finalColor = ResolveColor(colorDescription)
+                If m_XML.DoesTagExist(objectName, , , objPosition) Then
+                    colorDescription = m_XML.GetNonUniqueTag_String(colorName, objectName, , , , objPosition)
+                    If (Len(colorDescription) <> 0) Then finalColor = ResolveColor(colorDescription)
                 End If
             End If
         End If
@@ -572,13 +572,13 @@ Private Function ResolveColor(ByVal initialColorValue As String) As String
     Do
         
         'First, reject any empty strings (to prevent subsequent parse errors)
-        If Len(initialColorValue) = 0 Then
+        If (Len(initialColorValue) = 0) Then
             ResolveColor = vbNullString
             Exit Function
         End If
         
         'Next, see if the current color value appears to be some kind of valid color representation
-        If Colors.IsStringAColor(initialColorValue) Then
+        If Colors.IsStringAColor(initialColorValue, , False) Then
             ResolveColor = initialColorValue
             Exit Function
         
@@ -607,9 +607,11 @@ End Sub
 ' XML data entirely.
 Friend Sub AddColorToCache(ByRef objectName As String, ByRef colorName As String, ByRef srcColorEntry As PDThemeColor)
     
-    m_ColorCache(m_NumColorsCached).OrigObjectName = objectName
-    m_ColorCache(m_NumColorsCached).OrigColorName = colorName
-    m_ColorCache(m_NumColorsCached).OrigColorValues = srcColorEntry
+    With m_ColorCache(m_NumColorsCached)
+        .OrigObjectName = objectName
+        .OrigColorName = colorName
+        .OrigColorValues = srcColorEntry
+    End With
     
     m_NumColorsCached = m_NumColorsCached + 1
     If (m_NumColorsCached > UBound(m_ColorCache)) Then ReDim Preserve m_ColorCache(0 To m_NumColorsCached * 2 - 1) As PDCachedColor
@@ -687,7 +689,7 @@ Friend Function GetGenericUIColor(ByVal colorID As PD_UI_COLOR_LIST, Optional By
     GetGenericUIColor = m_UniversalColors.RetrieveColor(colorID, enabledState, activeState, hoverState)
 End Function
 
-Public Sub AddWindowPainter(ByVal srcHwnd As Long)
+Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
     If g_IsProgramRunning Then
         If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
         m_Subclass.ssc_Subclass srcHwnd, 0, 1, Me
@@ -695,7 +697,7 @@ Public Sub AddWindowPainter(ByVal srcHwnd As Long)
     End If
 End Sub
 
-Public Sub RemoveWindowPainter(ByVal srcHwnd As Long)
+Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
     If g_IsProgramRunning Then m_Subclass.ssc_UnSubclass srcHwnd
 End Sub
 

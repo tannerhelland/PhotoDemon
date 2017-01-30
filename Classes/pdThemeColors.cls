@@ -71,7 +71,7 @@ Public Function InitializeColorList(ByRef srcObjectName As String, ByVal numOfRe
 End Function
 
 'Load a given color from the active theme file.  Here's how this step works:
-' - While inside the IDE:
+' - While inside the designer:
 '   - All values are ignored except the "IDE_FailsafeColor" value.
 ' - While running:
 '   - We first look up the supplied color name inside the active theme file, using the current object's name as
@@ -170,7 +170,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
 End Function
 
 'Once a base color has been successfully retrieved, you can use this function to plug in any/all variant values
-Private Sub FillInColorVariant(ByRef objectName As String, ByRef colorName As String, ByVal variantStringTag As String, ByRef dstColor As Long, ByVal failsafeColor As Long)
+Private Sub FillInColorVariant(ByRef objectName As String, ByRef colorName As String, ByRef variantStringTag As String, ByRef dstColor As Long, ByVal failsafeColor As Long)
     
     'By default, assign the fallback color value.  If the rest of this function is successful, it will overwrite this
     ' value with a new, custom value.

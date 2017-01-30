@@ -568,7 +568,7 @@ Public Sub ContinueLoadingProgram()
     Icons_and_Cursors.InitializeCursors
     
     'Set up the program's title bar.  Odd-numbered releases are development releases.  Even-numbered releases are formal builds.
-    If Not (g_WindowManager Is Nothing) Then
+    If (Not g_WindowManager Is Nothing) Then
         g_WindowManager.SetWindowCaptionW FormMain.hWnd, Update_Support.GetPhotoDemonNameAndVersion()
     Else
         FormMain.Caption = Update_Support.GetPhotoDemonNameAndVersion()
@@ -602,7 +602,7 @@ Public Sub ContinueLoadingProgram()
     
     'Apply visual styles
     g_Themer.SynchronizeThemeMenus
-    FormMain.UpdateAgainstCurrentTheme False
+    FormMain.UpdateAgainstCurrentTheme False, True
     
     
     
@@ -637,9 +637,8 @@ Public Sub ContinueLoadingProgram()
     #If DEBUGMODE = 1 Then
         perfCheck.MarkEvent "Prep MRU menus"
     #End If
-            
+    
     'Initialize the Recent Files manager and load the most-recently-used file list (MRU)
-    ' CHANGING: Using pdMRUManager instead of pdRecentFiles
     Set g_RecentFiles = New pdMRUManager
     g_RecentFiles.InitList New pdMRURecentFiles
     g_RecentFiles.MRU_LoadFromFile
