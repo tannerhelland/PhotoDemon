@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdCheckBox chkSort 
+      Height          =   375
+      Left            =   240
+      TabIndex        =   19
+      Top             =   8280
+      Width           =   3615
+      _ExtentX        =   6376
+      _ExtentY        =   661
+      Caption         =   "sort before saving"
+      Value           =   0
+   End
    Begin PhotoDemon.pdCheckBox chkCustomMenuColor 
       Height          =   375
       Left            =   4200
@@ -114,7 +125,7 @@ Begin VB.Form FormThemeEditor
       Height          =   615
       Left            =   240
       TabIndex        =   8
-      Top             =   7920
+      Top             =   7560
       Width           =   3615
       _ExtentX        =   6376
       _ExtentY        =   873
@@ -174,20 +185,20 @@ Begin VB.Form FormThemeEditor
       Height          =   615
       Left            =   240
       TabIndex        =   2
-      Top             =   7200
+      Top             =   6840
       Width           =   3615
       _ExtentX        =   6376
       _ExtentY        =   1085
       Caption         =   "add a new resource"
    End
    Begin PhotoDemon.pdListBox lstResources 
-      Height          =   6135
+      Height          =   5775
       Left            =   120
       TabIndex        =   1
       Top             =   960
       Width           =   3735
       _ExtentX        =   6588
-      _ExtentY        =   10821
+      _ExtentY        =   10186
       Caption         =   "current resources"
    End
    Begin PhotoDemon.pdCommandBarMini cmdBar 
@@ -295,8 +306,8 @@ Attribute VB_Exposed = False
 'Resource editor dialog
 'Copyright 2016-2017 by Tanner Helland
 'Created: 22/August/16
-'Last updated: 28/December/16
-'Last update: continued work on core features
+'Last updated: 31/January/17
+'Last update: added option to sort resources during a forced save
 '
 'As of v7.0, PD finally supports visual themes using its internal theming engine.  As part of supporting
 ' visual themes, various PD controls need access to image resources at a size and color scheme appropriate
@@ -641,15 +652,41 @@ Private Sub SaveWorkingFile()
         cXML.WriteTag "LastEditedResource", m_LastResourceIndex
         
         Dim numResourcesWritten As Long: numResourcesWritten = 0
-        
         Dim i As Long
+        
+        'Make a local copy of the resource collection.  We may need to sort the collection before writing it
+        ' out to file, and we don't want to use our in-progress copy for that (as it needs to be synched to
+        ' the list box order).
+        Dim tmpResources() As PD_Resource
+        ReDim tmpResources(0 To m_NumOfResources - 1) As PD_Resource
+        For i = 0 To m_NumOfResources - 1
+            tmpResources(i) = m_Resources(i)
+        Next i
+        
+        If CBool(chkSort.Value) Then
+        
+            Dim tmpSort As PD_Resource
+            Dim j As Long
+            
+            For i = 0 To m_NumOfResources - 1
+            For j = 0 To m_NumOfResources - 1
+                If (StrComp(tmpResources(i).ResourceName, tmpResources(j).ResourceName, vbBinaryCompare) < 0) Then
+                    tmpSort = tmpResources(i)
+                    tmpResources(i) = tmpResources(j)
+                    tmpResources(j) = tmpSort
+                End If
+            Next j
+            Next i
+        
+        End If
+        
         For i = 0 To m_NumOfResources - 1
             
-            If (Not m_Resources(i).MarkedForDeletion) Then
+            If (Not tmpResources(i).MarkedForDeletion) Then
             
                 cXML.WriteTag CStr(numResourcesWritten + 1), vbNullString, True
                 
-                With m_Resources(i)
+                With tmpResources(i)
                     cXML.WriteTag "Name", .ResourceName
                     cXML.WriteTag "FileLocation", .ResFileLocation
                     cXML.WriteTag "Type", .ResType

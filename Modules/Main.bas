@@ -1,8 +1,21 @@
 Attribute VB_Name = "MainModule"
-'Note: this file has been modified for use within PhotoDemon.
-
-'This module is required for theming via embedded manifest.  Many thanks to LaVolpe for the automated tool that coincides
-' with this fine piece of code.  Download it yourself at: http://www.vbforums.com/showthread.php?t=606736
+'***************************************************************************
+'PhotoDemon Startup Module
+'Copyright 2014-2017 by Tanner Helland and Audioglider
+'Created: 03/March/14
+'Last updated: 31/January/17
+'Last update: continued work on improving program startup time
+'
+'The Main() sub in this module is the first thing invoked when PD begins (after VB's own internal startup processes,
+' obviously).  I've also included some other crucial startup and shutdown functions in this module.
+'
+'Portions of the Main() process (related to manually initializing shell libraries) were adopted from a vbforums.com
+' project by LaVolpe.  You can see his original work here: http://www.vbforums.com/showthread.php?t=606736
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
 
 Option Explicit
 
@@ -13,13 +26,14 @@ Private Type InitCommonControlsExStruct
     lngICC As Long
 End Type
 
-'As of September 2015, reordering the list of files in the master VBP has caused unpredictable crashes when PD closes.
-' I've spent two days bisecting commits and I can conclusively nail it down to
+'As of September 2015, reordering the list of files in the master VBP caused unpredictable crashes when PD closes.
+' (After the final line of PD code is run, no less.)  I spent two days bisecting commits and I can conclusively nail
+' the problem down to
 ' https://github.com/tannerhelland/PhotoDemon/commit/293de1ba4f2d5bc3102304d0263af624e93b6093
 '
 'I eventually solved the problem by manually unloading all global class instances in a specific order, rather than
 ' leaving it to VB, but during testing, I found it helpful to suppress the default Windows crash dialog.  In case this
-' ever proves useful in the future, I'll leave the declaration here.
+' proves useful in the future, I'll leave the declaration here.
 Private Declare Function SetErrorMode Lib "kernel32" (ByVal wMode As Long) As Long
 Private Const SEM_FAILCRITICALERRORS = &H1
 Private Const SEM_NOGPFAULTERRORBOX = &H2

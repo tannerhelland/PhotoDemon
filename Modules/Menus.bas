@@ -59,7 +59,69 @@ Public Sub InitializeMenus()
         
     AddMenuItem "file_print", 0, 15, , "file_print"         'Print
     AddMenuItem "file_quit", 0, 17                          'Exit
-
+    
+    'Edit menu
+    AddMenuItem "edit_undo", 1, 0, , "edit_undo"            'Undo
+    AddMenuItem "edit_redo", 1, 1, , "edit_redo"            'Redo
+    AddMenuItem "edit_history", 1, 2, , "edit_history"      'Undo history browser
+    
+    AddMenuItem "edit_repeat", 1, 4, , "edit_repeat"        'Repeat previous action
+    AddMenuItem "edit_fade", 1, 5                           'Fade previous action...
+    
+    AddMenuItem "edit_cut", 1, 7, , "edit_cut"              'Cut
+    AddMenuItem "edit_cutlayer", 1, 8                       'Cut from layer
+    AddMenuItem "edit_copy", 1, 9, , "edit_copy"            'Copy
+    AddMenuItem "edit_copylayer", 1, 10                     'Copy from layer
+    AddMenuItem "edit_pasteasimage", 1, 11, , "edit_paste"  'Paste as new image
+    AddMenuItem "edit_pasteaslayer", 1, 12                  'Paste as new layer
+    AddMenuItem "edit_emptyclipboard", 1, 14                'Empty Clipboard
+    
+    'View Menu
+    AddMenuItem "zoom_fit", 2, 0, , "zoom_fit"              'Fit on Screen
+    
+    AddMenuItem "zoom_in", 2, 2, , "zoom_in"                'Zoom In
+    AddMenuItem "zoom_out", 2, 3, , "zoom_out"              'Zoom Out
+    
+    AddMenuItem "zoom_16_1", 2, 5                           'Zoom 16:1
+    AddMenuItem "zoom_8_1", 2, 6                            'Zoom 8:1
+    AddMenuItem "zoom_4_1", 2, 7                            'Zoom 4:1
+    AddMenuItem "zoom_2_1", 2, 8                            'Zoom 2:1
+    AddMenuItem "zoom_actual", 2, 9, , "zoom_actual"        'Zoom 100%
+    AddMenuItem "zoom_1_2", 2, 10                           'Zoom 1:2
+    AddMenuItem "zoom_1_4", 2, 11                           'Zoom 1:4
+    AddMenuItem "zoom_1_8", 2, 12                           'Zoom 1:8
+    AddMenuItem "zoom_1_16", 2, 13                          'Zoom 1:16
+    
+    'Tools Menu
+    AddMenuItem "tools_language", 8, 0, , "tools_language"  'Languages
+    AddMenuItem "tools_languageeditor", 8, 1                'Language editor
+    
+    AddMenuItem "tools_macrotop", 8, 3, , "macro_record"    'Macros
+    
+        '--> Macro sub-menu
+        AddMenuItem "tools_recordmacro", 8, 3, 0, "macro_record" 'Start Recording
+        AddMenuItem "tools_stopmacro", 8, 3, 1, "macro_stop"     'Stop Recording
+        
+    AddMenuItem "tools_playmacro", 8, 4, , "macro_play"     'Play saved macro
+    AddMenuItem "tools_recentmacros", 8, 5                  'Recent macros
+    
+    AddMenuItem "tools_options", 8, 7, , "pref_advanced"    'Options (Preferences)
+    AddMenuItem "tools_plugins", 8, 8, , "tools_plugin"     'Plugin Manager
+    
+    'Window Menu
+    AddMenuItem "window_next", 9, 5, , "generic_next"          'Next image
+    AddMenuItem "window_previous", 9, 6, , "generic_previous"  'Previous image
+    
+    'Help Menu
+    AddMenuItem "help_donate", 10, 0, , "help_heart"        'Donate
+    AddMenuItem "help_checkupdates", 10, 2, , "help_update" 'Check for updates
+    AddMenuItem "help_contact", 10, 3, , "help_contact"     'Submit Feedback
+    AddMenuItem "help_reportbug", 10, 4, , "help_reportbug" 'Submit Bug
+    AddMenuItem "help_website", 10, 6, , "help_website"     'Visit the PhotoDemon website
+    AddMenuItem "help_sourcecode", 10, 7, , "help_github"   'Download source code
+    AddMenuItem "help_license", 10, 8, , "help_license"     'License
+    AddMenuItem "help_about", 10, 10, , "help_about"        'About PD
+    
 End Sub
 
 Private Sub AddMenuItem(ByRef menuName As String, ByVal topMenuID As Long, Optional ByVal subMenuID As Long = -1, Optional ByVal subSubMenuID As Long = -1, Optional ByRef menuImageName As String = vbNullString)

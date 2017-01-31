@@ -435,7 +435,7 @@ End Function
 ' 2) by avoiding disallowed extensions, using a pipe-delimited list of unacceptable extensions (e.g. "bak|tmp")
 '
 'Use either the whitelist or the blacklist option, but not both (obviously).
-Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = vbNullString, Optional ByVal doNotAllowTheseExtensions As String = vbNullString) As Boolean
         
     'Enforce strict trailing slash formatting of the base folder
     srcFolder = EnforcePathSlash(srcFolder)
@@ -690,7 +690,7 @@ End Function
 'Unicode-friendly Dir() replacement.  Original version developed by vbForums user "Elroy"
 ' (http://www.vbforums.com/showthread.php?736735-How-to-mamage-files-with-non-English-names&p=4779595&viewfull=1#post4779595)
 ' ...but heavily modified for use in PD.  Many thanks to Elroy for sharing his code.
-Public Function DirW(Optional ByVal sParam As String = "") As String
+Public Function DirW(Optional ByVal sParam As String = vbNullString) As String
     
     Dim allFilesFound As Boolean, keepSearching As Boolean, handleJustCreated As Boolean
     Dim retValue As Long
@@ -1229,7 +1229,7 @@ Public Function TrimNull(ByRef origString As String) As String
     nullPosition = InStr(origString, Chr$(0))
     
     'Remove null chars if present; otherwise, return a copy of the input string
-    If nullPosition <> 0 Then
+    If (nullPosition <> 0) Then
        TrimNull = Left$(origString, nullPosition - 1)
     Else
        TrimNull = origString
