@@ -388,6 +388,7 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
         Dim offsetY As Single, offsetX As Single
         tmpFont.AttachToDC bufferDC
         tmpFont.SetFontColor txtColor
+        tmpFont.SetTextAlignment vbLeftJustify
         
         Dim targetRect As RECT
         With targetRect
