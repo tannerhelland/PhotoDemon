@@ -257,6 +257,10 @@ Private m_commandID As Long, m_msgTimestamp As Long
 Private m_MouseX As Long, m_MouseY As Long
 Private m_mouseXInt As Integer, m_mouseYInt As Integer
 
+'In some rare cases, we still want to allow the default mouse handler to "do its thing" after PD performs any specialized handling.
+' If this rare case is active, this will be set to TRUE.
+Private m_StillUseDefWindowProc As Boolean
+
 'Initiate input tracking of a given hWnd.  Aside from the required hWnd, a few other, optional parameters exist:
 '
 ' - Tracking mouse enter/leave events.  Windows doesn't supply these by default - you have to manually request them.
@@ -382,6 +386,11 @@ End Sub
 Public Sub SetHighResolutionTrackingMode(ByVal newMode As Boolean)
     m_HighResModeActive = newMode
     If m_HighResModeActive Then ReDim m_MouseHistory(0 To MAX_MOUSE_HISTORY - 1) As MOUSEMOVEPOINT
+End Sub
+
+'Use this function to still call DefWindowProc after a mouse event occurs
+Public Sub SetDefWindowProcFallback(ByVal newMode As Boolean)
+    m_StillUseDefWindowProc = newMode
 End Sub
 
 Public Sub ResetTracking()
@@ -943,7 +952,11 @@ Private Sub myWndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                         ' the tooltip never gets notification.
                         '
                         'NOTE: now that PD implements its own custom tooltips, this no longer matters.
-                        bHandled = True
+                        If m_StillUseDefWindowProc Then
+                            bHandled = False
+                        Else
+                            bHandled = True
+                        End If
                         lReturn = 0
                         
                     End If

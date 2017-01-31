@@ -551,6 +551,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                     'Activate mouse events
                     If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
                     m_MouseEvents.AddInputTracker m_EditBoxHwnd, True, True, , True, , True
+                    m_MouseEvents.SetDefWindowProcFallback True
                     
                     'Subclass the parent window as well.  This is necessary for handling some update messages from the edit box.
                     If (Not m_ParentHasBeenSubclassed) Then
@@ -692,7 +693,7 @@ End Sub
 
 'Force the edit box to re-paint itself
 Private Sub RepaintEditBox()
-    If m_EditBoxHwnd <> 0 Then
+    If (m_EditBoxHwnd <> 0) Then
         Dim tmpRect As winRect
         GetWindowRect m_EditBoxHwnd, tmpRect
         InvalidateRect m_EditBoxHwnd, tmpRect, 1&
@@ -1341,6 +1342,8 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
         'Other messages??
         Case Else
+            lReturn = 0
+            bHandled = False
     
     End Select
 
