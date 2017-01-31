@@ -186,56 +186,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     ' maintain menu icons (among other menu properties).  As such, this sub is gradually shrinking.
     Menus.ApplyIconsToMenus
     
-    
-'    'File Menu
-'    AddMenuIcon "file_new", 0, 0      'New
-'    AddMenuIcon "file_open", 0, 1       'Open Image
-'
-'    'AddMenuIcon "OPENREC", 0, 2       'Open recent
-'    'AddMenuIcon "IMPORT", 0, 3        'Import
-'        '--> Import sub-menu
-'        AddMenuIcon "PASTE_IMAGE", 0, 3, 0 'From Clipboard (Paste as New Image)
-'        AddMenuIcon "SCANNER", 0, 3, 2     'Scan Image
-'        AddMenuIcon "SCANNERSEL", 0, 3, 3  'Select Scanner
-'        AddMenuIcon "DOWNLOAD", 0, 3, 5    'Online Image
-'        AddMenuIcon "SCREENCAP", 0, 3, 7   'Screen Capture
-'
-'    AddMenuIcon "file_close", 0, 5         'Close
-'    AddMenuIcon "file_save", 0, 8          'Save
-'    AddMenuIcon "file_savedup", 0, 9      'Save copy
-'    AddMenuIcon "file_saveas", 0, 10       'Save As...
-'
-'    'AddMenuIcon "REVERT", 0, 11       'Revert
-'    AddMenuIcon "file_batch", 0, 13     'Batch operations
-'        '--> Batch sub-menu
-'        AddMenuIcon "file_batch", 0, 13, 0    'Batch process
-'        AddMenuIcon "file_repair", 0, 13, 1    'Batch repair
-'    AddMenuIcon "file_print", 0, 15        'Print
-'    'AddMenuIcon "file_quit", 0, 17         'Exit
-    
-        
-    'Edit Menu
-    AddMenuIcon "edit_undo", 1, 0           'Undo
-    AddMenuIcon "edit_redo", 1, 1           'Redo
-    AddMenuIcon "UNDOHISTORY", 1, 2    'Undo history browser
-    
-    AddMenuIcon "REPEAT", 1, 4         'Repeat previous action
-    AddMenuIcon "FADE", 1, 5           'Fade previous action...
-    
-    AddMenuIcon "CUT", 1, 7            'Cut
-    AddMenuIcon "CUT_LAYER", 1, 8      'Cut from layer
-    AddMenuIcon "COPY", 1, 9           'Copy
-    AddMenuIcon "COPY_LAYER", 1, 10    'Copy from layer
-    AddMenuIcon "PASTE_IMAGE", 1, 11   'Paste as new image
-    AddMenuIcon "PASTE_LAYER", 1, 12   'Paste as new layer
-    AddMenuIcon "CLEAR", 1, 14         'Empty Clipboard
-    
-    'View Menu
-    AddMenuIcon "zoom_fit", 2, 0    'Fit on Screen
-    AddMenuIcon "zoom_in", 2, 2         'Zoom In
-    AddMenuIcon "zoom_out", 2, 3        'Zoom Out
-    AddMenuIcon "zoom_actual", 2, 9     'Zoom 100%
-    
     'Image Menu
     AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
     AddMenuIcon "RESIZE", 3, 2         'Resize
@@ -526,34 +476,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         'addMenuIcon "HEATMAP", 7, 14, 4        'Thermograph
         'addMenuIcon "VIBRATE", 7, 14, 5        'Vibrate
     
-    'Tools Menu
-    AddMenuIcon "LANGUAGES", 8, 0       'Languages
-    AddMenuIcon "LANGEDITOR", 8, 1      'Language editor
-    
-    AddMenuIcon "RECORDMACRO", 8, 3      'Macros
-        '--> Macro sub-menu
-        AddMenuIcon "RECORDMACRO", 8, 3, 0    'Start Recording
-        AddMenuIcon "RECORDSTOP", 8, 3, 1     'Stop Recording
-    AddMenuIcon "PLAYMACRO", 8, 4       'Play saved macro
-    AddMenuIcon "RECENTMACROS", 8, 5    'Recent macros
-    
-    AddMenuIcon "PREFERENCES", 8, 7     'Options (Preferences)
-    AddMenuIcon "PLUGIN", 8, 8          'Plugin Manager
-    
-    'Window Menu
-    AddMenuIcon "NEXTIMAGE", 9, 7       'Next image
-    AddMenuIcon "PREVIMAGE", 9, 8       'Previous image
-    
-    'Help Menu
-    AddMenuIcon "FAVORITE", 10, 0        'Donate
-    AddMenuIcon "UPDATES", 10, 2         'Check for updates
-    AddMenuIcon "FEEDBACK", 10, 3        'Submit Feedback
-    AddMenuIcon "BUG", 10, 4             'Submit Bug
-    AddMenuIcon "PDWEBSITE", 10, 6       'Visit the PhotoDemon website
-    AddMenuIcon "DOWNLOADSRC", 10, 7     'Download source code
-    AddMenuIcon "LICENSE", 10, 8         'License
-    AddMenuIcon "ABOUT", 10, 10          'About PD
-    
     'When we're done, reset the doEvents tracker
     m_refreshOutsideProgressBar = False
     
@@ -624,15 +546,14 @@ Public Sub ResetMenuIcons()
     AddMenuIcon "edit_redo", 1, 1     'Redo
     
     'Redraw the Repeat and Fade menus
-    AddMenuIcon "REPEAT", 1, 4         'Repeat previous action
-    AddMenuIcon "FADE", 1, 5           'Fade previous action...
+    AddMenuIcon "edit_repeat", 1, 4         'Repeat previous action
     
     'NOTE! In the future, when icons are available for the Repeat and Fade menu items, we will need to add their refreshes
     ' to this list (as their captions dynamically change at run-time).
     
     'Redraw the Window menu, as some of its menus will be en/disabled according to the docking status of image windows
-    AddMenuIcon "NEXTIMAGE", 9, 7       'Next image
-    AddMenuIcon "PREVIMAGE", 9, 8       'Previous image
+    AddMenuIcon "generic_next", 9, 5       'Next image
+    AddMenuIcon "generic_previous", 9, 6       'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
     If (Not g_RecentFiles Is Nothing) Then

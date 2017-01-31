@@ -106,18 +106,9 @@ Public Function GetOriginalICCPath() As String
 End Function
 
 Public Function LoadICCFromPtr(ByVal profileSize As Long, ByVal ptrToProfile As Long) As Boolean
-
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Image contains ICC profile.  Copying profile now..."
-    #End If
     
     ReDim m_ICCData(0 To profileSize - 1) As Byte
     CopyMemory ByVal VarPtr(m_ICCData(0)), ByVal ptrToProfile, profileSize
-        
-    'The complete ICC profile will now be inside the m_ICCData array.
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "ICC profile copied successfully."
-    #End If
     
     m_ICCFilename = vbNullString
     m_ICCDataExists = True
