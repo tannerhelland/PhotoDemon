@@ -92,6 +92,40 @@ Public Sub InitializeMenus()
     AddMenuItem "zoom_1_8", 2, 12                           'Zoom 1:8
     AddMenuItem "zoom_1_16", 2, 13                          'Zoom 1:16
     
+    'Image Menu
+    AddMenuItem "image_duplicate", 3, 0, , "edit_copy"      'Duplicate
+    
+    AddMenuItem "image_resize", 3, 2, , "image_resize"      'Resize
+    AddMenuItem "image_contentawareresize", 3, 3            'Content-aware resize
+    
+    AddMenuItem "image_canvassize", 3, 5, , "image_canvassize"  'Canvas resize
+    AddMenuItem "image_fittolayer", 3, 6                    'Fit canvas to active layer
+    AddMenuItem "image_fitalllayers", 3, 7                  'Fit canvas around all layers
+    
+    AddMenuItem "image_crop", 3, 9, , "image_crop"          'Crop to Selection
+    AddMenuItem "image_trim", 3, 10                         'Trim
+    
+    AddMenuItem "image_rotate", 3, 12                       'Rotate top-level
+        
+        '--> Rotate sub-menu
+        AddMenuItem "image_straighten", 3, 12, 0            'Straighten
+        
+        AddMenuItem "image_rotate90", 3, 12, 2, "generic_rotateright"  'Rotate Clockwise
+        AddMenuItem "image_rotate270", 3, 12, 3, "generic_rotateleft"  'Rotate Counter-clockwise
+        AddMenuItem "image_rotate180", 3, 12, 4             'Rotate 180
+        AddMenuItem "image_rotatearbitrary", 3, 12, 5       'Rotate Arbitrary
+        
+    AddMenuItem "image_fliphorizontal", 3, 13, , "image_fliphorizontal" 'Mirror
+    AddMenuItem "image_flipvertical", 3, 14, , "image_flipvertical"     'Flip
+    
+    AddMenuItem "image_metadata", 3, 16                     'Metadata (top-level)
+        
+        '--> Metadata sub-menu
+        AddMenuItem "image_editmetadata", 3, 16, 0, "image_metadata"    'Edit metadata
+        
+        AddMenuItem "image_countcolors", 3, 16, 2           'Count unique colors
+        AddMenuItem "image_maplocation", 3, 16, 3, "image_maplocation"  'Map photo location
+    
     'Tools Menu
     AddMenuItem "tools_language", 8, 0, , "tools_language"  'Languages
     AddMenuItem "tools_languageeditor", 8, 1                'Language editor

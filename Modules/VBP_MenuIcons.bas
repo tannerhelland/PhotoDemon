@@ -186,31 +186,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     ' maintain menu icons (among other menu properties).  As such, this sub is gradually shrinking.
     Menus.ApplyIconsToMenus
     
-    'Image Menu
-    AddMenuIcon "DUPLICATE", 3, 0      'Duplicate
-    AddMenuIcon "RESIZE", 3, 2         'Resize
-    AddMenuIcon "SMRTRESIZE", 3, 3     'Content-aware resize
-    AddMenuIcon "CANVASSIZE", 3, 5     'Canvas resize
-    AddMenuIcon "FITTOLAYER", 3, 6     'Fit canvas to active layer
-    AddMenuIcon "FITALLLAYERS", 3, 7   'Fit canvas around all layers
-    AddMenuIcon "CROPSEL", 3, 9        'Crop to Selection
-    AddMenuIcon "TRIMEMPTY", 3, 10      'Trim
-    AddMenuIcon "ROTATECW", 3, 12      'Rotate top-level
-        '--> Rotate sub-menu
-        AddMenuIcon "STRAIGHTEN", 3, 12, 0  'Straighten
-        AddMenuIcon "ROTATECW", 3, 12, 2    'Rotate Clockwise
-        AddMenuIcon "ROTATECCW", 3, 12, 3   'Rotate Counter-clockwise
-        AddMenuIcon "ROTATE180", 3, 12, 4   'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then AddMenuIcon "ROTATEANY", 3, 12, 5  'Rotate Arbitrary
-    AddMenuIcon "MIRROR", 3, 13        'Mirror
-    AddMenuIcon "FLIP", 3, 14          'Flip
-    'addMenuIcon "ISOMETRIC", 3, 12     'Isometric      'NOTE: isometric was removed in v6.4.
-    AddMenuIcon "METADATA", 3, 16      'Metadata (top-level)
-        '--> Metadata sub-menu
-        AddMenuIcon "BROWSEMD", 3, 16, 0     'Browse metadata
-        AddMenuIcon "COUNTCOLORS", 3, 16, 2  'Count Colors
-        AddMenuIcon "MAPPHOTO", 3, 16, 3     'Map photo location
-    
     'Layer menu
     AddMenuIcon "layer_add", 4, 0        'Add layer (top-level)
         '--> Add layer sub-menu
