@@ -566,20 +566,12 @@ Begin VB.Form FormMain
          Caption         =   "Transparency"
          Index           =   11
          Begin VB.Menu MnuLayerTransparency 
-            Caption         =   "Add basic transparency..."
+            Caption         =   "Make color transparent..."
             Index           =   0
          End
          Begin VB.Menu MnuLayerTransparency 
-            Caption         =   "Make color transparent..."
-            Index           =   1
-         End
-         Begin VB.Menu MnuLayerTransparency 
-            Caption         =   "-"
-            Index           =   2
-         End
-         Begin VB.Menu MnuLayerTransparency 
             Caption         =   "Remove transparency..."
-            Index           =   3
+            Index           =   1
          End
       End
       Begin VB.Menu MnuLayer 
@@ -4436,28 +4428,13 @@ End Sub
 Private Sub MnuLayerTransparency_Click(Index As Integer)
 
     Select Case Index
-    
-        'Add alpha channel
-        Case 0
-            
-            'Ignore if the current image is already in 32bpp mode
-            Process "Add alpha channel", True
             
         'Color to alpha
-        Case 1
-        
-            'Can be used even if the image already has an alpha channel
+        Case 0
             Process "Color to alpha", True
         
-        '<separator>
-        Case 2
-
         'Remove alpha channel
-        Case 3
-
-            'TODO: reevaluate the wisdom of having this option in the Image menu, vs a dedicated Layers menu
-            'Ignore if the current image is already in 24bpp mode
-            'If pdImages(g_CurrentImage).mainDIB.getDIBColorDepth = 24 Then Exit Sub
+        Case 1
             Process "Remove alpha channel", True
     
     End Select

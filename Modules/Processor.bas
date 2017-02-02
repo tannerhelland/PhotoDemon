@@ -900,13 +900,6 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             Layer_Handler.CropLayerToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Change layer alpha
-        Case "Add alpha channel"
-            If ShowDialog Then
-                ShowPDDialog vbModal, FormTransparency_Basic
-            Else
-                FormTransparency_Basic.SimpleConvert32bpp cParams.GetLong(1)
-            End If
-            
         Case "Color to alpha"
             If ShowDialog Then
                 ShowPDDialog vbModal, FormTransparency_FromColor
