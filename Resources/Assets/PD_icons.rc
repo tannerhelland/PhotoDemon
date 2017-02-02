@@ -13,40 +13,40 @@ AAA          ICON    MOVEABLE        PRELOAD         PHOTO_all.ico
 //CLEARRECENT  CUSTOM  MOVEABLE        LOADONCALL      minus_circle_16.png
 //CLEARRECLRG  CUSTOM  MOVEABLE        LOADONCALL      minus_circle_24.png
 
-IMPORT       CUSTOM  MOVEABLE        LOADONCALL      image_import.png
+//IMPORT       CUSTOM  MOVEABLE        LOADONCALL      image_import.png
 //--> Import sub-menu
-SCANNER      CUSTOM  MOVEABLE        LOADONCALL      scanner.png
-SCANNERSEL   CUSTOM  MOVEABLE        LOADONCALL      scanner_plus.png
-DOWNLOAD     CUSTOM  MOVEABLE        LOADONCALL      download_cloud.png
-SCREENCAP    CUSTOM  MOVEABLE        LOADONCALL      monitor_wallpaper.png
+//SCANNER      CUSTOM  MOVEABLE        LOADONCALL      scanner.png
+//SCANNERSEL   CUSTOM  MOVEABLE        LOADONCALL      scanner_plus.png
+//DOWNLOAD     CUSTOM  MOVEABLE        LOADONCALL      download_cloud.png
+//SCREENCAP    CUSTOM  MOVEABLE        LOADONCALL      monitor_wallpaper.png
 
 //CLOSE        CUSTOM  MOVEABLE        LOADONCALL      fileclose.png
 
 //SAVE         CUSTOM  MOVEABLE        LOADONCALL      disk.png
 //SAVEAS       CUSTOM  MOVEABLE        LOADONCALL      disk_save_as.png
 //SAVECOPY     CUSTOM  MOVEABLE        LOADONCALL      disks.png
-REVERT       CUSTOM  MOVEABLE        LOADONCALL      disk_revert.png
+//REVERT       CUSTOM  MOVEABLE        LOADONCALL      disk_revert.png
 
-BCONVERT     CUSTOM  MOVEABLE        LOADONCALL      images_stack.png
-PRINT        CUSTOM  MOVEABLE        LOADONCALL      printer.png
-EXIT         CUSTOM  MOVEABLE        LOADONCALL      exit.png
+//BCONVERT     CUSTOM  MOVEABLE        LOADONCALL      images_stack.png
+//PRINT        CUSTOM  MOVEABLE        LOADONCALL      printer.png
+//EXIT         CUSTOM  MOVEABLE        LOADONCALL      exit.png
 
 
 //Edit menu
 //UNDO         CUSTOM  MOVEABLE        LOADONCALL      edit_undo.png
 //REDO         CUSTOM  MOVEABLE        LOADONCALL      edit_redo.png
-UNDOHISTORY  CUSTOM  MOVEABLE        LOADONCALL      ui_scroll_pane_blog.png
+//UNDOHISTORY  CUSTOM  MOVEABLE        LOADONCALL      ui_scroll_pane_blog.png
 
-REPEAT       CUSTOM  MOVEABLE        LOADONCALL      arrow_repeat.png
-FADE         CUSTOM  MOVEABLE        LOADONCALL      image_saturation.png
+//REPEAT       CUSTOM  MOVEABLE        LOADONCALL      arrow_repeat.png
+//FADE         CUSTOM  MOVEABLE        LOADONCALL      image_saturation.png
 
-CUT          CUSTOM  MOVEABLE        LOADONCALL      scissors.png
-CUT_LAYER    CUSTOM  MOVEABLE        LOADONCALL      scissors_layer.png
-COPY         CUSTOM  MOVEABLE        LOADONCALL      document_copy.png
-COPY_LAYER   CUSTOM  MOVEABLE        LOADONCALL      document_copy_layer.png
-PASTE_IMAGE  CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_new_image.png
-PASTE_LAYER  CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_layer.png
-CLEAR        CUSTOM  MOVEABLE        LOADONCALL      clipboard_empty.png
+//CUT          CUSTOM  MOVEABLE        LOADONCALL      scissors.png
+//CUT_LAYER    CUSTOM  MOVEABLE        LOADONCALL      scissors_layer.png
+//COPY         CUSTOM  MOVEABLE        LOADONCALL      document_copy.png
+//COPY_LAYER   CUSTOM  MOVEABLE        LOADONCALL      document_copy_layer.png
+//PASTE_IMAGE  CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_new_image.png
+//PASTE_LAYER  CUSTOM  MOVEABLE        LOADONCALL      clipboard_paste_layer.png
+//CLEAR        CUSTOM  MOVEABLE        LOADONCALL      clipboard_empty.png
 
 
 //View menu
@@ -57,23 +57,23 @@ CLEAR        CUSTOM  MOVEABLE        LOADONCALL      clipboard_empty.png
 
 
 //Image menu
-DUPLICATE    CUSTOM  MOVEABLE        LOADONCALL      duplicate_image.png
-METADATA     CUSTOM  MOVEABLE        LOADONCALL      document_list.png
-BROWSEMD     CUSTOM  MOVEABLE        LOADONCALL      document_search_result.png
-MAPPHOTO     CUSTOM  MOVEABLE        LOADONCALL      map_pin.png
+//DUPLICATE    CUSTOM  MOVEABLE        LOADONCALL      duplicate_image.png
+//METADATA     CUSTOM  MOVEABLE        LOADONCALL      document_list.png
+//BROWSEMD     CUSTOM  MOVEABLE        LOADONCALL      document_search_result.png
+//MAPPHOTO     CUSTOM  MOVEABLE        LOADONCALL      map_pin.png
 TRANSPARENCY CUSTOM  MOVEABLE        LOADONCALL      layer_transparent.png
 //--> Transparency sub-menu
 ADDTRANS     CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_plus.png
 GREENSCREEN  CUSTOM  MOVEABLE        LOADONCALL      user_black_female_green.png
 REMOVETRANS  CUSTOM  MOVEABLE        LOADONCALL      layer_transparent_cross.png
 //
-RESIZE       CUSTOM  MOVEABLE        LOADONCALL      image_resize.png
-SMRTRESIZE   CUSTOM  MOVEABLE        LOADONCALL      image_contentaware_resize.png
-CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
-CROPSEL      CUSTOM  MOVEABLE        LOADONCALL      image_crop.png
-FITTOLAYER   CUSTOM  MOVEABLE        LOADONCALL      image_resize_actual.png
-FITALLLAYERS CUSTOM  MOVEABLE        LOADONCALL      image_fit_all.png
-TRIMEMPTY    CUSTOM  MOVEABLE        LOADONCALL      image_trim.png
+//RESIZE       CUSTOM  MOVEABLE        LOADONCALL      image_resize.png
+//SMRTRESIZE   CUSTOM  MOVEABLE        LOADONCALL      image_contentaware_resize.png
+//CANVASSIZE   CUSTOM  MOVEABLE        LOADONCALL      canvas_resize.png
+//CROPSEL      CUSTOM  MOVEABLE        LOADONCALL      image_crop.png
+//FITTOLAYER   CUSTOM  MOVEABLE        LOADONCALL      image_resize_actual.png
+//FITALLLAYERS CUSTOM  MOVEABLE        LOADONCALL      image_fit_all.png
+//TRIMEMPTY    CUSTOM  MOVEABLE        LOADONCALL      image_trim.png
 //--> Rotate sub-menu
 STRAIGHTEN   CUSTOM  MOVEABLE        LOADONCALL      arrow_retweet.png
 ROTATECW     CUSTOM  MOVEABLE        LOADONCALL      image_rotate_90.png
@@ -83,10 +83,10 @@ ROTATEANY    CUSTOM  MOVEABLE        LOADONCALL      image_rotate_arbitrary.png
 //
 FLIP         CUSTOM  MOVEABLE        LOADONCALL      layer_flip.png
 MIRROR       CUSTOM  MOVEABLE        LOADONCALL      layer_mirror.png
-ISOMETRIC    CUSTOM  MOVEABLE        LOADONCALL      controller.png
+//ISOMETRIC    CUSTOM  MOVEABLE        LOADONCALL      controller.png
 TILE         CUSTOM  MOVEABLE        LOADONCALL      image_tiled.png
 REDUCECOLORS CUSTOM  MOVEABLE        LOADONCALL      palette.png
-COUNTCOLORS  CUSTOM  MOVEABLE        LOADONCALL      counter.png
+//COUNTCOLORS  CUSTOM  MOVEABLE        LOADONCALL      counter.png
 
 
 //Layer menu
@@ -309,30 +309,30 @@ OTHER        CUSTOM  MOVEABLE        LOADONCALL      beaker.png
 
 
 //Tools menu
-LANGUAGES    CUSTOM  MOVEABLE        LOADONCALL      language.png
-LANGEDITOR   CUSTOM  MOVEABLE        LOADONCALL      document_language_edit.png
+//LANGUAGES    CUSTOM  MOVEABLE        LOADONCALL      language.png
+//LANGEDITOR   CUSTOM  MOVEABLE        LOADONCALL      document_language_edit.png
 //--> Macro sub-menu
-RECORDMACRO  CUSTOM  MOVEABLE        LOADONCALL      control_record.png
-PLAYMACRO    CUSTOM  MOVEABLE        LOADONCALL      control.png
-RECORDSTOP   CUSTOM  MOVEABLE        LOADONCALL      control_stop_square.png
-RECENTMACROS CUSTOM  MOVEABLE        LOADONCALL      folder_video.png
+//RECORDMACRO  CUSTOM  MOVEABLE        LOADONCALL      control_record.png
+//PLAYMACRO    CUSTOM  MOVEABLE        LOADONCALL      control.png
+//RECORDSTOP   CUSTOM  MOVEABLE        LOADONCALL      control_stop_square.png
+//RECENTMACROS CUSTOM  MOVEABLE        LOADONCALL      folder_video.png
 //
-PREFERENCES  CUSTOM  MOVEABLE        LOADONCALL      cog_edit.png
-PLUGIN       CUSTOM  MOVEABLE        LOADONCALL      plug.png
+//PREFERENCES  CUSTOM  MOVEABLE        LOADONCALL      cog_edit.png
+//PLUGIN       CUSTOM  MOVEABLE        LOADONCALL      plug.png
 
 //Window menu
-NEXTIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow.png
-PREVIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow_180.png
+//NEXTIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow.png
+//PREVIMAGE    CUSTOM  MOVEABLE        LOADONCALL      arrow_180.png
 
 //Help menu
-FAVORITE     CUSTOM  MOVEABLE        LOADONCALL      favorite.png
-UPDATES      CUSTOM  MOVEABLE        LOADONCALL      software_update_available.png
-FEEDBACK     CUSTOM  MOVEABLE        LOADONCALL      mail_send.png
-BUG          CUSTOM  MOVEABLE        LOADONCALL      bug_error.png
-PDWEBSITE    CUSTOM  MOVEABLE        LOADONCALL      globe_green_arrow.png
-DOWNLOADSRC  CUSTOM  MOVEABLE        LOADONCALL      git.png
-LICENSE      CUSTOM  MOVEABLE        LOADONCALL      creative_commons.png
-ABOUT        CUSTOM  MOVEABLE        LOADONCALL      about_pd.png
+//FAVORITE     CUSTOM  MOVEABLE        LOADONCALL      favorite.png
+//UPDATES      CUSTOM  MOVEABLE        LOADONCALL      software_update_available.png
+//FEEDBACK     CUSTOM  MOVEABLE        LOADONCALL      mail_send.png
+//BUG          CUSTOM  MOVEABLE        LOADONCALL      bug_error.png
+//PDWEBSITE    CUSTOM  MOVEABLE        LOADONCALL      globe_green_arrow.png
+//DOWNLOADSRC  CUSTOM  MOVEABLE        LOADONCALL      git.png
+//LICENSE      CUSTOM  MOVEABLE        LOADONCALL      creative_commons.png
+//ABOUT        CUSTOM  MOVEABLE        LOADONCALL      about_pd.png
 
 //Special-purpose images
 
