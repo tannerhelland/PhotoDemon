@@ -186,48 +186,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     ' maintain menu icons (among other menu properties).  As such, this sub is gradually shrinking.
     Menus.ApplyIconsToMenus
     
-    'Layer menu
-    AddMenuIcon "layer_add", 4, 0        'Add layer (top-level)
-        '--> Add layer sub-menu
-        AddMenuIcon "ADDLAYER", 4, 0, 0             'Add blank layer
-        AddMenuIcon "DUPL_LAYER", 4, 0, 1          'Add duplicate layer
-        AddMenuIcon "PASTE_LAYER", 4, 0, 3          'Add layer from clipboard
-        AddMenuIcon "ADDLAYERFILE", 4, 0, 4             'Add layer from file
-    AddMenuIcon "layer_delete", 4, 1        'Delete layer (top-level)
-        '--> Delete layer sub-menu
-        AddMenuIcon "DELLAYER", 4, 1, 0       'Delete current layer
-        AddMenuIcon "DELLAYERHDN", 4, 1, 1       'Delete all hidden layers
-    AddMenuIcon "MERGE_UP", 4, 3         'Merge up
-    AddMenuIcon "MERGE_DOWN", 4, 4       'Merge down
-    AddMenuIcon "LAYERORDER", 4, 5      'Order (top-level)
-        '--> Order layer sub-menu
-        AddMenuIcon "layer_up", 4, 5, 0     'Raise layer
-        AddMenuIcon "layer_down", 4, 5, 1     'Lower layer
-        AddMenuIcon "LAYERTOTOP", 4, 5, 3     'Raise to top
-        AddMenuIcon "LAYERTOBTM", 4, 5, 4     'Lower to bottom
-    AddMenuIcon "ROTATECW", 4, 7         'Layer Orientation (top-level)
-        '--> Orientation sub-menu
-        AddMenuIcon "STRAIGHTEN", 4, 7, 0   'Straighten
-        AddMenuIcon "ROTATECW", 4, 7, 2     'Rotate Clockwise
-        AddMenuIcon "ROTATECCW", 4, 7, 3    'Rotate Counter-clockwise
-        AddMenuIcon "ROTATE180", 4, 7, 4    'Rotate 180
-        If g_ImageFormats.FreeImageEnabled Then AddMenuIcon "ROTATEANY", 4, 7, 5   'Rotate Arbitrary
-        AddMenuIcon "MIRROR", 4, 7, 7       'Mirror
-        AddMenuIcon "FLIP", 4, 7, 8         'Flip
-    AddMenuIcon "RESIZE", 4, 8           'Layer Size (top-level)
-        '--> Size sub-menu
-        AddMenuIcon "RESETSIZE", 4, 8, 0        'Reset to original size
-        AddMenuIcon "RESIZE", 4, 8, 2        'Resize
-        AddMenuIcon "SMRTRESIZE", 4, 8, 3    'Content-aware resize
-    AddMenuIcon "CROPSEL", 4, 9          'Crop to Selection
-    AddMenuIcon "TRANSPARENCY", 4, 11    'Layer Transparency
-        '--> Transparency sub-menu
-        AddMenuIcon "ADDTRANS", 4, 11, 0     'Add alpha channel
-        AddMenuIcon "GREENSCREEN", 4, 11, 1  'Color to alpha
-        AddMenuIcon "REMOVETRANS", 4, 11, 3  'Remove alpha channel
-    'addMenuIcon "RASTERIZE", 4, 13       'Rasterize layer
-    AddMenuIcon "FLATTEN", 4, 15         'Flatten image
-    AddMenuIcon "MERGEVISIBLE", 4, 16    'Merge visible layers
     
     'Select Menu
     AddMenuIcon "SELECTALL", 5, 0       'Select all

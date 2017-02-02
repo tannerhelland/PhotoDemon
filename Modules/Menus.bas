@@ -51,7 +51,8 @@ Public Sub InitializeMenus()
     AddMenuItem "file_savecopy", 0, 9, , "file_savedup"     'Save copy
     AddMenuItem "file_saveas", 0, 10, , "file_saveas"       'Save As...
     AddMenuItem "file_revert", 0, 11                        'Revert
-    AddMenuItem "file_batch", 0, 13, , "file_batch"         'Batch operations
+    
+    AddMenuItem "file_batch", 0, 13                         'Batch operations
     
         '--> Batch sub-menu
         AddMenuItem "file_batch_process", 0, 13, 0, "file_batch"   'Batch process
@@ -59,6 +60,7 @@ Public Sub InitializeMenus()
         
     AddMenuItem "file_print", 0, 15, , "file_print"         'Print
     AddMenuItem "file_quit", 0, 17                          'Exit
+    
     
     'Edit menu
     AddMenuItem "edit_undo", 1, 0, , "edit_undo"            'Undo
@@ -76,6 +78,7 @@ Public Sub InitializeMenus()
     AddMenuItem "edit_pasteaslayer", 1, 12                  'Paste as new layer
     AddMenuItem "edit_emptyclipboard", 1, 14                'Empty Clipboard
     
+    
     'View Menu
     AddMenuItem "zoom_fit", 2, 0, , "zoom_fit"              'Fit on Screen
     
@@ -91,6 +94,7 @@ Public Sub InitializeMenus()
     AddMenuItem "zoom_1_4", 2, 11                           'Zoom 1:4
     AddMenuItem "zoom_1_8", 2, 12                           'Zoom 1:8
     AddMenuItem "zoom_1_16", 2, 13                          'Zoom 1:16
+    
     
     'Image Menu
     AddMenuItem "image_duplicate", 3, 0, , "edit_copy"      'Duplicate
@@ -126,6 +130,66 @@ Public Sub InitializeMenus()
         AddMenuItem "image_countcolors", 3, 16, 2           'Count unique colors
         AddMenuItem "image_maplocation", 3, 16, 3, "image_maplocation"  'Map photo location
     
+    
+    'Layer menu
+    AddMenuItem "layer_add", 4, 0                           'Add layer (top-level)
+        
+        '--> Add layer sub-menu
+        AddMenuItem "layer_addblank", 4, 0, 0               'Add blank layer
+        AddMenuItem "layer_duplicate", 4, 0, 1, "edit_copy" 'Add duplicate layer
+        AddMenuItem "layer_addfromclipboard", 4, 0, 3, "edit_paste"      'Add layer from clipboard
+        AddMenuItem "layer_addfromfile", 4, 0, 4, "file_open"            'Add layer from file
+    
+    AddMenuItem "layer_delete", 4, 1                        'Delete layer (top-level)
+        
+        '--> Delete layer sub-menu
+        AddMenuItem "layer_deletecurrent", 4, 1, 0, "generic_trash" 'Delete current layer
+        AddMenuItem "layer_deletehidden", 4, 1, 1, "generic_invisible" 'Delete all hidden layers
+    
+    AddMenuItem "layer_mergeup", 4, 3, , "layer_mergeup"    'Merge up
+    AddMenuItem "layer_mergedown", 4, 4, , "layer_mergedown" 'Merge down
+    
+    AddMenuItem "layer_order", 4, 5                         'Order (top-level)
+        
+        '--> Order layer sub-menu
+        AddMenuItem "layer_up", 4, 5, 0, "layer_up"         'Raise layer
+        AddMenuItem "layer_down", 4, 5, 1, "layer_down"     'Lower layer
+        AddMenuItem "layer_totop", 4, 5, 3                  'Raise to top
+        AddMenuItem "layer_tobottom", 4, 5, 4               'Lower to bottom
+        
+    AddMenuItem "layer_orientation", 4, 7                   'Layer Orientation (top-level)
+    
+        '--> Orientation sub-menu
+        AddMenuItem "layer_straighten", 4, 7, 0             'Straighten
+        AddMenuItem "layer_rotate90", 4, 7, 2, "generic_rotateright"  'Rotate Clockwise
+        AddMenuItem "layer_rotate270", 4, 7, 3, "generic_rotateleft"  'Rotate Counter-clockwise
+        AddMenuItem "layer_rotate180", 4, 7, 4              'Rotate 180
+        AddMenuItem "layer_rotatearbitrary", 4, 7, 5        'Rotate Arbitrary
+        
+        AddMenuItem "layer_fliphorizontal", 4, 7, 7, "image_fliphorizontal" 'Mirror
+        AddMenuItem "layer_flipvertical", 4, 7, 8, "image_flipvertical" 'Flip
+        
+    AddMenuItem "layer_resize", 4, 8                        'Layer Size (top-level)
+    
+        '--> Size sub-menu
+        AddMenuItem "layer_resetsize", 4, 8, 0, "generic_reset"         'Reset to original size
+        AddMenuItem "layer_resize", 4, 8, 2, "image_resize" 'Resize
+        AddMenuItem "layer_contentawareresize", 4, 8, 3     'Content-aware resize
+        
+    AddMenuItem "layer_crop", 4, 9, , "image_crop"          'Crop to Selection
+    
+    AddMenuItem "layer_transparency", 4, 11                 'Layer Transparency
+        
+        '--> Transparency sub-menu
+        AddMenuItem "layer_colortoalpha", 4, 11, 0          'Color to alpha
+        AddMenuItem "layer_removealpha", 4, 11, 1, "generic_trash" 'Remove alpha channel
+        
+    AddMenuItem "layer_rasterize", 4, 13       'Rasterize layer
+    
+    AddMenuItem "layer_flatten", 4, 15, , "layer_flatten"        'Flatten image
+    AddMenuItem "layer_mergevisible", 4, 16, , "generic_visible" 'Merge visible layers
+    
+    
     'Tools Menu
     AddMenuItem "tools_language", 8, 0, , "tools_language"  'Languages
     AddMenuItem "tools_languageeditor", 8, 1                'Language editor
@@ -142,9 +206,11 @@ Public Sub InitializeMenus()
     AddMenuItem "tools_options", 8, 7, , "pref_advanced"    'Options (Preferences)
     AddMenuItem "tools_plugins", 8, 8, , "tools_plugin"     'Plugin Manager
     
+    
     'Window Menu
     AddMenuItem "window_next", 9, 5, , "generic_next"          'Next image
     AddMenuItem "window_previous", 9, 6, , "generic_previous"  'Previous image
+    
     
     'Help Menu
     AddMenuItem "help_donate", 10, 0, , "help_heart"        'Donate

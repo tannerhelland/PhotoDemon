@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.34</langversion>
+<langversion>1.0.35</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -4968,11 +4968,6 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Add basic transparency</original>
-<translation>Додај основна транспарентност</translation>
-</phrase>
-
-<phrase>
 <original>Make color transparent</original>
 <translation>Направи боја транспарентен</translation>
 </phrase>
@@ -6470,11 +6465,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
-<original>Add alpha channel</original>
-<translation>Додадете алфа канал</translation>
-</phrase>
-
-<phrase>
 <original>Color to alpha</original>
 <translation>Боја на Алфа</translation>
 </phrase>
@@ -6484,7 +6474,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Отстрани алфа канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12823,42 +12813,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 
 <!-- END text for Layer_Flatten.frm-->
 
-<!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
-
-<phrase>
-<original>fully opaque</original>
-<translation>целосно нетранспарентно</translation>
-</phrase>
-
-<phrase>
-<original>fully transparent</original>
-<translation>целосно транспарентен</translation>
-</phrase>
-
-<phrase>
-<original>partially transparent</original>
-<translation>делумно проѕирно</translation>
-</phrase>
-
-<phrase>
-<original>new opacity</original>
-<translation>нови непроѕирноста</translation>
-</phrase>
-
-<phrase>
-<original>make image</original>
-<translation>направи слика</translation>
-</phrase>
-
-<phrase>
-<original>Adding new alpha channel to image</original>
-<translation>Додавање на нови алфа канал на сликата</translation>
-</phrase>
-
-<!-- Layer_Transparency_AddTransparency.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Layer_Transparency_AddTransparency.frm-->
-
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -12871,7 +12825,12 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>боја за да ги избришете (десен клик на преглед за да го изберете)</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Adding new alpha channel to image</original>
+<translation>Додавање на нови алфа канал на сликата</translation>
+</phrase>
+
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
 
@@ -14940,10 +14899,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4456 phrases. -->
+<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12382 total words. -->
 
 </pdData>
