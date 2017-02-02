@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2198</langversion>
+<langversion>6.8.2199</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4964,11 +4964,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Add basic transparency</original>
-<translation>Lägg grundläggande transparens</translation>
-</phrase>
-
-<phrase>
 <original>Make color transparent</original>
 <translation>Gör färgen transparent</translation>
 </phrase>
@@ -6466,11 +6461,6 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
-<original>Add alpha channel</original>
-<translation>Lägg till alfakanal</translation>
-</phrase>
-
-<phrase>
 <original>Color to alpha</original>
 <translation>Färg till alfa</translation>
 </phrase>
@@ -6480,7 +6470,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12818,42 +12808,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <!-- END text for Layer_Flatten.frm-->
 
-<!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
-
-<phrase>
-<original>fully opaque</original>
-<translation>helt ogenomskinlig</translation>
-</phrase>
-
-<phrase>
-<original>fully transparent</original>
-<translation>helt transparent</translation>
-</phrase>
-
-<phrase>
-<original>partially transparent</original>
-<translation>delvis transparent</translation>
-</phrase>
-
-<phrase>
-<original>new opacity</original>
-<translation>ny opacitet</translation>
-</phrase>
-
-<phrase>
-<original>make image</original>
-<translation>göra bilden</translation>
-</phrase>
-
-<phrase>
-<original>Adding new alpha channel to image</original>
-<translation>Lägga till ny alfakanal till bild</translation>
-</phrase>
-
-<!-- Layer_Transparency_AddTransparency.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Layer_Transparency_AddTransparency.frm-->
-
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -12866,7 +12820,12 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>färg för att radera (högerklicka på förhandsvisningen för att välja)</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Adding new alpha channel to image</original>
+<translation>Lägga till ny alfakanal till bild</translation>
+</phrase>
+
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
 
@@ -14935,10 +14894,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4456 phrases. -->
+<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12382 total words. -->
 
 </pdData>

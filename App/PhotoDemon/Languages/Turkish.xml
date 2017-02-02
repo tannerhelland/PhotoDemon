@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2198</langversion>
+<langversion>6.8.2199</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4962,11 +4962,6 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>Add basic transparency</original>
-<translation>Temel saydamlık ekle</translation>
-</phrase>
-
-<phrase>
 <original>Make color transparent</original>
 <translation>renk, şeffaf olun</translation>
 </phrase>
@@ -6463,11 +6458,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>Add alpha channel</original>
-<translation>Alfa kanalını ekle</translation>
-</phrase>
-
-<phrase>
 <original>Color to alpha</original>
 <translation>alfa Renk</translation>
 </phrase>
@@ -6477,7 +6467,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Alfa kanalını kaldırın</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12815,42 +12805,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <!-- END text for Layer_Flatten.frm-->
 
-<!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
-
-<phrase>
-<original>fully opaque</original>
-<translation>tam opak</translation>
-</phrase>
-
-<phrase>
-<original>fully transparent</original>
-<translation>tamamen şeffaf</translation>
-</phrase>
-
-<phrase>
-<original>partially transparent</original>
-<translation>kısmen saydam</translation>
-</phrase>
-
-<phrase>
-<original>new opacity</original>
-<translation>yeni donukluk</translation>
-</phrase>
-
-<phrase>
-<original>make image</original>
-<translation>resim yapmak</translation>
-</phrase>
-
-<phrase>
-<original>Adding new alpha channel to image</original>
-<translation>Görüntüye yeni alfa kanalı ekleme</translation>
-</phrase>
-
-<!-- Layer_Transparency_AddTransparency.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Layer_Transparency_AddTransparency.frm-->
-
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -12863,7 +12817,12 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>renk silmek için (sağ tıklayın seçmek için önizleme)</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Adding new alpha channel to image</original>
+<translation>Görüntüye yeni alfa kanalı ekleme</translation>
+</phrase>
+
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
 
@@ -14926,10 +14885,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4456 phrases. -->
+<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12382 total words. -->
 
 </pdData>

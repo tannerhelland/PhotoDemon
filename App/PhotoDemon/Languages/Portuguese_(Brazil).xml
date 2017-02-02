@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Portuguese (Brazil)</langname>
-<langversion>6.8.2198</langversion>
+<langversion>6.8.2199</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4969,11 +4969,6 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>Add basic transparency</original>
-<translation>Adicionar transparência básica</translation>
-</phrase>
-
-<phrase>
 <original>Make color transparent</original>
 <translation>Tornar a cor transparente</translation>
 </phrase>
@@ -6471,11 +6466,6 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 </phrase>
 
 <phrase>
-<original>Add alpha channel</original>
-<translation>Adicionar canal alfa</translation>
-</phrase>
-
-<phrase>
 <original>Color to alpha</original>
 <translation>Cor para alpha</translation>
 </phrase>
@@ -6485,7 +6475,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>Remover canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12823,42 +12813,6 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 
 <!-- END text for Layer_Flatten.frm-->
 
-<!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
-
-<phrase>
-<original>fully opaque</original>
-<translation>totalmente opaco</translation>
-</phrase>
-
-<phrase>
-<original>fully transparent</original>
-<translation>totalmente transparente</translation>
-</phrase>
-
-<phrase>
-<original>partially transparent</original>
-<translation>parcialmente transparente</translation>
-</phrase>
-
-<phrase>
-<original>new opacity</original>
-<translation>nova opacidade</translation>
-</phrase>
-
-<phrase>
-<original>make image</original>
-<translation>fazer imagem</translation>
-</phrase>
-
-<phrase>
-<original>Adding new alpha channel to image</original>
-<translation>Adicionando novo canal alfa para imagem</translation>
-</phrase>
-
-<!-- Layer_Transparency_AddTransparency.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Layer_Transparency_AddTransparency.frm-->
-
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -12871,7 +12825,12 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 <translation>cor para apagar (botão direito do mouse para selecionar pré-visualização)</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Adding new alpha channel to image</original>
+<translation>Adicionando novo canal alfa para imagem</translation>
+</phrase>
+
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
 
@@ -14940,10 +14899,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4456 phrases. -->
+<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12382 total words. -->
 
 </pdData>

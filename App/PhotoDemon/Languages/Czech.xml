@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2198</langversion>
+<langversion>6.8.2199</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4956,11 +4956,6 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
-<original>Add basic transparency</original>
-<translation>Přidejte základní průhlednost</translation>
-</phrase>
-
-<phrase>
 <original>Make color transparent</original>
 <translation>Udělat barva transparentní</translation>
 </phrase>
@@ -6455,11 +6450,6 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 </phrase>
 
 <phrase>
-<original>Add alpha channel</original>
-<translation>Přidat alfa kanál</translation>
-</phrase>
-
-<phrase>
 <original>Color to alpha</original>
 <translation>Barvu alfa</translation>
 </phrase>
@@ -6469,7 +6459,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Odstraňte alfa kanálu</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12807,42 +12797,6 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <!-- END text for Layer_Flatten.frm-->
 
-<!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
-
-<phrase>
-<original>fully opaque</original>
-<translation>zcela neprůhledné</translation>
-</phrase>
-
-<phrase>
-<original>fully transparent</original>
-<translation>plně transparentní</translation>
-</phrase>
-
-<phrase>
-<original>partially transparent</original>
-<translation>částečně průhledný</translation>
-</phrase>
-
-<phrase>
-<original>new opacity</original>
-<translation>nová neprůhlednost</translation>
-</phrase>
-
-<phrase>
-<original>make image</original>
-<translation>aby obraz</translation>
-</phrase>
-
-<phrase>
-<original>Adding new alpha channel to image</original>
-<translation>Přidání nové alfa kanál k obrazu</translation>
-</phrase>
-
-<!-- Layer_Transparency_AddTransparency.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Layer_Transparency_AddTransparency.frm-->
-
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -12855,7 +12809,12 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 <translation>Barva vymazat (pravým tlačítkem myši náhled na výběr)</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Adding new alpha channel to image</original>
+<translation>Přidání nové alfa kanál k obrazu</translation>
+</phrase>
+
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
 
@@ -14918,10 +14877,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4456 phrases. -->
+<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12382 total words. -->
 
 </pdData>

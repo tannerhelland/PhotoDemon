@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2198</langversion>
+<langversion>6.8.2199</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -4954,11 +4954,6 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Add basic transparency</original>
-<translation>Add alapvető átláthatóság</translation>
-</phrase>
-
-<phrase>
 <original>Make color transparent</original>
 <translation>Készítsen színes átlátszó</translation>
 </phrase>
@@ -6453,11 +6448,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
-<original>Add alpha channel</original>
-<translation>Add alfa csatorna</translation>
-</phrase>
-
-<phrase>
 <original>Color to alpha</original>
 <translation>Színes alfa</translation>
 </phrase>
@@ -6467,7 +6457,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12805,42 +12795,6 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <!-- END text for Layer_Flatten.frm-->
 
-<!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
-
-<phrase>
-<original>fully opaque</original>
-<translation>teljesen átlátszatlan</translation>
-</phrase>
-
-<phrase>
-<original>fully transparent</original>
-<translation>teljesen átlátszó</translation>
-</phrase>
-
-<phrase>
-<original>partially transparent</original>
-<translation>részben átlátszó</translation>
-</phrase>
-
-<phrase>
-<original>new opacity</original>
-<translation>új fényelnyelés</translation>
-</phrase>
-
-<phrase>
-<original>make image</original>
-<translation>a képet</translation>
-</phrase>
-
-<phrase>
-<original>Adding new alpha channel to image</original>
-<translation>Ha új alfa csatornát kép</translation>
-</phrase>
-
-<!-- Layer_Transparency_AddTransparency.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Layer_Transparency_AddTransparency.frm-->
-
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -12853,7 +12807,12 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>szín törléséhez (a jobb gombbal megtekintett kiválasztásához)</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Adding new alpha channel to image</original>
+<translation>Ha új alfa csatornát kép</translation>
+</phrase>
+
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
 
@@ -14916,10 +14875,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4456 phrases. -->
+<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12382 total words. -->
 
 </pdData>

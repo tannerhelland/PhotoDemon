@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.238</langversion>
+<langversion>6.7.239</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4959,11 +4959,6 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
-<original>Add basic transparency</original>
-<translation>Ajouter de la transparence de base</translation>
-</phrase>
-
-<phrase>
 <original>Make color transparent</original>
 <translation>Assurez couleur transparente</translation>
 </phrase>
@@ -6461,11 +6456,6 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 </phrase>
 
 <phrase>
-<original>Add alpha channel</original>
-<translation>Ajouter un canal alpha</translation>
-</phrase>
-
-<phrase>
 <original>Color to alpha</original>
 <translation>Couleur vers Alpha</translation>
 </phrase>
@@ -6475,7 +6465,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 189 were duplicates of existing phrases, so only 378 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -12812,42 +12802,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <!-- END text for Layer_Flatten.frm-->
 
-<!-- BEGIN text for Layer_Transparency_AddTransparency.frm (FormTransparency_Basic) -->
-
-<phrase>
-<original>fully opaque</original>
-<translation>totalement opaque</translation>
-</phrase>
-
-<phrase>
-<original>fully transparent</original>
-<translation>entièrement transparent</translation>
-</phrase>
-
-<phrase>
-<original>partially transparent</original>
-<translation>partiellement transparent</translation>
-</phrase>
-
-<phrase>
-<original>new opacity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>make image</original>
-<translation>faire une image</translation>
-</phrase>
-
-<phrase>
-<original>Adding new alpha channel to image</original>
-<translation>Ajout d'un nouveau canal alpha à l'image</translation>
-</phrase>
-
-<!-- Layer_Transparency_AddTransparency.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Layer_Transparency_AddTransparency.frm-->
-
 <!-- BEGIN text for Layer_Transparency_GreenScreen.frm (FormTransparency_FromColor) -->
 
 <phrase>
@@ -12860,7 +12814,12 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation>couleur à effacer (clic droit pour sélectionner l)</translation>
 </phrase>
 
-<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Adding new alpha channel to image</original>
+<translation>Ajout d'un nouveau canal alpha à l'image</translation>
+</phrase>
+
+<!-- Layer_Transparency_GreenScreen.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Layer_Transparency_GreenScreen.frm-->
 
@@ -14930,10 +14889,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2516</phrasecount>
+<phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4466 phrases. -->
-<!-- 1950 are duplicates, so only 2516 unique phrases have been written to file. -->
-<!-- These 2516 phrases contain approximately 12398 total words. -->
+<!-- As of this build, PhotoDemon contains 4456 phrases. -->
+<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- These 2509 phrases contain approximately 12382 total words. -->
 
 </pdData>
