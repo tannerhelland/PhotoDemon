@@ -2120,9 +2120,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             If IsMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                 
                 If Button <> 0 Then
-                    CanvasView.RequestCursor_PNG "HANDCLOSED", 0, 0
+                    CanvasView.RequestCursor_PNG "cursor_handclosed", 0, 0
                 Else
-                    CanvasView.RequestCursor_PNG "HANDOPEN", 0, 0
+                    CanvasView.RequestCursor_PNG "cursor_handopen", 0, 0
                 End If
             
             'If the cursor is not over the image, change to an arrow cursor
