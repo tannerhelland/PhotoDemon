@@ -334,7 +334,7 @@ Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal S
     If ViewportFitFullImage Then
         If AllowColorSelection Then
             forciblyShowOriginalImage = True
-            ucSupport.RequestCursor_PNG "C_PIPETTE", 0, 0
+            ucSupport.RequestCursor_PNG "cursor_eyedropper", 0, 16
         Else
             ucSupport.RequestCursor IDC_DEFAULT
         End If

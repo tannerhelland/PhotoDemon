@@ -3,19 +3,20 @@ Attribute VB_Name = "Icons_and_Cursors"
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2017 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 22/Tanner/15
-'Last updated by: Tanner
-'Last update: Shuffle all icons to account for changes to the Adjustments menu
+'Last updated: 03/February/17
+'Last update: add automatic high-DPI cursor support for custom cursors created from PNGs
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
-' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
-' Menu icons are extracted from a resource file (where they're stored in PNG format) and rendered to the menu at run-time.
-' See the clsMenuImage class for details on how this works. (A link to Leandro's original project can also be found there.)
+' functions to PhotoDemon.  As of 7.0, all icons in the program are stored in PD's custom resource file (in a variety of
+' formats, each one optimized for file size).  These icons are extracted, re-colored, resized (for high-DPI screens),
+' and rendered onto UI elements at run-time.
 '
-'This module also handles the rendering of dynamic form, program, and taskbar icons.  (When an image is loaded and active,
-' those icons can change to match the current image.)  As of February 2013, custom form icon generation has now been reworked
-' based off this MSDN article: http://support.microsoft.com/kb/318876
-' The new code is much leaner (and cleaner!) than past incarnations.
+'Menu icons currently use the clsMenuImage class by Leandro Ascierto.  Please see that class for details on how it works.
+' (A link to Leandro's original project can also be found there.)
+'
+'This module also handles the rendering of dynamic form, program, and taskbar icons.  When an image is loaded and active,
+' those icons can change to match the current image.  For an overview on how this works, you can see the following MSDN page:
+' http://support.microsoft.com/kb/318876
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -134,6 +135,9 @@ Private m_DefaultIconLarge As Long, m_DefaultIconSmall As Long
 'Size of the icons in the "Recent Files" menu.  This size is larger on Vista+ because it allows each menu to have its
 ' own image size (vs XP, where they must all match).
 Private m_RecentFileIconSize As Long
+
+'System cursor size (x, y).  X and Y sizes should always be identical, so we only cache one.
+Private m_CursorSize As Long
 
 'Load all the menu icons from PhotoDemon's embedded resource file
 Public Sub LoadMenuIcons()
@@ -766,54 +770,45 @@ Public Function CreateIconFromResource(ByVal resTitle As String) As Long
     
 End Function
 
-'Given an image in the .exe's resource section (typically a PNG image), return it as a cursor object.
-' The calling function is responsible for deleting the cursor once they are done with it.
+'Given an image in PD's theme file, return it as a system cursor handle.
+'PLEASE NOTE: PD auto-caches created cursors, and retains them for the life of the program.  They should not be manually freed.
 Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0) As Long
     
-    'Start by extracting the PNG resource data into a pdLayer object.
+    'If this is the first custom cursor request, cache the current system cursor size.
+    ' (This function matches those sizes automatically, and the caller does not have control over it, by design.)
+    
+    'Also, note that Windows cursors typically only use one quadrant of the current system cursor size.  This odd behavior
+    ' is why we divide the retrieved cursor size by two.
+    If (m_CursorSize = 0) Then
+        Const SM_CYCURSOR As Long = 14
+        m_CursorSize = GetSystemMetrics(SM_CYCURSOR) \ 2
+        If (m_CursorSize <= 0) Then m_CursorSize = FixDPI(16)
+    End If
+    
+    'Start by extracting the image itself into a DIB.  Note that the image will be auto-scaled to the system
+    ' cursor size calculated above.
     Dim resDIB As pdDIB
     Set resDIB = New pdDIB
-                
-    If LoadResourceToDIB(resTitle, resDIB) Then
-    
-        'If the user is running at non-96 DPI, we now need to perform DPI correction on the cursor.
-        ' NOTE: this line will need to be revisited if high-DPI cursors are added to the resource file.  The reason
-        '       I'm not making the change now is because PD's current cursor are not implemented uniformly, so I
-        '       need to standardize their size and layout before implementing a universal "resize per DPI" check.
-        '       The proper way to do this would be to retrieve cursor size from the system, then resize anything
-        '       that isn't already that size - I've made a note to do this eventually.
-        If (FixDPI(96) <> 96) Then
+    If LoadResourceToDIB(resTitle, resDIB, m_CursorSize, m_CursorSize) Then
         
-            'Create a temporary copy of the image
-            Dim dpiDIB As pdDIB
-            Set dpiDIB = New pdDIB
-            
-            dpiDIB.CreateFromExistingDIB resDIB
-            
-            'Erase and resize the primary DIB
-            resDIB.CreateBlank FixDPI(dpiDIB.GetDIBWidth), FixDPI(dpiDIB.GetDIBHeight), dpiDIB.GetDIBColorDepth
-            
-            'Use GDI+ to resize the cursor from dpiDIB into resDIB
-            GDIPlusResizeDIB resDIB, 0, 0, resDIB.GetDIBWidth, resDIB.GetDIBHeight, dpiDIB, 0, 0, dpiDIB.GetDIBWidth, dpiDIB.GetDIBHeight, GP_IM_NearestNeighbor
-        
-            'Release our temporary DIB
-            Set dpiDIB = Nothing
-        
-        End If
+        'Next, we need to scale the cursor hotspot to the actual cursor size.
+        ' (Cursor hotspots are always hard-coded on a 16x16 basis, then adjusted at run-time as necessary.)
+        curHotspotX = (CDbl(curHotspotX) / 16#) * m_CursorSize
+        curHotspotY = (CDbl(curHotspotY) / 16#) * m_CursorSize
         
         'Generate a blank monochrome mask to pass to the icon creation function.
         ' (This is a stupid Windows workaround for 32bpp cursors.  The cursor creation function always assumes
         '  the presence of a mask bitmap, so we have to submit one even if we want the PNG's alpha channel
-        '  used for transparency!)
+        '  used for transparency.)
         Dim monoBmp As Long
         monoBmp = CreateBitmap(resDIB.GetDIBWidth, resDIB.GetDIBHeight, 1, 1, ByVal 0&)
         
-        'Create an icon header and point it at our temp mask bitmap and our PNG resource
+        'Create an icon header and point it at our temporary mask and original DIB resource
         Dim icoInfo As ICONINFO
         With icoInfo
             .fIcon = False
-            .xHotspot = FixDPI(curHotspotX)
-            .yHotspot = FixDPI(curHotspotY)
+            .xHotspot = curHotspotX
+            .yHotspot = curHotspotY
             .hbmMask = monoBmp
             .hbmColor = resDIB.GetDIBHandle
         End With
@@ -825,10 +820,10 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
         DeleteObject monoBmp
         Set resDIB = Nothing
         
-        'Debug.Print "Custom cursor (""" & resTitle & """ : " & createCursorFromResource & ") created successfully!"
-        
     Else
-        Debug.Print "GDI+ couldn't load resource image - sorry!"
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  Icons_and_Cursors.CreateCursorFromResource failed to find the resource: " & resTitle
+        #End If
     End If
     
     Exit Function
@@ -860,7 +855,7 @@ Public Sub UnloadAllCursors()
     
 End Sub
 
-'Use any 32bpp PNG resource as a cursor .  When setting the mouse pointer of VB objects, please use setPNGCursorToObject, below.
+'Use any 32bpp PNG resource as a cursor .  When setting the mouse pointer of VB objects, please use SetPNGCursorToObject, below.
 Public Sub SetPNGCursorToHwnd(ByVal dstHwnd As Long, ByVal pngTitle As String, Optional ByVal curHotspotX As Long = 0, Optional ByVal curHotspotY As Long = 0)
     SetClassLong dstHwnd, GCL_HCURSOR, RequestCustomCursor(pngTitle, curHotspotX, curHotspotY)
 End Sub
@@ -895,7 +890,7 @@ End Sub
 
 'If a custom PNG cursor has not been loaded, this function will load the PNG, convert it to cursor format, then store
 ' the cursor resource for future reference (so the image doesn't have to be loaded again).
-Public Function RequestCustomCursor(ByVal CursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
+Public Function RequestCustomCursor(ByVal resCursorName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0) As Long
 
     Dim i As Long
     Dim cursorLocation As Long
@@ -905,11 +900,11 @@ Public Function RequestCustomCursor(ByVal CursorName As String, Optional ByVal c
     cursorAlreadyLoaded = False
     
     'Loop through all cursors that have been loaded, and see if this one has been requested already.
-    If numOfCustomCursors > 0 Then
+    If (numOfCustomCursors > 0) Then
     
         For i = 0 To numOfCustomCursors - 1
         
-            If (customCursorNames(i) = CursorName) Then
+            If (StrComp(customCursorNames(i), resCursorName, vbBinaryCompare) = 0) Then
                 cursorAlreadyLoaded = True
                 cursorLocation = i
                 Exit For
@@ -924,12 +919,12 @@ Public Function RequestCustomCursor(ByVal CursorName As String, Optional ByVal c
         RequestCustomCursor = customCursorHandles(cursorLocation)
     Else
         Dim tmpHandle As Long
-        tmpHandle = CreateCursorFromResource(CursorName, cursorHotspotX, cursorHotspotY)
+        tmpHandle = CreateCursorFromResource(resCursorName, cursorHotspotX, cursorHotspotY)
         
         If (tmpHandle <> 0) Then
             ReDim Preserve customCursorNames(0 To numOfCustomCursors) As String
             ReDim Preserve customCursorHandles(0 To numOfCustomCursors) As Long
-            customCursorNames(numOfCustomCursors) = CursorName
+            customCursorNames(numOfCustomCursors) = resCursorName
             customCursorHandles(numOfCustomCursors) = tmpHandle
             numOfCustomCursors = numOfCustomCursors + 1
         End If
