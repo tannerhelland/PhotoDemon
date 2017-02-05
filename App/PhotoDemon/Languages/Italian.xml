@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.239</langversion>
+<langversion>6.7.240</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -5918,8 +5918,8 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Support PhotoDemon with a small donation (thank you!)</original>
-<translation>Sostieni PhotoDemon con una piccola donazione (grazie!)</translation>
+<original>Support us with a small donation (thank you!)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5938,23 +5938,23 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>&Visit the PhotoDemon website</original>
-<translation>&Visita il sito di PhotoDemon</translation>
+<original>&Visit PhotoDemon website</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Download PhotoDemon's source code</original>
-<translation>Scarica il codice sorgente di PhotoDemon</translation>
+<original>Download PhotoDemon source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Read PhotoDemon's license and terms of use</original>
-<translation>Leggi la licenza di PhotoDemon ed i termini di utilizzo</translation>
+<original>Read license and terms of use</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>&About PhotoDemon</original>
-<translation>&A proposito di PhotoDemon</translation>
+<original>&About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14891,6 +14891,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- As of this build, PhotoDemon contains 4456 phrases. -->
 <!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12382 total words. -->
+<!-- These 2509 phrases contain approximately 12381 total words. -->
 
 </pdData>

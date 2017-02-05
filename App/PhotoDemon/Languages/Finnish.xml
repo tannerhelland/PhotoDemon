@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2199</langversion>
+<langversion>6.8.2200</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -5922,8 +5922,8 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>Support PhotoDemon with a small donation (thank you!)</original>
-<translation>Tuki PhotoDemon pienellä lahjoitus (kiitos!)</translation>
+<original>Support us with a small donation (thank you!)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5942,23 +5942,23 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>&Visit the PhotoDemon website</original>
-<translation>Käy PhotoDemon sivustolla</translation>
+<original>&Visit PhotoDemon website</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Download PhotoDemon's source code</original>
-<translation>Lataa Photo Demon lähdekoodista</translation>
+<original>Download PhotoDemon source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Read PhotoDemon's license and terms of use</original>
-<translation>Lue Photo Demon käyttöoikeuden ja käyttöehtoja</translation>
+<original>Read license and terms of use</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>&About PhotoDemon</original>
-<translation>Tietoja PhotoDemon</translation>
+<original>&About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14897,6 +14897,6 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- As of this build, PhotoDemon contains 4456 phrases. -->
 <!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12382 total words. -->
+<!-- These 2509 phrases contain approximately 12381 total words. -->
 
 </pdData>

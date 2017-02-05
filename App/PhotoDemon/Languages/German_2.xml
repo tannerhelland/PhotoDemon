@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2319</langversion>
+<langversion>6.8.2320</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5929,8 +5929,8 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>Support PhotoDemon with a small donation (thank you!)</original>
-<translation>PhotoDemon mit einer kleinen Spende unterstützen (Vielen Dank!)</translation>
+<original>Support us with a small donation (thank you!)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5949,23 +5949,23 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>&Visit the PhotoDemon website</original>
-<translation>Die Webseite von PhotoDemon &besuchen</translation>
+<original>&Visit PhotoDemon website</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Download PhotoDemon's source code</original>
-<translation>Quellcode von PhotoDemon herunterladen</translation>
+<original>Download PhotoDemon source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Read PhotoDemon's license and terms of use</original>
-<translation>Lizenz und Nutzungsbedingungen von PhotoDemon lesen</translation>
+<original>Read license and terms of use</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>&About PhotoDemon</original>
-<translation>&Über PhotoDemon</translation>
+<original>&About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14902,6 +14902,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- As of this build, PhotoDemon contains 4456 phrases. -->
 <!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12382 total words. -->
+<!-- These 2509 phrases contain approximately 12381 total words. -->
 
 </pdData>

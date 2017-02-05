@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.181</langversion>
+<langversion>6.6.182</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -5925,8 +5925,8 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>Support PhotoDemon with a small donation (thank you!)</original>
-<translation>Dukung PhotoDemon dengan sumbangan kecil (terima kasih!)</translation>
+<original>Support us with a small donation (thank you!)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5945,23 +5945,23 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 </phrase>
 
 <phrase>
-<original>&Visit the PhotoDemon website</original>
-<translation>kunjungi website PhotoDemon</translation>
+<original>&Visit PhotoDemon website</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Download PhotoDemon's source code</original>
-<translation>Unduh source code Foto Demon</translation>
+<original>Download PhotoDemon source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Read PhotoDemon's license and terms of use</original>
-<translation>Baca lisensi PhotoDemon dan persyaratan penggunaan</translation>
+<original>Read license and terms of use</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>&About PhotoDemon</original>
-<translation>Tentang PhotoDemon</translation>
+<original>&About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14898,6 +14898,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- As of this build, PhotoDemon contains 4456 phrases. -->
 <!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12382 total words. -->
+<!-- These 2509 phrases contain approximately 12381 total words. -->
 
 </pdData>

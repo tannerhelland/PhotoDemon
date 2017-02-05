@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2199</langversion>
+<langversion>6.8.2200</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -5924,8 +5924,8 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Support PhotoDemon with a small donation (thank you!)</original>
-<translation>Stöd PhotoDemon med en liten donation (tack!)</translation>
+<original>Support us with a small donation (thank you!)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5944,23 +5944,23 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>&Visit the PhotoDemon website</original>
-<translation>Besök PhotoDemon hemsida</translation>
+<original>&Visit PhotoDemon website</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Download PhotoDemon's source code</original>
-<translation>Ladda PhotoDemon källkod</translation>
+<original>Download PhotoDemon source code</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Read PhotoDemon's license and terms of use</original>
-<translation>Läs PhotoDemon licens-och användningsvillkor</translation>
+<original>Read license and terms of use</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>&About PhotoDemon</original>
-<translation>Om PhotoDemon</translation>
+<original>&About</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14898,6 +14898,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- As of this build, PhotoDemon contains 4456 phrases. -->
 <!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12382 total words. -->
+<!-- These 2509 phrases contain approximately 12381 total words. -->
 
 </pdData>
