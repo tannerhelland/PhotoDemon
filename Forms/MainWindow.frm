@@ -1408,11 +1408,11 @@ Begin VB.Form FormMain
          Index           =   6
       End
       Begin VB.Menu mnuTool 
-         Caption         =   "Options"
+         Caption         =   "Options..."
          Index           =   7
       End
       Begin VB.Menu mnuTool 
-         Caption         =   "Plugin manager"
+         Caption         =   "Plugin manager..."
          Index           =   8
       End
       Begin VB.Menu mnuTool 
@@ -1555,7 +1555,7 @@ Begin VB.Form FormMain
    Begin VB.Menu MnuHelpTop 
       Caption         =   "&Help"
       Begin VB.Menu MnuHelp 
-         Caption         =   "Support PhotoDemon with a small donation (thank you!)"
+         Caption         =   "Support us with a small donation (thank you!)"
          Index           =   0
       End
       Begin VB.Menu MnuHelp 
@@ -1579,15 +1579,15 @@ Begin VB.Form FormMain
          Index           =   5
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "&Visit the PhotoDemon website"
+         Caption         =   "&Visit PhotoDemon website"
          Index           =   6
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Download PhotoDemon's source code"
+         Caption         =   "Download PhotoDemon source code"
          Index           =   7
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "Read PhotoDemon's license and terms of use"
+         Caption         =   "Read license and terms of use"
          Index           =   8
       End
       Begin VB.Menu MnuHelp 
@@ -1595,7 +1595,7 @@ Begin VB.Form FormMain
          Index           =   9
       End
       Begin VB.Menu MnuHelp 
-         Caption         =   "&About PhotoDemon"
+         Caption         =   "&About"
          Index           =   10
       End
    End
