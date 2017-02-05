@@ -23,8 +23,8 @@ Private Declare Function InflateRect Lib "user32" (ByRef lpRect As RECT, ByVal x
 Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As LAYER_TYPE = PDL_IMAGE)
 
     'Validate the requested layer index
-    If dLayerIndex < 0 Then dLayerIndex = 0
-    If dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1 Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    If (dLayerIndex < 0) Then dLayerIndex = 0
+    If (dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
     
     'Ask the parent pdImage to create a new layer object
     Dim newLayerID As Long
@@ -35,6 +35,7 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.CreateBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+    tmpDIB.SetInitialAlphaPremultiplicationState True
     pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer newLayerType, g_Language.TranslateMessage("Blank layer"), tmpDIB
     
     'Make the blank layer the new active layer
