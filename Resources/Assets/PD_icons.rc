@@ -3,23 +3,6 @@ AAA          ICON    MOVEABLE        PRELOAD         PHOTO_all.ico
 
 //PNGs for use in menus - these are stored as custom data-types
 
-//Select menu
-SELECTALL    CUSTOM  MOVEABLE        LOADONCALL      select_all.png
-SELECTNONE   CUSTOM  MOVEABLE        LOADONCALL      select_none.png
-SELECTINVERT CUSTOM  MOVEABLE        LOADONCALL      select_invert.png
-SELECTGROW   CUSTOM  MOVEABLE        LOADONCALL      select_grow.png
-SELECTSHRINK CUSTOM  MOVEABLE        LOADONCALL      select_shrink.png
-SELECTBORDER CUSTOM  MOVEABLE        LOADONCALL      select_border.png
-SELECTFTHR   CUSTOM  MOVEABLE        LOADONCALL      select_feather.png
-SELECTSHRP   CUSTOM  MOVEABLE        LOADONCALL      select_sharpen.png
-SELECTERASE  CUSTOM  MOVEABLE        LOADONCALL      selection_erase.png
-SELECTLOAD   CUSTOM  MOVEABLE        LOADONCALL      select_load.png
-SELECTSAVE   CUSTOM  MOVEABLE        LOADONCALL      disk.png
-SELECTEXPORT CUSTOM  MOVEABLE        LOADONCALL      select_export.png
-//--> Export sub-menu
-EXPRTSELAREA CUSTOM  MOVEABLE        LOADONCALL      selected_area_export.png
-EXPRTSELMASK CUSTOM  MOVEABLE        LOADONCALL      mask.png
-
 //Adjustments menu
 
 AUTOCORRECT  CUSTOM  MOVEABLE        LOADONCALL      light_bulb.png

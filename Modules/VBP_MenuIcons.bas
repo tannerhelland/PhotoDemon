@@ -191,23 +191,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     Menus.ApplyIconsToMenus
     
     
-    'Select Menu
-    AddMenuIcon "SELECTALL", 5, 0       'Select all
-    AddMenuIcon "SELECTNONE", 5, 1      'Select none
-    AddMenuIcon "SELECTINVERT", 5, 2    'Invert selection
-    AddMenuIcon "SELECTGROW", 5, 4      'Grow selection
-    AddMenuIcon "SELECTSHRINK", 5, 5    'Shrink selection
-    AddMenuIcon "SELECTBORDER", 5, 6    'Border selection
-    AddMenuIcon "SELECTFTHR", 5, 7      'Feather selection
-    AddMenuIcon "SELECTSHRP", 5, 8      'Sharpen selection
-    AddMenuIcon "SELECTERASE", 5, 10    'Erase selected area
-    AddMenuIcon "SELECTLOAD", 5, 12     'Load selection from file
-    AddMenuIcon "SELECTSAVE", 5, 13     'Save selection to file
-    AddMenuIcon "SELECTEXPORT", 5, 14   'Export selection (top-level)
-        '--> Export Selection sub-menu
-        AddMenuIcon "EXPRTSELAREA", 5, 14, 0  'Export selected area as image
-        AddMenuIcon "EXPRTSELMASK", 5, 14, 1  'Export selection mask as image
-    
     'Adjustments Menu
     
     'Auto correct

@@ -184,11 +184,30 @@ Public Sub InitializeMenus()
         AddMenuItem "layer_colortoalpha", 4, 11, 0          'Color to alpha
         AddMenuItem "layer_removealpha", 4, 11, 1, "generic_trash" 'Remove alpha channel
         
-    AddMenuItem "layer_rasterize", 4, 13       'Rasterize layer
+    AddMenuItem "layer_rasterize", 4, 13                    'Rasterize layer
     
     AddMenuItem "layer_flatten", 4, 15, , "layer_flatten"        'Flatten image
     AddMenuItem "layer_mergevisible", 4, 16, , "generic_visible" 'Merge visible layers
-    
+   
+   
+    'Select Menu
+    AddMenuItem "select_all", 5, 0                          'Select all
+    AddMenuItem "select_none", 5, 1                         'Select none
+    AddMenuItem "select_invert", 5, 2                       'Invert selection
+    AddMenuItem "select_grow", 5, 4                         'Grow selection
+    AddMenuItem "select_shrink", 5, 5                       'Shrink selection
+    AddMenuItem "select_border", 5, 6                       'Border selection
+    AddMenuItem "select_feather", 5, 7                      'Feather selection
+    AddMenuItem "select_sharpen", 5, 8                      'Sharpen selection
+    AddMenuItem "select_erasearea", 5, 10                   'Erase selected area
+    AddMenuItem "select_load", 5, 12, , "file_open"         'Load selection from file
+    AddMenuItem "select_save", 5, 13, , "file_save"         'Save selection to file
+    AddMenuItem "select_export", 5, 14                      'Export selection (top-level)
+        
+        '--> Export Selection sub-menu
+        AddMenuItem "select_exportarea", 5, 14, 0           'Export selected area as image
+        AddMenuItem "select_exportmask", 5, 14, 1           'Export selection mask as image
+        
     
     'Tools Menu
     AddMenuItem "tools_language", 8, 0, , "tools_language"  'Languages
