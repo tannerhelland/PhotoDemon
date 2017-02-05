@@ -81,6 +81,7 @@ Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIn
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'Some display settings are stored in the registry (e.g. EDID).
+Private Declare Function RegCloseKey Lib "advapi32" (ByVal hKey As Long) As Long
 Private Declare Function RegOpenKeyEx Lib "advapi32" Alias "RegOpenKeyExW" (ByVal hKey As Long, ByVal ptrToSubKey As Long, ByVal ulOptions As Long, ByVal samDesired As Long, ByRef phkResult As Long) As Long
 Private Declare Function RegQueryValueEx Lib "advapi32" Alias "RegQueryValueExW" (ByVal hKey As Long, ByVal lpszValueName As Long, ByVal lpReserved As Long, ByRef lpType As Long, ByVal ptrToData As Long, ByRef lpcbData As Long) As Long
 
@@ -536,6 +537,14 @@ Private Function RetrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal regist
             #End If
             
         End If
+        
+        'Make sure to close the registry key when we're done with it.  Thank you to vbforums.com user Elroy for
+        ' catching and reporting this.
+        successCheck = RegCloseKey(regHandle)
+        
+        #If DEBUGMODE = 1 Then
+            If (successCheck <> 0) Then pdDebug.LogAction "WARNING!  pdDisplays.RetrieveEDIDFromRegistry failed to close registry key handle #" & regHandle
+        #End If
     
     'Couldn't open the registry key.  Exit.
     Else
