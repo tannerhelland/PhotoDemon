@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3791,7 +3791,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>Boja compositing</translation>
 </phrase>
 
 <phrase>
@@ -3801,17 +3801,17 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>transparentnost formatu</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>format boje</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>transparentnost cut-off</translation>
 </phrase>
 
 <phrase>
@@ -3821,7 +3821,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>prozirna boja</translation>
 </phrase>
 
 <phrase>
@@ -4233,7 +4233,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>Pregled metapodataka prije spremanja</translation>
 </phrase>
 
 <phrase>
@@ -5639,7 +5639,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5929,7 +5929,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Podržite nas s malom donacijom (hvala!)</translation>
 </phrase>
 
 <phrase>
@@ -5949,22 +5949,22 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& Posjetite PhotoDemon web stranica</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Preuzimanje PhotoDemon izvorni kod</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Pročitajte licencu i uvjete korištenja</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&Oko</translation>
 </phrase>
 
 <phrase>
@@ -10173,12 +10173,12 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>Vrsta rub</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Generiranje obris slike</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10189,12 +10189,12 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>podrhtavanje</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>smanjiti ispuštanje boje</translation>
 </phrase>
 
 <phrase>
@@ -10204,7 +10204,7 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>sačuvati bijeloj i crnoj boji</translation>
 </phrase>
 
 <phrase>
@@ -10214,7 +10214,7 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>medijan rez</translation>
 </phrase>
 
 <phrase>
@@ -10224,7 +10224,7 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10234,12 +10234,12 @@ If želite ga spremiti sa drugim imenom datoteke, odaberite "Cancel", zatim pomo
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Generiranje optimalnog palete</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Primjena nove palete na slici</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12010,22 +12010,22 @@ I Iskreno se ispričavamo zbog neugodnosti, ali na žalost ne postoji ništa %2 
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>Vrsta PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>osnovne postavke</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>Napredne postavke</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>postavke metapodataka</translation>
 </phrase>
 
 <phrase>
@@ -12035,7 +12035,7 @@ I Iskreno se ispričavamo zbog neugodnosti, ali na žalost ne postoji ništa %2 
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>pisati interlaced PNG</translation>
 </phrase>
 
 <phrase>
@@ -12045,7 +12045,7 @@ I Iskreno se ispričavamo zbog neugodnosti, ali na žalost ne postoji ništa %2 
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>embed boja pozadine (pozadinsko zračenje komad)</translation>
 </phrase>
 
 <phrase>
@@ -12055,7 +12055,7 @@ I Iskreno se ispričavamo zbog neugodnosti, ali na žalost ne postoji ništa %2 
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>optimizacija (OptiPNG)</translation>
 </phrase>
 
 <phrase>

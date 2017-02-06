@@ -1772,7 +1772,7 @@ End Sub
 
 'When the main form is resized, we must re-align the main canvas to match
 Private Sub Form_Resize()
-    If Not (g_WindowManager Is Nothing) Then
+    If (Not g_WindowManager Is Nothing) Then
         If g_WindowManager.GetAutoRefreshMode Then UpdateMainLayout
     Else
         UpdateMainLayout
@@ -3118,8 +3118,7 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Shutting down window manager..."
     #End If
     
-    g_WindowManager.UnregisterForm Me
-    g_WindowManager.SaveAllWindowLocations
+    g_WindowManager.UnregisterMainForm Me
     
     'As a final failsafe, forcibly unload any remaining forms
     #If DEBUGMODE = 1 Then

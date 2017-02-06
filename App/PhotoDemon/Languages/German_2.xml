@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2320</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -62,7 +62,7 @@
 
 <phrase>
 <original>Building font cache</original>
-<translation>Fontache wird aufgebaut</translation>
+<translation>Fontcache wird aufgebaut</translation>
 </phrase>
 
 <phrase>
@@ -5930,7 +5930,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Uns mit einer kleinen Spende unterstützen (Vielen Dank!)</translation>
 </phrase>
 
 <phrase>
@@ -5950,22 +5950,22 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>Website von PhotoDemon &besuchen</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Quellcode von PhotoDemon herunterladen</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Lizenz und Nutzungsbedingungen lesen</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&Über</translation>
 </phrase>
 
 <phrase>

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3792,7 +3792,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>warna penggubahan</translation>
 </phrase>
 
 <phrase>
@@ -3802,17 +3802,17 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>format ketelusan</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>format warna</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>ketelusan potong</translation>
 </phrase>
 
 <phrase>
@@ -3822,7 +3822,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>warna yang telus</translation>
 </phrase>
 
 <phrase>
@@ -4234,7 +4234,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>kajian sebelum menyimpan metadata</translation>
 </phrase>
 
 <phrase>
@@ -5640,7 +5640,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5930,7 +5930,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Menyokong kami dengan sumbangan kecil (terima kasih!)</translation>
 </phrase>
 
 <phrase>
@@ -5950,22 +5950,22 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& Lawati laman web PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Muat turun kod sumber PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Baca lesen dan syarat-syarat penggunaan</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>& About</translation>
 </phrase>
 
 <phrase>
@@ -10174,12 +10174,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>jenis kelebihan</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Menjana menggariskan imej</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10190,12 +10190,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>penggetaran</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>mengurangkan pendarahan warna</translation>
 </phrase>
 
 <phrase>
@@ -10205,7 +10205,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>memelihara putih dan hitam</translation>
 </phrase>
 
 <phrase>
@@ -10215,7 +10215,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>cut median</translation>
 </phrase>
 
 <phrase>
@@ -10225,7 +10225,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10235,12 +10235,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Menjana palet optimum</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Memohon palet baru kepada imej</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12011,22 +12011,22 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>jenis PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>tetapan asas</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>tetapan lanjutan</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>tetapan metadata</translation>
 </phrase>
 
 <phrase>
@@ -12036,7 +12036,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>naik PNG berjalin</translation>
 </phrase>
 
 <phrase>
@@ -12046,7 +12046,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>warna latar belakang embed (bKGD sebahagian)</translation>
 </phrase>
 
 <phrase>
@@ -12056,7 +12056,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>pengoptimuman (OptiPNG)</translation>
 </phrase>
 
 <phrase>

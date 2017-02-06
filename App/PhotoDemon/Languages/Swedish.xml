@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3787,7 +3787,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>compositing färg</translation>
 </phrase>
 
 <phrase>
@@ -3797,17 +3797,17 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>transparens format</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>färgformat </translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>transparens cut-off</translation>
 </phrase>
 
 <phrase>
@@ -3817,7 +3817,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>transparent färg</translation>
 </phrase>
 
 <phrase>
@@ -4229,7 +4229,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>översyn metadata innan du sparar</translation>
 </phrase>
 
 <phrase>
@@ -5635,7 +5635,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5925,7 +5925,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Stöd oss med en liten donation (tack!)</translation>
 </phrase>
 
 <phrase>
@@ -5945,22 +5945,22 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& Besök PhotoDemon webbplats</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Hämta PhotoDemon källkod</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Läs licens och användningsvillkor </translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&Handla om</translation>
 </phrase>
 
 <phrase>
@@ -10169,12 +10169,12 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>kanttyp</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Generering av bildens konturer</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10185,12 +10185,12 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>dithering</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>reducera färgblödning</translation>
 </phrase>
 
 <phrase>
@@ -10200,7 +10200,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>bevara vit och svart</translation>
 </phrase>
 
 <phrase>
@@ -10210,7 +10210,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>median cut</translation>
 </phrase>
 
 <phrase>
@@ -10220,7 +10220,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10230,12 +10230,12 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Generering av optimal palett</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Tillämpa ny palett till bild</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12005,22 +12005,22 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>PNG typ</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>grund inställningar</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>avancerade inställningar</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>metadatainställningar </translation>
 </phrase>
 
 <phrase>
@@ -12030,7 +12030,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>skriva flätad PNG</translation>
 </phrase>
 
 <phrase>
@@ -12040,7 +12040,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>bädda in bakgrundsfärg  (Bkgd bit)</translation>
 </phrase>
 
 <phrase>
@@ -12050,7 +12050,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>optimering (optipng)</translation>
 </phrase>
 
 <phrase>

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flicker-Free Window Painter class
 'Copyright 2014-2017 by Tanner Helland
 'Created: 20/October/14  (but built from many parts existing earlier)
-'Last updated: 15/June/16
-'Last update: improve WM_ERASEBKGND handling for controls without persistent back buffers
+'Last updated: 06/February/17
+'Last update: migrate to safer subclassing technique
 '
 'Now that PD provides so many of its own user-controls, we have to do a lot of manual window painting.  Supporting the
 ' full spectrum of Windows versions (particularly XP), theme settings (including accessibility themes), window settings
@@ -76,20 +76,20 @@ Private m_WindowDC As Long
 Private m_WantEraseMessages As Boolean
 
 'Subclasser for intercepting window messages
-Private cSubclass As cSelfSubHookCallback
+Implements ISubclass
 
 Private Sub Class_Initialize()
     m_hWnd = 0
 End Sub
 
 Private Sub Class_Terminate()
-    If (Not (cSubclass Is Nothing)) Then
-        If (m_hWnd <> 0) Then
-            cSubclass.ssc_UnSubclass m_hWnd
-            m_hWnd = 0
-        End If
-        cSubclass.ssc_Terminate
-        Set cSubclass = Nothing
+    EndSubclassing
+End Sub
+
+Private Sub EndSubclassing()
+    If (m_hWnd <> 0) Then
+        VB_Hacks.StopSubclassing m_hWnd, Me
+        m_hWnd = 0
     End If
 End Sub
 
@@ -100,20 +100,13 @@ Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boo
     If g_IsProgramRunning Then
     
         'Release the existing subclasser, if any
-        If Not (cSubclass Is Nothing) Then
-            If (m_hWnd <> 0) Then
-                cSubclass.ssc_UnSubclass m_hWnd
-                cSubclass.ssc_Terminate
-            End If
-        End If
+        EndSubclassing
         
         m_hWnd = srcHwnd
     
         'Subclass all necessary messages for proper window painting
         If (m_hWnd <> 0) Then
-            If (cSubclass Is Nothing) Then Set cSubclass = New cSelfSubHookCallback
-            cSubclass.ssc_Subclass m_hWnd, , 1, Me, , , isAPIWindow
-            cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+            VB_Hacks.StartSubclassing m_hWnd, Me
             m_WantEraseMessages = wantEraseMessages
         End If
     
@@ -174,74 +167,49 @@ Public Sub PrepPaintEvent()
         
 End Sub
 
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Sub HandleEraseEvent(ByVal wParam As Long)
 
+    'Back up the current DC
+    Dim tmpDC As Long
+    tmpDC = m_WindowDC
+    
+    'wParam contains the new window DC
+    m_WindowDC = wParam
+    
+    'Let the control repaint
+    RaiseEvent EraseBkgnd
+    
+    'Reset everything to its original state
+    m_WindowDC = tmpDC
+    
+End Sub
 
-    If (uMsg = WM_PAINT) Then
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+
+    If (uiMsg = WM_PAINT) Then
         
         'Ignore paint requests for empty regions
-        If GetUpdateRect(m_hWnd, m_UpdateRect, 0) <> 0 Then
-            PrepPaintEvent
-        End If
+        If (GetUpdateRect(m_hWnd, m_UpdateRect, 0) <> 0) Then PrepPaintEvent
         
-        'Mark the message as handled and exit
-        bHandled = True
-        lReturn = 0
+        'Deliberately skip DefSubclassProc, as we've handled all painting
+        ISubclass_WindowMsg = 0
                 
-    ElseIf (uMsg = WM_ERASEBKGND) Then
+    ElseIf (uiMsg = WM_ERASEBKGND) Then
         
-        'Controls that do not maintain persistent back buffers need to respond to erase messages
-        If m_WantEraseMessages Then
-            
-            'Back up the current DC
-            Dim tmpDC As Long
-            tmpDC = m_WindowDC
-            
-            'wParam contains the new window DC
-            m_WindowDC = wParam
-            
-            'Let the control repaint
-            RaiseEvent EraseBkgnd
-            
-            'Reset everything
-            m_WindowDC = tmpDC
-            
-        End If
+        'Controls that do not maintain persistent back buffers need to respond to erase messages.
+        ' (Note that the HandleEraseEvent function contains very little code, but we don't want local
+        '  variables to clog up the stack, so we scope them externally.)
+        If m_WantEraseMessages Then HandleEraseEvent wParam
         
-        bHandled = True
-        lReturn = 1
+        'Deliberately skip DefSubclassProc, as we've handled all painting
+        ISubclass_WindowMsg = 1
+    
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        EndSubclassing
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
+    Else
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     End If
-
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
+    
+End Function

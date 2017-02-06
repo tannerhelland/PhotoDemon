@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3785,7 +3785,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>koontavista väri</translation>
 </phrase>
 
 <phrase>
@@ -3795,17 +3795,17 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>avoimuus muoto</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>värimuodossa</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>läpinäkyvyys cut-off</translation>
 </phrase>
 
 <phrase>
@@ -3815,7 +3815,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>läpinäkyvä väri</translation>
 </phrase>
 
 <phrase>
@@ -4227,7 +4227,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>arvostelu metadata ennen tallennusta</translation>
 </phrase>
 
 <phrase>
@@ -5633,7 +5633,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5923,7 +5923,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Tue meitä pienen lahjoituksen (kiitos!)</translation>
 </phrase>
 
 <phrase>
@@ -5943,22 +5943,22 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& Käy PhotoDemon sivustolla</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Lataa PhotoDemon lähdekoodi</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Lue lisenssi ja käyttöehdot</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&Noin</translation>
 </phrase>
 
 <phrase>
@@ -10167,12 +10167,12 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>reunamuodolla</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Luodaan kuvan ääriviivoja</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10183,12 +10183,12 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>kiertelevät</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>vähentää väri vuoto</translation>
 </phrase>
 
 <phrase>
@@ -10198,7 +10198,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>säilyttää valkoinen ja musta</translation>
 </phrase>
 
 <phrase>
@@ -10208,7 +10208,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>mediaani cut</translation>
 </phrase>
 
 <phrase>
@@ -10218,7 +10218,7 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10228,12 +10228,12 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Luodaan optimaalinen paletti</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Soveltamalla uusia paletti kuvan</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12004,22 +12004,22 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>PNG tyyppi</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>Perus asetukset</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>Lisäasetukset</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>metatietoasetuksia</translation>
 </phrase>
 
 <phrase>
@@ -12029,7 +12029,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>kirjoittaa lomitettu PNG</translation>
 </phrase>
 
 <phrase>
@@ -12039,7 +12039,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>embed taustavärin (Bkgd murikka)</translation>
 </phrase>
 
 <phrase>
@@ -12049,7 +12049,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>optimointi (optipng)</translation>
 </phrase>
 
 <phrase>

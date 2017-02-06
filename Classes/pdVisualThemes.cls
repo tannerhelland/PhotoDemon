@@ -24,6 +24,8 @@ Attribute VB_Exposed = False
 'To ensure that all UI elements are themed correctly, colors are never hard-coded.  Instead, they are retrieved
 ' from this class via one of several means (typically, control-specific color caches or universal color caches).
 '
+'Note that this class *does* perform some subclassing, so I cannot guarantee that it's IDE-safe.
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '

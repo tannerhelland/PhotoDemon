@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3777,7 +3777,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>kompozíciós szín</translation>
 </phrase>
 
 <phrase>
@@ -3787,17 +3787,17 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>átláthatóság formátum</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>szín formátum</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>átláthatóság cut-off</translation>
 </phrase>
 
 <phrase>
@@ -3807,7 +3807,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>átlátszó szín</translation>
 </phrase>
 
 <phrase>
@@ -4219,7 +4219,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>felülvizsgálat metaadatok mentés előtt</translation>
 </phrase>
 
 <phrase>
@@ -5625,7 +5625,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5915,7 +5915,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Támogass minket egy kis adománnyal (köszönöm!)</translation>
 </phrase>
 
 <phrase>
@@ -5935,22 +5935,22 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& Látogatás PhotoDemon honlapján</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Letöltés PhotoDemon forráskód</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Olvassa licenc és használati feltételek</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&Ról ről</translation>
 </phrase>
 
 <phrase>
@@ -10156,12 +10156,12 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>él típusú</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Generálása kép körvonalainak</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10172,12 +10172,12 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>szürkeárnyalás</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>csökkenti színes tinták</translation>
 </phrase>
 
 <phrase>
@@ -10187,7 +10187,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>megőrizni a fehér és fekete</translation>
 </phrase>
 
 <phrase>
@@ -10197,7 +10197,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>medián vágás</translation>
 </phrase>
 
 <phrase>
@@ -10207,7 +10207,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10217,12 +10217,12 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Generáló optimális paletta</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Alkalmazása új palettát kép</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -11992,22 +11992,22 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>PNG típus</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>alapbeállítások</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>további beállítások</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>metaadat beállításaiban</translation>
 </phrase>
 
 <phrase>
@@ -12017,7 +12017,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>levelet váltott PNG</translation>
 </phrase>
 
 <phrase>
@@ -12027,7 +12027,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>embed háttérszín (bKGD darab)</translation>
 </phrase>
 
 <phrase>
@@ -12037,7 +12037,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>optimalizálás (OptiPNG)</translation>
 </phrase>
 
 <phrase>

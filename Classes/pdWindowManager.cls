@@ -15,26 +15,22 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Manager class
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/October/13
-'Last updated: 05/March/06
-'Last update: purge all image tabstrip code, as it's now handled by pdCanvas and pdImageStrip
+'Last updated: 06/February/17
+'Last update: another large-scale code purge as I migrate everything to safer subclassing techniques
 '
-'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project, and in
-' 2013, it became time to rewrite its window method once again - this time, to a tabbed interface in line with the major
-' UI trends and research of the past decade.  (MDI has a lot of interaction problems, not to mention a host of known bugs
-' that will never be fixed because Microsoft is - rightfully - moving away from the MDI model.)
+'PhotoDemon first began as a single-pane, single-image editor.  About a decade ago, I rewrote it as an MDI project,
+' and in 2013 I rewrote it again - this time, to a tabbed interface in line with the major UI trends and research of
+' the modern era.  (Why dump MDI?  It has a ton of interaction problems, not to mention a host of known bugs that will
+' never be fixed because Microsoft is - rightfully - moving away from the MDI model.)
 '
-'One unfortunate result of this change is that PhotoDemon must now be responsible for much of its own window handling.  In
-' particular, child windows must move with the parent window, and all document windows must be managed intelligently.
-' Top-most behavior must be carefully handled to ensure proper order of the main form, toolboxes, image windows, and various
-' modal and non-modal dialogs.
+'This class came into existence during the 2013 rewrite, as a way to better manage complex window interactions.
+' It has been rewritten quite a few times over the years as new window management techniques have emerged, and at present,
+' it's a thin shell of its original (very complex) form.
 '
-'Thus this class.  The main form, toolbar forms, and any special forms (like progress bars) are all registered with this handler
-' when they are created. This class manages their placement, styles, opacity, and a host of other minor details.  Additionally,
-' other windows (such as tool dialogs) can be registered on-the-fly if they require special behavior.
-'
-'In order to perform all this detailed window management, this class subclasses a lot of forms and a lot of messages.  That
-' said, it should be wholly IDE-safe, but consider yourself warned.  (Also, some window order API calls do not function
-' properly in the IDE per http://support.microsoft.com/kb/192254.  Compile for best results.)
+'In order to perform detailed window management, this class subclasses multiple forms and/or window messages.
+' I've made it as IDE-safe as I can, but breakpoints may cause problems.  Consider yourself warned.
+' (Also, some window order API calls do not function properly in the IDE per http://support.microsoft.com/kb/192254.
+' Like everything else in PD, you need to compile for best results.)
 '
 'Also, special thanks to VB coder Merri for a simple trick that enables Unicode window captions
 ' (http://www.vbforums.com/showthread.php?527802-VB6-UniCaption).
@@ -47,36 +43,15 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Subclassed messages related to window movement
-Private Const WM_SYSCOMMAND As Long = &H112
-Private Const WM_SYSCOMMAND_WPARAM_MASK As Long = &HFFF0&
-Private Const WM_MOVE As Long = &H3
 Private Const WM_MOVING As Long = &H216
-Private Const WM_MOUSELEAVE As Long = &H2A3
 Private Const WM_SIZING As Long = &H214
-Private Const WM_SIZE As Long = &H5
-Private Const WM_ERASEBKGND As Long = &H14
-Private Const WM_SHOWWINDOW As Long = &H18
-Private Const WM_WINDOWPOSCHANGED As Long = &H47
-Private Const WM_NCACTIVATE As Long = &H86
 Private Const WM_GETMINMAXINFO As Long = &H24
-Private Const WM_CANCELMODE As Long = &H1F
-Private Const WM_ENABLE As Long = &HA
-Private Const WM_NCLBUTTONDBLCLK As Long = &HA3&
-
-'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
-Private Const WA_INACTIVE      As Long = 0
-Private Const WA_ACTIVE        As Long = 1
-Private Const WA_CLICKACTIVE   As Long = 2
-
-'System message that show up as additional params when subclassing WM_SYSCOMMAND
-Private Const SC_MAXIMIZE As Long = &HF030&
-Private Const SC_MINIMIZE As Long = &HF020&
-Private Const SC_RESTORE As Long = &HF120&
-Private Const SC_SIZE As Long = &HF000&
-Private Const SC_MOVE As Long = &HF010&
 
 'Constants for changing window style (including transparency)
 Private Const LWA_ALPHA As Long = &H2&
+Private Const WS_CHILD As Long = &H40000000
+Private Const WS_EX_APPWINDOW As Long = &H40000
+Private Const WS_POPUP As Long = &H80000000
 Private Const WS_EX_LAYERED As Long = &H80000
 Private Const WS_EX_COMPOSITED As Long = &H2000000
 Private Const GWL_EXSTYLE As Long = (-20)
@@ -97,96 +72,17 @@ Private Const SWP_NOZORDER As Long = &H4
 Private Const SWP_DRAWFRAME As Long = &H20
 Private Const SWP_NOCOPYBITS As Long = &H100
 
-Private Enum enWindowStyles
-    WS_BORDER = &H800000
-    WS_CAPTION = &HC00000
-    WS_CHILD = &H40000000
-    WS_CLIPCHILDREN = &H2000000
-    WS_CLIPSIBLINGS = &H4000000
-    WS_DISABLED = &H8000000
-    WS_DLGFRAME = &H400000
-    WS_GROUP = &H20000
-    WS_HSCROLL = &H100000
-    WS_MAXIMIZE = &H1000000
-    WS_MAXIMIZEBOX = &H10000
-    WS_MINIMIZE = &H20000000
-    WS_MINIMIZEBOX = &H20000
-    WS_OVERLAPPED = &H0&
-    WS_POPUP = &H80000000
-    WS_SYSMENU = &H80000
-    WS_TABSTOP = &H10000
-    WS_THICKFRAME = &H40000
-    WS_VISIBLE = &H10000000
-    WS_VSCROLL = &H200000
-    WS_EX_ACCEPTFILES = &H10&
-    WS_EX_DLGMODALFRAME = &H1&
-    WS_EX_NOACTIVATE = &H8000000
-    WS_EX_NOPARENTNOTIFY = &H4&
-    WS_EX_TOPMOST = &H8&
-    WS_EX_TRANSPARENT = &H20&
-    WS_EX_TOOLWINDOW = &H80&
-    WS_EX_MDICHILD = &H40
-    WS_EX_WINDOWEDGE = &H100
-    WS_EX_CLIENTEDGE = &H200
-    WS_EX_CONTEXTHELP = &H400
-    WS_EX_RIGHT = &H1000
-    WS_EX_LEFT = &H0
-    WS_EX_RTLREADING = &H2000
-    WS_EX_LTRREADING = &H0
-    WS_EX_LEFTSCROLLBAR = &H4000
-    WS_EX_RIGHTSCROLLBAR = &H0
-    WS_EX_CONTROLPARENT = &H10000
-    WS_EX_STATICEDGE = &H20000
-    WS_EX_APPWINDOW = &H40000
-    WS_EX_OVERLAPPEDWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_CLIENTEDGE)
-    WS_EX_PALETTEWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
-End Enum
-
-#If False Then
-    Private Const WS_BORDER = &H800000, WS_CAPTION = &HC00000, WS_CHILD = &H40000000, WS_CLIPCHILDREN = &H2000000, WS_CLIPSIBLINGS = &H4000000, WS_DISABLED = &H8000000, WS_DLGFRAME = &H400000, WS_EX_ACCEPTFILES = &H10&, WS_EX_DLGMODALFRAME = &H1&, WS_EX_NOPARENTNOTIFY = &H4&, WS_EX_TOPMOST = &H8&, WS_EX_TRANSPARENT = &H20&, WS_EX_TOOLWINDOW = &H80&, WS_GROUP = &H20000, WS_HSCROLL = &H100000, WS_MAXIMIZE = &H1000000, WS_MAXIMIZEBOX = &H10000, WS_MINIMIZE = &H20000000, WS_MINIMIZEBOX = &H20000, WS_OVERLAPPED = &H0&, WS_POPUP = &H80000000, WS_SYSMENU = &H80000, WS_TABSTOP = &H10000, WS_THICKFRAME = &H40000, WS_VISIBLE = &H10000000, WS_VSCROLL = &H200000, WS_EX_MDICHILD = &H40, WS_EX_WINDOWEDGE = &H100, WS_EX_CLIENTEDGE = &H200, WS_EX_CONTEXTHELP = &H400, WS_EX_RIGHT = &H1000, WS_EX_LEFT = &H0, WS_EX_RTLREADING = &H2000, WS_EX_LTRREADING = &H0, WS_EX_LEFTSCROLLBAR = &H4000, WS_EX_RIGHTSCROLLBAR = &H0, WS_EX_CONTROLPARENT = &H10000, WS_EX_STATICEDGE = &H20000, WS_EX_APPWINDOW = &H40000
-    Private Const WS_EX_OVERLAPPEDWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_CLIENTEDGE), WS_EX_PALETTEWINDOW = (WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST)
-#End If
-
 'Constants for window z-order
 Private Const HWND_NOTOPMOST As Long = -2
 Private Const HWND_TOPMOST As Long = -1
 Private Const HWND_TOP As Long = 0
 Private Const HWND_BOTTOM As Long = 1
 
-'Each window that the manager tracks stores some basic metadata in a variable of this type.
-Private Type pdWindowData
-    FormReference As Form
-    hWnd As Long
-    LastPosition As winRect
-    lastWindowState As Long
-    lastWindowBorder As Long
-    minimumWidth As Long
-    minimumHeight As Long
-    offsetX As Long
-    offsetY As Long
-    isVisible As Boolean
-    subclassingReleased As Boolean
-    windowName As String
-End Type
-
-'When a window is being resized, it is helpful to know which edge is being resized.  Windows uses the following system, which we mimic:
-Private Enum WinResizeEdge
-    WMSZ_LEFT = 1
-    WMSZ_RIGHT = 2
-    WMSZ_TOP = 3
-    WMSZ_TOPLEFT = 4
-    WMSZ_TOPRIGHT = 5
-    WMSZ_BOTTOM = 6
-    WMSZ_BOTTOMLEFT = 7
-    WMSZ_BOTTOMRIGHT = 8
-End Enum
-
-#If False Then
-    Private Const WMSZ_LEFT = 1, WMSZ_RIGHT = 2, WMSZ_TOP = 3, WMSZ_TOPLEFT = 4, WMSZ_TOPRIGHT = 5, WMSZ_BOTTOM = 6, WMSZ_BOTTOMLEFT = 7, WMSZ_BOTTOMRIGHT = 8
-#End If
+'Main window tracking
+Private m_MainWindowHWnd As Long
 
 'These constants can be used as the second parameter of the ShowWindow API function
-Private Enum showWindowOptions
+Private Enum ShowWindowOptions
     SW_HIDE = 0
     SW_SHOWNORMAL = 1
     SW_SHOWMINIMIZED = 2
@@ -216,7 +112,7 @@ Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, By
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hndWindow As Long, ByRef scrPoint As POINTAPI) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As ShowWindowOptions) As Long
 
 'APIs for getting/setting Unicode window captions
 Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
@@ -231,7 +127,6 @@ Private Declare Function GetFocus Lib "user32" () As Long
 Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
-Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdateRectPtr As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
@@ -241,55 +136,18 @@ Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As
 'Misc window APIs
 Private Declare Function DwmIsCompositionEnabled Lib "dwmapi.dll" (ByRef dstEnabledBool As Long) As Long
 
-'RedrawWindow API constants
-Private Const RDW_INVALIDATE As Long = &H1
-Private Const RDW_INTERNALPAINT As Long = &H2
-Private Const RDW_ERASE As Long = &H4
-Private Const RDW_VALIDATE As Long = &H8
-Private Const RDW_NOINTERNALPAINT As Long = &H10
-Private Const RDW_NOERASE As Long = &H20
-Private Const RDW_NOCHILDREN As Long = &H40
-Private Const RDW_ALLCHILDREN As Long = &H80
-Private Const RDW_UPDATENOW As Long = &H100
-Private Const RDW_ERASENOW As Long = &H200
-Private Const RDW_FRAME As Long = &H400
-Private Const RDW_NOFRAME As Long = &H800
-
-'Enforce a specific minimum width/height for the main window
+'We manually enforce a specific minimum width/height for the main window
 Private Const PD_MAIN_WINDOW_MINIMUM_HEIGHT As Long = 640
 Private Const PD_MAIN_WINDOW_MINIMUM_WIDTH As Long = 880
-
 Private Const PD_MAIN_WINDOW_PREFERRED_HEIGHT As Long = 720
 Private Const PD_MAIN_WINDOW_PREFERRED_WIDTH As Long = 980
 
-'Child window tracking
-Private pdWindows() As pdWindowData
-Private numOfPDWindows As Long
-
-'Primary window tracking; while the main window's data is stored just like the data for any other window, it is helpful to maintain dedicated
-' links to its hWnd and position in the tracking array, to prevent us having to constantly search for it.
-Private mainWindowHwnd As Long, mainWindowIndex As Long
-
-'When PD loses focus, we automatically revert all top-level toolbar windows to normal style.  When PD regains focus, we restore them as top-most.
-' Activation/deactivation messages are received multiple times, but we only want to do activation/deactivation stuff once, so our current state
-' is tracked by this variable.
-Private isPDDeactivated As Boolean
-
-'We must subclass various window types in order to manage them properly
-Private cSubclass As cSelfSubHookCallback
+'This class *performs subclassing*.  Be cautious in the IDE.
+Implements ISubclass
 
 'XML handling (used to save/load window locations) is handled through a specialized class
 Private m_XML As pdXML
-Private windowDataPath As String
-
-'When the main form is being moved or resized, it will trigger the movement of all child forms to match.  We set this variable to TRUE
-' so that child forms don't waste time and energy handling window move messages that have already been handled.
-Private mainFormTriggeredChange As Boolean
-
-'When the main form is minimized, a flurry of window messages are sent to all child windows, including instructions to resize to (0, 0).
-' To prevent this size from being synched as the "last-known window size", we track minimize mode, and disregard all location and
-' size syncing while it is active.
-Private insideMinimizeMode As Boolean
+Private m_WindowPresetPath As String
 
 'The tool options panel is a special case.  It may have a child panel active attached to it, depending on the tool.  We track that panel's
 ' hWnd here.  (It is generated by the "activateToolPanel" sub.)
@@ -525,40 +383,13 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
     
 End Sub
 
-'If external (or internal) functions move windows around on their own, they can manually request resyncing the window's offset.
-Public Sub RequestWindowResync(ByVal winIndex As Long)
-    
-    If insideMinimizeMode Then Exit Sub
-    
-    'Get the parent's window rect
-    Dim parentRect As winRect
-    GetWindowRect mainWindowHwnd, parentRect
-    
-    'Get the child's window rect
-    Dim childRect As winRect
-    GetWindowRect pdWindows(winIndex).hWnd, childRect
-    
-    'Store the new offset values
-    pdWindows(winIndex).offsetX = childRect.x1 - parentRect.x1
-    pdWindows(winIndex).offsetY = childRect.y1 - parentRect.y1
-    
-    'Also, update the last-known location properly
-    UpdateStoredWindowLocation winIndex
-    
-End Sub
-
 'Force a full window refresh (invalidate + update)
-Private Sub ForceFullWindowRefresh(ByVal winIndex As Long)
-    InvalidateRect pdWindows(winIndex).hWnd, ByVal 0&, 0
-    UpdateWindow pdWindows(winIndex).hWnd
-End Sub
-
 Public Sub ForceWindowRepaint(ByVal hWnd As Long)
     InvalidateRect hWnd, ByVal 0&, 0&
     UpdateWindow hWnd
 End Sub
 
-'By default, tool windows do not show up in the taskbar or in the Alt+Tab rotation.  Thanks to excellent debug work by Chen Lin,
+'By default, tool windows do not show up in the taskbar or in the Alt+Tab rotation.  Thanks to excellent debug work by ChenLin,
 ' this is a problem on older OSes that only display window icons in the Alt+Tab rotation.  We can work around this problem by
 ' manually setting the WS_EX_APPWINDOW bit after a window is created, but before the window is shown.
 Public Sub ForceWindowAppearInAltTab(ByVal srcHwnd As Long, ByVal appearState As Boolean)
@@ -580,12 +411,12 @@ End Sub
 Public Sub SetFirstRunMainWindowPosition()
 
     'Start by retrieving the primary monitor's dimensions.  Note that this check relies on access to PD's g_Displays class.
-    Dim PrimaryDisplay As pdDisplay
-    Set PrimaryDisplay = g_Displays.PrimaryDisplay
+    Dim tmpPrimaryDisplay As pdDisplay
+    Set tmpPrimaryDisplay = g_Displays.PrimaryDisplay
     
     Dim pWorkingRect As RECTL
-    If Not (PrimaryDisplay Is Nothing) Then
-        PrimaryDisplay.GetWorkingRect pWorkingRect
+    If (Not tmpPrimaryDisplay Is Nothing) Then
+        tmpPrimaryDisplay.GetWorkingRect pWorkingRect
     Else
         With pWorkingRect
             .Left = 0
@@ -613,8 +444,8 @@ Public Sub SetFirstRunMainWindowPosition()
     idealHeight = monitorHeight * 0.9
     
     'Make sure the newly calculated "ideal" dimensions aren't less than PD's default width/height
-    If idealWidth < PD_MAIN_WINDOW_MINIMUM_WIDTH Then idealWidth = PD_MAIN_WINDOW_MINIMUM_WIDTH
-    If idealHeight < PD_MAIN_WINDOW_MINIMUM_HEIGHT Then idealHeight = PD_MAIN_WINDOW_MINIMUM_HEIGHT
+    If (idealWidth < PD_MAIN_WINDOW_MINIMUM_WIDTH) Then idealWidth = PD_MAIN_WINDOW_MINIMUM_WIDTH
+    If (idealHeight < PD_MAIN_WINDOW_MINIMUM_HEIGHT) Then idealHeight = PD_MAIN_WINDOW_MINIMUM_HEIGHT
     
     'If PD's preferred minimum width/height is available, and it is larger than the currently calculated ideal width, use those instead.
     ' This is most relevant on 1024x768 monitors, where the "ideal" size of 80% of the monitor's available width and height is
@@ -630,74 +461,78 @@ Public Sub SetFirstRunMainWindowPosition()
         .y1 = primaryMonitorRect.y1 + (monitorHeight - idealHeight) \ 2
         .y2 = .y1 + idealHeight
     
-        MoveWindow mainWindowHwnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 0
+        MoveWindow m_MainWindowHWnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 0
     End With
 
 End Sub
 
 'If a window had location data previously stored, this function will retrieve that data and move the window into place.
-' If window data cannot be found, the form will be moved to the requested pseudo-location supplied by the second parameter.
-Public Function RestoreWindowLocation(ByVal windowIndex As Long, ByVal preferredLocationIfNecessary As Long) As Boolean
+'Returns: TRUE if a previous location was stored; FALSE otherwise.
+Public Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
 
     RestoreWindowLocation = False
 
     'Start by looking for this form's location data in the XML engine.
+    Dim windowName As String
+    windowName = m_XML.GetXMLSafeTagName(frmReference.Name)
     
     'If an entry is found, restore the window to that location.
-    If m_XML.DoesTagExist("windowEntry", "id", pdWindows(windowIndex).windowName) Then
+    Dim tagPos As Long
+    If m_XML.DoesTagExist("WindowEntry", "id", windowName, tagPos) Then
     
         'Retrieve this window's location data from the XML file.
-        With pdWindows(windowIndex)
         
-            'Window rect values
-            .LastPosition.x1 = CLng(m_XML.GetUniqueTag_String("windowLeft", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.y1 = CLng(m_XML.GetUniqueTag_String("windowTop", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.x2 = CLng(m_XML.GetUniqueTag_String("windowRight", 0, , "windowEntry", "id", .windowName))
-            .LastPosition.y2 = CLng(m_XML.GetUniqueTag_String("windowBottom", 0, , "windowEntry", "id", .windowName))
-            
-            'Window and border state
-            .lastWindowState = CLng(m_XML.GetUniqueTag_String("windowState", 0, , "windowEntry", "id", .windowName))
-            .lastWindowBorder = CLng(m_XML.GetUniqueTag_String("windowStyle", 0, , "windowEntry", "id", .windowName))
-            
-            'Apply those values to the window, starting with border style, then state, then coordinates
-            .FormReference.BorderStyle = .lastWindowBorder
-            .FormReference.WindowState = .lastWindowState
-            
-            'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user detached a
-            ' secondary monitor on which PhotoDemon was being used), change the values to ensure this window appears on-screen.
-            
-            'Note that this check relies on access to PD's g_Displays class, which returns the full virtual desktop dimensions, and
-            ' not just the primary monitor's (as VB's Screen object does).
-            Dim winWidth As Long, winHeight As Long
-            winWidth = .LastPosition.x2 - .LastPosition.x1
-            winHeight = .LastPosition.y2 - .LastPosition.y1
-            
-            If (.LastPosition.x1 + winWidth) < g_Displays.GetDesktopLeft Then
-                .LastPosition.x1 = g_Displays.GetDesktopLeft
-                .LastPosition.x2 = .LastPosition.x1 + winWidth
-            End If
-            
-            If .LastPosition.x1 > (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth) Then
-                .LastPosition.x1 = (g_Displays.GetDesktopWidth - winWidth)
-                .LastPosition.x2 = .LastPosition.x1 + winWidth
-            End If
-            
-            If .LastPosition.y1 < g_Displays.GetDesktopTop Then
-                .LastPosition.y1 = g_Displays.GetDesktopTop
-                .LastPosition.y2 = .LastPosition.y1 + winHeight
-            End If
-            
-            If .LastPosition.y1 > g_Displays.GetDesktopHeight Then
-                .LastPosition.y1 = (g_Displays.GetDesktopHeight - winHeight)
-                .LastPosition.y2 = .LastPosition.y1 + winHeight
-            End If
-            
-            'If the loaded positions are valid, restore them now
-            If (.LastPosition.x2 > .LastPosition.x1) And (.LastPosition.y2 > .LastPosition.y1) Then
-                MoveWindow .hWnd, .LastPosition.x1, .LastPosition.y1, .LastPosition.x2 - .LastPosition.x1, .LastPosition.y2 - .LastPosition.y1, 1
-            End If
-            
+        'Window rect
+        Dim tmpRect As winRect
+        With tmpRect
+            .x1 = m_XML.GetUniqueTag_Long("WindowLeft", 0, tagPos)
+            .y1 = m_XML.GetUniqueTag_Long("WindowTop", 0, tagPos)
+            .x2 = m_XML.GetUniqueTag_Long("WindowRight", 0, tagPos)
+            .y2 = m_XML.GetUniqueTag_Long("WindowBottom", 0, tagPos)
         End With
+            
+        'Window state (so that maximized windows are handled correctly if the primary display has changed resolution)
+        frmReference.WindowState = m_XML.GetUniqueTag_Long("WindowState", vbNormal, tagPos)
+            
+        'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user detached a
+        ' secondary monitor on which PhotoDemon was being used), change the values to ensure this window appears on-screen.
+        
+        'Note that this check relies on access to PD's g_Displays class, which returns the full virtual desktop dimensions, and
+        ' not just the primary monitor's (as VB's Screen object does).
+        If (frmReference.WindowState <> vbMaximized) Then
+        
+            Dim winWidth As Long, winHeight As Long
+            With tmpRect
+            
+                winWidth = .x2 - .x1
+                winHeight = .y2 - .y1
+                
+                If ((.x1 + winWidth) < g_Displays.GetDesktopLeft) Then
+                    .x1 = g_Displays.GetDesktopLeft
+                    .x2 = .x1 + winWidth
+                End If
+                
+                If (.x1 > (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth)) Then
+                    .x1 = (g_Displays.GetDesktopWidth - winWidth)
+                    .x2 = .x1 + winWidth
+                End If
+                
+                If (.y1 < g_Displays.GetDesktopTop) Then
+                    .y1 = g_Displays.GetDesktopTop
+                    .y2 = .y1 + winHeight
+                End If
+                
+                If (.y1 > g_Displays.GetDesktopHeight) Then
+                    .y1 = (g_Displays.GetDesktopHeight - winHeight)
+                    .y2 = .y1 + winHeight
+                End If
+                
+                'If the loaded positions are valid, restore them now
+                If ((.x2 > .x1) And (.y2 > .y1)) Then MoveWindow frmReference.hWnd, .x1, .y1, .x2 - .x1, .y2 - .y1, 1
+                
+            End With
+            
+        End If
         
         RestoreWindowLocation = True
         
@@ -710,7 +545,7 @@ Public Function LoadAllWindowLocations() As Boolean
     
     'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
     Dim windowLoadSuccessful As Boolean
-    windowLoadSuccessful = m_XML.LoadXMLFile(windowDataPath)
+    windowLoadSuccessful = m_XML.LoadXMLFile(m_WindowPresetPath)
     If windowLoadSuccessful Then windowLoadSuccessful = m_XML.IsPDDataType("Window locations")
     
     If (Not windowLoadSuccessful) Then
@@ -718,45 +553,38 @@ Public Function LoadAllWindowLocations() As Boolean
         ResetXMLData
     End If
     
-    'We don't actually load window locations now.  Now that the XML data is safely inside our XML engine, we load window data from it
-    ' on-demand as windows are added to the window manager.
+    'We don't actually load window locations now.  Now that the XML data is safely inside our XML engine, we load window data
+    ' from it on-demand as windows are registered with the window manager.
 
 End Function
 
 'Write the current locations of all windows to the XML engine.  (These will be used to restore the window location on subsequent loads.)
-Public Function SaveAllWindowLocations() As Boolean
+Public Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal writeToFile As Boolean = False) As Boolean
     
-    Dim i As Long
-    For i = 0 To numOfPDWindows - 1
+    Dim windowName As String
+    windowName = m_XML.GetXMLSafeTagName(frmReference.Name)
     
-        'Check for this window preset in the file.  If it does not exist, add it now.
-        If Not m_XML.DoesTagExist("windowEntry", "id", pdWindows(i).windowName) Then
-        
-            m_XML.WriteTagWithAttribute "windowEntry", "id", pdWindows(i).windowName, "", True
-            m_XML.CloseTag "windowEntry"
-            m_XML.WriteBlankLine
-        
-        End If
-        
-        'Write this window's location data into the XML file.
-        With pdWindows(i)
-        
-            'Window rect values
-            m_XML.UpdateTag "windowLeft", .LastPosition.x1, "windowEntry", "id", .windowName
-            m_XML.UpdateTag "windowTop", .LastPosition.y1, "windowEntry", "id", .windowName
-            m_XML.UpdateTag "windowRight", .LastPosition.x2, "windowEntry", "id", .windowName
-            m_XML.UpdateTag "windowBottom", .LastPosition.y2, "windowEntry", "id", .windowName
-            
-            'Window and border state
-            m_XML.UpdateTag "windowState", .lastWindowState, "windowEntry", "id", .windowName
-            m_XML.UpdateTag "windowStyle", .lastWindowBorder, "windowEntry", "id", .windowName
-            
-        End With
-        
-    Next i
+    'Check for this window preset in the file.  If it does not exist, add its section now
+    If (Not m_XML.DoesTagExist("WindowEntry", "id", windowName)) Then
+        m_XML.WriteTagWithAttribute "WindowEntry", "id", windowName, "", True
+        m_XML.CloseTag "WindowEntry"
+        m_XML.WriteBlankLine
+    End If
+    
+    'Now that the section is guaranteed to exist, generate a window rect for this window and save it accordingly
+    Dim tmpRect As winRect
+    GetWindowRect frmReference.hWnd, tmpRect
+    
+    With m_XML
+        .UpdateTag "WindowLeft", tmpRect.x1, "WindowEntry", "id", windowName
+        .UpdateTag "WindowTop", tmpRect.y1, "WindowEntry", "id", windowName
+        .UpdateTag "WindowRight", tmpRect.x2, "WindowEntry", "id", windowName
+        .UpdateTag "WindowBottom", tmpRect.y2, "WindowEntry", "id", windowName
+        .UpdateTag "WindowState", frmReference.WindowState, "WindowEntry", "id", windowName
+    End With
     
     'Write the data out to file
-    m_XML.WriteXMLToFile windowDataPath
+    If writeToFile Then m_XML.WriteXMLToFile m_WindowPresetPath
 
 End Function
 
@@ -768,46 +596,11 @@ Private Function ResetXMLData()
     m_XML.WriteBlankLine
 End Function
 
-'The window manager keeps a persistent list of last-known locations for every window it accesses.  Window locations are updated when:
-' - They're first loaded (and no previous position has been stored)
-' - They're moved
-' - They're closed
-'Any of those actions just need to send a request to this sub, which will handle the actual location storage process.
-Private Sub UpdateStoredWindowLocation(ByVal indexInWindowArray As Long)
-
-    Dim newWindowRect As winRect
-    
-    With pdWindows(indexInWindowArray)
-    
-        GetWindowRect .hWnd, newWindowRect
-        .LastPosition = newWindowRect
-        If Not (.FormReference Is Nothing) Then
-            .lastWindowBorder = .FormReference.BorderStyle
-            .lastWindowState = .FormReference.WindowState
-        End If
-    
-    End With
-
-End Sub
-
 'The primary PhotoDemon form must register its hWnd, so we can track its movement and move any children windows accordingly.
 Public Sub RegisterMainForm(ByRef parentForm As Form)
-
-    'Has this window already been registered?  If so, don't re-register it.
-    Dim i As Long
-    For i = 0 To numOfPDWindows
-        If pdWindows(i).hWnd = parentForm.hWnd Then
-            Debug.Print "WARNING!  Why are you attempting to register the main window twice??"
-            Exit Sub
-        End If
-    Next i
     
     'Add this window to the collection, and cache its hWnd (because we reference the main window handle frequently)
-    Set pdWindows(numOfPDWindows).FormReference = parentForm
-    pdWindows(numOfPDWindows).hWnd = parentForm.hWnd
-    mainWindowHwnd = parentForm.hWnd
-    mainWindowIndex = numOfPDWindows
-    pdWindows(numOfPDWindows).windowName = parentForm.Name
+    m_MainWindowHWnd = parentForm.hWnd
     
     If g_IsProgramRunning Then
     
@@ -817,376 +610,179 @@ Public Sub RegisterMainForm(ByRef parentForm As Form)
         
         'On Vista+, layered windows consume a bit more resources but they play very nicely with DWM
         If g_IsVistaOrLater Then newWinStyle = newWinStyle Or WS_EX_LAYERED
-        SetWindowLong parentForm.hWnd, GWL_EXSTYLE, newWinStyle
+        SetWindowLong m_MainWindowHWnd, GWL_EXSTYLE, newWinStyle
         
-        'Subclass the main window
-        cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-        cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SIZE
-        cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING, WM_NCLBUTTONDBLCLK
-        cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_SYSCOMMAND
+        'Enforce minimum size handling.  (Note that this will subclass the main window, which allows us to handle
+        ' other useful window messages simultaneously.)
+        Me.RequestMinMaxTracking m_MainWindowHWnd, , PD_MAIN_WINDOW_MINIMUM_WIDTH, PD_MAIN_WINDOW_MINIMUM_HEIGHT
         
         'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
-        RestoreWindowLocation numOfPDWindows, 0
+        If (Not RestoreWindowLocation(parentForm)) Then Me.SetFirstRunMainWindowPosition
         
     End If
-    
-    'Resize the window array for future additions
-    numOfPDWindows = numOfPDWindows + 1
-    ReDim Preserve pdWindows(0 To numOfPDWindows) As pdWindowData
         
 End Sub
 
 'When a window is unloaded, call this function so that we can stop subclassing in a safe and predictable way, and also track the
 ' last-known location of this window.
-Public Sub UnregisterForm(ByRef srcForm As Form)
-
-    'Find this window in the array.  (Note that if it cannot be found, nothing will happen.)
-    Dim i As Long
-    For i = 0 To numOfPDWindows
-        If pdWindows(i).hWnd = srcForm.hWnd Then
-            
-            'Update the last-known window location before the form closes
-            UpdateStoredWindowLocation i
-            
-            'Mark the window as invisible
-            pdWindows(i).isVisible = False
-            
-            'Release this window's subclassing
-            pdWindows(i).subclassingReleased = True
-            If g_IsProgramRunning Then cSubclass.ssc_UnSubclass pdWindows(i).hWnd
-            pdWindows(i).hWnd = 0
-            
-            'Remove our reference to this form (if we don't, it will remain in memory)
-            Set pdWindows(i).FormReference = Nothing
-            
-        End If
-    Next i
+Public Sub UnregisterMainForm(ByRef srcForm As Form)
+    
+    'Terminate main form subclassing
+    m_MainWindowHWnd = 0
+    StopMaxMinSubclassing srcForm.hWnd
+    
+    'Store the current main window position in the "last window position" collection and copy the collection out to file
+    SaveWindowLocation srcForm, True
 
 End Sub
 
 Private Sub Class_Initialize()
 
     'Reset all tracking variables
-    numOfPDWindows = 0
-    ReDim pdWindows(0) As pdWindowData
-    
     m_numOfMinMaxEntries = 0
     ReDim m_MinMaxEntries(0 To 3) As MinMaxTracker
     
     m_AutoRefreshMode = True
     
-    'Prepare the subclasser
-    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
-    
     'Prepare the XML handler, and retrieve window location data from file (if it exists)
     Set m_XML = New pdXML
     m_XML.SetTextCompareMode vbBinaryCompare
-    windowDataPath = g_UserPreferences.GetPresetPath & "Program_WindowLocations.xml"
+    m_WindowPresetPath = g_UserPreferences.GetPresetPath & "Program_WindowLocations.xml"
     LoadAllWindowLocations
-    
-    'To prevent circular redraws, we disable certain subclassing when we know we are responsible for triggering the window messages.  Initialize
-    ' that tracking variable to FALSE.
-    mainFormTriggeredChange = False
     
 End Sub
 
 Private Sub Class_Terminate()
-
-    'Release all subclassing
-    If g_IsProgramRunning Then cSubclass.ssc_Terminate
-        
-    'Manually clear all form references
+    
+    'If individual objects have requested max/min window size tracking, free their subclassers now
     Dim i As Long
-    For i = 0 To UBound(pdWindows)
-        Set pdWindows(i).FormReference = Nothing
-    Next i
-
+    If (m_numOfMinMaxEntries > 0) Then
+        For i = 0 To m_numOfMinMaxEntries - 1
+            StopMaxMinSubclassing m_MinMaxEntries(i).hWnd
+        Next i
+    End If
+    
 End Sub
 
 'Use this function to set minimum and/or maximum sizes for any arbitrary window.  (Note that this requires us to subclass
 ' the window in question; plan accordingly!)
 Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalID As Long, Optional ByVal minWidth As Long = 0, Optional ByVal minHeight As Long = 0, Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
-    With m_MinMaxEntries(m_numOfMinMaxEntries)
-        .hWnd = srcHwnd
-        .internalID = internalID
-        .minWidth = minWidth
-        .minHeight = minHeight
-        .maxWidth = maxWidth
-        .maxHeight = maxHeight
-    End With
+    If ((srcHwnd <> 0) And g_IsProgramRunning) Then
     
-    m_numOfMinMaxEntries = m_numOfMinMaxEntries + 1
-    If (m_numOfMinMaxEntries > UBound(m_MinMaxEntries)) Then
-        ReDim Preserve m_MinMaxEntries(0 To m_numOfMinMaxEntries * 2 - 1) As MinMaxTracker
+        With m_MinMaxEntries(m_numOfMinMaxEntries)
+            .hWnd = srcHwnd
+            .internalID = internalID
+            .minWidth = minWidth
+            .minHeight = minHeight
+            .maxWidth = maxWidth
+            .maxHeight = maxHeight
+        End With
+        
+        m_numOfMinMaxEntries = m_numOfMinMaxEntries + 1
+        If (m_numOfMinMaxEntries > UBound(m_MinMaxEntries)) Then ReDim Preserve m_MinMaxEntries(0 To m_numOfMinMaxEntries * 2 - 1) As MinMaxTracker
+        
+        'Unfortunately, there's no simple way to set min/max values in advance.  Instead, we must subclass the window, and respond
+        ' to any received WM_GETMINMAXINFO messages.
+        VB_Hacks.StartSubclassing srcHwnd, Me
+        
+    End If
+
+End Sub
+
+Private Sub StopMaxMinSubclassing(ByVal hWnd As Long)
+    
+    If ((hWnd <> 0) And (m_numOfMinMaxEntries <> 0)) Then
+        
+        Dim i As Long
+        For i = 0 To m_numOfMinMaxEntries - 1
+            If (m_MinMaxEntries(i).hWnd = hWnd) Then
+                VB_Hacks.StopSubclassing hWnd, Me
+                m_MinMaxEntries(i).hWnd = 0
+                Exit For
+            End If
+        Next i
+        
     End If
     
-    'Unfortunately, there's no simple way to set min/max values in advance.  Instead, we must subclass the window, and respond
-    ' to any received WM_GETMINMAXINFO messages.
-    cSubclass.ssc_Subclass srcHwnd, , 1, Me
-    cSubclass.ssc_AddMsg srcHwnd, MSG_BEFORE, WM_GETMINMAXINFO
-
 End Sub
 
-'Whenever a size change occurs that requires multiple windows to be redrawn, this function can be called.  It will automatically handle redraw duties.
-Private Sub RequestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winRect)
-    ForceFullWindowRefresh winIndex
-    RequestWindowResync winIndex
-End Sub
-
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function HandleMinMaxMessage(ByVal hWnd As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Boolean
     
-    Dim curWinRect As winRect
-    Dim userSizeTooSmall As Boolean
-    Dim resizeHandle As WinResizeEdge
-    Dim i As Long
+    HandleMinMaxMessage = False
     
-    'The primary purpose of this function is managing the main form's behavior.  Handle its case first.
-    If (lng_hWnd = mainWindowHwnd) Then
-        
-        'Check parent window messages
-        Select Case uMsg
-        
-            'The parent window is currently being moved
-            Case WM_MOVING, WM_MOVE
-            
-                'lParam contains a pointer to the window's rect location.  Retrieve it now.
-                Call CopyMemory(curWinRect, ByVal lParam, Len(curWinRect))
+    'lParam contains a pointer to the window's rect location.  Retrieve it now.
+    If (lParam <> 0) Then CopyMemory ByVal VarPtr(m_tmpMinMax), ByVal lParam, Len(m_tmpMinMax)
+    
+    'Iterate through all the windows we're handling min/max data for, and when we find the correct one, supply its min/max
+    ' values to the parent handler.
+    If (m_numOfMinMaxEntries > 0) Then
+    
+        Dim i As Long
+        For i = 0 To m_numOfMinMaxEntries - 1
+            If (m_MinMaxEntries(i).hWnd = hWnd) Then
                 
-                'Remember the main window's location
-                UpdateStoredWindowLocation mainWindowIndex
-
-                'Notify the color management engine that the main window may have changed monitors, so it may need to
-                ' be redrawn with a new color profile.
-                ColorManagement.CheckParentMonitor
-                
-            'The parent window is currently being resized
-            Case WM_SIZING, WM_SIZE
-                
-                mainFormTriggeredChange = True
-
-                'Note that in the case of WM_SIZING, we want to make sure the user is not stretching the window below an acceptable
-                ' minimum size.  Check that now.
-                If (uMsg = WM_SIZING) Then
-
-                    userSizeTooSmall = False
-
-                    'wParam contains a value that identifies the edge being used for the resize.
-                    resizeHandle = wParam
-
-                    'lParam contains a pointer to the window's rect location.  Retrieve it now.
-                    CopyMemory curWinRect, ByVal lParam, Len(curWinRect)
-
-                    'If the user has set the window size too small, force the window to a minimum size (640x480).
-                    If (curWinRect.x2 - curWinRect.x1) < PD_MAIN_WINDOW_MINIMUM_WIDTH Then
-                        userSizeTooSmall = True
-                        If (resizeHandle = WMSZ_BOTTOMLEFT) Or (resizeHandle = WMSZ_LEFT) Or (resizeHandle = WMSZ_TOPLEFT) Then
-                            curWinRect.x1 = curWinRect.x2 - PD_MAIN_WINDOW_MINIMUM_WIDTH
-                        Else
-                            curWinRect.x2 = curWinRect.x1 + PD_MAIN_WINDOW_MINIMUM_WIDTH
-                        End If
-                    End If
-
-                    If (curWinRect.y2 - curWinRect.y1) < PD_MAIN_WINDOW_MINIMUM_HEIGHT Then
-                        userSizeTooSmall = True
-                        If (resizeHandle = WMSZ_TOPLEFT) Or (resizeHandle = WMSZ_TOP) Or (resizeHandle = WMSZ_TOPRIGHT) Then
-                            curWinRect.y1 = curWinRect.y2 - PD_MAIN_WINDOW_MINIMUM_HEIGHT
-                        Else
-                            curWinRect.y2 = curWinRect.y1 + PD_MAIN_WINDOW_MINIMUM_HEIGHT
-                        End If
-                    End If
-
-                    If userSizeTooSmall Then
-
-                        'Copy the new rect into place
-                        CopyMemory ByVal lParam, curWinRect, Len(curWinRect)
-
-                        'Because subsequent functions need access to the new rect data, we cheat a bit here - we use SetWindowPos to immediately
-                        ' update the main window's rect, but we combine flags so that no new window messages are sent (to prevent infinite recursion of
-                        ' window changes causing more window changes).
-                        SetWindowPos lng_hWnd, 0, curWinRect.x1, curWinRect.y1, curWinRect.x2 - curWinRect.x1, curWinRect.y2 - curWinRect.y1, SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOSENDCHANGING
-
-                    End If
-
-                End If
-                
-                'Remember the main window's location
-                UpdateStoredWindowLocation mainWindowIndex
-                
-                'Notify the color management engine that the main window may have changed monitors, so it may need to
-                ' be redrawn with a new color profile.
-                ColorManagement.CheckParentMonitor
-                
-                mainFormTriggeredChange = False
-                               
-                                
-            'The parent window has just been maximized, minimized, or restored
-            Case WM_SYSCOMMAND
-                
-                'Per MSDN (http://msdn.microsoft.com/en-us/library/windows/desktop/ms646360%28v=vs.85%29.aspx):
-                ' In WM_SYSCOMMAND messages, the four low-order bits of the wParam parameter are used internally by the system.
-                ' To obtain the correct result when testing the value of wParam, an application must combine the value 0xFFF0 with
-                ' the wParam value by using the bitwise AND operator.
-                wParam = wParam And WM_SYSCOMMAND_WPARAM_MASK
-                
-                'RANDOM NOTE: for reasons I don't fully understand, bBefore will not always evaluate properly if used as a standalone
-                ' boolean value (e.g. If Not bBefore Then...).  It must be *explicitly* checked against a VB Boolean type in order
-                ' to return correct values.
-                
-                'The OS will automatically handle window restoration for us, but we need to make sure to resync all window positions
-                ' afterwards.  If we don't do this, PD's internal window position values will fall out of sync.
-                If ((wParam = SC_MAXIMIZE) Or (wParam = SC_RESTORE) Or (wParam = SC_SIZE) Or (wParam = SC_MOVE)) And (bBefore = False) And (Not isPDDeactivated) Then
-
-                    'Debug.Print "PD restoration code running..."
-
-                    GetWindowRect mainWindowHwnd, curWinRect
-                    For i = 0 To numOfPDWindows - 1
-                        RequestWindowResync i
-                        RequestWindowRedraw i, pdWindows(mainWindowIndex).LastPosition
-                    Next i
-
-                    If insideMinimizeMode Then insideMinimizeMode = False
-
-                End If
-
-                'When minimizing, check all windows, and if one has not been minimized, minimize it now
-                If (wParam = SC_MINIMIZE) And (bBefore = True) Then
-
-                    'Debug.Print "PD minimize code running..."
-
-                    'As a failsafe, update each window's location before minimizing it
-                    For i = 0 To numOfPDWindows - 1
-                        RequestWindowResync i
-                    Next i
-
-                    insideMinimizeMode = True
-
-                End If
-                
-            'The user is switching to or from PD and another application
-            Case WM_NCACTIVATE  'WM_ACTIVATEAPP was originally used here, but it is an unreliable piece of garbage.  It is sent to all top-level
-                                ' windows, even when they are not being activated.  Thank you to the nice MSDN commenter who suggested NCACTIVATE
-                                ' as a more reliable alternative.
-            
-                If bBefore Then
-            
-                    'wParam contains a notification of whether we are gaining or losing focus.
-                    Select Case wParam
+                With m_MinMaxEntries(i)
                     
-                        'PD is losing focus; make all top-most windows not topmost
-                        Case WA_INACTIVE
-                            Debug.Print "> PhotoDemon lost focus! <"
-                            isPDDeactivated = True
-                            
-                        'PD is gaining focus
-                        Case Else
-                            Debug.Print "> PhotoDemon regained focus! <"
-                            
-                            'Reactivate window state
-                            If isPDDeactivated Then isPDDeactivated = False
-                            
-                    End Select
-                    
-                Else
-                
-                    If (wParam <> WA_INACTIVE) And (Not isPDDeactivated) And (Not insideMinimizeMode) Then
-                        
-                        'Debug.Print "Running Show Desktop hack"
-                        
-                        'TODO: see if this is still necessary with v7.0's new lightweight toolbox manager
-                        
-                        'This rather nasty hack is required to work around the "Show Desktop" event.  For reasons known only
-                        ' to MS engineers, the Show Desktop command does not send *ANY* WM_SYSCOMMAND messages to your window.
-                        ' Thus, you have literally no way to track whether the option is used, except to track window focus.
-                        ' Because Show Desktop causes visual corruption of child windows, we must force a redraw of all open
-                        ' toolboxes; do this by manually sending a "restore" command to the main PD window.
-                        SendMessage mainWindowHwnd, WM_SYSCOMMAND, SC_RESTORE, ByVal 0&
-                        
-                        'Manually refresh the main window.  (Note that curWinRect doesn't matter here.)
-                        RequestWindowRedraw mainWindowIndex, curWinRect
-                        
+                    'Only request minimum (or maximum) tracking if the caller supplied at least *1* valid value for that dimension
+                    If (.minWidth <> 0) Or (.minHeight <> 0) Then
+                        If (.minWidth <> 0) Then m_tmpMinMax.MinTrackSize.x = .minWidth
+                        If (.minHeight <> 0) Then m_tmpMinMax.MinTrackSize.y = .minHeight
                     End If
-                
-                End If
-            
-            'DWM causes titlebar double-clicks (which normally result in a maximize action) to "pass through"
-            ' to the child window post-resize.  This results in all kinds of weird mouse behavior, so we cheat
-            ' and disable this behavior.
-            Case WM_NCLBUTTONDBLCLK
-                bHandled = True
-                lReturn = 0
-                        
-        End Select
     
-    'If this is *not* the main window, start testing other options
+                    If (.maxWidth <> 0) Or (.maxHeight <> 0) Then
+                        If (.maxWidth <> 0) Then m_tmpMinMax.MaxTrackSize.x = .maxWidth Else m_tmpMinMax.MaxTrackSize.x = Me.GetClientWidth(m_MainWindowHWnd)
+                        If (.maxHeight <> 0) Then m_tmpMinMax.MaxTrackSize.y = .maxHeight Else m_tmpMinMax.MaxTrackSize.y = Me.GetClientHeight(m_MainWindowHWnd)
+                    End If
+                    
+                End With
+                
+                CopyMemory ByVal lParam, ByVal VarPtr(m_tmpMinMax), Len(m_tmpMinMax)
+                HandleMinMaxMessage = True
+                Exit For
+                
+            End If
+        Next i
+        
+    End If
+        
+End Function
+
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+    
+    'Min/max handling is handled for multiple potential hWnds
+    If (uiMsg = WM_GETMINMAXINFO) Then
+        If HandleMinMaxMessage(hWnd, wParam, lParam, dwRefData) Then
+            ISubclass_WindowMsg = 0
+        Else
+            ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        End If
+    
+    'Always tear down subclassing manually when a subclassed window is being destroyed
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        StopMaxMinSubclassing hWnd
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
     Else
         
-        'Windows who have requested min/max tracking will show up with the corresponding message
-        If (uMsg = WM_GETMINMAXINFO) Then
+        'If this is the main window hWnd, update color-management settings on move and/or size events (as the parent monitor
+        ' may have changed)
+        If (hWnd = m_MainWindowHWnd) Then
+            If (uiMsg = WM_MOVING) Or (uiMsg = WM_SIZING) Then ColorManagement.CheckParentMonitor
             
-            'lParam contains a pointer to the window's rect location.  Retrieve it now.
-            CopyMemory ByVal VarPtr(m_tmpMinMax), ByVal lParam, Len(m_tmpMinMax)
+            'DWM causes titlebar double-clicks (which normally result in a maximize action) to "pass through"
+            ' to the child window post-resize.  This results in all kinds of weird mouse behavior, so as a
+            ' temporary fix, we cheat and disable this behavior.
+            'TODO!  Find a proper fix for this.
+            'If (uiMsg = WM_NCLBUTTONDBLCLK) Then
+            '    bHandled = True
+            '    lReturn = 0
+            'End If
             
-            For i = 0 To m_numOfMinMaxEntries - 1
-                If (m_MinMaxEntries(i).hWnd = lng_hWnd) Then
-                    
-                    With m_MinMaxEntries(i)
-                        
-                        'Only request minimum (or maximum) tracking if the caller supplied at least *1* valid value for that dimension
-                        If (.minWidth <> 0) Or (.minHeight <> 0) Then
-                            If (.minWidth <> 0) Then m_tmpMinMax.MinTrackSize.x = .minWidth
-                            If (.minHeight <> 0) Then m_tmpMinMax.MinTrackSize.y = .minHeight
-                        End If
-
-                        If (.maxWidth <> 0) Or (.maxHeight <> 0) Then
-                            If (.maxWidth <> 0) Then m_tmpMinMax.MaxTrackSize.x = .maxWidth Else m_tmpMinMax.MaxTrackSize.x = Me.GetClientWidth(mainWindowHwnd)
-                            If (.maxHeight <> 0) Then m_tmpMinMax.MaxTrackSize.y = .maxHeight Else m_tmpMinMax.MaxTrackSize.y = Me.GetClientHeight(mainWindowHwnd)
-                        End If
-                        
-                    End With
-                    
-                    CopyMemory ByVal lParam, ByVal VarPtr(m_tmpMinMax), Len(m_tmpMinMax)
-                    bHandled = True
-                    lReturn = 0
-                    Exit For
-                    
-                End If
-            Next i
-        
         End If
+        
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     End If
 
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
-
+End Function
