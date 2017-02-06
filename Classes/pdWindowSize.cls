@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon DPI-Aware Window Resize class
 'Copyright 2015-2017 by Tanner Helland
 'Created: 23/September/15 (but built from many parts existing earlier)
-'Last updated: 23/September/15
-'Last update: initial build
+'Last updated: 06/February/17
+'Last update: migrate to safer subclassing technique
 '
 'Because VB is only partially DPI-aware, each unique user control has to do a ton of specialized work to support
 ' resize and move events under non-standard DPI values.  To reduce the amount of redundant code copied between UCs,
@@ -65,7 +65,7 @@ Private Const WM_MOVE As Long = &H3
 Private Const WM_SIZE As Long = &H5
 
 'Subclassing is optional; if active, this class will be non-nothing.
-Private cSubclass As cSelfSubHookCallback
+Implements ISubclass
 Private m_SubclassActive As Boolean
 
 'hWnd attached to this class instance; use it for all API interactions
@@ -81,25 +81,26 @@ Private m_WindowRect As winRect
 ' bypass VB's faulty handling.
 Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEvents As Boolean = False)
     
-    If (srcHwnd = 0) Then
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdWindowSize.AttachToHWnd received a null hWnd - was this intentional??"
-        #End If
-    Else
+    If g_IsProgramRunning Then
     
-        m_hWnd = srcHwnd
+        EndSubclassing
         
-        'Activate the subclasser conditionally; some UCs don't need to receive API size/move events
-        m_SubclassActive = subclassMoveSizeEvents
+        If (srcHwnd = 0) Then
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdWindowSize.AttachToHWnd received a null hWnd - was this intentional??"
+            #End If
+        Else
         
-        If m_SubclassActive And g_IsProgramRunning Then
-            Set cSubclass = New cSelfSubHookCallback
-            cSubclass.ssc_Subclass m_hWnd, , , Me
-            cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SIZE, WM_MOVE
+            m_hWnd = srcHwnd
+            
+            'Activate the subclasser conditionally; some UCs don't need to receive API size/move events
+            m_SubclassActive = subclassMoveSizeEvents
+            If m_SubclassActive Then VB_Hacks.StartSubclassing m_hWnd, Me
+            
+            'Cache an initial set of window dimensions
+            UpdateWinRect
+            
         End If
-        
-        'Cache an initial set of window dimensions
-        UpdateWinRect
         
     End If
     
@@ -117,12 +118,12 @@ Public Function GetHeight() As Long
 End Function
 
 Public Function GetLeft() As Long
-    If Not m_SubclassActive Then UpdateWinRect
+    If (Not m_SubclassActive) Then UpdateWinRect
     GetLeft = m_WindowRect.x1
 End Function
 
 Public Function GetTop() As Long
-    If Not m_SubclassActive Then UpdateWinRect
+    If (Not m_SubclassActive) Then UpdateWinRect
     GetTop = m_WindowRect.y1
 End Function
 
@@ -197,58 +198,32 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If ((Not (cSubclass Is Nothing)) And g_IsProgramRunning) Then
-        If (m_hWnd <> 0) Then
-            cSubclass.ssc_UnSubclass m_hWnd
-            m_hWnd = 0
-        End If
-        cSubclass.ssc_Terminate
+    EndSubclassing
+End Sub
+
+Private Sub EndSubclassing()
+    If (m_hWnd <> 0) Then
+        If m_SubclassActive Then VB_Hacks.StopSubclassing m_hWnd, Me
+        m_hWnd = 0
     End If
+    m_SubclassActive = False
 End Sub
 
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
 
-    Select Case uMsg
+    If (uiMsg = WM_SIZE) Then
+        UpdateWinRect
+        RaiseEvent WindowResize(m_WindowRect.x2 - m_WindowRect.x1, m_WindowRect.y2 - m_WindowRect.y1)
     
-        Case WM_SIZE
-            UpdateWinRect
-            RaiseEvent WindowResize(m_WindowRect.x2 - m_WindowRect.x1, m_WindowRect.y2 - m_WindowRect.y1)
-        
-        Case WM_MOVE
-            UpdateWinRect
-            RaiseEvent WindowMove(m_WindowRect.x1, m_WindowRect.y1)
-            
-    End Select
+    ElseIf (uiMsg = WM_MOVE) Then
+        UpdateWinRect
+        RaiseEvent WindowMove(m_WindowRect.x1, m_WindowRect.y1)
     
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        EndSubclassing
+    
+    End If
+    
+    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
 
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
+End Function

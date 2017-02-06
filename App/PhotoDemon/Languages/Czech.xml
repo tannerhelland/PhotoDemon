@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3779,7 +3779,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>barva skládání</translation>
 </phrase>
 
 <phrase>
@@ -3789,17 +3789,17 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>formát průhlednost</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>barevný formát</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>transparentnost cut-off</translation>
 </phrase>
 
 <phrase>
@@ -3809,7 +3809,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>transparentní barva</translation>
 </phrase>
 
 <phrase>
@@ -4221,7 +4221,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>přezkoumání metadata před uložením</translation>
 </phrase>
 
 <phrase>
@@ -5627,7 +5627,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5917,7 +5917,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Podpořte nás s malým daru (děkuji!)</translation>
 </phrase>
 
 <phrase>
@@ -5937,22 +5937,22 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& Navštivte stránky PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Ke stažení PhotoDemon zdrojový kód</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Přečtěte si licenci a podmínky použití</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&O</translation>
 </phrase>
 
 <phrase>
@@ -10158,12 +10158,12 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>Typ hrana</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Generování image obrys</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10174,12 +10174,12 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>dithering</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>snížení barevného krvácení</translation>
 </phrase>
 
 <phrase>
@@ -10189,7 +10189,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>zachovat bílé a černé</translation>
 </phrase>
 
 <phrase>
@@ -10199,7 +10199,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>medián cut</translation>
 </phrase>
 
 <phrase>
@@ -10209,7 +10209,7 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10219,12 +10219,12 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Generování optimální palety</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Uplatnění novou paletu pro obraz</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -11994,22 +11994,22 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>Typ PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>základní nastavení</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>pokročilé nastavení</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>nastavení metadat</translation>
 </phrase>
 
 <phrase>
@@ -12019,7 +12019,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>napsat prokládaný PNG</translation>
 </phrase>
 
 <phrase>
@@ -12029,7 +12029,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>embed barva pozadí (BKGD kus)</translation>
 </phrase>
 
 <phrase>
@@ -12039,7 +12039,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>Optimalizace (OptiPNG)</translation>
 </phrase>
 
 <phrase>

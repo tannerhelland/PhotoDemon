@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Window Synchronization class
 'Copyright 2015-2017 by Tanner Helland
 'Created: 26/September/15
-'Last updated: 26/September/15
-'Last update: initial build
+'Last updated: 06/February/16
+'Last update: migrate to safer subclassing technique
 '
 'The right-side panel in the main PD window supports a number of collapsible panels.  Each panel lives on its own
 ' form, which helps keep the code organized (as there are so many panels, each with totally different UI needs).
@@ -36,6 +36,8 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+Implements ISubclass
 
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
@@ -64,9 +66,6 @@ Private Const WM_SIZE As Long = &H5
 'Currently subclassed hWnds.  Each key is a parent hWnd, while each value is the associated child hWnd.
 Private m_windowDict As pdDictionary
 
-'Each window is subclassed as it is added.
-Private m_Subclass As cSelfSubHookCallback
-
 'Temporary window calculation rect; a single declaration here results in less churn than a local one inside the subclass proc.
 Private m_newRect As winRect
 
@@ -75,41 +74,55 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If Not (m_Subclass Is Nothing) Then
-        If g_IsProgramRunning Then m_Subclass.ssc_Terminate
-        Set m_Subclass = Nothing
+    EndSubclassing
+End Sub
+
+'Un-subclassing is normally a simple process, but because this class may subclass multiple windows simultaneously,
+' a more elaborate shutdown process is required (where we unsubclass each window in turn).
+Private Sub EndSubclassing()
+    If (Not m_windowDict Is Nothing) Then
+        If (m_windowDict.GetNumOfEntries > 0) Then
+            Dim i As Long
+            For i = 0 To m_windowDict.GetNumOfEntries - 1
+                VB_Hacks.StopSubclassing m_windowDict.GetKeyByIndex(i), Me
+                m_windowDict.DeleteEntry m_windowDict.GetKeyByIndex(i)
+            Next i
+        End If
     End If
 End Sub
 
 Public Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
     
     Dim strKey As String
-    strKey = Trim$(Str(parentHwnd))
+    strKey = Trim$(Str$(parentHwnd))
     
     'Make sure this window doesn't already exist in the collection
-    If ((Not m_windowDict.DoesKeyExist(strKey)) And g_IsProgramRunning) Then
+    If g_IsProgramRunning Then
         
-        'Store the pair of hWnds
-        m_windowDict.AddEntry strKey, childHwnd
+        'Failsafe check for duplicate requests
+        If (Not m_windowDict.DoesKeyExist(strKey)) Then
         
-        'Subclass size and visibility messages on the parent window
-        If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
-        m_Subclass.ssc_Subclass parentHwnd, childHwnd, 1, Me
-        m_Subclass.ssc_AddMsg parentHwnd, MSG_BEFORE, WM_SIZE
+            'Store the pair of hWnds
+            m_windowDict.AddEntry strKey, childHwnd
+            
+            'Subclass size messages from the parent window
+            VB_Hacks.StartSubclassing parentHwnd, Me, childHwnd
+            
+            'Make the associated window a child of the parent; this automates position and visibility handling
+            SetParent childHwnd, parentHwnd
+            
+            'Perform an initial synchronization to position (0, 0) and the size of the parent window
+            Dim parentRect As winRect
+            GetClientRect parentHwnd, parentRect
+            SetWindowPosition childHwnd, 0, 0
+            SetWindowSize childHwnd, parentRect.x2, parentRect.y2
         
-        'Make the associated window a child of the parent; this automates position and visibility handling
-        SetParent childHwnd, parentHwnd
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Duplicated hWnd passed to pdWindowSync.SynchronizeWindows.  Fix this!"
+            #End If
+        End If
         
-        'Perform an initial synchronization to position (0, 0) and the size of the parent window
-        Dim parentRect As winRect
-        GetClientRect parentHwnd, parentRect
-        SetWindowPosition childHwnd, 0, 0
-        SetWindowSize childHwnd, parentRect.x2, parentRect.y2
-        
-    Else
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  Duplicated hWnd passed to pdWindowSync.SynchronizeWindows.  Fix this!"
-        #End If
     End If
     
 End Sub
@@ -120,10 +133,9 @@ Private Sub SetWindowPosition(ByVal srcHwnd As Long, ByVal newLeft As Long, ByVa
     'Per VB convention, the new left/top coordinates should be in parent coordinates.  If you want to position a
     ' window using *screen coordinates*, you'll need to write a new function (and/or manually convert the coordinates
     ' to screen space in advance).
-    
     Dim swpFlags As SWP_FLAGS
     swpFlags = SWP_NOSIZE Or SWP_NOZORDER Or SWP_NOACTIVATE
-    If Not notifyWindow Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
+    If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     
     SetWindowPos srcHwnd, 0&, newLeft, newTop, 0&, 0&, swpFlags
     
@@ -139,49 +151,25 @@ Private Sub SetWindowSize(ByVal srcHwnd As Long, ByVal newWidth As Long, ByVal n
     
 End Sub
 
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
     
-    Select Case uMsg
+    If (uiMsg = WM_SIZE) Then
+                
+        'Retrieve a copy of the parent window's rect (because the windows are guaranteed to be borderless,
+        ' GetClientRect works fine)
+        GetClientRect hWnd, m_newRect
+        
+        'Resize the child window to precisely match the parent.
+        SetWindowSize dwRefData, m_newRect.x2, m_newRect.y2
     
-        Case WM_SIZE
-            
-            'Retrieve a copy of the parent window's rect (because the windows are borderless, GetClientRect works fine)
-            GetClientRect lng_hWnd, m_newRect
-            
-            'Resize the child window accordingly.
-            SetWindowSize lParamUser, m_newRect.x2, m_newRect.y2
-            
-    End Select
+    'Normally we could let the default function perform tear-down for us, but because this class (uniquely) subclasses
+    ' multiple windows simultaneously, we manually update our parent/child window collection to note that the parent
+    ' window no longer exists.  (Note that the actual subclass removal is handled by the default PD handler.)
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        If (Not m_windowDict Is Nothing) Then m_windowDict.DeleteEntry Trim$(Str$(hWnd))
+        
+    End If
     
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
+    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+End Function

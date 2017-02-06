@@ -3,9 +3,9 @@ Attribute VB_Name = "VB_Hacks"
 'Misc VB6 Hacks
 'Copyright 2016-2017 by Tanner Helland
 'Created: 06/January/16
-'Last updated: 06/January/16
-'Last update: started moving VB6 hacks to a dedicated home; this should make various other modules more readable,
-'             since VB6 hacks often involve obscure trickery whose purpose isn't always obvious to non-VB6 coders.
+'Last updated: 06/February/17
+'Last update: add support for window subclassing via built-in WAPI functions; I'm migrating PD to this faster
+' (and safer) alternative instead of the old-school cSelfSubHookCallback approach.
 '
 'PhotoDemon relies on a lot of "not officially sanctioned" VB6 behavior to enable various optimizations and C-style
 ' code techniques. If a function's primary purpose is a VB6-specific workaround, I prefer to move it here, so I
@@ -15,12 +15,21 @@ Attribute VB_Name = "VB_Hacks"
 ' "As Any") but that's by design - e.g. to improve safety since these techniques are almost always crash-prone if
 ' used incorrectly or imprecisely.
 '
+'A number of the techniques in this module were devised with help from Karl E. Peterson's work at http://vb.mvps.org/
+' Thank you, Karl!
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
 '***************************************************************************
 
 Option Explicit
+
+'We use Karl E. Peterson's approach of declaring subclass functions by ordinal, per the documentation at http://vb.mvps.org/samples/HookXP/
+Private Declare Function SetWindowSubclass Lib "comctl32" Alias "#410" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
+Private Declare Function GetWindowSubclass Lib "comctl32" Alias "#411" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, pdwRefData As Long) As Long
+Private Declare Function RemoveWindowSubclass Lib "comctl32" Alias "#412" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long) As Long
+Private Declare Function DefSubclassProc Lib "comctl32" Alias "#413" (ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpvDestPtr As Long, ByVal lpvSourcePtr As Long, ByVal cbCopy As Long)
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
@@ -42,6 +51,7 @@ Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Lon
 
 Private Const GMEM_FIXED As Long = &H0&
 Private Const GMEM_MOVEABLE As Long = &H2&
+Public Const WM_NCDESTROY As Long = &H82&
 
 'A system info class is used to retrieve ThunderMain's hWnd, if required
 Private m_SysInfo As pdSystemInfo
@@ -291,3 +301,26 @@ Public Function MemCmp(ByVal ptr1 As Long, ByVal ptr2 As Long, ByVal bytesToComp
     bytesEqual = RtlCompareMemory(ptr1, ptr2, bytesToCompare)
     MemCmp = CBool(bytesEqual = bytesToCompare)
 End Function
+
+'Subclassing helper functions follow
+Public Function StartSubclassing(ByVal hWnd As Long, ByVal Thing As ISubclass, Optional dwRefData As Long) As Boolean
+    StartSubclassing = CBool(SetWindowSubclass(hWnd, AddressOf SubclassProc, ObjPtr(Thing), dwRefData))
+End Function
+
+Public Function StopSubclassing(ByVal hWnd As Long, ByVal Thing As ISubclass) As Boolean
+    StopSubclassing = CBool(RemoveWindowSubclass(hWnd, AddressOf SubclassProc, ObjPtr(Thing)))
+End Function
+
+Public Function DefaultSubclassProc(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    DefaultSubclassProc = DefSubclassProc(hWnd, uiMsg, wParam, lParam)
+End Function
+
+'As a failsafe against client negligence, this function will automatically remove subclassing when WM_NCDESTROY
+' is received.  (PD assumes automatic teardown behavior in a number of places, so *do not* remove the WM_NCDESTROY
+' check in this function!)  Note that there is no problem if the caller manually unsubclasses prior to returning;
+' the API will simply return FALSE because the hWnd/key pair doesn't exist in the object table.
+Public Function SubclassProc(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As ISubclass, ByVal dwRefData As Long) As Long
+   SubclassProc = uIdSubclass.WindowMsg(hWnd, uiMsg, wParam, lParam, dwRefData)
+   If (uiMsg = WM_NCDESTROY) Then StopSubclassing hWnd, uIdSubclass
+End Function
+

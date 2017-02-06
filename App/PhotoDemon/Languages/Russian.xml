@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3791,7 +3791,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>композитинга цвет</translation>
 </phrase>
 
 <phrase>
@@ -3801,17 +3801,17 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>формат прозрачность</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>цветовой формат</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>прозрачность отсечение</translation>
 </phrase>
 
 <phrase>
@@ -3821,7 +3821,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>прозрачный цвет</translation>
 </phrase>
 
 <phrase>
@@ -4233,7 +4233,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>Обзор метаданных перед сохранением</translation>
 </phrase>
 
 <phrase>
@@ -5639,7 +5639,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5929,7 +5929,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Поддержите нас небольшое пожертвование (спасибо!)</translation>
 </phrase>
 
 <phrase>
@@ -5949,22 +5949,22 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>Посетите веб-сайт и PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Скачать PhotoDemon исходный код</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Прочитайте лицензию и условия использования</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&Около</translation>
 </phrase>
 
 <phrase>
@@ -10173,12 +10173,12 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>Тип кромки</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Генерирование контур изображения</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10189,12 +10189,12 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>размывание</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>уменьшить цвет кровоточить</translation>
 </phrase>
 
 <phrase>
@@ -10204,7 +10204,7 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>сохранить белый и черный</translation>
 </phrase>
 
 <phrase>
@@ -10214,7 +10214,7 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>средний срез</translation>
 </phrase>
 
 <phrase>
@@ -10224,7 +10224,7 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10234,12 +10234,12 @@ If вы хотите сохранить его с другим именем фа
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Создание оптимальной палитры</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Применение новой палитры к изображению</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12010,22 +12010,22 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>Тип PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>базовые настройки</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>расширенные настройки</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>настройки метаданных</translation>
 </phrase>
 
 <phrase>
@@ -12035,7 +12035,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>написать чересстрочной PNG</translation>
 </phrase>
 
 <phrase>
@@ -12045,7 +12045,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>код вставки цвет фона (BKGD фрагмент)</translation>
 </phrase>
 
 <phrase>
@@ -12055,7 +12055,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>оптимизация (OptiPNG)</translation>
 </phrase>
 
 <phrase>

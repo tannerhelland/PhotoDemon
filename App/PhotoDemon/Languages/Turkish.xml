@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3785,7 +3785,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>Kompozisyon rengi</translation>
 </phrase>
 
 <phrase>
@@ -3795,17 +3795,17 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>Saydamlık biçimi</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>Renk biçimi</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>Saydamlık kesilmesi</translation>
 </phrase>
 
 <phrase>
@@ -3815,7 +3815,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>Saydam renk</translation>
 </phrase>
 
 <phrase>
@@ -4227,7 +4227,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>Kaydetmeden önce meta verileri inceleyin</translation>
 </phrase>
 
 <phrase>
@@ -5633,7 +5633,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Paletlemek</translation>
 </phrase>
 
 <phrase>
@@ -5923,7 +5923,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Bize küçük bir bağışla destek verin (teşekkürler!)</translation>
 </phrase>
 
 <phrase>
@@ -5943,22 +5943,22 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& PhotoDemon web sitesini ziyaret et</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>PhotoDemon kaynak kodunu indirin</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Lisans ve kullanım şartlarını okuyun</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&Hakkında</translation>
 </phrase>
 
 <phrase>
@@ -10166,12 +10166,12 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>Kenar tipi</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Görüntü anahattı oluşturma</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10182,12 +10182,12 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>Renk taklidi</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>Renk kanamasını azalt</translation>
 </phrase>
 
 <phrase>
@@ -10197,7 +10197,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>Beyaz ve siyah koruyun</translation>
 </phrase>
 
 <phrase>
@@ -10207,7 +10207,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>Orta kesim</translation>
 </phrase>
 
 <phrase>
@@ -10217,7 +10217,7 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>Neuquant</translation>
 </phrase>
 
 <phrase>
@@ -10227,12 +10227,12 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>En uygun palet üretme</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Görüntüye yeni palet uygulama</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12002,22 +12002,22 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>PNG türü</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>Temel ayarlar</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>gelişmiş Ayarlar</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>Meta veri ayarları</translation>
 </phrase>
 
 <phrase>
@@ -12027,7 +12027,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>Geçmeli PNG yaz</translation>
 </phrase>
 
 <phrase>
@@ -12037,7 +12037,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>Arka plan rengini embed (bKGD yığın)</translation>
 </phrase>
 
 <phrase>
@@ -12047,7 +12047,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>Optimizasyon (OptiPNG)</translation>
 </phrase>
 
 <phrase>

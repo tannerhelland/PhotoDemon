@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2200</langversion>
+<langversion>6.8.2355</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -3779,7 +3779,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>kolor compositingu</translation>
 </phrase>
 
 <phrase>
@@ -3789,17 +3789,17 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>Format przejrzystość</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>Format koloru</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>przejrzystość odcięcia</translation>
 </phrase>
 
 <phrase>
@@ -3809,7 +3809,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>kolor przezroczysty</translation>
 </phrase>
 
 <phrase>
@@ -4221,7 +4221,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>metadane przegląd przed zapisaniem</translation>
 </phrase>
 
 <phrase>
@@ -5627,7 +5627,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>Palettize</translation>
 </phrase>
 
 <phrase>
@@ -5917,7 +5917,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>Wspomóż nas z małej darowizny (dziękuję!)</translation>
 </phrase>
 
 <phrase>
@@ -5937,22 +5937,22 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>& Odwiedź stronę PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>Pobierz kod źródłowy PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>Czytaj licencji i warunki użytkowania</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&O</translation>
 </phrase>
 
 <phrase>
@@ -10158,12 +10158,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>edge type</original>
-<translation></translation>
+<translation>Typ krawędzi</translation>
 </phrase>
 
 <phrase>
 <original>Generating image outline</original>
-<translation></translation>
+<translation>Generowanie obrazu Zarys</translation>
 </phrase>
 
 <!-- Effects_Stylize_Outline.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10174,12 +10174,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>roztrząsania</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>zmniejszyć krwawienie kolorów</translation>
 </phrase>
 
 <phrase>
@@ -10189,7 +10189,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>zachowanie bieli i czerni</translation>
 </phrase>
 
 <phrase>
@@ -10199,7 +10199,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>mediana cięcia</translation>
 </phrase>
 
 <phrase>
@@ -10209,7 +10209,7 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>NeuQuant</translation>
 </phrase>
 
 <phrase>
@@ -10219,12 +10219,12 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>Generowanie optymalną paletę</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>Stosując nową paletę do obrazu</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -11994,22 +11994,22 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>Typ PNG</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>podstawowe ustawienia</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>zaawansowane ustawienia</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>ustawienia metadanych</translation>
 </phrase>
 
 <phrase>
@@ -12019,7 +12019,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>Napisać PNG z przeplotem</translation>
 </phrase>
 
 <phrase>
@@ -12029,7 +12029,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>embed kolor tła (bKGD fragment)</translation>
 </phrase>
 
 <phrase>
@@ -12039,7 +12039,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>Optymalizacja (OptiPNG)</translation>
 </phrase>
 
 <phrase>
