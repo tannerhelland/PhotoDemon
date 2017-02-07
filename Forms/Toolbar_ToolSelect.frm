@@ -758,16 +758,6 @@ Private Sub NewToolSelected()
                 End If
                 
             End If
-            
-            'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
-            ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
-            If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-                
-        Case VECTOR_TEXT, VECTOR_FANCYTEXT
-        
-            'Switching text tools may require us to redraw the text buffer, as the font rendering engine changes depending
-            ' on the current text tool.
-            If (g_OpenImageCount > 0) Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             
@@ -780,18 +770,12 @@ Private Sub NewToolSelected()
                 Paintbrush.SetBrushStyle BS_SoftBrush
             End If
             
-            'I'm not sure what paint tools require just yet, but a canvas redraw is always helpful to clear out any
-            ' overlays left behind from previous tools.
-            If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-            
-        Case Else
-        
-            'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
-            ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
-            If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-        
     End Select
     
+    'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
+    ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
+    If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                
     'Perform additional per-image initializations, as needed
     Tool_Support.InitializeToolsDependentOnImage
         
