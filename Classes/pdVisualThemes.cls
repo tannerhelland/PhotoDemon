@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Visual Theming class
 'Copyright 2013-2017 by Tanner Helland
 'Created: 23/October/13
-'Last updated: 02/June/16
-'Last update: finally purge all the old hard-coded theme color functions
+'Last updated: 07/February/17
+'Last update: migrate to safer subclassing techniques
 '
 'As of release 7.0, PhotoDemon supports the notion of "visual themes".  These themes are XML files that modify
 ' the program's appearance.
@@ -135,9 +135,11 @@ End Enum
 'Color retrieval and storage of program-wide UI colors is handled by a dedicated class
 Private m_UniversalColors As pdThemeColors
 
-'As a convenience, we manually paint form backgrounds (as VB won't paint them before first display, if the background
-' color changes in Form_Load - as it does for us)
-Private m_Subclass As cSelfSubHookCallback
+'As a convenience, we manually paint form backgrounds by subclassing form paint routines.  (VB won't paint them before
+' first display, if the background color changes in Form_Load - a rather serious flaw.)  Subclassed form hWnds are stored
+' in a dictionary.
+Implements ISubclass
+Private m_SubclassedHWnds As pdDictionary
 
 'Each theme is assigned a custom ID when it is loaded.  This ID can be used by external objects to see if they
 ' need to re-theme themselves.  (If the program's theme hasn't changed since the last time they re-themed,
@@ -693,14 +695,26 @@ End Function
 
 Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
     If g_IsProgramRunning Then
-        If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
-        m_Subclass.ssc_Subclass srcHwnd, 0, 1, Me
-        m_Subclass.ssc_AddMsg srcHwnd, MSG_BEFORE, WM_PAINT, WM_ERASEBKGND
+        
+        'If we're not already subclassing this hWnd (something that shouldn't be possible, but better safe than sorry),
+        ' add it to our subclassed list.
+        If (Not m_SubclassedHWnds.DoesKeyExist(srcHwnd)) Then
+            m_SubclassedHWnds.AddEntry srcHwnd, 0
+            VB_Hacks.StartSubclassing srcHwnd, Me
+        End If
+        
     End If
 End Sub
 
 Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
-    If g_IsProgramRunning Then m_Subclass.ssc_UnSubclass srcHwnd
+    
+    'Remove this entry from our subclassed list (which is double-checked when this class is unloaded)
+    If g_IsProgramRunning Then
+        VB_Hacks.StopSubclassing srcHwnd, Me
+        m_SubclassedHWnds.DeleteEntry srcHwnd
+        m_SubclassedHWnds.TrimDeletedEntries
+    End If
+    
 End Sub
 
 Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
@@ -717,80 +731,79 @@ Private Sub Class_Initialize()
     Set m_XML = New pdXML
     m_XML.SetTextCompareMode vbBinaryCompare
     Set m_UniversalColors = New pdThemeColors
+    Set m_SubclassedHWnds = New pdDictionary
 End Sub
 
 Private Sub Class_Terminate()
-    If (Not m_Subclass Is Nothing) Then Set m_Subclass = Nothing
+    
+    'The order in which this class is unloaded means that it should never still be subclassing forms when it terminates.
+    ' As a failsafe, however, we manually check the subclasser list and free any remaining items now.
+    If (Not m_SubclassedHWnds Is Nothing) Then
+        If (m_SubclassedHWnds.GetNumOfEntries > 0) Then
+            Dim i As Long, tmpHWnd As Long
+            For i = 0 To m_SubclassedHWnds.GetNumOfEntries - 1
+                tmpHWnd = CLng(m_SubclassedHWnds.GetKeyByIndex(i))
+                If (tmpHWnd <> 0) Then VB_Hacks.StopSubclassing tmpHWnd, Me
+            Next i
+        End If
+    End If
+    
 End Sub
 
-'All messages subclassed by m_Subclass are handled here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function HandleFormWMPaint(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
-    Dim tmpDC As Long
-    
-    If (uMsg = WM_PAINT) Then
+    'Ignore paint requests for empty regions
+    If (GetUpdateRect(hWnd, m_UpdateRect, 0) <> 0) Then
         
-        'Ignore paint requests for empty regions
-        If GetUpdateRect(hWnd, m_UpdateRect, 0) <> 0 Then
+        Dim tmpDC As Long
+        tmpDC = BeginPaint(hWnd, m_PaintStruct)
         
-            tmpDC = BeginPaint(hWnd, m_PaintStruct)
-            
-            With m_UpdateRect
-                GDI.FillRectToDC tmpDC, .Left, .Top, .Right - .Left, .Bottom - .Top, g_Themer.GetGenericUIColor(UI_Background)
-            End With
-            
-            'End painting (note: BeginPaint automatically validated the window's contents, so we don't need to do any
-            ' additional validation here)
-            EndPaint hWnd, m_PaintStruct
-            
-        End If
-        
-        'Mark the message as handled and exit
-        bHandled = True
-        lReturn = 0
-                
-    ElseIf (uMsg = WM_ERASEBKGND) Then
-        
-        tmpDC = wParam
-        GetClientRect hWnd, m_UpdateRect
         With m_UpdateRect
             GDI.FillRectToDC tmpDC, .Left, .Top, .Right - .Left, .Bottom - .Top, g_Themer.GetGenericUIColor(UI_Background)
         End With
         
-        bHandled = True
-        lReturn = 1
+        'End painting (note: BeginPaint automatically validated the window's contents, so we don't need to do any
+        ' additional validation here)
+        EndPaint hWnd, m_PaintStruct
         
     End If
+    
+    '0 is returned if the event has been processed successfully
+    HandleFormWMPaint = 0
+        
+End Function
 
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
+Private Function HandleFormWMEraseBkgnd(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    
+    'When erasing window backgrounds, wParam contains the target DC created for us by the system
+    GetClientRect hWnd, m_UpdateRect
+    With m_UpdateRect
+        GDI.FillRectToDC wParam, .Left, .Top, .Right - .Left, .Bottom - .Top, g_Themer.GetGenericUIColor(UI_Background)
+    End With
+    
+    '1 is returned if the event has been processed successfully
+    HandleFormWMEraseBkgnd = 1
+    
+End Function
 
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
 
+    If (uiMsg = WM_PAINT) Then
+        ISubclass_WindowMsg = HandleFormWMPaint(hWnd, uiMsg, wParam, lParam)
+        
+    ElseIf (uiMsg = WM_ERASEBKGND) Then
+        ISubclass_WindowMsg = HandleFormWMEraseBkgnd(hWnd, uiMsg, wParam, lParam)
+        
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        
+        m_SubclassedHWnds.DeleteEntry hWnd
+        VB_Hacks.StopSubclassing hWnd, Me
+        
+        'Allow VB to continue with its own internal teardown process
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        
+    Else
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    End If
+    
+End Function
