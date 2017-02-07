@@ -1082,6 +1082,7 @@ Private Sub RedrawBackBuffer()
                         
                         layerFont.SetFontColor paintColor
                         layerFont.AttachToDC bufferDC
+                        layerFont.SetTextAlignment vbLeftJustify
                         
                         'Calculate where the string will actually lie.  This is important, as the text region is clickable
                         ' (the user can double-click to edit the layer's name).
