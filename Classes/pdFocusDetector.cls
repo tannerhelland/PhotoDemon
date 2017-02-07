@@ -48,9 +48,9 @@ Private Const WM_KILLFOCUS As Long = &H8
 Private m_hWnd As Long
 
 'Subclasser for intercepting window messages
-Private cSubclass As cSelfSubHookCallback
+Implements ISubclass
 
-'If the window currently has focus, this will be set to TRUE.
+'If the window currently has focus, this will be set to TRUE.  We use this to avoid duplicate notifications.
 Private m_HasFocus As Boolean
 
 Private Sub Class_Initialize()
@@ -58,9 +58,9 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If ((m_hWnd <> 0) And (Not cSubclass Is Nothing) And g_IsProgramRunning) Then
-        cSubclass.ssc_UnSubclass m_hWnd
-        cSubclass.ssc_Terminate
+    If (m_hWnd <> 0) Then
+        VB_Hacks.StopSubclassing m_hWnd, Me
+        m_hWnd = 0
     End If
 End Sub
 
@@ -68,19 +68,18 @@ End Sub
 ' load this class.
 Public Sub StartFocusTracking(ByVal srcHwnd As Long)
     
-    'Release any existing subclassers
-    If ((Not (cSubclass Is Nothing)) And (m_hWnd <> 0)) And g_IsProgramRunning Then
-        cSubclass.ssc_UnSubclass m_hWnd
-        cSubclass.ssc_Terminate
-    End If
+    If g_IsProgramRunning Then
     
-    m_hWnd = srcHwnd
-    
-    'Subclass all necessary messages for proper focus detection
-    If ((m_hWnd <> 0) And g_IsProgramRunning) Then
-        Set cSubclass = New cSelfSubHookCallback
-        cSubclass.ssc_Subclass m_hWnd, , , Me
-        cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_NCACTIVATE, WM_KILLFOCUS, WM_SETFOCUS
+        'Release any existing subclassers
+        If (m_hWnd <> 0) Then
+            VB_Hacks.StopSubclassing m_hWnd, Me
+            m_hWnd = 0
+        End If
+        
+        'Subclass all necessary messages for proper focus detection
+        m_hWnd = srcHwnd
+        If (m_hWnd <> 0) Then VB_Hacks.StartSubclassing m_hWnd, Me
+        
     End If
     
 End Sub
@@ -98,7 +97,7 @@ Public Sub SetFocusManually()
 End Sub
 
 Private Function GetHiWord(ByVal lParam As Long) As Integer
-    If lParam And &H80000000 Then
+    If (lParam And &H80000000) Then
         GetHiWord = (lParam \ 65535) - 1
     Else
         GetHiWord = lParam \ 65535
@@ -106,80 +105,22 @@ Private Function GetHiWord(ByVal lParam As Long) As Integer
 End Function
 
 Private Function GetLoWord(ByVal lParam As Long) As Integer
-    If lParam And &H8000& Then
+    If (lParam And &H8000&) Then
         GetLoWord = &H8000 Or (lParam And &H7FFF&)
     Else
         GetLoWord = lParam And &HFFFF&
     End If
 End Function
 
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
-    
-    'By design, this subclasser does not report any messages as handled.
-    bHandled = False
-    
-    Select Case uMsg
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+
+    'Note: by design, this subclasser still forwards most of its handled messages to their default wndprocs
+    If (uiMsg = WM_ACTIVATE) Then
         
-        Case WM_ACTIVATE
-            
-            'The low-order portion of wParam contains a notification of whether we are gaining or losing focus.
-            Select Case GetLoWord(wParam)
-                
-                'Window is losing focus
-                Case WA_INACTIVE
-                    If m_HasFocus Then
-                        m_HasFocus = False
-                        UserControl_Support.PDControlLostFocus m_hWnd
-                        RaiseEvent LostFocusReliable
-                    End If
-                    
-                'Window is gaining focus
-                Case Else
-                    If (Not m_HasFocus) Then
-                        m_HasFocus = True
-                        UserControl_Support.PDControlReceivedFocus m_hWnd
-                        RaiseEvent GotFocusReliable
-                    End If
-                    
-            End Select
-            
-        'This message doesn't really apply to PD, but we cover it for completeness' sake
-        Case WM_NCACTIVATE
-            
-            If (Not m_HasFocus) And (wParam <> 0) Then
-                m_HasFocus = True
-                UserControl_Support.PDControlReceivedFocus m_hWnd
-                RaiseEvent GotFocusReliable
-            End If
-            
-            If wParam <> 1 Then lReturn = 1
+        'The low-order portion of wParam contains a notification of whether we are gaining or losing focus.
         
         'Window is losing focus
-        Case WM_KILLFOCUS
+        If (GetLoWord(wParam) = WA_INACTIVE) Then
             
             If m_HasFocus Then
                 m_HasFocus = False
@@ -188,22 +129,74 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             End If
         
         'Window is gaining focus
-        Case WM_SETFOCUS
+        Else
             
             If (Not m_HasFocus) Then
                 m_HasFocus = True
                 UserControl_Support.PDControlReceivedFocus m_hWnd
                 RaiseEvent GotFocusReliable
             End If
+            
+        End If
         
-    End Select
+        'Allow default focus handlers to still trigger
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
-
+    'This message doesn't really apply to most uses of this class, but we cover it for completeness' sake
+    ElseIf (uiMsg = WM_NCACTIVATE) Then
+            
+        If (Not m_HasFocus) And (wParam <> 0) Then
+            m_HasFocus = True
+            UserControl_Support.PDControlReceivedFocus m_hWnd
+            RaiseEvent GotFocusReliable
+        End If
+        
+        'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms632633%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396)...
+        ' "When the wParam parameter is FALSE, an application should return TRUE to indicate that the system
+        '  should proceed with the default processing, or it should return FALSE to prevent the change.
+        '  When wParam is TRUE, the return value is ignored."
+        
+        'We *always* want to proceed with default handling, so we need to specially handle the "wParam is FALSE" case.
+        If (wParam = 0) Then
+            ISubclass_WindowMsg = 1
+        Else
+            ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        End If
+        
+    'Window is losing focus
+    ElseIf (uiMsg = WM_KILLFOCUS) Then
+            
+        If m_HasFocus Then
+            m_HasFocus = False
+            UserControl_Support.PDControlLostFocus m_hWnd
+            RaiseEvent LostFocusReliable
+        End If
+        
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        
+    'Window is gaining focus
+    ElseIf (uiMsg = WM_SETFOCUS) Then
+            
+        If (Not m_HasFocus) Then
+            m_HasFocus = True
+            UserControl_Support.PDControlReceivedFocus m_hWnd
+            RaiseEvent GotFocusReliable
+        End If
+        
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        
+        If (hWnd <> 0) Then
+            VB_Hacks.StopSubclassing hWnd, Me
+            m_hWnd = 0
+        End If
+        
+        'Allow VB's normal teardown to occur
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+    Else
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    End If
+    
+End Function
