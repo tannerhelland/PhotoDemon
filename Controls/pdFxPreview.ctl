@@ -327,31 +327,35 @@ End Sub
 'After a resize or paint request, update the layout of our control
 Private Sub UpdateControlLayout()
     
-    'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
-    Dim newPicWidth As Long, newPicHeight As Long
-    newPicWidth = ucSupport.GetControlWidth
-    newPicHeight = ucSupport.GetControlHeight - (btsState.Height + FixDPI(4))
-    pdPreviewBox.SetPositionAndSize 0, 0, newPicWidth, newPicHeight
-    
-    'If zoom/pan is not allowed, hide that button entirely
-    btsZoom.Visible = AllowZoomPan
-    
-    'Adjust the button strips to appear just below the preview window
-    Dim newButtonTop As Long, newButtonWidth As Long
-    newButtonTop = ucSupport.GetControlHeight - btsState.Height
-    
-    'If zoom/pan is still visible, split the horizontal difference between that button strip, and the before/after strip.
-    If btsZoom.Visible Then
-        newButtonWidth = (newPicWidth \ 2) - FixDPI(8)
-        btsZoom.Move ucSupport.GetControlWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.Height
+    If g_IsProgramRunning Then
         
-    'If zoom/pan is NOT visible, let the before/after button have the entire horizontal space
-    Else
-        newButtonWidth = newPicWidth
-    End If
+        'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
+        Dim newPicWidth As Long, newPicHeight As Long
+        newPicWidth = ucSupport.GetControlWidth
+        newPicHeight = ucSupport.GetControlHeight - (btsState.Height + FixDPI(4))
+        pdPreviewBox.SetPositionAndSize 0, 0, newPicWidth, newPicHeight
+        
+        'If zoom/pan is not allowed, hide that button entirely
+        btsZoom.Visible = AllowZoomPan
+        
+        'Adjust the button strips to appear just below the preview window
+        Dim newButtonTop As Long, newButtonWidth As Long
+        newButtonTop = ucSupport.GetControlHeight - btsState.Height
+        
+        'If zoom/pan is still visible, split the horizontal difference between that button strip, and the before/after strip.
+        If btsZoom.Visible Then
+            newButtonWidth = (newPicWidth \ 2) - FixDPI(8)
+            btsZoom.SetPositionAndSize ucSupport.GetControlWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.Height
+            
+        'If zoom/pan is NOT visible, let the before/after button have the entire horizontal space
+        Else
+            newButtonWidth = newPicWidth
+        End If
+        
+        'Move the before/after toggle into place
+        btsState.SetPositionAndSize 0, newButtonTop, newButtonWidth, btsState.Height
     
-    'Move the before/after toggle into place
-    btsState.Move 0, newButtonTop, newButtonWidth, btsState.Height
+    End If
                 
 End Sub
 
