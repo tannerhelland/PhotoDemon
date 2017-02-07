@@ -85,9 +85,10 @@ Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Lo
 Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Const WM_SHOWWINDOW As Long = &H18&
 Private Const WM_WINDOWPOSCHANGING As Long = &H46&
-Private Const WM_DESTROY As Long = &H2
 
-Private m_Subclass As cSelfSubHookCallback
+'This class performs its own subclassing, as do a bunch of the other classes (pretty much everything declared WithEvents)
+Implements ISubclass
+
 Private WithEvents m_MouseEvents As pdInputMouse
 Attribute m_MouseEvents.VB_VarHelpID = -1
 Private WithEvents m_KeyEvents As pdInputKeyboard
@@ -109,6 +110,7 @@ Private m_Width As Long, m_Height As Long
 'If the caller has registered one (or more) custom messages, this will be set to TRUE.  When the parent control is
 ' unloaded, we need to de-register the hWnd with PD's central message marshaler.
 Private m_CustomInternalMessagesActive As Boolean
+Private m_CustomMessages As pdDictionary
 
 'Persistent back buffer, which we manage for the UC.  This provides a bunch of nice benefits, like automatic size syncing,
 ' color management when flipping to the screen, and perhaps someday, use of windowless controls, where appropriate.
@@ -199,12 +201,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         UserControl_Support.IncrementPDControlCount
         
         'Subclass the user control immediately
-        If g_IsProgramRunning Then
-            If (Not m_Subclass Is Nothing) Then
-                m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
-                m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SHOWWINDOW, WM_WINDOWPOSCHANGING, WM_DESTROY
-            End If
-        End If
+        If g_IsProgramRunning Then VB_Hacks.StartSubclassing m_hWnd, Me
         
         'Synchronize initial window visiblity
         m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
@@ -532,8 +529,10 @@ Friend Sub SubclassCustomMessage(ByVal wMsg As Long, Optional ByVal msgIsInterna
     
     If g_IsProgramRunning Then
         
-        If (Not m_Subclass Is Nothing) Then m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, wMsg
-    
+        'To ensure messages are routed correctly, we store all registered message IDs locally
+        If (m_CustomMessages Is Nothing) Then Set m_CustomMessages = New pdDictionary
+        m_CustomMessages.AddEntry wMsg, msgIsInternalToPD
+        
         'If the message is internal to PD, register the hWnd+message pair with PD's central marshaler
         If msgIsInternalToPD Then
             UserControl_Support.AddMessageRecipient m_hWnd, wMsg
@@ -1249,7 +1248,6 @@ End Sub
 
 Private Sub Class_Initialize()
 
-    If g_IsProgramRunning Then Set m_Subclass = New cSelfSubHookCallback
     m_BackColor = -1
     m_RedrawRequestCount = 0
     m_Visibility = False
@@ -1266,16 +1264,17 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    'Release all subclassing now.
+    'When PD was using old subclassing techniques, the order in which we released our subclassers was crucial to preventing leaks
+    ' and/or crashes.  Now that we use comctl32 subclassing, order is basically irrelevant - but I've left the old order-specific
+    ' code in place as I find it instructive.
+    
+    'Release all internal classes that may perform their own subclassing.
     StopAllSubclassing
     
-    'As a final step, release this class's internal subclasser
-    If Not (m_Subclass Is Nothing) Then
-        If g_IsProgramRunning Then
-            m_Subclass.ssc_UnSubclass m_hWnd
-            m_Subclass.ssc_Terminate
-        End If
-        Set m_Subclass = Nothing
+    'Release our subclasser.
+    If (m_hWnd <> 0) Then
+        VB_Hacks.StopSubclassing m_hWnd, Me
+        m_hWnd = 0
     End If
     
     UserControl_Support.DecrementPDControlCount
@@ -1287,116 +1286,111 @@ End Sub
 Private Sub StopAllSubclassing()
     
     'Release any non-subclassing classes first
-    If Not (m_Caption Is Nothing) Then Set m_Caption = Nothing
+    If (Not m_Caption Is Nothing) Then Set m_Caption = Nothing
     
-    'If the user control was registered for internal PD messages, de-register it with PD's central marshaler.
+    'If our parent control registered to receive internal PD messages, de-register it with PD's central marshaler.
     If m_CustomInternalMessagesActive Then
         UserControl_Support.RemoveMessageRecipient m_hWnd
         m_CustomInternalMessagesActive = False
     End If
     
+    'Release our custom subclassed message collection (which just stores message IDs, not hWnds or anything crucial to
+    ' stopping the subclass process).
+    Set m_CustomMessages = Nothing
+    
     'Release custom functionality first, in reverse-order
-    If Not (m_KeyEvents Is Nothing) Then
+    If (Not m_KeyEvents Is Nothing) Then
         m_KeyEvents.Shutdown
         Set m_KeyEvents = Nothing
     End If
     
-    If Not (m_MouseEvents Is Nothing) Then
+    If (Not m_MouseEvents Is Nothing) Then
         m_MouseEvents.Shutdown
         Set m_MouseEvents = Nothing
     End If
 
     'Release default functionality next, also in reverse-order
-    If Not (m_MoveSize Is Nothing) Then Set m_MoveSize = Nothing
-    If Not (m_FocusDetector Is Nothing) Then Set m_FocusDetector = Nothing
-    If Not (m_WindowPainter Is Nothing) Then Set m_WindowPainter = Nothing
+    If (Not m_MoveSize Is Nothing) Then Set m_MoveSize = Nothing
+    If (Not m_FocusDetector Is Nothing) Then Set m_FocusDetector = Nothing
+    If (Not m_WindowPainter Is Nothing) Then Set m_WindowPainter = Nothing
     
 End Sub
 
-'All messages subclassed by m_Subclass are handled here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function HandleWM_WindowPosChanging(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
     Dim initVisibility As Boolean
+    initVisibility = m_Visibility
+                
+    Dim tmpWindowPos As tagWINDOWPOS
+    CopyMemory ByVal VarPtr(tmpWindowPos), ByVal lParam, Len(tmpWindowPos)
     
-    'If (Not g_ProgramShuttingDown) Then
-    
-        Select Case uMsg
-            
-            'WM_WINDOWPOSCHANGING covers some visibility change cases that WM_SHOWWINDOW does not;
-            ' see http://blogs.msdn.com/b/oldnewthing/archive/2008/01/15/7113860.aspx for details
-            Case WM_WINDOWPOSCHANGING
-                
-                initVisibility = m_Visibility
-                
-                Dim tmpWindowPos As tagWINDOWPOS
-                CopyMemory ByVal VarPtr(tmpWindowPos), ByVal lParam, Len(tmpWindowPos)
-                
-                If (tmpWindowPos.wFlags And SWP_HIDEWINDOW) <> 0 Then m_Visibility = False
-                If (tmpWindowPos.wFlags And SWP_SHOWWINDOW) <> 0 Then
-                    
-                    m_Visibility = True
-                    
-                    'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
-                    ' one before the control is actually shown.)
-                    If (m_RedrawRequestCount > 0) Then AskForARepaint True, True
-                    
-                End If
-                
-                'Finally, notify the parent of the pending visibility change (if any)
-                If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
-                
-            Case WM_SHOWWINDOW
-                
-                initVisibility = m_Visibility
-                m_Visibility = CBool(wParam <> 0)
-                
-                'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
-                ' one before the control is actually shown.)
-                If m_Visibility And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
-                
-                'Finally, notify the parent of the pending visibility change
-                If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
-                
-            Case WM_DESTROY
-                StopAllSubclassing
-            
-            'All other messages are custom requests from the window.  Use them to raise custom message events.
-            Case Else
-                RaiseEvent CustomMessage(uMsg, wParam, lParam, bHandled, lReturn)
+    If (tmpWindowPos.wFlags And SWP_HIDEWINDOW) <> 0 Then m_Visibility = False
+    If (tmpWindowPos.wFlags And SWP_SHOWWINDOW) <> 0 Then
         
-        End Select
+        m_Visibility = True
+        
+        'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
+        ' one before the control is actually shown.)
+        If (m_RedrawRequestCount > 0) Then AskForARepaint True, True
+        
+    End If
     
-    'End If
+    'Finally, notify the parent of the pending visibility change (if any)
+    If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
     
-    bHandled = False
+End Function
 
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
+Private Function HandleWM_ShowWindow(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+
+    Dim initVisibility As Boolean
+    initVisibility = m_Visibility
+    
+    m_Visibility = CBool(wParam <> 0)
+    
+    'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
+    ' one before the control is actually shown.)
+    If m_Visibility And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
+    
+    'Finally, notify the parent of the pending visibility change
+    If (initVisibility <> m_Visibility) Then RaiseEvent VisibilityChange(m_Visibility)
+                
+End Function
+
+'Note that most (all?) of the messages subclassed by this class are "notification"-style only.  Default wndprocs are still called
+' after we gather the info we need.
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+    
+    Dim eatMessage As Boolean: eatMessage = False
+    
+    'WM_WINDOWPOSCHANGING covers some visibility change cases that WM_SHOWWINDOW does not;
+    ' see http://blogs.msdn.com/b/oldnewthing/archive/2008/01/15/7113860.aspx for details
+    If (uiMsg = WM_WINDOWPOSCHANGING) Then
+        HandleWM_WindowPosChanging hWnd, uiMsg, wParam, lParam
+    
+    ElseIf (uiMsg = WM_SHOWWINDOW) Then
+        HandleWM_ShowWindow hWnd, uiMsg, wParam, lParam
+        
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        
+        'Stop all 3rd-party subclassing
+        StopAllSubclassing
+        
+        'Stop internal subclassing and free our hWnd (which prevents subclassing from re-starting)
+        If (m_hWnd <> 0) Then
+            VB_Hacks.StopSubclassing m_hWnd, Me
+            m_hWnd = 0
+        End If
+    
+    Else
+        
+        'See if this message is a message that our parent control wants notification for.  If it is, relay it accordingly.
+        If (Not m_CustomMessages Is Nothing) Then
+            If m_CustomMessages.DoesKeyExist(uiMsg) Then RaiseEvent CustomMessage(uiMsg, wParam, lParam, eatMessage, ISubclass_WindowMsg)
+        End If
+        
+    End If
+    
+    'At present, none of our subclassed messages get "eaten".  Always call the default handler after we're done.
+    If (Not eatMessage) Then ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+End Function
