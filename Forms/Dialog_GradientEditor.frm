@@ -449,7 +449,7 @@ Private Sub Form_Load()
         
         'Set up a special mouse handler for the gradient interaction window
         If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
-        m_MouseEvents.AddInputTracker picInteract.hWnd, True, True, , True
+        m_MouseEvents.AddInputTracker picInteract.hWnd
         m_MouseEvents.SetSystemCursor IDC_HAND
         
         'Prep a default set of gradient points

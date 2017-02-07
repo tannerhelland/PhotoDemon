@@ -151,7 +151,7 @@ Private Const SBKM_OPAQUE = 2
 Private Const SBKM_TRANSPARENT = 1
 
 'These constants can be used as the second parameter of the ShowWindow API function
-Private Enum showWindowOptions
+Private Enum ShowWindowOptions
     SW_HIDE = 0
     SW_SHOWNORMAL = 1
     SW_SHOWMINIMIZED = 2
@@ -173,7 +173,7 @@ End Enum
 'System window handling APIs
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As ShowWindowOptions) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
@@ -550,7 +550,7 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
                     
                     'Activate mouse events
                     If (m_MouseEvents Is Nothing) Then Set m_MouseEvents = New pdInputMouse
-                    m_MouseEvents.AddInputTracker m_EditBoxHwnd, True, True, , True, , True
+                    m_MouseEvents.AddInputTracker m_EditBoxHwnd, , True
                     m_MouseEvents.SetDefWindowProcFallback True
                     
                     'Subclass the parent window as well.  This is necessary for handling some update messages from the edit box.

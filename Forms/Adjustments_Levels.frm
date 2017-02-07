@@ -1084,10 +1084,10 @@ Private Sub Form_Load()
     
     'Prepare the custom input handlers
     Set m_MouseEventsIn = New pdInputMouse
-    m_MouseEventsIn.AddInputTracker picInputArrows.hWnd, True, True, , True
+    m_MouseEventsIn.AddInputTracker picInputArrows.hWnd
     
     Set m_MouseEventsOut = New pdInputMouse
-    m_MouseEventsOut.AddInputTracker picOutputArrows.hWnd, True, True, , True
+    m_MouseEventsOut.AddInputTracker picOutputArrows.hWnd
     
     'Add button images
     Dim dropperSize As Long
