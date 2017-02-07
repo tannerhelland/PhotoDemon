@@ -551,7 +551,7 @@ Private Sub Form_Load()
     
     'Initialize a mouse handler
     Set m_MouseEvents = New pdInputMouse
-    m_MouseEvents.AddInputTracker Me.hWnd, True, True, , True
+    m_MouseEvents.AddInputTracker Me.hWnd
         
     g_PreviousTool = -1
     g_CurrentTool = g_UserPreferences.GetPref_Long("Tools", "LastUsedTool", NAV_DRAG)

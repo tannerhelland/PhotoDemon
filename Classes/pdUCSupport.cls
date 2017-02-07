@@ -256,7 +256,10 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         'Initialize special subclassers, as requested
         If customMouseEvents Then
             Set m_MouseEvents = New pdInputMouse
-            If g_IsProgramRunning Then m_MouseEvents.AddInputTracker m_hWnd, True, True, appCommandEvents, controlIsInteractive
+            If g_IsProgramRunning Then
+                m_MouseEvents.AddInputTracker m_hWnd, appCommandEvents
+                If (Not controlIsInteractive) Then m_MouseEvents.SetSystemCursor IDC_ARROW
+            End If
         End If
         
         If customKeyEvents Then

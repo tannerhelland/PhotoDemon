@@ -165,7 +165,7 @@ Private Sub Form_Load()
     
     'Prep a mouse handler
     Set m_MouseEvents = New pdInputMouse
-    m_MouseEvents.AddInputTracker Me.hWnd, True, True, , True, True
+    m_MouseEvents.AddInputTracker Me.hWnd, , True
     
     'Prep a window synchronizer and add each subpanel to it
     Set m_WindowSync = New pdWindowSync
