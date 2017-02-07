@@ -156,12 +156,9 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         '  should proceed with the default processing, or it should return FALSE to prevent the change.
         '  When wParam is TRUE, the return value is ignored."
         
-        'We *always* want to proceed with default handling, so we need to specially handle the "wParam is FALSE" case.
-        If (wParam = 0) Then
-            ISubclass_WindowMsg = 1
-        Else
-            ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
-        End If
+        'We *always* want to proceed with default handling, so we ignore this advice and forcibly allow
+        ' DefSubclassProc to request the behavior it wants.
+        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     'Window is losing focus
     ElseIf (uiMsg = WM_KILLFOCUS) Then
