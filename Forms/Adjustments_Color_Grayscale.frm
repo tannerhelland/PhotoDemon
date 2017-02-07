@@ -67,19 +67,14 @@ Begin VB.Form FormGrayscale
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin VB.PictureBox picDecompose 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picDecompose 
       Height          =   495
       Left            =   6120
-      ScaleHeight     =   33
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   377
       TabIndex        =   2
       Top             =   2040
       Width           =   5655
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdRadioButton optDecompose 
          Height          =   360
          Index           =   0
@@ -104,19 +99,14 @@ Begin VB.Form FormGrayscale
          Caption         =   "maximum"
       End
    End
-   Begin VB.PictureBox picChannel 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdContainer picChannel 
       Height          =   495
       Left            =   6120
-      ScaleHeight     =   33
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   369
       TabIndex        =   3
       Top             =   2040
       Width           =   5535
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdRadioButton optChannel 
          Height          =   360
          Index           =   0
@@ -1249,8 +1239,6 @@ Private Sub Form_Load()
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
-    SetArrowCursor picChannel
-    SetArrowCursor picDecompose
     
     'Draw the initial preview
     cmdBar.MarkPreviewStatus True
@@ -1279,11 +1267,3 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
-
-
-
