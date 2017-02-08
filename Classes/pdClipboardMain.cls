@@ -1603,7 +1603,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     End If
     
     'Grab a new temporary path name (TODO: use system-generated temp file names)
-    If Len(m_StashFile) = 0 Then m_StashFile = g_UserPreferences.GetTempPath() & "cbStash.tmpdib"
+    If (Len(m_StashFile) = 0) Then m_StashFile = g_UserPreferences.GetTempPath() & "cbStash.tmpdib"
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Writing clipboard stash now..."
@@ -1627,7 +1627,7 @@ Private Function UnstashClipboardData() As Boolean
     UnstashClipboardData = False
     
     'Make sure a stash file actually exists
-    If Len(m_StashFile) <> 0 Then
+    If (Len(m_StashFile) <> 0) Then
     
         Dim cFile As pdFSO
         Set cFile = New pdFSO
@@ -1722,7 +1722,7 @@ End Sub
 Private Sub m_Clipboard_ClipboardDestroyStashedData()
     
     'Only destroy stashed data if we're not the clipboard owner
-    If Not m_Clipboard.IsOurDataOnTheClipboard Then DestroyStashedData
+    If (Not m_Clipboard.IsOurDataOnTheClipboard) Then DestroyStashedData
     
 End Sub
 
@@ -1752,10 +1752,8 @@ Private Sub m_Clipboard_ClipboardRenderFormat(ByVal clipFormatID As Long)
     If UnstashClipboardData() Then
     
         'Validate the DIB, just to be safe
-        If Not (m_ClipboardDIB Is Nothing) Then
-            If (m_ClipboardDIB.GetDIBHandle <> 0) And (m_ClipboardDIB.GetDIBWidth <> 0) And (m_ClipboardDIB.GetDIBHeight <> 0) Then
-                okayToProceed = True
-            End If
+        If (Not m_ClipboardDIB Is Nothing) Then
+            okayToProceed = ((m_ClipboardDIB.GetDIBHandle <> 0) And (m_ClipboardDIB.GetDIBWidth <> 0) And (m_ClipboardDIB.GetDIBHeight <> 0))
         End If
         
     End If

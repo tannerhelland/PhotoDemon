@@ -285,7 +285,7 @@ Private cColl As Collection
 
 Private m_ClassicThemeWorkaround As Boolean
 
-'Tanner's addition: convert this class to ise IDE-safe subclassing
+'Tanner's addition: convert this class to use IDE-safe subclassing
 Private cSubclass As cSelfSubHookCallback
 
 Public Property Get IsWindowVistaOrLater() As Boolean
@@ -868,7 +868,6 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
     End If
     
 End Function
-
 
 Private Function SetSubclassing(ByVal hWnd As Long) As Boolean
     If g_IsProgramRunning Then

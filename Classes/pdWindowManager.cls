@@ -559,7 +559,7 @@ Public Function LoadAllWindowLocations() As Boolean
 End Function
 
 'Write the current locations of all windows to the XML engine.  (These will be used to restore the window location on subsequent loads.)
-Public Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal writeToFile As Boolean = False) As Boolean
+Public Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal writeLocationsToFile As Boolean = False) As Boolean
     
     Dim windowName As String
     windowName = m_XML.GetXMLSafeTagName(frmReference.Name)
@@ -584,7 +584,7 @@ Public Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
     End With
     
     'Write the data out to file
-    If writeToFile Then m_XML.WriteXMLToFile m_WindowPresetPath
+    If writeLocationsToFile Then m_XML.WriteXMLToFile m_WindowPresetPath
 
 End Function
 
