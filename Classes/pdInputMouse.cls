@@ -1222,6 +1222,11 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     ElseIf (uiMsg = WM_SETCURSOR) Then
         ISubclass_WindowMsg = HandleSetCursor(hWnd, uiMsg, wParam, lParam, msgEaten)
+    
+    'Failsafe check for parent window destruction
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        VB_Hacks.StopSubclassing hWnd, Me
+        m_hWnd = 0
         
     End If
     

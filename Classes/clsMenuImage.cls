@@ -273,7 +273,8 @@ Private Const WM_DRAWITEM As Long = &H2B
 Private Const WM_MENUSELECT As Long = &H11F
 Private Const WM_ENTERIDLE As Long = &H121
 
-Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
+'Changed by Tanner: we don't need menu messages, so don't waste time and resources raising this event
+'Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
 Private m_hWnd As Long
 
@@ -286,7 +287,8 @@ Private cColl As Collection
 Private m_ClassicThemeWorkaround As Boolean
 
 'Tanner's addition: convert this class to use IDE-safe subclassing
-Private cSubclass As cSelfSubHookCallback
+Implements ISubclass
+Private m_SubclassActive As Boolean
 
 Public Property Get IsWindowVistaOrLater() As Boolean
     IsWindowVistaOrLater = IsWinVistaOrLater
@@ -846,22 +848,19 @@ End Function
 
 Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Long, Optional ByVal bRaiseEvent As Boolean = False) As Boolean
 
-    If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
+    If (Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) And g_IsProgramRunning) Then
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
-        m_hWnd = hWnd
         
-        If UBound(mDIB) > 0 Then
-           Me.Clear
-        End If
+        If (UBound(mDIB) > 0) Then Me.Clear
         
         If (Not IsWinVistaOrLater) Or bRaiseEvent Then
-            If hWnd <> 0 Then
-                Call StopSubclassing
-                Init = SetSubclassing(hWnd)
-            End If
+            If (m_hWnd <> 0) Then StopSubclassing
+            m_hWnd = hWnd
+            If (m_hWnd <> 0) Then Init = SetSubclassing() Else Init = False
         Else
+            m_hWnd = hWnd
             Init = True
         End If
     
@@ -869,21 +868,20 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
     
 End Function
 
-Private Function SetSubclassing(ByVal hWnd As Long) As Boolean
+Private Function SetSubclassing() As Boolean
     If g_IsProgramRunning Then
-        If cSubclass.ssc_Subclass(hWnd, , , Me) Then
-            cSubclass.ssc_AddMsg hWnd, MSG_AFTER, WM_MENUSELECT, WM_ENTERIDLE, WM_MEASUREITEM, WM_DRAWITEM, WM_DESTROY
-            SetSubclassing = True
-        Else
-            SetSubclassing = False
-        End If
+        m_SubclassActive = VB_Hacks.StartSubclassing(m_hWnd, Me)
+        SetSubclassing = m_SubclassActive
+    Else
+        SetSubclassing = True
     End If
 End Function
 
 Private Function StopSubclassing() As Boolean
 
-    If (m_hWnd <> 0) And g_IsProgramRunning Then
-        cSubclass.ssc_UnSubclass m_hWnd
+    If (m_SubclassActive And (m_hWnd <> 0)) Then
+        VB_Hacks.StopSubclassing m_hWnd, Me
+        m_SubclassActive = False
         StopSubclassing = True
     Else
         StopSubclassing = False
@@ -916,14 +914,11 @@ Private Sub Class_Initialize()
     
     ReDim mDIB(0)
     
-    'Tanner's fix: initialize an IDE-safe subclasser
-    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
-    
 End Sub
 
 Private Sub Class_Terminate()
-    If g_IsProgramRunning Then cSubclass.ssc_Terminate
-    Clear
+    StopSubclassing
+    Me.Clear
 End Sub
 
 Private Function IsArrayDim(ByVal lpArray As Long) As Boolean
@@ -1040,125 +1035,103 @@ Private Function IsAlphaIcon(ByVal IconHandle As Long) As Boolean
     
 End Function
 
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
+    'This was in the original code; I have no idea if it's actually necessary, but since PD is soon moving to its own menu solution,
+    ' I don't care enough to test it.
     On Error Resume Next
     
-    Select Case uMsg
-    
-        Case WM_MENUSELECT, WM_ENTERIDLE 'put here what you need :)
-            RaiseEvent MenuMessages(lng_hWnd, uMsg, wParam, lParam)
-            
-        Case WM_MEASUREITEM
-        
-            Dim MIS As MEASUREITEMSTRUCT
-            
-            CopyMemory MIS, ByVal lParam, Len(MIS)
+    Dim MIS As MEASUREITEMSTRUCT
+    CopyMemory MIS, ByVal lParam, Len(MIS)
 
-            If MIS.CtlType = ODT_MENU Then
+    If (MIS.CtlType = ODT_MENU) Then
 
-                If MIS.itemHeight < m_lHeight + 4 Then
-                    MIS.itemHeight = m_lHeight + 4
-                End If
-                
-                If g_IsVistaOrLater Then
-                    If m_ClassicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12
-                Else
-                    MIS.itemWidth = MIS.itemWidth + m_lWidth + 2
-                End If
-                
-                CopyMemory ByVal lParam, MIS, Len(MIS)
-                
-                lReturn = 1
-                bHandled = True
-            Else
-                bHandled = False
-            End If
+        If (MIS.itemHeight < m_lHeight + 4) Then MIS.itemHeight = m_lHeight + 4
         
+        If g_IsVistaOrLater Then
+            If m_ClassicThemeWorkaround Then MIS.itemWidth = MIS.itemWidth + m_lWidth + 12&
+        Else
+            MIS.itemWidth = MIS.itemWidth + m_lWidth + 2&
+        End If
         
-        Case WM_DRAWITEM
+        CopyMemory ByVal lParam, MIS, Len(MIS)
+        
+        HandleMeasureItem = 1
+        msgEaten = True
+        
+    Else
+        msgEaten = False
+    End If
     
-            Dim DIS As DRAWITEMSTRUCT
-            Dim IsDisabled As Boolean
-            Dim IsCheckStyle As Boolean
-            Dim IsChecked As Boolean
-            Dim lLeft As Long
-            Dim MI As MENUINFO
-            
-            CopyMemory DIS, ByVal lParam, Len(DIS)
+End Function
 
-            If DIS.CtlType = ODT_MENU Then
+Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+    
+    'This was in the original code; I have no idea if it's actually necessary, but since PD is soon moving to its own menu solution,
+    ' I don't care enough to test it.
+    On Error Resume Next
+    
+    Dim DIS As DRAWITEMSTRUCT
+    Dim isDisabled As Boolean, isCheckStyle As Boolean, isChecked As Boolean
+    Dim lLeft As Long
+    Dim MI As MENUINFO
+    
+    CopyMemory DIS, ByVal lParam, Len(DIS)
+
+    If (DIS.CtlType = ODT_MENU) Then
+    
+        If (DIS.hWndItem <> GetMenu(hWnd)) Then
             
-                If DIS.hWndItem <> GetMenu(lng_hWnd) Then
-                        
-                    With MI
-                        .cbSize = Len(MI)
-                        .fMask = MIM_STYLE
-                    End With
+            With MI
+                .cbSize = Len(MI)
+                .fMask = MIM_STYLE
+            End With
+
+            GetMenuInfo DIS.hWndItem, MI
+
+            isCheckStyle = (MI.dwStyle And MNS_NOCHECK) <> MNS_NOCHECK
+            isChecked = (DIS.ItemState And ODS_CHECKED) = ODS_CHECKED
+            lLeft = IIf(isCheckStyle, GetSystemMetrics(SM_CXMENUCHECK), 0)
+        
+        End If
+        
+        isDisabled = (DIS.ItemState And ODS_GRAYED) = ODS_GRAYED
+        
+        If Not isCheckStyle And isChecked Then
+            Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, isDisabled)
+        End If
+        
+        'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
+        ' for users of the "classic theme"
+        If Not (m_ClassicThemeWorkaround And isDisabled) Then
+            DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), isDisabled
+        End If
+        
+        HandleDrawItem = 1
+        msgEaten = True
+        
+    Else
+        msgEaten = False
+    End If
     
-                    GetMenuInfo DIS.hWndItem, MI
-  
-                    IsCheckStyle = (MI.dwStyle And MNS_NOCHECK) <> MNS_NOCHECK
+End Function
+
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
     
-                    IsChecked = (DIS.ItemState And ODS_CHECKED) = ODS_CHECKED
+    'Sometimes we consume messages before passing them on.  Sometimes we don't.  Child functions will update this as necessary.
+    Dim msgEaten As Boolean: msgEaten = False
     
-                    lLeft = IIf(IsCheckStyle, GetSystemMetrics(SM_CXMENUCHECK), 0)
-                
-                End If
-                
-                IsDisabled = (DIS.ItemState And ODS_GRAYED) = ODS_GRAYED
-                
-                If Not IsCheckStyle And IsChecked Then
-                
-                    Call DrawCheck(DIS.hDC, lLeft, DIS.rcItem.Top, m_lWidth + 4, m_lHeight + 4, IsDisabled)
-                    
-                End If
-                
-                'Tanner edit: this is used to prevent a bug where the hDC value is invalid for disabled and non-hovered menu entries
-                ' for users of the "classic theme"
-                If Not (m_ClassicThemeWorkaround And IsDisabled) Then
-                    DrawDIB DIS.hDC, lLeft - 4, DIS.rcItem.Top + 2, cColl(DIS.hWndItem & "-" & DIS.itemID), IsDisabled
-                End If
-                
-                lReturn = 1
-                bHandled = True
-            Else
-                bHandled = False
-            End If
-            
-        Case WM_DESTROY
-            Call StopSubclassing
-            
-    End Select
+    If (uiMsg = WM_MEASUREITEM) Then
+        ISubclass_WindowMsg = HandleMeasureItem(hWnd, uiMsg, wParam, lParam, msgEaten)
     
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
+    ElseIf (uiMsg = WM_DRAWITEM) Then
+        ISubclass_WindowMsg = HandleDrawItem(hWnd, uiMsg, wParam, lParam, msgEaten)
+    
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        VB_Hacks.StopSubclassing hWnd, Me
+        m_SubclassActive = False
+    End If
+    
+    If (Not msgEaten) Then ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+End Function
