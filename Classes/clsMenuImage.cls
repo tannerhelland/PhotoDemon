@@ -859,6 +859,11 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
             If (m_hWnd <> 0) Then StopSubclassing
             m_hWnd = hWnd
             If (m_hWnd <> 0) Then Init = SetSubclassing() Else Init = False
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "clsMenuImage requires subclassing; SetSubclassing() returned " & CStr(Init)
+            #End If
+            
         Else
             m_hWnd = hWnd
             Init = True
@@ -1041,6 +1046,10 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     ' I don't care enough to test it.
     On Error Resume Next
     
+    'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
+    ' and once it's done, we'll overwrite the image handling bits with our own code.)
+    HandleMeasureItem = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
     Dim MIS As MEASUREITEMSTRUCT
     CopyMemory MIS, ByVal lParam, Len(MIS)
 
@@ -1055,13 +1064,11 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         End If
         
         CopyMemory ByVal lParam, MIS, Len(MIS)
-        
         HandleMeasureItem = 1
-        msgEaten = True
         
-    Else
-        msgEaten = False
     End If
+    
+    msgEaten = True
     
 End Function
 
@@ -1070,6 +1077,10 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
     'This was in the original code; I have no idea if it's actually necessary, but since PD is soon moving to its own menu solution,
     ' I don't care enough to test it.
     On Error Resume Next
+    
+    'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
+    ' and once it's done, we'll overwrite the image handling bits with our own code.)
+    HandleDrawItem = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     Dim DIS As DRAWITEMSTRUCT
     Dim isDisabled As Boolean, isCheckStyle As Boolean, isChecked As Boolean
@@ -1108,11 +1119,10 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
         End If
         
         HandleDrawItem = 1
-        msgEaten = True
         
-    Else
-        msgEaten = False
     End If
+    
+    msgEaten = True
     
 End Function
 
