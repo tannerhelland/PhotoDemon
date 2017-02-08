@@ -740,6 +740,13 @@ Public Sub FinalShutdown()
         End If
     Next i
     
+    'Free any ugly VB-specific workaround data
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Releasing VB-specific hackarounds..."
+    #End If
+    
+    VB_Hacks.ShutdownCleanup
+    
     'Delete any remaining temp files in the cache
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Clearing temp file cache..."
