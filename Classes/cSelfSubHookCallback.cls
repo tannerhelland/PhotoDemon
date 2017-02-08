@@ -101,7 +101,7 @@ Option Explicit
     Private Declare Function SetWindowsHookExA Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
     Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
     Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
-        Private Declare Function GetDesktopWindow Lib "user32" () As Long
+    Private Declare Function GetDesktopWindow Lib "user32" () As Long
     
     Public Enum eHookType  ' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
       WH_MSGFILTER = -1
