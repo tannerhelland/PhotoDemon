@@ -388,9 +388,6 @@ Private Declare Function CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" 
 'A single LittleCMS handle is maintained for the life of a PD instance; see InitializeLCMS and ReleaseLCMS, below.
 Private m_LCMSHandle As Long
 
-'LittleCMS requires a CDECL callback for its error handler function.  VB can't provide this, so we use a workaround provided by LaVolpe.
-Private m_CdeclWorkaround As cUniversalDLLCalls, m_CdeclCallback As Long
-
 'Initialize LittleCMS.  Do not call this until you have verified the LCMS plugin's existence
 ' (typically via the PluginManager module)
 Public Function InitializeLCMS() As Boolean
@@ -402,16 +399,6 @@ Public Function InitializeLCMS() As Boolean
     InitializeLCMS = CBool(m_LCMSHandle <> 0)
     
     #If DEBUGMODE = 1 Then
-        
-        'Set up an error logger.  Note that this WILL CRASH THAT PROGRAM after a log due to StdCall behavior.  As such,
-        ' it's only good for retrieving a single error (before everything goes to shit).
-        If InitializeLCMS Then
-            Set m_CdeclWorkaround = New cUniversalDLLCalls
-            m_CdeclCallback = m_CdeclWorkaround.ThunkFor_CDeclCallbackToVB(AddressOf cmsErrorHandler, 3)
-            Call cmsSetLogErrorHandler(m_CdeclCallback)
-            pdDebug.LogAction "LittleCMS callback successfully set: " & m_CdeclCallback
-        End If
-        
         If (Not InitializeLCMS) Then
             pdDebug.LogAction "WARNING!  LoadLibrary failed to load LittleCMS.  Last DLL error: " & Err.LastDllError
             pdDebug.LogAction "(FYI, the attempted path was: " & lcmsPath & ")"
@@ -432,11 +419,6 @@ End Function
 
 'When PD closes, make sure to release our library handle
 Public Sub ReleaseLCMS()
-    If (m_CdeclCallback <> 0) Then
-        m_CdeclWorkaround.ThunkRelease_CDECL m_CdeclCallback
-        m_CdeclCallback = 0
-        Set m_CdeclWorkaround = Nothing
-    End If
     If (m_LCMSHandle <> 0) Then FreeLibrary m_LCMSHandle
     g_LCMSEnabled = False
 End Sub
@@ -865,16 +847,4 @@ Public Function ApplyICCProfileToPDDIB(ByRef targetDIB As pdDIB) As Boolean
         #End If
     End If
     
-End Function
-
-Private Function cmsErrorHandler(ByVal ContextID As Long, ByVal cmsError As Long, ByVal ptrToText As Long) As Long
-    #If DEBUGMODE = 1 Then
-        Dim cUnicode As pdUnicode
-        Set cUnicode = New pdUnicode
-        
-        Dim errorMsg As String
-        errorMsg = cUnicode.ConvertCharPointerToVBString(ptrToText, False)
-        
-        pdDebug.LogAction "WARNING!  LittleCMS error occurred (#" & cmsError & "): " & errorMsg
-    #End If
 End Function

@@ -53,6 +53,9 @@ Private Const GMEM_FIXED As Long = &H0&
 Private Const GMEM_MOVEABLE As Long = &H2&
 Public Const WM_NCDESTROY As Long = &H82&
 
+'Unsigned arithmetic helpers
+Private Const SIGN_BIT As Long = &H80000000
+
 'A system info class is used to retrieve ThunderMain's hWnd, if required
 Private m_SysInfo As pdSystemInfo
 
@@ -304,6 +307,10 @@ Public Function MemCmp(ByVal ptr1 As Long, ByVal ptr2 As Long, ByVal bytesToComp
     Dim bytesEqual As Long
     bytesEqual = RtlCompareMemory(ptr1, ptr2, bytesToCompare)
     MemCmp = CBool(bytesEqual = bytesToCompare)
+End Function
+
+Public Function UnsignedAdd(ByVal baseValue As Long, ByVal amtToAdd As Long) As Long
+    UnsignedAdd = (baseValue Xor SIGN_BIT) + amtToAdd Xor SIGN_BIT
 End Function
 
 'Subclassing helper functions follow
