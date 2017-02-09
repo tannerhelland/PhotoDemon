@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.241</langversion>
+<langversion>6.7.242</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1343,11 +1343,6 @@ Gebruik een ander programma om deze afbeelding op te slaan in een generiek forma
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>Laden van afbeelding(en)</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation></translation>
 </phrase>
@@ -1385,7 +1380,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Duplicatie afbeelding klaar.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6161,21 +6156,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>Controleren op oude autosavedata</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>Controle van command line</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>Laden van gevraagde afbeeldingen</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Initialiseren software updater (deze functie kan worden uitgeschakeld vanaf het menu Gereedschappen -> Opties)</translation>
 </phrase>
@@ -6459,7 +6439,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14888,10 +14868,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>

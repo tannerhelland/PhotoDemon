@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2356</langversion>
+<langversion>6.8.2357</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1347,11 +1347,6 @@ Verwenden Sie bitte ein anderes Programm, um dieses Bild in einem generischen Fo
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>Bild wird bzw. Bilder werden geladen</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation>%1 von %2 Bildern erfolgreich geladen</translation>
 </phrase>
@@ -1392,7 +1387,7 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 <translation>Bildduplizierung fertiggestellt.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6171,21 +6166,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>Auf alte Autosave-Daten wird geprüft</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>Befehlszeile wird geprüft</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>Angeforderte Bilder werden geladen</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Software-Updater wird initialisiert (diese Funktion kann im Menü "Tools > Optionen" deaktiviert werden)</translation>
 </phrase>
@@ -6469,7 +6449,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14898,10 +14878,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>

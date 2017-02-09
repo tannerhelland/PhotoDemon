@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2255</langversion>
+<langversion>6.8.2256</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1341,11 +1341,6 @@ Please use another program to save this image in a generic format (such as JPEG 
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>加载图像</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation>% 2 图像加载成功 % 1</translation>
 </phrase>
@@ -1385,7 +1380,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>图像复制完成。</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6160,21 +6155,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>检查旧的自动保存数据</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>检查命令行</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>加载所请求的图像</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>启动时检测软件更新（此功能可以从工具-->选项菜单禁用）</translation>
 </phrase>
@@ -6457,7 +6437,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14885,10 +14865,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>

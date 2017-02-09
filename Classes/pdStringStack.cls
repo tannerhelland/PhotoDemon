@@ -350,13 +350,13 @@ Public Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     On Error GoTo FailsafeReset
     
     'Failsafe bounds check
-    If newStackSize <= 0 Then newStackSize = INIT_STACK_SIZE
+    If (newStackSize <= 0) Then newStackSize = INIT_STACK_SIZE
     
     'Reset the array (but only if necessary!)
     If m_NumOfStrings = 0 Then
         ReDim m_Strings(0 To newStackSize - 1) As String
     Else
-        If UBound(m_Strings) <> newStackSize - 1 Then ReDim m_Strings(0 To newStackSize - 1) As String
+        If (UBound(m_Strings) <> newStackSize - 1) Then ReDim m_Strings(0 To newStackSize - 1) As String
     End If
     
     m_NumOfStrings = 0
@@ -364,7 +364,7 @@ Public Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     Exit Sub
     
 FailsafeReset:
-    If newStackSize <= 0 Then newStackSize = INIT_STACK_SIZE
+    If (newStackSize <= 0) Then newStackSize = INIT_STACK_SIZE
     ReDim m_Strings(0 To newStackSize - 1) As String
     
 End Sub

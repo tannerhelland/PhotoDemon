@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.244</langversion>
+<langversion>6.7.245</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -1343,11 +1343,6 @@ Please utilizar otro programa para guardar esta imagen en un formato genérico (
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>Cargando imagen (s)</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation></translation>
 </phrase>
@@ -1385,7 +1380,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Completa la duplicación de imagen.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6162,21 +6157,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>Comprobación de los datos de copia de seguridad automática de edad</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>Comprobación de la línea de comandos</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>Cargando solicitó imágenes</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Iniciando actualizador de software (esta característica se puede desactivar en los menú Herramientas -> Opciones)</translation>
 </phrase>
@@ -6460,7 +6440,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14889,10 +14869,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>

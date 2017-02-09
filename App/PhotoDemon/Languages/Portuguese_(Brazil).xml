@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Portuguese (Brazil)</langname>
-<langversion>6.8.2356</langversion>
+<langversion>6.8.2357</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1347,11 +1347,6 @@ Please usar outro programa para salvar esta imagem em um formato genérico (como
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>Carregando imagem (s)</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation> %1 de %2 imagens carregado com êxito</translation>
 </phrase>
@@ -1392,7 +1387,7 @@ Please verificar que estes imagem (s) existe, e que eles usam um formato de imag
 <translation>Completa duplicação de imagem.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6171,21 +6166,6 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>Verificação de dados de gravação automática de idade</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>Verificar linha de comando</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>Carregando solicitou imagens</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Inicializar atualizador de software (este recurso pode ser desativado a partir das Ferramentas -> Opções)</translation>
 </phrase>
@@ -6469,7 +6449,7 @@ Do você tiver uma conta GitHub? (Se você não tem idéia do que isso significa
 <translation>Remover canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14899,10 +14879,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>

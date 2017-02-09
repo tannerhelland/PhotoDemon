@@ -55,9 +55,6 @@ Public g_AutozoomLargeImages As Long
 'The path where DLLs and related support libraries are kept, currently "ProgramPath\App\PhotoDemon\Plugins\"
 Public g_PluginPath As String
 
-'Command line (used here for processing purposes)
-Public g_CommandLine As String
-
 'Is compression via various libraries enabled?
 Public g_ZLibEnabled As Boolean
 Public g_ZstdEnabled As Boolean

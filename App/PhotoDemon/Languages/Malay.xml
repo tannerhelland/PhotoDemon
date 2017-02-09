@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2356</langversion>
+<langversion>6.8.2357</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1347,11 +1347,6 @@ Please menggunakan program lain untuk menyelamatkan imej ini dalam format generi
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>Memuatkan imej (s)</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation> %1 daripada %2 imej berjaya dimuatkan</translation>
 </phrase>
@@ -1392,7 +1387,7 @@ Please mengesahkan bahawa imej ini (s) wujud, dan bahawa mereka menggunakan form
 <translation>Pertindihan imej yang lengkap.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6171,21 +6166,6 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>Menyemak data autosimpan lama</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>Memeriksa baris arahan</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>Loading diminta imej</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Memulakan perisian updater (ciri ini boleh dimatikan dari Tools -> Menu Pilihan)</translation>
 </phrase>
@@ -6469,7 +6449,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14900,10 +14880,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>
