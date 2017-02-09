@@ -68,6 +68,7 @@ Private m_TimerFrequency As Currency
 'Because AddressOf doesn't work in classes, we have to jump through some hoops to allow class-based keyboard hooking
 Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private m_EditBoxRef As pdEditBoxW
+Private m_AcceleratorRef As pdAccelerator
 
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
@@ -355,7 +356,24 @@ Public Function KeyboardHookProcEditBox(ByVal nCode As Long, ByVal wParam As Lon
     End If
 End Function
 
+'Same idea as the three previous functions, but for the main pdAccelerator instance on FormMain
+Public Function NotifyAcceleratorHookNeeded(ByRef srcAccelerator As pdAccelerator) As Long
+    Set m_AcceleratorRef = srcAccelerator
+    NotifyAcceleratorHookNeeded = SetWindowsHookExW(WH_KEYBOARD, AddressOf KeyboardHookProcAccelerator, App.hInstance, App.ThreadID)
+End Function
+
+Public Sub NotifyAcceleratorHookNotNeeded(ByVal objPointer As Long)
+    If (ObjPtr(m_AcceleratorRef) = objPointer) Then Set m_AcceleratorRef = Nothing
+End Sub
+
+Public Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    If (Not m_AcceleratorRef Is Nothing) Then
+        KeyboardHookProcAccelerator = m_AcceleratorRef.KeyboardHookProcAccelerator(nCode, wParam, lParam)
+    End If
+End Function
+
 'If you have any hack-related cleanup that needs to be performed at shutdown time, use this function.
 Public Sub ShutdownCleanup()
     Set m_EditBoxRef = Nothing
+    Set m_AcceleratorRef = Nothing
 End Sub
