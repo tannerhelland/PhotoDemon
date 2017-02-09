@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2355</langversion>
+<langversion>6.8.2356</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -2539,12 +2539,6 @@ Please enter a numeric value.</original>
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
-
-<!-- BEGIN text for cUniversalDLLCalls.cls -->
-
-<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
-
-<!-- END text for cUniversalDLLCalls.cls-->
 
 <!-- BEGIN text for IMRUList.cls -->
 
@@ -6856,7 +6850,7 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <translation>Enkel fargekanal </translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Grayscale.frm contains 28 phrases. 17 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -14897,12 +14891,18 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4456 phrases. -->
-<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4458 phrases. -->
+<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
 <!-- These 2509 phrases contain approximately 12381 total words. -->
 
 </pdData>
