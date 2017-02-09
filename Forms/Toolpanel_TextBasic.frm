@@ -555,6 +555,9 @@ End Sub
 
 Private Sub Form_Load()
     
+    'Disable any layer updates as a result of control changes during the load process
+    Tool_Support.SetToolBusyState True
+    
     'Forcibly hide the "convert to text layer" panel
     toolpanel_Text.picConvertLayer.Visible = False
     
@@ -588,6 +591,8 @@ Private Sub Form_Load()
         UpdateAgainstCurrentTheme
         
     End If
+    
+    Tool_Support.SetToolBusyState False
     
 End Sub
 

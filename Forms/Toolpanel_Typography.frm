@@ -1298,7 +1298,10 @@ Private Sub chkOutlineText_LostFocusAPI()
 End Sub
 
 Private Sub Form_Load()
-
+    
+    'Disable any layer updates as a result of control changes during the load process
+    Tool_Support.SetToolBusyState True
+    
     'Generate a list of fonts
     If g_IsProgramRunning Then
         
@@ -1379,7 +1382,9 @@ Private Sub Form_Load()
         UpdateAgainstCurrentTheme
         
     End If
-
+    
+    Tool_Support.SetToolBusyState False
+    
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
