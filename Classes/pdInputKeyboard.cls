@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Keyboard Input Handler class
 'Copyright 2014-2017 by Tanner Helland
 'Created: 27/May/14 (though many individual parts existed earlier than this!)
-'Last updated: 30/September/14
-'Last update: separate keyboard tracking into its own class, as it requires a lot of extra work
+'Last updated: 09/February/17
+'Last update: convert to safer subclassing via comctl32
 '
 'As usual, VB has some unpleasant quirks when it comes to keyboard interactions.  For example, things like specifying
 ' a Default control can cause Enter keypresses to become unreportable.  Keys like Tab or Arrows may not be returned
@@ -24,24 +24,20 @@ Attribute VB_Exposed = False
 '
 'To work around these issues, I use this pdInputKeyboard class.  This class uses dynamic keyboard hooking to reliably
 ' capture and report any keypresses that occur while a given window has focus.  Hooking is initiated when an hWnd
-' receives focus, and it is released when focus is lost.  This all happens transparently, so the user need not worry
-' about anything except the following:
+' receives focus, and it is released when focus is lost.  This all happens transparently, so the only needs to worry
+' about the following details:
 '
-'1) Unlike pdInputMouse, this class only supports a single hWnd at a time.  This is by design, to get around some of
-'    the uglier complications of dynamic hooking.  If you need to track multiple hWnds, you will need multiple
-'    instances of this class.
-'
-'2) This class raises two events: KeyDown and KeyUp.  KeyUp corresponds to the physical release of a key.  KeyDown
+'1) This class raises two events: KeyDown and KeyUp.  KeyUp corresponds to the physical release of a key.  KeyDown
 '    *does not* correspond to the physical press of a key.  It is also raised if a key is pressed and held.  The user
 '    cannot presently distinguish between physical presses and hold-to-repeat presses.
 '
-'3) To ensure that accelerators work properly, the KeyDown and KeyUp events supply a ByRef "markEventHandled" Boolean.
+'2) To ensure that accelerators work properly, the KeyDown and KeyUp events supply a ByRef "markEventHandled" Boolean.
 '    *It is very important to make use of this parameter!*  If a keypress is NOT used by your function, you need to mark
 '    this variable as FALSE.  That will instruct this class to pass the keypress along to the next proc in line.  By
 '    default, the "markEventHandled" value is set to TRUE, on the assumption that the caller is making use of all
 '    key events, per #4...
 '
-'4) Rather than hook all keypresses, this class forces the caller to manually specify which keys it wants to intercept.
+'3) Rather than hook all keypresses, this class forces the caller to manually specify which keys it wants to intercept.
 '    This allows unused keypresses to pass through with minimal effort, but it is not ideal if you intend to make use of
 '    all (or nearly all) keys on the keyboard.  If many key events are wanted, you can remove the "check to see if key
 '    should be tracked" behavior in the hook proc, but be forewarned that this may have ugly consequences, particularly
@@ -49,7 +45,7 @@ Attribute VB_Exposed = False
 '
 '    tl;dr, Be careful about intercepting more keypress data than you actually require!
 '
-'5) Similar to VB's standard key events, Shift/Ctrl/Alt modifiers are reported as part of each event, as is the
+'4) Similar to VB's standard key events, Shift/Ctrl/Alt modifiers are reported as part of each event, as is the
 '    *VIRTUAL KEYCODE* of the pressed key.  Everything in this class works by virtual keycodes, which are listed here:
 '    http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
 '
@@ -94,11 +90,12 @@ Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_ME
 Private Const KF_EXTENDED As Long = &H1000000
 
 'Master subclasser for all input actions
-Private cSubclass As cSelfSubHookCallback
+Implements ISubclass
 
 'hWnd to track.  Because this class works by dynamically hooking the object that has focus, a separate class instance
 ' is always required for each hWnd (unlike pdMouseInput, which can handle multiple hWnds at once).
 Private m_targetHwnd As Long
+Private m_SubclassActive As Boolean
 
 'Key codes to track.  To minimize the impact of this class on keyboard events, the caller is required to *explicitly state*
 ' which keys it wants tracked.  Any keys that are not explicitly requested will be ignored by this class (and by "ignored"
@@ -115,8 +112,9 @@ Private m_HasFocus As Boolean
 ' This is done via a non-optional Name parameter supplied in the initial hook request.
 Private m_HookedControlName As String
 
-'When a keyboard hook is active, this will be set to TRUE.
-Private m_HookActive As Boolean
+'When a keyboard hook is active, this will be set to TRUE, and the hook ID will be a handle to the actual Windows hook object.
+Private m_HookID As Long
+Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 
 'While inside the hook event, this will be set to TRUE.  Because we raise events directly from the hook, we sometimes need to postpone
 ' crucial actions (like releasing the hook) until the hook proc has exited.
@@ -136,9 +134,6 @@ Private Sub Class_Initialize()
     
     m_HasFocus = False
     
-    'Initialize the subclasser
-    If g_IsProgramRunning Then Set cSubclass = New cSelfSubHookCallback
-    
 End Sub
 
 Private Sub Class_Terminate()
@@ -148,21 +143,26 @@ End Sub
 'This function is automatically called at Class_Terminate time, but you can also call it manually if you want
 ' to ensure a particular unload time.
 Public Sub Shutdown()
-    If g_IsProgramRunning Then
-        If (m_targetHwnd <> 0) Then
-            cSubclass.ssc_UnSubclass m_targetHwnd
-            m_targetHwnd = 0
-        End If
-        cSubclass.shk_TerminateHooks
-        cSubclass.ssc_Terminate
+    
+    If (m_targetHwnd <> 0) Then
+        If m_SubclassActive Then VB_Hacks.StopSubclassing m_targetHwnd, Me
+        m_SubclassActive = False
+        m_targetHwnd = 0
     End If
+    
+    If (m_HookID <> 0) Then
+        VB_Hacks.NotifyPDIKHookNotNeeded ObjPtr(Me)
+        UnhookWindowsHookEx m_HookID
+        m_HookID = 0
+    End If
+    
 End Sub
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
 Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHwnd As Long, ParamArray listOfKeys() As Variant) As Boolean
     
+    'Failsafe check for bad user behavior
     If (m_targetHwnd <> 0) Then Debug.Print "WARNING!  Keyboard tracker requested, but we're already tracking an object!"
-    
     m_HookedControlName = nameOfTarget
     
     If (targetHwnd <> 0) Then
@@ -171,72 +171,68 @@ Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal target
         m_targetHwnd = targetHwnd
         
         'Attach the subclasser to this hWnd
-        If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me) Then
+        m_SubclassActive = VB_Hacks.StartSubclassing(m_targetHwnd, Me)
+        If m_SubclassActive Then
             
-            Debug.Print "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
-            CreateKeyboardTracker = False
-            Exit Function
-        
-        End If
-        
-        'Key tracking is a nasty bit of business.  Let me just state that up front before breaking down how PD handles it.
-    
-        'Let's start by talking about something seemingly simple, like arrow keys.  By default, Windows typically handles arrow
-        ' keypresses for applications.  Depending on the context, arrow buttons may be used to navigate between command buttons,
-        ' or navigate within a text box or edit control, or interact with controls in some other standard way.
-        
-        'This default behavior can be overridden by intercepting the WM_GETDLGCODE message and returning a value that specifies
-        ' what default behaviors you want to override.  Sounds easy, right?
-        
-        'In theory, it should be.  But in practice, it is anything but.  Some element of VB (who knows what) eats the WM_GETDLGCODE
-        ' message before it ever arrives at our wndProc.  It is possible that there's a way to override this behavior, or
-        ' somehow intercept it, but after a great deal of testing I have not found a reliable way to do it for any possible hWnd.
-        ' (This could be due to a whole bunch of factors, including the various window bits VB chooses to use, which I didn't want
-        ' to custom-handle as the goal here is to support custom tracking for *any* type of hWnd.)
-        
-        'So, subclassing is out.  That leaves hooking, which is a more troublesome solution, especially in PD's main screen where
-        ' a whole bunch of windows are simultaneously present.
-        
-        'Because hooking is an energy-intensive project, we don't want to hook anything more than is absolutely necessary.  So
-        ' hooking is handled dynamically as any tracked window(s) gain or lose focus.  To accomplish this, key hooking requests
-        ' also generate some subclassing bits as well, so we can track focus of our individual windows.
-        
-        'Subclass two messages: WM_ACTIVATE (for floating windows) and WM_SETFOCUS/KILLFOCUS (for docked windows)
-        cSubclass.ssc_AddMsg targetHwnd, MSG_BEFORE, WM_ACTIVATE, WM_SETFOCUS, WM_KILLFOCUS
-        
-        'We now want to copy the list of keycodes we have been passed.  If our hook encounters a keycode that was not specifically
-        ' requested, we're going to let the default window proc handle it.  This allows things like the Tab key to behave normally,
-        ' unless a control specifically requests otherwise.
-        If UBound(listOfKeys) >= LBound(listOfKeys) Then
+            CreateKeyboardTracker = m_SubclassActive
             
-            'Resize our tracked keycode array
-            m_NumOfTrackedKeys = UBound(listOfKeys) - LBound(listOfKeys) + 1
-            ReDim m_TrackedKeys(0 To m_NumOfTrackedKeys - 1) As Long
-            
-            'Store the list of requested keycodes
-            Dim i As Variant, curKeyIndex As Long
-            curKeyIndex = 0
-            
-            For Each i In listOfKeys
-                m_TrackedKeys(curKeyIndex) = CLng(i)
-                curKeyIndex = curKeyIndex + 1
-            Next i
+            'Key tracking is a nasty bit of business.  Let me just state that up front before breaking down how PD handles it.
         
-        Else
+            'Let's start by talking about something seemingly simple, like arrow keys.  By default, Windows typically handles arrow
+            ' keypresses for applications.  Depending on the context, arrow buttons may be used to navigate between command buttons,
+            ' or navigate within a text box or edit control, or interact with controls in some other standard way.
+            
+            'This default behavior can be overridden by intercepting the WM_GETDLGCODE message and returning a value that specifies
+            ' what default behaviors you want to override.  Sounds easy, right?
+            
+            'In theory, it should be.  But in practice, it is anything but.  Some element of VB (who knows what) eats the WM_GETDLGCODE
+            ' message before it ever arrives at our wndProc.  It is possible that there's a way to override this behavior, or
+            ' somehow intercept it, but after a great deal of testing I have not found a reliable way to do it for any possible hWnd.
+            ' (This could be due to a whole bunch of factors, including the various window bits VB chooses to use, which I didn't want
+            ' to custom-handle as the goal here is to support custom tracking for *any* type of hWnd.)
+            
+            'So, subclassing is out.  That leaves hooking, which is a more troublesome solution, especially in PD's main screen where
+            ' a whole bunch of windows are simultaneously present.
+            
+            'Because hooking is an energy-intensive project, we don't want to hook anything more than is absolutely necessary.  So
+            ' hooking is handled dynamically as any tracked window(s) gain or lose focus.  To accomplish this, key hooking requests
+            ' also generate some subclassing bits as well, so we can track focus of individual windows.
+            
+            'We now want to copy the list of keycodes we have been passed.  If our hook encounters a keycode that was not specifically
+            ' requested, we're going to let the default window proc handle it.  This allows things like the Tab key to behave normally,
+            ' unless a control specifically requests otherwise.
+            If (UBound(listOfKeys) >= LBound(listOfKeys)) Then
+                
+                'Resize our tracked keycode array
+                m_NumOfTrackedKeys = UBound(listOfKeys) - LBound(listOfKeys) + 1
+                ReDim m_TrackedKeys(0 To m_NumOfTrackedKeys - 1) As Long
+                
+                'Store the list of requested keycodes
+                Dim i As Variant, curKeyIndex As Long
+                curKeyIndex = 0
+                
+                For Each i In listOfKeys
+                    m_TrackedKeys(curKeyIndex) = CLng(i)
+                    curKeyIndex = curKeyIndex + 1
+                Next i
             
             'It's okay to not supply keys here; the caller is allowed to postpone key requests until later
-            ReDim m_TrackedKeys(0) As Long
+            Else
+                ReDim m_TrackedKeys(0) As Long
+            End If
             
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
+            #End If
         End If
     
     'The calling function didn't supply an hWnd.  Warn and exit.
     Else
-        Debug.Print "WARNING: a function just requested keyboard tracking, but didn't supply an hWnd.  Fix it!"
-        CreateKeyboardTracker = False
-        Exit Function
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING: a function just requested keyboard tracking, but didn't supply an hWnd.  Fix it!"
+        #End If
     End If
-    
-    CreateKeyboardTracker = True
     
 End Function
 
@@ -293,11 +289,13 @@ End Function
 ' text box inside the KeyPress event.)
 Private Sub m_HookReleaseTimer_Timer()
     If (Not m_InHookNow) Then
-        If m_HookActive Then
+        If (m_HookID <> 0) Then
             RemoveKeyboardHook
             m_HookReleaseTimer.StopTimer
+        
+        'Something weird happened and the hook was released; stop timing now!
         Else
-            m_HookActive = False
+            m_HookReleaseTimer.StopTimer
         End If
     End If
 End Sub
@@ -306,11 +304,11 @@ End Sub
 Private Sub InstallKeyboardHook()
     
     'Check for an existing hook
-    If (Not m_HasFocus) And (Not m_HookActive) And (m_targetHwnd <> 0) And g_IsProgramRunning Then
+    If (Not m_HasFocus) And (m_targetHwnd <> 0) And (m_HookID = 0) And g_IsProgramRunning Then
         
         'If a hook is already active, and we're trying to unhook it safely, we don't want to reinstall our hook
         Dim tryingToUnhook As Boolean: tryingToUnhook = False
-        If Not (m_HookReleaseTimer Is Nothing) Then
+        If (Not m_HookReleaseTimer Is Nothing) Then
             tryingToUnhook = m_HookReleaseTimer.IsActive
             If tryingToUnhook Then m_HookReleaseTimer.StopTimer
         End If
@@ -320,12 +318,8 @@ Private Sub InstallKeyboardHook()
         
         'Install a new hook for this window
         If (Not tryingToUnhook) Then
-            If Not (cSubclass Is Nothing) Then
-                'Debug.Print "Installing keyboard hook for " & m_HookedControlName & ":" & m_targetHwnd
-                cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_targetHwnd, 2, Me
-                m_HookActive = True
-                UserControl_Support.PDControlReceivedFocus m_targetHwnd
-            End If
+            m_HookID = VB_Hacks.NotifyPDIKHookNeeded(Me)
+            UserControl_Support.PDControlReceivedFocus m_targetHwnd
         End If
         
     End If
@@ -334,47 +328,39 @@ End Sub
 
 'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
 Private Sub RemoveKeyboardHook()
-    If (Not (cSubclass Is Nothing)) And m_HookActive And g_IsProgramRunning Then
+    
+    If (m_HookID <> 0) Then
+        
+        VB_Hacks.NotifyPDIKHookNotNeeded ObjPtr(Me)
+        UnhookWindowsHookEx m_HookID
+        m_HookID = 0
+        
         'Debug.Print "Uninstalling keyboard hook for " & m_HookedControlName & ":" & m_targetHwnd
-        cSubclass.shk_UnHook WH_KEYBOARD
-        m_HookActive = False
         UserControl_Support.PDControlLostFocus m_targetHwnd
+        
     End If
+    
 End Sub
 
 'Release the edit box's keyboard hook.  In some circumstances, we can't do this immediately, so we set a timer that will
 ' release the hook as soon as the system allows.
 Private Sub SafelyRemoveKeyboardHook()
+
     If m_InHookNow Then
-        Debug.Print "Starting safe unhook procedure for " & m_HookedControlName & ":" & m_targetHwnd
+        'Debug.Print "Starting safe unhook procedure for " & m_HookedControlName & ":" & m_targetHwnd
         If (m_HookReleaseTimer Is Nothing) Then Set m_HookReleaseTimer = New pdTimer
         m_HookReleaseTimer.Interval = 16
         m_HookReleaseTimer.StartTimer
     Else
         RemoveKeyboardHook
     End If
+    
 End Sub
 
-'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
-Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
-'*************************************************************************************************
-' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
-'* bBefore    - Indicates whether the callback is before or after the next hook in chain.
-'* bHandled   - In a before next hook in chain callback, setting bHandled to True will prevent the
-'*              message being passed to the next hook in chain and (if set to do so).
-'* lReturn    - Return value. For Before messages, set per the MSDN documentation for the hook type
-'* nCode      - A code the hook procedure uses to determine how to process the message
-'* wParam     - Message related data, hook type specific
-'* lParam     - Message related data, hook type specific
-'* lHookType  - Type of hook calling this callback
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
     
-    m_InHookNow = True
-    bHandled = False
+    If (m_NumOfTrackedKeys > 0) Then
     
-    If (lHookType = WH_KEYBOARD) And m_HasFocus Then
-        
         'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
         Dim retShiftConstants As ShiftConstants
         If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
@@ -385,15 +371,15 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         Dim i As Long
         For i = 0 To m_NumOfTrackedKeys - 1
         
-            If wParam = m_TrackedKeys(i) Then
+            If (wParam = m_TrackedKeys(i)) Then
             
                 'This is a key we are supposed to be tracking.  Check its state by using isVirtualKeyDown.
                 If IsVirtualKeyDown(wParam) Then
                 
-                    bHandled = True
+                    msgEaten = True
                 
                     'This key is being pressed.  Raise the associated event.
-                    RaiseEvent KeyDownCustom(retShiftConstants, wParam, bHandled)
+                    RaiseEvent KeyDownCustom(retShiftConstants, wParam, msgEaten)
                     Exit For
                 
                 'The key has just been released.
@@ -405,10 +391,10 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                     ' specifically, it is only raised at the moment when the transition state is UP and the previous state is DOWN.
                     If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
                 
-                        bHandled = True
+                        msgEaten = True
                         
                         'This key is being released.  Raise the associated event.
-                        RaiseEvent KeyUpCustom(retShiftConstants, wParam, bHandled)
+                        RaiseEvent KeyUpCustom(retShiftConstants, wParam, msgEaten)
                         Exit For
                         
                     End If
@@ -419,134 +405,115 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         
         Next i
         
-        'If bHandled Then
-        '    Debug.Print "pdInput is handling keypress: " & bHandled & ", " & nCode
-        'Else
-        '    Debug.Print "pdInput is NOT handling keypress: " & bHandled & ", " & nCode
-        'End If
-        
     End If
+        
+End Function
+
+Friend Function PDIKKeyboardProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
-    'Per MSDN, return the value of CallNextHookEx
-    If (Not bHandled) Then
-        lReturn = CallNextHookEx(0&, nCode, wParam, lParam)
+    m_InHookNow = True
+    
+    'Ignore this event completely if we've shut down our hook internally.  (Because you can't use AddressOf in a class,
+    ' we have to use an ugly, hackish technique to handle these callbacks.)
+    If (m_HookID <> 0) Then
+        
+        Dim msgEaten As Boolean: msgEaten = False
+        
+        'If we don't have focus, ignore this completely
+        If m_HasFocus Then
+        
+            'MSDN states that negative codes must be passed to the next hook, without processing
+            ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
+            If (nCode >= 0) Then PDIKKeyboardProc = HandleKeyProc(nCode, wParam, lParam, msgEaten)
+            
+        End If
+        
+        'Per MSDN, return the value of CallNextHookEx, contingent on whether or not we handled the keypress internally.
+        ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
+        ' the pressed keys (and raise its own WM_CHAR events, etc).
+        If (Not msgEaten) Then
+            PDIKKeyboardProc = CallNextHookEx(0&, nCode, wParam, lParam)
+        Else
+            PDIKKeyboardProc = 1&
+        End If
+        
     Else
-        lReturn = 1&
+        PDIKKeyboardProc = CallNextHookEx(0&, nCode, wParam, lParam)
     End If
     
     m_InHookNow = False
     
-End Sub
+End Function
 
-'All events subclassed by this window are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Sub HandleWMActivate(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
+
+    'Figure out if the window is being activated or deactivated.
+    Const WA_INACTIVE As Long = 0
+    Const WA_ACTIVE As Long = 1
+    Const WA_CLICKACTIVE As Long = 2
     
-    'As a failsafe, make sure the window handle matches the hWnd we are tracking.  (This should never *not* be true,
-    ' but better safe than sorry.)
-    If (lng_hWnd = m_targetHwnd) Then
-    
-        'Parse window messages and raise any standard events; at present, this includes any messages that affect focus
-        ' state of a window or control.
-        Select Case uMsg
+    Dim activationStatus As Long
+    activationStatus = GetLoWord(wParam)
                 
-            'A floating toolbox window is being activated or deactivated.  This is important as this class uses
-            ' activation status to install and remove keyboard hooks.
-            Case WM_ACTIVATE
-                
-                'Figure out if the window is being activated or deactivated.
-                Const WA_INACTIVE As Long = 0
-                Const WA_ACTIVE As Long = 1
-                Const WA_CLICKACTIVE As Long = 2
-                
-                Dim activationStatus As Long
-                activationStatus = GetLoWord(wParam)
-                
-                'This hWnd is being deactivated.  If a hook has been installed, remove it now.
-                If activationStatus = WA_INACTIVE Then
-                    
-                    'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
-                    ' as soon as the system allows.
-                    SafelyRemoveKeyboardHook
-                    
-                    'Immediately mark the control-wide focus state, even though the hook has not yet been removed
-                    If m_HasFocus Then
-                        m_HasFocus = False
-                    Else
-                        Debug.Print m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
-                    End If
-                        
-                'This hWnd is being activated.  Install a hook now.
-                Else
-                    If (Not m_HasFocus) Then
-                        InstallKeyboardHook
-                    Else
-                        Debug.Print m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
-                    End If
-                End If
-                                
-            'Docked toolbox windows and standard controls will raise WM_SETFOCUS instead of WM_ACTIVATE
-            Case WM_SETFOCUS
-                
-                'Start hooking keypresses so we can grab Unicode chars before VB eats 'em.  Not that this function actually sets
-                ' the m_HasFocus value to TRUE.
-                If (Not m_HasFocus) Then
-                    InstallKeyboardHook
-                Else
-                    Debug.Print m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
-                End If
-                
-            Case WM_KILLFOCUS
-                
-                'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
-                ' as soon as the system allows.
-                SafelyRemoveKeyboardHook
-                
-                'Immediately mark the control-wide focus state, even though the hook has not yet been removed
-                If m_HasFocus Then
-                    m_HasFocus = False
-                Else
-                    Debug.Print m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
-                End If
-                
-        End Select
-        
-        bHandled = False
-    
-    'Somehow, the hWnd we've captured is not the one being tracked!  Abandon ship.
+    'This hWnd is being deactivated.  If a hook has been installed, remove it now.
+    If (activationStatus = WA_INACTIVE) Then
+        HandleWMKillFocus
+            
+    'This hWnd is being activated.  Install a hook now.
     Else
-        Debug.Print "WARNING!  Irrelevant hWnd intercepted by pdInput: " & lng_hWnd
-        bHandled = False
+        HandleWMSetFocus
     End If
-
-
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
+        
 End Sub
+
+Private Sub HandleWMSetFocus()
+    If (Not m_HasFocus) Then
+        InstallKeyboardHook
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction m_HookedControlName & " just gained focus, but a keyboard hook is already installed??"
+        #End If
+    End If
+End Sub
+
+Private Sub HandleWMKillFocus()
+
+    'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
+    ' as soon as the system allows.
+    SafelyRemoveKeyboardHook
+    
+    'Immediately mark the control-wide focus state, even though the hook has not yet been removed
+    If m_HasFocus Then
+        m_HasFocus = False
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction m_HookedControlName & " just lost focus, but no keyboard hook was ever installed??"
+        #End If
+    End If
+    
+End Sub
+
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+
+    'Note that this function only peeks at passed messages; it never consumes the messages
+    
+    'A floating toolbox window is being activated or deactivated.
+    If (uiMsg = WM_ACTIVATE) Then
+        HandleWMActivate hWnd, uiMsg, wParam, lParam
+    
+    'Docked toolbox windows and standard controls raise WM_SETFOCUS instead of WM_ACTIVATE
+    ElseIf (uiMsg = WM_SETFOCUS) Then
+        HandleWMSetFocus
+        
+    ElseIf (uiMsg = WM_KILLFOCUS) Then
+        HandleWMKillFocus
+        
+    ElseIf (uiMsg = WM_NCDESTROY) Then
+        VB_Hacks.StopSubclassing hWnd, Me
+        m_targetHwnd = 0
+        m_SubclassActive = False
+    End If
+    
+    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    
+End Function
