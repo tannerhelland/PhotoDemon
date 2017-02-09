@@ -33,8 +33,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Accelerator ("Hotkey") handler
 'Copyright 2013-2017 by Tanner Helland
 'Created: 06/November/15 (formally split off from a heavily modified vbaIHookControl by Steve McMahon
-'Last updated: 06/November/15
-'Last update: rewrite the damn thing (mostly) from scratch
+'Last updated: 09/February/17
+'Last update: migrate to safer comctl32 subclassing technique
 '
 'For many years, PD used vbAccelerator's "hook control" to handle program hotkeys:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Hooks/Accelerator_Control/article.asp
@@ -43,7 +43,7 @@ Attribute VB_Exposed = False
 ' I rewrote much of the control to solve some glaring stability issues.  Over time, I rewrote it more and more
 ' (https://github.com/tannerhelland/PhotoDemon/commits/master/Controls/vbalHookControl.ctl), tacking on PD-specific
 ' features and attempting to fix problematic bugs, until ultimately the control became a horrible mishmash of
-' spaghetti code: some old, some new, some completely unused, and some that was still problematically unreliable.
+' spaghetti code: some old, some new, some completely unused, and some that was still problematic and unreliable.
 '
 'Because dynamic hooking has enormous potential for causing hard-to-replicate bugs, a ground-up rewrite seemed long
 ' overdue.  Hence this new control.
@@ -90,8 +90,9 @@ Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
 Private Const VK_ALT As Long = &H12    'Note that VK_ALT is referred to as VK_MENU in MSDN documentation!
 
-'If the control's hook proc is active and primed, this will be set to TRUE
-Private m_HookingActive As Boolean
+'If the control's hook proc is active and primed, this will be set to TRUE.  (HookID is the actual Windows hook handle.)
+Private m_HookingActive As Boolean, m_HookID As Long
+Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 
 'When the control is actually inside the hook procedure, this will be set to TRUE.  The hook *cannot be removed
 ' until this returns to FALSE*.  To ensure correct unhooking behavior, we use a timer failsafe.
@@ -102,9 +103,6 @@ Private m_InHookNow As Boolean
 ' initiates the tmrAccelerator timer and immediately exits, which allows the hookproc to safely exit.  After the timer enforces a slight delay,
 ' it then performs the actual accelerator evaluation.
 Private m_AcceleratorIndex As Long, m_TimerAtAcceleratorPress As Double
-
-'Dynamic hooking requires great care, particularly within the IDE.  PD makes all attempts to do it safely.
-Private m_Subclass As cSelfSubHookCallback
 
 'This control may be problematic on systems with system-wide custom key handlers (like some Intel systems, argh).
 ' As part of the debug process, we generate extra text on first activation - text that can be ignored on subsequent runs.
@@ -176,11 +174,13 @@ Private Sub SafelyReleaseHook()
         
         If m_HookingActive Then
             m_HookingActive = False
-            m_Subclass.shk_UnHook WH_KEYBOARD
+            If (m_HookID <> 0) Then UnhookWindowsHookEx m_HookID
+            m_HookID = 0
+            VB_Hacks.NotifyAcceleratorHookNotNeeded ObjPtr(Me)
         End If
         
         'Also deactivate the failsafe timer
-        If (Not (m_ReleaseTimer Is Nothing)) Then m_ReleaseTimer.StopTimer
+        If (Not m_ReleaseTimer Is Nothing) Then m_ReleaseTimer.StopTimer
         
     End If
     
@@ -211,8 +211,6 @@ Private Sub UserControl_Initialize()
     'You may want to consider straight-up disabling hotkeys inside the IDE
     If g_IsProgramRunning Then
         
-        Set m_Subclass = New cSelfSubHookCallback
-        
         Set m_ReleaseTimer = New pdTimer
         m_ReleaseTimer.Interval = 17
         
@@ -228,10 +226,7 @@ End Sub
 Private Sub UserControl_Terminate()
     
     'Generally, we prefer the caller to disable us manually, but as a last resort, check for termination at shutdown time.
-    If Not (m_Subclass Is Nothing) Then
-        DeactivateHook True
-        Set m_Subclass = Nothing
-    End If
+    If (m_HookID <> 0) Then DeactivateHook True
     
     ReleaseResources
     
@@ -240,19 +235,17 @@ End Sub
 'Hook activation/deactivation must be controlled manually by the caller
 Public Function ActivateHook() As Boolean
     
-    If Not (m_Subclass Is Nothing) Then
+    If g_IsProgramRunning Then
         
         'If we're already hooked, don't attempt to hook again
         If (Not m_HookingActive) Then
             
-            m_HookingActive = True
-            m_Subclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, , 1, Me
+            m_HookID = VB_Hacks.NotifyAcceleratorHookNeeded(Me)
+            m_HookingActive = (m_HookID <> 0)
             
             #If DEBUGMODE = 1 Then
                 If (Not m_SubsequentInitialization) Then
-                    If m_HookingActive Then
-                        'pdDebug.LogAction "pdAccelerator.ActivateHook successful.  Hotkeys enabled for this session."
-                    Else
+                    If (Not m_HookingActive) Then
                         pdDebug.LogAction "WARNING!  pdAccelerator.ActivateHook failed.   Hotkeys disabled for this session."
                     End If
                 End If
@@ -269,11 +262,13 @@ End Function
 
 Public Sub DeactivateHook(Optional ByVal forciblyReleaseInstantly As Boolean = True)
     
-    If (Not (m_Subclass Is Nothing)) And m_HookingActive And g_IsProgramRunning Then
+    If m_HookingActive Then
         
         If forciblyReleaseInstantly Then
             m_HookingActive = False
-            m_Subclass.shk_UnHook WH_KEYBOARD
+            VB_Hacks.NotifyAcceleratorHookNotNeeded ObjPtr(Me)
+            If (m_HookID <> 0) Then UnhookWindowsHookEx m_HookID
+            m_HookID = 0
         Else
             SafelyReleaseHook
         End If
@@ -443,7 +438,7 @@ Public Function StringRepresentation(ByVal hkIndex As Long) As String
         StringRepresentation = tmpString
     
     Else
-        StringRepresentation = ""
+        StringRepresentation = vbNullString
     End If
     
 End Function
@@ -492,7 +487,7 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
         
         'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
         ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-        If Abs(Timer - m_TimerAtAcceleratorPress < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
+        If (Abs(Timer - m_TimerAtAcceleratorPress) < Interface.GetKeyboardDelay()) Then CanIRaiseAnAcceleratorEvent = False
         
         'If the accelerator timer is already waiting to process an existing accelerator, exit
         If (m_FireTimer Is Nothing) Then
@@ -512,26 +507,55 @@ Private Function CanIRaiseAnAcceleratorEvent() As Boolean
     
 End Function
 
-'This routine MUST BE KEPT as the final routine for this form. Its ordinal position determines its ability to hook properly.
-' Hooking is required to track application-wide mouse presses
-Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
-'*************************************************************************************************
-' http://msdn2.microsoft.com/en-us/library/ms644990.aspx
-'* bBefore    - Indicates whether the callback is before or after the next hook in chain.
-'* bHandled   - In a before next hook in chain callback, setting bHandled to True will prevent the
-'*              message being passed to the next hook in chain and (if set to do so).
-'* lReturn    - Return value. For Before messages, set per the MSDN documentation for the hook type
-'* nCode      - A code the hook procedure uses to determine how to process the message
-'* wParam     - Message related data, hook type specific
-'* lParam     - Message related data, hook type specific
-'* lHookType  - Type of hook calling this callback
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
+Private Function HandleActualKeypress(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Boolean
+
+    'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
+    Dim retShiftConstants As ShiftConstants
+    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+    
+    'Search our accelerator database for a match to the current keycode
+    If (m_NumOfHotkeys > 0) Then
+        
+        Dim i As Long
+        For i = 0 To m_NumOfHotkeys - 1
+            
+            'First, see if the keycode matches.
+            If (m_Hotkeys(i).vKeyCode = wParam) Then
+                
+                'Next, see if the Ctrl+Alt+Shift state matches
+                If (m_Hotkeys(i).shiftState = retShiftConstants) Then
+                    
+                    'We have a match!  Cache the index of the accelerator, note the current time,
+                    ' then initiate the accelerator evaluation timer.  It handles all further evaluation.
+                    m_AcceleratorIndex = i
+                    m_TimerAtAcceleratorPress = Timer
+                    
+                    If (Not m_FireTimer Is Nothing) Then m_FireTimer.StartTimer
+                    
+                    'Also, make sure to eat this keystroke
+                    HandleActualKeypress = True
+                    
+                    Exit For
+                
+                End If
+                
+            End If
+        
+        Next i
+    
+    End If  'Hotkey collection exists
+                    
+End Function
+
+Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
     On Error GoTo HookProcError
     
     m_InHookNow = True
-    bHandled = False
+    
+    Dim msgEaten As Boolean: msgEaten = False
     
     'Try to see if we're in an IDE break mode.  This isn't 100% reliable, but it's better than not checking at all.
     If (Not AreEventsFrozen) Then
@@ -542,80 +566,35 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         'While here, we also skip event processing if an accelerator key is already in the queue
         If (nCode >= 0) And (m_AcceleratorIndex = -1) Then
             
-            'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
-            ' current state (e.g. it's not locked, in the middle of other processing, etc.)
-            If CanIRaiseAnAcceleratorEvent Then
+            'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
+            ' being released.  Shortcuts do not allow for "press-and-hold-to-repeat" behavior, so we only fire on key release.
+            If (lParam < 0) Then
                 
-                'The first bit (e.g. "bit 31" per MSDN) controls key state: 0 means the key is being pressed, 1 means the key is
-                ' being released.  Shortcuts do not allow for "press-and-hold-to-repeat" behavior, so we only fire on key release.
-                If (lParam < 0) Then
+                'Before proceeding with further checks, see if PD is even allowed to process accelerators in its
+                ' current state (e.g. it's not locked, in the middle of other processing, etc.)
+                If CanIRaiseAnAcceleratorEvent Then
                     
-                    'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
-                    Dim retShiftConstants As ShiftConstants
-                    If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-                    If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
-                    If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+                    msgEaten = HandleActualKeypress(nCode, wParam, lParam)
                     
-                    'Search our accelerator database for a match to the current keycode
-                    If (m_NumOfHotkeys > 0) Then
-                        
-                        Dim i As Long
-                        For i = 0 To m_NumOfHotkeys - 1
-                            
-                            'First, see if the keycode matches.
-                            If (m_Hotkeys(i).vKeyCode = wParam) Then
-                                
-                                'Next, see if the Ctrl+Alt+Shift state matches
-                                If (m_Hotkeys(i).shiftState = retShiftConstants) Then
-                                    
-                                    'We have a match!  Cache the index of the accelerator, note the current time,
-                                    ' then initiate the accelerator evaluation timer.  It handles all further evaluation.
-                                    m_AcceleratorIndex = i
-                                    m_TimerAtAcceleratorPress = Timer
-                                    
-                                    If Not (m_FireTimer Is Nothing) Then
-                                        m_FireTimer.StartTimer
-                                    End If
-                                    
-                                    'Also, make sure to eat this keystroke
-                                    bHandled = True
-                                    
-                                    Exit For
-                                
-                                End If
-                                
-                            End If
-                        
-                        Next i
-                    
-                    End If  'Hotkey collection exists
-                End If  'Key is not in a transitionary state
-            End If  'PD allows accelerators in its current state
+                End If  'PD allows accelerators in its current state
+            End If  'Key is not in a transitionary state
         End If  'nCode >= 0
     End If  'Events are not frozen
     
     'If we didn't handle this keypress, allow subsequent hooks to have their way with it
-    If (Not bHandled) Then
-        lReturn = CallNextHookEx(0&, nCode, wParam, lParam)
+    If (Not msgEaten) Then
+        KeyboardHookProcAccelerator = CallNextHookEx(0&, nCode, wParam, lParam)
     Else
-        lReturn = 1
+        KeyboardHookProcAccelerator = 1
     End If
     
     m_InHookNow = False
-    Exit Sub
+    Exit Function
     
 'On errors, we simply want to bail, as there's little we can safely do to address an error from inside the hooking procedure
 HookProcError:
     
-    lReturn = CallNextHookEx(0&, nCode, wParam, lParam)
+    KeyboardHookProcAccelerator = CallNextHookEx(0&, nCode, wParam, lParam)
     m_InHookNow = False
     
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
-
+End Function
