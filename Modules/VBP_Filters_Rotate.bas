@@ -669,7 +669,8 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'Simple rotate/flip call:
         GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate90FlipNone
         
-        'Remove any null-padding
+        'Mark the correct alpha state and remove any null-padding
+        tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent of the change
@@ -825,7 +826,8 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'Simpler rotate/flip only reference:
         GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate270FlipNone
         
-        'Remove any null-padding
+        'Mark the correct alpha state and remove any null-padding
+        tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
