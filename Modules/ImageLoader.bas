@@ -914,7 +914,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         pdImages(g_CurrentImage).selectionActive = pdImages(g_CurrentImage).mainSelection.IsLockedIn
         
         'Synchronize the text boxes as necessary
-        syncTextToCurrentSelection g_CurrentImage
+        SyncTextToCurrentSelection g_CurrentImage
     
     End If
     

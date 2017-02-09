@@ -153,7 +153,7 @@ Public Function InitializeCompressionEngine(ByVal whichEngine As PD_COMPRESSION_
             m_CompressorAvailable(PD_CE_Lz4HC) = m_CompressorAvailable(PD_CE_Lz4)
         
         'All built-in compression engines are enabled if the user is running Windows 8 or later
-        Else
+        ElseIf (whichEngine > PD_CE_Lz4HC) Then
             m_CompressorAvailable(whichEngine) = IsWin8OrLater()
         End If
         
@@ -254,7 +254,9 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
     
     CompressPtrToPtr = False
     
-    If (compressionEngine = PD_CE_ZLib) Then
+    If (compressionEngine = PD_CE_NoCompression) Then
+        'Do nothing; the catch at the end of the function will handle this case for us
+    ElseIf (compressionEngine = PD_CE_ZLib) Then
         CompressPtrToPtr = Plugin_zLib.ZlibCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         CompressPtrToPtr = Plugin_zstd.ZstdCompressNakedPointers(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes, compressionLevel)
@@ -287,9 +289,10 @@ Public Function CompressPtrToPtr(ByVal constDstPtr As Long, ByRef dstSizeInBytes
     
     'If compression failed, perform a direct source-to-dst copy
     If (Not CompressPtrToPtr) Then
+        If (compressionEngine <> PD_CE_NoCompression) Then InternalErrorMsg "CompressPtrToPtr failed on compression engine " & compressionEngine
         CopyMemory_Strict constDstPtr, constSrcPtr, constSrcSizeInBytes
         dstSizeInBytes = constSrcSizeInBytes
-        CompressPtrToPtr = True
+        CompressPtrToPtr = (compressionEngine = PD_CE_NoCompression)
     End If
 
 End Function
@@ -334,7 +337,9 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
     
     DecompressPtrToPtr = False
     
-    If (compressionEngine = PD_CE_ZLib) Then
+    If (compressionEngine = PD_CE_NoCompression) Then
+        'Do nothing; the failsafe catch at the end of this function handles this case for us
+    ElseIf (compressionEngine = PD_CE_ZLib) Then
         DecompressPtrToPtr = Plugin_zLib.ZlibDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         DecompressPtrToPtr = CBool(Plugin_zstd.ZstdDecompress_UnsafePtr(constDstPtr, dstSizeInBytes, constSrcPtr, constSrcSizeInBytes) = dstSizeInBytes)
@@ -361,8 +366,9 @@ Public Function DecompressPtrToPtr(ByVal constDstPtr As Long, ByVal dstSizeInByt
     
     'If compression failed, perform a direct source-to-dst copy
     If (Not DecompressPtrToPtr) Then
+        If (compressionEngine <> PD_CE_NoCompression) Then InternalErrorMsg "DecompressPtrToPtr failed on compression engine " & compressionEngine
         CopyMemory_Strict constDstPtr, constSrcPtr, constSrcSizeInBytes
-        DecompressPtrToPtr = True
+        DecompressPtrToPtr = (compressionEngine = PD_CE_NoCompression)
     End If
 
 End Function
@@ -381,7 +387,9 @@ Public Function GetWorstCaseSize(ByVal srcBufferSizeInBytes As Long, ByVal compr
         GetWorstCaseSize = Plugin_zLib.ZlibGetMaxCompressedSize(srcBufferSizeInBytes)
     ElseIf (compressionEngine = PD_CE_Zstd) Then
         GetWorstCaseSize = Plugin_zstd.ZstdGetMaxCompressedSize(srcBufferSizeInBytes)
-    ElseIf ((compressionEngine = PD_CE_Lz4) Or (compressionEngine = PD_CE_Lz4HC)) Then
+    ElseIf (compressionEngine = PD_CE_Lz4) Then
+        GetWorstCaseSize = Plugin_lz4.Lz4GetMaxCompressedSize(srcBufferSizeInBytes)
+    ElseIf (compressionEngine = PD_CE_Lz4HC) Then
         GetWorstCaseSize = Plugin_lz4.Lz4GetMaxCompressedSize(srcBufferSizeInBytes)
     Else
         
@@ -472,4 +480,8 @@ Private Function IsWin8OrLater() As Boolean
 
 End Function
 
-
+Private Sub InternalErrorMsg(ByVal errMsg As String)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING! Compression module error: " & errMsg
+    #End If
+End Sub

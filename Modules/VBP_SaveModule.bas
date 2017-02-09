@@ -621,10 +621,20 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
     'That's all there is to it!  Write the completed pdPackage out to file.
     SavePhotoDemonLayer = pdiWriter.WritePackageToFile(pdiPath, , srcIsUndo)
     
+    #If DEBUGMODE = 1 Then
+        If (Not SavePhotoDemonLayer) Then
+            pdDebug.LogAction "WARNING!  SavingSavePhotoDemonLayer received a failure status from pdiWriter.WritePackageToFile()"
+        End If
+    #End If
+    
     Exit Function
     
 SavePDLayerError:
-
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  Saving.SavePhotoDemonLayer failed with error #" & Err.Number & ", " & Err.Description
+    #End If
+    
     SavePhotoDemonLayer = False
     
 End Function
@@ -786,42 +796,50 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         undoCmpLevel = g_UndoCompressionLevel - 1
     End If
     
+    Dim undoSuccess As Boolean
+    
     'What kind of Undo data we save is determined by the current processType.
     Select Case processType
     
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True)
             srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True)
         
         'A full copy of the pdImage stack, *without any layer DIB data*
         Case UNDO_IMAGEHEADER
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, undoCmpEngine, PD_CE_NoCompression, True, , undoCmpLevel, , True
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, undoCmpEngine, PD_CE_NoCompression, True, , undoCmpLevel, , True)
         
         'Layer data only (full layer header + full layer DIB).
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PD_CE_Lz4, undoCmpEngine, False, undoCmpLevel, True
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, PD_CE_Lz4, undoCmpEngine, False, undoCmpLevel, True)
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)
         Case UNDO_LAYERHEADER
-            Saving.SavePhotoDemonLayer srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, undoCmpEngine, PD_CE_NoCompression, True, undoCmpLevel, True
+            undoSuccess = Saving.SavePhotoDemonLayer(srcPDImage.GetLayerByID(targetLayerID), dstUndoFilename & ".layer", True, undoCmpEngine, PD_CE_NoCompression, True, undoCmpLevel, True)
             
         'Selection data only
         Case UNDO_SELECTION
-            srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
+            undoSuccess = srcPDImage.mainSelection.WriteSelectionToFile(dstUndoFilename & ".selection")
             
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
-            Debug.Print "Unknown Undo data write requested - is it possible to avoid this request entirely??"
-            Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, , undoCmpLevel, , True
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Unknown Undo data write requested - is it possible to avoid this request entirely??"
+            #End If
+            
+            undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, , undoCmpLevel, , True)
         
     End Select
     
+    SaveUndoData = undoSuccess
+    
     #If DEBUGMODE = 1 Then
+        If (Not SaveUndoData) Then pdDebug.LogAction "SaveUndoData returned failure; cause unknown."
         'Want to test undo timing?  Uncomment the line below
         Debug.Print "Undo file creation took: " & Format$(VB_Hacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
     #End If

@@ -1192,19 +1192,22 @@ Public Function GetRGBADIB_FromPalette(ByRef dstDIB As pdDIB, ByRef colorCount A
         finalX = dstDIB.GetDIBStride - 1
         finalY = dstDIB.GetDIBHeight - 1
         
-        Dim colorIndex As Long
+        Dim colorIndex As Long, numOfColors As Long
+        numOfColors = UBound(srcPalette) + 1
         
         For y = 0 To finalY
         For x = 0 To finalX Step pxSize
         
             colorIndex = srcPixels(x \ 4, y)
             
-            With srcPalette(colorIndex)
-                dstPixels(x, y) = .Blue
-                dstPixels(x + 1, y) = .Green
-                dstPixels(x + 2, y) = .Red
-                dstPixels(x + 3, y) = .alpha
-            End With
+            If (colorIndex < numOfColors) Then
+                With srcPalette(colorIndex)
+                    dstPixels(x, y) = .Blue
+                    dstPixels(x + 1, y) = .Green
+                    dstPixels(x + 2, y) = .Red
+                    dstPixels(x + 3, y) = .alpha
+                End With
+            End If
             
         Next x
         Next y
