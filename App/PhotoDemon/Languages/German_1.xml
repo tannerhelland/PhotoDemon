@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.240</langversion>
+<langversion>6.7.241</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -2529,12 +2529,6 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- cUnicodeBrowseFolders.cls contains 0 phrases. -->
 
 <!-- END text for cUnicodeBrowseFolders.cls-->
-
-<!-- BEGIN text for cUniversalDLLCalls.cls -->
-
-<!-- cUniversalDLLCalls.cls contains 0 phrases. -->
-
-<!-- END text for cUniversalDLLCalls.cls-->
 
 <!-- BEGIN text for IMRUList.cls -->
 
@@ -6846,7 +6840,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Einzel-Farbkanal</translation>
 </phrase>
 
-<!-- Adjustments_Color_Grayscale.frm contains 26 phrases. 15 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- Adjustments_Color_Grayscale.frm contains 28 phrases. 17 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Color_Grayscale.frm-->
 
@@ -14885,12 +14879,18 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2509</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4456 phrases. -->
-<!-- 1947 are duplicates, so only 2509 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4458 phrases. -->
+<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
 <!-- These 2509 phrases contain approximately 12381 total words. -->
 
 </pdData>
