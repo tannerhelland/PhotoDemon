@@ -1191,7 +1191,6 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
 End Function
 
 Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
-
     
     'Before proceeding, cache the status of all 256 keyboard keys.  This is important for non-Latin keyboards, which can
     ' produce Unicode characters in a variety of ways.  (For example, by holding down multiple keys at once.)  If we end

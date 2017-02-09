@@ -52,6 +52,7 @@ Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Lon
 Private Const GMEM_FIXED As Long = &H0&
 Private Const GMEM_MOVEABLE As Long = &H2&
 Public Const WM_NCDESTROY As Long = &H82&
+Private Const WH_KEYBOARD = 2
 
 'Unsigned arithmetic helpers
 Private Const SIGN_BIT As Long = &H80000000
@@ -69,6 +70,7 @@ Private m_TimerFrequency As Currency
 Private Declare Function SetWindowsHookExW Lib "user32" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
 Private m_EditBoxRef As pdEditBoxW
 Private m_AcceleratorRef As pdAccelerator
+Private m_PDIKRef As pdInputKeyboard
 
 'Point an internal 2D array at some other 2D array.  Any arrays aliased this way must be freed via Unalias2DArray,
 ' or VB will crash.
@@ -356,6 +358,22 @@ Public Function KeyboardHookProcEditBox(ByVal nCode As Long, ByVal wParam As Lon
     End If
 End Function
 
+'Same idea as the three previous functions, but for the generic pdInputKeyboard class
+Public Function NotifyPDIKHookNeeded(ByRef srcPDIK As pdInputKeyboard) As Long
+    Set m_PDIKRef = srcPDIK
+    NotifyPDIKHookNeeded = SetWindowsHookExW(WH_KEYBOARD, AddressOf KeyboardHookProcPDIK, App.hInstance, App.ThreadID)
+End Function
+
+Public Sub NotifyPDIKHookNotNeeded(ByVal objPointer As Long)
+    If (ObjPtr(m_PDIKRef) = objPointer) Then Set m_PDIKRef = Nothing
+End Sub
+
+Public Function KeyboardHookProcPDIK(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    If (Not m_PDIKRef Is Nothing) Then
+        KeyboardHookProcPDIK = m_PDIKRef.PDIKKeyboardProc(nCode, wParam, lParam)
+    End If
+End Function
+
 'Same idea as the three previous functions, but for the main pdAccelerator instance on FormMain
 Public Function NotifyAcceleratorHookNeeded(ByRef srcAccelerator As pdAccelerator) As Long
     Set m_AcceleratorRef = srcAccelerator
@@ -376,4 +394,5 @@ End Function
 Public Sub ShutdownCleanup()
     Set m_EditBoxRef = Nothing
     Set m_AcceleratorRef = Nothing
+    Set m_PDIKRef = Nothing
 End Sub
