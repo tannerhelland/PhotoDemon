@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2356</langversion>
+<langversion>6.8.2357</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -1345,11 +1345,6 @@ Please käyttää toista ohjelmaa tallentaa tämän kuvan yleisessä muodossa (k
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>Loading kuva (t)</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation> %1 %2 kuvaa ladattu onnistuneesti</translation>
 </phrase>
@@ -1387,7 +1382,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Kuva päällekkäisyyksien täydellinen.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6164,21 +6159,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>Tarkistetaan vanha automaattinen tallennus tietojen</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>Tarkistetaan komentorivi</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>Ladataan pyydetyt kuvat</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Alustetaan ohjelmistopäivitys (tämä ominaisuus voidaan poistaa käytöstä Työkalut -> Asetukset-valikossa)</translation>
 </phrase>
@@ -6462,7 +6442,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Poista alfa-kanava</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14893,10 +14873,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>

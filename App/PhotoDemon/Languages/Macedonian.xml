@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.37</langversion>
+<langversion>1.0.38</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1346,11 +1346,6 @@ Please користите друга програма да ја зачувате
 </phrase>
 
 <phrase>
-<original>Loading image(s)</original>
-<translation>Се вчитува слика (и)</translation>
-</phrase>
-
-<phrase>
 <original>%1 of %2 images loaded successfully</original>
 <translation> %1 %2 слики успешно вчитан</translation>
 </phrase>
@@ -1391,7 +1386,7 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>дуплирање сликата заврши.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6170,21 +6165,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Checking for old autosave data</original>
-<translation>Проверка за стари автоматско зачувување на податоци</translation>
-</phrase>
-
-<phrase>
-<original>Checking command line</original>
-<translation>Проверка на командната линија</translation>
-</phrase>
-
-<phrase>
-<original>Loading requested images</original>
-<translation>Се вчитува бара слики</translation>
-</phrase>
-
-<phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Иницијализирање ажурирање на софтверот (оваа функција може да биде исклучен од Алатки -> менито за опции)</translation>
 </phrase>
@@ -6468,7 +6448,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Отстрани алфа канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 189 were duplicates of existing phrases, so only 376 new phrases were written to file. -->
+<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14899,10 +14879,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2509</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4458 phrases. -->
-<!-- 1949 are duplicates, so only 2509 unique phrases have been written to file. -->
-<!-- These 2509 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4454 phrases. -->
+<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 12368 total words. -->
 
 </pdData>

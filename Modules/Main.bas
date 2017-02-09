@@ -166,11 +166,6 @@ Public Sub ContinueLoadingProgram()
         m_LoadTime = 0#
     End If
     
-    'Retrieve a Unicode-friendly copy of any command line parameters, and store them publicly
-    Dim cUnicode As pdUnicode
-    Set cUnicode = New pdUnicode
-    g_CommandLine = cUnicode.CommandW()
-    
     
     '*************************************************************************************************************************************
     ' Determine which version of Windows the user is running (as other load functions rely on this)

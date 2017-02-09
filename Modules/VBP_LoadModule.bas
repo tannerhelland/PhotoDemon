@@ -682,78 +682,6 @@ Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As PHOT
 
 End Function
 
-'If files are present in the command line, this sub will load them
-Public Sub LoadImagesFromCommandLine()
-
-    Message "Loading image(s)..."
-        
-    'NOTE: Windows will pass multiple filenames via the command line, but it does so in a confusing and overly complex way.
-    ' Specifically, quotation marks are placed around filenames IFF they contain a space; otherwise, file names are separated from
-    ' neighboring filenames by a space.  This creates a problem when passing a mixture of filenames with spaces and filenames without,
-    ' because Windows will switch between using and not using quotation marks to delimit the filenames.  Thus, we must perform complex,
-    ' specialized parsing of the command line.
-        
-    'This array will ultimately contain each filename to be loaded (one filename per index)
-    Dim inputFiles() As String
-        
-    'First, check the command line for quotation marks
-    If InStr(g_CommandLine, Chr$(34)) = 0 Then
-        
-        'If there aren't any, our work is simple - simply split the array using the "space" character as the delimiter
-        inputFiles = Split(g_CommandLine, Chr$(32))
-        
-    'If there are quotation marks, things get a lot messier.
-    Else
-        
-        Dim inQuotes As Boolean
-        inQuotes = False
-        
-        Dim tChar As String
-        
-        'Scan the command line one character at a time
-        Dim i As Long
-        For i = 1 To Len(g_CommandLine)
-            
-            tChar = Mid$(g_CommandLine, i, 1)
-                
-            'If the current character is a quotation mark, change inQuotes to specify that we are either inside
-            ' or outside a SET of quotation marks (note: they will always occur in pairs, per the rules of
-            ' how Windows handles command line parameters)
-            If tChar = Chr$(34) Then inQuotes = Not inQuotes
-                
-            'If the current character is a space...
-            If tChar = Chr$(32) Then
-                    
-                '...check to see if we are inside quotation marks.  If we are, that means this space is part of a
-                ' filename and NOT a delimiter.  Replace it with an asterisk.
-                If inQuotes Then g_CommandLine = Left$(g_CommandLine, i - 1) & "*" & Right$(g_CommandLine, Len(g_CommandLine) - i)
-                    
-            End If
-            
-        Next i
-            
-        'At this point, spaces that are parts of filenames have been replaced by asterisks.  That means we can use
-        ' Split() to fill our filename array, because the only spaces remaining in the command line are delimiters
-        ' between filenames.
-        inputFiles = Split(g_CommandLine, Chr(32))
-            
-        'Now that our filenames are successfully inside the sFile() array, go back and replace our asterisk placeholders
-        ' with spaces.  Also, remove any quotation marks (since those aren't technically part of the filename).
-        For i = 0 To UBound(inputFiles)
-            inputFiles(i) = Replace$(inputFiles(i), Chr$(42), Chr$(32))
-            inputFiles(i) = Replace$(inputFiles(i), Chr$(34), "")
-        Next i
-        
-    End If
-    
-    'Historically, PD accepted a bare array of filenames.  Now it asks that filenames be inside a pdStringStack, instead.
-    Dim listOfFiles As pdStringStack
-    Set listOfFiles = New pdStringStack
-    listOfFiles.CreateFromStringArray inputFiles
-    Loading.LoadMultipleImageFiles listOfFiles, True
-    
-End Sub
-
 'Want to load a whole bunch of image sources at once?  Use this function to do so.  While helpful, note that it comes with some caveats:
 ' 1) The only supported sources are absolute filenames.
 ' 2) You lose the ability to assign custom titles to incoming images.  Titles will be auto-assigned based on their filenames.
@@ -761,7 +689,7 @@ End Sub
 '    at least one image successfully.  If you want per-file success/fail results, call LoadFileAsNewImage manually from your own loop.
 Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional ByVal updateRecentFileList As Boolean = True) As Boolean
 
-    If Not (srcList Is Nothing) Then
+    If (Not srcList Is Nothing) Then
         
         'A lot can go wrong when loading image files.  This function will track failures and notify the user post-load.
         Dim numFailures As Long, numSuccesses As Long
@@ -774,7 +702,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
             If LoadFileAsNewImage(tmpFilename, , updateRecentFileList, True, False) Then
                 numSuccesses = numSuccesses + 1
             Else
-                If Len(tmpFilename) <> 0 Then
+                If (Len(tmpFilename) <> 0) Then
                     numFailures = numFailures + 1
                     brokenFiles = brokenFiles & GetFilename(tmpFilename) & vbCrLf
                 End If
@@ -785,7 +713,7 @@ Public Function LoadMultipleImageFiles(ByRef srcList As pdStringStack, Optional 
         If ((numSuccesses + numFailures) > 1) Or (numFailures > 0) Then
             Message "%1 of %2 images loaded successfully", numSuccesses, numSuccesses + numFailures
         Else
-            Message ""
+            Message vbNullString
         End If
         
         LoadMultipleImageFiles = CBool(numSuccesses > 0)

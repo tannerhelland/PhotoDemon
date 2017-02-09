@@ -2674,7 +2674,9 @@ Private Sub Form_Load()
     ' Next, make sure PD's previous session closed down successfully
     '*************************************************************************************************************************************
     
-    Message "Checking for old autosave data..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Checking for old autosave data..."
+    #End If
     Autosave_Handler.InitializeAutosave
     
     
@@ -2682,17 +2684,22 @@ Private Sub Form_Load()
     ' Next, analyze the command line and load any image files (if present).
     '*************************************************************************************************************************************
     
-    Message "Checking command line..."
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Checking command line..."
+    #End If
     
-    If (Len(g_CommandLine) <> 0) Then
+    'Retrieve a Unicode-friendly copy of any command line parameters
+    Dim cmdLineParams As pdStringStack
+    
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    If cUnicode.CommandW(cmdLineParams, True) Then
         
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Command line might contain images.  Here's what I found:"
-            pdDebug.LogAction g_CommandLine
+            pdDebug.LogAction "Command line might contain images.  Attempting to load..."
         #End If
         
-        Message "Loading requested images..."
-        Loading.LoadImagesFromCommandLine
+        Loading.LoadMultipleImageFiles cmdLineParams, True
         
     End If
         

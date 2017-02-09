@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Helper Class
 'Copyright 2015-2017 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 23/February/15
-'Last update: split out this class from pdFSO
+'Last updated: 09/February/17
+'Last update: let the system parse command-line parameters for us, and return the result inside a pdStringStack
 'Dependencies: pdSystemInfo (for determining OS version, among other things)
 '              Uniscribe_Interface module (Uniscribe is unavoidable for some advanced text processing)
 '
@@ -48,13 +48,17 @@ Private Declare Function CryptStringToBinary Lib "Crypt32" Alias "CryptStringToB
 'This class provides a lot of interop for API-style strings
 Private Const MAX_PATH As Long = 260
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
+Private Declare Function LocalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function lstrcpynW Lib "kernel32" (ByVal lpString1 As Long, ByVal lpString2 As Long, ByVal iMaxLength As Long) As Long
 Private Declare Function lstrcpyA Lib "kernel32" (ByVal lpBuffer As String, ByVal lpString As Long) As Long
-Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal Ptr As Long, ByVal Length As Long) As String
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
 Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
-Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
+Private Declare Function SysAllocString Lib "oleaut32" (ByVal Ptr As Long) As Long
+Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal Ptr As Long, ByVal Length As Long) As String
+Private Declare Function CommandLineToArgvW Lib "shell32" (ByVal lpCmdLine As Long, pNumArgs As Long) As Long
+Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
+Private Declare Function PutMem4 Lib "msvbvm60.dll" (ByVal srcAddr As Long, ByVal newVal As Long) As Long
 
 'LCMapString functions provide support for changing Unicode string case (including CJK support like simplified <-> traditional Chinese characters).
 ' Note that two variants are provided - one for XP, and another for Vista+.  MSDN explicitly states that Vista+ applications should use the newer function.
@@ -87,7 +91,7 @@ Private cSysInfo As pdSystemInfo
 
 'Given an arbitrary pointer (often to a VB array, but it doesn't matter) and a length IN BYTES, copy that chunk
 ' of bytes to a VB string.  The bytes must already be in Unicode format (UCS-2 or UTF-16).
-Public Function ConvertUTF16PointerToVBString(ByVal srcPointer As Long, ByVal lengthInBytes As Long, Optional ByVal trimNullChars As Boolean = True) As String
+Friend Function ConvertUTF16PointerToVBString(ByVal srcPointer As Long, ByVal lengthInBytes As Long, Optional ByVal trimNullChars As Boolean = True) As String
     
     Dim tmpString As String
     tmpString = String$(lengthInBytes / 2, 0)
@@ -111,7 +115,7 @@ End Function
 '
 'If the string length is known in advance, and WCHARS are being used, please use the faster (and more secure)
 ' ConvertUTF16PointerToVBString function, above.
-Public Function ConvertCharPointerToVBString(ByVal srcPointer As Long, Optional ByVal stringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1) As String
+Friend Function ConvertCharPointerToVBString(ByVal srcPointer As Long, Optional ByVal stringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1) As String
     
     'Check string length
     Dim strLength As Long
@@ -139,7 +143,7 @@ Public Function ConvertCharPointerToVBString(ByVal srcPointer As Long, Optional 
 End Function
 
 'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
-Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
+Friend Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
     
     'Use WideCharToMultiByte() to calculate the required size of the final UTF-8 array.
     Dim lenUTF8 As Long
@@ -177,7 +181,7 @@ End Function
 
 'Given a byte array containing UTF-8 data, return the data as a VB string.  A custom length can also be specified;
 ' if it's missing, the full input array will be used.
-Public Function UTF8BytesToString(ByRef Utf8() As Byte, Optional ByVal customDataLength As Long = -1) As String
+Friend Function UTF8BytesToString(ByRef Utf8() As Byte, Optional ByVal customDataLength As Long = -1) As String
     
     'Use MultiByteToWideChar() to calculate the required size of the final string (e.g. UTF-8 expanded to VB's default wide character set).
     Dim lenWideString As Long
@@ -223,7 +227,7 @@ End Function
 'For additional details on UTF-8 heuristics, see:
 '  https://github.com/neitanod/forceutf8/blob/master/src/ForceUTF8/Encoding.php
 '  http://www-archive.mozilla.org/projects/intl/UniversalCharsetDetection.html (very detailed)
-Public Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLength As Long = 512) As Boolean
+Friend Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLength As Long = 512) As Boolean
 
     If verifyLength > 0 Then
     
@@ -320,7 +324,7 @@ End Function
 '
 'RETURNS: TRUE if successful; FALSE otherwise.  Note that TRUE may not guarantee a correct string, especially if the incoming data
 ' is garbage, or if the format is unsupported or of some unknown ANSI codepage.
-Public Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
+Friend Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
     
     On Error GoTo StringConversionFailed
     
@@ -419,7 +423,7 @@ End Function
 ' Returns TRUE if successful; FALSE otherwise.
 '
 'Thanks to vbForums user dilettante for the original version of this code (retrieved here: http://www.vbforums.com/showthread.php?514815-JPEG-Base-64&p=3186994&viewfull=1#post3186994)
-Public Function Base64Decode(ByRef dstArray() As Byte, ByVal strBase64 As String) As Boolean
+Friend Function Base64Decode(ByRef dstArray() As Byte, ByVal strBase64 As String) As Boolean
     
     'Retrieve the necessary output buffer size.
     Dim lngOutLen As Long, dwActualUsed As Long
@@ -432,45 +436,76 @@ Public Function Base64Decode(ByRef dstArray() As Byte, ByVal strBase64 As String
     
 End Function
 
-'Return a Unicode-friendly copy of PD's command line params.  Thank you to contributor "dilettante" for the original version of this code,
-' available here (link good as of March 2015): http://www.xtremevbtalk.com/showthread.php?t=325868
-Public Function CommandW() As String
+'Return a Unicode-friendly copy of PD's command line params, pre-parsed into individual arguments.
+' By default, the standard exe path entry is removed.  (This behavior can be toggled via the "removeExePath" parameter.)
+' Returns: TRUE if argument count > 0; FALSE otherwise.
+'          If TRUE is returned, dstStringStack is guaranteed to be initialized.
+Friend Function CommandW(ByRef dstStringStack As pdStringStack, Optional ByVal removeExePath As Boolean = True) As Boolean
     
-    'If inside the IDE, we return the regular command-line; this allows test params set via Project Properties to still work
-    If Not g_IsProgramCompiled Then
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "IDE detected; command line params will not be Unicode-friendly."
-        #End If
-        CommandW = Command$
+    Dim fullCmdLine As String
+    
+    'If inside the IDE, use VB's regular command-line; this allows test params set via Project Properties to still work
+    If (Not g_IsProgramCompiled) Then
+        fullCmdLine = Command$
     
     'When compiled, a true Unicode-friendly command line is returned
     Else
+        fullCmdLine = Me.ConvertCharPointerToVBString(GetCommandLineW(), True)
+    End If
+    
+    'Next, we want to pre-parse the string into individual arguments using WAPI
+    If (Len(fullCmdLine) <> 0) Then
+    
+        Dim lPtr As Long, numArgs As Long
+        lPtr = CommandLineToArgvW(StrPtr(fullCmdLine), numArgs)
         
-        'Get a pointer to the command line string, and copy the result into a VB string
-        Dim ptrCommandLine As Long
-        ptrCommandLine = GetCommandLineW()
-        CommandW = Me.ConvertCharPointerToVBString(ptrCommandLine, True)
-                
-        'To match VB's regular Command$ function, we strip out the program name and return just the argument portion
-        Dim firstDelimiter As String
-        If StrComp(Left$(CommandW, 1), """", vbBinaryCompare) = 0 Then
-            firstDelimiter = """"
+        'lPtr now points to the first (of potentially many) string pointers, each one a command-line argument.
+        ' We want to assume control over each string in turn, and add each to our destination pdStringStack object.
+        If (dstStringStack Is Nothing) Then
+            Set dstStringStack = New pdStringStack
         Else
-            firstDelimiter = " "
+            dstStringStack.ResetStack
         End If
         
-        'Trim everything prior to the first delimiter
-        CommandW = Trim$(Mid$(CommandW, InStr(2, CommandW, firstDelimiter) + 1))
+        If (numArgs > 0) Then
         
+            Dim i As Long, tmpString As String, tmpPtr As Long
+            For i = 0 To numArgs - 1
+                
+                'Retrieve the next pointer
+                CopyMemoryStrict VarPtr(tmpPtr), lPtr + 4 * i, 4&
+                
+                'Allocate a matching string (over which we have ownership)
+                PutMem4 VarPtr(tmpString), SysAllocString(tmpPtr)
+                
+                'Conditionally add it to the string stack, depending on the removeExePath setting
+                If removeExePath Then
+                    If (InStr(1, tmpString, "PhotoDemon.exe", vbBinaryCompare) = 0) Then dstStringStack.AddString tmpString
+                Else
+                    dstStringStack.AddString tmpString
+                End If
+                
+                'Free the temporary string
+                tmpString = vbNullString
+                
+            Next
+            
+            CommandW = (dstStringStack.GetNumOfStrings <> 0)
+        
+        End If
+        
+        'Free the original arg pointer (which frees the corresponding system-controlled string references as well)
+        ' Details here: https://msdn.microsoft.com/en-us/library/windows/desktop/bb776391%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+        If (lPtr <> 0) Then LocalFree lPtr
+    
     End If
     
 End Function
 
-Public Function ShrinkPathW(ByRef srcString As String, ByVal newMaxLength As Long) As String
+Friend Function ShrinkPathW(ByRef srcString As String, ByVal newMaxLength As Long) As String
     
     'Limit length to MAX_PATH
-    If newMaxLength > MAX_PATH Then newMaxLength = MAX_PATH
+    If (newMaxLength > MAX_PATH) Then newMaxLength = MAX_PATH
     
     'This API is weird because regardless of original length, the incoming string must be, per MSDN,
     ' "A pointer to a null-terminated string of length MAX_PATH that contains the path to be altered."
@@ -479,7 +514,7 @@ Public Function ShrinkPathW(ByRef srcString As String, ByVal newMaxLength As Lon
     tmpStringSrc = String$(MAX_PATH, 0)
     
     copyLength = Len(srcString)
-    If copyLength > MAX_PATH Then copyLength = MAX_PATH
+    If (copyLength > MAX_PATH) Then copyLength = MAX_PATH
     CopyMemoryStrict StrPtr(tmpStringSrc), StrPtr(srcString), copyLength * 2
     
     'Now, prep an output buffer of size MAX_PATH
@@ -487,7 +522,7 @@ Public Function ShrinkPathW(ByRef srcString As String, ByVal newMaxLength As Lon
     tmpStringDst = String$(MAX_PATH, 0)
     
     'Use the API to shrink the path
-    If PathCompactPathEx(StrPtr(tmpStringDst), StrPtr(tmpStringSrc), newMaxLength + 1, 0&) <> 0 Then
+    If (PathCompactPathEx(StrPtr(tmpStringDst), StrPtr(tmpStringSrc), newMaxLength + 1, 0&) <> 0) Then
         ShrinkPathW = Me.TrimNull(tmpStringDst)
     Else
         ShrinkPathW = tmpStringDst
@@ -497,7 +532,7 @@ End Function
 
 'Apply some kind of remap conversion ("change case" in Latin languages) using WAPI.
 ' IMPORTANT: some LCMAP constants *are only available under Windows 7*, so be aware of which requests fail on earlier OSes.
-Public Function RemapString(ByRef srcString As String, ByVal remapType As PD_STRING_REMAP) As String
+Friend Function RemapString(ByRef srcString As String, ByVal remapType As PD_STRING_REMAP) As String
     
     'If the remap type is 0, do nothing
     If remapType = PDRS_NONE Then
@@ -578,7 +613,7 @@ End Function
 
 'When passing file and path strings to WAPI functions, we often have to pre-initialize them to some arbitrary buffer length
 ' (typically MAX_PATH).  When finished, the string needs to be trimmed to remove unused null chars.
-Public Function TrimNull(ByRef origString As String) As String
+Friend Function TrimNull(ByRef origString As String) As String
     
     'Start by double-checking that null chars actually exist in the string
     Dim nullPosition As Long
