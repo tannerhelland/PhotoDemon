@@ -551,9 +551,9 @@ End Function
 
 Friend Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
-    On Error GoTo HookProcError
-    
     m_InHookNow = True
+    
+    On Error GoTo HookProcError
     
     Dim msgEaten As Boolean: msgEaten = False
     
