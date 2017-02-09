@@ -821,7 +821,7 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
                 
                 'ADDED BY TANNER: let the debugger know that the hook is still technically active - a problem we
                 ' can solve by upgrading to a safe unhooking solution.
-                Debug.Print "cSelfSubHookCallback couldn't release hook immediately, as another hook is still active.  Upgrade to a safe unhooking solution!"
+                Debug.Print "Self-subclasser couldn't release hook immediately, as another hook is still active.  Upgrade to a safe unhooking solution!"
                 
             End If
         Else

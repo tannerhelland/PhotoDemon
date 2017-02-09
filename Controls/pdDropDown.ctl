@@ -42,9 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Drop Down control 2.0
 'Copyright 2016-2017 by Tanner Helland
 'Created: 24/February/16
-'Last updated: 24/February/16
-'Last update: based updated version of the control off the new listbox, instead of trying to integrate with a system
-'             combo box (an approach that had all sorts of horrific problems)
+'Last updated: 09/February/17
+'Last update: migrate to safer comctl32 subclassing technique
 '
 'This is a basic dropdown control, with no edit box functionality (by design).  It is very similar in construction to
 ' the pdListBox object, including its reliance on a separate pdListSupport class for managing its data.
@@ -90,7 +89,7 @@ Private Const SWP_FRAMECHANGED As Long = &H20
 
 'When the popup listbox is raised, we subclass the parent control.  If it is moved or sized or clicked, we automatically
 ' unload the dropdown listview.  (This workaround is necessary for modal dialogs, among other things.)
-Private m_Subclass As cSelfSubHookCallback
+Implements ISubclass
 Private m_ParentHWnd As Long
 Private Const WM_ENTERSIZEMOVE As Long = &H231
 Private Const WM_LBUTTONDOWN As Long = &H201
@@ -721,7 +720,7 @@ Private Sub RaiseListBox()
     ' section of an underlying form).  Focusable objects are taken care of automatically, because a LostFocus event will fire,
     ' but non-focusable clicks are problematic.  To solve this, we subclass our parent control and watch for mouse events.
     ' Also, since we're subclassing the control anyway, we'll also hide the ListBox if the parent window is moved.
-    If (m_ParentHWnd <> 0) Then
+    If (m_ParentHWnd <> 0) And g_IsProgramRunning Then
         
         'Make sure we're not currently trying to release a previous subclass attempt
         Dim subclassActive As Boolean: subclassActive = False
@@ -733,9 +732,7 @@ Private Sub RaiseListBox()
         End If
         
         If (Not subclassActive) And (Not m_SubclassActive) Then
-            If (m_Subclass Is Nothing) Then Set m_Subclass = New cSelfSubHookCallback
-            m_Subclass.ssc_Subclass m_ParentHWnd, 0, 1, Me
-            m_Subclass.ssc_AddMsg m_ParentHWnd, MSG_BEFORE, WM_ENTERSIZEMOVE, WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN, WM_WINDOWPOSCHANGING
+            VB_Hacks.StartSubclassing m_ParentHWnd, Me
             m_SubclassActive = True
         End If
         
@@ -787,9 +784,9 @@ End Sub
 
 'If a hook exists, uninstall it.  DO NOT CALL THIS FUNCTION if the class is currently inside the hook proc.
 Private Sub RemoveSubclass()
-    If (Not (m_Subclass Is Nothing)) And (m_ParentHWnd <> 0) And m_SubclassActive And g_IsProgramRunning Then
-        On Error GoTo UnsubclassUnnecessary
-        m_Subclass.ssc_UnSubclass m_ParentHWnd
+    On Error GoTo UnsubclassUnnecessary
+    If ((m_ParentHWnd <> 0) And m_SubclassActive) Then
+        VB_Hacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHWnd = 0
         m_SubclassActive = False
     End If
@@ -982,46 +979,27 @@ Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTi
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
-'All messages subclassed by m_Subclass are handled here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
-    
+Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+
     m_InSubclassNow = True
     
-    'We don't actually care about parsing out individual messages here.  This function will only be called by subclassed messages
-    ' that result in the listbox being closed.
-    If m_PopUpVisible Then HideListBox
+    'If certain events occur in our parent window, and our list box is visible, release it
+    If m_PopUpVisible Then
+        If (uiMsg = WM_ENTERSIZEMOVE) Or (uiMsg = WM_WINDOWPOSCHANGING) Then
+            HideListBox
+        ElseIf (uiMsg = WM_LBUTTONDOWN) Or (uiMsg = WM_RBUTTONDOWN) Or (uiMsg = WM_MBUTTONDOWN) Then
+            HideListBox
+        ElseIf (uiMsg = WM_NCDESTROY) Then
+            HideListBox
+            Set m_SubclassReleaseTimer = Nothing
+            VB_Hacks.StopSubclassing hWnd, Me
+            m_ParentHWnd = 0
+        End If
+    End If
+    
+    'Never eat parent window messages; just peek at them
+    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     m_InSubclassNow = False
-    bHandled = False
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-'   add this warning banner to the last routine in your class
-' *************************************************************
-End Sub
-
+    
+End Function
