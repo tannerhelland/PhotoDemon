@@ -150,11 +150,13 @@ Public Sub PrepareRestOfSplash()
         versionString = g_Language.TranslateMessage("version %1", GetPhotoDemonVersion)
         
         'Render the version string just below the logo text
-        m_versionFont.AttachToDC m_splashDIB.GetDIBDC
-        versionWidth = m_versionFont.GetWidthOfString(versionString)
-        versionHeight = m_versionFont.GetHeightOfString(versionString)
-        m_versionFont.FastRenderText pdLogoRight - versionWidth, pdLogoBottom + FixDPI(8), versionString
-        m_versionFont.ReleaseFromDC
+        If (m_splashDIB.GetDIBDC <> 0) Then
+            m_versionFont.AttachToDC m_splashDIB.GetDIBDC
+            versionWidth = m_versionFont.GetWidthOfString(versionString)
+            versionHeight = m_versionFont.GetHeightOfString(versionString)
+            m_versionFont.FastRenderText pdLogoRight - versionWidth, pdLogoBottom + FixDPI(8), versionString
+            m_versionFont.ReleaseFromDC
+        End If
         
         'Copy the composite image onto the underlying form
         BitBlt Me.hDC, 0, 0, formWidth, formHeight, m_splashDIB.GetDIBDC, 0, 0, vbSrcCopy
