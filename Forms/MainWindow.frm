@@ -772,11 +772,11 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuColorComponents 
-            Caption         =   "Maximum channel"
+            Caption         =   "Maximum"
             Index           =   3
          End
          Begin VB.Menu MnuColorComponents 
-            Caption         =   "Minimum channel"
+            Caption         =   "Minimum"
             Index           =   4
          End
          Begin VB.Menu MnuColorComponents 
@@ -784,11 +784,11 @@ Begin VB.Form FormMain
             Index           =   5
          End
          Begin VB.Menu MnuColorComponents 
-            Caption         =   "Shift channels left"
+            Caption         =   "Shift left"
             Index           =   6
          End
          Begin VB.Menu MnuColorComponents 
-            Caption         =   "Shift channels right"
+            Caption         =   "Shift right"
             Index           =   7
          End
       End
@@ -848,35 +848,36 @@ Begin VB.Form FormMain
          Caption         =   "Histogram"
          Index           =   14
          Begin VB.Menu MnuHistogram 
-            Caption         =   "Display histogram"
+            Caption         =   "Display..."
+            Index           =   0
          End
-         Begin VB.Menu mnuHistogramSepBar1 
+         Begin VB.Menu MnuHistogram 
             Caption         =   "-"
+            Index           =   1
          End
-         Begin VB.Menu MnuHistogramEqualize 
+         Begin VB.Menu MnuHistogram 
             Caption         =   "Equalize..."
+            Index           =   2
          End
-         Begin VB.Menu MnuHistogramStretch 
+         Begin VB.Menu MnuHistogram 
             Caption         =   "Stretch"
+            Index           =   3
          End
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Invert"
          Index           =   15
-         Begin VB.Menu MnuNegative 
-            Caption         =   "Invert CMYK (film negative)"
+         Begin VB.Menu MnuInvert 
+            Caption         =   "CMYK (film negative)"
+            Index           =   0
          End
-         Begin VB.Menu MnuInvertHue 
-            Caption         =   "Invert hue"
+         Begin VB.Menu MnuInvert 
+            Caption         =   "Hue"
+            Index           =   1
          End
-         Begin VB.Menu mnuInvert 
-            Caption         =   "Invert RGB"
-         End
-         Begin VB.Menu mnuInvertSepBar0 
-            Caption         =   "-"
-         End
-         Begin VB.Menu MnuCompoundInvert 
-            Caption         =   "Compound invert"
+         Begin VB.Menu MnuInvert 
+            Caption         =   "RGB"
+            Index           =   2
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -3449,10 +3450,6 @@ Private Sub MnuColorComponents_Click(Index As Integer)
     
 End Sub
 
-Private Sub MnuCompoundInvert_Click()
-    Process "Compound invert", False, BuildParams("128"), UNDO_LAYER
-End Sub
-
 Private Sub MnuCustomFilter_Click()
     Process "Custom filter", True
 End Sub
@@ -3777,17 +3774,27 @@ Private Sub MnuHelp_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuHistogram_Click()
-    'Process "Display histogram", True
-    ShowPDDialog vbModal, FormHistogram
-End Sub
-
-Private Sub MnuHistogramEqualize_Click()
-    Process "Equalize", True
-End Sub
-
-Private Sub MnuHistogramStretch_Click()
-    Process "Stretch histogram", , , UNDO_LAYER
+Private Sub MnuHistogram_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Display histogram (TODO: convert to processor?)
+        Case 0
+            ShowPDDialog vbModal, FormHistogram
+            
+        '<separator>
+        Case 1
+        
+        'Equalize
+        Case 2
+            Process "Equalize", True
+        
+        'Stretch
+        Case 3
+            Process "Stretch histogram", , , UNDO_LAYER
+        
+    End Select
+    
 End Sub
 
 'All top-level Image menu actions are handled here
@@ -3877,10 +3884,6 @@ End Sub
 
 Private Sub MnuAlien_Click()
     Process "Alien", , , UNDO_LAYER
-End Sub
-
-Private Sub MnuInvertHue_Click()
-    Process "Invert hue", , , UNDO_LAYER
 End Sub
 
 'When a language is clicked, immediately activate it
@@ -4059,12 +4062,24 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
 
 End Sub
 
-Private Sub MnuNegative_Click()
-    Process "Film negative", , , UNDO_LAYER
-End Sub
-
-Private Sub MnuInvert_Click()
-    Process "Invert RGB", , , UNDO_LAYER
+Private Sub MnuInvert_Click(Index As Integer)
+    
+    Select Case Index
+        
+        'CMYK (film negative)
+        Case 0
+            Process "Film negative", , , UNDO_LAYER
+        
+        'Hue
+        Case 1
+            Process "Invert hue", , , UNDO_LAYER
+        
+        'RGB (standard)
+        Case 2
+            Process "Invert RGB", , , UNDO_LAYER
+    
+    End Select
+    
 End Sub
 
 'All noise filters are handled here

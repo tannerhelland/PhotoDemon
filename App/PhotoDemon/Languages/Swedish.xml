@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2357</langversion>
+<langversion>6.8.2358</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -5123,23 +5123,23 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Maximum channel</original>
-<translation>Maximal kanal</translation>
+<original>Maximum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Minimum channel</original>
-<translation>Minsta kanal</translation>
+<original>Minimum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels left</original>
-<translation>Skift kanaler kvar</translation>
+<original>Shift left</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels right</original>
-<translation>Shift-kanaler direkt</translation>
+<original>Shift right</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5178,8 +5178,8 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Display histogram</original>
-<translation>Display histogram</translation>
+<original>Display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5193,23 +5193,13 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Invert CMYK (film negative)</original>
-<translation>Uteslut CMYK (negativ film)</translation>
+<original>CMYK (film negative)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Invert hue</original>
-<translation>Invertera nyans</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Invertera RGB</translation>
-</phrase>
-
-<phrase>
-<original>Compound invert</original>
-<translation>Förening invert</translation>
+<original>RGB</original>
+<translation>RGB</translation>
 </phrase>
 
 <phrase>
@@ -6181,6 +6171,16 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>Maximum channel</original>
+<translation>Maximal kanal</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Minsta kanal</translation>
+</phrase>
+
+<phrase>
 <original>Shift colors (left)</original>
 <translation>Skiftfärger (till vänster)</translation>
 </phrase>
@@ -6360,6 +6360,16 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
+<original>Invert hue</original>
+<translation>Invertera nyans</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Invertera RGB</translation>
+</phrase>
+
+<phrase>
 <original>Bilateral smoothing</original>
 <translation>Bilateral utjämning</translation>
 </phrase>
@@ -6444,7 +6454,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6659,11 +6669,6 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 </phrase>
 
 <phrase>
-<original>RGB</original>
-<translation>RGB</translation>
-</phrase>
-
-<phrase>
 <original>CMY</original>
 <translation>CMY</translation>
 </phrase>
@@ -6698,7 +6703,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Isolera %1 kanal</translation>
 </phrase>
 
-<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 22 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_Rechannel.frm-->
 
@@ -14874,10 +14879,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2506</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4454 phrases. -->
-<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 12368 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
+<!-- These 2506 phrases contain approximately 12364 total words. -->
 
 </pdData>

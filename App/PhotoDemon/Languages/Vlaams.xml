@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.242</langversion>
+<langversion>6.7.243</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -5118,23 +5118,23 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Maximum channel</original>
-<translation>Maximum kanaal</translation>
+<original>Maximum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Minimum channel</original>
-<translation>Minimum kanaal</translation>
+<original>Minimum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels left</original>
-<translation>Shuif kanalen naar links</translation>
+<original>Shift left</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels right</original>
-<translation>Shuif kanalen naar rechts</translation>
+<original>Shift right</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5173,8 +5173,8 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Display histogram</original>
-<translation>Weergave Histogram</translation>
+<original>Display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5188,23 +5188,13 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Invert CMYK (film negative)</original>
-<translation>Omkeren CMYK (film negatief)</translation>
+<original>CMYK (film negative)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Invert hue</original>
-<translation>Omkeren Kleurtoon</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Omkeren RGB</translation>
-</phrase>
-
-<phrase>
-<original>Compound invert</original>
-<translation>Omkeren samenstelling</translation>
+<original>RGB</original>
+<translation>RGB</translation>
 </phrase>
 
 <phrase>
@@ -6176,6 +6166,16 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
+<original>Maximum channel</original>
+<translation>Maximum kanaal</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Minimum kanaal</translation>
+</phrase>
+
+<phrase>
 <original>Shift colors (left)</original>
 <translation>Verschuif kleuren (links)</translation>
 </phrase>
@@ -6355,6 +6355,16 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
+<original>Invert hue</original>
+<translation>Omkeren Kleurtoon</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Omkeren RGB</translation>
+</phrase>
+
+<phrase>
 <original>Bilateral smoothing</original>
 <translation>Bilaterale vergladding</translation>
 </phrase>
@@ -6439,7 +6449,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6654,11 +6664,6 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 </phrase>
 
 <phrase>
-<original>RGB</original>
-<translation>RGB</translation>
-</phrase>
-
-<phrase>
 <original>CMY</original>
 <translation></translation>
 </phrase>
@@ -6693,7 +6698,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Isoleren van %1 kanaal</translation>
 </phrase>
 
-<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 22 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_Rechannel.frm-->
 
@@ -14868,10 +14873,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2506</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4454 phrases. -->
-<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 12368 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
+<!-- These 2506 phrases contain approximately 12364 total words. -->
 
 </pdData>

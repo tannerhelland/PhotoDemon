@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2256</langversion>
+<langversion>6.8.2257</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -5118,23 +5118,23 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Maximum channel</original>
-<translation>最大通道</translation>
+<original>Maximum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Minimum channel</original>
-<translation>最小通道</translation>
+<original>Minimum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels left</original>
-<translation>左移通道</translation>
+<original>Shift left</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels right</original>
-<translation>右移通道</translation>
+<original>Shift right</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5173,8 +5173,8 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Display histogram</original>
-<translation>显示直方图</translation>
+<original>Display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5188,23 +5188,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Invert CMYK (film negative)</original>
-<translation>倒置的CMYK（负片）</translation>
+<original>CMYK (film negative)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Invert hue</original>
-<translation>反转色调</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>反转 RGB</translation>
-</phrase>
-
-<phrase>
-<original>Compound invert</original>
-<translation>重复反转</translation>
+<original>RGB</original>
+<translation>RGB</translation>
 </phrase>
 
 <phrase>
@@ -6175,6 +6165,16 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Maximum channel</original>
+<translation>最大通道</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>最小通道</translation>
+</phrase>
+
+<phrase>
 <original>Shift colors (left)</original>
 <translation>增强色（左）</translation>
 </phrase>
@@ -6353,6 +6353,16 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
+<original>Invert hue</original>
+<translation>反转色调</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>反转 RGB</translation>
+</phrase>
+
+<phrase>
 <original>Bilateral smoothing</original>
 <translation>双边滤波算法</translation>
 </phrase>
@@ -6437,7 +6447,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6652,11 +6662,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>RGB</original>
-<translation>RGB</translation>
-</phrase>
-
-<phrase>
 <original>CMY</original>
 <translation>CMY</translation>
 </phrase>
@@ -6691,7 +6696,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>隔离%1通道</translation>
 </phrase>
 
-<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 22 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_Rechannel.frm-->
 
@@ -14865,10 +14870,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2506</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4454 phrases. -->
-<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 12368 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
+<!-- These 2506 phrases contain approximately 12364 total words. -->
 
 </pdData>

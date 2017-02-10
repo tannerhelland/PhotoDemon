@@ -173,6 +173,162 @@ Public Sub InitializeMenus()
         AddMenuItem "Selection mask as image...", "select_exportmask", 5, 14, 1
         
     
+    'Adjustments Menu
+    AddMenuItem "Adjustments", "adj_top", 6
+    AddMenuItem "Auto-correct", "adj_autocorrect", 6, 0
+        AddMenuItem "Color", "adj_autocorrectcolor", 6, 0, 0
+        AddMenuItem "Contrast", "adj_autocorrectcontrast", 6, 0, 1
+        AddMenuItem "Lighting", "adj_autocorrectlighting", 6, 0, 2
+        AddMenuItem "Shadows and highlights", "adj_autocorrectsandh", 6, 0, 3
+    AddMenuItem "Auto-enhance", "adj_autoenhance", 6, 1
+        AddMenuItem "Color", "adj_autoenhancecolor", 6, 1, 0
+        AddMenuItem "Contrast", "adj_autoenhancecontrast", 6, 1, 1
+        AddMenuItem "Lighting", "adj_autoenhancelighting", 6, 1, 2
+        AddMenuItem "Shadows and highlights", "adj_autoenhancesandh", 6, 1, 3
+    AddMenuItem "Black and white...", "adj_blackandwhite", 6, 3
+    AddMenuItem "Brightness and contrast...", "adj_bandc", 6, 4
+    AddMenuItem "Color balance...", "adj_colorbalance", 6, 5
+    AddMenuItem "Curves...", "adj_curves", 6, 6
+    AddMenuItem "Levels...", "adj_levels", 6, 7
+    AddMenuItem "Shadows and highlights...", "adj_sandh", 6, 8
+    AddMenuItem "Vibrance...", "adj_vibrance", 6, 9
+    AddMenuItem "White balance...", "adj_whitebalance", 6, 10
+    
+    AddMenuItem "Channels", "adj_channels", 6, 12
+        AddMenuItem "Channel mixer...", "adj_channelmixer", 6, 12, 0
+        AddMenuItem "Rechannel...", "adj_rechannel", 6, 12, 1
+        AddMenuItem "Maximum channel", "adj_maxchannel", 6, 12, 3
+        AddMenuItem "Minimum channel", "adj_minchannel", 6, 12, 4
+        AddMenuItem "Shift channels left", "adj_shiftchannelsleft", 6, 12, 6
+        AddMenuItem "Shift channels right", "adj_shiftchannelsright", 6, 12, 7
+    AddMenuItem "Color", "adj_color", 6, 13
+        AddMenuItem "Color balance...", "adj_colorbalance", 6, 13, 0
+        AddMenuItem "White balance...", "adj_whitebalance", 6, 13, 1
+        AddMenuItem "Hue and saturation...", "adj_hsl", 6, 13, 3
+        AddMenuItem "Temperature...", "adj_temperature", 6, 13, 4
+        AddMenuItem "Tint...", "adj_tint", 6, 13, 5
+        AddMenuItem "Vibrance...", "adj_vibrance", 6, 13, 6
+        AddMenuItem "Black and white...", "adj_blackandwhite", 6, 13, 8
+        AddMenuItem "Colorize...", "adj_colorize", 6, 13, 9
+        AddMenuItem "Replace color...", "adj_replacecolor", 6, 13, 10
+        AddMenuItem "Sepia...", "adj_sepia", 6, 13, 11
+    AddMenuItem "Histogram", "adj_histogram", 6, 14
+        AddMenuItem "Display histogram...", "adj_histogramdisplay", 6, 14, 0
+        AddMenuItem "Equalize...", "adj_histogramequalize", 6, 14, 2
+        AddMenuItem "Stretch", "adj_histogramstretch", 6, 14, 3
+    AddMenuItem "Invert", "adj_invert", 6, 15
+        AddMenuItem "CMYK (film negative)", "adj_invertcmyk", 6, 15, 0
+        AddMenuItem "Hue", "adj_inverthue", 6, 15, 1
+        AddMenuItem "RGB", "adj_invertrgb", 6, 15, 2
+    AddMenuItem "Lighting", "adj_lighting", 6, 16
+        AddMenuItem "Brightness and contrast...", "adj_bandc", 6, 16, 0
+        AddMenuItem "Curves...", "adj_curves", 6, 16, 1
+        AddMenuItem "Gamma...", "adj_gamma", 6, 16, 2
+        AddMenuItem "Levels...", "adj_levels", 6, 16, 3
+        AddMenuItem "Shadows and highlights...", "adj_sandh", 6, 16, 4
+    AddMenuItem "Monochrome", "adj_monochrome", 6, 17
+        AddMenuItem "Color to monochrome...", "adj_colortomonochrome", 6, 17, 0
+        AddMenuItem "Monochrome to gray...", "adj_monochrometogray", 6, 17, 1
+    AddMenuItem "Photography", "adj_photo", 6, 18
+        AddMenuItem "Exposure...", "adj_exposure", 6, 18, 0
+        AddMenuItem "HDR...", "adj_hdr", 6, 18, 1
+        AddMenuItem "Photo filters...", "adj_photofilters", 6, 18, 2
+        AddMenuItem "Red-eye removal...", "adj_redeyeremoval", 6, 18, 3
+        AddMenuItem "Split toning...", "adj_splittone", 6, 18, 4
+    
+    
+    'Effects (Filters) Menu
+    AddMenuItem "Effects", "effects_top", 7
+    AddMenuItem "Artistic", "effects_artistic", 7, 0
+        AddMenuItem "Colored pencil...", "effects_colorpencil", 7, 0, 0
+        AddMenuItem "Comic book...", "effects_comicbook", 7, 0, 1
+        AddMenuItem "Figured glass (dents)...", "effects_figuredglass", 7, 0, 2
+        AddMenuItem "Film noir...", "effects_filmnoir", 7, 0, 3
+        AddMenuItem "Glass tiles...", "effects_glasstiles", 7, 0, 4
+        AddMenuItem "Kaleidoscope...", "effects_kaleidoscope", 7, 0, 5
+        AddMenuItem "Modern art...", "effects_modernart", 7, 0, 6
+        AddMenuItem "Oil painting...", "effects_oilpainting", 7, 0, 7
+        AddMenuItem "Posterize...", "effects_posterize", 7, 0, 8
+        AddMenuItem "Relief...", "effects_relief", 7, 0, 9
+        AddMenuItem "Stained glass...", "effects_stainedglass", 7, 0, 10
+    AddMenuItem "Blur", "effects_blur", 7, 1
+        AddMenuItem "Box blur...", "effects_boxblur", 7, 1, 0
+        AddMenuItem "Gaussian blur...", "effects_gaussianblur", 7, 1, 1
+        AddMenuItem "Surface blur...", "effects_surfaceblur", 7, 1, 2
+        AddMenuItem "Motion blur...", "effects_motionblur", 7, 1, 4
+        AddMenuItem "Radial blur...", "effects_radialblur", 7, 1, 5
+        AddMenuItem "Zoom blur...", "effects_zoomblur", 7, 1, 6
+        AddMenuItem "Kuwahara filter...", "effects_kuwahara", 7, 1, 8
+        AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 7, 1, 9
+    AddMenuItem "Distort", "effects_distort", 7, 2
+        AddMenuItem "Apply lens distortion...", "effects_applylensdistort", 7, 2, 0
+        AddMenuItem "Correct existing lens distortion...", "effects_fixlensdistort", 7, 2, 1
+        AddMenuItem "Donut...", "effects_donut", 7, 2, 3
+        AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 7, 2, 4
+        AddMenuItem "Poke...", "effects_poke", 7, 2, 5
+        AddMenuItem "Ripple...", "effects_ripple", 7, 2, 6
+        AddMenuItem "Squish...", "effects_squish", 7, 2, 7
+        AddMenuItem "Swirl...", "effects_swirl", 7, 2, 8
+        AddMenuItem "Waves...", "effects_waves", 7, 2, 9
+        AddMenuItem "Miscellaneous...", "effects_miscdistort", 7, 2, 11
+    AddMenuItem "Edges", "effects_edges", 7, 3
+        AddMenuItem "Emboss...", "effects_emboss", 7, 3, 0
+        AddMenuItem "Enhance edges...", "effects_enhanceedges", 7, 3, 1
+        AddMenuItem "Find edges...", "effects_findedges", 7, 3, 2
+        AddMenuItem "Range filter...", "effects_rangefilter", 7, 3, 4
+        AddMenuItem "Trace contour...", "effects_tracecontour", 7, 3, 4
+    AddMenuItem "Light and shadow", "effects_lightandshadow", 7, 4
+        AddMenuItem "Black light...", "effects_blacklight", 7, 4, 0
+        AddMenuItem "Cross-screen...", "effects_crossscreen", 7, 4, 1
+        AddMenuItem "Lens flare...", "effects_lensflare", 7, 4, 2
+        AddMenuItem "Rainbow...", "effects_rainbow", 7, 4, 3
+        AddMenuItem "Sunshine...", "effects_sunshine", 7, 4, 4
+        AddMenuItem "Dilate...", "effects_dilate", 7, 4, 6
+        AddMenuItem "Erode...", "effects_erode", 7, 4, 7
+    AddMenuItem "Natural", 7, 5
+        AddMenuItem "Atmosphere", "effects_atmosphere", 7, 5, 0
+        AddMenuItem "Fog...", "effects_fog", 7, 5, 1
+        AddMenuItem "Freeze", "effects_freeze", 7, 5, 2
+        AddMenuItem "Ignite", "effects_ignite", 7, 5, 3
+        AddMenuItem "Lava", "effects_lava", 7, 5, 4
+        AddMenuItem "Metal...", "effects_metal", 7, 5, 5
+        AddMenuItem "Underwater", "effects_underwater", 7, 5, 6
+    AddMenuItem "Noise", "effects_noise", 7, 6
+        AddMenuItem "Add film grain...", "effects_filmgrain", 7, 6, 0
+        AddMenuItem "Add RGB noise...", "effects_rgbnoise", 7, 6, 1
+        AddMenuItem "Anisotropic diffusion...", "effects_anisotropic", 7, 6, 3
+        AddMenuItem "Bilateral filter...", "effects_bilateral", 7, 6, 4
+        AddMenuItem "Mean shift...", "effects_meanshift", 7, 6, 5
+        AddMenuItem "Median...", "effects_median", 7, 6, 6
+    AddMenuItem "Pixelate", "effects_pixelate", 7, 7
+        AddMenuItem "Color halftone...", "effects_colorhalftone", 7, 7, 0
+        AddMenuItem "Crystallize...", "effects_crystallize", 7, 7, 1
+        AddMenuItem "Fragment...", "effects_fragment", 7, 7, 2
+        AddMenuItem "Mezzotint...", "effects_mezzotint", 7, 7, 3
+        AddMenuItem "Mosaic...", "effects_mosaic", 7, 7, 4
+    AddMenuItem "Sharpen", "effects_sharpentop", 7, 8
+        AddMenuItem "Sharpen...", "effects_sharpen", 7, 8, 0
+        AddMenuItem "Unsharp masking...", "effects_unsharp", 7, 8, 1
+    AddMenuItem "Stylize", "effects_stylize", 7, 9
+        AddMenuItem "Antique", "effects_antique", 7, 9, 0
+        AddMenuItem "Diffuse...", "effects_diffuse", 7, 9, 1
+        AddMenuItem "Outline...", "effects_outline", 7, 9, 2
+        AddMenuItem "Palettize...", "effects_palettize", 7, 9, 3
+        AddMenuItem "Portrait glow...", "effects_portraitglow", 7, 9, 4
+        AddMenuItem "Solarize...", "effects_solarize", 7, 9, 5
+        AddMenuItem "Twins...", "effects_twins", 7, 9, 6
+        AddMenuItem "Vignetting...", "effects_vignetting", 7, 9, 7
+    AddMenuItem "Transform", "effects_transform", 7, 10
+        AddMenuItem "Pan and zoom...", "effects_panandzoom", 7, 10, 0
+        AddMenuItem "Perspective...", "effects_perspective", 7, 10, 1
+        AddMenuItem "Polar conversion...", "effects_polarconversion", 7, 10, 2
+        AddMenuItem "Rotate...", "effects_rotate", 7, 10, 3
+        AddMenuItem "Shear...", "effects_shear", 7, 10, 4
+        AddMenuItem "Spherize...", "effects_spherize", 7, 10, 5
+    AddMenuItem "Custom filter...", "effects_customfilter", 7, 12
+    AddMenuItem "Test (developers only)", "effects_developertest", 7, 13
+    
+    
     'Tools Menu
     AddMenuItem "Tools", "tools_top", 8
     AddMenuItem "Language", "tools_language", 8, 0, , "tools_language"

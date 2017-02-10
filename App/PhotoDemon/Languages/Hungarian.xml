@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2357</langversion>
+<langversion>6.8.2358</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translator</author>
@@ -5113,23 +5113,23 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Maximum channel</original>
-<translation>maximális csatorna</translation>
+<original>Maximum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Minimum channel</original>
-<translation>minimum csatorna</translation>
+<original>Minimum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels left</original>
-<translation>Shift csatorna bal</translation>
+<original>Shift left</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels right</original>
-<translation>Shift-es csatornákat</translation>
+<original>Shift right</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5168,8 +5168,8 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Display histogram</original>
-<translation>kijelző hisztogram</translation>
+<original>Display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5183,23 +5183,13 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Invert CMYK (film negative)</original>
-<translation>Átalakítás CMYK (film negatív)</translation>
+<original>CMYK (film negative)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Invert hue</original>
-<translation>Invert színárnyalat</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Invert RGB</translation>
-</phrase>
-
-<phrase>
-<original>Compound invert</original>
-<translation>Összetett invert</translation>
+<original>RGB</original>
+<translation>RGB</translation>
 </phrase>
 
 <phrase>
@@ -6168,6 +6158,16 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Maximum channel</original>
+<translation>maximális csatorna</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>minimum csatorna</translation>
+</phrase>
+
+<phrase>
 <original>Shift colors (left)</original>
 <translation>Shift színek (balra)</translation>
 </phrase>
@@ -6347,6 +6347,16 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
+<original>Invert hue</original>
+<translation>Invert színárnyalat</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Invert RGB</translation>
+</phrase>
+
+<phrase>
 <original>Bilateral smoothing</original>
 <translation>kétoldalú simítás</translation>
 </phrase>
@@ -6431,7 +6441,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6646,11 +6656,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 </phrase>
 
 <phrase>
-<original>RGB</original>
-<translation>RGB</translation>
-</phrase>
-
-<phrase>
 <original>CMY</original>
 <translation>CMY</translation>
 </phrase>
@@ -6685,7 +6690,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Izolálása %1 csatorna</translation>
 </phrase>
 
-<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 22 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_Rechannel.frm-->
 
@@ -14855,10 +14860,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2506</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4454 phrases. -->
-<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 12368 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
+<!-- These 2506 phrases contain approximately 12364 total words. -->
 
 </pdData>

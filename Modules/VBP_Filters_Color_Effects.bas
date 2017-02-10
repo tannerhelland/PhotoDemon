@@ -274,6 +274,8 @@ Public Sub MenuInvertHue()
     
 End Sub
 
+'CURRENTLY UNUSED!
+'TODO 7.0: consider purging
 'I call this effect a "compound invert", but it's not actually anything like an invert operation.  Oh well.
 Public Sub MenuCompoundInvert(ByVal Divisor As Long)
 

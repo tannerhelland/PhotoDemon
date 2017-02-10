@@ -812,15 +812,15 @@ Private Sub cmbResizeFit_Click()
     
         'Stretch
         Case 0
-            LoadResourceToDIB "RSZ_STRETCH", tmpDIB
+            LoadResourceToDIB "sample_resize_stretch", tmpDIB, 191, 50
         
         'Fit inclusive
         Case 1
-            LoadResourceToDIB "RSZ_FITIN", tmpDIB
+            LoadResourceToDIB "sample_resize_fitinclusive", tmpDIB, 191, 50
         
         'Fit exclusive
         Case 2
-            LoadResourceToDIB "RSZ_FITEX", tmpDIB
+            LoadResourceToDIB "sample_resize_fitexclusive", tmpDIB, 191, 50
     
     End Select
     
@@ -1473,6 +1473,7 @@ Private Sub Form_Load()
             UpdatePhotoOpVisibility
             
         'Resize fit types
+            If g_IsProgramRunning Then picResizeDemo.BackColor = g_Themer.GetGenericUIColor(UI_Background)
             cmbResizeFit.Clear
             cmbResizeFit.AddItem "stretching to fit", 0
             cmbResizeFit.AddItem "fit inclusively", 1
