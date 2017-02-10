@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.242</langversion>
+<langversion>6.7.243</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -5117,23 +5117,23 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Maximum channel</original>
-<translation>Canale massimo</translation>
+<original>Maximum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Minimum channel</original>
-<translation>Canale minimo</translation>
+<original>Minimum</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels left</original>
-<translation>Sposta i canali a sinistra</translation>
+<original>Shift left</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Shift channels right</original>
-<translation>Sposta i canali a destra</translation>
+<original>Shift right</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5172,8 +5172,8 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Display histogram</original>
-<translation>Mostra l'istogramma</translation>
+<original>Display</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5187,23 +5187,13 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>Invert CMYK (film negative)</original>
-<translation>Inverti CMYK (negativo pellicola)</translation>
+<original>CMYK (film negative)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Invert hue</original>
-<translation>Inverti la tinta</translation>
-</phrase>
-
-<phrase>
-<original>Invert RGB</original>
-<translation>Inverti RGB</translation>
-</phrase>
-
-<phrase>
-<original>Compound invert</original>
-<translation>Composito invertito</translation>
+<original>RGB</original>
+<translation>RGB</translation>
 </phrase>
 
 <phrase>
@@ -6175,6 +6165,16 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 </phrase>
 
 <phrase>
+<original>Maximum channel</original>
+<translation>Canale massimo</translation>
+</phrase>
+
+<phrase>
+<original>Minimum channel</original>
+<translation>Canale minimo</translation>
+</phrase>
+
+<phrase>
 <original>Shift colors (left)</original>
 <translation>Sposta il colore (Sinistra)</translation>
 </phrase>
@@ -6354,6 +6354,16 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
+<original>Invert hue</original>
+<translation>Inverti la tinta</translation>
+</phrase>
+
+<phrase>
+<original>Invert RGB</original>
+<translation>Inverti RGB</translation>
+</phrase>
+
+<phrase>
 <original>Bilateral smoothing</original>
 <translation>Levigatura bilaterale</translation>
 </phrase>
@@ -6438,7 +6448,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 562 phrases. 189 were duplicates of existing phrases, so only 373 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6653,11 +6663,6 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 </phrase>
 
 <phrase>
-<original>RGB</original>
-<translation>RGB</translation>
-</phrase>
-
-<phrase>
 <original>CMY</original>
 <translation></translation>
 </phrase>
@@ -6692,7 +6697,7 @@ Hai un account GitHub? (Se non hai idea di cosa significhi, rispondi "No".)</tra
 <translation>Isolando il %1 canale</translation>
 </phrase>
 
-<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 22 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 23 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_Rechannel.frm-->
 
@@ -14867,10 +14872,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2506</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4454 phrases. -->
-<!-- 1949 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 12368 total words. -->
+<!-- As of this build, PhotoDemon contains 4452 phrases. -->
+<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
+<!-- These 2506 phrases contain approximately 12364 total words. -->
 
 </pdData>

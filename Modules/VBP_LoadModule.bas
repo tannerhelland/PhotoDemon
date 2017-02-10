@@ -872,7 +872,7 @@ Public Sub LoadAccelerators()
             .AddAccelerator vbKeyG, vbCtrlMask, "Gamma", FormMain.MnuLighting(2), True, True, True, UNDO_NOTHING
             
             'Adjustments -> Invert submenu
-            .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", FormMain.mnuInvert, True, True, False, UNDO_LAYER
+            .AddAccelerator vbKeyI, vbCtrlMask, "Invert RGB", FormMain.MnuInvert(2), True, True, False, UNDO_LAYER
             
             'Adjustments -> Monochrome submenu
             .AddAccelerator vbKeyB, vbCtrlMask Or vbAltMask Or vbShiftMask, "Color to monochrome", FormMain.MnuMonochrome(0), True, True, True, UNDO_NOTHING

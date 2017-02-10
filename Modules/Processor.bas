@@ -1169,17 +1169,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
         
         'Invert operations
-        Case "Invert RGB"
-            MenuInvert
-            
-        Case "Compound invert"
-            MenuCompoundInvert cParams.GetLong(1)
-            
         Case "Film negative"
             MenuNegative
-            
+        
         Case "Invert hue"
             MenuInvertHue
+            
+        Case "Invert RGB"
+            MenuInvert
         
         'Monochrome conversion
         ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))

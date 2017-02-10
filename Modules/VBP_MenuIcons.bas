@@ -190,212 +190,6 @@ Public Sub ApplyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     ' maintain menu icons (among other menu properties).  As such, this sub is gradually shrinking.
     Menus.ApplyIconsToMenus
     
-    
-    'Adjustments Menu
-    
-    'Auto correct
-    AddMenuIcon "AUTOCORRECT", 6, 0     'Auto-correct (top-level)
-        AddMenuIcon "HSL", 6, 0, 0          'Color
-        AddMenuIcon "BRIGHT", 6, 0, 1       'Contrast
-        AddMenuIcon "LIGHTING", 6, 0, 2     'Lighting
-        AddMenuIcon "SHDWHGHLGHT", 6, 0, 3  'Shadow/Highlight
-        
-    'Auto enhance
-    AddMenuIcon "AUTOENHANCE", 6, 1     'Auto-enhance (top-level)
-        AddMenuIcon "HSL", 6, 1, 0          'Color
-        AddMenuIcon "BRIGHT", 6, 1, 1       'Contrast
-        AddMenuIcon "LIGHTING", 6, 1, 2     'Lighting
-        AddMenuIcon "SHDWHGHLGHT", 6, 1, 3  'Shadow/Highlight
-        
-    'Adjustment shortcuts (top-level menu items)
-    AddMenuIcon "GRAYSCALE", 6, 3       'Black and white
-    AddMenuIcon "BRIGHT", 6, 4          'Brightness/Contrast
-    AddMenuIcon "COLORBALANCE", 6, 5    'Color balance
-    AddMenuIcon "CURVES", 6, 6          'Curves
-    AddMenuIcon "LEVELS", 6, 7          'Levels
-    AddMenuIcon "SHDWHGHLGHT", 6, 8     'Shadow/highlight
-    AddMenuIcon "VIBRANCE", 6, 9        'Vibrance
-    AddMenuIcon "WHITEBAL", 6, 10       'White Balance
-       
-    'Channels
-    AddMenuIcon "CHANNELMIX", 6, 12    'Channels top-level
-        AddMenuIcon "CHANNELMIX", 6, 12, 0   'Channel mixer
-        AddMenuIcon "RECHANNEL", 6, 12, 1    'Rechannel
-        AddMenuIcon "CHANNELMAX", 6, 12, 3   'Channel max
-        AddMenuIcon "CHANNELMIN", 6, 12, 4   'Channel min
-        AddMenuIcon "COLORSHIFTL", 6, 12, 6  'Shift Left
-        AddMenuIcon "COLORSHIFTR", 6, 12, 7  'Shift Right
-            
-    'Color
-    AddMenuIcon "HSL", 6, 13           'Color balance
-        AddMenuIcon "COLORBALANCE", 6, 13, 0 'Color balance
-        AddMenuIcon "WHITEBAL", 6, 13, 1     'White Balance
-        AddMenuIcon "HSL", 6, 13, 3          'HSL adjustment
-        AddMenuIcon "TEMPERATURE", 6, 13, 4  'Temperature
-        AddMenuIcon "TINT", 6, 13, 5         'Tint
-        AddMenuIcon "VIBRANCE", 6, 13, 6     'Vibrance
-        AddMenuIcon "GRAYSCALE", 6, 13, 8    'Black and white
-        AddMenuIcon "COLORIZE", 6, 13, 9     'Colorize
-        AddMenuIcon "REPLACECLR", 6, 13, 10  'Replace color
-        AddMenuIcon "SEPIA", 6, 13, 11       'Sepia
-    
-    'Histogram
-    AddMenuIcon "HISTOGRAM", 6, 14      'Histogram top-level
-        AddMenuIcon "HISTOGRAM", 6, 14, 0     'Display Histogram
-        AddMenuIcon "EQUALIZE", 6, 14, 2      'Equalize
-        AddMenuIcon "STRETCH", 6, 14, 3       'Stretch
-    
-    'Invert
-    AddMenuIcon "INVERT", 6, 15         'Invert top-level
-        AddMenuIcon "INVCMYK", 6, 15, 0     'Invert CMYK
-        AddMenuIcon "INVHUE", 6, 15, 1       'Invert Hue
-        AddMenuIcon "INVRGB", 6, 15, 2       'Invert RGB
-        AddMenuIcon "INVCOMPOUND", 6, 15, 4  'Compound Invert
-        
-    'Lighting
-    AddMenuIcon "LIGHTING", 6, 16       'Lighting top-level
-        AddMenuIcon "BRIGHT", 6, 16, 0       'Brightness/Contrast
-        AddMenuIcon "CURVES", 6, 16, 1       'Curves
-        AddMenuIcon "GAMMA", 6, 16, 2        'Gamma Correction
-        AddMenuIcon "LEVELS", 6, 16, 3       'Levels
-        AddMenuIcon "SHDWHGHLGHT", 6, 16, 4  'Shadow/Highlight
-        
-    'Monochrome
-    AddMenuIcon "MONOCHROME", 6, 17      'Monochrome
-        AddMenuIcon "COLORTOMONO", 6, 17, 0   'Color to monochrome
-        AddMenuIcon "MONOTOCOLOR", 6, 17, 1   'Monochrome to grayscale
-        
-    'Photography
-    AddMenuIcon "PHOTOFILTER", 6, 18      'Photography top-level
-        AddMenuIcon "EXPOSURE", 6, 18, 0     'Exposure
-        AddMenuIcon "HDR", 6, 18, 1          'HDR
-        AddMenuIcon "PHOTOFILTER", 6, 18, 2  'Photo filters
-        'addMenuIcon "REDEYE", 6, 18, 3       'Red-eye removal
-        AddMenuIcon "SPLITTONE", 6, 18, 4    'Split-toning
-    
-    
-    'Effects (Filters) Menu
-    AddMenuIcon "ARTISTIC", 7, 0        'Artistic
-        '--> Artistic sub-menu
-        AddMenuIcon "PENCIL", 7, 0, 0         'Pencil
-        AddMenuIcon "COMICBOOK", 7, 0, 1      'Comic book
-        AddMenuIcon "FIGGLASS", 7, 0, 2       'Figured glass
-        AddMenuIcon "FILMNOIR", 7, 0, 3       'Film Noir
-        AddMenuIcon "GLASSTILES", 7, 0, 4     'Glass tiles
-        AddMenuIcon "KALEIDOSCOPE", 7, 0, 5   'Kaleidoscope
-        AddMenuIcon "MODERNART", 7, 0, 6      'Modern Art
-        AddMenuIcon "OILPAINTING", 7, 0, 7    'Oil painting
-        AddMenuIcon "POSTERIZE", 7, 0, 8      'Posterize
-        AddMenuIcon "RELIEF", 7, 0, 9         'Relief
-        AddMenuIcon "STAINEDGLASS", 7, 0, 10  'Stained glass
-    
-    AddMenuIcon "BLUR", 7, 1            'Blur
-        '--> Blur sub-menu
-        AddMenuIcon "BOXBLUR", 7, 1, 0        'Box Blur
-        AddMenuIcon "GAUSSBLUR", 7, 1, 1      'Gaussian Blur
-        AddMenuIcon "SMARTBLUR", 7, 1, 2      'Surface Blur (formerly Smart Blur)
-        AddMenuIcon "MOTIONBLUR", 7, 1, 4     'Motion Blur
-        AddMenuIcon "RADIALBLUR", 7, 1, 5     'Radial Blur
-        AddMenuIcon "ZOOMBLUR", 7, 1, 6       'Zoom Blur
-        AddMenuIcon "CHROMABLUR", 7, 1, 8     'Kuwahara
-        
-    AddMenuIcon "DISTORT", 7, 2         'Distort
-        '--> Distort sub-menu
-        AddMenuIcon "LENSDISTORT", 7, 2, 0    'Apply lens distortion
-        AddMenuIcon "FIXLENS", 7, 2, 1        'Remove or correct existing lens distortion
-        
-        'addMenuIcon "DONUT", 7, 2, 3          'Donut
-        AddMenuIcon "PINCHWHIRL", 7, 2, 4     'Pinch and whirl
-        AddMenuIcon "POKE", 7, 2, 5           'Poke
-        AddMenuIcon "RIPPLE", 7, 2, 6         'Ripple
-        AddMenuIcon "SQUISH", 7, 2, 7         'Squish (formerly Fixed Perspective)
-        AddMenuIcon "SWIRL", 7, 2, 8          'Swirl
-        AddMenuIcon "WAVES", 7, 2, 9          'Waves
-        
-        AddMenuIcon "MISCDISTORT", 7, 2, 11   'Miscellaneous distort functions
-                
-    AddMenuIcon "EDGES", 7, 3           'Edges
-        '--> Edges sub-menu
-        AddMenuIcon "EMBOSS", 7, 3, 0         'Emboss / Engrave
-        AddMenuIcon "EDGEENHANCE", 7, 3, 1    'Enhance Edges
-        AddMenuIcon "EDGES", 7, 3, 2          'Find Edges
-        'addMenuIcon "RANGEFILTER", 7, 3, 4    'Range filter
-        AddMenuIcon "TRACECONTOUR", 7, 3, 4   'Trace Contour
-        
-    AddMenuIcon "SUNSHINE", 7, 4        'Lights and shadows
-        '--> Lights and shadows sub-menu
-        AddMenuIcon "BLACKLIGHT", 7, 4, 0     'Blacklight
-        AddMenuIcon "CROSSSCREEN", 7, 4, 1    'Cross-screen (stars)
-        AddMenuIcon "LENSFLARE", 7, 4, 2      'Lens flare
-        AddMenuIcon "RAINBOW", 7, 4, 3        'Rainbow
-        AddMenuIcon "SUNSHINE", 7, 4, 4       'Sunshine
-        AddMenuIcon "DILATE", 7, 4, 6         'Dilate
-        AddMenuIcon "ERODE", 7, 4, 7          'Erode
-    
-    AddMenuIcon "NATURAL", 7, 5         'Natural
-        '--> Natural sub-menu
-        AddMenuIcon "ATMOSPHERE", 7, 5, 0     'Atmosphere
-        AddMenuIcon "FOG", 7, 5, 1            'Fog
-        AddMenuIcon "FREEZE", 7, 5, 2         'Freeze
-        AddMenuIcon "BURN", 7, 5, 3           'Ignite
-        AddMenuIcon "LAVA", 7, 5, 4           'Lava
-        AddMenuIcon "STEEL", 7, 5, 5          'Steel
-        AddMenuIcon "RAIN", 7, 5, 6           'Water
-        
-    AddMenuIcon "NOISE", 7, 6           'Noise
-        '--> Noise sub-menu
-        AddMenuIcon "FILMGRAIN", 7, 6, 0      'Film grain
-        AddMenuIcon "ADDNOISE", 7, 6, 1       'Add Noise
-        
-        'addMenuIcon "ANISOTROPIC", 7, 6, 3    'Anisotropic diffusion
-        AddMenuIcon "BILATERAL", 7, 6, 4      'Bilateral smoothing
-        'addMenuIcon "MEANSHIFT", 7, 6, 5      'Mean-shift
-        AddMenuIcon "MEDIAN", 7, 6, 6         'Median
-        
-    AddMenuIcon "PIXELATE", 7, 7        'Pixelate
-        '--> Pixelate sub-menu
-        'addMenuIcon "CLRHALFTONE", 7, 7, 0   'Color halftone (TODO)
-        'addMenuIcon "CRYTALLIZE", 7, 7, 1    'Crystallize (TODO)
-        AddMenuIcon "FRAGMENT", 7, 7, 2       'Fragment
-        'addMenuIcon "MEZZOTINT", 7, 7, 3     'Mezzotint (TODO)
-        AddMenuIcon "PIXELATE", 7, 7, 4       'Mosaic (formerly Pixelate)
-    
-    AddMenuIcon "SHARPEN", 7, 8         'Sharpen
-        '--> Sharpen sub-menu
-        AddMenuIcon "SHARPEN", 7, 8, 0       'Sharpen
-        AddMenuIcon "UNSHARP", 7, 8, 1       'Unsharp
-        
-    AddMenuIcon "STYLIZE", 7, 9        'Stylize
-        '--> Stylize sub-menu
-        AddMenuIcon "ANTIQUE", 7, 9, 0        'Antique (Sepia)
-        AddMenuIcon "DIFFUSE", 7, 9, 1        'Diffuse
-        'addMenuIcon "OUTLINE", 7, 9, 2        'Outline
-        AddMenuIcon "REDUCECOLORS", 7, 9, 3   'Apply palette (reduce color count)
-        'addMenuIcon "PORTGLOW", 7, 9, 4      'Portrait glow
-        AddMenuIcon "SOLARIZE", 7, 9, 5       'Solarize
-        AddMenuIcon "TWINS", 7, 9, 6          'Twins
-        AddMenuIcon "VIGNETTE", 7, 9, 7      'Vignetting
-        
-    AddMenuIcon "PANANDZOOM", 7, 10        'Transform
-        '--> Transform sub-menu
-        AddMenuIcon "PANANDZOOM", 7, 10, 0    'Pan and zoom
-        AddMenuIcon "PERSPECTIVE", 7, 10, 1   'Perspective (free)
-        AddMenuIcon "POLAR", 7, 10, 2         'Polar conversion
-        AddMenuIcon "ROTATECW", 7, 10, 3      'Rotate
-        AddMenuIcon "SHEAR", 7, 10, 4         'Shear
-        AddMenuIcon "SPHERIZE", 7, 10, 5      'Spherize
-        
-    AddMenuIcon "CUSTFILTER", 7, 12     'Custom Filter
-    
-    'addMenuIcon "OTHER", 7, 14           'Experimental
-        '--> Experimental sub-menu
-        'addMenuIcon "ALIEN", 7, 14, 0          'Alien
-        'addMenuIcon "DREAM", 7, 14, 1          'Dream
-        'addMenuIcon "RADIOACTIVE", 7, 14, 2    'Radioactive
-        'addMenuIcon "SYNTHESIZE", 7, 14, 3     'Synthesize
-        'addMenuIcon "HEATMAP", 7, 14, 4        'Thermograph
-        'addMenuIcon "VIBRATE", 7, 14, 5        'Vibrate
-    
     'When we're done, reset the doEvents tracker
     m_refreshOutsideProgressBar = False
     
@@ -943,89 +737,18 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             End If
         End If
         
-        'If we failed to load the resource data using our internal methods, fall back to the old system
+        'If we failed to find the requested resource, return a small blank DIB (to work around some old code
+        ' that expects an initialized DIB), report the problem, then exit
         If (Not intResFound) Then
+        
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            dstDIB.CreateBlank 16, 16, 32, 0, 0
             
-            On Error GoTo Err_ResNotFound
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  LoadResourceToDIB couldn't find <" & resTitle & ">.  Check your spelling and try again."
+            #End If
             
-            'Start by extracting the resource data (typically a PNG) into a bytestream
-            Dim ImageData() As Byte
-            ImageData() = LoadResData(resTitle, "CUSTOM")
-            
-            Dim IStream As IUnknown
-            Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
-            
-            If (Not IStream Is Nothing) Then
-                
-                'Use GDI+ to convert the bytestream into a usable image
-                ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
-                Dim gdipBitmap As Long
-                If (GdipLoadImageFromStream(IStream, gdipBitmap) = 0) Then
-                
-                    'Retrieve the image's size and pixel format
-                    Dim tmpRect As RECTF
-                    GdipGetImageBounds gdipBitmap, tmpRect, UnitPixel
-                    
-                    Dim gdiPixelFormat As Long
-                    GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
-                    
-                    'Create the DIB anew as necessary
-                    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-                    
-                    'If the image has an alpha channel, create a 32bpp DIB to receive it
-                    If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                        dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 32
-                        dstDIB.SetInitialAlphaPremultiplicationState True
-                    Else
-                        dstDIB.CreateBlank tmpRect.Width, tmpRect.Height, 24
-                    End If
-                    
-                    'Convert the GDI+ bitmap to a standard Windows hBitmap
-                    Dim hBitmap As Long
-                    If (GdipCreateHBITMAPFromBitmap(gdipBitmap, hBitmap, vbBlack) = 0) Then
-                    
-                        'Select the hBitmap into a new DC so we can BitBlt it into the target DIB
-                        Dim gdiDC As Long
-                        gdiDC = GDI.GetMemoryDC()
-                        
-                        Dim oldBitmap As Long
-                        oldBitmap = SelectObject(gdiDC, hBitmap)
-                        
-                        'Copy the GDI+ bitmap into the DIB
-                        BitBlt dstDIB.GetDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
-                        
-                        'Release the original DDB and temporary device context
-                        SelectObject gdiDC, oldBitmap
-                        DeleteObject hBitmap
-                        GDI.FreeMemoryDC gdiDC
-                        
-                        'As an added bonus, free the destination DIB from its DC as well.  (pdDIB objects automatically
-                        ' select themselves into a DC, as necessary, so if this DIB isn't needed right away, we can
-                        ' spare usage of a DC until it actually needs to be rendered.)
-                        dstDIB.FreeFromDC
-                        
-                        LoadResourceToDIB = True
-                        
-                    Else
-                        LoadResourceToDIB = False
-                        Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
-                    End If
-                    
-                    'Release the GDI+ bitmap
-                    GdipDisposeImage gdipBitmap
-                        
-                Else
-                    LoadResourceToDIB = False
-                    Debug.Print "GDI+ failed to load requested resource " & resTitle & " from stream."
-                End If
-            
-                'Free the memory stream
-                Set IStream = Nothing
-                
-            Else
-                LoadResourceToDIB = False
-                Debug.Print "Could not load requested resource " & resTitle & " from file."
-            End If
+            LoadResourceToDIB = False
             
         End If
         
@@ -1034,13 +757,6 @@ Public Function LoadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
         LoadResourceToDIB = False
     End If
     
-    Exit Function
-    
-Err_ResNotFound:
-
-    Debug.Print "Requested resource " & resTitle & " wasn't found."
-    LoadResourceToDIB = False
-        
 End Function
 
 'PD will automatically update its taskbar icon to reflect the current image being edited.  I find this especially helpful

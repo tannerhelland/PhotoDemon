@@ -268,6 +268,7 @@ Private Sub Form_Load()
     GenerateContributor "Helmut Kuerbiss"
     GenerateContributor "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateContributor "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
+    GenerateContributor "Karl Peterson", "http://vb.mvps.org/"
     GenerateContributor "Kroc Camen", "http://camendesign.com"
     GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
     GenerateContributor "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
