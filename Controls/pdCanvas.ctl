@@ -874,7 +874,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     Drawing.ConvertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, layerX, layerY
     
     'Display a relevant cursor for the current action
-    SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
+    SetCanvasCursor pMouseDown, Button, x, y, imgX, imgY, layerX, layerY
     
     'Selection tools all use the same variable for tracking POIs
     Dim sCheck As Long
@@ -1218,7 +1218,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
     Else
         
         'Display a relevant cursor for the current action
-        SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
+        SetCanvasCursor pMouseMove, Button, x, y, imgX, imgY, layerX, layerY
     
         Select Case g_CurrentTool
         
@@ -2119,10 +2119,10 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             'When click-dragging the image to scroll around it, the cursor depends on being over the image
             If IsMouseOverImage(x, y, pdImages(g_CurrentImage)) Then
                 
-                If Button <> 0 Then
-                    CanvasView.RequestCursor_PNG "cursor_handclosed", 0, 0
-                Else
+                If (curMouseEvent = pMouseUp) Or (Button = 0) Then
                     CanvasView.RequestCursor_PNG "cursor_handopen", 0, 0
+                Else
+                    CanvasView.RequestCursor_PNG "cursor_handclosed", 0, 0
                 End If
             
             'If the cursor is not over the image, change to an arrow cursor
