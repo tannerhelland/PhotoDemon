@@ -325,7 +325,7 @@ Public Sub ContinueLoadingProgram()
     'Because this class controls the visual appearance of all forms in the project, it must be loaded early in the boot process
     LoadMessage "Initializing theme engine..."
     
-    Set g_Themer = New pdVisualThemes
+    Set g_Themer = New pdTheme
     
     'Load and validate the user's selected theme file
     g_Themer.LoadDefaultPDTheme

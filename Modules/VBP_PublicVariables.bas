@@ -151,7 +151,7 @@ Public g_UndoRedoActive As Boolean
 Public g_WindowManager As pdWindowManager
 
 'PhotoDemon's visual theme engine.
-Public g_Themer As pdVisualThemes
+Public g_Themer As pdTheme
 
 'PhotoDemon's recent files and recent macros managers.
 ' CHANGING: Replacing pdRecentFiles with pdMRUManager

@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdVisualThemes"
+Attribute VB_Name = "pdTheme"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Visual Theming class
 'Copyright 2013-2017 by Tanner Helland
 'Created: 23/October/13
-'Last updated: 07/February/17
-'Last update: migrate to safer subclassing techniques
+'Last updated: 11/February/17
+'Last update: add many new theme accent color options
 '
 'As of release 7.0, PhotoDemon supports the notion of "visual themes".  These themes are XML files that modify
 ' the program's appearance.
@@ -53,12 +53,17 @@ Private m_ThemeClass As PD_THEME_CLASS
 Public Enum PD_THEME_ACCENT
     PDTA_Undefined = -1
     PDTA_Blue = 0
-    PDTA_Green = 1
-    PDTA_Purple = 2
+    PDTA_Brown = 1
+    PDTA_Green = 2
+    PDTA_Orange = 3
+    PDTA_Pink = 4
+    PDTA_Purple = 5
+    PDTA_Red = 6
+    PDTA_Teal = 7
 End Enum
 
 #If False Then
-    Private Const PDTA_Undefined = -1, PDTA_Blue = 0, PDTA_Green = 1, PDTA_Purple = 2
+    Private Const PDTA_Undefined = -1, PDTA_Blue = 0, PDTA_Brown = 1, PDTA_Green = 2, PDTA_Orange = 3, PDTA_Pink = 4, PDTA_Purple = 5, PDTA_Red = 6, PDTA_Teal = 7
 #End If
 
 Private m_ThemeAccent As PD_THEME_ACCENT
@@ -236,8 +241,13 @@ Private Sub AttemptThemeRecovery()
     
     'NOTE!  YOU MUST UPDATE THIS LIST if new theme files become required for basic program functionality.
     DoesThemeFileExist "Colors_Blue.xml"
+    DoesThemeFileExist "Colors_Brown.xml"
     DoesThemeFileExist "Colors_Green.xml"
+    DoesThemeFileExist "Colors_Orange.xml"
+    DoesThemeFileExist "Colors_Pink.xml"
     DoesThemeFileExist "Colors_Purple.xml"
+    DoesThemeFileExist "Colors_Red.xml"
+    DoesThemeFileExist "Colors_Teal.xml"
     DoesThemeFileExist "Default_Dark.xml"
     DoesThemeFileExist "Default_Light.xml"
     
@@ -320,10 +330,20 @@ Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal a
     Select Case accentColor
         Case PDTA_Blue
             accentName = "Blue"
+        Case PDTA_Brown
+            accentName = "Brown"
         Case PDTA_Green
             accentName = "Green"
+        Case PDTA_Orange
+            accentName = "Orange"
+        Case PDTA_Pink
+            accentName = "Pink"
         Case PDTA_Purple
             accentName = "Purple"
+        Case PDTA_Red
+            accentName = "Red"
+        Case PDTA_Teal
+            accentName = "Teal"
         Case Else
             accentName = vbNullString
     End Select
@@ -366,17 +386,35 @@ Friend Sub SynchronizeThemeMenus()
         
             Case "blue"
                 activeAccentIndex = 3
-                
-            Case "green"
+            
+            Case "brown"
                 activeAccentIndex = 4
                 
-            Case Else
+            Case "green"
                 activeAccentIndex = 5
+                
+            Case "orange"
+                activeAccentIndex = 6
+                
+            Case "pink"
+                activeAccentIndex = 7
+                
+            Case "purple"
+                activeAccentIndex = 8
+                
+            Case "red"
+                activeAccentIndex = 9
+                
+            Case "teal"
+                activeAccentIndex = 10
+                
+            Case Else
+                activeAccentIndex = 3
                 
         End Select
         
         Dim i As Long
-        For i = 3 To 5
+        For i = 3 To 10
             FormMain.mnuTheme(i).Checked = CBool(i = activeAccentIndex)
         Next i
         
@@ -721,9 +759,9 @@ End Sub
 Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
     #If DEBUGMODE = 1 Then
         If msgIsNonErrorFeedback Then
-            pdDebug.LogAction "pdVisualThemes reported: " & msgError
+            pdDebug.LogAction "pdTheme reported: " & msgError
         Else
-            pdDebug.LogAction "WARNING!  pdVisualThemes error: " & msgError
+            pdDebug.LogAction "WARNING!  pdTheme error: " & msgError
         End If
     #End If
 End Sub

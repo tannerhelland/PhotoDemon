@@ -26,8 +26,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -48,23 +48,23 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   1080
-      _extentx        =   635
-      _extenty        =   635
-      errasout        =   0
-      pollinterval    =   100
-      waitforidle     =   0
+      _ExtentX        =   635
+      _ExtentY        =   635
+      ErrAsOut        =   0   'False
+      PollInterval    =   100
+      WaitForIdle     =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1375,11 +1375,11 @@ Begin VB.Form FormMain
          Caption         =   "Theme"
          Index           =   3
          Begin VB.Menu mnuTheme 
-            Caption         =   "Dark theme"
+            Caption         =   "Dark"
             Index           =   0
          End
          Begin VB.Menu mnuTheme 
-            Caption         =   "Light theme"
+            Caption         =   "Light"
             Index           =   1
          End
          Begin VB.Menu mnuTheme 
@@ -1387,16 +1387,36 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu mnuTheme 
-            Caption         =   "Blue accent"
+            Caption         =   "Blue"
             Index           =   3
          End
          Begin VB.Menu mnuTheme 
-            Caption         =   "Green accent"
+            Caption         =   "Brown"
             Index           =   4
          End
          Begin VB.Menu mnuTheme 
-            Caption         =   "Purple accent"
+            Caption         =   "Green"
             Index           =   5
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Orange"
+            Index           =   6
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Pink"
+            Index           =   7
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Purple"
+            Index           =   8
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Red"
+            Index           =   9
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Teal"
+            Index           =   10
          End
       End
       Begin VB.Menu MnuTool 
@@ -2277,43 +2297,53 @@ End Sub
 
 Private Sub mnuTheme_Click(Index As Integer)
 
-    Dim themeRefreshRequired As Boolean: themeRefreshRequired = False
-    
     Select Case Index
     
         'Dark/light themes
         Case 0
             g_Themer.SetNewTheme PDTC_Dark, g_Themer.GetCurrentThemeAccent, True
-            themeRefreshRequired = True
             
         Case 1
             g_Themer.SetNewTheme PDTC_Light, g_Themer.GetCurrentThemeAccent, True
-            themeRefreshRequired = True
-        
+            
         '(separator)
         Case 2
         
         'Accent colors
         Case 3
             g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Blue, True
-            themeRefreshRequired = True
-        
+            
         Case 4
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Green, True
-            themeRefreshRequired = True
-        
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Brown, True
+            
         Case 5
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Green, True
+            
+        Case 6
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Orange, True
+            
+        Case 7
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Pink, True
+            
+        Case 8
             g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Purple, True
-            themeRefreshRequired = True
-    
+            
+        Case 9
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Red, True
+            
+        Case 10
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Teal, True
+            
     End Select
     
-    If themeRefreshRequired Then
-        g_Themer.LoadDefaultPDTheme
-        g_Resources.NotifyThemeChange
-        Interface.RedrawEntireUI
-    End If
-
+    'Three steps are required to activate a theme change:
+    ' 1) Load the new theme (or accent) data from file
+    ' 2) Notify the resource manager of the change (as things like UI icons may need to be redrawn)
+    ' 3) Refresh the main window, including all child panels and controls
+    g_Themer.LoadDefaultPDTheme
+    g_Resources.NotifyThemeChange
+    Interface.RedrawEntireUI
+    
 End Sub
 
 Private Sub MnuWindowToolbox_Click(Index As Integer)
