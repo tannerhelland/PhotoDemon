@@ -26,8 +26,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   2280
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -48,23 +48,23 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   120
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   1680
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   1080
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   100
-      WaitForIdle     =   0
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0
+      pollinterval    =   100
+      waitforidle     =   0
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1352,9 +1352,9 @@ Begin VB.Form FormMain
          Caption         =   "Test"
       End
    End
-   Begin VB.Menu MnuTools 
+   Begin VB.Menu mnuTools 
       Caption         =   "&Tools"
-      Begin VB.Menu mnuTool 
+      Begin VB.Menu MnuTool 
          Caption         =   "Language"
          Index           =   0
          Begin VB.Menu mnuLanguages 
@@ -1363,17 +1363,49 @@ Begin VB.Form FormMain
             Index           =   0
          End
       End
-      Begin VB.Menu mnuTool 
+      Begin VB.Menu MnuTool 
          Caption         =   "Language editor..."
          Index           =   1
       End
-      Begin VB.Menu mnuTool 
+      Begin VB.Menu MnuTool 
          Caption         =   "-"
          Index           =   2
       End
-      Begin VB.Menu mnuTool 
-         Caption         =   "Record macro"
+      Begin VB.Menu MnuTool 
+         Caption         =   "Theme"
          Index           =   3
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Dark theme"
+            Index           =   0
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Light theme"
+            Index           =   1
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "-"
+            Index           =   2
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Blue accent"
+            Index           =   3
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Green accent"
+            Index           =   4
+         End
+         Begin VB.Menu mnuTheme 
+            Caption         =   "Purple accent"
+            Index           =   5
+         End
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "-"
+         Index           =   4
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "Record macro"
+         Index           =   5
          Begin VB.Menu MnuRecordMacro 
             Caption         =   "Start recording"
             Index           =   0
@@ -1384,13 +1416,13 @@ Begin VB.Form FormMain
             Index           =   1
          End
       End
-      Begin VB.Menu mnuTool 
+      Begin VB.Menu MnuTool 
          Caption         =   "Play macro..."
-         Index           =   4
+         Index           =   6
       End
-      Begin VB.Menu mnuTool 
+      Begin VB.Menu MnuTool 
          Caption         =   "Recent macros"
-         Index           =   5
+         Index           =   7
          Begin VB.Menu MnuRecentMacros 
             Caption         =   "Empty"
             Enabled         =   0   'False
@@ -1404,56 +1436,28 @@ Begin VB.Form FormMain
             Caption         =   "Clear recent macro list"
          End
       End
-      Begin VB.Menu mnuTool 
+      Begin VB.Menu MnuTool 
          Caption         =   "-"
-         Index           =   6
-      End
-      Begin VB.Menu mnuTool 
-         Caption         =   "Options..."
-         Index           =   7
-      End
-      Begin VB.Menu mnuTool 
-         Caption         =   "Plugin manager..."
          Index           =   8
       End
-      Begin VB.Menu mnuTool 
-         Caption         =   "-"
+      Begin VB.Menu MnuTool 
+         Caption         =   "Options..."
          Index           =   9
       End
-      Begin VB.Menu mnuTool 
-         Caption         =   "Developers"
+      Begin VB.Menu MnuTool 
+         Caption         =   "Plugin manager..."
          Index           =   10
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "-"
+         Index           =   11
+      End
+      Begin VB.Menu MnuTool 
+         Caption         =   "Developers"
+         Index           =   12
          Begin VB.Menu MnuDevelopers 
             Caption         =   "Theme editor..."
             Index           =   0
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "-"
-            Index           =   1
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "Light theme"
-            Index           =   2
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "Dark theme"
-            Index           =   3
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "-"
-            Index           =   4
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "Blue"
-            Index           =   5
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "Green"
-            Index           =   6
-         End
-         Begin VB.Menu MnuDevelopers 
-            Caption         =   "Purple"
-            Index           =   7
          End
       End
    End
@@ -1906,49 +1910,13 @@ End Sub
 'The Developer Tools menu is automatically hidden in production builds, so (obviously) do not put anything here that end-users might want access to.
 Private Sub mnuDevelopers_Click(Index As Integer)
     
-    Dim themeRefreshRequired As Boolean: themeRefreshRequired = False
-    
     Select Case Index
     
         'Theme Editor
         Case 0
             ShowPDDialog vbModal, FormThemeEditor
             
-        '(separator)
-        Case 1
-        
-        'Light/dark themes
-        Case 2
-            g_Themer.SetNewTheme PDTC_Light, g_Themer.GetCurrentThemeAccent, True
-            themeRefreshRequired = True
-        
-        Case 3
-            g_Themer.SetNewTheme PDTC_Dark, g_Themer.GetCurrentThemeAccent, True
-            themeRefreshRequired = True
-        
-        '(separator)
-        Case 4
-        
-        'Accent colors
-        Case 5
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Blue, True
-            themeRefreshRequired = True
-        
-        Case 6
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Green, True
-            themeRefreshRequired = True
-        
-        Case 7
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Purple, True
-            themeRefreshRequired = True
-    
     End Select
-    
-    If themeRefreshRequired Then
-        g_Themer.LoadDefaultPDTheme
-        g_Resources.NotifyThemeChange
-        Interface.RedrawEntireUI
-    End If
 
 End Sub
 
@@ -2305,6 +2273,47 @@ Private Sub MnuRecordMacro_Click(Index As Integer)
         
     End Select
     
+End Sub
+
+Private Sub mnuTheme_Click(Index As Integer)
+
+    Dim themeRefreshRequired As Boolean: themeRefreshRequired = False
+    
+    Select Case Index
+    
+        'Dark/light themes
+        Case 0
+            g_Themer.SetNewTheme PDTC_Dark, g_Themer.GetCurrentThemeAccent, True
+            themeRefreshRequired = True
+            
+        Case 1
+            g_Themer.SetNewTheme PDTC_Light, g_Themer.GetCurrentThemeAccent, True
+            themeRefreshRequired = True
+        
+        '(separator)
+        Case 2
+        
+        'Accent colors
+        Case 3
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Blue, True
+            themeRefreshRequired = True
+        
+        Case 4
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Green, True
+            themeRefreshRequired = True
+        
+        Case 5
+            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Purple, True
+            themeRefreshRequired = True
+    
+    End Select
+    
+    If themeRefreshRequired Then
+        g_Themer.LoadDefaultPDTheme
+        g_Resources.NotifyThemeChange
+        Interface.RedrawEntireUI
+    End If
+
 End Sub
 
 Private Sub MnuWindowToolbox_Click(Index As Integer)
@@ -4414,32 +4423,38 @@ Private Sub mnuTool_Click(Index As Integer)
         '(separator)
         Case 2
         
-        'Record macro (top-level)
+        'Themes (top-level)
         Case 3
         
-        'Play saved macro
+        '(separator)
         Case 4
+        
+        'Record macro (top-level)
+        Case 5
+        
+        'Play saved macro
+        Case 6
             Process "Play macro", True
         
         'Recent macros (top-level)
-        Case 5
+        Case 7
         
         '(separator)
-        Case 6
+        Case 8
     
         'Options
-        Case 7
+        Case 9
             If (Not FormPreferences.Visible) Then ShowPDDialog vbModal, FormPreferences
             
         'Plugin manager
-        Case 8
+        Case 10
             If (Not FormPluginManager.Visible) Then ShowPDDialog vbModal, FormPluginManager
             
         '(separator)
-        Case 9
+        Case 11
         
         'Developer tools (top-level)
-        Case 10
+        Case 12
             
     End Select
 

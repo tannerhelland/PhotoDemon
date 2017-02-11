@@ -890,10 +890,10 @@ Public Sub LoadAccelerators()
         
         'Tools menu
         'KeyCode 190 = >.  (two keys to the right of the M letter key)
-        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.mnuTool(4), True, True, True, UNDO_NOTHING
+        .AddAccelerator 190, vbCtrlMask Or vbAltMask, "Play macro", FormMain.MnuTool(6), True, True, True, UNDO_NOTHING
         
-        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.mnuTool(7), False, False, True, UNDO_NOTHING
-        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", FormMain.mnuTool(8), False, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyReturn, vbAltMask, "Preferences", FormMain.MnuTool(9), False, False, True, UNDO_NOTHING
+        .AddAccelerator vbKeyM, vbCtrlMask Or vbAltMask, "Plugin manager", FormMain.MnuTool(10), False, False, True, UNDO_NOTHING
         
         
         'Window menu

@@ -625,15 +625,15 @@ Public Sub ContinueLoadingProgram()
     
     LoadMessage "Preparing program menus..."
     
-    'In debug modes, certain developer and experimental options can be enabled.
+    'In debug modes, certain developer and experimental menus will be enabled.
     If (PD_BUILD_QUALITY <> PD_PRODUCTION) And (PD_BUILD_QUALITY <> PD_BETA) Then
         FormMain.MnuTest.Visible = True
-        FormMain.mnuTool(9).Visible = True
-        FormMain.mnuTool(10).Visible = True
+        FormMain.MnuTool(11).Visible = True
+        FormMain.MnuTool(12).Visible = True
     Else
         FormMain.MnuTest.Visible = False
-        FormMain.mnuTool(9).Visible = False
-        FormMain.mnuTool(10).Visible = False
+        FormMain.MnuTool(11).Visible = False
+        FormMain.MnuTool(12).Visible = False
     End If
     
     #If DEBUGMODE = 1 Then
