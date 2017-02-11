@@ -158,12 +158,12 @@ End Function
 Friend Sub LoadDefaultPDTheme()
 
     'By default, assume a light-on-dark theme.  (This will be overridden by a successful theme load.)
-    m_ThemeClass = PDTC_Light
+    m_ThemeClass = PDTC_Dark
     
     'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the IDE.)
     Dim themeName As String, themeFilename As String, accentName As String, accentFilename As String
     If g_IsProgramRunning Then
-        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Light")
+        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Dark")
         themeFilename = "Default_" & themeName & ".xml"
         accentName = g_UserPreferences.GetPref_String("Themes", "CurrentAccent", "Blue")
         accentFilename = "Colors_" & accentName & ".xml"
@@ -190,9 +190,9 @@ Friend Sub LoadDefaultPDTheme()
             AttemptThemeRecovery
             RaiseThemingError "Best attempt at theme recovery was made.  Trying to load default theme now...", True
             
-            m_ThemeClass = PDTC_Light
-            themeName = "Light"
-            themeFilename = "Default_Light.xml"
+            m_ThemeClass = PDTC_Dark
+            themeName = "Dark"
+            themeFilename = "Default_Dark.xml"
             accentName = "Blue"
             accentFilename = "Colors_Blue.xml"
             themeLoadedCorrectly = Me.LoadThemeFile(themeFilename, accentFilename)
@@ -349,35 +349,36 @@ Friend Sub SynchronizeThemeMenus()
     If g_IsProgramRunning Then
     
         Dim themeName As String, accentName As String
-        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Light")
+        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Dark")
         accentName = g_UserPreferences.GetPref_String("Themes", "CurrentAccent", "Blue")
         
-        If (StrComp(LCase$(themeName), "light", vbBinaryCompare) = 0) Then
-            FormMain.MnuDevelopers(2).Checked = True
-            FormMain.MnuDevelopers(3).Checked = False
+        If (StrComp(LCase$(themeName), "dark", vbBinaryCompare) = 0) Then
+            FormMain.mnuTheme(0).Checked = True
+            FormMain.mnuTheme(1).Checked = False
         Else
-            FormMain.MnuDevelopers(2).Checked = False
-            FormMain.MnuDevelopers(3).Checked = True
+            FormMain.mnuTheme(1).Checked = True
+            FormMain.mnuTheme(0).Checked = False
         End If
         
-        Select Case accentName
+        Dim activeAccentIndex As Long
         
-            Case "Blue"
-                FormMain.MnuDevelopers(5).Checked = True
-                FormMain.MnuDevelopers(6).Checked = False
-                FormMain.MnuDevelopers(7).Checked = False
-            
-            Case "Green"
-                FormMain.MnuDevelopers(5).Checked = False
-                FormMain.MnuDevelopers(6).Checked = True
-                FormMain.MnuDevelopers(7).Checked = False
-            
+        Select Case LCase$(accentName)
+        
+            Case "blue"
+                activeAccentIndex = 3
+                
+            Case "green"
+                activeAccentIndex = 4
+                
             Case Else
-                FormMain.MnuDevelopers(5).Checked = False
-                FormMain.MnuDevelopers(6).Checked = False
-                FormMain.MnuDevelopers(7).Checked = True
-        
+                activeAccentIndex = 5
+                
         End Select
+        
+        Dim i As Long
+        For i = 3 To 5
+            FormMain.mnuTheme(i).Checked = CBool(i = activeAccentIndex)
+        Next i
         
     End If
 
@@ -420,7 +421,7 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
                 RaiseThemingError "falling back to default PD theme..."
             End If
             
-            fullThemePath = g_UserPreferences.GetThemePath & "Default_Light.xml"
+            fullThemePath = g_UserPreferences.GetThemePath & "Default_Dark.xml"
             LoadThemeFile = m_XML.LoadXMLFile(fullThemePath)
             LoadThemeFile = LoadThemeFile And m_XML.IsPDDataType("Visual theme") And m_XML.ValidateLoadedXMLData("Colors")
             
@@ -430,7 +431,7 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
         ResetColorCache
         
         'Resolve the theme class type (light, dark, or high-contrast)
-        Select Case m_XML.GetUniqueTag_String("ThemeClass", "Light")
+        Select Case m_XML.GetUniqueTag_String("ThemeClass", "Dark")
             
             Case "Light"
                 m_ThemeClass = PDTC_Light

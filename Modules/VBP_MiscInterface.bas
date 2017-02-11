@@ -744,10 +744,10 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
         'Macro (within the Tools menu)
         Case PDUI_Macros
-            If (FormMain.mnuTool(3).Enabled <> newState) Then
-                FormMain.mnuTool(3).Enabled = newState
-                FormMain.mnuTool(4).Enabled = newState
-                FormMain.mnuTool(5).Enabled = newState
+            If (FormMain.MnuTool(5).Enabled <> newState) Then
+                FormMain.MnuTool(5).Enabled = newState
+                FormMain.MnuTool(6).Enabled = newState
+                FormMain.MnuTool(7).Enabled = newState
             End If
         
         'Selections in general

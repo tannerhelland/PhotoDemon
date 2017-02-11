@@ -333,13 +333,13 @@ Public Sub InitializeMenus()
     AddMenuItem "Tools", "tools_top", 8
     AddMenuItem "Language", "tools_language", 8, 0, , "tools_language"
     AddMenuItem "Language editor...", "tools_languageeditor", 8, 1
-    AddMenuItem "Record macro", "tools_macrotop", 8, 3, , "macro_record"
-        AddMenuItem "Start recording", "tools_recordmacro", 8, 3, 0, "macro_record"
-        AddMenuItem "Stop recording...", "tools_stopmacro", 8, 3, 1, "macro_stop"
-    AddMenuItem "Play macro...", "tools_playmacro", 8, 4, , "macro_play"
-    AddMenuItem "Recent macros", "tools_recentmacros", 8, 5
-    AddMenuItem "Options...", "tools_options", 8, 7, , "pref_advanced"
-    AddMenuItem "Plugin manager...", "tools_plugins", 8, 8, , "tools_plugin"
+    AddMenuItem "Record macro", "tools_macrotop", 8, 5, , "macro_record"
+        AddMenuItem "Start recording", "tools_recordmacro", 8, 5, 0, "macro_record"
+        AddMenuItem "Stop recording...", "tools_stopmacro", 8, 5, 1, "macro_stop"
+    AddMenuItem "Play macro...", "tools_playmacro", 8, 6, , "macro_play"
+    AddMenuItem "Recent macros", "tools_recentmacros", 8, 7
+    AddMenuItem "Options...", "tools_options", 8, 9, , "pref_advanced"
+    AddMenuItem "Plugin manager...", "tools_plugins", 8, 10, , "tools_plugin"
     
     
     'Window Menu
