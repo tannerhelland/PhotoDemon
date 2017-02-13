@@ -766,6 +766,11 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         'Initialize any relevant GDI+ objects for the current brush
         Drawing2D.QuickCreateSurfaceFromDC m_Surface, pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, CBool(m_BrushAntialiasing = P2_AA_HighQuality)
         
+        'If we're directly using GDI+ for painting (by calling various GDI+ line commands), we need to explicitly set
+        ' half-pixel offsets, so each pixel "coordinate" is treated as the *center* of the pixel instead of the top-left corner.
+        ' (PD's paint engine handles this internally.)
+        If (m_BrushEngine = BE_GDIPlus) Then m_Surface.SetSurfacePixelOffset P2_PO_Half
+        
         'Reset any brush dynamics that are calculated on a per-stroke basis
         m_DistPixels = 0
         
@@ -962,7 +967,7 @@ Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isF
             ' of a line unplotted, in case you are drawing multiple connected lines.  Because of this, we have to
             ' manually render a dab at the initial starting position.
             If isFirstStroke Then
-                m_Painter.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.01, srcY - 0.01
+                m_Painter.DrawLineF m_Surface, m_GDIPPen, srcX, srcY, srcX - 0.1, srcY - 0.1
             Else
                 m_Painter.DrawLineF m_Surface, m_GDIPPen, m_MouseX, m_MouseY, srcX, srcY
             End If
@@ -1140,8 +1145,9 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
         
         'TODO: certain features (like brush rotation) will require a GDI+ surface.  Simple brushes can use GDI's AlphaBlend
         ' for a performance boost, however.
-        m_SrcPenDIB.AlphaBlendToDCEx pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, srcX - m_BrushSize \ 2, srcY - m_BrushSize \ 2, m_BrushSize, m_BrushSize, 0, 0, m_BrushSize, m_BrushSize, dabOpacity * 255
+        m_SrcPenDIB.AlphaBlendToDCEx pdImages(g_CurrentImage).ScratchLayer.layerDIB.GetDIBDC, Int(srcX - m_BrushSize \ 2), Int(srcY - m_BrushSize \ 2), Int(m_BrushSize), Int(m_BrushSize), 0, 0, Int(m_BrushSize), Int(m_BrushSize), dabOpacity * 255
         'm_Painter.DrawSurfaceF m_Surface, srcX - m_BrushSize / 2, srcY - m_BrushSize / 2, m_CustomPenImage, dabOpacity * 100
+        
     End If
     
     'Each time we make a new dab, we keep a running tally of how many pixels we've traversed.  Some brush dynamics (e.g. spacing)
