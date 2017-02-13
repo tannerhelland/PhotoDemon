@@ -50,14 +50,14 @@ Private zoomCountDynamic As Long
 Public Function GetZoomValue(ByVal zoomIndex As Long) As Double
     
     'If the zoom value is a fixed entry, our work is easy - simply return the fixed zoom value at that index
-    If zoomIndex <= zoomCountFixed Then
+    If (zoomIndex <= zoomCountFixed) Then
         GetZoomValue = zoomValues(zoomIndex)
         
     'If the zoom value is a dynamic entry, we need to calculate a specific zoom value at run-time
     Else
     
         'Make sure a valid image is loaded and ready
-        If (g_OpenImageCount > 0) And Not (pdImages(g_CurrentImage) Is Nothing) Then
+        If (g_OpenImageCount > 0) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         
             'Retrieve the current image's width and height
             Dim imgWidth As Double, imgHeight As Double

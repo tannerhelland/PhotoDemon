@@ -1047,7 +1047,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                     
                         'If zoomed-in, we can switch to StretchBlt for performance gains.  (As nearest-neighbor interpolation will
                         ' be used regardless of the caller's requested interpolation type.)
-                        If srcImageRect.Width < dstViewportRect.Width Then
+                        If (srcImageRect.Width < dstViewportRect.Width) Then
                             
                             'We are zoomed-in to the image, e.g. zoom is larger than 100%.  Check for non-destructive FX being present.
                             
@@ -1080,7 +1080,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                 ApplyNDFXToDIB srcLayer, m_NDFXDIB
                                 
                                 'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
-                                GDI_Plus.GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, interpolationType, , Not isBaseLayer, , True
+                                GDI_Plus.GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, interpolationType, , Not isBaseLayer, True, True
                                                                 
                             'Non-destructive FX are not active.  Resize the source rectangle immediately.
                             Else
@@ -1089,7 +1089,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                                 ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                                 '  the function-wide resample mode.)
                                 If (srcLayer.GetLayerCanvasXModifier <> 1) Or (srcLayer.GetLayerCanvasYModifier <> 1) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = GP_IM_NearestNeighbor
-                                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer, , True
+                                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer, True, True
                                 
                             End If
                         
@@ -1155,8 +1155,8 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                     If (srcRect.Height > srcLayer.GetLayerHeight(False)) Then srcRect.Height = srcLayer.GetLayerHeight(False)
                     
                     'When zoomed in, nearest neighbor is preferred.  This is fast enough that we don't need to use a temporary DIB cache.
-                    If srcImageRect.Width < dstViewportRect.Width Then
-                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor
+                    If (srcImageRect.Width < dstViewportRect.Width) Then
+                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.GetLayerOpacity / 100, GP_IM_NearestNeighbor, , , True
                     
                     'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
                     ' performance settings.
@@ -1518,7 +1518,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
                     End If
                     
                     'Paint the resized DIB to the layer, at offset (0, 0), with subpixel offsets already accounted for.
-                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , True, , True
+                    GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , True, (srcImageRect.Width < dstViewportRect.Width), True
                     
                 End If
                 
@@ -1760,7 +1760,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
                 'Paint the resized DIB to the temporary DIB, at offset (0, 0), with subpixel offsets already accounted for.
                 ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                 '  the function-wide resample mode.)
-                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, GP_IM_NearestNeighbor, , True, , True
+                GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, GP_IM_NearestNeighbor, , True, True, True
                 
             'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
             ' option at present.
