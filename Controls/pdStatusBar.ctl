@@ -276,12 +276,12 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 'Display the current mouse coordinates
-Public Sub DisplayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, Optional ByVal clearCoords As Boolean = False)
+Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Double, Optional ByVal clearCoords As Boolean = False)
     
     If clearCoords Then
         lblCoordinates.Caption = ""
     Else
-        lblCoordinates.Caption = "(" & xCoord & "," & yCoord & ")"
+        lblCoordinates.Caption = "(" & Int(xCoord) & "," & Int(yCoord) & ")"
     End If
     
     'Align the right-hand line control with the newly captioned label

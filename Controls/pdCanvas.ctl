@@ -416,7 +416,7 @@ Public Sub DisplayCanvasMessage(ByRef cMessage As String)
     StatusBar.DisplayCanvasMessage cMessage
 End Sub
 
-Public Sub DisplayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, Optional ByVal clearCoords As Boolean = False)
+Public Sub DisplayCanvasCoordinates(ByVal xCoord As Double, ByVal yCoord As Double, Optional ByVal clearCoords As Boolean = False)
     StatusBar.DisplayCanvasCoordinates xCoord, yCoord, clearCoords
 End Sub
 
