@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.39</langversion>
+<langversion>1.0.42</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1680,8 +1680,8 @@ To овозможи поддршка скенер, молам копирајте
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>Скенирајте откажани.</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1689,12 +1689,7 @@ To овозможи поддршка скенер, молам копирајте
 <translation>Скенерот врати код на грешка која не е наведено во документацијата EZTW32.dll (Грешка # 1%). Посетете http://www.eztwain.com за повеќе информации.</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>Скенирајте Откажани</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2369,6 +2364,11 @@ In меѓувреме, ве молиме пробајте да зачувате 
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Иницијализирање ажурирање на софтверот (оваа функција може да биде исклучен од Алатки -> менито за опции)</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation> %1 %2 %3 Бета</translation>
 </phrase>
@@ -2388,7 +2388,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>бета</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2540,6 +2540,12 @@ Please enter a numeric value.</original>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4551,6 +4557,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5742,6 +5754,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>Снимање на макро</translation>
 </phrase>
@@ -5789,31 +5806,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Theme editor</original>
 <translation>тема уредник</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation>светла тема</translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation>темна тема</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>сина</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>зелена</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation>виолетова</translation>
 </phrase>
 
 <phrase>
@@ -6155,11 +6147,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Иницијализирање ажурирање на софтверот (оваа функција може да биде исклучен од Алатки -> менито за опции)</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation>Сенка и нагласување</translation>
 </phrase>
@@ -6458,7 +6445,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>Отстрани алфа канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8401,6 +8388,82 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13429,6 +13492,16 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>зелена</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>сина</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>Алфа</translation>
 </phrase>
@@ -13498,7 +13571,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Оваа опција определува кои критериуми магично стапче користи за да се утврди дали една точка треба да се додаде во тековната селекција.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14876,18 +14949,12 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

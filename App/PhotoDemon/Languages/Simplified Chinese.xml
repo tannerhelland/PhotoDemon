@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2257</langversion>
+<langversion>6.8.2260</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1673,8 +1673,8 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>取消扫描。</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1682,12 +1682,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 <translation>扫描仪返回一个错误代码，不在eztw32.dll文件规定（错误号 # % 1）。更多信息请访问http://www.eztwain.com。</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>取消扫描。</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2362,6 +2357,11 @@ In the meantime, please try saving the image to an alternate format.  You can al
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>启动时检测软件更新（此功能可以从工具-->选项菜单禁用）</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation>%1.%2 Beta %3</translation>
 </phrase>
@@ -2381,7 +2381,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>测试版</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2532,6 +2532,12 @@ Please enter a numeric value.</original>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4542,6 +4548,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5733,6 +5745,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>录制宏</translation>
 </phrase>
@@ -5780,31 +5797,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Theme editor</original>
 <translation>主题编辑器</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation>高亮主题</translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation>暗色主题</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>蓝色主题</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>绿色主题</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation>紫色主题</translation>
 </phrase>
 
 <phrase>
@@ -6145,11 +6137,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>启动时检测软件更新（此功能可以从工具-->选项菜单禁用）</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation>阴影和高光</translation>
 </phrase>
@@ -6447,7 +6434,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8390,6 +8377,82 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13418,6 +13481,16 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>绿色主题</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>蓝色主题</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>阿尔法</translation>
 </phrase>
@@ -13487,7 +13560,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14862,18 +14935,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

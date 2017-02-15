@@ -6,10 +6,10 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2358</langversion>
+<langversion>6.8.2361</langversion>
 <langstatus>raw machine translation</langstatus>
 
-<author>Google Translator</author>
+<author>Google Translate - translate.google.com</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -1680,8 +1680,8 @@ To включить поддержку сканера, пожалуйста, с�
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>Сканирование отменено.</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1689,12 +1689,7 @@ To включить поддержку сканера, пожалуйста, с�
 <translation>Сканер возвратил код ошибки, который не был указан в документации EZTW32.dll (Error # %1). Пожалуйста, посетите http://www.eztwain.com для получения дополнительной информации.</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>Сканирование Отменено</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2369,6 +2364,11 @@ In Тем временем, пожалуйста, попытайтесь сох�
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Инициализация обновления программного обеспечения (эта функция может быть отключена от Инструменты -> меню Options)</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation> %1. %2 Beta 3%</translation>
 </phrase>
@@ -2388,7 +2388,7 @@ In Тем временем, пожалуйста, попытайтесь сох�
 <translation>бета</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2540,6 +2540,12 @@ Please enter a numeric value.</original>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4551,6 +4557,12 @@ or the File > Open and File > Import menus.</original>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5742,6 +5754,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>Запись макросов</translation>
 </phrase>
@@ -5789,31 +5806,6 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Theme editor</original>
 <translation>редактор Theme</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation>Легкая тема</translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation>Темная тема</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>синий</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>зеленый</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation>Пурпурный</translation>
 </phrase>
 
 <phrase>
@@ -6155,11 +6147,6 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Инициализация обновления программного обеспечения (эта функция может быть отключена от Инструменты -> меню Options)</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation>Тенях и светах</translation>
 </phrase>
@@ -6458,7 +6445,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Удалить альфа-канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8401,6 +8388,82 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13429,6 +13492,16 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>зеленый</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>синий</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>Альфа</translation>
 </phrase>
@@ -13498,7 +13571,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Этот параметр определяет, какие критерии использует волшебная палочка, чтобы определить, следует ли пиксель быть добавлены к текущему выбору.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14876,18 +14949,12 @@ If вы все еще отключить обновления, не забудь
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

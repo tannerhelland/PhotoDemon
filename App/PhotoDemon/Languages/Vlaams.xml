@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.243</langversion>
+<langversion>6.7.246</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1672,8 +1672,8 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>Scan geannuleerd.</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1681,12 +1681,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <translation>De scanner heeft een foutcode geretourneerd die niet is opgegeven in de EZTW32.dll documentatie (Error #%1). Ga naar http://www.eztwain.com voor meer informatie.</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>Scan Geannuleerd</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2360,6 +2355,11 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Initialiseren software updater (deze functie kan worden uitgeschakeld vanaf het menu Gereedschappen -> Opties)</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation> %1.%2 Beta %3</translation>
 </phrase>
@@ -2379,7 +2379,7 @@ Probeer in tussentijd de afbeelding op te slaan naar een ander formaat. je kan d
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2531,6 +2531,12 @@ Geef een numerieke waarde.</translation>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4542,6 +4548,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5733,6 +5745,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>Opnemen macro</translation>
 </phrase>
@@ -5780,31 +5797,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <phrase>
 <original>Theme editor</original>
 <translation>Thema-editor</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Blauw</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>Groen</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -6146,11 +6138,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Initialiseren software updater (deze functie kan worden uitgeschakeld vanaf het menu Gereedschappen -> Opties)</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation></translation>
 </phrase>
@@ -6449,7 +6436,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8392,6 +8379,82 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13418,6 +13481,16 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>Groen</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Blauw</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>Alpha</translation>
 </phrase>
@@ -13487,7 +13560,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14865,18 +14938,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

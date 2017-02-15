@@ -131,6 +131,10 @@ Public Function GetGoogleTranslation(ByVal srcText As String, Optional ByRef cop
         If (InStr(srcText, vbLf) <> 0) Then srcText = Replace$(srcText, vbLf, "VBCRLF")
         If (InStr(srcText, vbCr) <> 0) Then srcText = Replace$(srcText, vbCr, "VBCRLF")
         
+        'Also replace some other problematic forbidden chars
+        If (InStr(srcText, "\") <> 0) Then processedHTML = Replace$(srcText, "\", "&#92;", 1, , vbBinaryCompare)
+        If (InStr(srcText, "/") <> 0) Then processedHTML = Replace$(srcText, "/", "&#47;", 1, , vbBinaryCompare)
+        
         GetGoogleTranslation = vbNullString
         
         'If translation fails, we will try again twice.  (Could be changed to as many times as you want, but twice is sufficient IMO.)
@@ -184,6 +188,8 @@ RetryTranslation:
         'Return any characters we removed before translation
         If (InStr(origHTML, "&#37;") <> 0) Then origHTML = Replace$(origHTML, "&#37;", "%", , , vbBinaryCompare)
         If (InStr(origHTML, "VBCRLF") <> 0) Then origHTML = Replace$(origHTML, "VBCRLF", vbCrLf)
+        If (InStr(1, origHTML, "&#92;", vbBinaryCompare) <> 0) Then processedHTML = Replace$(origHTML, "&#92;", "\", 1, , vbBinaryCompare)
+        If (InStr(1, origHTML, "&#47;", vbBinaryCompare) <> 0) Then processedHTML = Replace$(origHTML, "&#47;", "/", 1, , vbBinaryCompare)
         
         'Remove all irrelevant HTML tags
         processedHTML = StripHTMLTags(origHTML)
