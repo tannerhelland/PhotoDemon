@@ -88,11 +88,11 @@ End Enum
 Private m_Colors As pdThemeColors
 
 'Get/set alignment.  Please note the caveats under m_Alignment's definition, above.
-Public Function GetAlignment() As AlignmentConstants
+Friend Function GetAlignment() As AlignmentConstants
     GetAlignment = m_Alignment
 End Function
 
-Public Function SetAlignment(ByVal newAlignment As AlignmentConstants) As Boolean
+Friend Function SetAlignment(ByVal newAlignment As AlignmentConstants) As Boolean
     If newAlignment <> m_Alignment Then
         m_Alignment = newAlignment
         SetAlignment = True
@@ -100,12 +100,12 @@ Public Function SetAlignment(ByVal newAlignment As AlignmentConstants) As Boolea
 End Function
 
 'Get the current ENGLISH caption.
-Public Function GetCaptionEn() As String
+Friend Function GetCaptionEn() As String
     GetCaptionEn = m_CaptionEn
 End Function
 
 'Get the current TRANSLATED caption.
-Public Function GetCaptionTranslated() As String
+Friend Function GetCaptionTranslated() As String
     GetCaptionTranslated = m_CaptionTranslated
 End Function
 
@@ -113,7 +113,7 @@ End Function
 ' a redraw.  (Previously, I would raise an event when a redraw was required, but that burdens the caller even more because
 ' a lot of redraw events are raised during initialization, which we don't really want.)  Anyway, the take-home message is that
 ' the caller needs to check the return of this function, and handle redraws accordingly.
-Public Function SetCaption(ByVal newCaption As String) As Boolean
+Friend Function SetCaption(ByVal newCaption As String) As Boolean
 
     If (StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0) Then
         
@@ -158,7 +158,7 @@ Public Function SetCaption(ByVal newCaption As String) As Boolean
 End Function
 
 'Simplified wrapper for checking if a caption is active
-Public Function IsCaptionActive() As Boolean
+Friend Function IsCaptionActive() As Boolean
     
     If (Len(m_CaptionEn) <> 0) And (m_FontSizeCaption <> 0) Then
         IsCaptionActive = True
@@ -170,15 +170,15 @@ End Function
 
 'Assign a new caption color.  Remember that color changes do not require rebuilding the font.  Also, font color changes are persistent
 ' (by design), so they will not be overridden except by subsequent setCaptionColor calls.
-Public Sub SetCaptionColor(ByVal newCaptionColor As Long)
+Friend Sub SetCaptionColor(ByVal newCaptionColor As Long)
     m_CaptionColorCustom = newCaptionColor
 End Sub
 
-Public Function GetFontBold() As Boolean
+Friend Function GetFontBold() As Boolean
     GetFontBold = m_FontBold
 End Function
 
-Public Function SetFontBold(ByVal newValue As Boolean) As Boolean
+Friend Function SetFontBold(ByVal newValue As Boolean) As Boolean
     If m_FontBold <> newValue Then
         m_FontBold = newValue
         m_FontSizeVerified = False
@@ -188,11 +188,11 @@ Public Function SetFontBold(ByVal newValue As Boolean) As Boolean
     End If
 End Function
 
-Public Function GetFontItalic() As Boolean
+Friend Function GetFontItalic() As Boolean
     GetFontItalic = m_FontItalic
 End Function
 
-Public Function SetFontItalic(ByVal newValue As Boolean) As Boolean
+Friend Function SetFontItalic(ByVal newValue As Boolean) As Boolean
     If m_FontItalic <> newValue Then
         m_FontItalic = newValue
         m_FontSizeVerified = False
@@ -202,11 +202,11 @@ Public Function SetFontItalic(ByVal newValue As Boolean) As Boolean
     End If
 End Function
 
-Public Function GetFontUnderline() As Boolean
+Friend Function GetFontUnderline() As Boolean
     GetFontUnderline = m_FontUnderline
 End Function
 
-Public Function SetFontUnderline(ByVal newValue As Boolean) As Boolean
+Friend Function SetFontUnderline(ByVal newValue As Boolean) As Boolean
     If m_FontUnderline <> newValue Then
         m_FontUnderline = newValue
         m_FontSizeVerified = False
@@ -216,7 +216,7 @@ Public Function SetFontUnderline(ByVal newValue As Boolean) As Boolean
     End If
 End Function
 
-Public Function GetFontSize() As Single
+Friend Function GetFontSize() As Single
     GetFontSize = m_FontSizeCaption
 End Function
 
@@ -224,7 +224,7 @@ End Function
 ' a redraw.  (Previously, I would raise an event when a redraw was required, but that burdens the caller even more because
 ' a lot of redraw events are raised during initialization, which we don't really want.)  Anyway, the take-home message is that
 ' the caller needs to check the return of this function, and handle redraws accordingly.
-Public Function SetFontSize(ByVal newSize As Single) As Boolean
+Friend Function SetFontSize(ByVal newSize As Single) As Boolean
     
     If newSize <> m_FontSizeCaption Then
         m_FontSizeCaption = newSize
@@ -238,7 +238,7 @@ Public Function SetFontSize(ByVal newSize As Single) As Boolean
 End Function
 
 'Wordwrap can now be optionally enabled on-the-fly
-Public Sub SetWordWrapSupport(ByVal newSupportValue As Boolean)
+Friend Sub SetWordWrapSupport(ByVal newSupportValue As Boolean)
     If m_WordWrapAllowed <> newSupportValue Then
         m_WordWrapAllowed = newSupportValue
         m_FontSizeVerified = False
@@ -270,7 +270,7 @@ End Sub
 
 'For automatic font-fitting to work, we have to know our parent container's width.  The parent needs to supply this value
 ' 1) prior to requesting any draw or measurement actions, and 2) whenever the control dimensions change.
-Public Sub SetControlSize(ByVal newWidth As Single, ByVal newHeight As Single)
+Friend Sub SetControlSize(ByVal newWidth As Single, ByVal newHeight As Single)
     
     If (m_ContainerWidth <> newWidth) Or (m_ContainerHeight <> newHeight) Then
         m_ContainerWidth = newWidth
@@ -283,7 +283,7 @@ End Sub
 'Returns the width of the current caption, in pixels, with autofit active.  No padding is applied.
 ' Note that this return *ignores the wordwrap setting.*  Wordwrap (obviously)s affect the width of the string, but because the width
 ' of a wordwrap string is simply the container width - which the caller must specify - there's no point in returning it here.
-Public Function GetCaptionWidth() As Single
+Friend Function GetCaptionWidth() As Single
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
@@ -298,7 +298,7 @@ Public Function GetCaptionWidth() As Single
 End Function
 
 'Returns the width of the current caption, in pixels, *without considering autofit*.  No padding is applied.
-Public Function GetCaptionWidth_NoFit() As Single
+Friend Function GetCaptionWidth_NoFit() As Single
     
     'Get a copy of the default font size from the central font cache
     Dim tmpFont As pdFont
@@ -310,7 +310,7 @@ End Function
 
 'Returns the height of the current caption, in pixels.  No padding is applied.
 ' Note that this return varies depending on the presence of wordwrapping.  Wordwrap will (obviously) affect the return.
-Public Function GetCaptionHeight() As Single
+Friend Function GetCaptionHeight() As Single
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
@@ -330,7 +330,7 @@ End Function
 
 'Returns the height of the current caption, in pixels, *without considering autofit*.  No padding is applied.
 ' Note that this return varies depending on the presence of wordwrapping.  Wordwrap will (obviously) affect the return.
-Public Function GetCaptionHeight_NoFit() As Single
+Friend Function GetCaptionHeight_NoFit() As Single
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
@@ -348,7 +348,7 @@ End Function
 ' IMPORTANT NOTE: this command exists only to support controls that do their own custom text positioning.  It does not support
 '                  text alignment (how could it, without a constraining rect?) so you must use DrawCaption_Clipped if you want
 '                  alignment support.
-Public Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal customColor As Long = -1)
+Friend Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal customColor As Long = -1)
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
@@ -383,7 +383,7 @@ End Sub
 'When all font and caption settings are ready, use this to actually render the caption onto a target DC.  Clipping to the
 ' destination area will occur automatically, with ellipses applied according to the useEllipses parameter.  Note that you
 ' can also request to use the original font size, instead of the auto-fit size.
-Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
+Friend Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False, Optional ByVal centerVertically As Boolean = False)
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
@@ -540,7 +540,7 @@ End Sub
 
 'If the theme or language is changed at run-time, the caller should call this function.  It will refresh all tooltips in
 ' its collection against the current language and theme, without requiring any special input or parameters.
-Public Sub UpdateAgainstCurrentTheme()
+Friend Sub UpdateAgainstCurrentTheme()
     
     Dim oldTranslatedText As String
     oldTranslatedText = m_CaptionTranslated

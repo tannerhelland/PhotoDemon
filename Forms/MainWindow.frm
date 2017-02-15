@@ -1372,52 +1372,8 @@ Begin VB.Form FormMain
          Index           =   2
       End
       Begin VB.Menu MnuTool 
-         Caption         =   "Theme"
+         Caption         =   "Theme..."
          Index           =   3
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Dark"
-            Index           =   0
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Light"
-            Index           =   1
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "-"
-            Index           =   2
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Blue"
-            Index           =   3
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Brown"
-            Index           =   4
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Green"
-            Index           =   5
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Orange"
-            Index           =   6
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Pink"
-            Index           =   7
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Purple"
-            Index           =   8
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Red"
-            Index           =   9
-         End
-         Begin VB.Menu mnuTheme 
-            Caption         =   "Teal"
-            Index           =   10
-         End
       End
       Begin VB.Menu MnuTool 
          Caption         =   "-"
@@ -2292,57 +2248,6 @@ Private Sub MnuRecordMacro_Click(Index As Integer)
             Process "Stop macro recording", True
         
     End Select
-    
-End Sub
-
-Private Sub mnuTheme_Click(Index As Integer)
-
-    Select Case Index
-    
-        'Dark/light themes
-        Case 0
-            g_Themer.SetNewTheme PDTC_Dark, g_Themer.GetCurrentThemeAccent, True
-            
-        Case 1
-            g_Themer.SetNewTheme PDTC_Light, g_Themer.GetCurrentThemeAccent, True
-            
-        '(separator)
-        Case 2
-        
-        'Accent colors
-        Case 3
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Blue, True
-            
-        Case 4
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Brown, True
-            
-        Case 5
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Green, True
-            
-        Case 6
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Orange, True
-            
-        Case 7
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Pink, True
-            
-        Case 8
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Purple, True
-            
-        Case 9
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Red, True
-            
-        Case 10
-            g_Themer.SetNewTheme g_Themer.GetCurrentThemeClass, PDTA_Teal, True
-            
-    End Select
-    
-    'Three steps are required to activate a theme change:
-    ' 1) Load the new theme (or accent) data from file
-    ' 2) Notify the resource manager of the change (as things like UI icons may need to be redrawn)
-    ' 3) Refresh the main window, including all child panels and controls
-    g_Themer.LoadDefaultPDTheme
-    g_Resources.NotifyThemeChange
-    Interface.RedrawEntireUI
     
 End Sub
 
@@ -3942,7 +3847,8 @@ Private Sub mnuLanguages_Click(Index As Integer)
     
     'Apply the new translation
     Message "Applying new translation..."
-    g_Language.ActivateNewLanguage Index, True
+    g_Language.ActivateNewLanguage Index
+    g_Language.ApplyLanguage True, True
     
     Message "Language changed successfully."
     
@@ -4453,8 +4359,9 @@ Private Sub mnuTool_Click(Index As Integer)
         '(separator)
         Case 2
         
-        'Themes (top-level)
+        'Theme
         Case 3
+            DialogManager.PromptUITheme
         
         '(separator)
         Case 4

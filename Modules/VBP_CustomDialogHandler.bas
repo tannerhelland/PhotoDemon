@@ -3,8 +3,8 @@ Attribute VB_Name = "DialogManager"
 'Custom Dialog Interface
 'Copyright 2012-2017 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 04/May/15
-'Last update: start work on a generic "remember my choice" dialog, which will greatly simplify future tasks
+'Last updated: 12/February/17
+'Last update: add wrapper for "first-run" dialog
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
@@ -205,7 +205,7 @@ Public Function DisplayAutosaveWarning(ByRef dstArray() As AutosaveXML) As VbMsg
     
     'It's a bit unorthodox, but we must also populate dstArray() from this function, rather than relying on the
     ' dialog itself to do it (as VB makes it difficult to pass module-level array references).
-    dialog_AutosaveWarning.fillArrayWithSaveResults dstArray
+    dialog_AutosaveWarning.FillArrayWithSaveResults dstArray
     
     Unload dialog_AutosaveWarning
     Set dialog_AutosaveWarning = Nothing
@@ -467,3 +467,83 @@ Public Function ChoosePDGradient(ByRef oldGradient As String, ByRef NewGradient 
 
 End Function
 
+'Present a first-run dialog box that gives the user a choice of language and UI theme
+Public Function PromptUITheme() As VbMsgBoxResult
+    
+    'Before displaying the dialog, cache the current language and theme settings.  If the user changes
+    ' one or more of these via the dialog, we need to repaint the main form after the dialog closes.
+    Dim backupLangIndex As Long
+    backupLangIndex = g_Language.GetCurrentLanguageIndex
+    
+    Dim backupThemeClass As PD_THEME_CLASS, backupThemeAccent As PD_THEME_ACCENT, backupIconsMono As Boolean
+    backupThemeClass = g_Themer.GetCurrentThemeClass
+    backupThemeAccent = g_Themer.GetCurrentThemeAccent
+    backupIconsMono = g_Themer.GetMonochromeIconSetting
+    
+    Dim newLangIndex As Long
+    Dim newThemeClass As PD_THEME_CLASS, newThemeAccent As PD_THEME_ACCENT, newIconsMono As Boolean
+    
+    Load dialog_UITheme
+    dialog_UITheme.ShowDialog
+    PromptUITheme = dialog_UITheme.DialogResult
+    
+    'Retrieve any/all new settings from the dialog, then release it
+    dialog_UITheme.GetNewSettings newLangIndex, newThemeClass, newThemeAccent, newIconsMono
+    Unload dialog_UITheme
+    Set dialog_UITheme = Nothing
+    
+    'If the dialog was canceled, reset the original language and theme.
+    If (PromptUITheme <> vbOK) Then
+        
+        g_Language.ActivateNewLanguage backupLangIndex
+        g_Language.ApplyLanguage False
+        g_Themer.SetNewTheme backupThemeClass, backupThemeAccent
+        g_Themer.SetMonochromeIconSetting backupIconsMono
+    
+    'If the dialog was *not* canceled, make the new settings persistent.  (Note that we only apply theme settings here,
+    ' not language settings, as they are handled separately.)
+    Else
+        
+        g_Themer.SetNewTheme newThemeClass, newThemeAccent
+        g_Themer.SetMonochromeIconSetting newIconsMono
+        
+    End If
+    
+    'If a new language is in use, apply it now
+    If (PromptUITheme = vbOK) Then
+        If (newLangIndex <> backupLangIndex) Then
+            
+            'Load the old language file and undo any existing translations
+            g_Language.ActivateNewLanguage backupLangIndex
+            g_Language.ApplyLanguage False
+            
+            g_Language.UndoTranslations FormMain, True
+            g_Language.UndoTranslations toolbar_Toolbox, True
+            g_Language.UndoTranslations toolbar_Options, True
+            g_Language.UndoTranslations toolbar_Layers, True
+            
+            'Now, load the *new* language and apply it
+            g_Language.ActivateNewLanguage newLangIndex
+            g_Language.ApplyLanguage True, True
+            
+        End If
+    End If
+    
+    'Four steps are required to activate a theme change:
+    ' 1) Load the new theme (or accent) data from file
+    ' 2) Notify the resource manager of the change (because things like UI icons may need to be redrawn)
+    ' 3) Regenerate any/all internal rendering caches (some rely on theme colors)
+    ' 4) Redraw the main window, including all child panels and controls
+    g_Themer.LoadDefaultPDTheme
+    g_Resources.NotifyThemeChange
+    
+    'If the theme has actually changed, apply the changes now.  (We can skip this step if the dialog was canceled,
+    ' or if the user confirmed their original settings.)
+    If (PromptUITheme = vbOK) Then
+        If (newThemeClass <> backupThemeClass) Or (newThemeAccent <> backupThemeAccent) Or (newIconsMono <> backupIconsMono) Then
+            Drawing.CacheUIPensAndBrushes
+            Interface.RedrawEntireUI
+        End If
+    End If
+    
+End Function
