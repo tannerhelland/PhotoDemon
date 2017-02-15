@@ -611,7 +611,7 @@ Public Function QuickCreatePairOfUIPens(ByRef dstPenBase As pd2DPen, ByRef dstPe
     
     With dstPenTop
         .SetPenWidth 1.6
-        If useHighlightColor Then .SetPenColor RGB(80, 145, 255) Else .SetPenColor vbWhite
+        If useHighlightColor Then .SetPenColor g_Themer.GetGenericUIColor(UI_Accent) Else .SetPenColor vbWhite
         .SetPenOpacity 87.5
         .SetPenLineJoin penLineJoin
         .SetPenLineCap penLineCap
