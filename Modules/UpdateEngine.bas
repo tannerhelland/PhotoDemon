@@ -810,6 +810,59 @@ Public Function WasProgramStartedViaRestart() As Boolean
     
 End Function
 
+'Every time PD is run, we have to do things like "see if it's time to check for an update".  This meta-function wraps all those behaviors
+' into a single, caller-friendly function (currently called by FormMain_Load()).
+Public Sub StandardUpdateChecks()
+
+    'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is successfully applied, for example.
+    g_ProgramStartedViaRestart = Update_Support.WasProgramStartedViaRestart
+        
+    'Before updating, clear out any temp files leftover from previous updates.  (Replacing files at run-time is messy business, and Windows
+    ' is unpredictable about allowing replaced files to be deleted.)
+    Update_Support.CleanPreviousUpdateFiles
+        
+    'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
+    Dim allowedToUpdate As Boolean
+    allowedToUpdate = Update_Support.IsItTimeForAnUpdate()
+    
+    'If PD was restarted by an internal restart, disallow an update check now, as we would have just applied one (which caused the restart)
+    If g_ProgramStartedViaRestart Then allowedToUpdate = False
+    
+    'If this is the user's first time using the program, don't pester them with update notifications
+    If g_IsFirstRun Then allowedToUpdate = False
+    
+    'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates,
+    ' as it is assumed the user already has an updated copy of the software - and we don't want to bother them already!)
+    If allowedToUpdate Then
+    
+        Message "Initializing software updater (this feature can be disabled from the Tools -> Options menu)..."
+        
+        'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
+        ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
+        ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
+        FormMain.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
+        
+        'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
+        ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language
+        ' file update *is* found, we'll download and patch those separately.)
+        If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then
+            FormMain.asyncDownloader.AddToQueue "LANGUAGE_UPDATE_CHECK", "http://photodemon.org/downloads/updates/langupdate.xml"
+        End If
+        
+        'As of v6.6, PhotoDemon also supports independent plugin file updates, separate from updating PD as a whole.
+        ' Check that preference, and if allowed, initiate a separate plugin file check.  (If no core program update is found, but a plugin
+        ' file update *is* found, we'll download and patch those separately.)
+        If g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True) Then
+            'TODO!
+        End If
+        
+    End If
+    
+    'With all potentially required downloads added to the queue, we can now begin downloading everything
+    FormMain.asyncDownloader.SetAutoDownloadMode True
+    
+End Sub
+
 'If an update is ready, you may call this function to display an update notification to the user
 Public Sub DisplayUpdateNotification()
     

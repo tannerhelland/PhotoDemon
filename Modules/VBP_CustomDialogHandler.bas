@@ -492,6 +492,9 @@ Public Function PromptUITheme() As VbMsgBoxResult
     Unload dialog_UITheme
     Set dialog_UITheme = Nothing
     
+    'Regardless of the return value, note that the user has seen this dialog
+    g_UserPreferences.SetPref_Boolean "Themes", "HasSeenThemeDialog", True
+    
     'If the dialog was canceled, reset the original language and theme.
     If (PromptUITheme <> vbOK) Then
         

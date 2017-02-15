@@ -528,6 +528,8 @@ Private Sub CreateNewPreferencesFile()
     m_XMLEngine.WriteTag "Themes", "", True
         m_XMLEngine.WriteTag "CurrentTheme", "Dark"
         m_XMLEngine.WriteTag "CurrentAccent", "Blue"
+        m_XMLEngine.WriteTag "HasSeenThemeDialog", "False"
+        m_XMLEngine.WriteTag "MonochromeIcons", "False"
     m_XMLEngine.CloseTag "Themes"
     m_XMLEngine.WriteBlankLine
     

@@ -2647,80 +2647,13 @@ Private Sub Form_Load()
         Loading.LoadMultipleImageFiles cmdLineParams, True
         
     End If
-        
-    '*************************************************************************************************************************************
-    ' Next, see if we need to display the language selection dialog (NOT IMPLEMENTED AT PRESENT)
-    '*************************************************************************************************************************************
-    
-    'Before continuing with the last few steps of interface initialization, we need to make sure the user is being presented
-    ' with an interface they can understand - thus we need to evaluate the current language and make changes as necessary.
-    
-    'Start by asking the translation engine if it thinks we should display a language dialog.  (The conditions that trigger
-    ' this are described in great detail in the pdTranslate class.)
-    Dim lDialogReason As Long
-    If g_Language.IsLanguageDialogNeeded(lDialogReason) Then
-    
-        'If we are inside this block, the translation engine thinks we should ask the user to pick a language.  The reason
-        ' for this is stored in the lDialogReason variable, and the values correspond to the following:
-        ' 0) User-initiated dialog (irrelevant in this case; the return should never be 0)
-        ' 1) First-time user, and an approximate (but not exact) language match was found.  Ask them to clarify.
-        ' 2) First-time user, and no language match found.  Give them a language dialog in English.
-        ' 3) Not a first-time user, but the preferred language file couldn't be located.  Ask them to pick a new one.
-        
-    
-    End If
     
     
     '*************************************************************************************************************************************
     ' Next, see if we need to launch an asynchronous check for updates
     '*************************************************************************************************************************************
-        
-    'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is successfully applied, for example.
-    g_ProgramStartedViaRestart = Update_Support.WasProgramStartedViaRestart
-        
-    'Before updating, clear out any temp files leftover from previous updates.  (Replacing files at run-time is messy business, and Windows
-    ' is unpredictable about allowing replaced files to be deleted.)
-    Update_Support.CleanPreviousUpdateFiles
-        
-    'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
-    Dim allowedToUpdate As Boolean
-    allowedToUpdate = Update_Support.IsItTimeForAnUpdate()
     
-    'If PD was restarted by an internal restart, disallow an update check now, as we would have just applied one (which caused the restart)
-    If g_ProgramStartedViaRestart Then allowedToUpdate = False
-    
-    'If this is the user's first time using the program, don't pester them with update notifications
-    If g_IsFirstRun Then allowedToUpdate = False
-    
-    'If we're STILL allowed to update, do so now (unless this is the first time the user has run the program; in that case, suspend updates,
-    ' as it is assumed the user already has an updated copy of the software - and we don't want to bother them already!)
-    If allowedToUpdate Then
-    
-        Message "Initializing software updater (this feature can be disabled from the Tools -> Options menu)..."
-        
-        'Initiate an asynchronous download of the standard PD update file (photodemon.org/downloads/updates.xml).
-        ' When the asynchronous download completes, the downloader will place the completed update file in the /Data/Updates subfolder.
-        ' On exit (or subsequent program runs), PD will check for the presence of that file, then proceed accordingly.
-        Me.asyncDownloader.AddToQueue "PROGRAM_UPDATE_CHECK", "http://photodemon.org/downloads/updates/pdupdate.xml", , vbAsyncReadForceUpdate, False, g_UserPreferences.GetUpdatePath & "updates.xml"
-        
-        'As of v6.6, PhotoDemon now supports independent language file updates, separate from updating PD as a whole.
-        ' Check that preference, and if allowed, initiate a separate language file check.  (If no core program update is found, but a language
-        ' file update *is* found, we'll download and patch those separately.)
-        If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then
-            Me.asyncDownloader.AddToQueue "LANGUAGE_UPDATE_CHECK", "http://photodemon.org/downloads/updates/langupdate.xml"
-        End If
-        
-        'As of v6.6, PhotoDemon also supports independent plugin file updates, separate from updating PD as a whole.
-        ' Check that preference, and if allowed, initiate a separate plugin file check.  (If no core program update is found, but a plugin
-        ' file update *is* found, we'll download and patch those separately.)
-        If g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True) Then
-            'TODO!
-        End If
-        
-    End If
-    
-    'With all potentially required downloads added to the queue, we can now begin downloading everything
-    Me.asyncDownloader.SetAutoDownloadMode True
+    Update_Support.StandardUpdateChecks
     
     
     '*************************************************************************************************************************************
@@ -2735,6 +2668,15 @@ Private Sub Form_Load()
     'I occasionally add dire messages to nightly builds.  The line below is the best place to enable that, as necessary.
     'PDMsgBox "WARNING!  I am currently overhauling PhotoDemon's image export capabilities.  Because this work impacts the reliability of the File > Save and File > Save As commands, I DO NOT RECOMMEND using this build for serious work." & vbCrLf & vbCrLf & "(Seriously: please do any serious editing with with the last stable release, available from photodemon.org)", vbExclamation + vbOKOnly + vbApplicationModal, "7.0 Development Warning"
     
+    '*************************************************************************************************************************************
+    ' Next, see if we need to display the language/theme selection dialog
+    '*************************************************************************************************************************************
+    
+    'In v7.0, a new "choose your language and UI theme" dialog was added to the project.  This is helpful for first-time
+    ' users to help them get everything set up just the way they want it.
+    
+    'See if we've shown this dialog before; if we have, suspend its load.
+    If (Not g_UserPreferences.GetPref_Boolean("Themes", "HasSeenThemeDialog", False)) Then DialogManager.PromptUITheme
     
     '*************************************************************************************************************************************
     ' For developers only, calculate some debug counts and show an IDE avoidance warning (if it hasn't been dismissed before).
