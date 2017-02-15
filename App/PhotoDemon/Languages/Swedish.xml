@@ -6,10 +6,10 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2358</langversion>
+<langversion>6.8.2361</langversion>
 <langstatus>raw machine translation</langstatus>
 
-<author>Google Translator</author>
+<author>Google Translate - translate.google.com</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -1676,8 +1676,8 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>Scan avbryts.</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1685,12 +1685,7 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 <translation>Skannern tillbaka en felkod som inte angavs i EZTW32.dll dokumentation (Fel # %1). Besök http://www.eztwain.com för mer information.</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>Scan Avbruten</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2365,6 +2360,11 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Initierar Software Updater (kan denna funktion inaktiveras från Verktyg -> Alternativ)</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation> %1. %2 Beta %3</translation>
 </phrase>
@@ -2384,7 +2384,7 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2536,6 +2536,12 @@ Please ange ett numeriskt värde.</translation>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4547,6 +4553,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5738,6 +5750,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>Record makro</translation>
 </phrase>
@@ -5785,31 +5802,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <phrase>
 <original>Theme editor</original>
 <translation>tema redaktör</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation>ljus tema</translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation>mörkt tema</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>blå</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>grön</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation>Lila</translation>
 </phrase>
 
 <phrase>
@@ -6151,11 +6143,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Initierar Software Updater (kan denna funktion inaktiveras från Verktyg -> Alternativ)</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation>Skugga och markera</translation>
 </phrase>
@@ -6454,7 +6441,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8397,6 +8384,82 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13424,6 +13487,16 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>grön</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>blå</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>Alpha</translation>
 </phrase>
@@ -13493,7 +13566,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Det här alternativet styr vilka kriterier trollspö använder för att avgöra om en pixel bör läggas till den aktuella markeringen.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14871,18 +14944,12 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

@@ -553,8 +553,8 @@ Attribute VB_Exposed = False
 'Interactive Language (Translation) Editor
 'Copyright 2013-2017 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
-'Last updated: 03/September/15
-'Last update: convert all buttons to pdButton and overhaul UI code accordingly
+'Last updated: 15/February/17
+'Last update: attempt to improve titlecase handling
 '
 'Thanks to the incredible work of Frank Donckers, PhotoDemon includes a fully functional language translation engine.
 ' Many thanks to Frank for taking the initiative on not only implementing the translation engine prototype, but also
@@ -575,8 +575,9 @@ Attribute VB_Exposed = False
 '
 'To accelerate the translation process, Google Translate can be used to automatically populate an "estimated"
 ' translation.  This was Frank's idea and Frank's code - many thanks to him for such a clever feature!  As of
-' 22 February 2014, I have added an option to perform a full automatic translation of all untranslated phrases.  This
-' is helpful for creating a translation file from scratch, which can then be reviewed by a human at their own leisure.
+' 22 February 2014, I have added an option to perform a full automatic translation of all untranslated phrases.
+' This is helpful for creating a translation file from scratch, which can then be reviewed by a human at their
+' own leisure.
 '
 'Note: for the Google Translate Terms of Use, please visit http://www.google.com/policies/terms/
 '
@@ -590,10 +591,10 @@ Option Compare Text
 
 'The current list of available languages.  This list is not currently updated with the language the user is working on.
 ' It only contains a list of languages already stored in the /App/PhotoDemon/Languages and Data/Languages folders.
-Private listOfAvailableLanguages() As pdLanguageFile
+Private m_ListOfLanguages() As pdLanguageFile
 
-'The language currently being edited.  This curLanguage variable will contain all metadata for the language file.
-Private curLanguage As pdLanguageFile
+'The language currently being edited.  This m_curLanguage variable will contain all metadata for the language file.
+Private m_curLanguage As pdLanguageFile
 
 'All phrases that need to be translated will be stored in this array
 Private Type Phrase
@@ -604,26 +605,29 @@ Private Type Phrase
     IsMachineTranslation As Boolean
 End Type
 Private m_NumOfPhrases As Long
-Private allPhrases() As Phrase
+Private m_AllPhrases() As Phrase
 
 'Has the source XML language file been loaded yet?
-Private xmlLoaded As Boolean
+Private m_xmlLoaded As Boolean
 
 'The current wizard page
-Private curWizardPage As Long
+Private m_WizardPage As Long
 
 'System progress bar control (used on the "please wait" screen)
 Private sysProgBar As cProgressBarOfficial
 
 'A Google Translate interface, which we use to auto-populate missing translations
-Private autoTranslate As clsGoogleTranslate
+Private m_AutoTranslate As clsGoogleTranslate
 
 'An XML engine is used to parse and update the actual language file contents
-Private xmlEngine As pdXML
+Private m_XMLEngine As pdXML
+
+'Unicode operation helper
+Private m_Unicode As pdUnicode
 
 'To minimize the chance of data loss, PhotoDemon backs up translation data to two alternating files.  In the event of a crash anywhere in
 ' the editing or export stages, this guarantees that we will never lose more than the last-edited phrase.
-Private curBackupFile As Long
+Private m_curBackupFile As Long
 Private Const backupFileName As String = "PD_LANG_EDIT_BACKUP_"
 
 'During phrase editing, the user can choose to display all phrases, only translated phrases, or only untranslated phrases.
@@ -639,22 +643,22 @@ Private Sub cboPhraseFilter_Click()
         'All phrases
         Case 0
             For i = 0 To m_NumOfPhrases - 1
-                lstPhrases.AddItem allPhrases(i).ListBoxEntry
+                lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
             Next i
         
         'Translated phrases
         Case 1
             For i = 0 To m_NumOfPhrases - 1
-                If Len(allPhrases(i).Translation) <> 0 Then
-                    lstPhrases.AddItem allPhrases(i).ListBoxEntry
+                If Len(m_AllPhrases(i).Translation) <> 0 Then
+                    lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
                 End If
             Next i
         
         'Untranslated phrases
         Case 2
             For i = 0 To m_NumOfPhrases - 1
-                If Len(allPhrases(i).Translation) = 0 Then
-                    lstPhrases.AddItem allPhrases(i).ListBoxEntry
+                If Len(m_AllPhrases(i).Translation) = 0 Then
+                    lstPhrases.AddItem m_AllPhrases(i).ListBoxEntry
                 End If
             Next i
     
@@ -677,7 +681,7 @@ Private Sub cmdAutoTranslate_Click()
     Dim msgReturn As VbMsgBoxResult
     msgReturn = PDMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo + vbApplicationModal + vbInformation, "Automatic translation warning")
 
-    If msgReturn <> vbYes Then Exit Sub
+    If (msgReturn <> vbYes) Then Exit Sub
     
     'The user has given the go-ahead, so start translating!
     Dim i As Long
@@ -688,38 +692,41 @@ Private Sub cmdAutoTranslate_Click()
     totalTranslated = 0
     
     For i = 0 To m_NumOfPhrases - 1
-        If Len(allPhrases(i).Translation) = 0 Then totalUntranslated = totalUntranslated + 1
+        If Len(m_AllPhrases(i).Translation) = 0 Then totalUntranslated = totalUntranslated + 1
     Next i
     
     Dim srcPhrase As String, retString As String
     
     'Iterate through all untranslated phrases, requesting Google translates as we go
     For i = 0 To m_NumOfPhrases - 1
-        If Len(allPhrases(i).Translation) = 0 Then
+        If Len(m_AllPhrases(i).Translation) = 0 Then
         
             'Regardless of whether or not we succeed, increment the counter
             totalTranslated = totalTranslated + 1
             cmdAutoTranslate.Caption = g_Language.TranslateMessage("Processing phrase %1 of %2", totalTranslated, totalUntranslated)
             
-            allPhrases(i).IsMachineTranslation = True
+            m_AllPhrases(i).IsMachineTranslation = True
             
             'This phrase is not translated.  Apply a minimal amount of preprocessing, then request a translation from Google.
-            srcPhrase = allPhrases(i).Original
+            srcPhrase = m_AllPhrases(i).Original
             
             'Remove ampersands, as Google will treat these as the word "and"
-            If InStr(1, srcPhrase, "&") Then srcPhrase = Replace(srcPhrase, "&", "")
+            If InStr(1, srcPhrase, "&", vbBinaryCompare) Then srcPhrase = Replace$(srcPhrase, "&", vbNullString, , , vbBinaryCompare)
             
             'Request a translation from Google
-            retString = autoTranslate.GetGoogleTranslation(srcPhrase)
+            retString = m_AutoTranslate.GetGoogleTranslation(srcPhrase)
             
             'If Google succeeded, store the new translation
-            If Len(retString) <> 0 Then
+            If (Len(retString) <> 0) Then
+                
+                'Do a "quick and dirty" case fix for titlecase text
+                retString = GetFixedTitlecase(srcPhrase, retString)
                 
                 'Store the translation
-                allPhrases(i).Translation = retString
+                m_AllPhrases(i).Translation = retString
                 
                 'Insert this translation into the original XML file
-                xmlEngine.UpdateTagAtLocation "translation", allPhrases(i).Translation, xmlEngine.GetLocationOfParentTag("phrase", "original", allPhrases(i).Original)
+                m_XMLEngine.UpdateTagAtLocation "translation", m_AllPhrases(i).Translation, m_XMLEngine.GetLocationOfParentTag("phrase", "original", m_AllPhrases(i).Original)
     
             End If
             
@@ -727,8 +734,8 @@ Private Sub cmdAutoTranslate_Click()
             If (i And 15) = 0 Then PerformAutosave
             
             'Translations can sometimes get "stuck" (for reasons unknown), so forcibly refresh them after attempting a translation
-            srcPhrase = ""
-            retString = ""
+            srcPhrase = vbNullString
+            retString = vbNullString
             
         End If
         
@@ -751,7 +758,7 @@ AutoTranslateFailure:
     
 End Sub
 
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
     Unload Me
 End Sub
 
@@ -767,15 +774,15 @@ Private Sub cmdDeleteLanguage_Click()
     Dim msgReturn As VbMsgBoxResult
 
     'Display different warnings for official languages (which can be restored) and user languages (which cannot)
-    If listOfAvailableLanguages(GetLanguageIndexFromListIndex()).LangType = "Official" Then
+    If m_ListOfLanguages(GetLanguageIndexFromListIndex()).LangType = "Official" Then
         
         'Make sure we have write access to this folder before attempting to delete anything
-        If cFile.FolderExist(GetDirectory(listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
+        If cFile.FolderExist(GetDirectory(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName), True) Then
         
             msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
             If msgReturn = vbYes Then
-                cFile.KillFile listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName
+                cFile.KillFile m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
                 lstLanguages.RemoveItem lstLanguages.ListIndex
                 cmdDeleteLanguage.Enabled = False
             End If
@@ -791,7 +798,7 @@ Private Sub cmdDeleteLanguage_Click()
         msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
         If msgReturn = vbYes Then
-            cFile.KillFile listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName
+            cFile.KillFile m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName
             lstLanguages.RemoveItem lstLanguages.ListIndex
             cmdDeleteLanguage.Enabled = False
         End If
@@ -809,10 +816,10 @@ Private Sub cmdNextPhrase_Click()
     If lstPhrases.ListIndex < 0 Then Exit Sub
     
     'Store this translation to the phrases array
-    allPhrases(GetPhraseIndexFromListIndex()).Translation = txtTranslation
+    m_AllPhrases(GetPhraseIndexFromListIndex()).Translation = txtTranslation
     
     'Insert this translation into the original XML file
-    xmlEngine.UpdateTagAtLocation "translation", txtTranslation, xmlEngine.GetLocationOfParentTag("phrase", "original", allPhrases(GetPhraseIndexFromListIndex()).Original)
+    m_XMLEngine.UpdateTagAtLocation "translation", txtTranslation, m_XMLEngine.GetLocationOfParentTag("phrase", "original", m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
     
     'Write an alternating backup out to file
     PerformAutosave
@@ -893,7 +900,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     unloadFormNow = False
 
     'Before changing the page, maek sure all user input on the current page is valid
-    Select Case curWizardPage
+    Select Case m_WizardPage
     
         'The first page is the language selection page.  When the user leaves this page, we must load the language they've selected
         ' into memory - so this validation step is quite large.
@@ -936,10 +943,10 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             ' hopefully present... if not, there's not much we can do.)
             If optBaseLanguage(0) Then
                                 
-                If LoadAllPhrasesFromFile(g_UserPreferences.GetLanguagePath & "Master\MASTER.xml") Then
+                If Loadm_AllPhrasesFromFile(g_UserPreferences.GetLanguagePath & "Master\MASTER.xml") Then
                     
                     'Populate the current language's metadata container with some default values
-                    With curLanguage
+                    With m_curLanguage
                         .FileName = g_UserPreferences.GetLanguagePath(True) & "new language.xml"
                         .langID = "en-US"
                         .LangName = g_Language.TranslateMessage("New Language")
@@ -962,11 +969,11 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
-                curLanguage = listOfAvailableLanguages(GetLanguageIndexFromListIndex())
-                curLanguage.FileName = g_UserPreferences.GetLanguagePath(True) & GetFilename(listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName)
+                m_curLanguage = m_ListOfLanguages(GetLanguageIndexFromListIndex())
+                m_curLanguage.FileName = g_UserPreferences.GetLanguagePath(True) & GetFilename(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName)
                 
                 'Attempt to load the selected language from file
-                If LoadAllPhrasesFromFile(listOfAvailableLanguages(GetLanguageIndexFromListIndex()).FileName) Then
+                If Loadm_AllPhrasesFromFile(m_ListOfLanguages(GetLanguageIndexFromListIndex()).FileName) Then
                     
                     'No further action is necessary!
                     
@@ -984,13 +991,13 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             Screen.MousePointer = vbDefault
             tmrProgBar.Enabled = False
             Set sysProgBar = Nothing
-            curWizardPage = curWizardPage + 1
+            m_WizardPage = m_WizardPage + 1
             
         'The second page is the metadata editing page.
         Case 2
         
             'When leaving the metadata page, automatically copy all text box entries into the metadata holder
-            With curLanguage
+            With m_curLanguage
                 .langID = Trim$(txtLangID(0)) & "-" & Trim$(txtLangID(1))
                 .LangName = Trim$(txtLangName)
                 .LangStatus = Trim$(txtLangStatus)
@@ -999,15 +1006,15 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
             End With
             
             'Also, automatically set the destination language of the Google Translate interface
-            autoTranslate.setDstLanguage Trim$(txtLangID(0))
+            m_AutoTranslate.SetDstLanguage Trim$(txtLangID(0))
             
             'Write these updated tags into the original XML text
-            With curLanguage
-                xmlEngine.UpdateTagAtLocation "langid", .langID
-                xmlEngine.UpdateTagAtLocation "langname", .LangName
-                xmlEngine.UpdateTagAtLocation "langstatus", .LangStatus
-                xmlEngine.UpdateTagAtLocation "langversion", .langVersion
-                xmlEngine.UpdateTagAtLocation "author", .Author
+            With m_curLanguage
+                m_XMLEngine.UpdateTagAtLocation "langid", .langID
+                m_XMLEngine.UpdateTagAtLocation "langname", .LangName
+                m_XMLEngine.UpdateTagAtLocation "langstatus", .LangStatus
+                m_XMLEngine.UpdateTagAtLocation "langversion", .langVersion
+                m_XMLEngine.UpdateTagAtLocation "author", .Author
             End With
             
             'Update the autosave file
@@ -1022,11 +1029,11 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 ' may not be usable.  Strip just the original filename, and append our own folder and extension.
                 Dim sFile As String
                 
-                If curLanguage.LangType = "Autosave" Then
-                    sFile = cFile.MakeValidWindowsFilename(curLanguage.LangName)
-                    sFile = cFile.GetPathOnly(curLanguage.FileName) & sFile & ".xml"
+                If m_curLanguage.LangType = "Autosave" Then
+                    sFile = cFile.MakeValidWindowsFilename(m_curLanguage.LangName)
+                    sFile = cFile.GetPathOnly(m_curLanguage.FileName) & sFile & ".xml"
                 Else
-                    sFile = cFile.GetPathOnly(curLanguage.FileName) & GetFilenameWithoutExtension(curLanguage.FileName) & ".xml"
+                    sFile = cFile.GetPathOnly(m_curLanguage.FileName) & GetFilenameWithoutExtension(m_curLanguage.FileName) & ".xml"
                 End If
                 
                 Dim cdFilter As String
@@ -1039,7 +1046,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
                 If saveDialog.GetSaveFileName(sFile, , True, cdFilter, , GetDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd) Then
                 
                     'Write the current XML file out to the user's requested path
-                    xmlEngine.WriteXMLToFile sFile, True
+                    m_XMLEngine.WriteXMLToFile sFile, True
                     unloadFormNow = True
                     
                 Else
@@ -1057,15 +1064,15 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
     'Everything has successfully validated, so go ahead and advance (or decrement) the page count
     If moveForward Then
-        curWizardPage = curWizardPage + 1
+        m_WizardPage = m_WizardPage + 1
     Else
-        curWizardPage = curWizardPage - 1
-        If curWizardPage = 1 Then curWizardPage = 0
+        m_WizardPage = m_WizardPage - 1
+        If m_WizardPage = 1 Then m_WizardPage = 0
     End If
     
         
     'We can now apply any entrance-timed panel changes
-    Select Case curWizardPage
+    Select Case m_WizardPage
     
         'Language selection
         Case 0
@@ -1080,7 +1087,7 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         Case 2
         
             'When entering the metadata page, automatically fill all boxes with the currently stored metadata entries
-            With curLanguage
+            With m_curLanguage
             
                 'Language ID is the most complex, because we must parse the two halves into individual text boxes
                 If InStr(1, .langID, "-") > 0 Then
@@ -1103,9 +1110,9 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
         Case 3
         
             'If an XML file was successfully loaded, add its contents to the list box
-            If Not xmlLoaded Then
+            If Not m_xmlLoaded Then
             
-                xmlLoaded = True
+                m_xmlLoaded = True
                 
                 'Setting the ListIndex property will fire the _Click event, which will handle the actual phrase population
                 cboPhraseFilter.ListIndex = 0
@@ -1117,30 +1124,30 @@ Private Sub ChangeWizardPage(ByVal moveForward As Boolean)
     
     'Hide all inactive panels (and show the active one)
     For i = 0 To picContainer.Count - 1
-        If i = curWizardPage Then picContainer(i).Visible = True Else picContainer(i).Visible = False
+        If i = m_WizardPage Then picContainer(i).Visible = True Else picContainer(i).Visible = False
     Next i
     
     'If we are at the beginning, disable the previous button
-    If curWizardPage = 0 Then cmdPrevious.Enabled = False Else cmdPrevious.Enabled = True
+    If m_WizardPage = 0 Then cmdPrevious.Enabled = False Else cmdPrevious.Enabled = True
     
     'If we are at the end, change the text of the "next" button; otherwise, make sure it says "next"
-    If curWizardPage = picContainer.Count - 1 Then
+    If m_WizardPage = picContainer.Count - 1 Then
         cmdNext.Caption = g_Language.TranslateMessage("&Save and Exit")
     Else
         cmdNext.Caption = g_Language.TranslateMessage("&Next")
     End If
     
     'Finally, change the top title caption and left-hand help text to match the current step
-    If curWizardPage < 1 Then
-        lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", curWizardPage + 1)
+    If m_WizardPage < 1 Then
+        lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage + 1)
     Else
-        lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", curWizardPage)
+        lblWizardTitle.Caption = g_Language.TranslateMessage("Step %1:", m_WizardPage)
     End If
     lblWizardTitle.Caption = lblWizardTitle.Caption & " "
     
     Dim helpText As String
     
-    Select Case curWizardPage
+    Select Case m_WizardPage
     
         Case 0
             lblWizardTitle.Caption = lblWizardTitle.Caption & g_Language.TranslateMessage("select a language file")
@@ -1179,7 +1186,7 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
     
     'If the down arrow key is pressed while the user is in the phrase-editing panel, automatically save the current
     ' phrase and move to the next one.
-    If CBool(chkShortcut) And (KeyCode = vbKeyReturn) And (curWizardPage = 3) Then
+    If CBool(chkShortcut) And (KeyCode = vbKeyReturn) And (m_WizardPage = 3) Then
         cmdNextPhrase_Click
         KeyCode = 0
     End If
@@ -1188,13 +1195,15 @@ End Sub
 
 Private Sub Form_Load()
     
+    Set m_Unicode = New pdUnicode
+    
     'Mark the XML file as not loaded
-    xmlLoaded = False
-    curBackupFile = 0
+    m_xmlLoaded = False
+    m_curBackupFile = 0
     
     'By default, the first wizard page is displayed.  (We start at -1 because we will incerement the page count by +1 with our first
     ' call to changeWizardPage in Form_Activate)
-    curWizardPage = -1
+    m_WizardPage = -1
         
     'Fill the "phrases to display" combo box
     cboPhraseFilter.Clear
@@ -1204,8 +1213,8 @@ Private Sub Form_Load()
     cboPhraseFilter.ListIndex = 0
     
     'Initialize the Google Translate interface
-    Set autoTranslate = New clsGoogleTranslate
-    autoTranslate.setSrcLanguage "en"
+    Set m_AutoTranslate = New clsGoogleTranslate
+    m_AutoTranslate.SetSrcLanguage "en"
     
     'Apply translations and visual styles
     ApplyThemeAndTranslations Me
@@ -1220,64 +1229,64 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Given a source language file, find all phrase tags, and load them into a specialized phrase array
-Private Function LoadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
+Private Function Loadm_AllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
 
-    Set xmlEngine = New pdXML
+    Set m_XMLEngine = New pdXML
     
     'Attempt to load the language file
-    If xmlEngine.LoadXMLFile(srcLangFile) Then
+    If m_XMLEngine.LoadXMLFile(srcLangFile) Then
     
         'Validate the language file's contents
-        If xmlEngine.IsPDDataType("Translation") And xmlEngine.ValidateLoadedXMLData("phrase") Then
+        If m_XMLEngine.IsPDDataType("Translation") And m_XMLEngine.ValidateLoadedXMLData("phrase") Then
         
             lblPleaseWait.Caption = g_Language.TranslateMessage("Please wait while the language file is validated...")
             
             'New as of August '14 is the ability to set text comparison mode.  To ensure output matches
             ' the rest of PD, the language editor now uses binary comparison mode exclusively.
-            xmlEngine.SetTextCompareMode vbBinaryCompare
+            m_XMLEngine.SetTextCompareMode vbBinaryCompare
         
             'Attempt to load all phrase tag location occurrences
             Dim phraseLocations() As Long
-            If xmlEngine.FindAllTagLocations(phraseLocations, "phrase", True) Then
+            If m_XMLEngine.FindAllTagLocations(phraseLocations, "phrase", True) Then
             
                 lblPleaseWait.Caption = g_Language.TranslateMessage("Validation successful!  Loading all phrases and preparing translation engine...")
                 
                 m_NumOfPhrases = UBound(phraseLocations) + 1
-                ReDim allPhrases(0 To m_NumOfPhrases - 1) As Phrase
+                ReDim m_AllPhrases(0 To m_NumOfPhrases - 1) As Phrase
                 
                 Dim tmpString As String
                 
                 Dim i As Long
                 For i = 0 To m_NumOfPhrases - 1
-                    tmpString = xmlEngine.GetUniqueTag_String("original", , phraseLocations(i))
-                    allPhrases(i).Original = tmpString
-                    allPhrases(i).Length = Len(tmpString)
-                    allPhrases(i).Translation = xmlEngine.GetUniqueTag_String("translation", , phraseLocations(i))
+                    tmpString = m_XMLEngine.GetUniqueTag_String("original", , phraseLocations(i))
+                    m_AllPhrases(i).Original = tmpString
+                    m_AllPhrases(i).Length = Len(tmpString)
+                    m_AllPhrases(i).Translation = m_XMLEngine.GetUniqueTag_String("translation", , phraseLocations(i))
                     
                     'We also need a modified version of the string to add to the phrase list box.  This text can't include line breaks,
                     ' and it can't be so long that it overflows the list box.
                     If InStr(1, tmpString, vbCrLf) Then tmpString = Replace(tmpString, vbCrLf, "")
                     If InStr(1, tmpString, vbCr) Then tmpString = Replace(tmpString, vbCr, "")
                     If InStr(1, tmpString, vbLf) Then tmpString = Replace(tmpString, vbLf, "")
-                    allPhrases(i).ListBoxEntry = tmpString
+                    m_AllPhrases(i).ListBoxEntry = tmpString
                     
                     'I don't like using DoEvents, but we need a way to refresh the progress bar.
                     If (i And 3) = 0 Then DoEvents
                     
                 Next i
                 
-                LoadAllPhrasesFromFile = True
+                Loadm_AllPhrasesFromFile = True
             
             Else
-                LoadAllPhrasesFromFile = False
+                Loadm_AllPhrasesFromFile = False
             End If
         
         Else
-            LoadAllPhrasesFromFile = False
+            Loadm_AllPhrasesFromFile = False
         End If
     
     Else
-        LoadAllPhrasesFromFile = False
+        Loadm_AllPhrasesFromFile = False
     End If
 
 End Function
@@ -1292,14 +1301,14 @@ Private Sub lstPhrases_Click()
     
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase:")
     lblTranslatedPhrase.ForeColor = RGB(64, 64, 64)
-    txtOriginal = allPhrases(GetPhraseIndexFromListIndex()).Original
+    txtOriginal = m_AllPhrases(GetPhraseIndexFromListIndex()).Original
     
     'If a translation exists for this phrase, load it.  If it does not, use Google Translate to estimate a translation
     ' (contingent on the relevant check box setting)
     lblTranslatedPhrase.Caption = g_Language.TranslateMessage("translated phrase")
     
-    If Len(allPhrases(GetPhraseIndexFromListIndex()).Translation) <> 0 Then
-        txtTranslation = allPhrases(GetPhraseIndexFromListIndex()).Translation
+    If Len(m_AllPhrases(GetPhraseIndexFromListIndex()).Translation) <> 0 Then
+        txtTranslation = m_AllPhrases(GetPhraseIndexFromListIndex()).Translation
         lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(saved):")
     Else
     
@@ -1312,10 +1321,10 @@ Private Sub lstPhrases_Click()
             'I've had trouble with the text boxes not clearing properly (no idea why), so manually clear them before
             ' assigning new text.
             Dim retString As String
-            retString = autoTranslate.GetGoogleTranslation(allPhrases(GetPhraseIndexFromListIndex()).Original)
-            If Len(retString) <> 0 Then
+            retString = m_AutoTranslate.GetGoogleTranslation(m_AllPhrases(GetPhraseIndexFromListIndex()).Original)
+            If (Len(retString) <> 0) Then
                 txtTranslation = ""
-                txtTranslation = retString
+                txtTranslation = GetFixedTitlecase(m_AllPhrases(GetPhraseIndexFromListIndex()).Original, retString)
             Else
                 txtTranslation = ""
                 txtTranslation = g_Language.TranslateMessage("translation failed!")
@@ -1360,15 +1369,15 @@ End Sub
 Private Sub PerformAutosave()
 
     'We keep two autosaves at all times; simply alternate between them each time a save is requested
-    If curBackupFile = 1 Then curBackupFile = 0 Else curBackupFile = 1
+    If m_curBackupFile = 1 Then m_curBackupFile = 0 Else m_curBackupFile = 1
     
     'Generate an autosave filename.  The language ID is appended to the name, so separate autosaves will exist for each edited language
     ' (assuming they have different language IDs).
     Dim backupFile As String
-    backupFile = g_UserPreferences.GetLanguagePath(True) & backupFileName & curLanguage.langID & "_" & Str(curBackupFile) & ".tmpxml"
+    backupFile = g_UserPreferences.GetLanguagePath(True) & backupFileName & m_curLanguage.langID & "_" & Str(m_curBackupFile) & ".tmpxml"
     
     'The XML engine handles the actual writing to file.  For performance reasons, auto-tabbing is suppressed.
-    xmlEngine.WriteXMLToFile backupFile, True
+    m_XMLEngine.WriteXMLToFile backupFile, True
 
 End Sub
 
@@ -1378,7 +1387,7 @@ Private Sub PopulateAvailableLanguages()
     ReDim m_langListIndexes(0 To 15) As Long
     
     'Retrieve a list of available languages from the translation engine
-    g_Language.CopyListOfLanguages listOfAvailableLanguages
+    g_Language.CopyListOfLanguages m_ListOfLanguages
     
     'We now do a bit of additional work.  Look for any autosave files (with extension .tmpxml) in the user language folder.  Allow the
     ' user to load these if available.
@@ -1388,24 +1397,24 @@ Private Sub PopulateAvailableLanguages()
     Do While (chkFile <> "")
         
         'Use PD's XML engine to load the file
-        Dim tmpXMLEngine As pdXML
-        Set tmpXMLEngine = New pdXML
-        If tmpXMLEngine.LoadXMLFile(g_UserPreferences.GetLanguagePath(True) & chkFile) Then
+        Dim tmpm_xmlEngine As pdXML
+        Set tmpm_xmlEngine = New pdXML
+        If tmpm_xmlEngine.LoadXMLFile(g_UserPreferences.GetLanguagePath(True) & chkFile) Then
         
             'Use the XML engine to validate this file, and to make sure it contains at least a language ID, name, and one (or more) translated phrase
-            If tmpXMLEngine.IsPDDataType("Translation") And tmpXMLEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
+            If tmpm_xmlEngine.IsPDDataType("Translation") And tmpm_xmlEngine.ValidateLoadedXMLData("langid", "langname", "phrase") Then
             
-                ReDim Preserve listOfAvailableLanguages(0 To UBound(listOfAvailableLanguages) + 1) As pdLanguageFile
+                ReDim Preserve m_ListOfLanguages(0 To UBound(m_ListOfLanguages) + 1) As pdLanguageFile
                 
-                With listOfAvailableLanguages(UBound(listOfAvailableLanguages))
+                With m_ListOfLanguages(UBound(m_ListOfLanguages))
                     'Get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
-                    .langID = tmpXMLEngine.GetUniqueTag_String("langid")
-                    .LangName = tmpXMLEngine.GetUniqueTag_String("langname")
+                    .langID = tmpm_xmlEngine.GetUniqueTag_String("langid")
+                    .LangName = tmpm_xmlEngine.GetUniqueTag_String("langname")
     
                     'Version, status, and author information should also be present, but the file will still be loaded even if they don't exist
-                    .langVersion = tmpXMLEngine.GetUniqueTag_String("langversion")
-                    .LangStatus = tmpXMLEngine.GetUniqueTag_String("langstatus")
-                    .Author = tmpXMLEngine.GetUniqueTag_String("author")
+                    .langVersion = tmpm_xmlEngine.GetUniqueTag_String("langversion")
+                    .LangStatus = tmpm_xmlEngine.GetUniqueTag_String("langstatus")
+                    .Author = tmpm_xmlEngine.GetUniqueTag_String("author")
                     
                     'Finally, add some internal metadata
                     .FileName = g_UserPreferences.GetLanguagePath(True) & chkFile
@@ -1429,27 +1438,27 @@ Private Sub PopulateAvailableLanguages()
     lstLanguages.Clear
     
     Dim i As Long
-    For i = 0 To UBound(listOfAvailableLanguages)
+    For i = 0 To UBound(m_ListOfLanguages)
     
         'Note that we DO NOT add the English language entry - that is used by the "start a new language file from scratch" option.
-        If StrComp(UCase$(listOfAvailableLanguages(i).LangType), "DEFAULT", vbBinaryCompare) <> 0 Then
+        If StrComp(UCase$(m_ListOfLanguages(i).LangType), "DEFAULT", vbBinaryCompare) <> 0 Then
             Dim listEntry As String
-            listEntry = listOfAvailableLanguages(i).LangName
+            listEntry = m_ListOfLanguages(i).LangName
             
             'For official translations, an author name will always be provided.  Include the author's name in the list.
-            If listOfAvailableLanguages(i).LangType = "Official" Then
+            If m_ListOfLanguages(i).LangType = "Official" Then
                 listEntry = listEntry & " ("
                 listEntry = listEntry & g_Language.TranslateMessage("official translation by")
-                listEntry = listEntry & " " & listOfAvailableLanguages(i).Author
+                listEntry = listEntry & " " & m_ListOfLanguages(i).Author
                 listEntry = listEntry & ")"
             
             'For unofficial translations, an author name may not be provided.  Include the author's name only if it's available.
-            ElseIf listOfAvailableLanguages(i).LangType = "Unofficial" Then
+            ElseIf m_ListOfLanguages(i).LangType = "Unofficial" Then
                 listEntry = listEntry & " "
                 listEntry = listEntry & g_Language.TranslateMessage("by")
                 listEntry = listEntry & " "
-                If Len(listOfAvailableLanguages(i).Author) <> 0 Then
-                    listEntry = listEntry & listOfAvailableLanguages(i).Author
+                If Len(m_ListOfLanguages(i).Author) <> 0 Then
+                    listEntry = listEntry & m_ListOfLanguages(i).Author
                 Else
                     listEntry = listEntry & g_Language.TranslateMessage("unknown author")
                 End If
@@ -1461,8 +1470,8 @@ Private Sub PopulateAvailableLanguages()
                 listEntry = listEntry & " "
                 listEntry = listEntry & g_Language.TranslateMessage("by")
                 listEntry = listEntry & " "
-                If Len(listOfAvailableLanguages(i).Author) <> 0 Then
-                    listEntry = listEntry & listOfAvailableLanguages(i).Author
+                If Len(m_ListOfLanguages(i).Author) <> 0 Then
+                    listEntry = listEntry & m_ListOfLanguages(i).Author
                 Else
                     listEntry = listEntry & g_Language.TranslateMessage("unknown author")
                 End If
@@ -1471,15 +1480,15 @@ Private Sub PopulateAvailableLanguages()
                 listEntry = listEntry & " ("
                 listEntry = listEntry & g_Language.TranslateMessage("autosaved on")
                 listEntry = listEntry & " "
-                listEntry = listEntry & Format(FileDateTime(listOfAvailableLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
+                listEntry = listEntry & Format(FileDateTime(m_ListOfLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
                 listEntry = listEntry & ") "
             
             End If
             
             'To save us time in the future, use the .ItemData property of this entry to store the language's original index position
-            ' in our listOfAvailableLanguages array.
+            ' in our m_ListOfLanguages array.
             lstLanguages.AddItem listEntry
-            listOfAvailableLanguages(i).InternalDisplayName = listEntry
+            m_ListOfLanguages(i).InternalDisplayName = listEntry
             
         Else
             'Ignore the default language entry entirely
@@ -1493,8 +1502,8 @@ End Sub
 
 Private Function GetLanguageIndexFromListIndex() As Long
     Dim i As Long
-    For i = LBound(listOfAvailableLanguages) To UBound(listOfAvailableLanguages)
-        If StrComp(lstLanguages.List(lstLanguages.ListIndex), listOfAvailableLanguages(i).InternalDisplayName, vbBinaryCompare) = 0 Then
+    For i = LBound(m_ListOfLanguages) To UBound(m_ListOfLanguages)
+        If StrComp(lstLanguages.List(lstLanguages.ListIndex), m_ListOfLanguages(i).InternalDisplayName, vbBinaryCompare) = 0 Then
             GetLanguageIndexFromListIndex = i
             Exit For
         End If
@@ -1503,10 +1512,118 @@ End Function
 
 Private Function GetPhraseIndexFromListIndex() As Long
     Dim i As Long
-    For i = LBound(allPhrases) To UBound(allPhrases)
-        If StrComp(lstPhrases.List(lstPhrases.ListIndex), allPhrases(i).ListBoxEntry, vbBinaryCompare) = 0 Then
+    For i = LBound(m_AllPhrases) To UBound(m_AllPhrases)
+        If StrComp(lstPhrases.List(lstPhrases.ListIndex), m_AllPhrases(i).ListBoxEntry, vbBinaryCompare) = 0 Then
             GetPhraseIndexFromListIndex = i
             Exit For
         End If
     Next i
 End Function
+
+'On Win 7+, we attempt to automatically handle titlecase of translated text.  If the original English string used titlecase,
+' we'll set titlecase to the translated string as well.
+Private Function GetFixedTitlecase(ByVal origString As String, ByVal translatedString As String) As String
+    
+    On Error GoTo TitlecaseFail
+    
+    If (Len(origString) <> 0) And (Len(translatedString) <> 0) Then
+    
+        If g_IsWin7OrLater Then
+            
+            Dim origStringTitlecase As Boolean
+            
+            'Split the original string into individual words
+            Dim strOrig() As String, strTranslated() As String
+            strOrig = Split(origString, " ", , vbBinaryCompare)
+            strTranslated = Split(translatedString, " ", , vbBinaryCompare)
+            
+            'Only proceed with automatic casing if *both* strings contain multiple words.  (Some translations may not
+            ' result in 1:1 word counts.)
+            Dim multWords As Boolean
+            multWords = (UBound(strOrig) <> 0)
+            If multWords Then multWords = (UBound(strTranslated) <> 0)
+            
+            'If the text involves multiple words, we only want to titlecase the first word in the string
+            If multWords Then
+            
+                'Split out the first word in the string
+                Dim firstWord As String, firstWordIndex As Long
+                
+                Dim i As Long
+                For i = LBound(strOrig) To UBound(strOrig)
+                    If (Len(Trim$(strOrig(i))) <> 0) Then
+                        firstWord = strOrig(i)
+                        firstWordIndex = i
+                        Exit For
+                    End If
+                Next i
+                
+                'See if the first word used titlecase
+                origStringTitlecase = (StrComp(firstWord, m_Unicode.RemapString(firstWord, PDRS_TITLECASE_WIN7), vbBinaryCompare) = 0)
+                
+                'If it did, apply titlecase to the first word of the translated string as well
+                If origStringTitlecase Then
+                    
+                    'Find the first word in the translation and titlecase it
+                    For i = LBound(strTranslated) To UBound(strTranslated)
+                        If (Len(Trim$(strTranslated(i))) <> 0) Then
+                            firstWord = strTranslated(i)
+                            firstWordIndex = i
+                            Exit For
+                        End If
+                    Next i
+                    
+                    Dim tmpString As String
+                    tmpString = m_Unicode.RemapString(firstWord, PDRS_TITLECASE_WIN7)
+                    
+                    If (Len(tmpString) <> 0) Then
+                    
+                        strTranslated(firstWordIndex) = tmpString
+                        
+                        'Reassemble the translated string
+                        GetFixedTitlecase = vbNullString
+                        
+                        For i = LBound(strTranslated) To UBound(strTranslated)
+                            GetFixedTitlecase = GetFixedTitlecase & strTranslated(i)
+                            If (i < UBound(strTranslated)) Then GetFixedTitlecase = GetFixedTitlecase & " "
+                        Next i
+                        
+                    Else
+                        GetFixedTitlecase = translatedString
+                    End If
+                    
+                Else
+                    GetFixedTitlecase = translatedString
+                End If
+                
+            'Single-word case is quite a bit easier to handle
+            Else
+            
+                'See if the original string used titlecase
+                origStringTitlecase = (StrComp(origString, m_Unicode.RemapString(origString, PDRS_TITLECASE_WIN7), vbBinaryCompare) = 0)
+                
+                'If it did, apply titlecase to the translated string as well
+                If origStringTitlecase Then
+                    GetFixedTitlecase = m_Unicode.RemapString(translatedString, PDRS_TITLECASE_WIN7)
+                Else
+                    GetFixedTitlecase = translatedString
+                End If
+                
+            End If
+            
+        Else
+            GetFixedTitlecase = translatedString
+        End If
+        
+    End If
+    
+    Exit Function
+    
+TitlecaseFail:
+
+    Debug.Print "WARNING!  Titlecase failed on string: " & origString
+    Debug.Print "Attempted translation was: " & translatedString
+    GetFixedTitlecase = translatedString
+
+End Function
+

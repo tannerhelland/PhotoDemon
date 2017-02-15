@@ -6,10 +6,10 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2358</langversion>
+<langversion>6.8.2361</langversion>
 <langstatus>raw machine translation</langstatus>
 
-<author>Google Translator</author>
+<author>Google Translate - translate.google.com</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -1676,8 +1676,8 @@ To mahdollistaa skannerin tuki, kopioi EZTW32.dll tiedosto (ladattavissa osoitte
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>Scan peruutettu.</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1685,12 +1685,7 @@ To mahdollistaa skannerin tuki, kopioi EZTW32.dll tiedosto (ladattavissa osoitte
 <translation>Skannerin palautti virhekoodin, jota ei ole määritelty EZTW32.dll asiakirjat (Error # %1). Käy http://www.eztwain.com lisätietoja.</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>Scan peruutettu</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2363,6 +2358,11 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Alustetaan ohjelmistopäivitys (tämä ominaisuus voidaan poistaa käytöstä Työkalut -> Asetukset-valikossa)</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation> %1. %2 Beta %3</translation>
 </phrase>
@@ -2382,7 +2382,7 @@ In välin, kokeile kuvan tallentamista vaihtoehtoiseen muotoon. Voit myös antaa
 <translation>beeta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2534,6 +2534,12 @@ Please enter a numeric value.</original>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4545,6 +4551,12 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5736,6 +5748,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>Record makro</translation>
 </phrase>
@@ -5783,31 +5800,6 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <phrase>
 <original>Theme editor</original>
 <translation>Teemaeditori</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation>Light teema</translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation>tumma teema</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Sininen</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>Vihreä</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation>Violetti</translation>
 </phrase>
 
 <phrase>
@@ -6149,11 +6141,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Alustetaan ohjelmistopäivitys (tämä ominaisuus voidaan poistaa käytöstä Työkalut -> Asetukset-valikossa)</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation>Varjo ja korosta</translation>
 </phrase>
@@ -6452,7 +6439,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Poista alfa-kanava</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8395,6 +8382,82 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13423,6 +13486,16 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>Vihreä</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Sininen</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>Alpha</translation>
 </phrase>
@@ -13492,7 +13565,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Tämä vaihtoehto tarkastuksia, jotka kriteerit taikasauvaa käyttää sen määrittämiseksi, onko pikseli olisi lisättävä nykyiseen valintaan.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14870,18 +14943,12 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

@@ -203,14 +203,14 @@ ScanError:
             scanErrMessage = g_Language.TranslateMessage("Temporary file access error.  This can be caused when running on a system with limited access rights.  Please enable admin rights and try again.")
         Case -1
             scanErrMessage = g_Language.TranslateMessage("Scan canceled at the user's request.")
-            Message "Scan canceled."
+            Message "Scan canceled"
             Exit Sub
         Case Else
             scanErrMessage = g_Language.TranslateMessage("The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.", scanCheck)
     End Select
         
-    PDMsgBox scanErrMessage, vbExclamation + vbOKOnly + vbApplicationModal, "Scan Canceled"
-    Message "Scan canceled. "
+    PDMsgBox scanErrMessage, vbExclamation + vbOKOnly + vbApplicationModal, "Scan canceled"
+    Message "Scan canceled "
     
 End Sub
 

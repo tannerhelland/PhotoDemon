@@ -535,7 +535,7 @@ End Function
 Friend Function RemapString(ByRef srcString As String, ByVal remapType As PD_STRING_REMAP) As String
     
     'If the remap type is 0, do nothing
-    If remapType = PDRS_NONE Then
+    If (remapType = PDRS_NONE) Then
         RemapString = srcString
         Exit Function
     End If

@@ -6,10 +6,10 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2358</langversion>
+<langversion>6.8.2361</langversion>
 <langstatus>raw machine translation</langstatus>
 
-<author>Google Translator</author>
+<author>Google Translate - translate.google.com</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -1681,8 +1681,8 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>Imbas dibatalkan.</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1690,12 +1690,7 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 <translation>Pengimbas kembali kod ralat yang tidak dinyatakan dalam dokumentasi EZTW32.dll (Kesilapan # %1). Sila layari http://www.eztwain.com untuk maklumat lanjut.</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>Imbas Dibatalkan</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2370,6 +2365,11 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Memulakan perisian updater (ciri ini boleh dimatikan dari Tools -> Menu Pilihan)</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation> %1. %2 %3 Beta</translation>
 </phrase>
@@ -2389,7 +2389,7 @@ In pada itu, sila cuba menyelamatkan imej kepada format sesuai. Anda juga boleh 
 <translation>beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2541,6 +2541,12 @@ Please masukkan nilai berangka.</translation>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4552,6 +4558,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5743,6 +5755,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>rekod makro</translation>
 </phrase>
@@ -5790,31 +5807,6 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <phrase>
 <original>Theme editor</original>
 <translation>editor tema</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation>tema Light</translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation>tema gelap</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Blue</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>hijau</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation>Ungu</translation>
 </phrase>
 
 <phrase>
@@ -6156,11 +6148,6 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Memulakan perisian updater (ciri ini boleh dimatikan dari Tools -> Menu Pilihan)</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation>Shadow dan kemuncak</translation>
 </phrase>
@@ -6459,7 +6446,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8402,6 +8389,82 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13430,6 +13493,16 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>hijau</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Blue</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>Alpha</translation>
 </phrase>
@@ -13499,7 +13572,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14877,18 +14950,12 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

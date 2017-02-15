@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2358</langversion>
+<langversion>6.8.2419</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -47,7 +47,7 @@
 
 <phrase>
 <original>Initializing theme engine</original>
-<translation>Themen-Engine wird initialisiert</translation>
+<translation>Theme-Engine wird initialisiert</translation>
 </phrase>
 
 <phrase>
@@ -1681,8 +1681,8 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 </phrase>
 
 <phrase>
-<original>Scan canceled.</original>
-<translation>Scannen abgebrochen.</translation>
+<original>Scan canceled</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1690,12 +1690,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 <translation>Der Scanner hat einen Fehlercode zurückgegeben, der nicht in der EZTW32.dll-Dokumentation spezifiziert ist (Fehler #%1). Besuchen Sie bitte http://www.eztwain.com für mehr Informationen.</translation>
 </phrase>
 
-<phrase>
-<original>Scan Canceled</original>
-<translation>Scannen abgebrochen</translation>
-</phrase>
-
-<!-- Plugin_EZTwain.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Plugin_EZTwain.bas contains 32 phrases. 15 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Plugin_EZTwain.bas-->
 
@@ -2370,6 +2365,11 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 </phrase>
 
 <phrase>
+<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
+<translation>Software-Updater wird initialisiert (diese Funktion kann im Menü "Tools > Optionen" deaktiviert werden)</translation>
+</phrase>
+
+<phrase>
 <original>%1.%2 Beta %3</original>
 <translation>%1.%2 Beta %3</translation>
 </phrase>
@@ -2389,7 +2389,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 <translation>Beta</translation>
 </phrase>
 
-<!-- UpdateEngine.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
 
@@ -2541,6 +2541,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- IMRUList.cls contains 0 phrases. -->
 
 <!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for ISubclass.cls -->
+
+<!-- ISubclass.cls contains 0 phrases. -->
+
+<!-- END text for ISubclass.cls-->
 
 <!-- BEGIN text for pd2DBrush.cls -->
 
@@ -4552,6 +4558,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <!-- END text for pdStatusBar.ctl-->
 
+<!-- BEGIN text for pdStrip.ctl -->
+
+<!-- pdStrip.ctl contains 0 phrases. -->
+
+<!-- END text for pdStrip.ctl-->
+
 <!-- BEGIN text for pdTextBox.ctl -->
 
 <!-- pdTextBox.ctl contains 0 phrases. -->
@@ -5129,22 +5141,22 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maximum</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimum</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Verschieben nach links</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Verschieben nach rechts</translation>
 </phrase>
 
 <phrase>
@@ -5184,7 +5196,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Anzeige</translation>
 </phrase>
 
 <phrase>
@@ -5199,7 +5211,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (Filmnegativ)</translation>
 </phrase>
 
 <phrase>
@@ -5743,6 +5755,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
+<original>Theme</original>
+<translation>Theme</translation>
+</phrase>
+
+<phrase>
 <original>Record macro</original>
 <translation>Makro aufnehmen</translation>
 </phrase>
@@ -5790,31 +5807,6 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <phrase>
 <original>Theme editor</original>
 <translation>Themen-Editor</translation>
-</phrase>
-
-<phrase>
-<original>Light theme</original>
-<translation>Thema Hell</translation>
-</phrase>
-
-<phrase>
-<original>Dark theme</original>
-<translation>Thema Dunkel</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Blau</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>Grün</translation>
-</phrase>
-
-<phrase>
-<original>Purple</original>
-<translation>Violett</translation>
 </phrase>
 
 <phrase>
@@ -6156,11 +6148,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Software-Updater wird initialisiert (diese Funktion kann im Menü "Tools > Optionen" deaktiviert werden)</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation>Schatten und Glanzlicht</translation>
 </phrase>
@@ -6459,7 +6446,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
+<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8402,6 +8389,82 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <!-- Dialog_ToneMapping.frm contains 27 phrases. 11 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
+
+<!-- BEGIN text for Dialog_UITheme.frm (dialog_UITheme) -->
+
+<phrase>
+<original>Theme and language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>icons</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface accent color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interface theme</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>language</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dark</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>light</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>brown</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pink</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>purple</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>teal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>monochromatic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Translation by %1</original>
+<translation></translation>
+</phrase>
+
+<!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for Dialog_UITheme.frm-->
 
 <!-- BEGIN text for Dialog_UnsavedChanges.frm (dialog_UnsavedChanges) -->
 
@@ -13428,6 +13491,16 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
+<original>Green</original>
+<translation>Grün</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Blau</translation>
+</phrase>
+
+<phrase>
 <original>Alpha</original>
 <translation>Alpha</translation>
 </phrase>
@@ -13497,7 +13570,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 23 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14875,18 +14948,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for ISubclass.cls -->
-
-<!-- ISubclass.cls contains 0 phrases. -->
-
-<!-- END text for ISubclass.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2506</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4452 phrases. -->
-<!-- 1946 are duplicates, so only 2506 unique phrases have been written to file. -->
-<!-- These 2506 phrases contain approximately 12364 total words. -->
+<!-- As of this build, PhotoDemon contains 4467 phrases. -->
+<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 12378 total words. -->
 
 </pdData>

@@ -156,9 +156,12 @@ Public Sub ShowDialog()
     m_SuspendUpdates = True
     cboLanguage.Clear
     
+    Dim chrSpace As String
+    chrSpace = " "
+    
     Dim i As Long
     For i = 0 To UBound(m_AvailableLanguages)
-        cboLanguage.AddItem " " & m_AvailableLanguages(i).LangName
+        cboLanguage.AddItem chrSpace & m_AvailableLanguages(i).LangName
     Next i
     
     'TODO: high-contrast theme
