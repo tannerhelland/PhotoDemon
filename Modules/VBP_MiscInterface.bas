@@ -1460,6 +1460,8 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
                 isPDControl = True
             ElseIf (TypeOf eControl Is pdHistory) Then
                 isPDControl = True
+            ElseIf (TypeOf eControl Is pdStrip) Then
+                isPDControl = True
             ElseIf (TypeOf eControl Is pdDropDownFont) Then
                 isPDControl = True
             End If
@@ -1491,12 +1493,12 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     'Next, we need to translate any VB objects on the form.  At present, this only includes the Form caption and any menus
     ' on the form.
-    ' TODO 6.8: once all controls are migrated, consider killing this step entirely, and moving the specialized translation bits here.
     If g_Language.TranslationActive Then
         If dstForm.Enabled Then g_Language.ApplyTranslations dstForm, useDoEvents
     End If
     
-    'If this is the main form, we need to reassign menu icon, because they are inadvertently dropped whenever menu captions change.
+    'If this is the main form, we need to reassign any menu icons, because they are reset whenever their associated
+    ' menu captions change.
     If (StrComp(dstForm.Name, "FormMain", vbBinaryCompare) = 0) Then
         If (Not suspendMainFormIconCheck) And FormMain.Visible Then ApplyAllMenuIcons
     End If
