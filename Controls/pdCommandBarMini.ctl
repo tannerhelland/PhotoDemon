@@ -138,7 +138,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -161,7 +161,7 @@ Private Sub cmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Let the caller know that OK was pressed
     RaiseEvent OKClick

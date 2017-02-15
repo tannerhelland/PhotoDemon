@@ -68,6 +68,10 @@ End Enum
 
 Private m_ThemeAccent As PD_THEME_ACCENT
 
+'When set, all requested icons will be forced to monochrome (unless specifically flagged otherwise, like the project logo;
+' see the g_Resources.LoadImageResource() function for details).
+Private m_MonochromeIcons As Boolean
+
 'Extra API functions for painting form backgrounds
 Private Const WM_PAINT As Long = &HF
 Private Const WM_ERASEBKGND As Long = &H14
@@ -158,6 +162,18 @@ Friend Function GetCurrentThemeID() As String
     GetCurrentThemeID = m_CurrentThemeID
 End Function
 
+'Get/set monochromatic icons
+Friend Function GetMonochromeIconSetting() As Boolean
+    GetMonochromeIconSetting = m_MonochromeIcons
+End Function
+
+Friend Sub SetMonochromeIconSetting(ByVal newSetting As Boolean)
+    If (newSetting <> m_MonochromeIcons) Then
+        m_MonochromeIcons = newSetting
+        g_UserPreferences.SetPref_Boolean "Themes", "MonochromeIcons", m_MonochromeIcons
+    End If
+End Sub
+
 'Pull the current default PD theme from the user preferences file, and attempt to load it.  If the theme can't be loaded,
 ' we'll fall back to PD's default light-on-dark theme.
 Friend Sub LoadDefaultPDTheme()
@@ -165,13 +181,40 @@ Friend Sub LoadDefaultPDTheme()
     'By default, assume a light-on-dark theme.  (This will be overridden by a successful theme load.)
     m_ThemeClass = PDTC_Dark
     
-    'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the IDE.)
+    'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the designer.)
     Dim themeName As String, themeFilename As String, accentName As String, accentFilename As String
     If g_IsProgramRunning Then
+    
         themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Dark")
         themeFilename = "Default_" & themeName & ".xml"
+        
         accentName = g_UserPreferences.GetPref_String("Themes", "CurrentAccent", "Blue")
         accentFilename = "Colors_" & accentName & ".xml"
+        
+        'Note that the accent filename is not automatically mapped to an internal "accent value";
+        ' we must handle this manually.
+        If (StrComp(LCase$(accentName), "blue", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Blue
+        ElseIf (StrComp(LCase$(accentName), "brown", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Brown
+        ElseIf (StrComp(LCase$(accentName), "green", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Green
+        ElseIf (StrComp(LCase$(accentName), "orange", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Orange
+        ElseIf (StrComp(LCase$(accentName), "pink", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Pink
+        ElseIf (StrComp(LCase$(accentName), "purple", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Purple
+        ElseIf (StrComp(LCase$(accentName), "red", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Red
+        ElseIf (StrComp(LCase$(accentName), "teal", vbBinaryCompare) = 0) Then
+            m_ThemeAccent = PDTA_Teal
+        Else
+            m_ThemeAccent = PDTA_Undefined
+        End If
+        
+        m_MonochromeIcons = g_UserPreferences.GetPref_Boolean("Themes", "MonochromeIcons", False)
+        
     Else
         'FYI: inside the designer, PD will silently fall back on hard-coded IDE colors
     End If
@@ -198,8 +241,12 @@ Friend Sub LoadDefaultPDTheme()
             m_ThemeClass = PDTC_Dark
             themeName = "Dark"
             themeFilename = "Default_Dark.xml"
+            
+            m_ThemeAccent = PDTA_Blue
             accentName = "Blue"
             accentFilename = "Colors_Blue.xml"
+            
+            m_MonochromeIcons = False
             themeLoadedCorrectly = Me.LoadThemeFile(themeFilename, accentFilename)
             
             'If this attempt fails, there's nothing left to try.  Pray to the programming gods that the
@@ -314,7 +361,7 @@ Private Function DoesThemeFileExist(ByVal themeFile As String) As Boolean
     
 End Function
 
-Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal accentColor As PD_THEME_ACCENT = PDTA_Undefined, Optional ByVal syncMenusToMatch As Boolean = False) As Boolean
+Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal accentColor As PD_THEME_ACCENT = PDTA_Undefined) As Boolean
     
     Dim themeName As String
     Select Case themeClass
@@ -358,69 +405,8 @@ Friend Function SetNewTheme(ByVal themeClass As PD_THEME_CLASS, Optional ByVal a
     Else
         SetNewTheme = False
     End If
-    
-    If syncMenusToMatch Then SynchronizeThemeMenus
-    
+        
 End Function
-
-'After theme changes are made, call this sub to synchronize the main window's theme menu to the current theme's properties
-Friend Sub SynchronizeThemeMenus()
-    
-    If g_IsProgramRunning Then
-    
-        Dim themeName As String, accentName As String
-        themeName = g_UserPreferences.GetPref_String("Themes", "CurrentTheme", "Dark")
-        accentName = g_UserPreferences.GetPref_String("Themes", "CurrentAccent", "Blue")
-        
-        If (StrComp(LCase$(themeName), "dark", vbBinaryCompare) = 0) Then
-            FormMain.mnuTheme(0).Checked = True
-            FormMain.mnuTheme(1).Checked = False
-        Else
-            FormMain.mnuTheme(1).Checked = True
-            FormMain.mnuTheme(0).Checked = False
-        End If
-        
-        Dim activeAccentIndex As Long
-        
-        Select Case LCase$(accentName)
-        
-            Case "blue"
-                activeAccentIndex = 3
-            
-            Case "brown"
-                activeAccentIndex = 4
-                
-            Case "green"
-                activeAccentIndex = 5
-                
-            Case "orange"
-                activeAccentIndex = 6
-                
-            Case "pink"
-                activeAccentIndex = 7
-                
-            Case "purple"
-                activeAccentIndex = 8
-                
-            Case "red"
-                activeAccentIndex = 9
-                
-            Case "teal"
-                activeAccentIndex = 10
-                
-            Case Else
-                activeAccentIndex = 3
-                
-        End Select
-        
-        Dim i As Long
-        For i = 3 To 10
-            FormMain.mnuTheme(i).Checked = CBool(i = activeAccentIndex)
-        Next i
-        
-    End If
-
-End Sub
 
 Friend Function GetCurrentThemeClass() As PD_THEME_CLASS
     GetCurrentThemeClass = m_ThemeClass
@@ -443,7 +429,7 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
     
     'Attempt to resolve the passed themeFilename to one of these locations, giving preference to the /App folder.
     ' (TODO 6.8: make a decision on how much control we expose over theme editing; maybe the /Data folder is unnecessary)
-    If g_IsProgramRunning And Not g_ProgramShuttingDown Then
+    If (g_IsProgramRunning And (Not g_ProgramShuttingDown)) Then
     
         Dim fullThemePath As String
         fullThemePath = g_UserPreferences.GetThemePath & themeFilename
@@ -541,11 +527,17 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
         'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
         ' on the theme folder.
         If LoadThemeFile Then
+            
+            'Generate a unique "ID" for this theme; individual controls use this to know if they need to re-theme or not
             If (Len(overrideColorDefinitionFilename) <> 0) Then
                 m_CurrentThemeID = themeFilename & "-" & overrideColorDefinitionFilename
             Else
                 m_CurrentThemeID = themeFilename
             End If
+            
+            'Add the current "monochrome icons" setting onto the theme ID, as it also forces redraws when changed
+            m_CurrentThemeID = m_CurrentThemeID & Trim$(Str$(CLng(m_MonochromeIcons)))
+            
         Else
             RaiseThemingError "Default theme failed to load!  Catastrophic failure imminent!"
             ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
@@ -691,6 +683,8 @@ End Function
 Private Sub CacheUniversalColors()
 
     Dim colorCount As PD_UI_COLOR_LIST: colorCount = [_Count]
+    
+    Set m_UniversalColors = New pdThemeColors
     m_UniversalColors.InitializeColorList "UIElements", colorCount
     
     With m_UniversalColors
@@ -767,10 +761,15 @@ Private Sub RaiseThemingError(ByVal msgError As String, Optional ByVal msgIsNonE
 End Sub
 
 Private Sub Class_Initialize()
+    
     Set m_XML = New pdXML
     m_XML.SetTextCompareMode vbBinaryCompare
+    
     Set m_UniversalColors = New pdThemeColors
     Set m_SubclassedHWnds = New pdDictionary
+    
+    m_MonochromeIcons = False
+    
 End Sub
 
 Private Sub Class_Terminate()
