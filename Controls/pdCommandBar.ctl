@@ -507,7 +507,7 @@ Private Sub cmdAction_Click(Index As Integer)
 End Sub
 
 'CANCEL button
-Private Sub cmdCancel_Click()
+Private Sub CmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -527,7 +527,7 @@ Private Sub cmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     
     'Automatically validate all relevant controls on the parent object.  This is a huge perk, because it saves us
     ' from having to write validation code individually.

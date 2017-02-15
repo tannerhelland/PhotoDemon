@@ -83,7 +83,7 @@ Private m_ButtonHoverIndex As Long
 Private m_ButtonMouseDown As Long
 
 'Array of current button entries
-Private Type buttonEntry
+Private Type ButtonEntry
     btCaptionEn As String           'Current button caption, in its original English
     btCaptionTranslated As String   'Current button caption, translated into the active language (if English is active, this is a copy of btCaptionEn)
     btBounds As RECT                'Boundaries of this button (full clickable area, inclusive - meaning 1px border NOT included)
@@ -96,7 +96,7 @@ Private Type buttonEntry
                                     ' this value will be non-zero, and the button renderer must use it when rendering the button.
 End Type
 
-Private m_Buttons() As buttonEntry
+Private m_Buttons() As ButtonEntry
 Private m_numOfButtons As Long
 
 'Index of which button has the focus.  The user can use arrow keys to move focus between buttons.
@@ -477,7 +477,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     
     'Increase the button count and resize the array to match
     m_numOfButtons = m_numOfButtons + 1
-    ReDim Preserve m_Buttons(0 To m_numOfButtons - 1) As buttonEntry
+    ReDim Preserve m_Buttons(0 To m_numOfButtons - 1) As ButtonEntry
     
     'Shift all buttons above this one upward, as necessary.
     If itemIndex < m_numOfButtons - 1 Then
@@ -518,12 +518,12 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
 End Sub
 
 'Assign a DIB to a button entry.  Disabled and hover states are automatically generated.
-Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0)
+Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As String = vbNullString, Optional ByRef srcDIB As pdDIB, Optional ByVal imgWidth As Long = 0, Optional ByVal imgHeight As Long = 0, Optional ByVal preventMonoIcons As Boolean = False)
     
     'Load the requested resource DIB, as necessary
     If (imgWidth = 0) Then imgWidth = 32
     If (imgHeight = 0) Then imgHeight = 32
-    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight
+    If (Len(resName) <> 0) Then LoadResourceToDIB resName, srcDIB, imgWidth, imgHeight, , , preventMonoIcons
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
     ' (We also check for these != 0 to verify that an image was successfully loaded.)
@@ -1095,4 +1095,3 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-

@@ -83,7 +83,7 @@ Private m_ButtonHoverIndex As Long
 Private m_ButtonMouseDown As Long
 
 'Array of current button entries
-Private Type buttonEntry
+Private Type ButtonEntry
     btCaptionEn As String           'Current button caption, in its original English
     btCaptionTranslated As String   'Current button caption, translated into the active language (if English is active, this is a copy of btCaptionEn)
     btBounds As RECT                'Boundaries of this button (full clickable area, inclusive - meaning 1px border NOT included)
@@ -100,7 +100,7 @@ Private Type buttonEntry
     btToolTipIcon As TT_ICON_TYPE   'See above comments for btToolTipText
 End Type
 
-Private m_Buttons() As buttonEntry
+Private m_Buttons() As ButtonEntry
 Private m_numOfButtons As Long
 
 'Index of which button has the focus.  The user can use arrow keys to move focus between buttons.
@@ -457,7 +457,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     
     'Increase the button count and resize the array to match
     m_numOfButtons = m_numOfButtons + 1
-    ReDim Preserve m_Buttons(0 To m_numOfButtons - 1) As buttonEntry
+    ReDim Preserve m_Buttons(0 To m_numOfButtons - 1) As ButtonEntry
     
     'Shift all buttons above this one upward, as necessary.
     If itemIndex < m_numOfButtons - 1 Then

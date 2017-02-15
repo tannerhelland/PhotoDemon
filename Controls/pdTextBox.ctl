@@ -588,7 +588,7 @@ End Sub
 Private Sub RelayUpdatedColorsToEditBox()
     If (Not m_EditBox Is Nothing) Then
         m_EditBox.BackColor = m_Colors.RetrieveColor(PDEB_Background, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
-        m_EditBox.textColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
+        m_EditBox.TextColor = m_Colors.RetrieveColor(PDEB_Text, Me.Enabled, m_ControlHasFocus, m_MouseOverEditBox)
     End If
 End Sub
 

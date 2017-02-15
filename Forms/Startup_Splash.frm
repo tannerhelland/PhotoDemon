@@ -84,11 +84,11 @@ Public Sub PrepareSplashLogo(ByVal maxProgressValue As Long)
     Dim origLogoWidth As Long, origLogoHeight As Long
     origLogoWidth = FixDPI(779)
     origLogoHeight = FixDPI(220)
-    m_dibsLoadedSuccessfully = LoadResourceToDIB("pd_logo_white", m_logoDIB, origLogoWidth, origLogoHeight)
+    m_dibsLoadedSuccessfully = LoadResourceToDIB("pd_logo_white", m_logoDIB, origLogoWidth, origLogoHeight, , , True)
     If m_dibsLoadedSuccessfully Then m_logoAspectRatio = CDbl(m_logoDIB.GetDIBWidth) / CDbl(m_logoDIB.GetDIBHeight)
     
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
-    m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("pd_logo_black", m_shadowDIB, origLogoWidth, origLogoHeight)
+    m_dibsLoadedSuccessfully = m_dibsLoadedSuccessfully And LoadResourceToDIB("pd_logo_black", m_shadowDIB, origLogoWidth, origLogoHeight, , , True)
     
 End Sub
 
@@ -209,3 +209,4 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     End If
 
 End Sub
+

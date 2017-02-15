@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Resource Manager
 'Copyright 2016-2017 by Tanner Helland
 'Created: 13/December/16
-'Last updated: 29/December/16
-'Last update: add rudimentary monochrome icon support
+'Last updated: 14/February/17
+'Last update: flesh out official monochrome icon support
 '
 'PhotoDemon needs to include a whole swatch of custom resources.  These resources take up a lot of space,
 ' and we also need to pull different resources depending on things like screen DPI.  To simplify this process,
@@ -28,8 +28,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-Private Const DBG_TEST_MONOCHROME_ICONS As Boolean = False
 
 'If a resource file was loaded successfully, this will be set to TRUE.  You *must* check this value before
 ' attempting to retrieve individual resources.
@@ -74,8 +72,7 @@ Public Function LoadInitialResourceCollection() As Boolean
     #End If
     
     'Pull the "monochrome icon" setting from the theme engine.
-    ' TODO: actually implement this!
-    m_ThemeIconsMonochrome = DBG_TEST_MONOCHROME_ICONS
+    If (Not g_Themer Is Nothing) Then m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting() Else m_ThemeIconsMonochrome = False
     
     'TODO!  Someday we'll build the (finished) resource file directly into the .exe, but for now,
     ' load it from a static debug folder.
@@ -150,6 +147,7 @@ End Function
 Public Sub NotifyThemeChange()
     m_ThemeIconColor = g_Themer.GetGenericUIColor(UI_IconMonochrome)
     m_ThemeIconColorMenu = g_Themer.GetGenericUIColor(UI_IconMonochromeMenu)
+    m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting()
 End Sub
 
 'Load an image-type resource.  Destination width and height must be manually specified.  If they are not specified, the imgae resource
@@ -157,7 +155,7 @@ End Sub
 '
 'Optional padding and colors can also be specified, for places where icons are used in non-standard ways.  (Try to keep these to a minimum,
 ' as they are not guaranteed to work nicely with all themes.)
-Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Single = 0#, Optional ByVal dstIsMenu As Boolean = False, Optional ByVal customColor As Long = -1) As Boolean
+Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Single = 0#, Optional ByVal dstIsMenu As Boolean = False, Optional ByVal customColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False) As Boolean
     
     LoadImageResource = False
     
@@ -274,7 +272,7 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     'First: if the user wants monochrome icons, this overrides all other color settings.
                     Dim targetColor As Long
                     
-                    If m_ThemeIconsMonochrome Then
+                    If m_ThemeIconsMonochrome And (Not suspendMonochrome) Then
                         If dstIsMenu Then targetColor = m_ThemeIconColorMenu Else targetColor = m_ThemeIconColor
                         DIB_Support.ColorizeDIB dstDIB, targetColor
                     
@@ -328,7 +326,11 @@ Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
 End Function
 
 Private Sub Class_Initialize()
+    
     m_ResourcesAvailable = False
+    m_ThemeIconsMonochrome = False
+    
     Set m_XML = New pdXML
     m_XML.SetTextCompareMode vbBinaryCompare
+    
 End Sub
