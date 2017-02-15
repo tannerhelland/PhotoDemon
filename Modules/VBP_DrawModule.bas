@@ -26,7 +26,7 @@ Public Enum SystemIconConstants
     IDI_WINDOWS = 32517
 End Enum
 
-Private Declare Function LoadIconByID Lib "user32" Alias "LoadIconA" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
+Private Declare Function LoadIconW Lib "user32" (ByVal hInstance As Long, ByVal lpIconName As Long) As Long
 Private Declare Function DrawIcon Lib "user32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal hIcon As Long) As Long
 
 'API for converting between hWnd-specific coordinate spaces.  Note that the function technically accepts an
@@ -101,7 +101,7 @@ End Sub
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
 Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, ByVal x As Long, ByVal y As Long)
     Dim hIcon As Long
-    hIcon = LoadIconByID(0, icon)
+    hIcon = LoadIconW(0, icon)
     DrawIcon hDC, x, y, hIcon
 End Sub
 
@@ -658,7 +658,7 @@ End Sub
 '
 '(Also, note the corresponding "release" function below.)
 Public Sub CacheUIPensAndBrushes()
-    Drawing2D.QuickCreatePainter m_Painter
+    If (m_Painter Is Nothing) Then Drawing2D.QuickCreatePainter m_Painter
     Drawing2D.QuickCreatePairOfUIPens m_PenUIBase, m_PenUITop
     Drawing2D.QuickCreatePairOfUIPens m_PenUIBaseHighlight, m_PenUITopHighlight, True
 End Sub
