@@ -4,7 +4,7 @@ Begin VB.Form dialog_UITheme
    AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Interface theme"
+   Caption         =   " Theme and language"
    ClientHeight    =   6405
    ClientLeft      =   45
    ClientTop       =   315
