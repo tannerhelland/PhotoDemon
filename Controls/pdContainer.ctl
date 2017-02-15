@@ -147,11 +147,16 @@ Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    ucSupport.RequestCursor IDC_ARROW
+End Sub
+
 Private Sub UserControl_Initialize()
 
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd, , True
+    ucSupport.RequestExtraFunctionality True, , , False
     
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
