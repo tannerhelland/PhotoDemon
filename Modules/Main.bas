@@ -610,7 +610,6 @@ Public Sub ContinueLoadingProgram()
     ColorManagement.CacheDisplayCMMData
     
     'Apply visual styles
-    g_Themer.SynchronizeThemeMenus
     FormMain.UpdateAgainstCurrentTheme False, True
     
     

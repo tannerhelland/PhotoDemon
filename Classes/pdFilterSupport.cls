@@ -38,7 +38,7 @@ Private m_Interpolate As Boolean
 Private m_DstX As Long, m_DstY As Long
 
 'A function may want to force parts of an image to a certain color.  This simplified function can be used to do that.
-Public Sub ForcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
+Friend Sub ForcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
 
     Dim QuickVal As Long
     QuickVal = x * m_ColorDepth
@@ -54,7 +54,7 @@ End Sub
 ' do something with the colors from those various positions.
 '
 'Said another way, the caller need only calculate srcX and srcY, then this class will do the rest!
-Public Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, Optional ByRef origX As Long, Optional ByRef origY As Long)
+Friend Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, Optional ByRef origX As Long, Optional ByRef origY As Long)
     
     'Cache the original x/y values as necessary
     If m_EdgeMethod = EDGE_ORIGINAL Then
@@ -104,7 +104,7 @@ End Sub
 
 'After a transform has generate a set of reverse-mapped pixel coordinates, they are passed to this function.
 ' Based on already established parameters (such as interpolation, edge handling, etc), new pixel values are set.
-Public Sub SetPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
+Friend Sub SetPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, ByRef dstData() As Byte)
 
     If m_EdgeMethod = EDGE_ORIGINAL Then
         m_DstX = x
@@ -145,7 +145,7 @@ End Sub
 
 'When this support class is first initialized by a function, a number of parameters are specified.  It is much faster
 ' to set these once and store them instead of passing them every time a pixel needs to be handled.
-Public Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As EDGE_OPERATOR, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
+Friend Sub SetDistortParameters(ByVal imgColorDepth As Long, ByVal edgeMethod As EDGE_OPERATOR, ByVal toInterpolate As Boolean, ByVal finalX As Long, ByVal finalY As Long)
     
     m_ColorDepth = imgColorDepth
     m_ColorDepthLoop = m_ColorDepth - 1
@@ -159,7 +159,7 @@ End Sub
 'If a pixel lies outside image boundaries, move it in-bounds using one of several methods
 ' If the edge handle method is "Erase", this function will return a boolean indicating whether the supplied pixel
 ' must be erased.  If FALSE is returned, the pixel can be handled normally.
-Public Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As Boolean
+Friend Function FixDistortEdges(ByRef srcX As Double, ByRef srcY As Double) As Boolean
 
     Select Case m_EdgeMethod
     
