@@ -52,8 +52,10 @@ Private m_XML As pdXML
 ' during debugging.)
 '
 'In production builds, the initial collection is pulled from the .exe itself.
-Public Function LoadInitialResourceCollection() As Boolean
+Friend Function LoadInitialResourceCollection() As Boolean
 
+    'In developer builds, we preferentially load the file-based resource file from the App/PhotoDemon/Themes folder.
+    ' (The resource file is updated frequently, and it's easier to work with a standalone file.)
     #If DEBUGMODE = 1 Then
         
         pdDebug.LogAction "Loading core resource collection..."
@@ -70,6 +72,10 @@ Public Function LoadInitialResourceCollection() As Boolean
         End If
         
     #End If
+    
+    'If the theme file *was not loaded successfully* (as it won't be in production builds), load a copy directly from
+    ' this .exe's resource segment.
+    If (Not LoadInitialResourceCollection) Then LoadInitialResourceCollection = LoadDefaultResource()
     
     'Pull the "monochrome icon" setting from the theme engine.
     If (Not g_Themer Is Nothing) Then m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting() Else m_ThemeIconsMonochrome = False
@@ -134,17 +140,32 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
 End Function
 
 'Given a path to a .pdr file, attempt to load and validate it
-Public Function LoadResourceFile(ByRef srcPath As String) As Boolean
+Private Function LoadResourceFile(ByRef srcPath As String) As Boolean
     Set m_Resources = New pdPackager2
     m_ResourcesAvailable = m_Resources.ReadPackageFromFile(srcPath, PD_RES_IDENTIFIER, PD_SM_MemoryBacked)
     LoadResourceFile = m_ResourcesAvailable
 End Function
 
-Public Function AreResourcesAvailable() As Boolean
+'Load the default resource collection directly from this .exe instance
+Private Function LoadDefaultResource() As Boolean
+    
+    Set m_Resources = New pdPackager2
+    
+    'Pull the relevant resource out of memory
+    Dim tmpRes() As Byte
+    tmpRes = LoadResData("MAINRES", "CUSTOM")
+    
+    'Validate the resource
+    m_ResourcesAvailable = m_Resources.ReadPackageFromMemory(VarPtr(tmpRes(0)), UBound(tmpRes) + 1, PD_RES_IDENTIFIER)
+    LoadDefaultResource = m_ResourcesAvailable
+    
+End Function
+
+Friend Function AreResourcesAvailable() As Boolean
     AreResourcesAvailable = m_ResourcesAvailable
 End Function
 
-Public Sub NotifyThemeChange()
+Friend Sub NotifyThemeChange()
     m_ThemeIconColor = g_Themer.GetGenericUIColor(UI_IconMonochrome)
     m_ThemeIconColorMenu = g_Themer.GetGenericUIColor(UI_IconMonochromeMenu)
     m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting()
@@ -155,7 +176,7 @@ End Sub
 '
 'Optional padding and colors can also be specified, for places where icons are used in non-standard ways.  (Try to keep these to a minimum,
 ' as they are not guaranteed to work nicely with all themes.)
-Public Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Single = 0#, Optional ByVal dstIsMenu As Boolean = False, Optional ByVal customColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False) As Boolean
+Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pdDIB, Optional ByVal desiredWidth As Long = 0, Optional ByVal desiredHeight As Long = 0, Optional ByVal desiredBorders As Single = 0#, Optional ByVal dstIsMenu As Boolean = False, Optional ByVal customColor As Long = -1, Optional ByVal suspendMonochrome As Boolean = False) As Boolean
     
     LoadImageResource = False
     
