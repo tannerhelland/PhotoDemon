@@ -1,5 +1,2 @@
 // Icon for the main application
-AAA          ICON    	  PHOTO_all.ico
-
-// Essential resources (e.g. things that PD can't live without - this does *not* include stuff like translation files)
-MAINRES      CUSTOM    	  Core_Icons.pdrc
+AAA          ICON    MOVEABLE        PRELOAD         PHOTO_all.ico
