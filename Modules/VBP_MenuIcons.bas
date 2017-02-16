@@ -140,19 +140,9 @@ Private m_RecentFileIconSize As Long
 Private m_CursorSize As Long
 
 'Load all the menu icons from PhotoDemon's embedded resource file
-Public Sub LoadMenuIcons()
+Public Sub LoadMenuIcons(Optional ByVal alsoApplyMenuIcons As Boolean = True)
 
-    'If we are re-loading all icons instead of just loading them for the first time, clear out the old list
-    If Not (cMenuImage Is Nothing) Then
-        cMenuImage.Clear
-        Set cMenuImage = Nothing
-    End If
-    
-    'Reset the icon tracking array
-    curIcon = 0
-    Erase iconNames
-
-    Set cMenuImage = New clsMenuImage
+    FreeMenuIconCache
     
     With cMenuImage
             
@@ -170,13 +160,29 @@ Public Sub LoadMenuIcons()
     End With
             
     'Now that all menu icons are loaded, apply them to the proper menu entires
-    ApplyAllMenuIcons
+    If alsoApplyMenuIcons Then ApplyAllMenuIcons
         
     '...and initialize the separate MRU icon handler.
     Set cMRUIcons = New clsMenuImage
     If g_IsVistaOrLater Then m_RecentFileIconSize = FixDPI(64) Else m_RecentFileIconSize = FixDPI(16)
     cMRUIcons.Init FormMain.hWnd, m_RecentFileIconSize, m_RecentFileIconSize
         
+End Sub
+
+Public Sub FreeMenuIconCache()
+    
+    'If we are re-loading all icons instead of just loading them for the first time, clear out the old list
+    If (Not cMenuImage Is Nothing) Then
+        cMenuImage.Clear
+        Set cMenuImage = Nothing
+    End If
+    
+    Set cMenuImage = New clsMenuImage
+    
+    'Also reset the icon tracking array
+    curIcon = 0
+    Erase iconNames
+    
 End Sub
 
 'Apply (and if necessary, dynamically load) menu icons to their proper menu entries.

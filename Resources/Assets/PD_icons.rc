@@ -1,5 +1,12 @@
 // Icon for the main application
-AAA          ICON    	  PHOTO_all.ico
+AAA				ICON		PHOTO_all.ico
 
-// Essential resources (e.g. things that PD can't live without - this does *not* include stuff like translation files)
-MAINRES      CUSTOM    	  Core_Icons.pdrc
+// Essential resources follow
+// (These are things that PD requires for a successful run - this does *not* include stuff like translation files,
+//  which are "nice to have" but not "essential".)
+
+//Core resource collection (UI icons, etc)
+MAINRES			CUSTOM		Core_Icons.pdrc
+
+//Core theme files
+MAINTHEME		CUSTOM		Core_Themes.pdrc

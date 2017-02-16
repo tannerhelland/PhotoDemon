@@ -143,7 +143,6 @@ Public Sub ShowDialog()
     m_ThemeClass = g_Themer.GetCurrentThemeClass()
     m_ThemeAccent = g_Themer.GetCurrentThemeAccent()
     If (m_ThemeAccent = PDTA_Undefined) Then m_ThemeAccent = PDTA_Blue
-    Debug.Print m_ThemeAccent
     
     'Prep a painter for owner-drawn objects
     Drawing2D.QuickCreatePainter m_Painter
@@ -304,22 +303,26 @@ End Sub
 
 Private Sub LiveUpdateUITheme()
     
-    'Cache the currently selected theme settings at module level; these may need to be returned to our
-    ' parent function if the dialog is closed after this request.
-    If (btsInterface.ListIndex = 0) Then m_ThemeClass = PDTC_Dark Else m_ThemeClass = PDTC_Light
-    m_ThemeAccent = strAccents.ListIndex
-    m_MonoIcons = CBool(btsIcons.ListIndex = 1)
-    
-    'Relay any changes to PD's central themer and load a new theme to match
-    g_Themer.SetMonochromeIconSetting m_MonoIcons
-    g_Themer.SetNewTheme m_ThemeClass, m_ThemeAccent
-    g_Themer.LoadDefaultPDTheme
-    
-    'Normally, resources need to be reset after a theme change, but we deliberately suspend this inside this dialog
-    ' (because we don't want the "color" representation icon to be forced to monochrome)
-    'g_Resources.NotifyThemeChange
-    
-    'Re-theme this dialog
-    Interface.ApplyThemeAndTranslations Me
+    If (Not m_SuspendUpdates) Then
+        
+        'Cache the currently selected theme settings at module level; these may need to be returned to our
+        ' parent function if the dialog is closed after this request.
+        If (btsInterface.ListIndex = 0) Then m_ThemeClass = PDTC_Dark Else m_ThemeClass = PDTC_Light
+        m_ThemeAccent = strAccents.ListIndex
+        m_MonoIcons = CBool(btsIcons.ListIndex = 1)
+        
+        'Relay any changes to PD's central themer and load a new theme to match
+        g_Themer.SetMonochromeIconSetting m_MonoIcons
+        g_Themer.SetNewTheme m_ThemeClass, m_ThemeAccent
+        g_Themer.LoadDefaultPDTheme
+        
+        'Normally, resources need to be reset after a theme change, but we deliberately suspend this inside this dialog
+        ' (because we don't want the "color" representation icon to be forced to monochrome)
+        'g_Resources.NotifyThemeChange
+        
+        'Re-theme this dialog
+        Interface.ApplyThemeAndTranslations Me
+        
+    End If
     
 End Sub
