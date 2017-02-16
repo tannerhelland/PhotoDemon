@@ -1435,6 +1435,10 @@ Begin VB.Form FormMain
             Caption         =   "Theme editor..."
             Index           =   0
          End
+         Begin VB.Menu MnuDevelopers 
+            Caption         =   "Build theme package..."
+            Index           =   1
+         End
       End
    End
    Begin VB.Menu MnuWindowTop 
@@ -1891,6 +1895,10 @@ Private Sub mnuDevelopers_Click(Index As Integer)
         'Theme Editor
         Case 0
             ShowPDDialog vbModal, FormThemeEditor
+            
+        'Build theme package
+        Case 1
+            g_Themer.BuildThemePackage
             
     End Select
 

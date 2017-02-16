@@ -158,6 +158,10 @@ Private m_SubclassedHWnds As pdDictionary
 ' module to do it, because it appends a language ID to this value.
 Private m_CurrentThemeID As String
 
+'Failsafe copies of all theme files are embedded inside PhotoDemon.exe's resource segment.  We drop back to these if something
+' goes wrong with the normal theme files.
+Private m_ThemeBackup As pdPackager2
+
 Friend Function GetCurrentThemeID() As String
     GetCurrentThemeID = m_CurrentThemeID
 End Function
@@ -273,13 +277,11 @@ End Sub
 '  the root folder.  This sub will try to fix that.)
 Private Sub AttemptThemeRecovery()
 
-    'At present, there are six key theme files PD expects to exist (in the /App/PhotoDemon/Themes folder).
+    'At present, there are ten key theme files PD expects to exist (in the /App/PhotoDemon/Themes folder).
     ' These files come in three types:
     ' 1) Core theme files that describe most of the colors used by the program
     ' 2) Theme "accent" files that describe a (much smaller) set of accent colors.  These can be plugged
     '    into any base theme for a unique coloring scheme.
-    ' 3) A theme resource file, which contains all of the icons associated with a given theme.  (At present,
-    '    there is only one of these, built by me.)
     
     'If these files go missing, PD is liable to break.  Horribly.
     ' In the future, if we can't recover the files in question, I intend to pull a failsafe copy from PD's
@@ -423,110 +425,77 @@ End Function
 ' fall back to its default theme to prevent the program from exploding.
 Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal overrideColorDefinitionFilename As String = vbNullString) As Boolean
     
-    'Like most things in PD, themes can exist in two places:
+    'Like many things in PD, themes can exist in several places:
     ' 1) The "untouchable" /App folder, which contains PD's core data
-    ' 2) The /Data folder, which contains user-specific data (and can be deleted willy-nilly)
+    ' 2) PD's resource segment, which serves as a failsafe against theme file corruption
+    ' 3) (not currently implemented) The user's /Data folder, which contains user-specific data (and can be deleted willy-nilly)
     
-    'Attempt to resolve the passed themeFilename to one of these locations, giving preference to the /App folder.
-    ' (TODO 6.8: make a decision on how much control we expose over theme editing; maybe the /Data folder is unnecessary)
+    'Attempt to resolve the passed themeFilename to one of these locations
     If (g_IsProgramRunning And (Not g_ProgramShuttingDown)) Then
     
-        Dim fullThemePath As String
-        fullThemePath = g_UserPreferences.GetThemePath & themeFilename
-        
-        If m_XML.LoadXMLFile(fullThemePath) Then
+        If LoadThemeWithAllFallbacks(themeFilename, m_XML) Then
             
-            'Perform minor validation on the file
-            LoadThemeFile = m_XML.IsPDDataType("Visual theme") And m_XML.ValidateLoadedXMLData("Colors")
+            'Reset our internal color cache(s).  (This shortcut cache makes theme color retrieval much faster.)
+            ResetColorCache
             
-        Else
-            If g_IsProgramRunning Then
-                RaiseThemingError "failed to load requested theme: " & fullThemePath
-                RaiseThemingError "falling back to default PD theme..."
-            End If
+            'Resolve the theme class type (light, dark, or high-contrast)
+            Select Case m_XML.GetUniqueTag_String("ThemeClass", "Dark")
+                
+                Case "Light"
+                    m_ThemeClass = PDTC_Light
+                
+                Case "Dark"
+                    m_ThemeClass = PDTC_Dark
+                
+                Case "HighContrast"
+                    m_ThemeClass = PDTC_HighContrast
+                
+                Case Else
+                    RaiseThemingError "theme file doesn't define a theme class; assuming light theme"
+                    m_ThemeClass = PDTC_Light
+                
+            End Select
             
-            fullThemePath = g_UserPreferences.GetThemePath & "Default_Dark.xml"
-            LoadThemeFile = m_XML.LoadXMLFile(fullThemePath)
-            LoadThemeFile = LoadThemeFile And m_XML.IsPDDataType("Visual theme") And m_XML.ValidateLoadedXMLData("Colors")
+            'If we made it all the way here, this is good enough to call this load a "success"!
+            LoadThemeFile = True
             
-        End If
-        
-        'Regardless of success or failure, reset our internal color cache(s)
-        ResetColorCache
-        
-        'Resolve the theme class type (light, dark, or high-contrast)
-        Select Case m_XML.GetUniqueTag_String("ThemeClass", "Dark")
+            'Theme files generally consist of two parts: a theme XML file, and a color definition file.  This system allows
+            ' a single theme file to be re-used against multiple color definition files, making it easy to support various
+            ' color schemes with minimal work.
             
-            Case "Light"
-                m_ThemeClass = PDTC_Light
-            
-            Case "Dark"
-                m_ThemeClass = PDTC_Dark
-            
-            Case "HighContrast"
-                m_ThemeClass = PDTC_HighContrast
-            
-            Case Else
-                RaiseThemingError "theme file doesn't define a theme class; assuming light theme"
-                m_ThemeClass = PDTC_Light
-            
-        End Select
-        
-        'Theme files generally consist of two parts: a theme XML file, and a color definition file.  This system allows
-        ' a single theme file to be re-used against multiple color definition files, making it easy to support various
-        ' color schemes with minimal work.
-        
-        'Anyway, if the theme file loaded correctly, we need to also load its color definition file (if any).
-        If LoadThemeFile Then
-        
             'Color description files are listed under the DefinitionFile tag.  (This tag is optional, so we can
             ' assume all definitions are embedded in the file if the DefinitionFile tag doesn't exist.)
             If m_XML.DoesTagExist("DefinitionFile") Or (Len(overrideColorDefinitionFilename) <> 0) Then
-            
+                
                 'Load and validate the specified definition file
                 Dim tmpXML As pdXML
                 Set tmpXML = New pdXML
                 
-                Dim fullDefinitionPath As String
-                If Len(overrideColorDefinitionFilename) <> 0 Then
-                    fullDefinitionPath = g_UserPreferences.GetThemePath & overrideColorDefinitionFilename
-                Else
-                    fullDefinitionPath = g_UserPreferences.GetThemePath & m_XML.GetUniqueTag_String("DefinitionFile")
-                End If
+                Dim fullAccentName As String
+                If (Len(overrideColorDefinitionFilename) <> 0) Then fullAccentName = overrideColorDefinitionFilename Else fullAccentName = m_XML.GetUniqueTag_String("DefinitionFile")
                 
-                If tmpXML.LoadXMLFile(fullDefinitionPath) Then
+                If LoadAccentWithAllFallbacks(fullAccentName, tmpXML) Then
                 
-                    If tmpXML.IsPDDataType("Color definitions") And tmpXML.ValidateLoadedXMLData("Definitions") Then
+                    'Retrieve the definition list
+                    Dim colorDefinitionList As String
+                    colorDefinitionList = tmpXML.GetUniqueTag_String("Definitions")
                     
-                        'Retrieve the definition list
-                        Dim colorDefinitionList As String
-                        colorDefinitionList = tmpXML.GetUniqueTag_String("Definitions")
-                        
-                        'Plug it straight into the Definitions section of the current XML file.
-                        colorDefinitionList = colorDefinitionList & m_XML.GetUniqueTag_String("Definitions")
-                        
-                        If Not m_XML.UpdateTag("Definitions", colorDefinitionList) Then
-                            RaiseThemingError "color definition file listed in " & fullThemePath & " couldn't be dynamically inserted into parent theme"
-                        End If
+                    'Plug it straight into the Definitions section of the current XML file.
+                    colorDefinitionList = colorDefinitionList & m_XML.GetUniqueTag_String("Definitions")
                     
-                    Else
-                        RaiseThemingError "color definition file listed in " & fullThemePath & " failed to validate"
+                    If (Not m_XML.UpdateTag("Definitions", colorDefinitionList)) Then
+                        RaiseThemingError "color definition file listed in " & themeFilename & " couldn't be dynamically inserted into parent theme"
                     End If
-                
+                    
                 Else
-                    RaiseThemingError "color definition file listed in " & fullThemePath & " failed to load"
+                    RaiseThemingError "color definition file listed in " & themeFilename & " failed to load"
                 End If
-            
+                
+            'If a color definition file doesn't exist, that's okay; it just means this theme only supports its built-in colors.
             End If
-        
-        End If
-        
-        'With all color definitions imported, we can now cache a few program-wide UI colors
-        CacheUniversalColors
-        
-        'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
-        ' on the theme folder.
-        If LoadThemeFile Then
+            
+            'With all color definitions imported, we can now cache a few program-wide UI colors
+            CacheUniversalColors
             
             'Generate a unique "ID" for this theme; individual controls use this to know if they need to re-theme or not
             If (Len(overrideColorDefinitionFilename) <> 0) Then
@@ -539,12 +508,149 @@ Friend Function LoadThemeFile(ByVal themeFilename As String, Optional ByVal over
             m_CurrentThemeID = m_CurrentThemeID & Trim$(Str$(CLng(m_MonochromeIcons)))
             
         Else
-            RaiseThemingError "Default theme failed to load!  Catastrophic failure imminent!"
-            ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
+            RaiseThemingError "WARNING!  PD failed to load any theme whatsoever.  Catastrophic failure imminent!"
         End If
         
     End If
     
+End Function
+
+'Internal helper function, only. Failed theme loads will fall back to PD's embedded theme resources, as necessary.
+Private Function LoadThemeWithAllFallbacks(ByVal themeFilename As String, ByRef dstXML As pdXML) As Boolean
+
+    Dim fullThemePath As String
+    fullThemePath = g_UserPreferences.GetThemePath & themeFilename
+        
+    Dim loadSuccess As Boolean
+    
+    'In debug builds, we preferentially pull theme files from PD's theme folder.  In production builds, however,
+    ' we pull theme files directly from the .exe.
+    #If DEBUGMODE = 1 Then
+        loadSuccess = dstXML.LoadXMLFile(fullThemePath)
+        If loadSuccess Then loadSuccess = dstXML.IsPDDataType("Visual theme") And dstXML.ValidateLoadedXMLData("Colors")
+    #End If
+    
+    If (Not loadSuccess) Then
+        
+        RaiseThemingError "Requested theme file missing or broken.  Retrieving failsafe from internal cache...", True
+        
+        'Make sure the backup cache exists
+        If CacheBackupThemes() Then
+        
+            RaiseThemingError "Backup theme cache generated successfully.  Attempting to retrieve requested theme...", True
+            
+            'Try to pull the requested theme from the backup cache
+            loadSuccess = LoadBackupTheme(themeFilename, dstXML)
+            
+            'If *that* failed, it's probably a bad theme name.  Load PD's base theme as a final fallback.
+            If loadSuccess Then
+                RaiseThemingError "Backup theme retrieval successful.  Continuing with load...", True
+            Else
+                RaiseThemingError "Backup theme retrieval failed.  Reverting to PD's default theme..."
+                loadSuccess = LoadBackupTheme("Default_Dark.xml", dstXML)
+            End If
+            
+        End If
+        
+    End If
+        
+    'By now, we should have loaded *something*.  (If we haven't, this session is unusable.)
+    If loadSuccess Then
+        LoadThemeWithAllFallbacks = True
+    Else
+        RaiseThemingError "Catastrophic failure inside pdTheme.LoadThemeWithAllFallbacks().  This session is not recoverable."
+        LoadThemeWithAllFallbacks = False
+    End If
+    
+End Function
+
+'Internal helper function, only. Failed theme loads will fall back to PD's embedded theme resources, as necessary.
+Private Function LoadAccentWithAllFallbacks(ByVal accentFilename As String, ByRef dstXML As pdXML) As Boolean
+
+    Dim fullAccentPath As String
+    fullAccentPath = g_UserPreferences.GetThemePath & accentFilename
+        
+    Dim loadSuccess As Boolean
+    
+    'In debug builds, we preferentially pull theme files from PD's theme folder.  In production builds, however,
+    ' we pull theme files directly from the .exe.
+    #If DEBUGMODE = 1 Then
+        loadSuccess = dstXML.LoadXMLFile(fullAccentPath)
+        loadSuccess = dstXML.IsPDDataType("Color definitions") And m_XML.ValidateLoadedXMLData("Definitions")
+    #End If
+    
+    If (Not loadSuccess) Then
+        
+        RaiseThemingError "Requested accent file missing or broken.  Retrieving failsafe from internal cache...", True
+        
+        'Make sure the backup cache exists
+        If CacheBackupThemes() Then
+        
+            RaiseThemingError "Backup theme cache generated successfully.  Attempting to retrieve requested accent...", True
+            
+            'Try to pull the requested accent from the backup cache
+            loadSuccess = LoadBackupTheme(accentFilename, dstXML)
+            
+            'If *that* failed, it's probably a bad accent name.  Load PD's base accent (blue) as a final fallback.
+            If loadSuccess Then
+                RaiseThemingError "Backup accent retrieval successful.  Continuing with load...", True
+            Else
+                RaiseThemingError "Backup accent retrieval failed.  Reverting to PD's default accent..."
+                loadSuccess = LoadBackupTheme("Colors_Blue.xml", dstXML)
+            End If
+            
+        End If
+        
+    End If
+        
+    'By now, we should have loaded *something*.  (If we haven't, this session is unusable.)
+    If loadSuccess Then
+        LoadAccentWithAllFallbacks = True
+    Else
+        RaiseThemingError "Catastrophic failure inside pdTheme.LoadAccentWithAllFallbacks().  This session is not recoverable."
+        LoadAccentWithAllFallbacks = False
+    End If
+    
+End Function
+
+'Internal helper function, only.  Initializes PD's failsafe theme cache.
+Private Function CacheBackupThemes() As Boolean
+    
+    If (m_ThemeBackup Is Nothing) Then
+    
+        RaiseThemingError "Generating backup theme cache...", True
+        
+        Set m_ThemeBackup = New pdPackager2
+        
+        Dim tmpBytes() As Byte
+        tmpBytes = LoadResData("MAINTHEME", "CUSTOM")
+        
+        CacheBackupThemes = m_ThemeBackup.ReadPackageFromMemory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1, PD_RES_IDENTIFIER)
+        
+    Else
+        CacheBackupThemes = (m_ThemeBackup.GetNumOfNodes() <> 0)
+    End If
+
+End Function
+
+Private Function LoadBackupTheme(ByVal themeFilename As String, ByRef dstXML As pdXML) As Boolean
+    
+    If (Not m_ThemeBackup Is Nothing) Then
+    
+        Dim tmpArray() As Byte, tmpArraySize As Long
+        
+        If m_ThemeBackup.GetNodeDataByName(themeFilename, True, tmpArray, False, tmpArraySize) Then
+        
+            Dim tmpString As String
+            tmpString = Space$(tmpArraySize \ 2)
+            CopyMemory ByVal StrPtr(tmpString), ByVal VarPtr(tmpArray(0)), tmpArraySize
+            
+            LoadBackupTheme = dstXML.LoadXMLFromString(tmpString)
+        
+        End If
+    
+    End If
+
 End Function
 
 'Call this function to verify that an object exists inside the current theme file.  If it doesn't, you should not
@@ -725,6 +831,52 @@ End Sub
 Friend Function GetGenericUIColor(ByVal colorID As PD_UI_COLOR_LIST, Optional ByVal enabledState As Boolean = True, Optional ByVal activeState As Boolean = False, Optional ByVal hoverState As Boolean = False) As Long
     GetGenericUIColor = m_UniversalColors.RetrieveColor(colorID, enabledState, activeState, hoverState)
 End Function
+
+'DEVELOPER USE ONLY!
+' Package all core theme files into a single pdPackage instance, then write it out to file.  This package can then
+' be stored inside the .exe as a dedicated resource, which is PD's ultimate failsafe if the /App/PhotoDemon/Themes
+' folder goes missing.
+Friend Sub BuildThemePackage()
+
+    'This pdPackage instance does most the heavy lifting
+    Dim tmpPackage As pdPackager2
+    Set tmpPackage = New pdPackager2
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    'Prep a new package
+    Dim dstFilename As String
+    dstFilename = g_UserPreferences.GetThemePath(False) & "Core_Themes.pdrc"
+    tmpPackage.PrepareNewPackage , PD_RES_IDENTIFIER, , PD_SM_MemoryBacked
+    
+    'Add each file in turn
+    Dim listOfFiles As pdStringStack
+    cFile.RetrieveAllFiles g_UserPreferences.GetThemePath(False), listOfFiles, False, False, "xml"
+    
+    Dim tmpFilename As String
+    Do While listOfFiles.PopString(tmpFilename)
+        AddThemeFileToPackage tmpPackage, cFile, tmpFilename
+    Loop
+    
+    'With all files added, finalize the package
+    tmpPackage.WritePackageToFile dstFilename, PD_CE_Zstd, , Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+    
+End Sub
+
+'Helper for BuildThemePackage(), above.  Not intended or designed for any other use.
+Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager2, ByRef cFile As pdFSO, ByRef srcFilename As String)
+    
+    'Pull the source file into a string
+    Dim tmpString As String
+    cFile.LoadTextFileAsString srcFilename, tmpString
+    
+    'Copy that string into the packager
+    Dim tmpNode As Long
+    tmpNode = dstPackager.AddNode(cFile.GetFilename(srcFilename))
+    dstPackager.AddNodeDataFromString tmpNode, True, tmpString, PD_CE_Zstd, Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+
+End Sub
 
 Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
     If g_IsProgramRunning Then
