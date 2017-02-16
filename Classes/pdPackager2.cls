@@ -915,14 +915,12 @@ Friend Sub ClosePackage()
     If (Not m_DataBuffer Is Nothing) Then m_DataBuffer.StopStream
 End Sub
 
-'Load a pdPackage file into memory.  A few things to note:
-' - For performance reasons, this class caches the entire file contents in RAM.  It does this so that individual nodes can be
-'    quickly extracted without touching the hard drive.  If your particular pdPackage file is enormous, make sure you have enough
-'    memory to cache it!
-' - The caller is expected to handle detailed testing of the supplied path (e.g. read access, etc).  This function does only
+'Load a pdPackage file into memory.
+'
+'NOTE: the caller is expected to handle detailed testing of the supplied path (e.g. read access, etc).  This function performs
 '    minimal error checking.
 '
-'If the file can be successfully loaded, this function returns TRUE.
+'If the file can be successfully loaded and parsed, this function returns TRUE.
 '
 'Parameters include:
 ' 1) Source file.  (Again, callers must do their own validation on this path.)
@@ -931,7 +929,7 @@ End Sub
 ' 3) Mode for the pdStream backer.  MEMORY mode means the entire file will be immediately read into memory and stored there.
 '     For small files, this is fine, and will likely result in better node retrieval performance.  For large files, however,
 '     you probably just want the stream to be created in FILE mode.  This will only pull data from the file as it is requested,
-'     and you *must* keep the file alive for the duration of this pdPackage instance.
+'     and you *must* keep the file alive and accessible for the duration of this pdPackage instance.
 ' 4) Access rights for the pdStream backer.  In READ-ONLY mode, you will not be able to append anything to this pdPackage file.
 '     However, memory-mapping will be used to load nodes into file, resulting in even better performance.  This is the default
 '     mode, and at present, the only supported mode.
@@ -1062,10 +1060,16 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
             End If
             
+            'Free the compressed copy of the directory (if any)
+            Erase tmpCompressionBuffer
+            
             'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
             m_NumOfNodes = m_FileHeader.NodeCount
             ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
             CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
+            
+            'Free the raw directory buffer
+            Erase rawBuffer
             
             'The package's directory is now available in-memory.  Before proceeding, make a note of the requested stream mode
             ' and access, which affect how we pull data out of this file.
@@ -1129,6 +1133,187 @@ StopPackageFileRead:
     ReadPackageFromFile = False
     Exit Function
 
+End Function
+
+'Load a pdPackage file from some arbitrary pointer (+length, obviously).  If validated successfully, the source memory will be
+' copied locally, meaning you can free the source immediately after this function successfully returns.
+'
+'If a pdPackage can be successfully parsed from the pointer, this function returns TRUE.
+'
+'Parameters include:
+' 1, 2) Pointer + length.  Length is non-optional, and it *will* be validated against the pdPackage's internal pointers -
+'     so make certain it is correct.
+' 3) Optionally, a sub-type value you want to validate.  If this value is not found in bytes 4-7 of the file header, the file
+'     will be rejected.  (If you didn't request a specific sub-type at pdPackage creation time, don't enable this check!)
+' 4) Access rights for the pdStream backer.  READ-ONLY mode is the default mode, and at present, the only supported mode.
+Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength As Long, Optional ByVal subTypeValidator As Long = 0, Optional ByVal streamAccess As PD_STREAM_ACCESS = PD_SA_ReadOnly) As Boolean
+
+    On Error GoTo StopPackageMemoryRead
+    
+    Dim srcBuffer() As Byte, rawBuffer() As Byte, tmpCompressionBuffer() As Byte
+    
+    'Attempt to load a file header.  If the source memory is invalid, this may potentially be gibberish, but we won't know until we try!
+    If (srcLength > LenB(m_FileHeader)) Then
+        CopyMemory_Strict VarPtr(m_FileHeader), srcPointer, LenB(m_FileHeader)
+    Else
+        InternalErrorMsg "Bad memory length specified (smaller than pdPackage header).  Abandoning load."
+        GoTo StopPackageMemoryRead
+    End If
+    
+    'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
+    If (m_FileHeader.PDP_ID <> PDP_UNIVERSAL_IDENTIFIER) Then
+        InternalErrorMsg "Memory doesn't have valid pdPackage header.  Abandoning load."
+        GoTo StopPackageMemoryRead
+    End If
+        
+    'If the caller requested a sub-type validation, perform that now
+    If (subTypeValidator <> 0) Then
+        If (m_FileHeader.PDP_SubID <> subTypeValidator) Then
+            InternalErrorMsg "Memory doesn't match requested sub-type value.  Abandoning load."
+            GoTo StopPackageMemoryRead
+        End If
+    End If
+        
+    'Finally, check the PDP version.  This check is currently meaningless, as this class only supports the current pdPackage version.
+    If (m_FileHeader.PDP_Version < THIS_PDPACKAGE_VERSION) Then
+        InternalErrorMsg "Legacy file format could not be decoded."
+        GoTo StopPackageMemoryRead
+        
+    'This is the current PDP version.  Continue the normal loading process.
+    Else
+        
+        'Make sure the struct size is correct; if it isn't, all subsequent parsing will fail.
+        Dim tmpNode As PDP_NODE
+        If (m_FileHeader.NodeStructSize <> LenB(tmpNode)) Then
+            InternalErrorMsg "Node struct size in header is invalid.  This memory looks to be invalid!  Abandoning load."
+            GoTo StopPackageMemoryRead
+        End If
+        
+        'Next, it's time to retrieve the directory.  The size of the directory varies, based on whether it received
+        ' second-pass compression, but the uncompressed result will *always* end up inside this rawBuffer() array.
+        ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSizeOriginal - 1) As Byte
+        
+        'Failsafe memory length check.  (Note that the pdPackage directory sits at the *end* of the file, so this length
+        ' check is the most important one!)
+        If (srcLength >= m_FileHeader.DirectoryChunkPosition + m_FileHeader.DirectoryChunkSizePacked) Then
+        
+            'If no compression was applied, read the bytes directly into our buffer
+            If (m_FileHeader.DirectoryChunkSizePacked = m_FileHeader.DirectoryChunkSizeOriginal) Then
+                CopyMemory_Strict VarPtr(rawBuffer(0)), srcPointer + m_FileHeader.DirectoryChunkPosition, m_FileHeader.DirectoryChunkSizePacked
+                
+            'If the packed and original sizes do *not* match, the directory is compressed.  Attempt to decompress it now.
+            Else
+                
+                'Regardless of compression method, pull the raw bytes from file
+                ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizePacked - 1) As Byte
+                CopyMemory_Strict VarPtr(tmpCompressionBuffer(0)), srcPointer + m_FileHeader.DirectoryChunkPosition, m_FileHeader.DirectoryChunkSizePacked
+                
+                Dim decompressionResult As Boolean: decompressionResult = False
+                
+                'Figure out which decompression library was used for the original compression.
+                ' (Note that if the required decompression library isn't available, we're screwed; loading is impossible.)
+                Dim cmpEngine As PD_COMPRESSION_ENGINES: cmpEngine = PD_CE_NoCompression
+                If GetBitFlag(PDP_HF2_ZstdRequired, m_FileHeader.DirectoryFlags(0)) Then
+                    cmpEngine = PD_CE_Zstd
+                ElseIf GetBitFlag(PDP_HF2_ZlibRequired, m_FileHeader.DirectoryFlags(0)) Then
+                    cmpEngine = PD_CE_ZLib
+                ElseIf GetBitFlag(PDP_HF2_Lz4Required, m_FileHeader.DirectoryFlags(0)) Then
+                    cmpEngine = PD_CE_Lz4
+                End If
+                
+                If Compression.IsCompressionEngineAvailable(cmpEngine) Then
+                
+                    decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, cmpEngine)
+                
+                    'If the decompression fails, it may be due to a bad compression encoding (e.g. the data is compressed using a system other
+                    ' than the one flagged in the file.)  Try again using a different compression method.
+                    If (Not decompressionResult) Then
+                    
+                        InternalErrorMsg "WARNING!  pdPackager2.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
+                        
+                        Dim i As PD_COMPRESSION_ENGINES
+                        For i = PD_CE_ZLib To PD_CE_Lz4
+                            decompressionResult = Compression.DecompressPtrToPtr(VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizePacked, i)
+                            If decompressionResult Then
+                                InternalErrorMsg "Directory may be recoverable; compressor #" & i & " worked.  Proceeding with load..."
+                                Exit For
+                            End If
+                        Next i
+                        
+                        'If all decompression attempts failed, we're shit out of luck
+                        If (Not decompressionResult) Then
+                            InternalErrorMsg "Sorry, but no decompressor worked.  Something's definitely wrong with this package."
+                        End If
+                        
+                    End If
+                    
+                Else
+                    InternalErrorMsg "WARNING!  Required decompression engine missing; pdPackage directory cannot be read."
+                End If
+                
+                'If decompression failed, we have to abandon the load process, as we can't even access the original file's directory.
+                If (Not decompressionResult) Then
+                    InternalErrorMsg "WARNING!  Could not decompress pdPackage directory.  Possible explanations include missing decompression library or file corruption."
+                    GoTo StopPackageMemoryRead
+                End If
+                    
+            End If
+            
+        'Source length is invalid (too small)
+        Else
+            InternalErrorMsg "WARNING!  Could not retrieve pdPackage directory; supplied mem length too small."
+            GoTo StopPackageMemoryRead
+        End If
+        
+        'Free the compressed copy of the directory (if any)
+        Erase tmpCompressionBuffer
+            
+        'Use information from the file header to prepare the directory array, then copy the raw buffer into it.
+        m_NumOfNodes = m_FileHeader.NodeCount
+        ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+        CopyMemory_Strict VarPtr(m_NodeDirectory(0)), VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSizeOriginal
+        
+        'Free the raw directory buffer
+        Erase rawBuffer
+        
+        'The package's directory is now available in-memory.  Before proceeding, make a note of the stream mode and access,
+        ' which affect how we pull data out of this file.  (Note that stream mode is hard-coded to MEMORY because we are
+        ' obviously loading the data from memory, not from file!)
+        m_StreamMode = PD_SM_MemoryBacked
+        m_StreamAccess = streamAccess
+        
+        'Finally, retrieve the data chunk.  Note that we basically just wrap a pdStream object around the data, and it handles
+        ' everything from there.
+        Set m_DataBuffer = New pdStream
+        If (m_FileHeader.DataChunkSizePacked = m_FileHeader.DataChunkSizeOriginal) Then
+            
+            'For a memory-backed stream, immediately load the full data chunk into memory.
+            m_DataBuffer.StartStream PD_SM_MemoryBacked, m_StreamAccess
+            m_DataBuffer.EnsureBufferSpaceAvailable m_FileHeader.DataChunkSizeOriginal, True
+            CopyMemory_Strict m_DataBuffer.Peek_PointerOnly(0), srcPointer + m_FileHeader.DataChunkPosition, m_FileHeader.DataChunkSizeOriginal
+            
+            'Reset the buffer's internal data pointer (instead of letting it auto-position itself at the end of the buffer.)
+            m_DataBuffer.SetSizeExternally m_FileHeader.DataChunkSizeOriginal
+            m_DataBuffer.SetPosition 0
+                
+        Else
+            InternalErrorMsg "Data chunk sizes don't match.  Package cannot be read."
+            GoTo StopPackageMemoryRead
+        End If
+        
+    End If
+    
+    'Memory-based load complete!
+    ReadPackageFromMemory = True
+    
+    
+    Exit Function
+    
+StopPackageMemoryRead:
+    
+    InternalErrorMsg "An internal error occurred in the pdPackager.ReadPackageFromMemory function."
+    ReadPackageFromMemory = False
+    
 End Function
 
 'Returns the version of a loaded pdPackage.  Return value is meaningless if no package is loaded.
