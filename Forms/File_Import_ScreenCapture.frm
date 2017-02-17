@@ -25,21 +25,15 @@ Begin VB.Form FormScreenCapture
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4335
       Index           =   1
       Left            =   120
-      ScaleHeight     =   289
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   393
       TabIndex        =   5
       Top             =   1200
       Width           =   5895
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdListBox lstWindows 
          Height          =   3135
          Left            =   120
@@ -77,21 +71,15 @@ Begin VB.Form FormScreenCapture
          UseCustomForeColor=   -1  'True
       End
    End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      HasDC           =   0   'False
+   Begin PhotoDemon.pdContainer picContainer 
       Height          =   4335
       Index           =   0
       Left            =   120
-      ScaleHeight     =   289
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   393
       TabIndex        =   3
       Top             =   1200
       Width           =   5895
+      _ExtentX        =   0
+      _ExtentY        =   0
       Begin PhotoDemon.pdCheckBox chkMinimize 
          Height          =   300
          Left            =   120
@@ -255,6 +243,7 @@ Private Sub Form_Load()
     lblMinimizedWarning.Caption = g_Language.TranslateMessage("This program is currently minimized.  Restore it to normal size for best results.")
     If Not (g_Themer Is Nothing) Then
         lblMinimizedWarning.ForeColor = g_Themer.GetGenericUIColor(UI_ErrorRed)
+        picPreview.BackColor = g_Themer.GetGenericUIColor(UI_Background)
     Else
         lblMinimizedWarning.ForeColor = RGB(232, 24, 20)
     End If
