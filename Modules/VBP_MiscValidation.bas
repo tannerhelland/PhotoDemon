@@ -103,7 +103,7 @@ End Function
 Public Function CDblCustom(ByVal srcString As String) As Double
 
     'Replace commas with periods
-    If InStr(1, srcString, ",") > 0 Then srcString = Replace(srcString, ",", ".")
+    If (InStr(1, srcString, ",", vbBinaryCompare) > 0) Then srcString = Replace$(srcString, ",", ".", , , vbBinaryCompare)
     
     'We can now use Val() to convert to Double
     If IsNumberLocaleUnaware(srcString) Then

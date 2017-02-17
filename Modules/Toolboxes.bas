@@ -72,8 +72,16 @@ Public Sub LoadToolboxData()
             .IsVisiblePreference = g_UserPreferences.GetPref_Boolean("Toolbox", GetToolboxName(i) & "Visible", True)
             .IsVisibleNow = .IsVisiblePreference
             
-            'Apply a failsafe size check to the previous session's saved value
+            'Retrieve the last-set size for the toolbox, then adjust it to compensate for any per-session DPI changes
             newSize = g_UserPreferences.GetPref_Long("Toolbox", GetToolboxName(i) & "Size", .DefaultSize)
+            
+            Dim lastDPI As Single
+            lastDPI = g_UserPreferences.GetPref_Float("Toolbox", "LastSessionDPI", 1#)
+            If (lastDPI < 1#) Then lastDPI = 1#
+            If (lastDPI > 4#) Then lastDPI = 4#
+            newSize = newSize * (Interface.GetSystemDPI() / lastDPI)
+            
+            'Apply a failsafe size check to the previous session's adjusted value
             If (newSize < .MinSize) Then newSize = .MinSize
             If (newSize > .MaxSize) Then newSize = .MaxSize
             .ConstrainingSize = newSize
@@ -93,6 +101,8 @@ Public Sub SaveToolboxData()
             g_UserPreferences.SetPref_Long "Toolbox", GetToolboxName(i) & "Size", .ConstrainingSize
         End With
     Next i
+    
+    g_UserPreferences.SetPref_Float "Toolbox", "LastSessionDPI", Interface.GetSystemDPI()
 
 End Sub
 
@@ -129,8 +139,8 @@ Private Sub FillDefaultToolboxValues()
                 
                 Case PDT_BottomToolbox
                     .DefaultSize = FixDPI(100)
-                    .MinSize = 0                'The bottom toolbox is unique in not being user-sizable.  It is autosized according
-                    .MaxSize = FixDPI(500)      ' to the requirements of each tool, so these are basically just dummy values.
+                    .MinSize = FixDPI(100)      'The bottom toolbox is unique in not being user-sizable.  It is autosized according
+                    .MaxSize = FixDPI(100)      ' to the requirements of each tool, so these are basically just dummy values.
                 
                 Case PDT_RightToolbox
                     .DefaultSize = FixDPI(230)
@@ -219,7 +229,7 @@ Public Sub PositionToolbox(ByVal toolID As PD_Toolbox, ByVal toolboxHWnd As Long
             If (toolID = PDT_LeftToolbox) Then
                 g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, .MinSize, , .MaxSize
             ElseIf (toolID = PDT_BottomToolbox) Then
-                
+                g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, , .MinSize, , .MaxSize
             ElseIf (toolID = PDT_RightToolbox) Then
                 g_WindowManager.RequestMinMaxTracking toolboxHWnd, toolID, .MinSize, , .MaxSize
             End If

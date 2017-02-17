@@ -147,6 +147,8 @@ Public Sub InitializeInterfaceBackend()
     
 End Sub
 
+'Get/set system DPI *as a ratio*, e.g. 96 DPI ("100%") should be cached as 1.0.  This gives us an easy modifier for calculating
+' new window layouts and sizes.
 Public Sub CacheSystemDPI(ByVal newDPI As Single)
     m_CurrentSystemDPI = newDPI
 End Sub
@@ -1217,7 +1219,7 @@ End Sub
 Public Function FixDPI(ByVal pxMeasurement As Long) As Long
 
     'The first time this function is called, m_DPIRatio will be 0.  Calculate it.
-    If m_DPIRatio = 0# Then
+    If (m_DPIRatio = 0#) Then
     
         'There are 1440 twips in one inch.  (Twips are resolution-independent.)  Use that knowledge to calculate DPI.
         m_DPIRatio = 1440 / TwipsPerPixelXFix
@@ -1255,35 +1257,19 @@ End Function
 ' certain controls (like SmartCheckBox) because the size will actually come up short due to rounding errors!
 ' So whenever TwipsPerPixelXFix/Y is required, use these functions instead.
 Public Function TwipsPerPixelXFix() As Double
-    
     If (m_CurrentSystemDPI = 0) Then
-    
-        If Screen.TwipsPerPixelX = 7 Then
-            TwipsPerPixelXFix = 7.5
-        Else
-            TwipsPerPixelXFix = Screen.TwipsPerPixelX
-        End If
-        
+        If (Screen.TwipsPerPixelX = 7) Then TwipsPerPixelXFix = 7.5 Else TwipsPerPixelXFix = Screen.TwipsPerPixelX
     Else
         TwipsPerPixelXFix = 15# / m_CurrentSystemDPI
     End If
-
 End Function
 
 Public Function TwipsPerPixelYFix() As Double
-    
-    If m_CurrentSystemDPI = 0 Then
-    
-        If Screen.TwipsPerPixelY = 7 Then
-            TwipsPerPixelYFix = 7.5
-        Else
-            TwipsPerPixelYFix = Screen.TwipsPerPixelY
-        End If
-        
+    If (m_CurrentSystemDPI = 0) Then
+        If (Screen.TwipsPerPixelY = 7) Then TwipsPerPixelYFix = 7.5 Else TwipsPerPixelYFix = Screen.TwipsPerPixelY
     Else
         TwipsPerPixelYFix = 15# / m_CurrentSystemDPI
     End If
-
 End Function
 
 'ScaleX and ScaleY functions do not work when converting from pixels to twips, thanks to the 15 / 2 <> 7
