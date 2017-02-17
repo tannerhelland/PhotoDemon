@@ -1354,7 +1354,7 @@ Public Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
     If (m_RenderingEngine = tre_WAPI) Then
         
         'These backends have no reason to render if text isn't present
-        If Len(m_CurrentText) <> 0 Then
+        If (Len(m_CurrentText) <> 0) Then
         
                 'We should now know whether GDI or GDI+ is required for this combination of settings.
             Select Case m_CurrentBackend
@@ -1364,7 +1364,7 @@ Public Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
                     RenderTextToDIB = RenderTextToDIB_GDIPlus(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
                     
                     'GDI+ may fail when actually drawing (UGH).  If it does, silently fall back to GDI.
-                    If Not RenderTextToDIB Then RenderTextToDIB = RenderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
+                    If (Not RenderTextToDIB) Then RenderTextToDIB = RenderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
                     
                 'GDI is required
                 Case fb_GDI
@@ -1474,17 +1474,17 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
             ' overhang to the right boundary as well.  (We do this because GDI+ word wrap is unpredictable, and we can't retrieve
             ' where it decides to wordwrap - so we have to make assumptions like this.)
             newWidth = boundingRect.Width - (Abs(firstCharABCWidth.abcfC) + 1)
-            If newWidth > 0 Then boundingRect.Width = newWidth
+            If (newWidth > 0) Then boundingRect.Width = newWidth
             
         End If
         
     End If
         
     'Finally, use GDI+ to render the actual string
-    Dim gdipReturn As Long
+    Dim gdipReturn As GP_Result
     gdipReturn = GdipDrawString(dstGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, boundingRect, m_GDIPlusStringFormat, gdipBrush)
     
-    If gdipReturn = 0 Then
+    If (gdipReturn = GP_OK) Then
         RenderTextToDIB_GDIPlus = True
     Else
         Debug.Print "WARNING!  GdipDrawString failed with error code " & gdipReturn
@@ -1502,7 +1502,7 @@ End Function
 ' fits into the desired target rect.
 Private Function GetStringBoundingBox(ByRef srcGraphics As Long, ByRef srcString As String, ByRef srcLayoutRect As RECTF, ByRef dstBoundRect As RECTF) As Boolean
 
-    If m_GDIPlusFont <> 0 Then
+    If (m_GDIPlusFont <> 0) Then
         
         Dim gdipReturn As Long
         gdipReturn = GdipMeasureString(srcGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, srcLayoutRect, m_GDIPlusStringFormat, dstBoundRect, ByVal 0&, ByVal 0&)

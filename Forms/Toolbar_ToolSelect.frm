@@ -877,6 +877,13 @@ Public Sub ResetToolButtonStates()
             m_ActiveToolPanel = TP_None
             
     End Select
+    
+    'Notify the parent options panel of the new tool panel.  It will handle window synchronization between the two.
+    If (m_ActiveToolPanel = TP_None) Then
+        toolbar_Options.NotifyChildPanelHWnd 0
+    Else
+        toolbar_Options.NotifyChildPanelHWnd m_Panels(m_ActiveToolPanel).PanelHWnd
+    End If
         
     'If a selection tool is active, we will also need activate a specific subpanel
     Dim activeSelectionSubpanel As Long
@@ -1014,7 +1021,7 @@ Public Sub ResetToolButtonStates()
         Next i
         
     End If
-            
+    
     NewToolSelected
     
     m_InsideReflowCode = False

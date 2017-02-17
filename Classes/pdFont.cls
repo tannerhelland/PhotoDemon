@@ -367,13 +367,13 @@ End Sub
 Public Sub AttachToDC(ByVal targetDC As Long)
     
     #If DEBUGMODE = 1 Then
-        If targetDC = 0 Then Debug.Print "WARNING!  pdFont.AttachToDC() was called with targetDC = 0.  Fix this!"
-        If curDC <> 0 Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
-        If targetDC = curDC Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
+        If (targetDC = 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called with targetDC = 0.  Fix this!"
+        If (curDC <> 0) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
+        If (targetDC = curDC) Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
     #End If
     
     'Set the font
-    If targetDC <> curDC Then
+    If (targetDC <> curDC) Then
         oldFont = SelectObject(targetDC, curFont)
         curDC = targetDC
     End If

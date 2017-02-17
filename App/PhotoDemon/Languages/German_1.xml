@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.247</langversion>
+<langversion>6.7.248</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -11508,7 +11508,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Bitte wählen Sie einen anderen.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -14946,8 +14946,8 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4468 phrases. -->
-<!-- 1950 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4470 phrases. -->
+<!-- 1952 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12381 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2437</langversion>
+<langversion>6.8.2439</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -5810,6 +5810,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
+<original>Build theme package</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>&Fenster</translation>
 </phrase>
@@ -6446,7 +6451,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 555 phrases. 185 were duplicates of existing phrases, so only 370 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -11514,7 +11519,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Wählen Sie bitte einen anderen aus.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -14950,10 +14955,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2517</phrasecount>
+<phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4467 phrases. -->
-<!-- 1950 are duplicates, so only 2517 unique phrases have been written to file. -->
-<!-- These 2517 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4470 phrases. -->
+<!-- 1952 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- These 2518 phrases contain approximately 12381 total words. -->
 
 </pdData>

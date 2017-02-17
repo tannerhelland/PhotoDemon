@@ -370,25 +370,29 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDNO_Background, Me.Enabled))
     
-    'Before doing anything else, ask our owner to paint the "new" and "old" areas
-    RaiseEvent DrawNewItem(bufferDC, VarPtr(m_NewItemRect))
-    RaiseEvent DrawOldItem(bufferDC, VarPtr(m_OldItemRect))
-    
-    'Next, paint the "new" and "old" captions
-    Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
-    
-    With tmpFont
-        .SetTextAlignment vbLeftJustify
-        .SetFontColor m_Colors.RetrieveColor(PDNO_Caption, Me.Enabled)
-    End With
-    
-    tmpFont.AttachToDC bufferDC
-    tmpFont.FastRenderText m_NewCaptionPt.x, m_NewCaptionPt.y, m_NewCaptionTranslated
-    tmpFont.FastRenderText m_OldCaptionPt.x, m_OldCaptionPt.y, m_OldCaptionTranslated
-    
-    tmpFont.ReleaseFromDC
-    Set tmpFont = Nothing
+    If (bufferDC <> 0) Then
+        
+        'Before doing anything else, ask our owner to paint the "new" and "old" areas
+        RaiseEvent DrawNewItem(bufferDC, VarPtr(m_NewItemRect))
+        RaiseEvent DrawOldItem(bufferDC, VarPtr(m_OldItemRect))
+        
+        'Next, paint the "new" and "old" captions
+        Dim tmpFont As pdFont
+        Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
+        
+        With tmpFont
+            .SetTextAlignment vbLeftJustify
+            .SetFontColor m_Colors.RetrieveColor(PDNO_Caption, Me.Enabled)
+        End With
+        
+        tmpFont.AttachToDC bufferDC
+        tmpFont.FastRenderText m_NewCaptionPt.x, m_NewCaptionPt.y, m_NewCaptionTranslated
+        tmpFont.FastRenderText m_OldCaptionPt.x, m_OldCaptionPt.y, m_OldCaptionTranslated
+        
+        tmpFont.ReleaseFromDC
+        Set tmpFont = Nothing
+        
+    End If
     
     'Next, draw borders around the new and old items
     If g_IsProgramRunning Then

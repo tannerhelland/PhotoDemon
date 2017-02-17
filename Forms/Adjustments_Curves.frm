@@ -713,12 +713,12 @@ End Function
 
 Private Sub RedrawPreviewBox()
 
-    If Not cmdBar.PreviewsAllowed Then Exit Sub
+    If (Not cmdBar.PreviewsAllowed) Or (Not g_IsProgramRunning) Then Exit Sub
 
     picDraw.Picture = LoadPicture("")
     
     'Start by copying the proper histogram image into the picture box
-    On Error GoTo skipHistogramRender
+    On Error GoTo SkipHistogramRender
     
     Select Case btsHistogram.ListIndex
     
@@ -737,7 +737,7 @@ Private Sub RedrawPreviewBox()
     
     'Next, draw a grid that separates the image into 16 segments; this helps orient the user, and it also provides a
     ' border for the drawing area (important since that area sits well within the picture box itself).
-skipHistogramRender:
+SkipHistogramRender:
     picDraw.DrawWidth = 1
     picDraw.ForeColor = RGB(172, 172, 172)
     

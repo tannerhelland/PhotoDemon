@@ -2169,25 +2169,29 @@ End Sub
 ' to the underlying control.  If you do, those images will obviously overwrite this warning!)
 Public Sub ShowDisabledPreviewImage(ByRef dstPreview As pdFxPreviewCtl)
     
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.CreateBlank dstPreview.GetPreviewWidth, dstPreview.GetPreviewHeight
-
-    Dim notifyFont As pdFont
-    Set notifyFont = New pdFont
-    notifyFont.SetFontFace g_InterfaceFont
-    notifyFont.SetFontSize 14
-    notifyFont.SetFontColor 0
-    notifyFont.SetFontBold True
-    notifyFont.SetTextAlignment vbCenter
-    notifyFont.CreateFontObject
-    notifyFont.AttachToDC tmpDIB.GetDIBDC
-
-    notifyFont.FastRenderText tmpDIB.GetDIBWidth \ 2, tmpDIB.GetDIBHeight \ 2, g_Language.TranslateMessage("preview not available")
-    dstPreview.SetOriginalImage tmpDIB
-    dstPreview.SetFXImage tmpDIB
+    If g_IsProgramRunning Then
     
-    notifyFont.ReleaseFromDC
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.CreateBlank dstPreview.GetPreviewWidth, dstPreview.GetPreviewHeight
+    
+        Dim notifyFont As pdFont
+        Set notifyFont = New pdFont
+        notifyFont.SetFontFace g_InterfaceFont
+        notifyFont.SetFontSize 14
+        notifyFont.SetFontColor 0
+        notifyFont.SetFontBold True
+        notifyFont.SetTextAlignment vbCenter
+        notifyFont.CreateFontObject
+        notifyFont.AttachToDC tmpDIB.GetDIBDC
+    
+        notifyFont.FastRenderText tmpDIB.GetDIBWidth \ 2, tmpDIB.GetDIBHeight \ 2, g_Language.TranslateMessage("preview not available")
+        dstPreview.SetOriginalImage tmpDIB
+        dstPreview.SetFXImage tmpDIB
+        
+        notifyFont.ReleaseFromDC
+        
+    End If
     
 End Sub
 

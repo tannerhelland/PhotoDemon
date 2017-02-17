@@ -215,6 +215,13 @@ Public Sub SetEnablementByHWnd(ByVal dstHwnd As Long, ByVal enabledState As Bool
     EnableWindow dstHwnd, IIf(enabledState, 1&, 0&)
 End Sub
 
+Public Sub SetSizeByHWnd(ByVal dstHwnd As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+    Dim swpFlags As Long
+    swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
+    If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
+    SetWindowPos dstHwnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
+End Sub
+
 Public Function GetWindowLongWrapper(ByVal dstHwnd As Long, Optional ByVal useExtendedStyle As Boolean = False) As Long
     Dim nIndex As Long
     If useExtendedStyle Then nIndex = GWL_EXSTYLE Else nIndex = GWL_STYLE
