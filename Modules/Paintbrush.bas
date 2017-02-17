@@ -1177,11 +1177,17 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
         tmpRectF.Height = newY - m_MouseY
     End If
     
-    'Inflate the rect calculation by the size of the current brush
-    tmpRectF.Left = tmpRectF.Left - m_BrushSize / 2
-    tmpRectF.Top = tmpRectF.Top - m_BrushSize / 2
-    tmpRectF.Width = tmpRectF.Width + m_BrushSize
-    tmpRectF.Height = tmpRectF.Height + m_BrushSize
+    'Inflate the rect calculation by the size of the current brush, while accounting for the possibility of antialiasing
+    ' (which may extend up to 1.0 pixel outside the calculated boundary area).
+    Dim halfBrushSize As Single
+    halfBrushSize = m_BrushSize / 2 + 1#
+    
+    tmpRectF.Left = tmpRectF.Left - halfBrushSize
+    tmpRectF.Top = tmpRectF.Top - halfBrushSize
+    
+    halfBrushSize = halfBrushSize * 2
+    tmpRectF.Width = tmpRectF.Width + halfBrushSize
+    tmpRectF.Height = tmpRectF.Height + halfBrushSize
     
     Dim tmpOldRectF As RECTF
     
