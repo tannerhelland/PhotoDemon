@@ -127,7 +127,7 @@ End Sub
 'Initialize batch preference mode.  This is used by the preferences dialog to allow us to write a whole swath of preferences in one fell swoop,
 ' without writing the updates out to file after each updated.
 ' NOTE!  You must remember to deactivate this mode when finished; otherwise, preferences may not get written out to file for that session.
-Public Sub StartBatchPreferenceMode()
+Friend Sub StartBatchPreferenceMode()
 
     m_BatchModeActive = True
 
@@ -139,13 +139,13 @@ End Sub
 
 'When you have finished updating multiple preferences, use this function to terminate batch mode.  The updated XML file will be
 ' immediately written to file.
-Public Sub EndBatchPreferenceMode()
+Friend Sub EndBatchPreferenceMode()
     m_BatchModeActive = False
     m_XMLEngine.WriteXMLToFile m_PreferencesPath
 End Sub
 
 'Get the current Theme path.  Note that there are /App (program default) and /Data (userland) variants of this folder.
-Public Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
+Friend Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean = False) As String
     If getUserThemePathInstead Then
         GetThemePath = m_UserThemePath
     Else
@@ -154,21 +154,21 @@ Public Function GetThemePath(Optional ByVal getUserThemePathInstead As Boolean =
 End Function
 
 'Get the current Debug path
-Public Function GetDebugPath() As String
+Friend Function GetDebugPath() As String
     GetDebugPath = m_DebugPath
 End Function
 
 'Get the current Preset path
-Public Function GetPresetPath() As String
+Friend Function GetPresetPath() As String
     GetPresetPath = m_PresetPath
 End Function
 
 'Get/set the current Selection directory
-Public Function GetSelectionPath() As String
+Friend Function GetSelectionPath() As String
     GetSelectionPath = m_SelectionPath
 End Function
 
-Public Sub SetSelectionPath(ByVal newSelectionPath As String)
+Friend Sub SetSelectionPath(ByVal newSelectionPath As String)
     StripDirectory newSelectionPath
     newSelectionPath = FileSystem.FixPath(newSelectionPath)
     m_SelectionPath = newSelectionPath
@@ -176,7 +176,7 @@ Public Sub SetSelectionPath(ByVal newSelectionPath As String)
 End Sub
 
 'Return the current Language directory
-Public Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
+Friend Function GetLanguagePath(Optional ByVal getUserLanguagePathInstead As Boolean = False) As String
     If getUserLanguagePathInstead Then
         GetLanguagePath = m_UserLanguagePath
     Else
@@ -186,12 +186,12 @@ End Function
 
 'Return the current temporary directory, as specified by the user's preferences.  (Note that this is a totally different function from
 ' this class's GetSystemTemporaryPath function, which returns the current Windows system temp path.)
-Public Function GetTempPath() As String
+Friend Function GetTempPath() As String
     GetTempPath = m_TempPath
 End Function
 
 'Set the current temp directory
-Public Sub SetTempPath(ByVal newTempPath As String)
+Friend Sub SetTempPath(ByVal newTempPath As String)
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -222,27 +222,27 @@ Public Sub SetTempPath(ByVal newTempPath As String)
 End Sub
 
 'Return the current program directory
-Public Function GetProgramPath() As String
+Friend Function GetProgramPath() As String
     GetProgramPath = m_ProgramPath
 End Function
 
 'Return the current app data directory
-Public Function GetAppPath() As String
+Friend Function GetAppPath() As String
     GetAppPath = m_AppPath
 End Function
 
 'Return the current user data directory
-Public Function GetDataPath() As String
+Friend Function GetDataPath() As String
     GetDataPath = m_DataPath
 End Function
 
 'Return the current macro directory
-Public Function GetMacroPath() As String
+Friend Function GetMacroPath() As String
     GetMacroPath = m_MacroPath
 End Function
 
 'Set the current macro directory
-Public Sub SetMacroPath(ByVal newMacroPath As String)
+Friend Sub SetMacroPath(ByVal newMacroPath As String)
     StripDirectory newMacroPath
     newMacroPath = FileSystem.FixPath(newMacroPath)
     m_MacroPath = newMacroPath
@@ -250,17 +250,17 @@ Public Sub SetMacroPath(ByVal newMacroPath As String)
 End Sub
 
 'Return the current MRU icon directory
-Public Function GetIconPath() As String
+Friend Function GetIconPath() As String
     GetIconPath = m_IconPath
 End Function
 
 'Return the current update-specific temp path
-Public Function GetUpdatePath() As String
+Friend Function GetUpdatePath() As String
     GetUpdatePath = m_UpdatesPath
 End Function
 
 'Initialize key program directories
-Public Sub InitializePaths()
+Friend Sub InitializePaths()
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -331,7 +331,7 @@ Public Sub InitializePaths()
 End Sub
 
 'Load all user settings from file
-Public Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
+Friend Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean = True)
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -380,7 +380,7 @@ Public Sub LoadUserSettings(Optional ByVal endBatchModeWhenFinished As Boolean =
 End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
-Public Sub ResetPreferences()
+Friend Sub ResetPreferences()
 
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -587,7 +587,7 @@ Private Sub CreateNewPreferencesFile()
 End Sub
 
 'Get a Boolean-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Boolean) As Boolean
+Friend Function GetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Boolean) As Boolean
 
     'Request the value (as a string)
     Dim tmpString As String
@@ -615,7 +615,7 @@ Public Function GetPref_Boolean(ByRef preferenceSection As String, ByRef prefere
 End Function
 
 'Write a Boolean-type value to the preferences file.
-Public Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
+Friend Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal boolVal As Boolean)
 
     If boolVal Then
         WritePreference preferenceSection, preferenceName, "True"
@@ -626,7 +626,7 @@ Public Sub SetPref_Boolean(ByRef preferenceSection As String, ByRef preferenceNa
 End Sub
 
 'Get a Long-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Long) As Long
+Friend Function GetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Long) As Long
 
     'Get the value (as a string) from the INI file
     Dim tmpString As String
@@ -648,12 +648,38 @@ Public Function GetPref_Long(ByRef preferenceSection As String, ByRef preference
 End Function
 
 'Set a Long-type value to the preferences file.
-Public Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
+Friend Sub SetPref_Long(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal longVal As Long)
     WritePreference preferenceSection, preferenceName, Trim$(Str(longVal))
 End Sub
 
+'Get a Float-type value from the preference file.  (A default value must be supplied; this is used if no such value exists.)
+Friend Function GetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal prefDefaultValue As Double) As Double
+
+    'Get the value (as a string) from the INI file
+    Dim tmpString As String
+    tmpString = GetPreference(preferenceSection, preferenceName)
+    
+    'If the requested value DOES NOT exist, return the default value as supplied by the user
+    If (Len(tmpString) = 0) Then
+    
+        'To prevent future blank results, write out a default value
+        SetPref_Float preferenceSection, preferenceName, prefDefaultValue
+        GetPref_Float = prefDefaultValue
+    
+    'If the requested value DOES exist, convert it to Long type and return it
+    Else
+        GetPref_Float = CDblCustom(tmpString)
+    End If
+
+End Function
+
+'Set a Float-type value to the preferences file.
+Friend Sub SetPref_Float(ByRef preferenceSection As String, ByRef preferenceName As String, ByVal floatVal As Double)
+    WritePreference preferenceSection, preferenceName, Trim$(Str(floatVal))
+End Sub
+
 'Get a String-type value from the preferences file.  (A default value must be supplied; this is used if no such value exists.)
-Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, Optional ByVal prefDefaultValue As String = vbNullString) As String
+Friend Function GetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, Optional ByVal prefDefaultValue As String = vbNullString) As String
 
     'Get the requested value from the preferences file
     Dim tmpString As String
@@ -675,12 +701,12 @@ Public Function GetPref_String(ByRef preferenceSection As String, ByRef preferen
 End Function
 
 'Set a String-type value to the INI file.
-Public Sub SetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByRef stringVal As String)
+Friend Sub SetPref_String(ByRef preferenceSection As String, ByRef preferenceName As String, ByRef stringVal As String)
     WritePreference preferenceSection, preferenceName, stringVal
 End Sub
 
 'Sometimes we want to know if a value exists at all.  This function handles that.
-Public Function DoesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
+Friend Function DoesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
     Dim tmpString As String
     tmpString = GetPreference(preferenceSection, preferenceName)
     DoesValueExist = CBool(Len(tmpString) <> 0)
@@ -710,7 +736,7 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
 End Function
 
 'Write a string value to the preferences file
-Public Function WritePreference(strSectionHeader As String, strVariableName As String, strValue As String) As Boolean
+Friend Function WritePreference(strSectionHeader As String, strVariableName As String, strValue As String) As Boolean
 
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
@@ -757,7 +783,7 @@ End Function
 
 'Return the XML parameter list for a given dialog ID (constructed by the last-used settings class).
 ' Returns: TRUE if a preset exists for that ID; FALSE otherwise.
-Public Function GetDialogPresets(ByRef dialogID As String, ByRef dstXMLString As String) As Boolean
+Friend Function GetDialogPresets(ByRef dialogID As String, ByRef dstXMLString As String) As Boolean
 
     If m_XMLPresets.DoesTagExist(dialogID) Then
         dstXMLString = m_XMLPresets.GetUniqueTag_String(dialogID, vbNullString)
@@ -770,7 +796,7 @@ Public Function GetDialogPresets(ByRef dialogID As String, ByRef dstXMLString As
 End Function
 
 'Set an XML parameter list for a given dialog ID (constructed by the last-used settings class).
-Public Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As String) As Boolean
+Friend Function SetDialogPresets(ByRef dialogID As String, ByRef srcXMLString As String) As Boolean
     m_XMLPresets.UpdateTag dialogID, srcXMLString
 End Function
 

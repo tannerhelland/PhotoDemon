@@ -195,15 +195,15 @@ Private m_tmpMinMax As MINMAXINFO
 
 'The VB-specific "Form.Caption = <string>" statement isn't Unicode-compatible.  It also has the quirk of causing a docked child form
 ' to un-dock.  Thus, all caption requests must be passed through the window manager, who will then use the API to change caption text.
-Public Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As String)
+Friend Sub SetWindowCaptionW(ByRef targetHwnd As Long, ByRef newCaption As String)
     DefWindowProcW targetHwnd, WM_SETTEXT, 0&, ByVal StrPtr(newCaption)
 End Sub
 
-Public Function GetVisibilityByHWnd(ByVal srcHwnd As Long) As Boolean
+Friend Function GetVisibilityByHWnd(ByVal srcHwnd As Long) As Boolean
     GetVisibilityByHWnd = CBool(IsWindowVisible(srcHwnd) <> 0)
 End Function
 
-Public Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
+Friend Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As Boolean, Optional ByVal activateWindowToo As Boolean = False)
     If visibilityState Then
         If activateWindowToo Then ShowWindow srcHwnd, SW_RESTORE Else ShowWindow srcHwnd, SW_SHOWNA
     Else
@@ -211,25 +211,25 @@ Public Sub SetVisibilityByHWnd(ByVal srcHwnd As Long, ByVal visibilityState As B
     End If
 End Sub
 
-Public Sub SetEnablementByHWnd(ByVal dstHwnd As Long, ByVal enabledState As Boolean)
+Friend Sub SetEnablementByHWnd(ByVal dstHwnd As Long, ByVal enabledState As Boolean)
     EnableWindow dstHwnd, IIf(enabledState, 1&, 0&)
 End Sub
 
-Public Sub SetSizeByHWnd(ByVal dstHwnd As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
+Friend Sub SetSizeByHWnd(ByVal dstHwnd As Long, ByVal newWidth As Long, ByVal newHeight As Long, Optional ByVal notifyWindow As Boolean = True)
     Dim swpFlags As Long
     swpFlags = SWP_NOMOVE Or SWP_NOZORDER Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER
     If (Not notifyWindow) Then swpFlags = swpFlags Or SWP_NOSENDCHANGING
     SetWindowPos dstHwnd, 0&, 0&, 0&, newWidth, newHeight, swpFlags
 End Sub
 
-Public Function GetWindowLongWrapper(ByVal dstHwnd As Long, Optional ByVal useExtendedStyle As Boolean = False) As Long
+Friend Function GetWindowLongWrapper(ByVal dstHwnd As Long, Optional ByVal useExtendedStyle As Boolean = False) As Long
     Dim nIndex As Long
     If useExtendedStyle Then nIndex = GWL_EXSTYLE Else nIndex = GWL_STYLE
     GetWindowLongWrapper = GetWindowLong(dstHwnd, nIndex)
 End Function
 
 'As it says, a simplified wrapper to SetWindowLong.  Returns the original window style before any changes are made.
-Public Function SetWindowLongWrapper(ByVal dstHwnd As Long, ByVal newFlag As Long, Optional ByVal removeFlagInstead As Boolean = False, Optional ByVal useExtendedStyle As Boolean = False, Optional ByVal overrideEntireLong As Boolean = False) As Long
+Friend Function SetWindowLongWrapper(ByVal dstHwnd As Long, ByVal newFlag As Long, Optional ByVal removeFlagInstead As Boolean = False, Optional ByVal useExtendedStyle As Boolean = False, Optional ByVal overrideEntireLong As Boolean = False) As Long
     
     Dim nIndex As Long
     If useExtendedStyle Then nIndex = GWL_EXSTYLE Else nIndex = GWL_STYLE
@@ -255,13 +255,13 @@ Friend Sub GetClientWinRect(ByVal srcHwnd As Long, ByRef dstRect As winRect)
     GetClientRect srcHwnd, dstRect
 End Sub
 
-Public Function GetClientWidth(ByVal targetHwnd As Long) As Long
+Friend Function GetClientWidth(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
     GetClientRect targetHwnd, tmpRect
     GetClientWidth = tmpRect.x2
 End Function
 
-Public Function GetClientHeight(ByVal targetHwnd As Long) As Long
+Friend Function GetClientHeight(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
     GetClientRect targetHwnd, tmpRect
     GetClientHeight = tmpRect.y2
@@ -279,15 +279,15 @@ Private Function GetWindowHeight(ByVal targetHwnd As Long) As Long
     GetWindowHeight = tmpRect.y2 - tmpRect.y1
 End Function
 
-Public Function GetFocusAPI() As Long
+Friend Function GetFocusAPI() As Long
     GetFocusAPI = GetFocus()
 End Function
 
-Public Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
+Friend Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus
 End Sub
 
-Public Function IsDWMCompositionEnabled() As Boolean
+Friend Function IsDWMCompositionEnabled() As Boolean
     If g_IsVistaOrLater Then
         If g_IsWin8OrLater Then
             IsDWMCompositionEnabled = True
@@ -310,16 +310,16 @@ End Function
 ' when one of these actions occurs, but if the caller knows that multiple refresh-triggering-actions will be happening
 ' in a group (like when PD is first loaded, and all toolbars are loaded and positioned in turn), it can deactivate
 ' those auto-refreshes for a meaningful performance boost.
-Public Sub SetAutoRefreshMode(ByVal newMode As Boolean)
+Friend Sub SetAutoRefreshMode(ByVal newMode As Boolean)
     m_AutoRefreshMode = newMode
 End Sub
 
-Public Function GetAutoRefreshMode() As Boolean
+Friend Function GetAutoRefreshMode() As Boolean
     GetAutoRefreshMode = m_AutoRefreshMode
 End Function
 
 'Activate a new tool options panel
-Public Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindowHwnd As Long)
+Friend Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindowHwnd As Long)
     
     'Cache the hWnd of this form
     m_CurrentToolPanelHwnd = formHWndToActivate
@@ -358,7 +358,7 @@ Public Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindo
 End Sub
 
 'After a tool panel has been loaded, it must be specially deactivated.  This is necessary because we dynamically mess with its window bits.
-Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByVal useCustomHwnd As Long = 0)
+Friend Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByVal useCustomHwnd As Long = 0)
     
     'By default, this function will automatically apply the new settings to the last tool options panel it created.
     ' However, the caller can specify a custom hWnd if they so desire.  (PD uses this when the program is closing,
@@ -391,7 +391,7 @@ Public Sub DeactivateToolPanel(ByVal programIsGoingDown As Boolean, Optional ByV
 End Sub
 
 'Force a full window refresh (invalidate + update)
-Public Sub ForceWindowRepaint(ByVal hWnd As Long)
+Friend Sub ForceWindowRepaint(ByVal hWnd As Long)
     InvalidateRect hWnd, ByVal 0&, 0&
     UpdateWindow hWnd
 End Sub
@@ -399,7 +399,7 @@ End Sub
 'By default, tool windows do not show up in the taskbar or in the Alt+Tab rotation.  Thanks to excellent debug work by ChenLin,
 ' this is a problem on older OSes that only display window icons in the Alt+Tab rotation.  We can work around this problem by
 ' manually setting the WS_EX_APPWINDOW bit after a window is created, but before the window is shown.
-Public Sub ForceWindowAppearInAltTab(ByVal srcHwnd As Long, ByVal appearState As Boolean)
+Friend Sub ForceWindowAppearInAltTab(ByVal srcHwnd As Long, ByVal appearState As Boolean)
     
     Dim curExStyle As Long
     curExStyle = GetWindowLong(srcHwnd, GWL_EXSTYLE)
@@ -415,7 +415,7 @@ Public Sub ForceWindowAppearInAltTab(ByVal srcHwnd As Long, ByVal appearState As
 End Sub
 
 'The first time PhotoDemon is run, this sub can be called to nicely center the window on the user's primary monitor.
-Public Sub SetFirstRunMainWindowPosition()
+Friend Sub SetFirstRunMainWindowPosition()
 
     'Start by retrieving the primary monitor's dimensions.  Note that this check relies on access to PD's g_Displays class.
     Dim tmpPrimaryDisplay As pdDisplay
@@ -475,7 +475,7 @@ End Sub
 
 'If a window had location data previously stored, this function will retrieve that data and move the window into place.
 'Returns: TRUE if a previous location was stored; FALSE otherwise.
-Public Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
+Friend Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
 
     RestoreWindowLocation = False
 
@@ -500,7 +500,27 @@ Public Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
             
         'Window state (so that maximized windows are handled correctly if the primary display has changed resolution)
         frmReference.WindowState = m_XML.GetUniqueTag_Long("WindowState", vbNormal, tagPos)
-            
+        
+        'Window DPI (if DPI changes between sessions, we need to re-map all coordinates accordingly)
+        Dim tmpDPIModifier As Single
+        tmpDPIModifier = m_XML.GetUniqueTag_Double("WindowDPI", 1#, tagPos)
+        
+        'For now, we limit DPI coverage to 400% or less.  Future coverage may be expanded.
+        If (tmpDPIModifier < 1#) Then tmpDPIModifier = 1#
+        If (tmpDPIModifier > 4#) Then tmpDPIModifier = 4#
+        
+        'Calculate a difference between the old and new DPIs, and apply that modifier to our saved values, as necessary
+        tmpDPIModifier = Interface.GetSystemDPI() / tmpDPIModifier
+        
+        If (tmpDPIModifier <> 1) Then
+            With tmpRect
+                .x1 = .x1 * tmpDPIModifier
+                .y1 = .y1 * tmpDPIModifier
+                .x2 = .x2 * tmpDPIModifier
+                .y2 = .y2 * tmpDPIModifier
+            End With
+        End If
+        
         'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user detached a
         ' secondary monitor on which PhotoDemon was being used), change the values to ensure this window appears on-screen.
         
@@ -548,7 +568,7 @@ Public Function RestoreWindowLocation(ByRef frmReference As Form) As Boolean
 End Function
 
 'Load previous window locations from file.
-Public Function LoadAllWindowLocations() As Boolean
+Friend Function LoadAllWindowLocations() As Boolean
     
     'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
     Dim windowLoadSuccessful As Boolean
@@ -566,7 +586,7 @@ Public Function LoadAllWindowLocations() As Boolean
 End Function
 
 'Write the current locations of all windows to the XML engine.  (These will be used to restore the window location on subsequent loads.)
-Public Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal writeLocationsToFile As Boolean = False) As Boolean
+Friend Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal writeLocationsToFile As Boolean = False) As Boolean
     
     Dim windowName As String
     windowName = m_XML.GetXMLSafeTagName(frmReference.Name)
@@ -588,6 +608,7 @@ Public Function SaveWindowLocation(ByRef frmReference As Form, Optional ByVal wr
         .UpdateTag "WindowRight", tmpRect.x2, "WindowEntry", "id", windowName
         .UpdateTag "WindowBottom", tmpRect.y2, "WindowEntry", "id", windowName
         .UpdateTag "WindowState", frmReference.WindowState, "WindowEntry", "id", windowName
+        .UpdateTag "WindowDPI", Interface.GetSystemDPI, "WindowEntry", "id", windowName
     End With
     
     'Write the data out to file
@@ -604,7 +625,7 @@ Private Function ResetXMLData()
 End Function
 
 'The primary PhotoDemon form must register its hWnd, so we can track its movement and move any children windows accordingly.
-Public Sub RegisterMainForm(ByRef parentForm As Form)
+Friend Sub RegisterMainForm(ByRef parentForm As Form)
     
     'Add this window to the collection, and cache its hWnd (because we reference the main window handle frequently)
     m_MainWindowHWnd = parentForm.hWnd
@@ -632,7 +653,7 @@ End Sub
 
 'When a window is unloaded, call this function so that we can stop subclassing in a safe and predictable way, and also track the
 ' last-known location of this window.
-Public Sub UnregisterMainForm(ByRef srcForm As Form)
+Friend Sub UnregisterMainForm(ByRef srcForm As Form)
     
     'Terminate main form subclassing
     m_MainWindowHWnd = 0
