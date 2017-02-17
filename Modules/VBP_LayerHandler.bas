@@ -105,6 +105,9 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     
     End If
     
+    'Layers always start with premultiplied alpha
+    tmpDIB.SetInitialAlphaPremultiplicationState True
+    
     'Set the layer name
     If (Len(Trim$(dLayerName)) = 0) Then
     
