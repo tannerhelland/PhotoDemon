@@ -525,27 +525,27 @@ Private Function LoadThemeWithAllFallbacks(ByVal themeFilename As String, ByRef 
     
     'In debug builds, we preferentially pull theme files from PD's theme folder.  In production builds, however,
     ' we pull theme files directly from the .exe.
-    #If DEBUGMODE = 1 Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(fullThemePath) Then
         loadSuccess = dstXML.LoadXMLFile(fullThemePath)
         If loadSuccess Then loadSuccess = dstXML.IsPDDataType("Visual theme") And dstXML.ValidateLoadedXMLData("Colors")
-    #End If
+    End If
     
+    'If we didn't pull the theme from file (which is okay!), load it from the .exe resources instead
     If (Not loadSuccess) Then
-        
-        RaiseThemingError "Requested theme file missing or broken.  Retrieving failsafe from internal cache...", True
         
         'Make sure the backup cache exists
         If CacheBackupThemes() Then
         
-            RaiseThemingError "Backup theme cache generated successfully.  Attempting to retrieve requested theme...", True
+            RaiseThemingError "Retrieving requested theme from backup cache...", True
             
             'Try to pull the requested theme from the backup cache
             loadSuccess = LoadBackupTheme(themeFilename, dstXML)
             
             'If *that* failed, it's probably a bad theme name.  Load PD's base theme as a final fallback.
-            If loadSuccess Then
-                RaiseThemingError "Backup theme retrieval successful.  Continuing with load...", True
-            Else
+            If (Not loadSuccess) Then
                 RaiseThemingError "Backup theme retrieval failed.  Reverting to PD's default theme..."
                 loadSuccess = LoadBackupTheme("Default_Dark.xml", dstXML)
             End If
@@ -574,27 +574,26 @@ Private Function LoadAccentWithAllFallbacks(ByVal accentFilename As String, ByRe
     
     'In debug builds, we preferentially pull theme files from PD's theme folder.  In production builds, however,
     ' we pull theme files directly from the .exe.
-    #If DEBUGMODE = 1 Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    If cFile.FileExist(fullAccentPath) Then
         loadSuccess = dstXML.LoadXMLFile(fullAccentPath)
         loadSuccess = dstXML.IsPDDataType("Color definitions") And m_XML.ValidateLoadedXMLData("Definitions")
-    #End If
+    End If
     
+    'If the accent file didn't load (which is okay!), pull it from the .exe instead
     If (Not loadSuccess) Then
-        
-        RaiseThemingError "Requested accent file missing or broken.  Retrieving failsafe from internal cache...", True
         
         'Make sure the backup cache exists
         If CacheBackupThemes() Then
         
-            RaiseThemingError "Backup theme cache generated successfully.  Attempting to retrieve requested accent...", True
+            RaiseThemingError "Retrieving requested accent from backup cache...", True
             
             'Try to pull the requested accent from the backup cache
             loadSuccess = LoadBackupTheme(accentFilename, dstXML)
             
             'If *that* failed, it's probably a bad accent name.  Load PD's base accent (blue) as a final fallback.
-            If loadSuccess Then
-                RaiseThemingError "Backup accent retrieval successful.  Continuing with load...", True
-            Else
+            If (Not loadSuccess) Then
                 RaiseThemingError "Backup accent retrieval failed.  Reverting to PD's default accent..."
                 loadSuccess = LoadBackupTheme("Colors_Blue.xml", dstXML)
             End If
@@ -624,7 +623,6 @@ Private Function CacheBackupThemes() As Boolean
         
         Dim tmpBytes() As Byte
         tmpBytes = LoadResData("MAINTHEME", "CUSTOM")
-        
         CacheBackupThemes = m_ThemeBackup.ReadPackageFromMemory(VarPtr(tmpBytes(0)), UBound(tmpBytes) + 1, PD_RES_IDENTIFIER)
         
     Else
