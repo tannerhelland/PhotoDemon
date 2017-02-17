@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Resource Manager
 'Copyright 2016-2017 by Tanner Helland
 'Created: 13/December/16
-'Last updated: 14/February/17
-'Last update: flesh out official monochrome icon support
+'Last updated: 17/February/17
+'Last update: finalize support for loading custom resources directly from the .exe (instead of from a standalone file)
 '
 'PhotoDemon needs to include a whole swatch of custom resources.  These resources take up a lot of space,
 ' and we also need to pull different resources depending on things like screen DPI.  To simplify this process,
@@ -53,35 +53,27 @@ Private m_XML As pdXML
 '
 'In production builds, the initial collection is pulled from the .exe itself.
 Friend Function LoadInitialResourceCollection() As Boolean
-
+    
+    Dim loadSuccess As Boolean
+    
     'In developer builds, we preferentially load the file-based resource file from the App/PhotoDemon/Themes folder.
     ' (The resource file is updated frequently, and it's easier to work with a standalone file.)
-    #If DEBUGMODE = 1 Then
+    Dim srcResFile As String
+    srcResFile = "Core_Icons.pdrc"
+    loadSuccess = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
         
-        pdDebug.LogAction "Loading core resource collection..."
-        
-        'In debug builds, we load the resource from a static location instead of pulling it from the .exe
-        Dim srcResFile As String
-        srcResFile = "Core_Icons.pdrc"
+    'If the theme file doesn't exist, attempt to recover it.  (This may be necessary if the user used a dumb program
+    ' like WinZip to unzip their PD download.)
+    If (Not loadSuccess) Then
+        AttemptResourceRecovery srcResFile
         LoadInitialResourceCollection = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
-        
-        'If the theme file doesn't exist, attempt to recover it
-        If (Not LoadInitialResourceCollection) Then
-            AttemptResourceRecovery srcResFile
-            LoadInitialResourceCollection = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
-        End If
-        
-    #End If
+    End If
     
-    'If the theme file *was not loaded successfully* (as it won't be in production builds), load a copy directly from
-    ' this .exe's resource segment.
+    'If the theme file was *not* loaded from a standalone file, load a good copy directly from this .exe's resource segment.
     If (Not LoadInitialResourceCollection) Then LoadInitialResourceCollection = LoadDefaultResource()
     
-    'Pull the "monochrome icon" setting from the theme engine.
+    'While we're here, cache the "monochrome icon" setting from the theme engine.
     If (Not g_Themer Is Nothing) Then m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting() Else m_ThemeIconsMonochrome = False
-    
-    'TODO!  Someday we'll build the (finished) resource file directly into the .exe, but for now,
-    ' load it from a static debug folder.
     
 End Function
 
@@ -101,18 +93,18 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
     'The file is missing.  Let's see if we can find it.
     Else
     
-        pdDebug.LogAction "WARNING!  Resource file <" & resourceFile & "> is missing.  Scanning alternate folders..."
+        RaiseResourceError "Resource file <" & resourceFile & "> is missing.  Scanning alternate folders...", True
         
         'See if the file exists in the base PD folder.  This can happen if a user unknowingly extracts
         ' the PD .zip without folders preserved.
         If cFile.FileExist(g_UserPreferences.GetProgramPath & resourceFile) Then
             
-            pdDebug.LogAction "UPDATE!  Resource file found in the base PD folder.  Attempting to relocate..."
+            RaiseResourceError "Resource file found in the base PD folder.  Attempting to relocate...", True
             
             'Move the file to the proper folder
             If cFile.CopyFile(g_UserPreferences.GetProgramPath & resourceFile, g_UserPreferences.GetThemePath & resourceFile) Then
                 
-                pdDebug.LogAction "UPDATE!  Resource file relocated successfully."
+                RaiseResourceError "Resource file relocated successfully.", True
                 
                 'Kill the old file instance
                 cFile.KillFile g_UserPreferences.GetProgramPath & resourceFile
@@ -123,15 +115,13 @@ Private Function AttemptResourceRecovery(ByVal resourceFile As String) As Boolea
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case
             ' this program session is pretty much doomed.  Exit now.
             Else
-                pdDebug.LogAction "WARNING!  Resource file <" & resourceFile & "> could not be relocated.  Initialization abandoned."
+                RaiseResourceError "WARNING!  Resource file <" & resourceFile & "> could not be relocated."
                 AttemptResourceRecovery = False
             End If
         
         'If the file doesn't exist in the base folder either, we're SOL.  Exit now.
-        ' (In the future, we'll want to try and recover a failsafe copy from the .exe resource section.)
-        ' TODO 7.0!
         Else
-            pdDebug.LogAction "WARNING!  Resource file <" & resourceFile & "> wasn't found in alternate locations.  Initialization abandoned."
+            RaiseResourceError "Resource file <" & resourceFile & "> wasn't found in alternate locations.", True
             AttemptResourceRecovery = False
         End If
     
@@ -141,14 +131,30 @@ End Function
 
 'Given a path to a .pdr file, attempt to load and validate it
 Private Function LoadResourceFile(ByRef srcPath As String) As Boolean
+        
     Set m_Resources = New pdPackager2
-    m_ResourcesAvailable = m_Resources.ReadPackageFromFile(srcPath, PD_RES_IDENTIFIER, PD_SM_MemoryBacked)
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(srcPath) Then
+        RaiseResourceError "Loading core resource collection from file...", True
+        m_ResourcesAvailable = m_Resources.ReadPackageFromFile(srcPath, PD_RES_IDENTIFIER, PD_SM_MemoryBacked)
+    Else
+        m_ResourcesAvailable = False
+    End If
+    
     LoadResourceFile = m_ResourcesAvailable
+    
 End Function
 
 'Load the default resource collection directly from this .exe instance
 Private Function LoadDefaultResource() As Boolean
+        
+    On Error GoTo NoResourcesAvailable
     
+    RaiseResourceError "Falling back to internal resource collection...", True
+        
     Set m_Resources = New pdPackager2
     
     'Pull the relevant resource out of memory
@@ -159,12 +165,18 @@ Private Function LoadDefaultResource() As Boolean
     m_ResourcesAvailable = m_Resources.ReadPackageFromMemory(VarPtr(tmpRes(0)), UBound(tmpRes) + 1, PD_RES_IDENTIFIER)
     LoadDefaultResource = m_ResourcesAvailable
     
+    Exit Function
+    
+NoResourcesAvailable:
+    RaiseResourceError "No resources found.  This session may not work as expected."
 End Function
 
 Friend Function AreResourcesAvailable() As Boolean
     AreResourcesAvailable = m_ResourcesAvailable
 End Function
 
+'When the user changes themes, the resource manager needs to be notified.  (Image resources are dynamically colored at run-time to
+' match the current theme, so theme changes necessitate resource changes.)
 Friend Sub NotifyThemeChange()
     m_ThemeIconColor = g_Themer.GetGenericUIColor(UI_IconMonochrome)
     m_ThemeIconColorMenu = g_Themer.GetGenericUIColor(UI_IconMonochromeMenu)
@@ -345,6 +357,16 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
     End If
     
 End Function
+
+Private Sub RaiseResourceError(ByVal msgError As String, Optional ByVal msgIsNonErrorFeedback As Boolean = False)
+    #If DEBUGMODE = 1 Then
+        If msgIsNonErrorFeedback Then
+            pdDebug.LogAction "pdResources reported: " & msgError
+        Else
+            pdDebug.LogAction "WARNING!  pdResources error: " & msgError
+        End If
+    #End If
+End Sub
 
 Private Sub Class_Initialize()
     
