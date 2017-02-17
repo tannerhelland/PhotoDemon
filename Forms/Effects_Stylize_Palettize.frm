@@ -245,7 +245,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Palettize", , GetToolParamString, UNDO_IMAGE
+    Process "Palettize", , GetToolParamString, UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
