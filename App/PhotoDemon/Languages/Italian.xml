@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.247</langversion>
+<langversion>6.7.248</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11508,7 +11508,7 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 <translation>Si prega di selezionarne un altro.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 21 phrases. 8 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 23 phrases. 10 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -14946,8 +14946,8 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4468 phrases. -->
-<!-- 1950 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4470 phrases. -->
+<!-- 1952 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12381 total words. -->
 
 </pdData>

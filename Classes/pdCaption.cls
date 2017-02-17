@@ -352,31 +352,35 @@ Friend Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Opt
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
-    If Not m_FontSizeVerified Then VerifyFontSize
+    If (Not m_FontSizeVerified) Then VerifyFontSize
     
-    'Get a copy of the current font from the central font cache
-    Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
-    
-    'Make sure colors have correctly retrieved from the active theme
-    
-    If customColor <> -1 Then
-        tmpFont.SetFontColor customColor
-    Else
-        If m_Colors Is Nothing Then InitializeColorCache
-        If m_CaptionColor = -1 Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
-        If m_CaptionColorCustom <> -1 Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
+    'Failsafe check
+    If (dstDC <> 0) Then
+        
+        'Get a copy of the current font from the central font cache
+        Dim tmpFont As pdFont
+        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+        
+        'Make sure colors have correctly retrieved from the active theme
+        If (customColor <> -1) Then
+            tmpFont.SetFontColor customColor
+        Else
+            If (m_Colors Is Nothing) Then InitializeColorCache
+            If (m_CaptionColor = -1) Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
+            If (m_CaptionColorCustom <> -1) Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
+        End If
+        
+        tmpFont.AttachToDC dstDC
+        
+        If m_WordWrapAllowed Then
+            tmpFont.FastRenderMultilineText dstX, dstY, m_CaptionTranslated
+        Else
+            tmpFont.FastRenderText dstX, dstY, m_CaptionTranslated
+        End If
+        
+        tmpFont.ReleaseFromDC
+        
     End If
-    
-    tmpFont.AttachToDC dstDC
-    
-    If m_WordWrapAllowed Then
-        tmpFont.FastRenderMultilineText dstX, dstY, m_CaptionTranslated
-    Else
-        tmpFont.FastRenderText dstX, dstY, m_CaptionTranslated
-    End If
-    
-    tmpFont.ReleaseFromDC
     
 End Sub
 
@@ -389,37 +393,42 @@ Friend Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal ds
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
     If (Not m_FontSizeVerified) Then VerifyFontSize
     
-    'Get a copy of the current font from the central font cache
-    Dim tmpFont As pdFont
-    
-    If useOriginalFontSize Then
-        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
-    Else
-        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+    'Failsafe check
+    If (dstDC <> 0) Then
+        
+        'Get a copy of the current font from the central font cache
+        Dim tmpFont As pdFont
+        
+        If useOriginalFontSize Then
+            Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
+        Else
+            Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+        End If
+        
+        If (customColor <> -1) Then
+            tmpFont.SetFontColor customColor
+        Else
+            If (m_Colors Is Nothing) Then InitializeColorCache
+            If (m_CaptionColor = -1) Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
+            If (m_CaptionColorCustom <> -1) Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
+        End If
+        
+        tmpFont.AttachToDC dstDC
+        
+        'NOTE: pdFont.SetTextAlignment does not actually set text alignment as a property inside the target DC.  Instead, it uses
+        '      DrawText flags to enforce alignment.  This leaves the target DC untouched, so previously set text flags won't be
+        '      modified by calls to pdFont, by design.
+        tmpFont.SetTextAlignment m_Alignment
+        
+        If m_WordWrapAllowed Then
+            tmpFont.FastRenderMultilineTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, centerVertically
+        Else
+            tmpFont.FastRenderTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, useEllipses, centerVertically
+        End If
+        
+        tmpFont.ReleaseFromDC
+        
     End If
-    
-    If (customColor <> -1) Then
-        tmpFont.SetFontColor customColor
-    Else
-        If (m_Colors Is Nothing) Then InitializeColorCache
-        If (m_CaptionColor = -1) Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
-        If (m_CaptionColorCustom <> -1) Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
-    End If
-    
-    tmpFont.AttachToDC dstDC
-    
-    'NOTE: pdFont.SetTextAlignment does not actually set text alignment as a property inside the target DC.  Instead, it uses
-    '      DrawText flags to enforce alignment.  This leaves the target DC untouched, so previously set text flags won't be
-    '      modified by calls to pdFont, by design.
-    tmpFont.SetTextAlignment m_Alignment
-    
-    If m_WordWrapAllowed Then
-        tmpFont.FastRenderMultilineTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, centerVertically
-    Else
-        tmpFont.FastRenderTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, useEllipses, centerVertically
-    End If
-    
-    tmpFont.ReleaseFromDC
     
 End Sub
 
@@ -429,55 +438,59 @@ Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optio
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
-    If Not m_FontSizeVerified Then VerifyFontSize
+    If (Not m_FontSizeVerified) Then VerifyFontSize
     
-    'Get a copy of the current font from the central font cache
-    Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+    'Failsafe check
+    If (dstDC <> 0) Then
     
-    If customColor <> -1 Then
-        tmpFont.SetFontColor customColor
-    Else
-        If m_Colors Is Nothing Then InitializeColorCache
-        If m_CaptionColor = -1 Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
-        If m_CaptionColorCustom <> -1 Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
-    End If
-    
-    tmpFont.AttachToDC dstDC
-    tmpFont.SetTextAlignment vbLeftJustify
-    
-    If m_WordWrapAllowed Then
+        'Get a copy of the current font from the central font cache
+        Dim tmpFont As pdFont
+        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
         
-        'See if the string, as-is, fits within the target area
-        Dim strWidth As Long
-        strWidth = tmpFont.GetWidthOfString(m_CaptionTranslated)
-        
-        If strWidth < (dstRect.Right - dstRect.Left) Then
-            tmpFont.DrawCenteredTextToRect m_CaptionTranslated, dstRect, True
+        If (customColor <> -1) Then
+            tmpFont.SetFontColor customColor
         Else
-        
-            'Find the height of the string as it currently exists
-            Dim strHeight As Long
-            strHeight = tmpFont.GetHeightOfWordwrapString(m_CaptionTranslated, dstRect.Right - dstRect.Left)
-            
-            'Recalculate the rect top so that the text is centered
-            Dim newRect As RECT
-            newRect.Left = dstRect.Left
-            newRect.Bottom = dstRect.Bottom
-            newRect.Right = dstRect.Right
-            newRect.Top = dstRect.Top + (CSng(CSng(dstRect.Bottom - dstRect.Top) / 2) - CSng(strHeight / 2))
-            
-            Const DT_CENTER = &H1, DT_WORDBREAK = &H10, DT_NOCLIP = &H100
-            tmpFont.DrawTextWrapper StrPtr(m_CaptionTranslated), Len(m_CaptionTranslated), newRect, DT_WORDBREAK Or DT_NOCLIP Or DT_CENTER
-            
+            If (m_Colors Is Nothing) Then InitializeColorCache
+            If (m_CaptionColor = -1) Then m_CaptionColor = m_Colors.RetrieveColor(PDC_Caption)
+            If (m_CaptionColorCustom <> -1) Then tmpFont.SetFontColor m_CaptionColorCustom Else tmpFont.SetFontColor m_CaptionColor
         End If
         
-    Else
-        tmpFont.DrawCenteredTextToRect m_CaptionTranslated, dstRect, True
+        tmpFont.AttachToDC dstDC
+        tmpFont.SetTextAlignment vbLeftJustify
+        
+        If m_WordWrapAllowed Then
+            
+            'See if the string, as-is, fits within the target area
+            Dim strWidth As Long
+            strWidth = tmpFont.GetWidthOfString(m_CaptionTranslated)
+            
+            If (strWidth < (dstRect.Right - dstRect.Left)) Then
+                tmpFont.DrawCenteredTextToRect m_CaptionTranslated, dstRect, True
+            Else
+            
+                'Find the height of the string as it currently exists
+                Dim strHeight As Long
+                strHeight = tmpFont.GetHeightOfWordwrapString(m_CaptionTranslated, dstRect.Right - dstRect.Left)
+                
+                'Recalculate the rect top so that the text is centered
+                Dim newRect As RECT
+                newRect.Left = dstRect.Left
+                newRect.Bottom = dstRect.Bottom
+                newRect.Right = dstRect.Right
+                newRect.Top = dstRect.Top + (CSng(CSng(dstRect.Bottom - dstRect.Top) / 2) - CSng(strHeight / 2))
+                
+                Const DT_CENTER = &H1, DT_WORDBREAK = &H10, DT_NOCLIP = &H100
+                tmpFont.DrawTextWrapper StrPtr(m_CaptionTranslated), Len(m_CaptionTranslated), newRect, DT_WORDBREAK Or DT_NOCLIP Or DT_CENTER
+                
+            End If
+            
+        Else
+            tmpFont.DrawCenteredTextToRect m_CaptionTranslated, dstRect, True
+        End If
+        
+        tmpFont.ReleaseFromDC
+        
     End If
-    
-    tmpFont.ReleaseFromDC
-    Set tmpFont = Nothing
     
 End Sub
 
@@ -486,7 +499,7 @@ End Sub
 Private Sub VerifyFontSize()
     
     'Our parent control is responsible for notifying us if its size changes.  If it hasn't notified us yet, verification can't proceed.
-    If m_ContainerWidth > 0 Then
+    If (m_ContainerWidth > 0) Then
         
         Dim newFontSize As Single
         

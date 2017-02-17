@@ -480,7 +480,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     ReDim Preserve m_Buttons(0 To m_numOfButtons - 1) As ButtonEntry
     
     'Shift all buttons above this one upward, as necessary.
-    If itemIndex < m_numOfButtons - 1 Then
+    If (itemIndex < m_numOfButtons - 1) Then
     
         Dim i As Long
         For i = m_numOfButtons - 1 To itemIndex Step -1
@@ -675,7 +675,7 @@ Private Sub UpdateControlLayout()
     buttonHeight = bHeight - 2
     
     'Button width is trickier.  We have a 1px border around the whole control, and then (n-1) borders on the interior.
-    If m_numOfButtons > 0 Then
+    If (m_numOfButtons > 0) Then
         buttonWidth = (bWidth - 2 - (m_numOfButtons - 1)) / m_numOfButtons
     Else
         buttonWidth = bWidth - 2
@@ -683,140 +683,138 @@ Private Sub UpdateControlLayout()
     
     'Using these values, populate a boundary rect for each button, and store it.  (This makes the render step much faster.)
     Dim i As Long
-    For i = 0 To m_numOfButtons - 1
+    If (m_numOfButtons > 0) Then
     
-        With m_Buttons(i).btBounds
-            '.Left is calculated as: 1px left border, plus 1px border for any preceding buttons, plus preceding button widths
-            .Left = m_ButtonStripRect.Left + 1 + i + (buttonWidth * i)
-            .Top = m_ButtonStripRect.Top + 1
-            .Bottom = .Top + buttonHeight
-        End With
-    
-    Next i
-    
-    'Now, we're going to do something odd.  To avoid truncation errors, we're going to dynamically calculate RIGHT bounds
-    ' by looping back through the array, and assigning right values to match the left value calculated for the next
-    ' button in line.  The final button receives special consideration.
-    If m_numOfButtons > 0 Then
-    
+        For i = 0 To m_numOfButtons - 1
+        
+            With m_Buttons(i).btBounds
+                '.Left is calculated as: 1px left border, plus 1px border for any preceding buttons, plus preceding button widths
+                .Left = m_ButtonStripRect.Left + 1 + i + (buttonWidth * i)
+                .Top = m_ButtonStripRect.Top + 1
+                .Bottom = .Top + buttonHeight
+            End With
+        
+        Next i
+        
+        'Now, we're going to do something odd.  To avoid truncation errors, we're going to dynamically calculate RIGHT bounds
+        ' by looping back through the array, and assigning right values to match the left value calculated for the next
+        ' button in line.  The final button receives special consideration.
         m_Buttons(m_numOfButtons - 1).btBounds.Right = m_ButtonStripRect.Right - 2
         
-        If m_numOfButtons > 1 Then
-        
+        If (m_numOfButtons > 1) Then
             For i = 1 To m_numOfButtons - 1
                 m_Buttons(i - 1).btBounds.Right = m_Buttons(i).btBounds.Left - 2
             Next i
-        
         End If
         
-    End If
-    
-    'Each button now has its boundaries precisely calculated.  Next, we want to precalculate all text positioning inside
-    ' each button.  Because text positioning varies by caption, we are also going to pre-cache these values, to further
-    ' reduce the amount of work we need to do in the render loop.
-    Dim strWidth As Long, strHeight As Long
-    
-    'Rather than create and manage our own font object(s), we borrow font objects from the global PD font cache.
-    Dim tmpFont As pdFont
-    
-    For i = 0 To m_numOfButtons - 1
-    
-        'Reset font size for this button
-        m_Buttons(i).btFontSize = 0
+        'Each button now has its boundaries precisely calculated.  Next, we want to precalculate all text positioning inside
+        ' each button.  Because text positioning varies by caption, we are also going to pre-cache these values, to further
+        ' reduce the amount of work we need to do in the render loop.
+        Dim strWidth As Long, strHeight As Long
         
-        'Calculate the width of this button (which may deviate by 1px between buttons, due to integer truncation)
-        buttonWidth = m_Buttons(i).btBounds.Right - m_Buttons(i).btBounds.Left
+        'Rather than create and manage our own font object(s), we borrow font objects from the global PD font cache.
+        Dim tmpFont As pdFont
+    
+        For i = 0 To m_numOfButtons - 1
         
-        'Next, we are going to calculate all text metrics.  We can skip this step for buttons without captions.
-        If Len(m_Buttons(i).btCaptionTranslated) <> 0 Then
-        
-            'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
-            ' remove the width of the image, plus padding, in advance.
-            If Not (m_Buttons(i).btImages Is Nothing) Then
-                buttonWidth = buttonWidth - (m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING))
-            End If
+            'Reset font size for this button
+            m_Buttons(i).btFontSize = 0
             
-            'Retrieve the expected size of the string, in pixels
-            Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
-            strWidth = tmpFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
+            'Calculate the width of this button (which may deviate by 1px between buttons, due to integer truncation)
+            buttonWidth = m_Buttons(i).btBounds.Right - m_Buttons(i).btBounds.Left
             
-            'If the string is too long for its containing button, activate word wrap and measure again
-            If (strWidth > buttonWidth) Then
+            'Next, we are going to calculate all text metrics.  We can skip this step for buttons without captions.
+            If Len(m_Buttons(i).btCaptionTranslated) <> 0 Then
+            
+                'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
+                ' remove the width of the image, plus padding, in advance.
+                If Not (m_Buttons(i).btImages Is Nothing) Then
+                    buttonWidth = buttonWidth - (m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING))
+                End If
                 
-                strWidth = buttonWidth
-                strHeight = tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
+                'Retrieve the expected size of the string, in pixels
+                Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
+                strWidth = tmpFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
                 
-                'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
-                If (strHeight > buttonHeight) Then
-                    strHeight = buttonHeight
+                'If the string is too long for its containing button, activate word wrap and measure again
+                If (strWidth > buttonWidth) Then
                     
-                'As a second failsafe, if word-wrapping didn't solve the problem (because the text is a single word, for example, as is common
-                ' in German), we will forcibly set a smaller font size for this caption alone.
-                ElseIf tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated) Then
-                    m_Buttons(i).btFontSize = tmpFont.GetMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
-                    Set tmpFont = Font_Management.GetMatchingUIFont(m_Buttons(i).btFontSize, m_FontBold)
+                    strWidth = buttonWidth
+                    strHeight = tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
+                    
+                    'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
+                    If (strHeight > buttonHeight) Then
+                        strHeight = buttonHeight
+                        
+                    'As a second failsafe, if word-wrapping didn't solve the problem (because the text is a single word, for example, as is common
+                    ' in German), we will forcibly set a smaller font size for this caption alone.
+                    ElseIf tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated) Then
+                        m_Buttons(i).btFontSize = tmpFont.GetMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
+                        Set tmpFont = Font_Management.GetMatchingUIFont(m_Buttons(i).btFontSize, m_FontBold)
+                        strHeight = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
+                    End If
+                    
+                Else
                     strHeight = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
                 End If
                 
-            Else
-                strHeight = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
-            End If
-            
-            'Release our copy of this global PD UI font
-            Set tmpFont = Nothing
-            
-        End If
-        
-        'Use the size of the string, the size of the button's image (if any), and the size of the button itself to determine
-        ' optimal painting position (using top-left alignment).
-        With m_Buttons(i)
-            
-            'Again, handling branches according to the presence of a caption
-            If Len(.btCaptionTranslated) <> 0 Then
-            
-                'No image...
-                If (.btImages Is Nothing) Then
-                    .btCaptionRect.Left = .btBounds.Left
-                
-                'Image...
-                Else
-                    If (strWidth < buttonWidth) Then
-                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING)
-                    Else
-                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING) * 2
-                    End If
-                End If
-                
-                .btCaptionRect.Top = .btBounds.Top + (buttonHeight - strHeight) \ 2
-                .btCaptionRect.Right = .btBounds.Right
-                .btCaptionRect.Bottom = .btBounds.Bottom
+                'Release our copy of this global PD UI font
+                Set tmpFont = Nothing
                 
             End If
-        
-            'Calculate a position for the button image, if any
-            If Not (.btImages Is Nothing) Then
+            
+            'Use the size of the string, the size of the button's image (if any), and the size of the button itself to determine
+            ' optimal painting position (using top-left alignment).
+            With m_Buttons(i)
                 
-                'X-positioning is dependent on the presence of a caption.  If a caption exists, it gets placement preference.
+                'Again, handling branches according to the presence of a caption
                 If Len(.btCaptionTranslated) <> 0 Then
                 
-                    If (strWidth < buttonWidth) Then
-                        .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
+                    'No image...
+                    If (.btImages Is Nothing) Then
+                        .btCaptionRect.Left = .btBounds.Left
+                    
+                    'Image...
                     Else
-                        .btImageCoords.x = .btBounds.Left + FixDPI(IMG_TEXT_PADDING)
+                        If (strWidth < buttonWidth) Then
+                            .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING)
+                        Else
+                            .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING) * 2
+                        End If
                     End If
                     
-                'If no caption exists, center the image horizontally
-                Else
-                    .btImageCoords.x = .btBounds.Left + ((.btBounds.Right - .btBounds.Left) - .btImageWidth) \ 2
+                    .btCaptionRect.Top = .btBounds.Top + (buttonHeight - strHeight) \ 2
+                    .btCaptionRect.Right = .btBounds.Right
+                    .btCaptionRect.Bottom = .btBounds.Bottom
+                    
                 End If
-                
-                .btImageCoords.y = .btBounds.Top + (buttonHeight - .btImageHeight) \ 2
             
-            End If
+                'Calculate a position for the button image, if any
+                If (Not .btImages Is Nothing) Then
+                    
+                    'X-positioning is dependent on the presence of a caption.  If a caption exists, it gets placement preference.
+                    If (Len(.btCaptionTranslated) <> 0) Then
+                    
+                        If (strWidth < buttonWidth) Then
+                            .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
+                        Else
+                            .btImageCoords.x = .btBounds.Left + FixDPI(IMG_TEXT_PADDING)
+                        End If
+                        
+                    'If no caption exists, center the image horizontally
+                    Else
+                        .btImageCoords.x = .btBounds.Left + ((.btBounds.Right - .btBounds.Left) - .btImageWidth) \ 2
+                    End If
+                    
+                    .btImageCoords.y = .btBounds.Top + (buttonHeight - .btImageHeight) \ 2
+                
+                End If
+            
+            End With
+            
+        Next i
         
-        End With
-        
-    Next i
+    End If
     
     'With all metrics successfully measured, we can now recreate the back buffer
     If ucSupport.AmIVisible Then RedrawBackBuffer
@@ -861,7 +859,7 @@ Private Sub RedrawBackBuffer()
         
     'Note also that this control has a unique "ColorScheme" property that is used for image-only button strips
     ' (as the default "invert" coloring tends to drown out the images themselves).
-    If m_ColoringMode = CM_DEFAULT Then
+    If (m_ColoringMode = CM_DEFAULT) Then
         btnColorBackground = m_Colors.RetrieveColor(BTS_Background, enabledState, False, False)
         btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, False)
         btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, False)
@@ -900,7 +898,7 @@ Private Sub RedrawBackBuffer()
     Dim tmpFont As pdFont
     
     'Next, each individual button is rendered in turn.
-    If m_numOfButtons > 0 Then
+    If ((m_numOfButtons > 0) And g_IsProgramRunning) Then
     
         Dim i As Long
         For i = 0 To m_numOfButtons - 1

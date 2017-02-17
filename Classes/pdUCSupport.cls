@@ -598,8 +598,8 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
     
     'If the caller specifies a background color, we want to use it.  If they don't, grab the default window background from
     ' PD's central themer.
-    If newBackColor = -1 Then
-        If m_BackColor = -1 Then
+    If (newBackColor = -1) Then
+        If (m_BackColor = -1) Then
             newBackColor = m_Colors.RetrieveColor(UCS_Background)
         Else
             newBackColor = m_BackColor

@@ -837,7 +837,7 @@ Private Sub RedrawBackBuffer()
     Dim tmpFont As pdFont
     
     'Next, each individual button is rendered in turn.
-    If m_numOfButtons > 0 Then
+    If ((m_numOfButtons > 0) And g_IsProgramRunning) Then
     
         Dim i As Long
         For i = 0 To m_numOfButtons - 1

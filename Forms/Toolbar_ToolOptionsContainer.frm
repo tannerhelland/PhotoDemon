@@ -50,8 +50,19 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'When a tool panel is active, this value will mirror the tool panel's hWnd
+Private m_PanelHWnd As Long
+
+'To better support high-DPI OS settings, we use a system-based move/size handler
+Private WithEvents m_WindowSize As pdWindowSize
+
 Private Sub Form_Load()
-        
+    
+    If g_IsProgramRunning Then
+        Set m_WindowSize = New pdWindowSize
+        m_WindowSize.AttachToHWnd Me.hWnd, True
+    End If
+    
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
     
@@ -61,7 +72,12 @@ End Sub
 ' to exiting; if it is not found, cancel the unload and simply hide this form.  (Note that the ToggleToolboxVisibility sub
 ' will also keep this toolbar's Window menu entry in sync with the form's current visibility.)
 Private Sub Form_Unload(Cancel As Integer)
+    Set m_WindowSize = Nothing
     If g_ProgramShuttingDown Then ReleaseFormTheming Me
+End Sub
+
+Public Sub NotifyChildPanelHWnd(ByVal srcHwnd As Long)
+    m_PanelHWnd = srcHwnd
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -76,4 +92,8 @@ Public Sub UpdateAgainstCurrentTheme()
     ' any common controls that may still exist in the program.)
     ApplyThemeAndTranslations Me
     
+End Sub
+
+Private Sub m_WindowSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    If (m_PanelHWnd <> 0) Then g_WindowManager.SetSizeByHWnd m_PanelHWnd, newWidth, newHeight, False
 End Sub

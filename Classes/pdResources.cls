@@ -66,14 +66,16 @@ Friend Function LoadInitialResourceCollection() As Boolean
     ' like WinZip to unzip their PD download.)
     If (Not loadSuccess) Then
         AttemptResourceRecovery srcResFile
-        LoadInitialResourceCollection = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
+        loadSuccess = LoadResourceFile(g_UserPreferences.GetThemePath & srcResFile)
     End If
     
     'If the theme file was *not* loaded from a standalone file, load a good copy directly from this .exe's resource segment.
-    If (Not LoadInitialResourceCollection) Then LoadInitialResourceCollection = LoadDefaultResource()
+    If (Not loadSuccess) Then loadSuccess = LoadDefaultResource()
     
     'While we're here, cache the "monochrome icon" setting from the theme engine.
     If (Not g_Themer Is Nothing) Then m_ThemeIconsMonochrome = g_Themer.GetMonochromeIconSetting() Else m_ThemeIconsMonochrome = False
+    
+    LoadInitialResourceCollection = loadSuccess
     
 End Function
 

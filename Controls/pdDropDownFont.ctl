@@ -449,6 +449,8 @@ End Sub
 
 Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Long, itemTextEn As String, ByVal itemIsSelected As Boolean, ByVal itemIsHovered As Boolean, ByVal ptrToRectF As Long)
     
+    If (Not g_IsProgramRunning) Then Exit Sub
+    
     'Cache colors in advance, so we can simply reuse them in the inner loop
     Dim itemFillColor As Long, itemFillBorderColor As Long, itemFontColor As Long
     itemFillColor = m_Colors.RetrieveColor(PDDD_ComboFill, Me.Enabled, itemIsSelected, itemIsHovered)

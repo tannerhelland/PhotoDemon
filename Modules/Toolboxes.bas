@@ -74,8 +74,8 @@ Public Sub LoadToolboxData()
             
             'Apply a failsafe size check to the previous session's saved value
             newSize = g_UserPreferences.GetPref_Long("Toolbox", GetToolboxName(i) & "Size", .DefaultSize)
-            If newSize < .MinSize Then newSize = .MinSize
-            If newSize > .MaxSize Then newSize = .MaxSize
+            If (newSize < .MinSize) Then newSize = .MinSize
+            If (newSize > .MaxSize) Then newSize = .MaxSize
             .ConstrainingSize = newSize
             
         End With

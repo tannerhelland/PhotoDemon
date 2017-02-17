@@ -511,23 +511,23 @@ Private Sub UpdateControlLayout()
     End If
     
     'Using these values, populate a boundary rect for each button, and store it.  (This makes the render step much faster.)
-    Dim i As Long
-    For i = 0 To m_numOfButtons - 1
-    
-        With m_Buttons(i).btBounds
-            '.Left is calculated as: 1px border for any preceding buttons, plus preceding button widths
-            .Left = m_ButtonStripRect.Left + i + (buttonWidth * i)
-            .Top = m_ButtonStripRect.Top
-            .Bottom = .Top + buttonHeight
-        End With
-    
-    Next i
-    
-    'Now, we're going to do something odd.  To avoid truncation errors, we're going to dynamically calculate RIGHT bounds
-    ' by looping back through the array, and assigning right values to match the left value calculated for the next
-    ' button in line.  The final button receives special consideration.
     If (m_numOfButtons > 0) Then
     
+        Dim i As Long
+        For i = 0 To m_numOfButtons - 1
+        
+            With m_Buttons(i).btBounds
+                '.Left is calculated as: 1px border for any preceding buttons, plus preceding button widths
+                .Left = m_ButtonStripRect.Left + i + (buttonWidth * i)
+                .Top = m_ButtonStripRect.Top
+                .Bottom = .Top + buttonHeight
+            End With
+        
+        Next i
+    
+        'Now, we're going to do something odd.  To avoid truncation errors, we're going to dynamically calculate RIGHT bounds
+        ' by looping back through the array, and assigning right values to match the left value calculated for the next
+        ' button in line.  The final button receives special consideration.
         m_Buttons(m_numOfButtons - 1).btBounds.Right = m_ButtonStripRect.Right
         
         If (m_numOfButtons > 1) Then
