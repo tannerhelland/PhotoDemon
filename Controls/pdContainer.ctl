@@ -33,16 +33,16 @@ Attribute VB_Exposed = False
 'PhotoDemon Generic Control Container
 'Copyright 2016-2017 by Tanner Helland
 'Created: 13/June/16
-'Last updated: 13/June/16
-'Last update: initial build
+'Last updated: 18/February/17
+'Last update: report size changes back to our parent window
 '
-'Historically, PD used bare "picture box" controls as control containers.  This was redundant and silly, as picture
-' boxes require a lot of resources, and they expose a ton of features that we don't need when we just want to
-' group a bunch of controls into an easier-to-manage form.
+'Historically, PD used bare "picture box" controls as control containers.  This was redundant and silly,
+' as picture boxes require a lot of resources, and they expose a ton of features we don't need when we
+' just want to group a bunch of controls into an easier-to-manage form.
 '
-'So this new control container was built.  It's fully themable, but it doesn't manage a true backbuffer, so you
+'So this new control container was built.  It's fully themable, but it *doesn't* manage a true backbuffer, so you
 ' can't render strange custom stuff to it (by design).  It is also lighter-weight than a comparable picture box
-' would be.
+' would be, while still reporting useful things like DPI-accurate size changes.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -55,6 +55,9 @@ Option Explicit
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+
+'To help layout functions, some additional size changes are reported
+Public Event SizeChanged()
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -135,6 +138,10 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestNewSize newWidth, newHeight, True
+End Sub
+
 Public Sub Refresh()
     ucSupport.RequestRepaint True
 End Sub
@@ -149,6 +156,10 @@ End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_ARROW
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    RaiseEvent SizeChanged
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -172,7 +183,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
