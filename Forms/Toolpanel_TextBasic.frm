@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_Text
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   1515
+   ClientHeight    =   1500
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   18465
@@ -22,15 +22,24 @@ Begin VB.Form toolpanel_Text
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   101
+   ScaleHeight     =   100
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1231
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButtonStripVertical btsMain 
+      Height          =   1350
+      Left            =   30
+      TabIndex        =   1
+      Top             =   30
+      Width           =   2100
+      _ExtentX        =   3704
+      _ExtentY        =   2381
+   End
    Begin PhotoDemon.pdContainer picConvertLayer 
       Height          =   1335
       Left            =   17280
-      TabIndex        =   11
+      TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
       Width           =   1455
@@ -60,230 +69,238 @@ Begin VB.Form toolpanel_Text
          Layout          =   1
       End
    End
-   Begin PhotoDemon.pdButtonStrip btsHAlignment 
-      Height          =   435
-      Left            =   15720
-      TabIndex        =   9
-      Top             =   30
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   767
-      ColorScheme     =   1
-   End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
+   Begin PhotoDemon.pdContainer pdcMain 
+      Height          =   1500
       Index           =   0
-      Left            =   7680
-      TabIndex        =   5
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
-   End
-   Begin PhotoDemon.pdSlider sltTextClarity 
-      Height          =   405
-      Left            =   11880
-      TabIndex        =   4
-      Top             =   930
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   767
-      Value           =   5
-      NotchPosition   =   2
-      NotchValueCustom=   5
-   End
-   Begin PhotoDemon.pdColorSelector csTextFontColor 
-      Height          =   390
-      Left            =   11880
-      TabIndex        =   0
-      Top             =   60
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   688
-      curColor        =   0
-   End
-   Begin PhotoDemon.pdSpinner tudTextFontSize 
-      Height          =   345
-      Left            =   7680
-      TabIndex        =   1
-      Top             =   510
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   609
-      DefaultValue    =   16
-      Min             =   1
-      Max             =   1000
-      SigDigits       =   1
-      Value           =   16
-   End
-   Begin PhotoDemon.pdTextBox txtTextTool 
-      Height          =   1380
-      Left            =   840
+      Left            =   2280
       TabIndex        =   2
-      Top             =   30
-      Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   2434
-      FontSize        =   9
-      Multiline       =   -1  'True
+      Top             =   0
+      Width           =   10980
+      _ExtentX        =   18521
+      _ExtentY        =   2646
+      Begin PhotoDemon.pdTextBox txtTextTool 
+         Height          =   1350
+         Left            =   0
+         TabIndex        =   4
+         Top             =   30
+         Width           =   10815
+         _ExtentX        =   19076
+         _ExtentY        =   2381
+         FontSize        =   9
+         Multiline       =   -1  'True
+      End
    End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
+   Begin PhotoDemon.pdContainer pdcMain 
+      Height          =   1500
       Index           =   1
-      Left            =   120
-      Top             =   60
-      Width           =   645
-      _ExtentX        =   1138
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "text:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   3
-      Left            =   6360
-      Top             =   120
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font face:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   4
-      Left            =   6360
-      Top             =   570
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font size:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   2
-      Left            =   6360
-      Top             =   1020
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font style:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdDropDown cboTextRenderingHint 
-      Height          =   375
-      Left            =   11880
+      Left            =   2280
       TabIndex        =   3
-      Top             =   525
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   635
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   5
-      Left            =   10320
-      Top             =   570
-      Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "antialiasing:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   6
-      Left            =   10320
-      Top             =   1020
-      Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "clarity:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   7
-      Left            =   10320
-      Top             =   120
-      Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "color:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
-      Index           =   1
-      Left            =   8160
-      TabIndex        =   6
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
-   End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
-      Index           =   2
-      Left            =   8640
-      TabIndex        =   7
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
-   End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
-      Index           =   3
-      Left            =   9120
-      TabIndex        =   8
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   8
-      Left            =   14400
-      Top             =   120
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "alignment:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdButtonStrip btsVAlignment 
-      Height          =   435
-      Left            =   15720
-      TabIndex        =   10
-      Top             =   480
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   767
-      ColorScheme     =   1
-   End
-   Begin PhotoDemon.pdDropDownFont cboTextFontFace 
-      Height          =   375
-      Left            =   7680
-      TabIndex        =   12
-      Top             =   60
-      Width           =   2430
-      _ExtentX        =   4286
-      _ExtentY        =   661
+      Top             =   0
+      Width           =   10980
+      _ExtentX        =   18521
+      _ExtentY        =   2646
+      Begin PhotoDemon.pdButtonStrip btsHAlignment 
+         Height          =   435
+         Left            =   9360
+         TabIndex        =   5
+         Top             =   0
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   0
+         Left            =   1320
+         TabIndex        =   6
+         Top             =   900
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdSlider sltTextClarity 
+         Height          =   405
+         Left            =   5520
+         TabIndex        =   7
+         Top             =   900
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   767
+         Value           =   5
+         NotchPosition   =   2
+         NotchValueCustom=   5
+      End
+      Begin PhotoDemon.pdColorSelector csTextFontColor 
+         Height          =   390
+         Left            =   5520
+         TabIndex        =   8
+         Top             =   30
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   688
+         curColor        =   0
+      End
+      Begin PhotoDemon.pdSpinner tudTextFontSize 
+         Height          =   345
+         Left            =   1320
+         TabIndex        =   9
+         Top             =   480
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   609
+         DefaultValue    =   16
+         Min             =   1
+         Max             =   1000
+         SigDigits       =   1
+         Value           =   16
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   3
+         Left            =   0
+         Top             =   90
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font face:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   4
+         Left            =   0
+         Top             =   540
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font size:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   2
+         Left            =   0
+         Top             =   990
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font style:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdDropDown cboTextRenderingHint 
+         Height          =   375
+         Left            =   5520
+         TabIndex        =   10
+         Top             =   495
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   5
+         Left            =   3960
+         Top             =   540
+         Width           =   1365
+         _ExtentX        =   2408
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "antialiasing:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   6
+         Left            =   3960
+         Top             =   990
+         Width           =   1365
+         _ExtentX        =   2408
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "clarity:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   7
+         Left            =   3960
+         Top             =   90
+         Width           =   1365
+         _ExtentX        =   2408
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "color:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   1
+         Left            =   1800
+         TabIndex        =   11
+         Top             =   900
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   2
+         Left            =   2280
+         TabIndex        =   12
+         Top             =   900
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   3
+         Left            =   2760
+         TabIndex        =   13
+         Top             =   900
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   8
+         Left            =   8040
+         Top             =   90
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "alignment:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdButtonStrip btsVAlignment 
+         Height          =   435
+         Left            =   9360
+         TabIndex        =   14
+         Top             =   450
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+      Begin PhotoDemon.pdDropDownFont cboTextFontFace 
+         Height          =   375
+         Left            =   1320
+         TabIndex        =   15
+         Top             =   30
+         Width           =   2430
+         _ExtentX        =   4286
+         _ExtentY        =   661
+      End
    End
 End
 Attribute VB_Name = "toolpanel_Text"
@@ -431,6 +448,10 @@ Private Sub btsHAlignment_LostFocusAPI()
     If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
 End Sub
 
+Private Sub btsMain_Click(ByVal buttonIndex As Long)
+    ChangeMainPanel
+End Sub
+
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
@@ -561,11 +582,19 @@ Private Sub Form_Load()
     'Forcibly hide the "convert to text layer" panel
     toolpanel_Text.picConvertLayer.Visible = False
     
-    'Generate a list of fonts
     If g_IsProgramRunning Then
+        
+        'This tool is separated into two panels: text entry, and text settings
+        btsMain.AddItem "text", 0
+        btsMain.AddItem "settings", 1
+        btsMain.ListIndex = 0
+        ChangeMainPanel
+        
+        'Generate a list of fonts
         cboTextFontFace.InitializeFontList
         cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(g_InterfaceFont, vbBinaryCompare)
-    
+        
+        'Antialiasing options behave slightly differently from the typography tool
         cboTextRenderingHint.Clear
         cboTextRenderingHint.AddItem "None", 0
         cboTextRenderingHint.AddItem "Normal", 1
@@ -623,6 +652,15 @@ Private Sub lblConvertLayerConfirm_Click()
     
 End Sub
 
+Private Sub pdcMain_SizeChanged(Index As Integer)
+
+    'The "text" panel auto-resizes the text entry area to match the size of the container
+    If (Index = 0) Then
+        txtTextTool.SetSize (pdcMain(Index).GetWidth - txtTextTool.GetLeft) - FixDPI(4), txtTextTool.GetHeight
+    End If
+    
+End Sub
+
 Private Sub sltTextClarity_Change()
 
     'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
@@ -643,7 +681,7 @@ Private Sub sltTextClarity_Change()
 End Sub
 
 Private Sub sltTextClarity_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_TextContrast, sltTextClarity.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
@@ -710,7 +748,20 @@ End Sub
 'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-basic-text text layer of
 ' some type (e.g. typography), an option will be displayed to convert the layer over.
 Public Sub UpdateAgainstCurrentLayer()
-
+    
+    'Regardless of layer type, resize our containers to match the current window width.
+    Dim winSize As winRect
+    If (Not g_WindowManager Is Nothing) Then
+        
+        g_WindowManager.GetClientWinRect Me.hWnd, winSize
+        
+        Dim i As Long
+        For i = pdcMain.lBound To pdcMain.UBound
+            pdcMain(i).SetSize (winSize.x2 - winSize.x1) - pdcMain(i).GetLeft, pdcMain(i).GetHeight
+        Next i
+        
+    End If
+    
     If (g_OpenImageCount > 0) Then
 
         If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
@@ -741,6 +792,7 @@ Public Sub UpdateAgainstCurrentLayer()
                 
                 'Display the panel
                 Me.picConvertLayer.Visible = True
+                Me.picConvertLayer.ZOrder 0
                 
             Else
                 Me.picConvertLayer.Visible = False
@@ -771,6 +823,15 @@ Private Function CurrentLayerIsText() As Boolean
     End If
     
 End Function
+
+Private Sub ChangeMainPanel()
+    
+    Dim i As Long
+    For i = pdcMain.lBound To pdcMain.UBound
+        pdcMain(i).Visible = (i = btsMain.ListIndex)
+    Next i
+    
+End Sub
 
 'Updating against the current theme accomplishes a number of things:
 ' 1) All user-drawn controls are redrawn according to the current g_Themer settings.
