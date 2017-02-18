@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.248</langversion>
+<langversion>6.7.249</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13592,6 +13592,11 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
+<original>settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crisp</original>
 <translation></translation>
 </phrase>
@@ -13611,7 +13616,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14945,10 +14950,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4470 phrases. -->
-<!-- 1952 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12382 total words. -->
 
 </pdData>

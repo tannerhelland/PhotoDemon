@@ -3,7 +3,7 @@ Begin VB.Form toolpanel_FancyText
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   ClientHeight    =   1515
+   ClientHeight    =   1500
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   18435
@@ -21,15 +21,36 @@ Begin VB.Form toolpanel_FancyText
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   101
+   ScaleHeight     =   100
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1229
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdContainer pdcMain 
+      Height          =   1500
+      Index           =   0
+      Left            =   2280
+      TabIndex        =   2
+      Top             =   0
+      Width           =   10980
+      _ExtentX        =   19368
+      _ExtentY        =   2646
+      Begin PhotoDemon.pdTextBox txtTextTool 
+         Height          =   1380
+         Left            =   0
+         TabIndex        =   4
+         Top             =   30
+         Width           =   9855
+         _ExtentX        =   17383
+         _ExtentY        =   2434
+         FontSize        =   9
+         Multiline       =   -1  'True
+      End
+   End
    Begin PhotoDemon.pdContainer ctlGroupConvertLayer 
       Height          =   1335
       Left            =   0
-      TabIndex        =   42
+      TabIndex        =   0
       Top             =   840
       Visible         =   0   'False
       Width           =   1455
@@ -59,704 +80,700 @@ Begin VB.Form toolpanel_FancyText
          Layout          =   1
       End
    End
-   Begin PhotoDemon.pdButtonStripVertical btsCategory 
+   Begin PhotoDemon.pdButtonStripVertical btsMain 
       Height          =   1380
-      Left            =   6240
+      Left            =   30
       TabIndex        =   1
       Top             =   30
-      Width           =   2175
-      _ExtentX        =   4048
+      Width           =   2100
+      _ExtentX        =   3704
       _ExtentY        =   2434
    End
-   Begin PhotoDemon.pdTextBox txtTextTool 
-      Height          =   1380
-      Left            =   840
-      TabIndex        =   0
-      Top             =   30
-      Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   2434
-      FontSize        =   9
-      Multiline       =   -1  'True
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   1
-      Left            =   120
-      Top             =   60
-      Width           =   645
-      _ExtentX        =   1138
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "text:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdContainer ctlGroupCategory 
+   Begin PhotoDemon.pdContainer pdcMain 
       Height          =   1500
-      Index           =   0
-      Left            =   8520
-      TabIndex        =   2
+      Index           =   1
+      Left            =   2280
+      TabIndex        =   3
       Top             =   0
-      Width           =   10935
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButtonStripVertical btsCharCategory 
+      Width           =   14580
+      _ExtentX        =   25718
+      _ExtentY        =   2646
+      Begin PhotoDemon.pdButtonStripVertical btsCategory 
          Height          =   1380
          Left            =   0
-         TabIndex        =   18
+         TabIndex        =   5
          Top             =   30
-         Width           =   1815
-         _ExtentX        =   3201
+         Width           =   2175
+         _ExtentX        =   4048
          _ExtentY        =   2434
       End
-      Begin PhotoDemon.pdContainer ctlGroupCharCategory 
+      Begin PhotoDemon.pdContainer ctlGroupCategory 
          Height          =   1500
          Index           =   0
-         Left            =   1920
-         TabIndex        =   19
-         Top             =   60
+         Left            =   2280
+         TabIndex        =   6
+         Top             =   0
+         Width           =   10935
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Begin PhotoDemon.pdButtonStripVertical btsCharCategory 
+            Height          =   1380
+            Left            =   0
+            TabIndex        =   7
+            Top             =   30
+            Width           =   1815
+            _ExtentX        =   3201
+            _ExtentY        =   2434
+         End
+         Begin PhotoDemon.pdContainer ctlGroupCharCategory 
+            Height          =   1500
+            Index           =   0
+            Left            =   1920
+            TabIndex        =   8
+            Top             =   60
+            Visible         =   0   'False
+            Width           =   10935
+            _ExtentX        =   0
+            _ExtentY        =   0
+            Begin PhotoDemon.pdDropDownFont cboTextFontFace 
+               Height          =   375
+               Left            =   1320
+               TabIndex        =   9
+               Top             =   0
+               Width           =   2415
+               _ExtentX        =   4260
+               _ExtentY        =   661
+            End
+            Begin PhotoDemon.pdSpinner tudTextFontSize 
+               Height          =   345
+               Left            =   1320
+               TabIndex        =   10
+               Top             =   450
+               Width           =   2415
+               _ExtentX        =   4260
+               _ExtentY        =   609
+               DefaultValue    =   16
+               Min             =   1
+               Max             =   1000
+               Value           =   16
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   3
+               Left            =   0
+               Top             =   60
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "font face:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   4
+               Left            =   0
+               Top             =   510
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "font size:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   2
+               Left            =   0
+               Top             =   960
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "font style:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+               Height          =   435
+               Index           =   1
+               Left            =   1800
+               TabIndex        =   11
+               Top             =   870
+               Width           =   450
+               _ExtentX        =   794
+               _ExtentY        =   767
+               StickyToggle    =   -1  'True
+            End
+            Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+               Height          =   435
+               Index           =   2
+               Left            =   2280
+               TabIndex        =   12
+               Top             =   870
+               Width           =   450
+               _ExtentX        =   794
+               _ExtentY        =   767
+               StickyToggle    =   -1  'True
+            End
+            Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+               Height          =   435
+               Index           =   3
+               Left            =   2760
+               TabIndex        =   13
+               Top             =   870
+               Width           =   450
+               _ExtentX        =   794
+               _ExtentY        =   767
+               StickyToggle    =   -1  'True
+            End
+            Begin PhotoDemon.pdCheckBox chkHinting 
+               Height          =   330
+               Left            =   4200
+               TabIndex        =   14
+               Top             =   450
+               Width           =   3615
+               _ExtentX        =   6376
+               _ExtentY        =   582
+               Caption         =   "hinting"
+               Value           =   0
+            End
+            Begin PhotoDemon.pdDropDown cboTextRenderingHint 
+               Height          =   375
+               Left            =   5400
+               TabIndex        =   15
+               Top             =   0
+               Width           =   2415
+               _ExtentX        =   4260
+               _ExtentY        =   635
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   5
+               Left            =   3840
+               Top             =   60
+               Width           =   1365
+               _ExtentX        =   2408
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "antialiasing:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+               Height          =   435
+               Index           =   0
+               Left            =   1320
+               TabIndex        =   16
+               Top             =   870
+               Width           =   450
+               _ExtentX        =   794
+               _ExtentY        =   767
+               StickyToggle    =   -1  'True
+            End
+         End
+         Begin PhotoDemon.pdContainer ctlGroupCharCategory 
+            Height          =   1500
+            Index           =   1
+            Left            =   1920
+            TabIndex        =   17
+            Top             =   60
+            Visible         =   0   'False
+            Width           =   10935
+            _ExtentX        =   0
+            _ExtentY        =   0
+            Begin PhotoDemon.pdSpinner tudJitter 
+               Height          =   345
+               Index           =   0
+               Left            =   5280
+               TabIndex        =   18
+               Top             =   0
+               Width           =   1215
+               _ExtentX        =   1720
+               _ExtentY        =   609
+               Max             =   100
+               SigDigits       =   1
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   26
+               Left            =   0
+               Top             =   60
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "remap:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdDropDown cboCharCase 
+               Height          =   375
+               Left            =   1320
+               TabIndex        =   19
+               Top             =   0
+               Width           =   2595
+               _ExtentX        =   4577
+               _ExtentY        =   661
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   30
+               Left            =   0
+               Top             =   540
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "spacing:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdSlider sltCharSpacing 
+               CausesValidation=   0   'False
+               Height          =   405
+               Left            =   1200
+               TabIndex        =   20
+               Top             =   420
+               Width           =   2760
+               _ExtentX        =   4868
+               _ExtentY        =   873
+               Min             =   -1
+               Max             =   1
+               SigDigits       =   3
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   31
+               Left            =   0
+               Top             =   1020
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "orientation:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdSlider sltCharOrientation 
+               CausesValidation=   0   'False
+               Height          =   405
+               Left            =   1200
+               TabIndex        =   21
+               Top             =   900
+               Width           =   2760
+               _ExtentX        =   4868
+               _ExtentY        =   873
+               Min             =   -360
+               Max             =   360
+               SigDigits       =   1
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   32
+               Left            =   3960
+               Top             =   60
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "jitter:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   33
+               Left            =   4125
+               Top             =   1020
+               Width           =   960
+               _ExtentX        =   1693
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "mirror:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdDropDown cboCharMirror 
+               Height          =   375
+               Left            =   5280
+               TabIndex        =   22
+               Top             =   945
+               Width           =   2595
+               _ExtentX        =   4577
+               _ExtentY        =   661
+            End
+            Begin PhotoDemon.pdSpinner tudJitter 
+               Height          =   345
+               Index           =   1
+               Left            =   6675
+               TabIndex        =   23
+               Top             =   0
+               Width           =   1215
+               _ExtentX        =   2143
+               _ExtentY        =   609
+               Max             =   100
+               SigDigits       =   1
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   240
+               Index           =   34
+               Left            =   3960
+               Top             =   540
+               Width           =   1125
+               _ExtentX        =   1984
+               _ExtentY        =   503
+               Alignment       =   1
+               Caption         =   "inflation:"
+               ForeColor       =   0
+            End
+            Begin PhotoDemon.pdSlider sltCharInflation 
+               CausesValidation=   0   'False
+               Height          =   405
+               Left            =   5160
+               TabIndex        =   24
+               Top             =   420
+               Width           =   2760
+               _ExtentX        =   4868
+               _ExtentY        =   873
+               Max             =   20
+               SigDigits       =   1
+            End
+         End
+      End
+      Begin PhotoDemon.pdContainer ctlGroupCategory 
+         Height          =   1500
+         Index           =   3
+         Left            =   2280
+         TabIndex        =   25
+         Top             =   0
          Visible         =   0   'False
          Width           =   10935
          _ExtentX        =   0
          _ExtentY        =   0
-         Begin PhotoDemon.pdDropDownFont cboTextFontFace 
+      End
+      Begin PhotoDemon.pdContainer ctlGroupCategory 
+         Height          =   1500
+         Index           =   2
+         Left            =   2280
+         TabIndex        =   26
+         Top             =   0
+         Visible         =   0   'False
+         Width           =   10935
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Begin PhotoDemon.pdButtonStripVertical btsAppearanceCategory 
+            Height          =   1380
+            Left            =   0
+            TabIndex        =   27
+            Top             =   30
+            Width           =   1815
+            _ExtentX        =   3201
+            _ExtentY        =   2434
+         End
+         Begin PhotoDemon.pdContainer ctlGroupAppearanceCategory 
+            Height          =   1500
+            Index           =   1
+            Left            =   1920
+            TabIndex        =   28
+            Top             =   0
+            Visible         =   0   'False
+            Width           =   10935
+            _ExtentX        =   0
+            _ExtentY        =   0
+            Begin PhotoDemon.pdPenSelector psTextBackground 
+               Height          =   855
+               Left            =   4680
+               TabIndex        =   29
+               Top             =   480
+               Width           =   2055
+               _ExtentX        =   3625
+               _ExtentY        =   1508
+            End
+            Begin PhotoDemon.pdBrushSelector bsTextBackground 
+               Height          =   855
+               Left            =   1200
+               TabIndex        =   30
+               Top             =   480
+               Width           =   2055
+               _ExtentX        =   3625
+               _ExtentY        =   1508
+            End
+            Begin PhotoDemon.pdCheckBox chkBackground 
+               Height          =   330
+               Left            =   120
+               TabIndex        =   31
+               Top             =   60
+               Width           =   3240
+               _ExtentX        =   4445
+               _ExtentY        =   582
+               Caption         =   "fill background"
+               Value           =   0
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   720
+               Index           =   15
+               Left            =   0
+               Top             =   480
+               Width           =   1095
+               _ExtentX        =   1931
+               _ExtentY        =   1270
+               Alignment       =   1
+               Caption         =   "fill style:"
+               ForeColor       =   0
+               Layout          =   1
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   720
+               Index           =   28
+               Left            =   3360
+               Top             =   480
+               Width           =   1215
+               _ExtentX        =   2143
+               _ExtentY        =   1270
+               Alignment       =   1
+               Caption         =   "border style:"
+               ForeColor       =   0
+               Layout          =   1
+            End
+            Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
+               Height          =   330
+               Left            =   3480
+               TabIndex        =   32
+               Top             =   60
+               Width           =   3240
+               _ExtentX        =   4445
+               _ExtentY        =   582
+               Caption         =   "background border"
+               Value           =   0
+            End
+         End
+         Begin PhotoDemon.pdContainer ctlGroupAppearanceCategory 
+            Height          =   1500
+            Index           =   0
+            Left            =   1920
+            TabIndex        =   33
+            Top             =   0
+            Visible         =   0   'False
+            Width           =   10935
+            _ExtentX        =   0
+            _ExtentY        =   0
+            Begin PhotoDemon.pdPenSelector psText 
+               Height          =   855
+               Left            =   4680
+               TabIndex        =   34
+               Top             =   480
+               Width           =   2055
+               _ExtentX        =   3625
+               _ExtentY        =   1508
+            End
+            Begin PhotoDemon.pdBrushSelector bsText 
+               Height          =   855
+               Left            =   1200
+               TabIndex        =   35
+               Top             =   480
+               Width           =   2055
+               _ExtentX        =   3625
+               _ExtentY        =   1508
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   855
+               Index           =   6
+               Left            =   0
+               Top             =   480
+               Width           =   1095
+               _ExtentX        =   1931
+               _ExtentY        =   1508
+               Alignment       =   1
+               Caption         =   "fill style:"
+               Layout          =   1
+            End
+            Begin PhotoDemon.pdCheckBox chkFillText 
+               Height          =   330
+               Left            =   120
+               TabIndex        =   36
+               Top             =   60
+               Width           =   3255
+               _ExtentX        =   5741
+               _ExtentY        =   582
+               Caption         =   "fill text"
+            End
+            Begin PhotoDemon.pdLabel lblText 
+               Height          =   855
+               Index           =   7
+               Left            =   3360
+               Top             =   480
+               Width           =   1215
+               _ExtentX        =   2143
+               _ExtentY        =   1508
+               Alignment       =   1
+               Caption         =   "outline style:"
+               Layout          =   1
+            End
+            Begin PhotoDemon.pdCheckBox chkOutlineText 
+               Height          =   330
+               Left            =   3480
+               TabIndex        =   37
+               Top             =   60
+               Width           =   3255
+               _ExtentX        =   5741
+               _ExtentY        =   582
+               Caption         =   "outline text"
+               Value           =   0
+            End
+         End
+      End
+      Begin PhotoDemon.pdContainer ctlGroupCategory 
+         Height          =   1500
+         Index           =   1
+         Left            =   2280
+         TabIndex        =   38
+         Top             =   0
+         Visible         =   0   'False
+         Width           =   10935
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Begin PhotoDemon.pdSpinner tudLineSpacing 
+            Height          =   345
+            Left            =   5160
+            TabIndex        =   39
+            Top             =   1020
+            Width           =   1935
+            _ExtentX        =   3413
+            _ExtentY        =   609
+            Min             =   -10
+            SigDigits       =   2
+         End
+         Begin PhotoDemon.pdSpinner tudMargin 
+            Height          =   345
+            Index           =   0
+            Left            =   5160
+            TabIndex        =   40
+            Top             =   90
+            Width           =   1380
+            _ExtentX        =   2434
+            _ExtentY        =   609
+            Min             =   -1000
+            Max             =   1000
+         End
+         Begin PhotoDemon.pdButtonStrip btsHAlignment 
+            Height          =   435
+            Left            =   1320
+            TabIndex        =   41
+            Top             =   60
+            Width           =   1455
+            _ExtentX        =   2566
+            _ExtentY        =   767
+            ColorScheme     =   1
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   8
+            Left            =   0
+            Top             =   150
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "alignment:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdButtonStrip btsVAlignment 
+            Height          =   435
+            Left            =   1320
+            TabIndex        =   42
+            Top             =   510
+            Width           =   1455
+            _ExtentX        =   2566
+            _ExtentY        =   767
+            ColorScheme     =   1
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   0
+            Left            =   0
+            Top             =   1080
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "line wrap:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdDropDown cboWordWrap 
             Height          =   375
             Left            =   1320
             TabIndex        =   43
-            Top             =   0
-            Width           =   2415
-            _ExtentX        =   4260
+            Top             =   1020
+            Width           =   2070
+            _ExtentX        =   3651
             _ExtentY        =   661
          End
-         Begin PhotoDemon.pdSpinner tudTextFontSize 
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   23
+            Left            =   3360
+            Top             =   150
+            Width           =   1605
+            _ExtentX        =   2831
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "h. padding:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdSpinner tudMargin 
             Height          =   345
-            Left            =   1320
-            TabIndex        =   20
-            Top             =   450
-            Width           =   2415
-            _ExtentX        =   4260
+            Index           =   1
+            Left            =   6540
+            TabIndex        =   44
+            Top             =   90
+            Width           =   1380
+            _ExtentX        =   2434
             _ExtentY        =   609
-            DefaultValue    =   16
-            Min             =   1
+            Min             =   -1000
             Max             =   1000
-            Value           =   16
          End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   3
-            Left            =   0
-            Top             =   60
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "font face:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   4
-            Left            =   0
-            Top             =   510
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "font size:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   2
-            Left            =   0
-            Top             =   960
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "font style:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   1
-            Left            =   1800
-            TabIndex        =   21
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   2
-            Left            =   2280
-            TabIndex        =   22
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   3
-            Left            =   2760
-            TabIndex        =   23
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-         Begin PhotoDemon.pdCheckBox chkHinting 
-            Height          =   330
-            Left            =   4200
-            TabIndex        =   24
-            Top             =   450
-            Width           =   3615
-            _ExtentX        =   6376
-            _ExtentY        =   582
-            Caption         =   "hinting"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdDropDown cboTextRenderingHint 
-            Height          =   375
-            Left            =   5400
-            TabIndex        =   25
-            Top             =   0
-            Width           =   2415
-            _ExtentX        =   4260
-            _ExtentY        =   635
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   5
-            Left            =   3840
-            Top             =   60
-            Width           =   1365
-            _ExtentX        =   2408
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "antialiasing:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-            Height          =   435
-            Index           =   0
-            Left            =   1320
-            TabIndex        =   26
-            Top             =   870
-            Width           =   450
-            _ExtentX        =   794
-            _ExtentY        =   767
-            StickyToggle    =   -1  'True
-         End
-      End
-      Begin PhotoDemon.pdContainer ctlGroupCharCategory 
-         Height          =   1500
-         Index           =   1
-         Left            =   1920
-         TabIndex        =   27
-         Top             =   60
-         Visible         =   0   'False
-         Width           =   10935
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Begin PhotoDemon.pdSpinner tudJitter 
+         Begin PhotoDemon.pdSpinner tudMargin 
             Height          =   345
-            Index           =   0
-            Left            =   5280
-            TabIndex        =   32
-            Top             =   0
-            Width           =   1215
-            _ExtentX        =   1720
-            _ExtentY        =   609
-            Max             =   100
-            SigDigits       =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   26
-            Left            =   0
-            Top             =   60
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "remap:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdDropDown cboCharCase 
-            Height          =   375
-            Left            =   1320
-            TabIndex        =   28
-            Top             =   0
-            Width           =   2595
-            _ExtentX        =   4577
-            _ExtentY        =   661
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   30
-            Left            =   0
-            Top             =   540
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "spacing:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdSlider sltCharSpacing 
-            CausesValidation=   0   'False
-            Height          =   405
-            Left            =   1200
-            TabIndex        =   29
-            Top             =   420
-            Width           =   2760
-            _ExtentX        =   4868
-            _ExtentY        =   873
-            Min             =   -1
-            Max             =   1
-            SigDigits       =   3
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   31
-            Left            =   0
-            Top             =   1020
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "orientation:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdSlider sltCharOrientation 
-            CausesValidation=   0   'False
-            Height          =   405
-            Left            =   1200
-            TabIndex        =   30
-            Top             =   900
-            Width           =   2760
-            _ExtentX        =   4868
-            _ExtentY        =   873
-            Min             =   -360
-            Max             =   360
-            SigDigits       =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   32
-            Left            =   3960
-            Top             =   60
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "jitter:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   33
-            Left            =   4125
-            Top             =   1020
-            Width           =   960
-            _ExtentX        =   1693
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "mirror:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdDropDown cboCharMirror 
-            Height          =   375
-            Left            =   5280
-            TabIndex        =   31
-            Top             =   945
-            Width           =   2595
-            _ExtentX        =   4577
-            _ExtentY        =   661
-         End
-         Begin PhotoDemon.pdSpinner tudJitter 
-            Height          =   345
-            Index           =   1
-            Left            =   6675
-            TabIndex        =   33
-            Top             =   0
-            Width           =   1215
-            _ExtentX        =   2143
-            _ExtentY        =   609
-            Max             =   100
-            SigDigits       =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   34
-            Left            =   3960
-            Top             =   540
-            Width           =   1125
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "inflation:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.pdSlider sltCharInflation 
-            CausesValidation=   0   'False
-            Height          =   405
+            Index           =   2
             Left            =   5160
-            TabIndex        =   34
-            Top             =   420
-            Width           =   2760
-            _ExtentX        =   4868
-            _ExtentY        =   873
-            Max             =   20
-            SigDigits       =   1
+            TabIndex        =   45
+            Top             =   570
+            Width           =   1380
+            _ExtentX        =   2434
+            _ExtentY        =   609
+            Min             =   -1000
+            Max             =   1000
          End
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupCategory 
-      Height          =   1500
-      Index           =   3
-      Left            =   8520
-      TabIndex        =   7
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   10935
-      _ExtentX        =   0
-      _ExtentY        =   0
-   End
-   Begin PhotoDemon.pdContainer ctlGroupCategory 
-      Height          =   1500
-      Index           =   2
-      Left            =   8520
-      TabIndex        =   6
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   10935
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdButtonStripVertical btsAppearanceCategory 
-         Height          =   1380
-         Left            =   0
-         TabIndex        =   9
-         Top             =   30
-         Width           =   1815
-         _ExtentX        =   3201
-         _ExtentY        =   2434
-      End
-      Begin PhotoDemon.pdContainer ctlGroupAppearanceCategory 
-         Height          =   1500
-         Index           =   1
-         Left            =   1920
-         TabIndex        =   11
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   10935
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Begin PhotoDemon.pdPenSelector psTextBackground 
-            Height          =   855
-            Left            =   4680
-            TabIndex        =   39
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdBrushSelector bsTextBackground 
-            Height          =   855
-            Left            =   1200
-            TabIndex        =   37
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdCheckBox chkBackground 
-            Height          =   330
-            Left            =   120
-            TabIndex        =   12
-            Top             =   60
-            Width           =   3240
-            _ExtentX        =   4445
-            _ExtentY        =   582
-            Caption         =   "fill background"
-            Value           =   0
+         Begin PhotoDemon.pdSpinner tudMargin 
+            Height          =   345
+            Index           =   3
+            Left            =   6540
+            TabIndex        =   46
+            Top             =   570
+            Width           =   1380
+            _ExtentX        =   2434
+            _ExtentY        =   609
+            Min             =   -1000
+            Max             =   1000
          End
          Begin PhotoDemon.pdLabel lblText 
-            Height          =   720
-            Index           =   15
-            Left            =   0
-            Top             =   480
-            Width           =   1095
-            _ExtentX        =   1931
-            _ExtentY        =   1270
-            Alignment       =   1
-            Caption         =   "fill style:"
-            ForeColor       =   0
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   720
-            Index           =   28
+            Height          =   240
+            Index           =   24
             Left            =   3360
-            Top             =   480
-            Width           =   1215
-            _ExtentX        =   2143
-            _ExtentY        =   1270
+            Top             =   630
+            Width           =   1605
+            _ExtentX        =   2831
+            _ExtentY        =   503
             Alignment       =   1
-            Caption         =   "border style:"
+            Caption         =   "v. padding:"
             ForeColor       =   0
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdCheckBox chkBackgroundBorder 
-            Height          =   330
-            Left            =   3480
-            TabIndex        =   38
-            Top             =   60
-            Width           =   3240
-            _ExtentX        =   4445
-            _ExtentY        =   582
-            Caption         =   "background border"
-            Value           =   0
-         End
-      End
-      Begin PhotoDemon.pdContainer ctlGroupAppearanceCategory 
-         Height          =   1500
-         Index           =   0
-         Left            =   1920
-         TabIndex        =   10
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   10935
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Begin PhotoDemon.pdPenSelector psText 
-            Height          =   855
-            Left            =   4680
-            TabIndex        =   41
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdBrushSelector bsText 
-            Height          =   855
-            Left            =   1200
-            TabIndex        =   36
-            Top             =   480
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   1508
          End
          Begin PhotoDemon.pdLabel lblText 
-            Height          =   855
-            Index           =   6
-            Left            =   0
-            Top             =   480
-            Width           =   1095
-            _ExtentX        =   1931
-            _ExtentY        =   1508
-            Alignment       =   1
-            Caption         =   "fill style:"
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdCheckBox chkFillText 
-            Height          =   330
-            Left            =   120
-            TabIndex        =   35
-            Top             =   60
-            Width           =   3255
-            _ExtentX        =   5741
-            _ExtentY        =   582
-            Caption         =   "fill text"
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   855
-            Index           =   7
-            Left            =   3360
-            Top             =   480
-            Width           =   1215
-            _ExtentX        =   2143
-            _ExtentY        =   1508
-            Alignment       =   1
-            Caption         =   "outline style:"
-            Layout          =   1
-         End
-         Begin PhotoDemon.pdCheckBox chkOutlineText 
-            Height          =   330
+            Height          =   240
+            Index           =   25
             Left            =   3480
-            TabIndex        =   40
-            Top             =   60
-            Width           =   3255
-            _ExtentX        =   5741
-            _ExtentY        =   582
-            Caption         =   "outline text"
-            Value           =   0
+            Top             =   1080
+            Width           =   1530
+            _ExtentX        =   2699
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "line spacing:"
+            ForeColor       =   0
          End
-      End
-   End
-   Begin PhotoDemon.pdContainer ctlGroupCategory 
-      Height          =   1500
-      Index           =   1
-      Left            =   8520
-      TabIndex        =   3
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   10935
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSpinner tudLineSpacing 
-         Height          =   345
-         Left            =   5160
-         TabIndex        =   17
-         Top             =   1020
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-         Min             =   -10
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   0
-         Left            =   5160
-         TabIndex        =   13
-         Top             =   90
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdButtonStrip btsHAlignment 
-         Height          =   435
-         Left            =   1320
-         TabIndex        =   4
-         Top             =   60
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   767
-         ColorScheme     =   1
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   8
-         Left            =   0
-         Top             =   150
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "alignment:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdButtonStrip btsVAlignment 
-         Height          =   435
-         Left            =   1320
-         TabIndex        =   5
-         Top             =   510
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   767
-         ColorScheme     =   1
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   0
-         Left            =   0
-         Top             =   1080
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "line wrap:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdDropDown cboWordWrap 
-         Height          =   375
-         Left            =   1320
-         TabIndex        =   8
-         Top             =   1020
-         Width           =   2070
-         _ExtentX        =   3651
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   23
-         Left            =   3360
-         Top             =   150
-         Width           =   1605
-         _ExtentX        =   2831
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "h. padding:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   1
-         Left            =   6540
-         TabIndex        =   14
-         Top             =   90
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   2
-         Left            =   5160
-         TabIndex        =   15
-         Top             =   570
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdSpinner tudMargin 
-         Height          =   345
-         Index           =   3
-         Left            =   6540
-         TabIndex        =   16
-         Top             =   570
-         Width           =   1380
-         _ExtentX        =   2434
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   24
-         Left            =   3360
-         Top             =   630
-         Width           =   1605
-         _ExtentX        =   2831
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "v. padding:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   25
-         Left            =   3480
-         Top             =   1080
-         Width           =   1530
-         _ExtentX        =   2699
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "line spacing:"
-         ForeColor       =   0
       End
    End
 End
@@ -987,6 +1004,10 @@ End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
     If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+End Sub
+
+Private Sub btsMain_Click(ByVal buttonIndex As Long)
+    ChangeMainPanel
 End Sub
 
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
@@ -1305,6 +1326,12 @@ Private Sub Form_Load()
     'Generate a list of fonts
     If g_IsProgramRunning Then
         
+        'This tool is separated into two panels: text entry, and text settings
+        btsMain.AddItem "text", 0
+        btsMain.AddItem "settings", 1
+        btsMain.ListIndex = 0
+        ChangeMainPanel
+        
         'Initialize the font list
         cboTextFontFace.InitializeFontList
         cboTextFontFace.ListIndex = cboTextFontFace.ListIndexByString(g_InterfaceFont, vbBinaryCompare)
@@ -1420,6 +1447,15 @@ Private Sub lblConvertLayerConfirm_Click()
     Me.UpdateAgainstCurrentLayer
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     SyncInterfaceToCurrentImage
+    
+End Sub
+
+Private Sub pdcMain_SizeChanged(Index As Integer)
+
+    'The "text" panel auto-resizes the text entry area to match the size of the container
+    If (Index = 0) Then
+        txtTextTool.SetSize (pdcMain(Index).GetWidth - txtTextTool.GetLeft) - FixDPI(4), txtTextTool.GetHeight
+    End If
     
 End Sub
 
@@ -1770,9 +1806,31 @@ Private Function CurrentLayerIsText() As Boolean
     
 End Function
 
+Private Sub ChangeMainPanel()
+    
+    Dim i As Long
+    For i = pdcMain.lBound To pdcMain.UBound
+        pdcMain(i).Visible = (i = btsMain.ListIndex)
+    Next i
+    
+End Sub
+
 'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-typography text layer of
 ' some type (e.g. basic text), an option will be displayed to convert the layer.
 Public Sub UpdateAgainstCurrentLayer()
+    
+    'Regardless of layer type, resize our containers to match the current window width.
+    Dim winSize As winRect
+    If (Not g_WindowManager Is Nothing) Then
+        
+        g_WindowManager.GetClientWinRect Me.hWnd, winSize
+        
+        Dim i As Long
+        For i = pdcMain.lBound To pdcMain.UBound
+            pdcMain(i).SetSize (winSize.x2 - winSize.x1) - pdcMain(i).GetLeft, pdcMain(i).GetHeight
+        Next i
+        
+    End If
     
     If (g_OpenImageCount > 0) Then
     
@@ -1804,6 +1862,7 @@ Public Sub UpdateAgainstCurrentLayer()
                 
                 'Display the panel
                 Me.ctlGroupConvertLayer.Visible = True
+                Me.ctlGroupConvertLayer.ZOrder 0
                 Me.ctlGroupConvertLayer.Refresh
                 
             Else

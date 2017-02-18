@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2262</langversion>
+<langversion>6.8.2263</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -13592,6 +13592,11 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
+<original>settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crisp</original>
 <translation>脆</translation>
 </phrase>
@@ -13611,7 +13616,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>点击此处这层转换为基本的文本层。</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14942,10 +14947,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4470 phrases. -->
-<!-- 1952 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12382 total words. -->
 
 </pdData>

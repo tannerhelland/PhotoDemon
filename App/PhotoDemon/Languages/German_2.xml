@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2439</langversion>
+<langversion>6.8.2440</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -13602,6 +13602,11 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
+<original>settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crisp</original>
 <translation>Knackig</translation>
 </phrase>
@@ -13621,7 +13626,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Klicken Sie hier, um diesen Layer in einen grundlegenden Textlayer zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14955,10 +14960,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4470 phrases. -->
-<!-- 1952 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12382 total words. -->
 
 </pdData>
