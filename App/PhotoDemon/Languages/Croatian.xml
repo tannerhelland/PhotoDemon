@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.7.2438</langversion>
+<langversion>6.7.2439</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -13603,6 +13603,11 @@ I Iskreno se ispričavamo zbog neugodnosti, ali nažalost ne postoji ništa %2 m
 </phrase>
 
 <phrase>
+<original>settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crisp</original>
 <translation>Hrskav</translation>
 </phrase>
@@ -13622,7 +13627,7 @@ I Iskreno se ispričavamo zbog neugodnosti, ali nažalost ne postoji ništa %2 m
 <translation>Kliknite ovdje da pretvoriti taj sloj u osnovni tekstualni sloj.</translation>
 </phrase>
 
-<!-- Toolpanel_TextBasic.frm contains 20 phrases. 12 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Toolpanel_TextBasic.frm contains 21 phrases. 12 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_TextBasic.frm-->
 
@@ -14956,10 +14961,10 @@ If još uvijek onemogućiti ažuriranja, ne zaboravite posjetiti photodemon.org 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4470 phrases. -->
-<!-- 1952 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12381 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12382 total words. -->
 
 </pdData>
