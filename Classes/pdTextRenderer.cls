@@ -292,10 +292,12 @@ Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Lo
 Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As Long
 
 'GDI+ string format functions
+Private Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As StringFormatFlags, ByVal srcLanguage As Long, ByRef dstStringFormat As Long) As GP_Result
 Private Declare Function GdipStringFormatGetGenericTypographic Lib "gdiplus" (ByRef dstStringFormat As Long) As Long
 Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As Long
 Private Declare Function GdipSetStringFormatFlags Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newFlags As Long) As Long
 Private Declare Function GdipGetStringFormatFlags Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstFlags As Long) As Long
+Private Declare Function GdipGetStringFormatAlign Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstAlignment As GdiPlusStringAlignment) As GP_Result
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As Long
 Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As Long
 Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal ptrToString As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RECTF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RECTF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As Long
@@ -863,24 +865,19 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
                 SetGenericTextProperty = True
             End If
         
+        'When using GDI+ as our text layout engine, we set alignment changes immediately, as it's inexpensive to do so
         Case ptp_HorizontalAlignment
             If m_HorizontalAlignment <> CLng(newValue) Then
                 m_HorizontalAlignment = CLng(newValue)
                 SetGenericTextProperty = True
-                
-                'If using GDI+, set this format immediately, as it's inexpensive to do so
-                If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
-                
+                If (m_GDIPlusStringFormat <> 0) Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
             End If
         
         Case ptp_VerticalAlignment
             If m_VerticalAlignment <> CLng(newValue) Then
                 m_VerticalAlignment = CLng(newValue)
                 SetGenericTextProperty = True
-                
-                'If using GDI+, set this format immediately, as it's inexpensive to do so
-                If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, m_VerticalAlignment
-                
+                If (m_GDIPlusStringFormat <> 0) Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, m_VerticalAlignment
             End If
         
         Case ptp_TextAntialiasing
@@ -901,9 +898,9 @@ Friend Function SetGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
             If m_TextContrast <> CLng(newValue) Then
                 m_TextContrast = CLng(newValue)
                 
-                If m_TextContrast < 0 Then
+                If (m_TextContrast < 0) Then
                     m_TextContrast = 0
-                ElseIf m_TextContrast > 10 Then
+                ElseIf (m_TextContrast > 10) Then
                     m_TextContrast = 10
                 End If
                 
@@ -1364,7 +1361,10 @@ Public Function RenderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
                     RenderTextToDIB = RenderTextToDIB_GDIPlus(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
                     
                     'GDI+ may fail when actually drawing (UGH).  If it does, silently fall back to GDI.
-                    If (Not RenderTextToDIB) Then RenderTextToDIB = RenderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
+                    If (Not RenderTextToDIB) Then
+                        Debug.Print "GDI+ text render failed; falling back to GDI renderer..."
+                        RenderTextToDIB = RenderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
+                    End If
                     
                 'GDI is required
                 Case fb_GDI
@@ -1428,12 +1428,12 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     dstGraphics = GDI_Plus.GetGDIPlusGraphicsFromDC(dstDIB.GetDIBDC, False)
     
     'Next, set up all container-specific text settings
-    If GdipSetTextRenderingHint(dstGraphics, ConvertTextAAToGdipTextHint) <> 0 Then
+    If (GdipSetTextRenderingHint(dstGraphics, ConvertTextAAToGdipTextHint) <> 0) Then
         Debug.Print "Failed to set text rendering hint " & m_TextAntialiasing
     End If
     
     'PD stores text contrast on a 0-10 scale, but GDI+ inexplicably uses a 0-12 scale.
-    If GdipSetTextContrast(dstGraphics, CLng(CDbl(m_TextContrast) * 1.2)) <> 0 Then
+    If (GdipSetTextContrast(dstGraphics, CLng(CDbl(m_TextContrast) * 1.2)) <> 0) Then
         Debug.Print "Failed to set text contrast " & m_TextContrast
     End If
     
@@ -1456,7 +1456,7 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     
     'Hypothetically, we could attempt to retrieve a bounding box for the string.  This would be relevant when compensating for overhang
     ' on the left side, for synthesized fonts like Times New Roman - Italic.  Unfortunately, GDI+ is stupid and it doesn't report
-    ' left-bound overhang, so our internal function getStringBoundingBox() isn't helpful at all.
+    ' left-bound overhang, so our internal function GetStringBoundingBox() isn't helpful at all.
     
     'We can, however, use GDI to calculate it instead.  (TODO: cache this value, and only re-check it if the string and/or font changes.)
     Dim firstCharABCWidth As ABCFLOAT
@@ -2113,7 +2113,15 @@ Private Sub Class_Initialize()
     ' HotkeyPrefix: None
     ' DigitSubstitutionMethod: User
     ' DigitSubstitutionLanguage: 0
-    GdipStringFormatGetGenericTypographic m_GDIPlusStringFormat
+    'GdipStringFormatGetGenericTypographic m_GDIPlusStringFormat
+    
+    'NOTE!  In Feb 2017, testing revealed that GDI+ reuses the object returned by GdipStringFormatGetGenericTypographic.
+    ' This is some kind of shared object, and when you have multiple text layers in a single image, the layers all share
+    ' (and thus repeatedly overwrite!) this same object.
+    '
+    'The only way around this is to manually create a typographic string format from scratch.  Uuuuugh GDI+ headaches!
+    Const LANG_NEUTRAL As Long = 0&
+    GdipCreateStringFormat StringFormatFlagsNoClip Or StringFormatFlagsFitBlackBox Or StringFormatFlagsLineLimit, LANG_NEUTRAL, m_GDIPlusStringFormat
     
     'Make a few adjustments to allow partially visible lines to still appear
     Dim tmpCopyFlags As Long
