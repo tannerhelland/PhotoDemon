@@ -206,6 +206,10 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long)
+    ucSupport.RequestNewSize newWidth, newHeight, True
+End Sub
+
 'External functions can call this to fully select the text box's contents
 Public Sub SelectAll()
     If Not (m_EditBox Is Nothing) Then m_EditBox.SelectAll
