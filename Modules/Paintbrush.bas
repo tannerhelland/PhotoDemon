@@ -372,7 +372,6 @@ Public Sub CreateCurrentBrush(Optional ByVal alsoCreateBrushOutline As Boolean =
                 If (m_GDIPPen Is Nothing) Then Set m_GDIPPen = New pd2DPen
                 Drawing2D.QuickCreateSolidPen m_GDIPPen, m_BrushSize, m_BrushSourceColor, , P2_LJ_Round, P2_LC_Round
                 
-            'TESTING ONLY!
             Case BE_PhotoDemon
                 
                 'Build a new brush reference image that reflects the current brush properties
@@ -562,6 +561,7 @@ Private Sub CreateSoftBrushReference_PD()
         Dim cLookup() As Long
         ReDim cLookup(0 To 255) As Long
         
+        'Calculate brush flow (which controls the opacity of individual dabs)
         Dim normMult As Single, flowMult As Single
         flowMult = (m_BrushFlow / 100)
         normMult = (1 / 255) * flowMult
@@ -597,6 +597,8 @@ Private Sub CreateSoftBrushReference_PD()
         initX = 0
         initY = 0
         
+        'For small brush sizes, we use the larger "temporary DIB" size as our target; the final result will be
+        ' downsampled at the end.
         If tmpBrushRequired Then
             finalX = tmpDIB.GetDIBWidth - 1
             finalY = tmpDIB.GetDIBHeight - 1
@@ -607,13 +609,16 @@ Private Sub CreateSoftBrushReference_PD()
         
         'After a good deal of testing, I've decided that I don't like the MyPaint system for calculating brush hardness.
         ' Their system behaves ridiculously at low "hardness" values, causing huge spacing issues for the brush.
-        '
-        'For now, I'm using a system similar to PD's "vignette" tool, which yields much better results IMO.
+        ' Instead, I'm using a system similar to PD's "vignette" tool, which yields much better results for beginners, IMO.
         Dim brushHardness As Single
         brushHardness = m_BrushHardness
         
+        'Calculate interior and exterior brush radii.  Any pixels...
+        ' - OUTSIDE the EXTERIOR radius are guaranteed to be fully transparent
+        ' - INSIDE the INTERIOR radius are guaranteed to be fully opaque (or whatever the equivalent "max opacity" is for
+        '    the current brush flow rate)
+        ' - BETWEEN the exterior and interior radii will be feathered accordingly
         Dim brushRadius As Single, brushRadiusSquare As Single
-        
         If tmpBrushRequired Then
             brushRadius = CSng(BRUSH_SIZE_MIN_CUTOFF) / 2
         Else
@@ -642,7 +647,8 @@ Private Sub CreateSoftBrushReference_PD()
             cy = y - brushRadius
             pxDistance = (cx * cx + cy * cy)
             
-            'Ignore pixels that lie outside the brush radius
+            'Ignore pixels that lie outside the brush radius.  (These were initialized to full transparency,
+            ' and we're simply gonna leave them that way.)
             If (pxDistance <= brushRadiusSquare) Then
                 
                 'If pixels lie *inside* the inner radius, set them to maximum opacity
@@ -659,8 +665,7 @@ Private Sub CreateSoftBrushReference_PD()
                     'Cube the result to produce a more gaussian-like fade
                     pxOpacity = pxOpacity * pxOpacity * pxOpacity
                     
-                    'NOTE: if you wanted to, you could apply a dab opacity here (e.g. pxOpacity * [0, 1])
-                    ' We ignore this now as I haven't currently implemented an "incremental" paint mode.
+                    'Pull the matching result from our lookup table
                     dstImageData(x, y) = cLookup(pxOpacity * 255)
                     
                 End If
@@ -735,19 +740,21 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     'Perform a failsafe check for brush creation
     If (Not m_BrushIsReady) Then CreateCurrentBrush
     
-    'If this is a MouseDown operation, we need to prep the full paint engine.
-    ' (TODO: initialize this elsewhere, so there's no "stutter" on first paint.)
+    'If this is a MouseDown operation, we need to make sure the full paint engine is synchronized against any property
+    ' changes that are applied "on-demand".
     If isFirstStroke Then
         
-        'Switch the target canvas into high-resolution, non-auto-drop mode.  (This basically means the mouse tracker
+        'Switch the target canvas into high-resolution, non-auto-drop mode.  This basically means the mouse tracker
         ' reconstructs full mouse movement histories via GetMouseMovePointsEx, and it reports every last event to us,
         ' regardless of the delays involved.  (Normally, as mouse events become increasingly delayed, they are
         ' auto-dropped until the processor catches up.  We have other ways of working around that problem in the
-        ' brush engine.))
+        ' brush engine.)
+        '
+        'TODO: VirtualBox returns bad data via GetMouseMovePointsEx, so this setting needs to be toggleable by the user.
         srcCanvas.SetMouseInput_HighRes True
         srcCanvas.SetMouseInput_AutoDrop False
         
-        'Reset the number of mouse events, and any associated mouse trackers
+        'Reset all internal mouse events trackers
         m_NumOfMouseEvents = 1
         m_NetTimeToRender = 0
         m_NumRenders = 0
@@ -818,7 +825,8 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         'Notify the scratch layer of our updates
         pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
         
-        Debug.Print "Paint tool render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
+        'Report paint tool render times, as relevant
+        'Debug.Print "Paint tool render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
     
     'The previous x/y coordinate trackers are updated automatically when the mouse is DOWN.  When the mouse is UP, we must manually
     ' modify those values.
@@ -835,102 +843,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     '
     '(Note that we only request manual redraws if the mouse is currently down; if the mouse *isn't* down, the canvas
     ' handles this for us.)
-    If mouseButtonDown Then
-    
-        'If this is the first paint stroke, we always want to update the viewport to reflect that.
-        Dim updateViewportNow As Boolean
-        updateViewportNow = isFirstStroke
-        
-        'In the background, paint tool rendering is uncapped.  (60+ fps is achievable on most modern PCs, thankfully.)
-        ' However, relaying those paint tool updates to the screen is a time-consuming process, as we have to composite
-        ' the full image, apply color management, calculate zoom, and a whole bunch of other crap.  Because of this,
-        ' it improves the user experience to run background paint calculations and on-screen viewport updates at
-        ' different framerates, with an emphasis on making sure the *background* paint tool rendering gets top priority.
-        If (Not updateViewportNow) Then
-            
-            'If this is the first frame we're rendering (which should have already been caught by the "isFirstStroke"
-            ' check above), force a render
-            If (m_NumRenders > 0) Then
-            
-                'Perform some quick heuristics to determine if brush performance is lagging; if it is, we can
-                ' artificially delay viewport updates to compensate.  (On large images and/or at severe zoom-out values,
-                ' viewport rendering consumes a disproportionate portion of the brush rendering process.)
-                'Debug.Print "Average render time: " & Format$((m_NetTimeToRender / m_NumRenders) * 1000, "0000") & " ms"
-                
-                'Calculate an average per-frame render time for the current stroke, in ms.
-                Dim avgFrameTime As Currency
-                avgFrameTime = (m_NetTimeToRender / m_NumRenders) * 1000
-                
-                'If our average rendering time is "good" (above 15 fps), allow viewport updates to occur "in realtime",
-                ' e.g. as fast as the background brush rendering.
-                If (avgFrameTime < 66) Then
-                    updateViewportNow = True
-                
-                'If our average frame rendering time drops below 15 fps, start dropping viewport rendering frames, but only
-                ' until we hit the (barely workable) threshold of 2 fps - at that point, we have to provide visual feedback,
-                ' whatever the cost.
-                Else
-                    
-                    'Never skip so many frames that viewport updates drop below 2 fps.  (This is absolutely a
-                    ' "worst-case" scenario, and it should never be relevant except on the lowliest of PCs.)
-                    updateViewportNow = CBool(VB_Hacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 500#)
-                    
-                    'If we're somewhere between 2 and 15 fps, keep an eye on how many frames we're dropping.  If we drop
-                    ' *too* many, the performance gain is outweighed by the obnoxiousness of stuttering screen renders.
-                    If (Not updateViewportNow) Then
-                        
-                        'This frame is a candidate for dropping.
-                        Dim frameCutoff As Long
-                        
-                        'Next, determine how many frames we're allowed to drop.  As our average frame time increases,
-                        ' we get more aggressive about dropping frames to compensate.  (This sliding scale tops out at
-                        ' dropping 5 consecutive frames, which is pretty damn severe - but note that framerate drops
-                        ' are also limited by the 2 fps check before this If/Then block.)
-                        If (avgFrameTime < 100) Then
-                            frameCutoff = 1
-                        ElseIf (avgFrameTime < 133) Then
-                            frameCutoff = 2
-                        ElseIf (avgFrameTime < 167) Then
-                            frameCutoff = 3
-                        ElseIf (avgFrameTime < 200) Then
-                            frameCutoff = 4
-                        Else
-                            frameCutoff = 5
-                        End If
-                        
-                        'Keep track of how many frames we've dropped in a row
-                        m_FramesDropped = m_FramesDropped + 1
-                        
-                        'If we've dropped too many frames proportionate to the current framerate, cancel this drop and
-                        ' update the viewport.
-                        If (m_FramesDropped > frameCutoff) Then updateViewportNow = True
-                        
-                    End If
-                    
-                End If
-            
-            End If
-            
-        End If
-        
-        'If a viewport update is required, composite the full layer stack prior to updating the screen
-        If updateViewportNow Then
-            
-            'Reset the frame drop counter and the "time since last viewport render" tracker
-            m_FramesDropped = 0
-            VB_Hacks.GetHighResTime m_TimeSinceLastRender
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , , pdImages(g_CurrentImage).GetActiveLayerIndex
-        
-        'If not enough time has passed since the last redraw, simply update the cursor
-        Else
-            Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
-        End If
-        
-        'Update our running "time to render" tracker
-        m_NetTimeToRender = m_NetTimeToRender + VB_Hacks.GetTimerDifferenceNow(startTime)
-        m_NumRenders = m_NumRenders + 1
-        
-    End If
+    If mouseButtonDown Then UpdateViewportWhilePainting isFirstStroke, startTime, srcCanvas
     
     'If the mouse button has been released, we can also release our internal GDI+ objects.
     ' (Note that the current *brush* resources are *not* released, by design.)
@@ -945,6 +858,106 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         srcCanvas.SetMouseInput_AutoDrop True
         
     End If
+    
+End Sub
+
+'While painting, we use a (fairly complicated) set of heuristics to decide when to update the primary viewport.
+' We don't want to update it on every paint stroke event, as compositing the full viewport can be a very
+' time-consuming process (especially for large images and/or images with many layers).
+Private Sub UpdateViewportWhilePainting(ByVal isFirstStroke As Boolean, ByVal strokeStartTime As Currency, ByRef srcCanvas As pdCanvas)
+
+    'If this is the first paint stroke, we always want to update the viewport to reflect that.
+    Dim updateViewportNow As Boolean
+    updateViewportNow = isFirstStroke
+    
+    'In the background, paint tool rendering is uncapped.  (60+ fps is achievable on most modern PCs, thankfully.)
+    ' However, relaying those paint tool updates to the screen is a time-consuming process, as we have to composite
+    ' the full image, apply color management, calculate zoom, and a whole bunch of other crap.  Because of this,
+    ' it improves the user experience to run background paint calculations and on-screen viewport updates at
+    ' different framerates, with an emphasis on making sure the *background* paint tool rendering gets top priority.
+    If (Not updateViewportNow) Then
+        
+        'If this is the first frame we're rendering (which should have already been caught by the "isFirstStroke"
+        ' check above), force a render
+        If (m_NumRenders > 0) Then
+        
+            'Perform some quick heuristics to determine if brush performance is lagging; if it is, we can
+            ' artificially delay viewport updates to compensate.  (On large images and/or at severe zoom-out values,
+            ' viewport rendering consumes a disproportionate portion of the brush rendering process.)
+            'Debug.Print "Average render time: " & Format$((m_NetTimeToRender / m_NumRenders) * 1000, "0000") & " ms"
+            
+            'Calculate an average per-frame render time for the current stroke, in ms.
+            Dim avgFrameTime As Currency
+            avgFrameTime = (m_NetTimeToRender / m_NumRenders) * 1000
+            
+            'If our average rendering time is "good" (above 15 fps), allow viewport updates to occur "in realtime",
+            ' e.g. as fast as the background brush rendering.
+            If (avgFrameTime < 66) Then
+                updateViewportNow = True
+            
+            'If our average frame rendering time drops below 15 fps, start dropping viewport rendering frames, but only
+            ' until we hit the (barely workable) threshold of 2 fps - at that point, we have to provide visual feedback,
+            ' whatever the cost.
+            Else
+                
+                'Never skip so many frames that viewport updates drop below 2 fps.  (This is absolutely a
+                ' "worst-case" scenario, and it should never be relevant except on the lowliest of PCs.)
+                updateViewportNow = CBool(VB_Hacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 500#)
+                
+                'If we're somewhere between 2 and 15 fps, keep an eye on how many frames we're dropping.  If we drop
+                ' *too* many, the performance gain is outweighed by the obnoxiousness of stuttering screen renders.
+                If (Not updateViewportNow) Then
+                    
+                    'This frame is a candidate for dropping.
+                    Dim frameCutoff As Long
+                    
+                    'Next, determine how many frames we're allowed to drop.  As our average frame time increases,
+                    ' we get more aggressive about dropping frames to compensate.  (This sliding scale tops out at
+                    ' dropping 5 consecutive frames, which is pretty damn severe - but note that framerate drops
+                    ' are also limited by the 2 fps check before this If/Then block.)
+                    If (avgFrameTime < 100) Then
+                        frameCutoff = 1
+                    ElseIf (avgFrameTime < 133) Then
+                        frameCutoff = 2
+                    ElseIf (avgFrameTime < 167) Then
+                        frameCutoff = 3
+                    ElseIf (avgFrameTime < 200) Then
+                        frameCutoff = 4
+                    Else
+                        frameCutoff = 5
+                    End If
+                    
+                    'Keep track of how many frames we've dropped in a row
+                    m_FramesDropped = m_FramesDropped + 1
+                    
+                    'If we've dropped too many frames proportionate to the current framerate, cancel this drop and
+                    ' update the viewport.
+                    If (m_FramesDropped > frameCutoff) Then updateViewportNow = True
+                    
+                End If
+                
+            End If
+        
+        End If
+        
+    End If
+    
+    'If a viewport update is required, composite the full layer stack prior to updating the screen
+    If updateViewportNow Then
+        
+        'Reset the frame drop counter and the "time since last viewport render" tracker
+        m_FramesDropped = 0
+        VB_Hacks.GetHighResTime m_TimeSinceLastRender
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , , pdImages(g_CurrentImage).GetActiveLayerIndex
+    
+    'If not enough time has passed since the last redraw, simply update the cursor
+    Else
+        Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
+    End If
+    
+    'Update our running "time to render" tracker
+    m_NetTimeToRender = m_NetTimeToRender + VB_Hacks.GetTimerDifferenceNow(strokeStartTime)
+    m_NumRenders = m_NumRenders + 1
     
 End Sub
 
@@ -996,12 +1009,15 @@ Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isF
     
 End Sub
 
-'Calculate all point positions between (srcx, srcy) and the previous coordinates, and dab each point in turn.
-' (This function is currently under heavy development as I test various implementations for their quality
-' vs performance trade-offs.)
+'Calculate all point positions between (srcX, srcX) and the previous coordinates, and dab each point in turn.
+' Note that I've implemented a number of different brush line algorithms; at present, a voxel-traversal algorithm
+' is used instead of the more-obvious Bresenham method, as it provides proper sub-pixel coverage.
 Private Sub ManuallyCalculateBrushPoints(ByVal srcX As Single, ByVal srcY As Single)
     
+    'Want to use a traditional Bresenham rasterizer?  Here you go:
     'CalcPoints_Bresenham srcX, srcY
+    
+    'Voxel-traversal provides better support for floating-point brush sizes:
     CalcPoints_VoxelTraversal srcX, srcY
     
 End Sub
@@ -1073,9 +1089,10 @@ Private Sub CalcPoints_VoxelTraversal(ByVal srcX As Single, ByVal srcY As Single
     
 End Sub
 
+'Bresenham line rasterizer.  Currently unused, but provided for educational purposes.
 Private Sub CalcPoints_Bresenham(ByVal srcX As Single, ByVal srcY As Single)
 
-    'TEST 2: This is a barebones Bresenham implementation.  It will be difficult to improve speed much beyond
+    'This is a barebones Bresenham implementation.  It would be difficult to improve speed much beyond
     ' this code, short of specialized per-brush implementations, so this is a nice baseline for "fast but
     ' sketchy pixel coverage."  (Note that performance of this function itself is irrelevant -- the cost of
     ' stroke rendering lies entirely in rendering the brush itself.)
@@ -1128,11 +1145,8 @@ Private Sub CalcPoints_Bresenham(ByVal srcX As Single, ByVal srcY As Single)
     
 End Sub
 
-Private Function FractionalPartVoxel(ByVal x As Single) As Single
-    FractionalPartVoxel = x - Int(x)
-End Function
-
-'Apply a single paint dab to the target position
+'Apply a single paint dab to the target position.  Note that dab opacity is currently hard-coded at 100%; flow is controlled
+' at brush creation time (instead of on-the-fly).  This may change depending on future brush dynamics implementations.
 Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal dabOpacity As Single = 1#)
     
     Dim allowedToDab As Boolean: allowedToDab = True
@@ -1157,6 +1171,7 @@ Private Sub ApplyPaintDab(ByVal srcX As Single, ByVal srcY As Single, Optional B
 End Sub
 
 'Whenever we receive notifications of a new mouse (x, y) pair, you need to call this sub to calculate a new "affected area" rect.
+' The compositor uses this "affected area" rect to minimize the amount of rendering work it needs to perform.
 Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal isFirstStroke As Boolean)
 
     'Start by calculating the affected rect for just this stroke.
@@ -1200,7 +1215,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
         m_ModifiedRectF = tmpRectF
     End If
     
-    'Always calculate a total combined RectF, for use in the final merge step
+    'Always calculate a running "total combined RectF", for use in the final merge step
     If isFirstStroke Then
         m_TotalModifiedRectF = tmpRectF
     Else
