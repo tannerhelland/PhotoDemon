@@ -2160,6 +2160,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 'Mouse is over a rotation handle
                 Case 4 To 7
                     CanvasView.RequestCursor_System IDC_SIZEALL
+                    'CanvasView.RequestCursor_PNG "cursor_rotate", 7, 7
                     
                 'Mouse is within the layer, but not over a specific node
                 Case 8
