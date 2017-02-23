@@ -201,7 +201,9 @@ Public Sub SaveSelectionToFile()
         g_UserPreferences.SetSelectionPath sFile
         
         'Write out the selection file
-        If pdImages(g_CurrentImage).mainSelection.WriteSelectionToFile(sFile) Then
+        Dim cmpLevel As Long
+        cmpLevel = Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+        If pdImages(g_CurrentImage).mainSelection.WriteSelectionToFile(sFile, PD_CE_Zstd, cmpLevel, PD_CE_Zstd, cmpLevel) Then
             Message "Selection saved."
         Else
             Message "Unknown error occurred.  Selection was not saved.  Please try again."
@@ -679,7 +681,7 @@ Public Sub InvertCurrentSelection()
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim quickVal As Long
+    Dim xStride As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -701,11 +703,11 @@ Public Sub InvertCurrentSelection()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = 0 To maskWidth
-        quickVal = x * selMaskDepth
+        xStride = x * selMaskDepth
     For y = 0 To maskHeight
-        selMaskData(quickVal, y) = 255 - selMaskData(quickVal, y)
-        selMaskData(quickVal + 1, y) = 255 - selMaskData(quickVal + 1, y)
-        selMaskData(quickVal + 2, y) = 255 - selMaskData(quickVal + 2, y)
+        selMaskData(xStride, y) = 255 - selMaskData(xStride, y)
+        selMaskData(xStride + 1, y) = 255 - selMaskData(xStride + 1, y)
+        selMaskData(xStride + 2, y) = 255 - selMaskData(xStride + 2, y)
     Next y
         If (x And progBarCheck) = 0 Then SetProgBarVal x
     Next x
@@ -819,7 +821,7 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim quickVal As Long, qvDepth As Long
+        Dim xStride As Long, qvDepth As Long
         qvDepth = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBColorDepth \ 8
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -847,18 +849,18 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = 0 To iWidth
-            quickVal = x * qvDepth
+            xStride = x * qvDepth
         For y = 0 To iHeight
                 
             'Retrieve the original image's pixels
-            r = selMaskData(quickVal + 2, y)
-            g = selMaskData(quickVal + 1, y)
-            b = selMaskData(quickVal, y)
+            r = selMaskData(xStride + 2, y)
+            g = selMaskData(xStride + 1, y)
+            b = selMaskData(xStride, y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(quickVal + 2, y)
-            g2 = srcImageData(quickVal + 1, y)
-            b2 = srcImageData(quickVal, y)
+            r2 = srcImageData(xStride + 2, y)
+            g2 = srcImageData(xStride + 1, y)
+            b2 = srcImageData(xStride, y)
             
             tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
                 
@@ -880,9 +882,9 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
             newG = BlendColors(newG, g, blendVal)
             newB = BlendColors(newB, b, blendVal)
             
-            selMaskData(quickVal + 2, y) = newR
-            selMaskData(quickVal + 1, y) = newG
-            selMaskData(quickVal, y) = newB
+            selMaskData(xStride + 2, y) = newR
+            selMaskData(xStride + 1, y) = newG
+            selMaskData(xStride, y) = newB
                     
         Next y
             If (x And progBarCheck) = 0 Then SetProgBarVal x
