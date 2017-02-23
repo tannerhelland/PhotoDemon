@@ -138,7 +138,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
@@ -161,16 +161,16 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
                     
         'Generate monochromatic noise, e.g. the same amount of noise for each color component, based around RGB(127, 127, 127)
         nColor = 127 + (gStrength2 * Rnd) - gStrength
         
         'Assign that noise to each color component
-        dstImageData(QuickVal + 2, y) = nColor
-        dstImageData(QuickVal + 1, y) = nColor
-        dstImageData(QuickVal, y) = nColor
+        dstImageData(quickVal + 2, y) = nColor
+        dstImageData(quickVal + 1, y) = nColor
+        dstImageData(quickVal, y) = nColor
         
     Next y
         If Not toPreview Then
@@ -232,16 +232,16 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(QuickVal + 2, y)
-            g = srcImageData(QuickVal + 1, y)
-            b = srcImageData(QuickVal, y)
+            r = srcImageData(quickVal + 2, y)
+            g = srcImageData(quickVal + 1, y)
+            b = srcImageData(quickVal, y)
                     
             'Now, retrieve a noise pixel (we only need one, as each color component will be identical)
-            nColor = GaussImageData(QuickVal, y) - 127
+            nColor = GaussImageData(quickVal, y) - 127
                     
             'Add the noise to each color component
             r = r + nColor
@@ -255,9 +255,9 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
             If b > 255 Then b = 255
             If b < 0 Then b = 0
             
-            dstImageData(QuickVal + 2, y) = r
-            dstImageData(QuickVal + 1, y) = g
-            dstImageData(QuickVal, y) = b
+            dstImageData(quickVal + 2, y) = r
+            dstImageData(quickVal + 1, y) = g
+            dstImageData(quickVal, y) = b
             
         Next y
             If Not toPreview Then
@@ -305,8 +305,10 @@ Private Sub Form_Load()
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
-        iWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+        Dim selBounds As RECTF
+        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+        iWidth = selBounds.Width
+        iHeight = selBounds.Height
     Else
         iWidth = pdImages(g_CurrentImage).Width
         iHeight = pdImages(g_CurrentImage).Height

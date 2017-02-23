@@ -439,12 +439,12 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 lastSelParamString = pdImages(g_CurrentImage).undoManager.GetLastParamString(UNDO_SELECTION)
                 
                 'If such a param string exists, compare it against the current selection param string
-                If Len(lastSelParamString) <> 0 Then
+                If (Len(lastSelParamString) <> 0) Then
                 
                     'If the last selection Undo param string does not match the current selection param string, the user has
                     ' modified the selection in some way since the last Undo was created.  Create a new entry now.
-                    If StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, vbTextCompare) <> 0 Then
-                        pdImages(g_CurrentImage).undoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, , -1
+                    If (StrComp(lastSelParamString, pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, vbTextCompare) <> 0) Then
+                        pdImages(g_CurrentImage).undoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, , -1
                     End If
                 
                 End If

@@ -275,7 +275,7 @@ Public Sub SyncInterfaceToCurrentImage()
         'If a selection is active on this image, update the text boxes to match
         If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
             SetUIGroupState PDUI_Selections, True
-            SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
+            SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.IsTransformable()
             SyncTextToCurrentSelection g_CurrentImage
         Else
             SetUIGroupState PDUI_Selections, False

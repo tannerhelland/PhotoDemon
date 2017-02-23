@@ -1009,7 +1009,7 @@ Private Sub ApplyPaintLine(ByVal srcX As Single, ByVal srcY As Single, ByVal isF
     
 End Sub
 
-'Calculate all point positions between (srcX, srcX) and the previous coordinates, and dab each point in turn.
+'Calculate all point positions between (srcX, srcY) and the previous coordinates, and dab each point in turn.
 ' Note that I've implemented a number of different brush line algorithms; at present, a voxel-traversal algorithm
 ' is used instead of the more-obvious Bresenham method, as it provides proper sub-pixel coverage.
 Private Sub ManuallyCalculateBrushPoints(ByVal srcX As Single, ByVal srcY As Single)

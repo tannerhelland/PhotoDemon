@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdPackager"
+Attribute VB_Name = "pdPackagerLegacy"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -174,7 +174,7 @@ Private Type PDP_NODE
 
     NodeName As String * 32                 'Name of the node, as a standard VB String (DBCS)
     NodeID As Long                          'Alternatively, calling functions can specify an optional 4-byte numerical ID.  Nodes can be read by 32-char name or 4-byte ID.
-    OptionalNodeType As Long                'Calling functions can also assign each node a TYPE if they want; this value has no meaning to the pdPackager class.
+    OptionalNodeType As Long                'Calling functions can also assign each node a TYPE if they want; this value has no meaning to this class.
     NodeFlags(0 To 3) As Long               '16 bytes of node-specific flags are allowed.  At present, these are mostly unused.
     
     'One of the unique features of pdPackages is that each node is allotted two entries in the data chunk.  These entries don't have
@@ -614,16 +614,16 @@ Public Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
         If Not nodeAdditionSuccess Then
             
             If recurseSubfolders Then
-                Debug.Print "WARNING! pdPackager.autoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
+                Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Do you have read access to all subfolders??"
             Else
-                Debug.Print "WARNING! pdPackager.autoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
+                Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() failed to add one or more nodes.  Please investigate."
             End If
         
         End If
         
     Else
         
-        Debug.Print "WARNING! pdPackager.autoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
+        Debug.Print "WARNING! pdPackager.AutoAddNodesFromFolder() could not retrieve a valid list of files.  Do you have read access to the folder??"
         AutoAddNodesFromFolder = False
         
     End If
@@ -698,7 +698,7 @@ Public Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStac
             End If
         
         Else
-            Debug.Print "WARNING!  pdPackager.autoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
+            Debug.Print "WARNING!  pdPackager.AutoAddNodesFromStringStack() was handed something that isn't a file or folder (" & curFile & ")."
         End If
     
     Loop

@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2364</langversion>
+<langversion>6.8.2365</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3339,12 +3339,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdSelection.cls -->
 
-<phrase>
-<original>Requested selection file could not be located.  Selection load abandoned.</original>
-<translation>Żądany plik wybór nie może być zlokalizowany. opuszczone obciążenia Selection.</translation>
-</phrase>
-
-<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -13777,7 +13772,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <translation>Kliknij tutaj, aby przekształcić tej warstwy do warstwy typografii.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 28 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14939,10 +14934,10 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2518</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12382 total words. -->
+<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

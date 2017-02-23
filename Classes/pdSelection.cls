@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2017 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 18/October/14
-'Last update: add outline mode for all tools (except magic wand); also toooons of refactoring
+'Last updated: 21/February/17
+'Last update: total refactor to prep for paint tool integration
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
 ' currently implemented, with magic wand set to be tackled in the coming weeks.
@@ -28,12 +28,12 @@ Attribute VB_Exposed = False
 '
 'To that end, multiple coordinate sets are used within this class.  Individual shapes have their own coordinate collections;
 ' these vary from simple coordinate pairs, as with rectangle selections, to large variable-size arrays, as with a lasso
-' selection.  From these, a uniform set of selLeft, selTop, selWidth, and selHeight values are calculated, which define the
+' selection.  From these, a uniform set of m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, and m_CornersLocked.Height values are calculated, which define the
 ' boundaries of the raw geometric shape constructed by the selection.  These four values are primarily used internally, or to
 ' show the user the size of their created shape (rectangle and elliptical selections allow the user to modify these values
 ' via text box), but generally they should not be used externally.
 '
-'At selection mask creation time, a final bounding rect (used by variables boundLeft, boundTop, boundWidth, and boundHeight)
+'At selection mask creation time, a final bounding rect (used by variables m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, and m_Bounds.Height)
 ' is created, factoring in any extra settings like feathering, border considerations, etc.  These bounding values are the
 ' ones that external functions should use, because they enclose the full image area affected by the selection.  In some rare
 ' cases, e.g. raster selections, these boundary coordinates may actually be calculated by a manual scan of the selection mask.
@@ -54,115 +54,140 @@ Option Explicit
 Private Const SELECTION_IDENTIFIER As Long = &H64734450     'PDsd
 Private Const SELECTION_FILE_VERSION_2014 As Long = &H1002
 Private Const SELECTION_FILE_VERSION_2014_2 As Long = &H1003
+Private Const SELECTION_FILE_VERSION_2017 As Long = &H1004
 
 'What shape does this selection have?
-Public Enum PD_SELECTION_SHAPE
-    sRectangle = 1
-    sCircle = 2
-    sLine = 4
-    sPolygon = 8
-    sLasso = 16
-    sWand = 32
-    sRaster = 64
-    sAllNonRasterShapes = 128
+Public Enum PD_SelectionShape
+    ss_Unknown = -1
+    ss_Rectangle = 0
+    ss_Circle = 1
+    ss_Line = 2
+    ss_Polygon = 3
+    ss_Lasso = 4
+    ss_Wand = 5
+    ss_Raster = 6
+    ss_AllNonRasterShapes = 50
 End Enum
 
 #If False Then
-    Const sRectangle = 1, sCircle = 2, sLine = 4, sPolygon = 8, sLasso = 16, sWand = 32, sRaster = 64, sAllNonRasterShapes = 128
+    Private Const ss_Unknown = -1, ss_Rectangle = 0, ss_Circle = 1, ss_Line = 2, ss_Polygon = 3, ss_Lasso = 4, ss_Wand = 5, ss_Raster = 6, ss_AllNonRasterShapes = 50
 #End If
 
-Private sShape As PD_SELECTION_SHAPE
+Private m_SelectionShape As PD_SelectionShape
 
 'What area does this selection encompass?  (Most selection shapes allow the user to change the selection state between interior, exterior,
 ' and bordered on the fly.
-Public Enum PD_SELECTION_AREA
-    sInterior = 0
-    sExterior = 1
-    sBorder = 2
+Public Enum PD_SelectionArea
+    sa_Interior = 0
+    sa_Exterior = 1
+    sa_Border = 2
 End Enum
 
 #If False Then
-    Const sInterior = 0, sExterior = 1, sBorder = 2
+    Private Const sa_Interior = 0, sa_Exterior = 1, sa_Border = 2
 #End If
 
 'What kind of smoothing (feathering) will be applied to this selection?
-Public Enum PD_SELECTION_SMOOTHING
-    sNone = 0
-    sAntialiased = 1
-    sFullyFeathered = 2
+Public Enum PD_SelectionSmoothing
+    ss_None = 0
+    ss_Antialiased = 1
+    ss_FullyFeathered = 2
 End Enum
 
 #If False Then
-    Const sNone = 0, sAntialiased = 1, sFullyFeathered = 2
+    Private Const ss_None = 0, ss_Antialiased = 1, ss_FullyFeathered = 2
 #End If
 
 'Is a special drawing display mode in use?
-Public Enum SelectionDrawingDisplay
-    sNormalDisplay = 0
-    sOutlineOnlyDisplay = 1
+Public Enum PD_SelectionDisplay
+    sd_Normal = 0
+    sd_Outline = 1
 End Enum
 
 #If False Then
-    Const sNormalDisplay = 0, sOutlineOnlyDisplay = 1
+    Private Const sd_Normal = 0, sd_Outline = 1
+#End If
+
+'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
+' values and the dictionary itself.
+Public Enum PD_SelectionProperty
+    sp_Area = 0
+    sp_Smoothing = 1
+    sp_BorderWidth = 2
+    sp_FeatheringRadius = 3
+    sp_RoundedCornerRadius = 4
+    sp_LineWidth = 5
+    sp_SmoothStroke = 6
+    sp_PolygonCurvature = 7
+    sp_WandTolerance = 8
+    sp_WandSearchMode = 9
+    sp_WandSampleMerged = 10
+    sp_WandCompareMethod = 11
+    sp_RoundedCornerModified = 12
+    sp_BorderWidthModified = 13
+    sp_BorderWidthIgnore = 14
+End Enum
+
+#If False Then
+    Private Const sp_Area = 0, sp_Smoothing = 1, sp_BorderWidth = 2, sp_FeatheringRadius = 3, sp_RoundedCornerRadius = 4, sp_LineWidth = 5
+    Private Const sp_SmoothStroke = 6, sp_PolygonCurvature = 7, sp_WandTolerance = 8, sp_WandSearchMode = 9, sp_WandSampleMerged = 10
+    Private Const sp_WandCompareMethod = 11, sp_RoundedCornerModified = 12, sp_BorderWidthModified = 13, sp_BorderWidthIgnore = 14
 #End If
 
 'The coordinates of the current selection (if rectangular)
-Public x1 As Double, x2 As Double
-Public y1 As Double, y2 As Double
+Private m_CornersUnlocked As RECTF_RB
 
 'When a selection is "locked in", the x and y values of corner points are converted to these values
-Public selLeft As Long, selTop As Long
-Public selWidth As Long, selHeight As Long
+Private m_CornersLocked As RECTF
 
 'And finally, for nonstandard or inverted selections, an additional set of coordinates is required to track the bounding area of the
 ' selection as a whole.  External functions need these values to determine how to handle the selection's data.
-Public boundLeft As Long, boundTop As Long
-Public boundWidth As Long, boundHeight As Long
+Private m_Bounds As RECTF
 
 'Is this selection "locked in"?
-Private lockedIn As Boolean
+Private m_IsLocked As Boolean
 
 'When the selection is moved, it's necessary to know the difference between the current mouse point and the original left / top values
-Private moveXDist As Double, moveYDist As Double
+Private m_MoveXDist As Single, m_MoveYDist As Single
 
 'Is this selection requesting text box updates? Because if it is, ignore external requests to update.
-Public rejectRefreshRequests As Boolean
+Private m_RejectRefreshRequests As Boolean
 
 'What is the current transformation mode? (This is important for dragging to resize the selection.)
-Private selTransformationType As Long
+Private m_SelTransformationType As Long
 
 'Is transformation mode active?
-Private transformModeActive As Boolean
+Private m_TransformModeActive As Boolean
 
-'What image does this selection belong to?
-Public containingPDImage As pdImage
+'What image does this selection belong to?  We use this to simplify things like bounds-checking against the base image.
+Private m_parentPDImage As pdImage
 
 'This DIB contains the selection mask for this selection object.  Black pixels in the selection mask represent unselected pixels in the image.
-' White pixels represent selected ones.  Non-white and non-black pixels can be used for aliasing.
-Public selMask As pdDIB
+' White pixels represent selected ones.  Non-white and non-black pixels describe aliasing (or "partial" selections).
+Private m_SelMask As pdDIB
 
-'Until a mask has been created, this value will remain "false".  It is used to optimize operations on blank selections.
-Public maskHasBeenCreated As Boolean
+'Until a mask has been created, this value will remain "false".  It is used to optimize operations on empty selections.
+Private m_MaskHasBeenCreated As Boolean
 
-'After the mask has been generated, its status will be set as "ready".  Any function that changes the selected area will reset this to "false".
+'After a mask has been generated, its status will be set as "ready".  Any function that changes the selected area will reset this to "false".
 ' The selection rendering code can check this value to see if the mask needs to be recreated before rendering it to screen.  If external
 ' functions modify the selection in some way (e.g. Select menu dialogs), they need to set this to TRUE to prevent the engine from attempting
 ' to recreate a mask from existing vector data.
-Public isMaskReady As Boolean
+Private m_IsMaskReady As Boolean
 
 'Some types of transformations (basic shapes, like rectangles, etc), are transformable, meaning that after they are created, the user can
 ' click on them again to resize or move them.  Complex transformations (magic wand, lasso, etc), may not be transformable.  This boolean
 ' is read by the mouse tracker in the image form, and it uses it to determine if the user is allowed to transform the current selection.
-Public isTransformable As Boolean
+Private m_IsTransformable As Boolean
 
 'If the user holds "Shift" while moving the selection, it will be forced to a 1:1 aspect ratio.
-Private isSquare As Boolean
+Private m_IsSquare As Boolean
 
 'Lasso and polygon selections have a variable number of points.  As such, we have to track their contents dynamically.
-Private m_numOfLassoPoints As Long
+Private m_NumOfLassoPoints As Long
 Private m_LassoPoints() As POINTFLOAT
 
-Private m_numOfPolygonPoints As Long
+Private m_NumOfPolygonPoints As Long
 Private m_PolygonPoints() As POINTFLOAT
 
 'When move transforms are applied to lasso or polygon selections, we must maintain a backup copy of the original point array.
@@ -177,352 +202,382 @@ Private m_PolygonClosed As Boolean, m_LassoClosed As Boolean
 ' they are stored in a dictionary, and only created/accessed as necessary.
 Private m_PropertyDict As pdDictionary
 
-'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
-' values and the dictionary itself.
-Public Enum PD_SELECTION_PROPERTY
-    SP_AREA = 0
-    SP_SMOOTHING = 1
-    SP_BORDER_WIDTH = 2
-    SP_FEATHERING_RADIUS = 3
-    SP_ROUNDED_CORNER_RADIUS = 4
-    SP_LINE_WIDTH = 5
-    SP_SMOOTH_STROKE = 6
-    SP_POLYGON_CURVATURE = 7
-    SP_WAND_TOLERANCE = 8
-    SP_WAND_SEARCH_MODE = 9
-    SP_WAND_SAMPLE_MERGED = 10
-    SP_WAND_COMPARE_METHOD = 11
-    SP_ROUNDED_CORNER_MODIFIED = 12
-    SP_BORDER_WIDTH_MODIFIED = 13
-    SP_BORDER_WIDTH_IGNORE = 14
-End Enum
-
-#If False Then
-    Const SP_AREA = 0, SP_SMOOTHING = 1, SP_BORDER_WIDTH = 2, SP_FEATHERING_RADIUS = 3, SP_ROUNDED_CORNER_RADIUS = 4, SP_LINE_WIDTH = 5
-    Const SP_SMOOTH_STROKE = 6, SP_POLYGON_CURVATURE = 7, SP_WAND_TOLERANCE = 8, SP_WAND_SEARCH_MODE = 9, SP_WAND_SAMPLE_MERGED = 10
-    Const SP_WAND_COMPARE_METHOD = 11, SP_ROUNDED_CORNER_MODIFIED = 12, SP_BORDER_WIDTH_MODIFIED = 13, SP_BORDER_WIDTH_IGNORE = 14
-#End If
-
-'Selection properties can be retrieved via these functions.  Note that the default function returns a STRING; this is because properties are
-' frequently passed around via param string.  To retrieve a numeric value, use the _Long or _Double function variants.
-Public Function GetSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY) As String
-    GetSelectionProperty = m_PropertyDict.GetEntry_String(PropertyName, "", True)
+'Retrieve various boundary rects.  Full descriptions of these rects are given above.
+Friend Function GetCornersUnlockedRect() As RECTF_RB
+    GetCornersUnlockedRect = m_CornersUnlocked
 End Function
 
-Public Function GetSelectionProperty_Long(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Long = 0) As Long
-    GetSelectionProperty_Long = m_PropertyDict.GetEntry_Long(PropertyName, defaultValueIfMissing)
+Friend Function GetCornersLockedRect() As RECTF
+    GetCornersLockedRect = m_CornersLocked
 End Function
 
-Public Function GetSelectionProperty_Double(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Double = 0#) As Double
-    GetSelectionProperty_Double = m_PropertyDict.GetEntry_Double(PropertyName, defaultValueIfMissing)
+Friend Function GetBoundaryRect() As RECTF
+    GetBoundaryRect = m_Bounds
 End Function
 
-Public Function GetSelectionProperty_Boolean(ByVal PropertyName As PD_SELECTION_PROPERTY, Optional ByVal defaultValueIfMissing As Boolean = False) As Boolean
-    GetSelectionProperty_Boolean = m_PropertyDict.GetEntry_Boolean(PropertyName, defaultValueIfMissing)
+Friend Function GetMaskDC() As Long
+    If (Not m_SelMask Is Nothing) Then GetMaskDC = m_SelMask.GetDIBDC
+End Function
+
+Friend Function GetMaskDIB() As pdDIB
+    Set GetMaskDIB = m_SelMask
+End Function
+
+Friend Sub SetParentReference(ByRef srcImage As pdImage)
+    Set m_parentPDImage = srcImage
+End Sub
+
+Friend Sub SuspendAutoRefresh(ByVal newSetting As Boolean)
+    m_RejectRefreshRequests = newSetting
+End Sub
+
+Friend Function GetAutoRefreshSuspend() As Boolean
+    GetAutoRefreshSuspend = m_RejectRefreshRequests
+End Function
+
+'Selection properties can be retrieved via these functions.  Note that the default function returns a STRING; this is because
+' properties are saved/loaded as XML.  To retrieve a numeric value, use the _Long or _Float function variants.
+Friend Function GetSelectionProperty(ByVal propertyName As PD_SelectionProperty) As String
+    GetSelectionProperty = m_PropertyDict.GetEntry_String(propertyName, "", True)
+End Function
+
+Friend Function GetSelectionProperty_Long(ByVal propertyName As PD_SelectionProperty, Optional ByVal defaultValueIfMissing As Long = 0) As Long
+    GetSelectionProperty_Long = m_PropertyDict.GetEntry_Long(propertyName, defaultValueIfMissing)
+End Function
+
+Friend Function GetSelectionProperty_Float(ByVal propertyName As PD_SelectionProperty, Optional ByVal defaultValueIfMissing As Single = 0#) As Single
+    GetSelectionProperty_Float = m_PropertyDict.GetEntry_Double(propertyName, defaultValueIfMissing)
+End Function
+
+Friend Function GetSelectionProperty_Boolean(ByVal propertyName As PD_SelectionProperty, Optional ByVal defaultValueIfMissing As Boolean = False) As Boolean
+    GetSelectionProperty_Boolean = m_PropertyDict.GetEntry_Boolean(propertyName, defaultValueIfMissing)
 End Function
 
 'Selection properties can be set via this function
-Public Sub SetSelectionProperty(ByVal PropertyName As PD_SELECTION_PROPERTY, ByVal propertyValue As Variant)
+Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVal propertyValue As Variant)
     
-    'Check to see if this value already exists in the collection
-    If m_PropertyDict.DoesKeyExist(PropertyName) Then
-    
-        'If the values are the same, we don't need to actually add it
-        If m_PropertyDict.GetEntry_Variant(PropertyName) = propertyValue Then Exit Sub
-        
+    'If this value already exists in the collection, we don't need to waste time adding it
+    If m_PropertyDict.DoesKeyExist(propertyName) Then
+        If (m_PropertyDict.GetEntry_Variant(propertyName) = propertyValue) Then Exit Sub
     End If
     
-    m_PropertyDict.AddEntry PropertyName, propertyValue
+    m_PropertyDict.AddEntry propertyName, propertyValue
     
-    'Some property changes require us to redraw the selection mask, because it will be different due to the new parameter.
-    ' To minimize the impact of property changes, we try to refresh the mask only if absolutely necessary.
-    Select Case PropertyName
+    'Some property changes require us to redraw the selection mask.  To maximize property change performance, we only refresh
+    ' the mask if absolutely necessary.
+    Select Case propertyName
     
-        Case SP_AREA
-            If (sShape <> sRaster) Then isMaskReady = False
+        Case sp_Area
+            If (m_SelectionShape <> ss_Raster) Then m_IsMaskReady = False
         
-        Case SP_SMOOTHING
-            If (sShape <> sRaster) Then isMaskReady = False
+        Case sp_Smoothing
+            If (m_SelectionShape <> ss_Raster) Then m_IsMaskReady = False
         
-        Case SP_BORDER_WIDTH
-            If (sShape <> sRaster) And (sShape <> sWand) Then isMaskReady = False
+        Case sp_BorderWidth
+            If (m_SelectionShape <> ss_Raster) And (m_SelectionShape <> ss_Wand) Then m_IsMaskReady = False
         
-        Case SP_FEATHERING_RADIUS
-            If (sShape <> sRaster) Then isMaskReady = False
+        Case sp_FeatheringRadius
+            If (m_SelectionShape <> ss_Raster) Then m_IsMaskReady = False
         
-        Case SP_ROUNDED_CORNER_RADIUS
-            If (sShape = sRectangle) Then isMaskReady = False
+        Case sp_RoundedCornerRadius
+            If (m_SelectionShape = ss_Rectangle) Then m_IsMaskReady = False
         
-        Case SP_LINE_WIDTH
-            If (sShape = sLine) Then isMaskReady = False
+        Case sp_LineWidth
+            If (m_SelectionShape = ss_Line) Then m_IsMaskReady = False
         
-        Case SP_SMOOTH_STROKE
-            If (sShape = sLasso) Then isMaskReady = False
+        Case sp_SmoothStroke
+            If (m_SelectionShape = ss_Lasso) Then m_IsMaskReady = False
         
-        Case SP_POLYGON_CURVATURE
-            If (sShape = sPolygon) Then isMaskReady = False
+        Case sp_PolygonCurvature
+            If (m_SelectionShape = ss_Polygon) Then m_IsMaskReady = False
         
-        Case SP_WAND_TOLERANCE
-            If (sShape = sWand) Then isMaskReady = False
+        Case sp_WandTolerance
+            If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
-        Case SP_WAND_SEARCH_MODE
-            If (sShape = sWand) Then isMaskReady = False
+        Case sp_WandSearchMode
+            If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
-        Case SP_WAND_SAMPLE_MERGED
-            If (sShape = sWand) Then isMaskReady = False
+        Case sp_WandSampleMerged
+            If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
-        Case SP_WAND_COMPARE_METHOD
-            If (sShape = sWand) Then isMaskReady = False
+        Case sp_WandCompareMethod
+            If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
     End Select
     
 End Sub
 
-'To save code elsewhere, a selection can be initialized by using a param string generated by a pdParamString object.  This condenses a huge
-' list of variables into a single string.  This function is especially helpful when writing full selection data to/from file.
-Public Sub InitFromParamString(ByVal paramString As String)
+'To save code elsewhere, a selection can be initialized by an XML string generated by a pdParamXML object.
+' (This function is primarily used when writing full selection data to/from file.)
+Friend Sub InitFromXML(ByVal srcXML As String)
 
     Dim i As Long
     
-    'Before doing anything else, convert the paramString from its current "relative" coordinates to "absolute" coordinates based on
-    ' the size of the parent image.
-    paramString = TranslateParamStringToRelativeFormat(paramString, False)
-    
-    'While we're here, also make a backup of the current paramstring and mask state
-    Dim origMaskState As Boolean
-    origMaskState = isMaskReady
-    
-    Dim backupParamString As String
-    backupParamString = TranslateParamStringToRelativeFormat(GetSelectionParamString, False)
-    
     'Start by creating a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types upon request.
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(paramString) <> 0 Then cParams.SetParamString paramString
+    If (Len(srcXML) <> 0) Then
     
-    'The order of param string values is HARD-CODED per the following table:
-    
-    '01 - selection shape
-    SetSelectionShape cParams.GetLong(1)
-    
-    '02 - selection area (interior, exterior, border)
-    SetSelectionProperty SP_AREA, cParams.GetLong(2)
-    
-    '03 - smoothing type (none, AA, fully feathered)
-    SetSelectionProperty SP_SMOOTHING, cParams.GetLong(3)
-    
-    '04 - feathering radius
-    SetSelectionProperty SP_FEATHERING_RADIUS, cParams.GetLong(4)
-    
-    '05 - border size
-    SetSelectionProperty SP_BORDER_WIDTH, cParams.GetLong(5)
-    
-    '06 - rounded corner amount
-    SetSelectionProperty SP_ROUNDED_CORNER_RADIUS, cParams.GetLong(6)
-    
-    '07 - selection line width
-    SetSelectionProperty SP_LINE_WIDTH, cParams.GetLong(7)
-    
-    '08 - left
-    selLeft = cParams.GetLong(8)
-    
-    '9 - top
-    selTop = cParams.GetLong(9)
-    
-    '10 - width
-    selWidth = cParams.GetLong(10)
-    
-    '11 - height
-    selHeight = cParams.GetLong(11)
-    
-    'Beyond this point, parameters vary by selection type
-    Select Case sShape
-    
-        'Rectangles, ellipses, and lines only require bounding rect values (stored as two (x, y) pairs).  Retrieve these
-        ' values from positions [12, 15] inclusive.
-        Case sRectangle, sCircle, sLine
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString srcXML
         
-            x1 = cParams.GetDouble(12)
-            y1 = cParams.GetDouble(13)
-            x2 = cParams.GetDouble(14)
-            y2 = cParams.GetDouble(15)
+        'All selections share a core set of universal properties
+        SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
+        SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
+        SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", ss_None)
+        SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
+        SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
+        SetSelectionProperty sp_RoundedCornerRadius, cParams.GetLong("SelectionRoundedCornerRadius", 0)
+        SetSelectionProperty sp_LineWidth, cParams.GetLong("SelectionLineWidth", 1)
         
-        'Polygon selections have a variable number of parameters, based on the number of points in the polygon.
-        ' Position (14) stores the number of points.
-        Case sPolygon
+        'All coordinates must be transformed from absolute values to relative ones (on the scale [0, 1])
+        With m_CornersLocked
+            .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionLeft", 0), True)
+            .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionTop", 0), False)
+            .Width = TranslateValueRelToAbs(cParams.GetDouble("SelectionWidth", 0), True)
+            .Height = TranslateValueRelToAbs(cParams.GetDouble("SelectionHeight", 0), False)
+        End With
+        
+        'Additional parameters vary by selection type
+        Select Case m_SelectionShape
+        
+            'Rectangles, ellipses, and lines only require bounding rect values (stored as two (x, y) pairs).  Retrieve these
+            ' values from positions [12, 15] inclusive.
+            Case ss_Rectangle, ss_Circle, ss_Line
             
-            '12 - Polygon curvature
-            SetSelectionProperty SP_POLYGON_CURVATURE, cParams.GetDouble(12)
+                With m_CornersUnlocked
+                    .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorLeft", 0#), True)
+                    .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorTop", 0#), False)
+                    .Right = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorRight", 0#), True)
+                    .Bottom = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorBottom", 0#), False)
+                End With
             
-            '13 - number of points in the polygon array
-            m_numOfPolygonPoints = cParams.GetLong(13)
-            
-            If m_numOfPolygonPoints > 0 Then
-            
-                ReDim m_PolygonPoints(0 To m_numOfPolygonPoints - 1) As POINTFLOAT
+            'Polygon selections have a variable number of parameters, based on the number of points in the polygon.
+            Case ss_Polygon
                 
-                'Retrieve all polygon points from the param string
-                If m_numOfPolygonPoints > 0 Then
-                    For i = 0 To m_numOfPolygonPoints - 1
-                        m_PolygonPoints(i).x = cParams.GetDouble(14 + i * 2)
-                        m_PolygonPoints(i).y = cParams.GetDouble(15 + i * 2)
-                    Next i
+                SetSelectionProperty sp_PolygonCurvature, cParams.GetDouble("SelectionPolygonCurvature", 0#)
+                m_NumOfPolygonPoints = cParams.GetLong("SelectionNumOfPoints", 0)
+                
+                If (m_NumOfPolygonPoints > 0) Then
+                
+                    ReDim m_PolygonPoints(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+                    
+                    'Retrieve all polygon points from the param string
+                    If (m_NumOfPolygonPoints > 0) Then
+                        For i = 0 To m_NumOfPolygonPoints - 1
+                            With m_PolygonPoints(i)
+                                .x = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointX" & CStr(i + 1), 0), True)
+                                .y = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointY" & CStr(i + 1), 0), False)
+                            End With
+                        Next i
+                    End If
+                    
+                Else
+                    ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
                 End If
+            
+            'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
+            Case ss_Lasso
                 
-            Else
-                ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
-            End If
-        
-        'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
-        ' Position (14) stores the number of points.
-        Case sLasso
-                        
-            '12 - Smooth stroke
-            SetSelectionProperty SP_SMOOTH_STROKE, cParams.GetDouble(12)
-            
-            '13 - number of points in the lasso array
-            m_numOfLassoPoints = cParams.GetLong(13)
-            
-            If m_numOfLassoPoints > 0 Then
-            
-                ReDim m_LassoPoints(0 To m_numOfLassoPoints - 1) As POINTFLOAT
+                SetSelectionProperty sp_SmoothStroke, cParams.GetDouble("SelectionSmoothStroke", 0#)
+                m_NumOfLassoPoints = cParams.GetLong("SelectionNumOfPoints", 0)
                 
-                'Retrieve all remaining lasso points
-                If m_numOfLassoPoints > 0 Then
-                    For i = 0 To m_numOfLassoPoints - 1
-                        m_LassoPoints(i).x = cParams.GetDouble(14 + i * 2)
-                        m_LassoPoints(i).y = cParams.GetDouble(15 + i * 2)
-                    Next i
+                If (m_NumOfLassoPoints > 0) Then
+                
+                    ReDim m_LassoPoints(0 To m_NumOfLassoPoints - 1) As POINTFLOAT
+                    
+                    'Retrieve all remaining lasso points
+                    If (m_NumOfLassoPoints > 0) Then
+                        For i = 0 To m_NumOfLassoPoints - 1
+                            With m_LassoPoints(i)
+                                .x = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointX" & CStr(i + 1), 0#), True)
+                                .y = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointY" & CStr(i + 1), 0#), False)
+                            End With
+                        Next i
+                    End If
+                    
+                Else
+                    ReDim m_LassoPoints(0 To 127) As POINTFLOAT
                 End If
+            
+            'Almost all of the "magic wand" selection properties are unique (relative to other selection shapes)
+            Case ss_Wand
                 
-            Else
-                ReDim m_LassoPoints(0 To 127) As POINTFLOAT
-            End If
+                'For weird historical reasons, wand selections store the wand origin point inside the unlocked selection rect
+                With m_CornersUnlocked
+                    .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionWandX", 0), True)
+                    .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionWandY", 0), False)
+                End With
+                
+                SetSelectionProperty sp_WandTolerance, cParams.GetDouble("SelectionWandTolerance", 0#)
+                SetSelectionProperty sp_WandSampleMerged, cParams.GetLong("SelectionWandSampleMerged", 0)
+                SetSelectionProperty sp_WandSearchMode, cParams.GetLong("SelectionWandSearchMode", 0)
+                SetSelectionProperty sp_WandCompareMethod, cParams.GetLong("SelectionWandCompareMode", 0)
+                
+            'Other types (e.g. raster selections) cannot be initiated via XML parameters
+            Case Else
         
-        Case sWand
-            
-            '12, 13 - (x,y) coordinates for the fill
-            x1 = cParams.GetLong(12)
-            y1 = cParams.GetLong(13)
-            
-            '14 - Tolerance
-            SetSelectionProperty SP_WAND_TOLERANCE, cParams.GetDouble(14)
-            
-            '15 - Sample Merged
-            SetSelectionProperty SP_WAND_SAMPLE_MERGED, cParams.GetLong(15)
-            
-            '16 - Search Mode (contiguous or global)
-            SetSelectionProperty SP_WAND_SEARCH_MODE, cParams.GetLong(16)
-            
-            '17 - Compare Mode (one of several values, e.g. "Luminance", "Red", etc
-            SetSelectionProperty SP_WAND_COMPARE_METHOD, cParams.GetLong(17)
-            
-        'Other types (e.g. raster selections) cannot be initiated this way, so we can ignore them.
-        Case Else
-    
-    End Select
-    
-    'Setting selection parameters always forces a redraw of the selection mask, which is a performance-intensive operation.
-    ' To avoid that unless absolutely necessary, compare the pre-initialization param string to the one we were passed.
-    ' If they match, we don't need to regenerate the mask, because it would only be identical to the current one.
-    If origMaskState And (StrComp(paramString, backupParamString, vbBinaryCompare) <> 0) Then isMaskReady = False
+        End Select
+        
+        'Initializing a selection via XML always forces a redraw of the selection mask
+        m_IsMaskReady = False
+        
+    'End non-zero XML length check
+    End If
         
 End Sub
 
-'Return all of this selection's important settings as a specifically formatted parameter string.  This string can be passed to a selection
-' object at any future point to recreate this selection exactly.
-' (See also: "initFromParamString" above)
-Public Function GetSelectionParamString() As String
+'Return all of this selection's important settings as an XML packet.  If the current selection shape is vector-based,
+' this packet can be used to exactly re-create this selection.  (See also: "InitFromXML()" above)
+Friend Function GetSelectionAsXML() As String
     
     Dim i As Long
     
     'All selection types store a preset list of standardized values
-    GetSelectionParamString = BuildParams(sShape, GetSelectionProperty(SP_AREA), GetSelectionProperty(SP_SMOOTHING), GetSelectionProperty(SP_FEATHERING_RADIUS), GetSelectionProperty(SP_BORDER_WIDTH), GetSelectionProperty(SP_ROUNDED_CORNER_RADIUS), GetSelectionProperty(SP_LINE_WIDTH), selLeft, selTop, selWidth, selHeight)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
     
-    'After the preset values, each selection type can write its own coords, relevant to its particular shape
-    Select Case sShape
+    cParams.AddParam "SelectionShape", Me.GetSelectionShape
+    cParams.AddParam "SelectionArea", Me.GetSelectionProperty(sp_Area)
+    cParams.AddParam "SelectionSmoothing", Me.GetSelectionProperty(sp_Smoothing)
+    cParams.AddParam "SelectionFeatheringRadius", Me.GetSelectionProperty(sp_FeatheringRadius)
+    cParams.AddParam "SelectionBorderWidth", Me.GetSelectionProperty(sp_BorderWidth)
+    cParams.AddParam "SelectionRoundedCornerRadius", Me.GetSelectionProperty(sp_RoundedCornerRadius)
+    cParams.AddParam "SelectionLineWidth", Me.GetSelectionProperty(sp_LineWidth)
     
-        'Rectangles, ellipses, and lines require only (x1, y1) and (x2, y2) coordinates
-        Case sRectangle, sCircle, sLine
-            GetSelectionParamString = GetSelectionParamString & "|" & BuildParams(x1, y1, x2, y2)
-        
-        'Polygon selections are trickier; they have a dynamic length based on the number of points in the shape.
-        ' (TODO: use a string builder class for this, to improve performance)
-        Case sPolygon
+    With m_CornersLocked
+        cParams.AddParam "SelectionLeft", TranslateValueAbsToRel(.Left, True)
+        cParams.AddParam "SelectionTop", TranslateValueAbsToRel(.Top, False)
+        cParams.AddParam "SelectionWidth", TranslateValueAbsToRel(.Width, True)
+        cParams.AddParam "SelectionHeight", TranslateValueAbsToRel(.Height, False)
+    End With
+    
+    'After universal values, we add any additional properties specific to the current selection shape
+    Select Case m_SelectionShape
+    
+        'Rectangles, ellipses, and lines store corner coordinates
+        Case ss_Rectangle, ss_Circle, ss_Line
+            With m_CornersUnlocked
+                cParams.AddParam "SelectionVectorLeft", TranslateValueAbsToRel(.Left, True)
+                cParams.AddParam "SelectionVectorTop", TranslateValueAbsToRel(.Top, False)
+                cParams.AddParam "SelectionVectorRight", TranslateValueAbsToRel(.Right, True)
+                cParams.AddParam "SelectionVectorBottom", TranslateValueAbsToRel(.Bottom, False)
+            End With
             
-            GetSelectionParamString = GetSelectionParamString & "|" & GetSelectionProperty(SP_POLYGON_CURVATURE) & "|" & CStr(m_numOfPolygonPoints)
+        'Polygon selections are trickier; they have a dynamic parameter list based on the number of points in the shape.
+        Case ss_Polygon
             
-            If m_numOfPolygonPoints > 0 Then
-                For i = 0 To m_numOfPolygonPoints - 1
-                    GetSelectionParamString = GetSelectionParamString & "|" & Trim$(Str(m_PolygonPoints(i).x)) & "|" & Trim$(Str(m_PolygonPoints(i).y))
+            cParams.AddParam "SelectionPolygonCurvature", Me.GetSelectionProperty(sp_PolygonCurvature)
+            cParams.AddParam "SelectionNumOfPoints", m_NumOfPolygonPoints
+            
+            If (m_NumOfPolygonPoints > 0) Then
+                For i = 0 To m_NumOfPolygonPoints - 1
+                    With m_PolygonPoints(i)
+                        cParams.AddParam "SelectionPointX" & CStr(i + 1), TranslateValueAbsToRel(.x, True)
+                        cParams.AddParam "SelectionPointY" & CStr(i + 1), TranslateValueAbsToRel(.y, False)
+                    End With
                 Next i
             End If
-        
-        'Lasso selections are trickier; they have a dynamic length based on the number of drawn points.
-        ' (TODO: use a string builder class for this, to improve performance)
-        Case sLasso
             
-            GetSelectionParamString = GetSelectionParamString & "|" & GetSelectionProperty(SP_SMOOTH_STROKE) & "|" & CStr(m_numOfLassoPoints)
+        'Lasso selections are similar to polygon selections
+        Case ss_Lasso
             
-            If m_numOfLassoPoints > 0 Then
-                For i = 0 To m_numOfLassoPoints - 1
-                    GetSelectionParamString = GetSelectionParamString & "|" & Trim$(Str(m_LassoPoints(i).x)) & "|" & Trim$(Str(m_LassoPoints(i).y))
+            cParams.AddParam "SelectionSmoothStroke", Me.GetSelectionProperty(sp_SmoothStroke)
+            cParams.AddParam "SelectionNumOfPoints", m_NumOfLassoPoints
+            
+            If (m_NumOfLassoPoints > 0) Then
+                For i = 0 To m_NumOfLassoPoints - 1
+                    With m_LassoPoints(i)
+                        cParams.AddParam "SelectionPointX" & CStr(i + 1), TranslateValueAbsToRel(.x, True)
+                        cParams.AddParam "SelectionPointY" & CStr(i + 1), TranslateValueAbsToRel(.y, False)
+                    End With
                 Next i
             End If
             
-        'Wand selections only have a few extra params
-        Case sWand
+        'Wand selections have a few wand-specific fixed params
+        Case ss_Wand
         
-            GetSelectionParamString = GetSelectionParamString & "|" & CStr(x1) & "|" & CStr(y1) & "|" & GetSelectionProperty(SP_WAND_TOLERANCE) & "|" & GetSelectionProperty(SP_WAND_SAMPLE_MERGED) & "|" & GetSelectionProperty(SP_WAND_SEARCH_MODE) & "|" & GetSelectionProperty(SP_WAND_COMPARE_METHOD)
+            'For weird historical reasons, wand selections store the wand origin point inside the unlocked selection rect
+            With m_CornersUnlocked
+                cParams.AddParam "SelectionWandX", TranslateValueAbsToRel(.Left, True)
+                cParams.AddParam "SelectionWandY", TranslateValueAbsToRel(.Top, False)
+            End With
             
-        'Raster selections cannot be initiated this way!
-        Case sRaster
+            cParams.AddParam "SelectionWandTolerance", Me.GetSelectionProperty(sp_WandTolerance)
+            cParams.AddParam "SelectionWandSampleMerged", Me.GetSelectionProperty(sp_WandSampleMerged)
+            cParams.AddParam "SelectionWandSearchMode", Me.GetSelectionProperty(sp_WandSearchMode)
+            cParams.AddParam "SelectionWandCompareMode", Me.GetSelectionProperty(sp_WandCompareMethod)
+            
+        'Raster selections cannot be returned this way
+        Case Else
     
     End Select
     
-    GetSelectionParamString = TranslateParamStringToRelativeFormat(GetSelectionParamString, True)
+    GetSelectionAsXML = cParams.GetParamString()
     
 End Function
 
+'By default, selection properties use absolute coordinates (e.g. [50, 50] for the center of a [100, 100] image).  When saving
+' to file or recording in a macro, we want to switch to relative formats (e.g. [0.5, 0.5] for a coordinate at the center of any image).
+' This allows selections to be correctly stretched to images of any arbitrary size.
+'
+'This function handles translation of coordinate values between absolute and relative geometries.
+Private Function TranslateValueAbsToRel(ByVal srcFloat As Double, ByVal useWidth As Boolean) As Double
+    Dim tmpDimension As Double
+    If useWidth Then tmpDimension = m_parentPDImage.Width Else tmpDimension = m_parentPDImage.Height
+    If (tmpDimension <> 0#) Then TranslateValueAbsToRel = srcFloat / tmpDimension Else TranslateValueAbsToRel = 0#
+End Function
+
+Private Function TranslateValueRelToAbs(ByVal srcFloat As Double, ByVal useWidth As Boolean) As Double
+    Dim tmpDimension As Double
+    If useWidth Then tmpDimension = m_parentPDImage.Width Else tmpDimension = m_parentPDImage.Height
+    TranslateValueRelToAbs = srcFloat * tmpDimension
+End Function
+
 'Simple - use this to select the entire image attached to this selection object.  Note that this DOES NOT render the new selection on-screen,
-' and it doesn't render a matching selection mask.  The calling function is responsible for that.
-Public Sub SelectAll()
+' and it doesn't render a matching selection mask.  The caller is responsible for that.
+Friend Sub SelectAll()
 
     'Set basic information about this selection
-    SetSelectionShape sRectangle
-    SetSelectionProperty SP_AREA, sInterior
-    SetSelectionProperty SP_FEATHERING_RADIUS, 0
-    SetSelectionProperty SP_SMOOTHING, sAntialiased
-    SetSelectionProperty SP_ROUNDED_CORNER_RADIUS, 0
+    SetSelectionShape ss_Rectangle
+    SetSelectionProperty sp_Area, sa_Interior
+    SetSelectionProperty sp_FeatheringRadius, 0
+    SetSelectionProperty sp_Smoothing, ss_Antialiased
+    SetSelectionProperty sp_RoundedCornerRadius, 0
     
-    x1 = 0
-    y1 = 0
-    x2 = containingPDImage.Width
-    y2 = containingPDImage.Height
+    With m_CornersUnlocked
+        .Left = 0
+        .Top = 0
+        .Right = m_parentPDImage.Width
+        .Bottom = m_parentPDImage.Height
+    End With
     
-    selLeft = 0
-    selTop = 0
-    selWidth = containingPDImage.Width
-    selHeight = containingPDImage.Height
+    With m_CornersLocked
+        .Left = 0
+        .Top = 0
+        .Width = m_parentPDImage.Width
+        .Height = m_parentPDImage.Height
+    End With
     
-    isTransformable = True
-    isMaskReady = False
+    m_IsTransformable = True
+    m_IsMaskReady = False
     
 End Sub
 
 'Request a 1:1 aspect ratio selection (squares, circles)
-Public Sub RequestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSelectionRefresh As Boolean = False)
+Friend Sub RequestSquare(ByVal requestChoice As Boolean, Optional ByVal forceSelectionRefresh As Boolean = False)
     
-    isSquare = requestChoice
-    If (sShape <> sRaster) And (sShape <> sLasso) And (sShape <> sPolygon) And (sShape <> sWand) Then
+    m_IsSquare = requestChoice
+    If (m_SelectionShape <> ss_Raster) And (m_SelectionShape <> ss_Lasso) And (m_SelectionShape <> ss_Polygon) And (m_SelectionShape <> ss_Wand) Then
     
-        isMaskReady = False
+        m_IsMaskReady = False
     
         'Redraw the selection if necessary
-        If forceSelectionRefresh And (Not containingPDImage Is Nothing) Then
-            UpdateInternalCoords
-            CreateSelectionMask
+        If forceSelectionRefresh Then
+            If (Not m_parentPDImage Is Nothing) Then
+                UpdateInternalCoords
+                CreateSelectionMask
+            End If
         End If
         
     End If
@@ -531,15 +586,15 @@ End Sub
 
 'Request a redraw of the selection mask.  We must do this when loading an Undo or Redo request after the image size has
 ' been changed; otherwise, OOB errors can occur (because the selection mask will be a different size than the image).
-Public Sub RequestNewMask()
+Friend Sub RequestNewMask()
 
-    If (Not containingPDImage Is Nothing) Then
+    If (Not m_parentPDImage Is Nothing) Then
         
         UpdateInternalCoords
         
         'Transformable selections are rendered using polygon geometry; as such, redrawing them requires invoking
         ' whatever polygon code we used previously.
-        If (sShape <> sRaster) Then
+        If (m_SelectionShape <> ss_Raster) Then
             CreateSelectionMask
             
         'Raster selections are simply bitmaps.  We will pad them to match the new image size, but other
@@ -553,71 +608,72 @@ Public Sub RequestNewMask()
 End Sub
 
 'Get/set a transformation type
-Public Function GetTransformationType()
-    If transformModeActive Then
-        GetTransformationType = selTransformationType
+Friend Function GetTransformationType() As Long
+    If m_TransformModeActive Then
+        GetTransformationType = m_SelTransformationType
     Else
         GetTransformationType = -1
     End If
 End Function
 
-Public Sub SetTransformationType(ByVal transShape As Long)
-    selTransformationType = transShape
+Friend Sub SetTransformationType(ByVal newTransType As Long)
+    m_SelTransformationType = newTransType
 End Sub
 
-Public Sub OverrideTransformMode(ByVal newOverride As Boolean)
-    transformModeActive = newOverride
+Friend Sub OverrideTransformMode(ByVal newOverride As Boolean)
+    m_TransformModeActive = newOverride
 End Sub
 
 'Get/set the selection's current coordinates.  At present, this is only used by line selections, as part of "compare mouse
 ' coordinates against selection coordinates" functionality.
-Public Sub GetSelectionCoordinates(ByVal numPoint As Long, ByRef xDst As Double, ByRef yDst As Double)
-    If numPoint = 1 Then
-        xDst = x1
-        yDst = y1
+'TODO: remove this
+Friend Sub GetSelectionCoordinates(ByVal numPoint As Long, ByRef xDst As Double, ByRef yDst As Double)
+    If (numPoint = 1) Then
+        xDst = m_CornersUnlocked.Left
+        yDst = m_CornersUnlocked.Top
     Else
-        xDst = x2
-        yDst = y2
+        xDst = m_CornersUnlocked.Right
+        yDst = m_CornersUnlocked.Bottom
     End If
 End Sub
 
 'Get/set a selection shape
-Public Function GetSelectionShape() As PD_SELECTION_SHAPE
-    GetSelectionShape = sShape
+Friend Function GetSelectionShape() As PD_SelectionShape
+    GetSelectionShape = m_SelectionShape
 End Function
 
-Public Sub SetSelectionShape(ByVal selShape As PD_SELECTION_SHAPE)
+Friend Sub SetSelectionShape(ByVal selShape As PD_SelectionShape)
     
     'Certain types of shapes are transformable.  Mark those now.
     Select Case selShape
         
-        Case sRectangle, sCircle, sLine
-            isTransformable = True
+        Case ss_Rectangle, ss_Circle, ss_Line
+            m_IsTransformable = True
             
-        Case sLasso, sPolygon
-            isTransformable = True
+        Case ss_Lasso, ss_Polygon
+            m_IsTransformable = True
             
-        Case sWand
-            isTransformable = False
+        Case ss_Wand
+            m_IsTransformable = False
         
     End Select
     
-    If (sShape <> sRaster) Then isMaskReady = False
-    sShape = selShape
+    If (m_SelectionShape <> ss_Raster) Then m_IsMaskReady = False
+    m_SelectionShape = selShape
     
 End Sub
 
 'Return the number of polygon points
-Public Function GetNumOfPolygonPoints() As Long
-    GetNumOfPolygonPoints = m_numOfPolygonPoints
+Friend Function GetNumOfPolygonPoints() As Long
+    GetNumOfPolygonPoints = m_NumOfPolygonPoints
 End Function
 
-'Copy the current polygon point collection into an outside array.  This is used by mouse coordinate checking functions.
+'Copy the current polygon point collection into an arbitrary destination array.  This is used by mouse coordinate checking functions.
 Friend Sub GetPolygonPoints(ByRef ptFloatArray() As POINTFLOAT)
     
-    If m_numOfPolygonPoints > 0 Then
-        ReDim ptFloatArray(0 To m_numOfPolygonPoints - 1) As POINTFLOAT
-        CopyMemory ByVal VarPtr(ptFloatArray(0)), ByVal VarPtr(m_PolygonPoints(0)), m_numOfPolygonPoints * 8
+    If (m_NumOfPolygonPoints > 0) Then
+        ReDim ptFloatArray(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+        CopyMemory ByVal VarPtr(ptFloatArray(0)), ByVal VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
     Else
         ReDim ptFloatArray(0) As POINTFLOAT
     End If
@@ -625,297 +681,314 @@ Friend Sub GetPolygonPoints(ByRef ptFloatArray() As POINTFLOAT)
 End Sub
 
 'For lasso selections, the canvas needs to know if the current lasso selection is open (e.g. still under construction) or closed.
-Public Function GetLassoClosedState() As Boolean
+Friend Function GetLassoClosedState() As Boolean
     GetLassoClosedState = m_LassoClosed
 End Function
 
-Public Sub SetLassoClosedState(ByVal newState As Boolean)
+Friend Sub SetLassoClosedState(ByVal newState As Boolean)
     m_LassoClosed = newState
 End Sub
 
 'For polygon selections, the canvas needs to know if the current polygon selection is open (e.g. still under construction) or closed.
-Public Function GetPolygonClosedState() As Boolean
+Friend Function GetPolygonClosedState() As Boolean
     GetPolygonClosedState = m_PolygonClosed
 End Function
 
-Public Sub SetPolygonClosedState(ByVal newState As Boolean)
+Friend Sub SetPolygonClosedState(ByVal newState As Boolean)
     m_PolygonClosed = newState
 End Sub
 
 'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle.  The mouse coordinate
 ' checker code uses this to see if the mouse cursor is currently within the bounds of the selection area.
-Public Function GetGdipRegionForSelection() As Long
-    If sShape = sPolygon Then
-        GetGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), GP_FM_Winding, True, GetSelectionProperty_Double(SP_POLYGON_CURVATURE))
+Friend Function GetGdipRegionForSelection() As Long
+    If (m_SelectionShape = ss_Polygon) Then
+        GetGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), GP_FM_Winding, True, GetSelectionProperty_Float(sp_PolygonCurvature))
     Else
-        GetGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), GP_FM_Winding, True, GetSelectionProperty_Double(SP_SMOOTH_STROKE))
+        GetGdipRegionForSelection = GDI_Plus.GetGDIPlusRegionFromPoints(m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), GP_FM_Winding, True, GetSelectionProperty_Float(sp_SmoothStroke))
     End If
 End Function
 
 'For lasso and polygon selections, this function will calculate a boundary rect using GDI+.  This is relevant when curvature is active,
 ' because the curvature bounds may extend outside the points used to create the selection shape.
-Public Sub FillBoundsUsingGDIPlus()
+Friend Sub FillBoundsUsingGDIPlus()
     
     'This function is only relevant for lasso and polygon selections
-    If ((sShape <> sLasso) And (sShape <> sPolygon)) Then Exit Sub
+    If ((m_SelectionShape = ss_Lasso) Or (m_SelectionShape = ss_Polygon)) Then
     
-    'GDI+ returns boundaries as a floating-point rect
-    Dim boundRect As RECTF
-    
-    If sShape = sPolygon Then
-        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), containingPDImage, GP_FM_Winding, True, GetSelectionProperty_Double(SP_POLYGON_CURVATURE))
-    Else
-        boundRect = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), containingPDImage, GP_FM_Winding, True, GetSelectionProperty_Double(SP_SMOOTH_STROKE))
+        If (m_SelectionShape = ss_Polygon) Then
+            m_CornersLocked = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), m_parentPDImage, GP_FM_Winding, True, GetSelectionProperty_Float(sp_PolygonCurvature))
+        Else
+            m_CornersLocked = GDI_Plus.GetGDIPlusUnionFromPointsAndImage(m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), m_parentPDImage, GP_FM_Winding, True, GetSelectionProperty_Float(sp_SmoothStroke))
+        End If
+        
+        m_Bounds = m_CornersLocked
+        
     End If
-    
-    'The returned boundaries encompass the intersection of our containing image, and the selection region.
-    
-    'All that's left to do is to copy the new rect values into our internal selLeft/selTop/etc and boundLeft/boundTop/etc values
-    With boundRect
-        selLeft = .Left
-        selTop = .Top
-        selWidth = .Width
-        selHeight = .Height
-    End With
-    
-    boundLeft = selLeft
-    boundTop = selTop
-    boundWidth = selWidth
-    boundHeight = selHeight
     
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
-' Note that this this should only be called after a transformation type has been set.
-Public Sub SetInitialTransformCoordinates(ByVal x As Double, y As Double)
+' Note that this this should only be called after a transformation type has been set (via SetTransformationType(), above).
+Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
 
-    'If new transform coordinates are being set, this selection must be "unlocked"
-    lockedIn = False
+    'If new transform coordinates are being set, this selection must be "unlocked" first
+    m_IsLocked = False
+    m_TransformModeActive = True
     
-    'The use of setInitialCoordinates means this IS a transformation
-    transformModeActive = True
+    'Different selection types handle transformation differently.  For example, rectangular selections can be resized
+    ' in multiple directions, but a line selection will only move its endpoints.  So we must sort input twice:
+    ' 1) by selection type
+    ' 2) by transformation type.
     
-    'Different selection types handle transformation differently.  For example, rectangular selections can be resized in multiple directions,
-    ' but a line selection will only move its endpoints.  So we must sort input twice - first, sort by selection type, and second, by
-    ' transformation type.
-    
-    Select Case sShape
-    
-        'Rectangular and elliptical selections are handled identically
-        Case sRectangle, sCircle
+    'Rectangular and elliptical selections are handled identically
+    If ((m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle)) Then
         
-            'Based on the transform mode, set the initial points accordingly
-            Select Case selTransformationType
+        'Based on the transform mode, set the initial points accordingly
+        Select Case m_SelTransformationType
+        
+            'Case -1 should never occur, because -1 means "no point of interest clicked"
+            Case -1
+                Debug.Print "Selection transform initiated on a non-existent point - FIX THIS!"
+                
+            '0 - NW corner
+            Case 0
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left + m_CornersLocked.Width
+                    .Top = m_CornersLocked.Top + m_CornersLocked.Height
+                    .Right = m_CornersLocked.Left
+                    .Bottom = m_CornersLocked.Top
+                End With
             
-                'Case -1 should never occur, because -1 means "no point of interest clicked"
-                Case -1
-                    Debug.Print "Selection transform initiated on a non-existent point - FIX THIS!"
-                    
-                '0 - NW corner
-                Case 0
-                    x1 = selLeft + selWidth
-                    y1 = selTop + selHeight
-                    x2 = selLeft
-                    y2 = selTop
-                
-                '1 - NE corner
-                Case 1
-                    x1 = selLeft
-                    y1 = selTop + selHeight
-                    x2 = x
-                    y2 = y
-                
-                '2 - SE corner
-                Case 2
-                    x1 = selLeft
-                    y1 = selTop
-                    x2 = x
-                    y2 = y
-                
-                '3 - SW corner
-                Case 3
-                    x1 = selLeft + selWidth
-                    y1 = selTop
-                    x2 = x
-                    y2 = y
-                
-                '4 - N edge
-                Case 4
-                    x1 = selLeft
-                    x2 = selLeft + selWidth
-                    y1 = selTop + selHeight
-                    y2 = y
-                
-                '5 - E edge
-                Case 5
-                    x1 = selLeft
-                    x2 = x
-                    y1 = selTop
-                    y2 = selTop + selHeight
-                
-                '6 - S edge
-                Case 6
-                    x1 = selLeft
-                    x2 = selLeft + selWidth
-                    y1 = selTop
-                    y2 = y
-                
-                '7 - W edge
-                Case 7
-                    x1 = selLeft + selWidth
-                    x2 = x
-                    y1 = selTop
-                    y2 = selTop + selHeight
-                
-                '8 - interior of selection, not near a corner or edge
-                Case 8
-                    moveXDist = x - selLeft
-                    moveYDist = y - selTop
+            '1 - NE corner
+            Case 1
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left
+                    .Top = m_CornersLocked.Top + m_CornersLocked.Height
+                    .Right = x
+                    .Bottom = y
+                End With
             
-            End Select
-        
-        
-        'Line selections
-        Case sLine
-        
-            'Based on the transform mode, set the initial points accordingly
-            Select Case selTransformationType
-        
-                'Case -1 should never occur, but if it does - treat this like a normal initial coordinate call
-                Case -1
-                    x1 = x
-                    y1 = y
-                    x2 = x
-                    y2 = y
-                
-                'First point is being moved
-                Case 0
-                    x1 = x
-                    y1 = y
-                
-                'Second point is being moved
-                Case 1
-                    x2 = x
-                    y2 = y
-                    
-            End Select
-                
-        'Polygons can be both moved and resized (by click-dragging individual points)
-        Case sPolygon
-        
-            'Based on the transform mode, set the initial points accordingly
-            Select Case selTransformationType
-        
-                'numOfPolygonPoints - interior of the selection, which will trigger a move transformation
-                Case m_numOfPolygonPoints
-                    moveXDist = x
-                    moveYDist = y
-                    
-                    'For the transform to work, we need to apply any transformed data to the *original polygon points*.
-                    ' Make a backup copy of the original array now.
-                    ReDim m_PolygonPointsBackup(0 To m_numOfPolygonPoints - 1) As POINTFLOAT
-                    CopyMemory ByVal VarPtr(m_PolygonPointsBackup(0)), ByVal VarPtr(m_PolygonPoints(0)), m_numOfPolygonPoints * 8
-                    
-                'Other transforms don't actually require special handling, as all the work is done in the
-                ' setAdditionalTransformCoordinates function.
-                Case Else
-                    
-            End Select
-        
-        'Lasso selections can only be moved, so the only valid transform type is type 0
-        Case sLasso
-        
-            'Based on the transform mode, set the initial points accordingly
-            Select Case selTransformationType
-        
-                '0 - interior of the selection, which will trigger a move transformation
-                Case 0
-                    moveXDist = x
-                    moveYDist = y
-                    
-                    'For the transform to work, we need to apply any transformed data to the *original lasso points*.
-                    ' Make a backup copy of the original array now.
-                    ReDim m_LassoPointsBackup(0 To m_numOfLassoPoints - 1) As POINTFLOAT
-                    CopyMemory ByVal VarPtr(m_LassoPointsBackup(0)), ByVal VarPtr(m_LassoPoints(0)), m_numOfLassoPoints * 8
-                    
-            End Select
+            '2 - SE corner
+            Case 2
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left
+                    .Top = m_CornersLocked.Top
+                    .Right = x
+                    .Bottom = y
+                End With
             
-        'Wand selections don't care about transformation
-        Case sWand
-            x1 = x
-            y1 = y
+            '3 - SW corner
+            Case 3
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left + m_CornersLocked.Width
+                    .Top = m_CornersLocked.Top
+                    .Right = x
+                    .Bottom = y
+                End With
+            
+            '4 - N edge
+            Case 4
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left
+                    .Right = m_CornersLocked.Left + m_CornersLocked.Width
+                    .Top = m_CornersLocked.Top + m_CornersLocked.Height
+                    .Bottom = y
+                End With
+            
+            '5 - E edge
+            Case 5
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left
+                    .Right = x
+                    .Top = m_CornersLocked.Top
+                    .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
+                End With
+            
+            '6 - S edge
+            Case 6
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left
+                    .Right = m_CornersLocked.Left + m_CornersLocked.Width
+                    .Top = m_CornersLocked.Top
+                    .Bottom = y
+                End With
+            
+            '7 - W edge
+            Case 7
+                With m_CornersUnlocked
+                    .Left = m_CornersLocked.Left + m_CornersLocked.Width
+                    .Right = x
+                    .Top = m_CornersLocked.Top
+                    .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
+                End With
+            
+            '8 - interior of selection, not near a corner or edge
+            Case 8
+                With m_CornersUnlocked
+                    m_MoveXDist = x - m_CornersLocked.Left
+                    m_MoveYDist = y - m_CornersLocked.Top
+                End With
         
-        'Some selection types cannot be transformed!
-        Case sRaster
+        End Select
         
-    End Select
+    'Line selections
+    ElseIf (m_SelectionShape = ss_Line) Then
+    
+        'Based on the transform mode, set the initial points accordingly
+        Select Case m_SelTransformationType
+    
+            'Case -1 should never occur, but if it does - treat this like a normal initial coordinate call
+            Case -1
+                With m_CornersUnlocked
+                    .Left = x
+                    .Top = y
+                    .Right = x
+                    .Bottom = y
+                End With
+            
+            'First point is being moved
+            Case 0
+                With m_CornersUnlocked
+                    .Left = x
+                    .Top = y
+                End With
+            
+            'Second point is being moved
+            Case 1
+                With m_CornersUnlocked
+                    .Right = x
+                    .Bottom = y
+                End With
+        
+        End Select
+                
+    'Polygons can be both moved and resized (by click-dragging individual points)
+    ElseIf (m_SelectionShape = ss_Polygon) Then
+    
+        'Based on the transform mode, set the initial points accordingly
+        Select Case m_SelTransformationType
+    
+            'Interior of the selection, which triggers a move transformation
+            Case m_NumOfPolygonPoints
+                m_MoveXDist = x
+                m_MoveYDist = y
+                
+                'For the transform to work, we need to apply any transformed data to the *original polygon points*.
+                ' Make a backup copy of the original array now.
+                ReDim m_PolygonPointsBackup(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+                CopyMemory ByVal VarPtr(m_PolygonPointsBackup(0)), ByVal VarPtr(m_PolygonPoints(0)), m_NumOfPolygonPoints * 8
+                
+            'Other transforms don't actually require special handling, as all the work is done in the
+            ' SetAdditionalTransformCoordinates function.
+            Case Else
+                
+        End Select
+        
+    'Lasso selections can only be moved, so the only valid transform type is type 0
+    ElseIf (m_SelectionShape = ss_Lasso) Then
+    
+        'Based on the transform mode, set the initial points accordingly
+        Select Case m_SelTransformationType
+    
+            'Interior of the selection, which triggers a move transformation
+            Case 0
+                m_MoveXDist = x
+                m_MoveYDist = y
+                
+                'For the transform to work, we need to apply any transformed data to the *original lasso points*.
+                ' Make a backup copy of the original array now.
+                ReDim m_LassoPointsBackup(0 To m_NumOfLassoPoints - 1) As POINTFLOAT
+                CopyMemory ByVal VarPtr(m_LassoPointsBackup(0)), ByVal VarPtr(m_LassoPoints(0)), m_NumOfLassoPoints * 8
+                
+        End Select
+            
+    'Wand selections don't care about transformation type
+    ElseIf (m_SelectionShape = ss_Wand) Then
+        With m_CornersUnlocked
+            .Left = x
+            .Top = y
+        End With
+        
+    'Any other selection types cannot be transformed
+    End If
     
     UpdateInternalCoords
     
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and stores them internally
-Public Sub SetInitialCoordinates(ByVal x As Double, y As Double)
+Friend Sub SetInitialCoordinates(ByVal x As Double, ByVal y As Double)
     
     'If new initial coordinates are being set, this selection must be "unlocked"
-    lockedIn = False
+    m_IsLocked = False
     
     'The use of setInitialCoordinates means this is not a transformation
-    transformModeActive = False
+    m_TransformModeActive = False
     
     'If we're setting new initial coordinates, the mask is not (by definition) ready
-    isMaskReady = False
+    m_IsMaskReady = False
     
-    x1 = x
-    y1 = y
+    With m_CornersUnlocked
+        .Left = x
+        .Top = y
+    End With
     
     'Set the second set of point to match the first set
-    Select Case sShape
+    Select Case m_SelectionShape
         
-        Case sRectangle, sCircle, sLine
-            x2 = x
-            y2 = y
+        Case ss_Rectangle, ss_Circle, ss_Line
+            
+            With m_CornersUnlocked
+                .Right = x
+                .Bottom = y
+            End With
             
             'Also, mark selections of any of these shapes (rectangle, circle, line) as transformable
-            isTransformable = True
+            m_IsTransformable = True
         
         'Polygon selections require us to initialize a whole bunch of polygon tracking variables
-        Case sPolygon
-            isTransformable = True
+        Case ss_Polygon
+            m_IsTransformable = True
             
-            m_numOfPolygonPoints = 1
+            m_NumOfPolygonPoints = 1
             ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
             
             m_PolygonPoints(0).x = x
             m_PolygonPoints(0).y = y
             
             'Also set up a dummy set of initial boundary coordinates
-            selLeft = x
-            selTop = y
-            selWidth = 1
-            selHeight = 1
+            With m_CornersLocked
+                .Left = x
+                .Top = y
+                .Width = 1
+                .Height = 1
+            End With
             
         'Lasso selections have limited transform capabilities, and they have a variable number of points
-        Case sLasso
-            isTransformable = True
+        Case ss_Lasso
+            m_IsTransformable = True
             
-            m_numOfLassoPoints = 1
+            m_NumOfLassoPoints = 1
             ReDim m_LassoPoints(0 To 127) As POINTFLOAT
             
             m_LassoPoints(0).x = x
             m_LassoPoints(0).y = y
             
             'Also set up a dummy set of initial boundary coordinates
-            selLeft = x
-            selTop = y
-            selWidth = 1
-            selHeight = 1
+            With m_CornersLocked
+                .Left = x
+                .Top = y
+                .Width = 1
+                .Height = 1
+            End With
         
         'Wand selections don't support transforms
-        Case sWand
-            isTransformable = False
-            x1 = x
-            y1 = y
+        Case ss_Wand
+            m_IsTransformable = False
+            With m_CornersUnlocked
+                .Left = x
+                .Top = y
+            End With
         
         'Other selection types (e.g. raster selections) cannot be created this way
         Case Else
@@ -927,107 +1000,108 @@ Public Sub SetInitialCoordinates(ByVal x As Double, y As Double)
 End Sub
 
 'Takes x and y coordinates (from a _MouseMove event, typically) and stores them internally
-Public Sub SetAdditionalCoordinates(ByVal x As Double, y As Double)
+Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
     
     Dim newMaskRequired As Boolean
     newMaskRequired = True
     
     'Check for an active transformation mode.  (A transformation is something like resizing or moving an existing selection,
     ' versus drawing a new one from scratch.)
-    If transformModeActive Then
+    If m_TransformModeActive Then
         
         Dim i As Long
         
-        Select Case sShape
+        Select Case m_SelectionShape
     
-            Case sRectangle, sCircle
+            Case ss_Rectangle, ss_Circle
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case selTransformationType
+                Select Case m_SelTransformationType
                 
                     'Case -1 should never occur, but if it does - treat this like a normal subsequent coordinate call
                     'Cases 1-4 can similarly be treated like a normal subsequent coordinate call
-                    ' (See setInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
+                    ' (See SetInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
                     '  these to constants instead of numbers... :P)
                     Case 0 To 3
-                        x2 = x
-                        y2 = y
+                        m_CornersUnlocked.Right = x
+                        m_CornersUnlocked.Bottom = y
                     
                     '4 - N edge
                     Case 4
-                        y2 = y
+                        m_CornersUnlocked.Bottom = y
                         
                     '5 - E edge
                     Case 5
-                        x2 = x
+                        m_CornersUnlocked.Right = x
                         
                     '6 - S edge
                     Case 6
-                        y2 = y
+                        m_CornersUnlocked.Bottom = y
                         
                     '7 - W edge
                     Case 7
-                        x2 = x
+                        m_CornersUnlocked.Right = x
                         
                     '8 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
                     Case 8
-                    
-                        x1 = x - moveXDist
-                        y1 = y - moveYDist
-                        x2 = x1 + selWidth
-                        y2 = y1 + selHeight
+                        With m_CornersUnlocked
+                            .Left = x - m_MoveXDist
+                            .Top = y - m_MoveYDist
+                            .Right = .Left + m_CornersLocked.Width
+                            .Bottom = .Top + m_CornersLocked.Height
+                        End With
                         
                 End Select
                 
                 'If a transform mode is active, re-mark the selection as being transformable
-                isTransformable = True
+                m_IsTransformable = True
         
-            Case sLine
+            Case ss_Line
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case selTransformationType
+                Select Case m_SelTransformationType
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
                     Case -1
                     
                     'First point is being moved
                     Case 0
-                        x1 = x
-                        y1 = y
+                        m_CornersUnlocked.Left = x
+                        m_CornersUnlocked.Top = y
                         
                     'Second point is being moved
                     Case 1
-                        x2 = x
-                        y2 = y
+                        m_CornersUnlocked.Right = x
+                        m_CornersUnlocked.Bottom = y
                         
                 End Select
                 
                 'If a transform mode is active, re-mark the selection as being transformable
-                isTransformable = True
+                m_IsTransformable = True
             
             'Polygon transforms consist of either moving an individual polygon point, or moving the entire polygon array
-            Case sPolygon
+            Case ss_Polygon
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case selTransformationType
+                Select Case m_SelTransformationType
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
                     Case -1
                     
                     'Move transform
-                    Case m_numOfPolygonPoints
+                    Case m_NumOfPolygonPoints
                         
                         'Rebuild the main polygon array by copying all points from the backup array, and applying the current
                         ' x/y transformation distance to them.
-                        For i = 0 To m_numOfPolygonPoints - 1
-                            m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + (x - moveXDist)
-                            m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + (y - moveYDist)
+                        For i = 0 To m_NumOfPolygonPoints - 1
+                            m_PolygonPoints(i).x = m_PolygonPointsBackup(i).x + (x - m_MoveXDist)
+                            m_PolygonPoints(i).y = m_PolygonPointsBackup(i).y + (y - m_MoveYDist)
                         Next i
                     
                     'Anything else is just moving a polygon point
                     Case Else
                     
-                        With m_PolygonPoints(selTransformationType)
+                        With m_PolygonPoints(m_SelTransformationType)
                             .x = x
                             .y = y
                         End With
@@ -1035,13 +1109,13 @@ Public Sub SetAdditionalCoordinates(ByVal x As Double, y As Double)
                 End Select
                 
                 'If a transform mode is active, re-mark the selection as being transformable
-                isTransformable = True
+                m_IsTransformable = True
             
             'Lasso transforms require us to transform the entire lasso array
-            Case sLasso
+            Case ss_Lasso
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case selTransformationType
+                Select Case m_SelTransformationType
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
                     Case -1
@@ -1051,18 +1125,18 @@ Public Sub SetAdditionalCoordinates(ByVal x As Double, y As Double)
                         
                         'Rebuild the main lasso array by copying all points from the backup array, and applying the current
                         ' x/y transformation distance to them.
-                        For i = 0 To m_numOfLassoPoints - 1
-                            m_LassoPoints(i).x = m_LassoPointsBackup(i).x + (x - moveXDist)
-                            m_LassoPoints(i).y = m_LassoPointsBackup(i).y + (y - moveYDist)
+                        For i = 0 To m_NumOfLassoPoints - 1
+                            m_LassoPoints(i).x = m_LassoPointsBackup(i).x + (x - m_MoveXDist)
+                            m_LassoPoints(i).y = m_LassoPointsBackup(i).y + (y - m_MoveYDist)
                         Next i
                         
                 End Select
                 
                 'If a transform mode is active, re-mark the selection as being transformable
-                isTransformable = True
+                m_IsTransformable = True
             
             'Wand selections are not transformable
-            Case sWand
+            Case ss_Wand
                 Debug.Print "Transform initiated on a wand selection - FIX THIS!"
             
         End Select
@@ -1071,46 +1145,46 @@ Public Sub SetAdditionalCoordinates(ByVal x As Double, y As Double)
     ' this simply means copying the passed (x, y) values.  Polygon/lasso selections are more complicated.
     Else
         
-        Select Case sShape
+        Select Case m_SelectionShape
         
             'Rectangle, ellipse, and line selections are easy - just copy the passed (x, y) values into (x2, y2)
-            Case sRectangle, sCircle, sLine
-                x2 = x
-                y2 = y
+            Case ss_Rectangle, ss_Circle, ss_Line
+                m_CornersUnlocked.Right = x
+                m_CornersUnlocked.Bottom = y
                 
             'Polygon selections will increment the current polygon array by one, adding the new point as the latest polygon coordinate
-            Case sPolygon
+            Case ss_Polygon
             
                 'Make room in the point array
-                m_numOfPolygonPoints = m_numOfPolygonPoints + 1
-                If m_numOfPolygonPoints > UBound(m_PolygonPoints) Then ReDim Preserve m_PolygonPoints(0 To m_numOfPolygonPoints * 2 - 1) As POINTFLOAT
+                m_NumOfPolygonPoints = m_NumOfPolygonPoints + 1
+                If (m_NumOfPolygonPoints > UBound(m_PolygonPoints)) Then ReDim Preserve m_PolygonPoints(0 To m_NumOfPolygonPoints * 2 - 1) As POINTFLOAT
                     
                 'Store the new point
-                m_PolygonPoints(m_numOfPolygonPoints - 1).x = x
-                m_PolygonPoints(m_numOfPolygonPoints - 1).y = y
+                m_PolygonPoints(m_NumOfPolygonPoints - 1).x = x
+                m_PolygonPoints(m_NumOfPolygonPoints - 1).y = y
                 
             'Lasso selections will increment the current lasso array, and add the new point to its list
-            Case sLasso
+            Case ss_Lasso
             
                 'Perform a quick check to make sure this point isn't a duplicate of the previous point.  With high-DPI mice,
                 ' this is a distinct possibility.
-                If m_LassoPoints(m_numOfLassoPoints - 1).x <> x Or m_LassoPoints(m_numOfLassoPoints - 1).y <> y Then
+                If ((m_LassoPoints(m_NumOfLassoPoints - 1).x <> x) Or (m_LassoPoints(m_NumOfLassoPoints - 1).y <> y)) Then
             
                     'Make room in the point array
-                    m_numOfLassoPoints = m_numOfLassoPoints + 1
-                    If m_numOfLassoPoints > UBound(m_LassoPoints) Then ReDim Preserve m_LassoPoints(0 To m_numOfLassoPoints * 2 - 1) As POINTFLOAT
+                    m_NumOfLassoPoints = m_NumOfLassoPoints + 1
+                    If (m_NumOfLassoPoints > UBound(m_LassoPoints)) Then ReDim Preserve m_LassoPoints(0 To m_NumOfLassoPoints * 2 - 1) As POINTFLOAT
                     
                     'Store the new point
-                    m_LassoPoints(m_numOfLassoPoints - 1).x = x
-                    m_LassoPoints(m_numOfLassoPoints - 1).y = y
+                    m_LassoPoints(m_NumOfLassoPoints - 1).x = x
+                    m_LassoPoints(m_NumOfLassoPoints - 1).y = y
                     
                 End If
             
             'Wand selections can have their point of interest moved, but they don't actually support "additional" coordinates
-            Case sWand
-                If (x1 <> x) Or (y1 <> y) Then
-                    x1 = x
-                    y1 = y
+            Case ss_Wand
+                If (m_CornersUnlocked.Left <> x) Or (m_CornersUnlocked.Top <> y) Then
+                    m_CornersUnlocked.Left = x
+                    m_CornersUnlocked.Top = y
                 Else
                     newMaskRequired = False
                 End If
@@ -1127,46 +1201,55 @@ Public Sub SetAdditionalCoordinates(ByVal x As Double, y As Double)
 End Sub
 
 'Has this selection been locked in?
-Public Function IsLockedIn() As Boolean
-    IsLockedIn = lockedIn
+Friend Function IsLockedIn() As Boolean
+    IsLockedIn = m_IsLocked
+End Function
+
+'Is this selection transformable?
+Friend Function IsTransformable() As Boolean
+    IsTransformable = m_IsTransformable
 End Function
 
 'If the user is using the SHIFT key to request a square-shaped (or circle-shaped) selection, this function will be called.
 Private Sub MakeCoordinatesSquare()
 
-    Select Case sShape
+    Select Case m_SelectionShape
                 
-        Case sRectangle, sCircle, sLine
-        
-            If x1 < x2 Then
-                If y1 < y2 Then
-                    If Abs(x1 - x2) > Abs(y1 - y2) Then
-                        y2 = y1 + Abs(x1 - x2)
+        Case ss_Rectangle, ss_Circle, ss_Line
+            
+            With m_CornersUnlocked
+                
+                If (.Left < .Right) Then
+                    If (.Top < .Bottom) Then
+                        If (Abs(.Left - .Right) > Abs(.Top - .Bottom)) Then
+                            .Bottom = .Top + Abs(.Left - .Right)
+                        Else
+                            .Right = .Left + Abs(.Top - .Bottom)
+                        End If
                     Else
-                        x2 = x1 + Abs(y1 - y2)
+                        If (Abs(.Left - .Right) > Abs(.Top - .Bottom)) Then
+                            .Bottom = .Top - Abs(.Left - .Right)
+                        Else
+                            .Right = .Left + Abs(.Top - .Bottom)
+                        End If
                     End If
                 Else
-                    If Abs(x1 - x2) > Abs(y1 - y2) Then
-                        y2 = y1 - Abs(x1 - x2)
+                    If (.Top < .Bottom) Then
+                        If (Abs(.Left - .Right) > Abs(.Top - .Bottom)) Then
+                            .Bottom = .Top + Abs(.Left - .Right)
+                        Else
+                            .Right = .Left - Abs(.Top - .Bottom)
+                        End If
                     Else
-                        x2 = x1 + Abs(y1 - y2)
+                        If (Abs(.Left - .Right) > Abs(.Top - .Bottom)) Then
+                            .Bottom = .Top - Abs(.Left - .Right)
+                        Else
+                            .Right = .Left - Abs(.Top - .Bottom)
+                        End If
                     End If
                 End If
-            Else
-                If y1 < y2 Then
-                    If Abs(x1 - x2) > Abs(y1 - y2) Then
-                        y2 = y1 + Abs(x1 - x2)
-                    Else
-                        x2 = x1 - Abs(y1 - y2)
-                    End If
-                Else
-                    If Abs(x1 - x2) > Abs(y1 - y2) Then
-                        y2 = y1 - Abs(x1 - x2)
-                    Else
-                        x2 = x1 - Abs(y1 - y2)
-                    End If
-                End If
-            End If
+                
+            End With
             
         'Other selection types do not currently support square modifiers
         Case Else
@@ -1182,99 +1265,103 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
 
     'This function only needs to be run if the selection is stored in vector format.  If it is not, a bounding rect
     ' will already be correctly set.
-    If (sShape <> sRaster) Then
+    If (m_SelectionShape <> ss_Raster) Then
     
         Dim i As Long
         Dim selMaxX As Long, selMaxY As Long
     
         'Mark the selection mask as "not ready", as it will need to be redrawn after new coordinates are set
-        If forciblyResetMask Then isMaskReady = False
+        If forciblyResetMask Then m_IsMaskReady = False
 
         'If a square (1:1 aspect ratio) selection has been requested, calculate new coordinates now.
         
         ' (This set of if/then blocks looks complicated, but it's actually very simple - we simply have to account for every variation
         '  of quadrants, because the selection can be drawn up or down in both directions, giving eight possible variants of x1 </> x2
         '  and y1 </> y2.  By covering all those cases, square selections can be drawn in any direction.)
-        If isSquare Then MakeCoordinatesSquare
+        If m_IsSquare Then MakeCoordinatesSquare
         
         'Finally, calculate a left, top, width and height for this selection based off the current individual coordinate values
-        Select Case sShape
+        Select Case m_SelectionShape
         
             'Rectangles, ellipses, and lines all use the same (x1, y1) - (x2, y2) coordinate system, so finding selection bounds is easy.
-            Case sRectangle, sCircle, sLine
-            
-                If x1 < x2 Then
-                    selLeft = x1
-                    selWidth = x2 - x1
-                Else
-                    selLeft = x2
-                    selWidth = x1 - x2
-                End If
+            Case ss_Rectangle, ss_Circle, ss_Line
                 
-                If y1 < y2 Then
-                    selTop = y1
-                    selHeight = y2 - y1
-                Else
-                    selTop = y2
-                    selHeight = y1 - y2
-                End If
+                With m_CornersUnlocked
+                    
+                    If (.Left < .Right) Then
+                        m_CornersLocked.Left = .Left
+                        m_CornersLocked.Width = .Right - .Left
+                    Else
+                        m_CornersLocked.Left = .Right
+                        m_CornersLocked.Width = .Left - .Right
+                    End If
+                    
+                    If (.Top < .Bottom) Then
+                        m_CornersLocked.Top = .Top
+                        m_CornersLocked.Height = .Bottom - .Top
+                    Else
+                        m_CornersLocked.Top = .Bottom
+                        m_CornersLocked.Height = .Top - .Bottom
+                    End If
+                    
+                End With
             
             'Polygon selections require us to search all polygon points in order to construct a bounding rect.
-            Case sPolygon
+            Case ss_Polygon
                 
-                selLeft = LONG_MAX
-                selTop = LONG_MAX
+                m_CornersLocked.Left = LONG_MAX
+                m_CornersLocked.Top = LONG_MAX
                 selMaxX = -LONG_MAX
                 selMaxY = -LONG_MAX
                 
                 'Search the entire polygon array for new left/top/width/height values
-                For i = 0 To m_numOfPolygonPoints - 1
+                For i = 0 To m_NumOfPolygonPoints - 1
                     
                     With m_PolygonPoints(i)
-                        If .x < selLeft Then selLeft = .x
-                        If .y < selTop Then selTop = .y
-                        If .x > selMaxX Then selMaxX = .x
-                        If .y > selMaxY Then selMaxY = .y
+                        If (.x < m_CornersLocked.Left) Then m_CornersLocked.Left = .x
+                        If (.y < m_CornersLocked.Top) Then m_CornersLocked.Top = .y
+                        If (.x > selMaxX) Then selMaxX = .x
+                        If (.y > selMaxY) Then selMaxY = .y
                     End With
                     
                 Next i
                 
-                selWidth = selMaxX - selLeft
-                selHeight = selMaxY - selTop
+                m_CornersLocked.Width = selMaxX - m_CornersLocked.Left
+                m_CornersLocked.Height = selMaxY - m_CornersLocked.Top
                 
                 'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                If IsLockedIn And (GetSelectionProperty_Double(SP_POLYGON_CURVATURE) > 0) Then FillBoundsUsingGDIPlus
+                If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_PolygonCurvature) > 0)) Then Me.FillBoundsUsingGDIPlus
             
             'Like polygon selection, lasso selections require us to search all lasso points in order to construct
             ' a bounding rect.
-            Case sLasso
+            Case ss_Lasso
             
-                selLeft = LONG_MAX
-                selTop = LONG_MAX
+                m_CornersLocked.Left = LONG_MAX
+                m_CornersLocked.Top = LONG_MAX
                 selMaxX = -LONG_MAX
                 selMaxY = -LONG_MAX
                 
                 'Search the entire lasso array for new left/top/width/height values
-                For i = 0 To m_numOfLassoPoints - 1
+                For i = 0 To m_NumOfLassoPoints - 1
                     
                     With m_LassoPoints(i)
-                        If .x < selLeft Then selLeft = .x
-                        If .y < selTop Then selTop = .y
-                        If .x > selMaxX Then selMaxX = .x
-                        If .y > selMaxY Then selMaxY = .y
+                        If (.x < m_CornersLocked.Left) Then m_CornersLocked.Left = .x
+                        If (.y < m_CornersLocked.Top) Then m_CornersLocked.Top = .y
+                        If (.x > selMaxX) Then selMaxX = .x
+                        If (.y > selMaxY) Then selMaxY = .y
                     End With
                     
                 Next i
                 
-                selWidth = selMaxX - selLeft
-                selHeight = selMaxY - selTop
+                m_CornersLocked.Width = selMaxX - m_CornersLocked.Left
+                m_CornersLocked.Height = selMaxY - m_CornersLocked.Top
                 
                 'If curvature is active, we'll use GDI+ to find our bounds more precisely
-                If IsLockedIn And (GetSelectionProperty_Double(SP_SMOOTH_STROKE) > 0) Then FillBoundsUsingGDIPlus
+                If (Me.IsLockedIn And (GetSelectionProperty_Float(sp_SmoothStroke) > 0)) Then Me.FillBoundsUsingGDIPlus
             
             'Wand selections require manual bounds-checking
-            Case sWand
-                If IsLockedIn Then FindNewBoundsManually True
+            Case ss_Wand
+                If Me.IsLockedIn Then Me.FindNewBoundsManually True
                 
             Case Else
             
@@ -1284,44 +1371,45 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
 
 End Sub
 
-'Because selections can be created beyond the parent image's borders, it is necessary to check if ALL selection coordinates lie off the
-' image.  If this is the case, we don't want to finalize the current selection - we want to forget it.  Note that this function requires
-' the selLeft/Top/Width/Height values to be correctly set in advance!
-Public Function AreAllCoordinatesInvalid() As Boolean
-
-    'Selections must lie at least partially on the image.  If all coordinates lie outside the image, return TRUE, and the caller
-    ' will know to remove the selection completely.
-    Select Case sShape
+'Because selections can be created beyond the parent image's borders, it is sometimes necessary to check if ALL selection coordinates
+' lie off the image.  If this is the case, we don't want to finalize the current selection - we want to forget it.
+'
+'Note that this function requires the m_CornersLocked.Left/Top/Width/Height values to be correctly set prior to calling.
+'
+'Returns: TRUE if this selection lies completely outside its parent image boundaries
+Friend Function AreAllCoordinatesInvalid() As Boolean
+    
+    Select Case m_SelectionShape
     
         'Rectangles, ellipses, and lines are easy - check the bounding box, and if it lies completely outside the image,
         ' reject it.  Note that this occurs before a final bound rect has been calculated, so you have no choice but to
-        ' rely on intermediate x/y coords instead of the boundLeft/boundTop etc values.
-        Case sRectangle, sCircle, sLine
+        ' rely on intermediate x/y coords instead of the m_Bounds.Left/m_Bounds.Top etc values.
+        Case ss_Rectangle, ss_Circle, ss_Line
             
-            If (selLeft + selWidth <= 0) Then AreAllCoordinatesInvalid = True
-            If (selLeft > containingPDImage.Width) Then AreAllCoordinatesInvalid = True
-            If (selTop + selHeight <= 0) Then AreAllCoordinatesInvalid = True
-            If (selTop > containingPDImage.Height) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Left > m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Top > m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
            
-        'Polygon and Lasso are a bit more complicated.  If curvature is not active, we can use existing selLeft/Top etc bounds,
+        'Polygon and Lasso are a bit more complicated.  If curvature is not active, we can use existing m_CornersLocked.Left/Top etc bounds,
         ' but if it is active, we need to perform a manual search for boundaries.
-        Case sPolygon, sLasso
+        Case ss_Polygon, ss_Lasso
         
             'If curvature is active, use GDI+ to update the current boundaries.
-            If ((sShape = sPolygon) And (GetSelectionProperty_Double(SP_POLYGON_CURVATURE) <> 0)) Or ((sShape = sLasso) And (GetSelectionProperty_Double(SP_SMOOTH_STROKE) <> 0)) Then FillBoundsUsingGDIPlus
+            If ((m_SelectionShape = ss_Polygon) And (GetSelectionProperty_Float(sp_PolygonCurvature) <> 0)) Or ((m_SelectionShape = ss_Lasso) And (GetSelectionProperty_Float(sp_SmoothStroke) <> 0)) Then Me.FillBoundsUsingGDIPlus
             
-            If (selLeft + selWidth <= 0) Then AreAllCoordinatesInvalid = True
-            If (selLeft >= containingPDImage.Width) Then AreAllCoordinatesInvalid = True
-            If (selTop + selHeight <= 0) Then AreAllCoordinatesInvalid = True
-            If (selTop >= containingPDImage.Height) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Left + m_CornersLocked.Width <= 0) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Top + m_CornersLocked.Height <= 0) Then AreAllCoordinatesInvalid = True
+            If (m_CornersLocked.Top >= m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
         
         'Wand selections are valid if the (x1, y1) coordinate pair falls inside the image
-        Case sWand
-            If x1 < 0 Then AreAllCoordinatesInvalid = True
-            If y1 < 0 Then AreAllCoordinatesInvalid = True
-            If x1 >= containingPDImage.Width Then AreAllCoordinatesInvalid = True
-            If y1 >= containingPDImage.Height Then AreAllCoordinatesInvalid = True
-                    
+        Case ss_Wand
+            If (m_CornersUnlocked.Left < 0) Then AreAllCoordinatesInvalid = True
+            If (m_CornersUnlocked.Top < 0) Then AreAllCoordinatesInvalid = True
+            If (m_CornersUnlocked.Left >= m_parentPDImage.Width) Then AreAllCoordinatesInvalid = True
+            If (m_CornersUnlocked.Top >= m_parentPDImage.Height) Then AreAllCoordinatesInvalid = True
+            
         'In the future, additional selection types can be handled here.
         Case Else
             
@@ -1330,21 +1418,21 @@ Public Function AreAllCoordinatesInvalid() As Boolean
 End Function
 
 'Nudge the selection in a given direction.  This function is supplied as a convenience for SELECTION TYPES WHOSE POSITION CANNOT
-' BE MODIFIED BY TEXT BOX.  If a selection's position can be modified via text box (e.g. rectangle, ellipse, etc), you need to
-' use the updateViaTextBox() function instead, to ensure that text box and internal position are properly synched.
-Public Sub NudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal vOffset As Double = 0#)
+' BE MODIFIED BY TEXT BOX.  If a selection's position can be modified via text box (e.g. rectangle, ellipse, etc), you should
+' use the UpdateViaTextBox() function instead, to ensure that text box and internal positions are properly synched.
+Friend Sub NudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal vOffset As Double = 0#)
 
     Dim i As Long
 
-    Select Case sShape
+    Select Case m_SelectionShape
     
-        Case sRectangle, sCircle, sLine
+        Case ss_Rectangle, ss_Circle, ss_Line
             Debug.Print "nudgeSelection function was used on an invalid selection type - FIX THIS!"
     
-        Case sPolygon
+        Case ss_Polygon
         
             'Apply the new offsets to all points in the polygon
-            For i = 0 To m_numOfPolygonPoints - 1
+            For i = 0 To m_NumOfPolygonPoints - 1
                 With m_PolygonPoints(i)
                     .x = .x + hOffset
                     .y = .y + vOffset
@@ -1354,10 +1442,10 @@ Public Sub NudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
             'We also need to update the selection's bounding rect
             UpdateInternalCoords
         
-        Case sLasso
+        Case ss_Lasso
             
             'Apply the new offsets to all points in the lasso array
-            For i = 0 To m_numOfLassoPoints - 1
+            For i = 0 To m_NumOfLassoPoints - 1
                 With m_LassoPoints(i)
                     .x = .x + hOffset
                     .y = .y + vOffset
@@ -1367,14 +1455,14 @@ Public Sub NudgeSelection(Optional ByVal hOffset As Double = 0#, Optional ByVal 
             'We also need to update the selection's bounding rect
             UpdateInternalCoords
             
-        Case sWand
-            x1 = x1 + hOffset
-            y1 = y1 + vOffset
+        Case ss_Wand
+            m_CornersUnlocked.Left = m_CornersUnlocked.Left + hOffset
+            m_CornersUnlocked.Top = m_CornersUnlocked.Top + vOffset
             
-            If x1 < 0 Then x1 = 0
-            If y1 < 0 Then y1 = 0
-            If x1 >= containingPDImage.Width Then x1 = containingPDImage.Width - 1
-            If y1 >= containingPDImage.Height Then y1 = containingPDImage.Height - 1
+            If (m_CornersUnlocked.Left < 0) Then m_CornersUnlocked.Left = 0
+            If (m_CornersUnlocked.Top < 0) Then m_CornersUnlocked.Top = 0
+            If (m_CornersUnlocked.Left >= m_parentPDImage.Width) Then m_CornersUnlocked.Left = m_parentPDImage.Width - 1
+            If (m_CornersUnlocked.Top >= m_parentPDImage.Height) Then m_CornersUnlocked.Top = m_parentPDImage.Height - 1
             
             'We also need to update the selection's bounding rect
             UpdateInternalCoords
@@ -1385,24 +1473,21 @@ End Sub
 
 'Polygon selections are not as fiddly as lasso selections, but it can still be useful to remove the last-clicked point.
 ' This function (typically triggered via the BACKSPACE key) can be used to remove the last-created polygon point.
-Public Sub RemoveLastPolygonPoint()
-
-    'First, make sure we actually have points to remove
-    If m_numOfPolygonPoints > 1 Then m_numOfPolygonPoints = m_numOfPolygonPoints - 1
-    
+Friend Sub RemoveLastPolygonPoint()
+    If (m_NumOfPolygonPoints > 1) Then m_NumOfPolygonPoints = m_NumOfPolygonPoints - 1
 End Sub
 
 'Lasso selections have the unique burden of being somewhat unfavorable to user error.  This function (typically triggered via
-' the BACKSPACE key) can be used to retreat the lasso position, and potentially correct any errors.  The calling function must
-' supply two Double-type variables, which will receive the new cursor position IN IMAGE COORDINATES.  The calling function is
-' responsible for translating these to screen coordinates and actually applying the cursor repositioning.
-Public Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newCursorY_ImgCoords As Double)
+' the BACKSPACE key) can be used to retreat the lasso position and potentially correct any positioning errors.  The calling
+' function must supply two Double-type variables, which will receive the new cursor position IN IMAGE COORDINATES.  The calling
+' function is responsible for translating these to screen coordinates and actually applying the cursor repositioning.
+Friend Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newCursorY_ImgCoords As Double)
 
     'Determine a point to retreat to.  We could do this a number of different ways, but because PD generally favors quality
     ' over all else, we're going to complicate it a bit.  The goal is to retreat a distance of ten pixels, which may correspond
     ' to any number of actual lasso points.
     Dim newLassoIndex As Long
-    newLassoIndex = m_numOfLassoPoints - 1
+    newLassoIndex = m_NumOfLassoPoints - 1
     
     Dim netDistance As Double
     netDistance = 0
@@ -1420,97 +1505,95 @@ Public Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
     Loop
     
     'Reposition the lasso point index to match
-    m_numOfLassoPoints = newLassoIndex + 1
-    If m_numOfLassoPoints < 1 Then m_numOfLassoPoints = 1
+    m_NumOfLassoPoints = newLassoIndex + 1
+    If (m_NumOfLassoPoints < 1) Then m_NumOfLassoPoints = 1
     
     'Return the new cursor coordinates at this position, then exit
-    newCursorX_ImgCoords = m_LassoPoints(m_numOfLassoPoints - 1).x
-    newCursorY_ImgCoords = m_LassoPoints(m_numOfLassoPoints - 1).y
+    newCursorX_ImgCoords = m_LassoPoints(m_NumOfLassoPoints - 1).x
+    newCursorY_ImgCoords = m_LassoPoints(m_NumOfLassoPoints - 1).y
 
 End Sub
 
 'Update this selection using the values in the main form's selection text boxes
-Public Sub UpdateViaTextBox()
+Friend Sub UpdateViaTextBox()
 
     'Ignore text box update requests until the selection is locked in
-    If Not IsLockedIn Then Exit Sub
+    If (Not Me.IsLockedIn) Then Exit Sub
 
-    rejectRefreshRequests = True
+    m_RejectRefreshRequests = True
     
     Dim subpanelOffset As Long
-    subpanelOffset = Selection_Handler.getSelectionSubPanelFromSelectionShape(pdImages(g_CurrentImage)) * 4
+    subpanelOffset = Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(g_CurrentImage)) * 4
     
     'Check all text box entries for validity, then update the corresponding selection values.
-    Select Case sShape
+    Select Case m_SelectionShape
     
         'Rectangles, ellipses, and lines all support movement via text box
-        Case sRectangle, sCircle, sLine
-            isMaskReady = False
-            If toolpanel_Selections.tudSel(subpanelOffset + 0).IsValid(False) Then selLeft = toolpanel_Selections.tudSel(subpanelOffset + 0)
-            If toolpanel_Selections.tudSel(subpanelOffset + 1).IsValid(False) Then selTop = toolpanel_Selections.tudSel(subpanelOffset + 1)
-            If toolpanel_Selections.tudSel(subpanelOffset + 2).IsValid(False) Then selWidth = toolpanel_Selections.tudSel(subpanelOffset + 2)
-            If toolpanel_Selections.tudSel(subpanelOffset + 3).IsValid(False) Then selHeight = toolpanel_Selections.tudSel(subpanelOffset + 3)
+        Case ss_Rectangle, ss_Circle, ss_Line
+            m_IsMaskReady = False
+            If toolpanel_Selections.tudSel(subpanelOffset + 0).IsValid(False) Then m_CornersLocked.Left = toolpanel_Selections.tudSel(subpanelOffset + 0)
+            If toolpanel_Selections.tudSel(subpanelOffset + 1).IsValid(False) Then m_CornersLocked.Top = toolpanel_Selections.tudSel(subpanelOffset + 1)
+            If toolpanel_Selections.tudSel(subpanelOffset + 2).IsValid(False) Then m_CornersLocked.Width = toolpanel_Selections.tudSel(subpanelOffset + 2)
+            If toolpanel_Selections.tudSel(subpanelOffset + 3).IsValid(False) Then m_CornersLocked.Height = toolpanel_Selections.tudSel(subpanelOffset + 3)
             
         'I haven't decided if other selection types will support movement via text box...
         Case Else
         
     End Select
     
-    'For some selection types, we need to update more than just the selLeft/Top/Width/Height values.
-    Select Case sShape
+    'For some selection types, we need to update more than just the m_CornersLocked.Left/Top/Width/Height values.
+    Select Case m_SelectionShape
     
         'Adjust the x1, y1, x2, y2 values to match the retrieved text box values
-        Case sRectangle, sCircle
-            x1 = selLeft
-            y1 = selTop
-            x2 = selLeft + selWidth
-            y2 = selTop + selHeight
+        Case ss_Rectangle, ss_Circle
+            m_CornersUnlocked.Left = m_CornersLocked.Left
+            m_CornersUnlocked.Top = m_CornersLocked.Top
+            m_CornersUnlocked.Right = m_CornersLocked.Left + m_CornersLocked.Width
+            m_CornersUnlocked.Bottom = m_CornersLocked.Top + m_CornersLocked.Height
         
         'Adjust the x1, y1, x2, y2 values to match the retrieved text box values, but note that x2 and y2 do not correspond to
         ' width and height on line selections; they correspond to x2/y2 coordinates.
-        Case sLine
-            x1 = selLeft
-            y1 = selTop
-            x2 = selWidth
-            y2 = selHeight
+        Case ss_Line
+            m_CornersUnlocked.Left = m_CornersLocked.Left
+            m_CornersUnlocked.Top = m_CornersLocked.Top
+            m_CornersUnlocked.Right = m_CornersLocked.Width
+            m_CornersUnlocked.Bottom = m_CornersLocked.Height
             
         Case Else
         
     End Select
     
-    rejectRefreshRequests = False
+    m_RejectRefreshRequests = False
     
 End Sub
 
 '"Lock-in" a selection. Typically this is prompted by a _MouseUp event
-Public Sub LockIn()
+Friend Sub LockIn()
     
     'Mark this selection as locked-in
-    lockedIn = True
+    m_IsLocked = True
         
     'For vector selections, update the internal coordinates one final time
-    If (sShape <> sRaster) Then
+    If (m_SelectionShape <> ss_Raster) Then
         
-        'updateInternalCoords
-    
         'The final thing we need to check for is the width and height, which may be still be zero at this point.
         ' Due to the way outside filters and effects use selection bounding rects, we can't allow selections of size 0.
-        If selWidth < 1 Then selWidth = 1
-        If selHeight < 1 Then selHeight = 1
+        If (m_CornersLocked.Width < 1) Then m_CornersLocked.Width = 1
+        If (m_CornersLocked.Height < 1) Then m_CornersLocked.Height = 1
         
     End If
         
 End Sub
 
 '"Unlock" a selection
-Public Sub LockRelease()
-    lockedIn = False
+Friend Sub LockRelease()
+    m_IsLocked = False
 End Sub
 
 'For polygon and lasso selection, it reduces risk to reset a few custom trackers when a selection is erased.
-Public Sub EraseCustomTrackers()
-    m_numOfLassoPoints = 0
-    m_numOfPolygonPoints = 0
+Friend Sub EraseCustomTrackers()
+    m_NumOfLassoPoints = 0
+    m_NumOfPolygonPoints = 0
     m_PolygonClosed = False
     m_LassoClosed = False
 End Sub
@@ -1521,7 +1604,7 @@ End Sub
 '     used to specify aliasing or partial selections.
 ' 3) The selection mask is stored as a pdDIB object, so any image filters can be applied to it.
 ' 4) For shape-based selections (rectangle, square, etc), the selection's dimensions need to be set BEFORE calling this function.  This function
-'     relies on things like selLeft and selWidth to know where to render the mask.  For non-shape-based selections, this function will call a
+'     relies on things like m_CornersLocked.Left and m_CornersLocked.Width to know where to render the mask.  For non-shape-based selections, this function will call a
 '     separate function to find the bounding rect.
 Private Sub CreateSelectionMask()
 
@@ -1530,22 +1613,22 @@ Private Sub CreateSelectionMask()
     'Note that a mask has been created for this image.  This is important for saving/loading selections, as a new mask must be generated
     ' if one isn't already present.
     ' TODO: see if we can move this to the end of the function without consequences.
-    maskHasBeenCreated = True
+    m_MaskHasBeenCreated = True
     
     'Debug msg: trying to minimize redundant mask creation requests
-    If isMaskReady Then Debug.Print "Selection mask is marked as READY, but a new mask was requested.  FIX THIS!"
+    If m_IsMaskReady Then Debug.Print "Selection mask is marked as READY, but a new mask was requested.  FIX THIS!"
     
     'If the current selection is raster-type, this function should not have been called!
-    If sShape = sRaster Then
+    If (m_SelectionShape = ss_Raster) Then
         Debug.Print "Mask redraw requested for raster-type selection - FIX THIS!"
-        isMaskReady = True
+        m_IsMaskReady = True
         Exit Sub
     End If
     
     Dim maskBackColor As Long, maskForeColor As Long, maskBackByte As Byte
     
     'Interior and exterior selections are rendered using identical code; the only difference is the colors used
-    If GetSelectionProperty_Long(SP_AREA) = sExterior Then
+    If (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
         maskBackColor = RGB(255, 255, 255)
         maskBackByte = 255
         maskForeColor = RGB(0, 0, 0)
@@ -1556,20 +1639,20 @@ Private Sub CreateSelectionMask()
     End If
 
     'Some selection types (line selections) need to know max/min values, which are separate from left/top/width/height
-    Dim minX As Long, maxX As Long, MinY As Long, MaxY As Long
-    If x1 < x2 Then
-        minX = x1
-        maxX = x2
+    Dim minX As Long, maxX As Long, minY As Long, maxY As Long
+    If (m_CornersUnlocked.Left < m_CornersUnlocked.Right) Then
+        minX = m_CornersUnlocked.Left
+        maxX = m_CornersUnlocked.Right
     Else
-        minX = x2
-        maxX = x1
+        minX = m_CornersUnlocked.Right
+        maxX = m_CornersUnlocked.Left
     End If
-    If y1 < y2 Then
-        MinY = y1
-        MaxY = y2
+    If (m_CornersUnlocked.Top < m_CornersUnlocked.Bottom) Then
+        minY = m_CornersUnlocked.Top
+        maxY = m_CornersUnlocked.Bottom
     Else
-        MinY = y2
-        MaxY = y1
+        minY = m_CornersUnlocked.Bottom
+        maxY = m_CornersUnlocked.Top
     End If
 
     'At present, mask creation is only applicable for certain transformable shapes (rectangles, ellipses, lines).  Other functions,
@@ -1577,17 +1660,17 @@ Private Sub CreateSelectionMask()
     ' As such, use caution when calling this function, as the existing mask will be completely erased.
     
     'Start by creating a blank mask (this will also erase any existing mask)
-    If (selMask.GetDIBWidth <> containingPDImage.Width) Or (selMask.GetDIBHeight <> containingPDImage.Height) Then
-        selMask.CreateBlank containingPDImage.Width, containingPDImage.Height, 32, maskBackColor
-        selMask.SetAlphaPremultiplication False
+    If ((m_SelMask.GetDIBWidth <> m_parentPDImage.Width) Or (m_SelMask.GetDIBHeight <> m_parentPDImage.Height)) Then
+        m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, maskBackColor
+        m_SelMask.SetAlphaPremultiplication False
     Else
-        selMask.ResetDIB maskBackByte
+        m_SelMask.ResetDIB maskBackByte
     End If
         
     'Border selections are automatically disabled if the border size exceeds the smallest dimension (width or height)
     ' of the image
     Dim minDimension As Long
-    If selWidth < selHeight Then minDimension = selWidth Else minDimension = selHeight
+    If (m_CornersLocked.Width < m_CornersLocked.Height) Then minDimension = m_CornersLocked.Width Else minDimension = m_CornersLocked.Height
             
     'When rendering rectangle and ellipse selections in BORDERED mode, we calculate some values in advance.  Basically, these shapes
     ' handle border selections by rendering a smaller version of the selection shape within itself.  We never want the smaller copy
@@ -1598,37 +1681,35 @@ Private Sub CreateSelectionMask()
     
     ignoreBorderValue = False
     
-    If (GetSelectionProperty_Long(SP_AREA) = sBorder) And ((sShape = sRectangle) Or (sShape = sCircle)) Then
-    
-        rectModifier = GetSelectionProperty_Long(SP_BORDER_WIDTH)
-        If rectModifier < 1 Then rectModifier = 1
-        If rectModifier > (minDimension \ 2) Then ignoreBorderValue = True
-            
+    If (GetSelectionProperty_Long(sp_Area) = sa_Border) And ((m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle)) Then
+        rectModifier = GetSelectionProperty_Long(sp_BorderWidth)
+        If (rectModifier < 1) Then rectModifier = 1
+        If (rectModifier > (minDimension \ 2)) Then ignoreBorderValue = True
     End If
                 
     'The actual rendering of the selection will vary based on the current selection type (obviously).
     ' TODO: move all rendering into a separate child class.  This is necessary for union/intersect/etc with multiple selections.
-    Select Case sShape
+    Select Case m_SelectionShape
     
-        Case sRectangle
+        Case ss_Rectangle
         
             'RECTANGLE SELECTION, NO ROUNDED CORNERS
             ' (Note: rectangular selections ignore the current antialiasing setting, as there's no point)
-            If GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) = 0 Then
+            If (Me.GetSelectionProperty_Long(sp_RoundedCornerRadius) = 0) Then
             
                 'Interior/exterior selections, and bordered selections with too large of a width use identical rendering code.
-                If (GetSelectionProperty_Long(SP_AREA) = sInterior) Or (GetSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
+                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
                 
-                    GDI_Plus.GDIPlusFillDIBRect selMask, selLeft, selTop, selWidth, selHeight, maskForeColor
+                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor
                     
                 'Border selections are a bit different; we must draw two rectangles - an exterior and an interior one.
                 Else
                 
                     'Draw the exterior rectangle
-                    GDI_Plus.GDIPlusFillDIBRect selMask, selLeft, selTop, selWidth, selHeight, maskForeColor
+                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor
                     
                     'Next, draw the interior one
-                    GDI_Plus.GDIPlusFillDIBRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor
+                    GDI_Plus.GDIPlusFillDIBRect m_SelMask, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, maskBackColor
                     
                 End If
             
@@ -1637,52 +1718,52 @@ Private Sub CreateSelectionMask()
                 
                 'Interior/exterior selections use identical rendering code.  The only difference is the render color (whether the
                 ' rounded rect represents the selected or non-selected region, basically).
-                If (GetSelectionProperty_Long(SP_AREA) = sInterior) Or (GetSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
+                If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
                     
                     'Use GDI+ for antialiasing, regular GDI for non-antialiased
-                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS), maskForeColor, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                    GDIPlusDrawRoundRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, GetSelectionProperty_Long(sp_RoundedCornerRadius), maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
                     
                 'Border selections are a bit different; we must draw two rounded rectangles - an exterior and an interior one.
                 Else
                     
                     'Draw the exterior rectangle
-                    GDIPlusDrawRoundRect selMask, selLeft, selTop, selWidth, selHeight, GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS), maskForeColor, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                    GDIPlusDrawRoundRect m_SelMask, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, GetSelectionProperty_Long(sp_RoundedCornerRadius), maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
                     
                     'Next, draw the interior one.
-                    GDIPlusDrawRoundRect selMask, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS), maskBackColor, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                    GDIPlusDrawRoundRect m_SelMask, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, GetSelectionProperty_Long(sp_RoundedCornerRadius), maskBackColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
                     
                 End If
                 
             End If
                     
         'CIRCLES / ELLIPSES
-        Case sCircle
+        Case ss_Circle
         
             'Interior/exterior selections use identical rendering code.
-            If (GetSelectionProperty_Long(SP_AREA) = sInterior) Or (GetSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
+            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
             
-                GDIPlusFillEllipseToDC selMask.GetDIBDC, selLeft, selTop, selWidth - 1, selHeight - 1, maskForeColor, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC m_SelMask.GetDIBDC, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width - 1, m_CornersLocked.Height - 1, maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
                 
             'Border selections are a bit different; we must draw two ellipses - an exterior and an interior one.
             Else
             
                 'Draw the exterior oval
-                GDIPlusFillEllipseToDC selMask.GetDIBDC, selLeft, selTop, selWidth, selHeight, maskForeColor, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC m_SelMask.GetDIBDC, m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, m_CornersLocked.Height, maskForeColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
                 
                 'Next, draw the interior one
-                GDIPlusFillEllipseToDC selMask.GetDIBDC, selLeft + rectModifier, selTop + rectModifier, selWidth - rectModifier * 2, selHeight - rectModifier * 2, maskBackColor, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone)
+                GDIPlusFillEllipseToDC m_SelMask.GetDIBDC, m_CornersLocked.Left + rectModifier, m_CornersLocked.Top + rectModifier, m_CornersLocked.Width - rectModifier * 2, m_CornersLocked.Height - rectModifier * 2, maskBackColor, (GetSelectionProperty_Long(sp_Smoothing) > ss_None)
                         
             End If
             
         
         'Line selections
         ' TODO: let the user specify line caps
-        Case sLine
+        Case ss_Line
         
             'Interior/exterior line selections use identical rendering code.
-            If (GetSelectionProperty_Long(SP_AREA) = sInterior) Or (GetSelectionProperty_Long(SP_AREA) = sExterior) Or ignoreBorderValue Then
+            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Or ignoreBorderValue Then
             
-                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, GetSelectionProperty_Long(SP_LINE_WIDTH), (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
+                GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left, m_CornersUnlocked.Top, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, maskForeColor, 255, GetSelectionProperty_Long(sp_LineWidth), (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
                 
             'Border selections are a bit different; we must draw two lines - an interior and an exterior one.
             ' TODO: GDI+ supplies a function that generates a new path, using the outline of an existing path as drawn with a specified pen.
@@ -1690,38 +1771,38 @@ Private Sub CreateSelectionMask()
             Else
                 
                 'Draw the exterior line
-                GDIPlusDrawLineToDC selMask.GetDIBDC, x1, y1, x2, y2, maskForeColor, 255, GetSelectionProperty_Long(SP_LINE_WIDTH), (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
+                GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left, m_CornersUnlocked.Top, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, maskForeColor, 255, GetSelectionProperty_Long(sp_LineWidth), (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
                 
                 'Next, draw the interior one.  Note that some additional calculations are required to
                 Dim xDiff As Double, yDiff As Double
-                xDiff = Abs(x1 - x2)
-                yDiff = Abs(y1 - y2)
+                xDiff = Abs(m_CornersUnlocked.Left - m_CornersUnlocked.Right)
+                yDiff = Abs(m_CornersUnlocked.Top - m_CornersUnlocked.Bottom)
                 Dim xModifier As Long, yModifier As Long
-                If xDiff > yDiff Then
-                    If xDiff = 0 Then xDiff = 0.00001
-                    xModifier = GetSelectionProperty_Long(SP_BORDER_WIDTH)
-                    yModifier = GetSelectionProperty_Long(SP_BORDER_WIDTH) * (yDiff / xDiff)
+                If (xDiff > yDiff) Then
+                    If (xDiff = 0) Then xDiff = 0.00001
+                    xModifier = GetSelectionProperty_Long(sp_BorderWidth)
+                    yModifier = GetSelectionProperty_Long(sp_BorderWidth) * (yDiff / xDiff)
                 Else
-                    If yDiff = 0 Then yDiff = 0.00001
-                    xModifier = GetSelectionProperty_Long(SP_BORDER_WIDTH) * (xDiff / yDiff)
-                    yModifier = GetSelectionProperty_Long(SP_BORDER_WIDTH)
+                    If (yDiff = 0) Then yDiff = 0.00001
+                    xModifier = GetSelectionProperty_Long(sp_BorderWidth) * (xDiff / yDiff)
+                    yModifier = GetSelectionProperty_Long(sp_BorderWidth)
                 End If
                 
                 Dim newLineWidth As Double
-                newLineWidth = GetSelectionProperty_Long(SP_LINE_WIDTH) - GetSelectionProperty_Long(SP_BORDER_WIDTH)
+                newLineWidth = GetSelectionProperty_Long(sp_LineWidth) - GetSelectionProperty_Long(sp_BorderWidth)
                 
-                If newLineWidth > 0 Then
-                    If x1 = minX Then
-                        If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 + yModifier, x2 - xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
+                If (newLineWidth > 0) Then
+                    If (m_CornersUnlocked.Left = minX) Then
+                        If (m_CornersUnlocked.Top = minY) Then
+                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left + xModifier, m_CornersUnlocked.Top + yModifier, m_CornersUnlocked.Right - xModifier, m_CornersUnlocked.Bottom - yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
                         Else
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 + xModifier, y1 - yModifier, x2 - xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
+                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left + xModifier, m_CornersUnlocked.Top - yModifier, m_CornersUnlocked.Right - xModifier, m_CornersUnlocked.Bottom + yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
                         End If
                     Else
-                        If y1 = MinY Then
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 + yModifier, x2 + xModifier, y2 - yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
+                        If (m_CornersUnlocked.Top = minY) Then
+                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left - xModifier, m_CornersUnlocked.Top + yModifier, m_CornersUnlocked.Right + xModifier, m_CornersUnlocked.Bottom - yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
                         Else
-                            GDIPlusDrawLineToDC selMask.GetDIBDC, x1 - xModifier, y1 - yModifier, x2 + xModifier, y2 + yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GP_LC_Round
+                            GDIPlusDrawLineToDC m_SelMask.GetDIBDC, m_CornersUnlocked.Left - xModifier, m_CornersUnlocked.Top - yModifier, m_CornersUnlocked.Right + xModifier, m_CornersUnlocked.Bottom + yModifier, maskBackColor, 255, newLineWidth, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GP_LC_Round
                         End If
                     End If
                 End If
@@ -1729,43 +1810,43 @@ Private Sub CreateSelectionMask()
             End If
         
         'Polygon selections are easy - simply close the current point collection, then fill (or stroke) it via GDI+.
-        Case sPolygon
+        Case ss_Polygon
         
             'Interior/exterior lasso selections use identical rendering code.
-            If (GetSelectionProperty_Long(SP_AREA) = sInterior) Or (GetSelectionProperty_Long(SP_AREA) = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), True, GetSelectionProperty_Double(SP_POLYGON_CURVATURE), GP_FM_Winding
+            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                GDIPlusDrawFilledShapeToDC m_SelMask.GetDIBDC, m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), True, GetSelectionProperty_Float(sp_PolygonCurvature), GP_FM_Winding
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GetSelectionProperty_Long(SP_BORDER_WIDTH), GP_LC_Flat, True, GetSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                GDI_Plus.GDIPlusStrokePathToDC m_SelMask.GetDIBDC, m_NumOfPolygonPoints, VarPtr(m_PolygonPoints(0)), True, maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GetSelectionProperty_Long(sp_BorderWidth), GP_LC_Flat, True, GetSelectionProperty_Float(sp_PolygonCurvature)
             End If
         
         'Strangely enough, lasso selections are arguably the simplest selection type to render, as we simply close the lasso shape,
         ' then fill it as if it represents an arbitrary region.
-        Case sLasso
+        Case ss_Lasso
         
             'Interior/exterior lasso selections use identical rendering code.
-            If (GetSelectionProperty_Long(SP_AREA) = sInterior) Or (GetSelectionProperty_Long(SP_AREA) = sExterior) Then
-                GDIPlusDrawFilledShapeToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), True, GetSelectionProperty_Double(SP_SMOOTH_STROKE), GP_FM_Winding
+            If (GetSelectionProperty_Long(sp_Area) = sa_Interior) Or (GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                GDIPlusDrawFilledShapeToDC m_SelMask.GetDIBDC, m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), True, GetSelectionProperty_Float(sp_SmoothStroke), GP_FM_Winding
                 
             'Border selections stroke the path instead of filling it
             Else
-                GDI_Plus.GDIPlusStrokePathToDC selMask.GetDIBDC, m_numOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (GetSelectionProperty_Long(SP_SMOOTHING) > sNone), GetSelectionProperty_Long(SP_BORDER_WIDTH), GP_LC_Flat, True, GetSelectionProperty_Double(SP_SMOOTH_STROKE)
+                GDI_Plus.GDIPlusStrokePathToDC m_SelMask.GetDIBDC, m_NumOfLassoPoints, VarPtr(m_LassoPoints(0)), True, maskForeColor, 255, (GetSelectionProperty_Long(sp_Smoothing) > ss_None), GetSelectionProperty_Long(sp_BorderWidth), GP_LC_Flat, True, GetSelectionProperty_Float(sp_SmoothStroke)
             End If
         
         'Wand selections use a custom class to perform a flood fill
-        Case sWand
+        Case ss_Wand
         
             'Create a flood fill class to help us process the wand
             Dim cFloodFill As pdFloodFill
             Set cFloodFill = New pdFloodFill
             
             'Set all initial parameters
-            cFloodFill.SetAntialiasingMode (GetSelectionProperty_Long(SP_SMOOTHING) > sNone)
-            cFloodFill.SetInitialPoint x1, y1
-            cFloodFill.SetTolerance GetSelectionProperty_Double(SP_WAND_TOLERANCE)
-            cFloodFill.SetSearchMode GetSelectionProperty_Long(SP_WAND_SEARCH_MODE)
-            cFloodFill.SetCompareMode GetSelectionProperty_Long(SP_WAND_COMPARE_METHOD)
+            cFloodFill.SetAntialiasingMode CBool(GetSelectionProperty_Long(sp_Smoothing) > ss_None)
+            cFloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
+            cFloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
+            cFloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
+            cFloodFill.SetCompareMode GetSelectionProperty_Long(sp_WandCompareMethod)
             
             'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class
             Dim tmpLayer As pdLayer
@@ -1774,16 +1855,16 @@ Private Sub CreateSelectionMask()
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
             
-            If GetSelectionProperty_Long(SP_WAND_SAMPLE_MERGED) = 0 Then
-                containingPDImage.GetCompositedImage tmpDIB
+            If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
+                m_parentPDImage.GetCompositedImage tmpDIB
             Else
-                tmpLayer.CopyExistingLayer containingPDImage.GetActiveLayer
-                tmpLayer.ConvertToNullPaddedLayer containingPDImage.Width, containingPDImage.Height
+                tmpLayer.CopyExistingLayer m_parentPDImage.GetActiveLayer
+                tmpLayer.ConvertToNullPaddedLayer m_parentPDImage.Width, m_parentPDImage.Height
                 Set tmpDIB = tmpLayer.layerDIB
             End If
             
             'Apply the flood fill
-            cFloodFill.InitiateFloodFill tmpDIB, selMask
+            cFloodFill.InitiateFloodFill tmpDIB, m_SelMask
             
             'Erase our temporary objects
             Set tmpDIB = Nothing
@@ -1795,141 +1876,166 @@ Private Sub CreateSelectionMask()
     End Select
     
     'Mark the mask as ready for use
-    isMaskReady = True
+    m_IsMaskReady = True
     
     'We now need to establish a bounding region for the selection.  For certain types of selections, we can do this with existing knowledge
-    ' (e.g. the selLeft/Top/Width/Height values may reflect this).  For other types of selections, we need to find bounds via pixel searching.
+    ' (e.g. the m_CornersLocked RectF may reflect this).  For other types of selections, we need to find bounds via pixel searching.
     '
-    'Why not just use selLeft/Top/Width/Height?  The bounding rect may differ from those values if feathering is in use.
+    'Why not just use the m_CornersLocked RectF?  The bounding rect may differ from those values if feathering is in use.
     ' The viewport renderer uses the actual bounding rect to optimize its rendering of the selection effect, so it needs values that
     ' incorporate the full affected area, including any feathering or other modifications.
     
     'As a rule, exterior selections enclose the entire image boundary, so we sort by getSelectionProperty_Long(SP_AREA) first
-    Select Case GetSelectionProperty_Long(SP_AREA)
+    Select Case GetSelectionProperty_Long(sp_Area)
     
         'Exterior selections typically bound the entire image.  We could search for a smaller area, but at present the costs
         ' of this outweigh any potential benefits.
-        Case sExterior
-            boundLeft = 0
-            boundTop = 0
-            boundWidth = containingPDImage.Width
-            boundHeight = containingPDImage.Height
+        Case sa_Exterior
+            With m_Bounds
+                .Left = 0
+                .Top = 0
+                .Width = m_parentPDImage.Width
+                .Height = m_parentPDImage.Height
+            End With
         
         'Interior and bordered selections are handled more normally
         Case Else
         
             'Next, we sort bound calculations by selection shape
-            Select Case sShape
+            Select Case m_SelectionShape
             
                 'Rectangle, ellipse, and lasso selections are easy; bounds have already been set by the width/height values
-                Case sRectangle, sCircle
-                    If GetSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
-                        boundLeft = selLeft - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                        boundTop = selTop - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                        boundWidth = selWidth + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
-                        boundHeight = selHeight + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                Case ss_Rectangle, ss_Circle
+                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
+                        With m_Bounds
+                            .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
+                            .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
+                            .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                            .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                        End With
                     Else
-                        boundLeft = selLeft
-                        boundTop = selTop
-                        boundWidth = selWidth
-                        boundHeight = selHeight
+                        With m_Bounds
+                            .Left = m_CornersLocked.Left
+                            .Top = m_CornersLocked.Top
+                            .Width = m_CornersLocked.Width
+                            .Height = m_CornersLocked.Height
+                        End With
                     End If
                     
                 'Lines are a bit weirder.  Because the two points are not sorted by distance (e.g. x1 may be greater than x2), we have to check that now.
-                Case sLine
+                Case ss_Line
                 
-                    If GetSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
-                        boundLeft = minX - (GetSelectionProperty_Long(SP_LINE_WIDTH) / 2) - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                        boundTop = MinY - (GetSelectionProperty_Long(SP_LINE_WIDTH) / 2) - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                        boundWidth = (maxX - minX) + GetSelectionProperty_Long(SP_LINE_WIDTH) + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
-                        boundHeight = (MaxY - MinY) + GetSelectionProperty_Long(SP_LINE_WIDTH) + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
+                        With m_Bounds
+                            .Left = minX - (GetSelectionProperty_Long(sp_LineWidth) / 2) - GetSelectionProperty_Long(sp_FeatheringRadius)
+                            .Top = minY - (GetSelectionProperty_Long(sp_LineWidth) / 2) - GetSelectionProperty_Long(sp_FeatheringRadius)
+                            .Width = (maxX - minX) + GetSelectionProperty_Long(sp_LineWidth) + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                            .Height = (maxY - minY) + GetSelectionProperty_Long(sp_LineWidth) + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                        End With
                     Else
-                        boundLeft = minX - (GetSelectionProperty_Long(SP_LINE_WIDTH) / 2)
-                        boundTop = MinY - (GetSelectionProperty_Long(SP_LINE_WIDTH) / 2)
-                        boundWidth = (maxX - minX) + GetSelectionProperty_Long(SP_LINE_WIDTH)
-                        boundHeight = (MaxY - MinY) + GetSelectionProperty_Long(SP_LINE_WIDTH)
+                        With m_Bounds
+                            .Left = minX - (GetSelectionProperty_Long(sp_LineWidth) / 2)
+                            .Top = minY - (GetSelectionProperty_Long(sp_LineWidth) / 2)
+                            .Width = (maxX - minX) + GetSelectionProperty_Long(sp_LineWidth)
+                            .Height = (maxY - minY) + GetSelectionProperty_Long(sp_LineWidth)
+                        End With
                     End If
                 
                 'Polygon selections support curvature via cardinal spline.  If active, we must manually calculate bounds,
                 ' because the spline may extend beyond the current coordinate collection.
-                Case sPolygon
+                Case ss_Polygon
                 
                     'GDI+ can manually calculate bounds for us.  These bounds are not guaranteed to be the smallest possible area,
                     ' but they are guaranteed to enclose the entire path.
-                    FillBoundsUsingGDIPlus
+                    Me.FillBoundsUsingGDIPlus
                     
                     'If feathering is active, we must manually increase the bounding area to account for the feathering radius.
-                    If GetSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
+                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
                     
                         'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
                         ' factor the pen width into our boundary calculations.
-                        If GetSelectionProperty_Long(SP_AREA) = sBorder Then
-                            boundLeft = selLeft - GetSelectionProperty_Long(SP_FEATHERING_RADIUS) - (GetSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
-                            boundTop = selTop - GetSelectionProperty_Long(SP_FEATHERING_RADIUS) - (GetSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
-                            boundWidth = selWidth + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + GetSelectionProperty_Long(SP_BORDER_WIDTH)
-                            boundHeight = selHeight + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + GetSelectionProperty_Long(SP_BORDER_WIDTH)
+                        If (GetSelectionProperty_Long(sp_Area) = sa_Border) Then
+                            With m_Bounds
+                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
+                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
+                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
+                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
+                            End With
                         Else
-                            boundLeft = selLeft - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                            boundTop = selTop - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                            boundWidth = selWidth + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
-                            boundHeight = selHeight + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                            With m_Bounds
+                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
+                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
+                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                            End With
                         End If
                         
                     Else
-                        boundLeft = selLeft
-                        boundTop = selTop
-                        boundWidth = selWidth
-                        boundHeight = selHeight
+                        With m_Bounds
+                            .Left = m_CornersLocked.Left
+                            .Top = m_CornersLocked.Top
+                            .Width = m_CornersLocked.Width
+                            .Height = m_CornersLocked.Height
+                        End With
                     End If
                     
                     
                 'Lasso selections support artificial smoothing via cardinal spline.  If active, we must manually calculate bounds,
                 ' because the spline may extend beyond the drawn coordinates.
-                Case sLasso
+                Case ss_Lasso
                 
                     'GDI+ can manually calculate bounds for us.  These bounds are not guaranteed to be the smallest possible area,
                     ' but they are guaranteed to enclose the entire path.
-                    FillBoundsUsingGDIPlus
+                    Me.FillBoundsUsingGDIPlus
                     
                     'If feathering is active, we must manually increase the bounding area to account for the feathering radius.
-                    If GetSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
+                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
                     
                         'Because of the way GDI+ pens work, they will be centered on the stroked path.  This means that we must
                         ' factor the pen width into our boundary calculations.
-                        If GetSelectionProperty_Long(SP_AREA) = sBorder Then
-                            boundLeft = selLeft - GetSelectionProperty_Long(SP_FEATHERING_RADIUS) - (GetSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
-                            boundTop = selTop - GetSelectionProperty_Long(SP_FEATHERING_RADIUS) - (GetSelectionProperty_Long(SP_BORDER_WIDTH) \ 2)
-                            boundWidth = selWidth + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + GetSelectionProperty_Long(SP_BORDER_WIDTH)
-                            boundHeight = selHeight + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2 + GetSelectionProperty_Long(SP_BORDER_WIDTH)
+                        If GetSelectionProperty_Long(sp_Area) = sa_Border Then
+                            With m_Bounds
+                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
+                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius) - (GetSelectionProperty_Long(sp_BorderWidth) \ 2)
+                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
+                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2 + GetSelectionProperty_Long(sp_BorderWidth)
+                            End With
                         Else
-                            boundLeft = selLeft - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                            boundTop = selTop - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                            boundWidth = selWidth + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
-                            boundHeight = selHeight + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                            With m_Bounds
+                                .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
+                                .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
+                                .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                                .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                            End With
                         End If
                         
                     Else
-                        boundLeft = selLeft
-                        boundTop = selTop
-                        boundWidth = selWidth
-                        boundHeight = selHeight
+                        With m_Bounds
+                            .Left = m_CornersLocked.Left
+                            .Top = m_CornersLocked.Top
+                            .Width = m_CornersLocked.Width
+                            .Height = m_CornersLocked.Height
+                        End With
                     End If
                 
                 'Magic wand requires manual bounds-finding
-                Case sWand
-                    FindNewBoundsManually True
+                Case ss_Wand
+                    
+                    Me.FindNewBoundsManually True
                     
                     'If feathering is active, increase bounds accordingly
-                    If GetSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered Then
-                        boundLeft = selLeft - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                        boundTop = selTop - GetSelectionProperty_Long(SP_FEATHERING_RADIUS)
-                        boundWidth = selWidth + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
-                        boundHeight = selHeight + GetSelectionProperty_Long(SP_FEATHERING_RADIUS) * 2
+                    If (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) Then
+                        With m_Bounds
+                            .Left = m_CornersLocked.Left - GetSelectionProperty_Long(sp_FeatheringRadius)
+                            .Top = m_CornersLocked.Top - GetSelectionProperty_Long(sp_FeatheringRadius)
+                            .Width = m_CornersLocked.Width + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                            .Height = m_CornersLocked.Height + GetSelectionProperty_Long(sp_FeatheringRadius) * 2
+                        End With
                     End If
                 
                 'Other shapes currently rely on manual bounds-checking, using the rendered mask as the guide
                 Case Else
-                    FindNewBoundsManually
+                    Me.FindNewBoundsManually
                     
             End Select
                 
@@ -1942,7 +2048,7 @@ Private Sub CreateSelectionMask()
     
     'Finally, if the selection is locked and feathering has been requested, apply it now.
     ' (We only apply feathering when locked-in, as the performance penalty is severe.)
-    If lockedIn And (GetSelectionProperty_Long(SP_SMOOTHING) = sFullyFeathered) And (GetSelectionProperty_Long(SP_FEATHERING_RADIUS) > 0) Then ApplyFeatheringToMask
+    If m_IsLocked And (GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) And (GetSelectionProperty_Long(sp_FeatheringRadius) > 0) Then ApplyFeatheringToMask
     
 End Sub
 
@@ -1950,32 +2056,35 @@ End Sub
 ' (Because bounds have already been precisely calculated, this function's behavior does not need to differ by selection type.)
 Private Sub FixBoundsToImageSize()
     
-    If boundLeft < 0 Then
-        boundWidth = boundWidth + boundLeft
-        boundLeft = 0
-    End If
-    
-    If boundTop < 0 Then
-        boundHeight = boundHeight + boundTop
-        boundTop = 0
-    End If
-    
-    If boundLeft + boundWidth > containingPDImage.Width Then boundWidth = containingPDImage.Width - boundLeft
-    If boundTop + boundHeight > containingPDImage.Height Then boundHeight = containingPDImage.Height - boundTop
+    With m_Bounds
+        
+        If (.Left < 0) Then
+            .Width = .Width + .Left
+            .Left = 0
+        End If
+        
+        If (.Top < 0) Then
+            .Height = .Height + .Top
+            .Top = 0
+        End If
+        
+        If (.Left + .Width > m_parentPDImage.Width) Then .Width = m_parentPDImage.Width - .Left
+        If (.Top + .Height > m_parentPDImage.Height) Then .Height = m_parentPDImage.Height - .Top
+        
+    End With
     
 End Sub
 
 'Apply feathering to the current selection mask.  If the user is on Win 7 or later, we may choose to do this via GDI+.
 Private Sub ApplyFeatheringToMask()
-    QuickBlurDIB selMask, GetSelectionProperty_Long(SP_FEATHERING_RADIUS), False
+    QuickBlurDIB m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), False
 End Sub
 
 'While a selection tool is active, we draw transform nodes around it.  The viewport renderer invokes this function as necessary.
-' TODO: replace the radius and alpha values with a central interface node function (that also accounts for high-DPI considerations)
-Public Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long)
+Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
-    If rejectRefreshRequests Then Exit Sub
+    If m_RejectRefreshRequests Then Exit Sub
     
     'Before drawing the nodes, we need to convert the selection's coordinates from "image coordinates" to "viewport coordinates".
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
@@ -1984,18 +2093,18 @@ Public Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
     
-    If (sShape = sRectangle) Or (sShape = sCircle) Then
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft, selTop, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
+    If (m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle) Then
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersLocked.Left, m_CornersLocked.Top, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersLocked.Left + m_CornersLocked.Width, m_CornersLocked.Top + m_CornersLocked.Height, dstRight, dstBottom
     Else
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x1, y1, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), x2, y2, dstRight, dstBottom
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersUnlocked.Left, m_CornersUnlocked.Top, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
     End If
     
     
     'If this selection is in vector format, we have the option of drawing transform circles at appropriate locations
     ' for the selection's shape.
-    If (sShape <> sRaster) Then
+    If (m_SelectionShape <> ss_Raster) Then
         
         Dim circRadius As Long
         circRadius = 7
@@ -2005,9 +2114,9 @@ Public Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
         
         Dim i As Long
         
-        Select Case sShape
+        Select Case m_SelectionShape
         
-            Case sRectangle, sCircle
+            Case ss_Rectangle, ss_Circle
         
                 'Draw corner circles first
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
@@ -2025,20 +2134,20 @@ Public Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, midVertical, circRadius, circAlpha
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, midHorizontal, dstBottom, circRadius, circAlpha
                 
-            Case sLine
+            Case ss_Line
             
                 'Lines only need transform nodes at the end points of the line
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstBottom, circRadius, circAlpha
             
-            Case sPolygon
+            Case ss_Polygon
             
-                For i = 0 To m_numOfPolygonPoints - 1
+                For i = 0 To m_NumOfPolygonPoints - 1
                     Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_PolygonPoints(i).x, m_PolygonPoints(i).y, dstLeft, dstTop
                     GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
                 Next i
                 
-            Case sWand
+            Case ss_Wand
                 GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
                 
             'Other selection types will require more involved transform code
@@ -2056,13 +2165,13 @@ End Sub
 ' It only requires that valid selection boundaries be specified in advance, which it uses to accelerate the render process.
 ' (Also note that the renderColor default constant evaluates to RGB(112, 183, 255), but VB doesn't let us use RGB inside a function dec.)
 ' TODO: allow light box translucency to be set by the user
-Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As SelectionRender, Optional ByVal renderColor As Long = 16758640)
+Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
-    If rejectRefreshRequests Then Exit Sub
+    If m_RejectRefreshRequests Then Exit Sub
 
     'Is the selection mask ready to be used?  If not, prepare it now.
-    If (Not isMaskReady) Then CreateSelectionMask
+    If (Not m_IsMaskReady) Then CreateSelectionMask
     
     'A few different criteria can cause us to abandon this function in favor of renderOutlineOnly (which, per its name,
     ' renders the active selection as just an outline):
@@ -2071,9 +2180,9 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
     '
     'If any of the above are true, we will reroute control to renderOutlineOnly
-    If ((renderType = SELECTION_RENDER_OUTLINE) And (sShape <> sWand) And (sShape <> sRaster)) Or _
-        ((sShape = sLasso) And (Not m_LassoClosed)) Or _
-        ((sShape = sPolygon) And (Not m_PolygonClosed)) Then
+    If ((renderType = PDSR_Outline) And (m_SelectionShape <> ss_Wand) And (m_SelectionShape <> ss_Raster)) Or _
+        ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)) Or _
+        ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed)) Then
         
         RenderOutlineOnly dstDIB, srcImage, dstCanvas
         Exit Sub
@@ -2081,7 +2190,7 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     End If
     
     'Wand and raster selections cannot be rendered in outline mode; if this happens, forcibly switch the mode to HIGHLIGHT.
-    If (renderType = SELECTION_RENDER_OUTLINE) And ((sShape = sWand) Or (sShape = sRaster)) Then renderType = SELECTION_RENDER_HIGHLIGHT
+    If (renderType = PDSR_Outline) And ((m_SelectionShape = ss_Wand) Or (m_SelectionShape = ss_Raster)) Then renderType = PDSR_Highlight
     
     
     'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
@@ -2090,21 +2199,21 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     '   in effect.)
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
-    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft, boundTop, dstLeft, dstTop
-    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, boundLeft + boundWidth, boundTop + boundHeight, dstRight, dstBottom
+    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_Bounds.Left, m_Bounds.Top, dstLeft, dstTop
+    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_Bounds.Left + m_Bounds.Width, m_Bounds.Top + m_Bounds.Height, dstRight, dstBottom
     
     'Several different selection rendering methods use the same variables.  I've declared the common ones here.
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
     Dim x As Long, y As Long
-    Dim QuickVal As Long
+    Dim quickVal As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
     
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = containingPDImage.Width - 1
-    srcHeight = containingPDImage.Height - 1
+    srcWidth = m_parentPDImage.Width - 1
+    srcHeight = m_parentPDImage.Height - 1
     
     'Just to be safe, declare some bounding variables in advance as well.  PhotoDemon now allows selections to lie off the image, so
     ' we must make sure we don't attempt to render selection pixels in any out-of-bound regions.
@@ -2144,14 +2253,14 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
     'Next, acquire a pointer to the selection mask's pixel bits
-    PrepDIBSafeArray selMask, selMaskSA
+    PrepDIBSafeArray m_SelMask, selMaskSA
     CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
     
     'Based on the selection type, draw a corresponding selection visualization.
     Select Case renderType
     
         'Lightbox style
-        Case SELECTION_RENDER_LIGHTBOX
+        Case PDSR_Lightbox
             
             'Use a look-up table to dim the non-active parts of the image
             Dim hData(0 To 255) As Byte
@@ -2162,28 +2271,28 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
                                     
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
-                QuickVal = x * xPxSizeInBytes
+                quickVal = x * xPxSizeInBytes
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
                 
                 'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
                 If tmpSelHolder = 0 Then
-                    iData(QuickVal + 2, y) = hData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = hData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = hData(iData(QuickVal, y))
+                    iData(quickVal + 2, y) = hData(iData(quickVal + 2, y))
+                    iData(quickVal + 1, y) = hData(iData(quickVal + 1, y))
+                    iData(quickVal, y) = hData(iData(quickVal, y))
                 ElseIf tmpSelHolder < 255 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(QuickVal + 2, y) = BlendColors(hData(iData(QuickVal + 2, y)), iData(QuickVal + 2, y), tmpSelDivider)
-                    iData(QuickVal + 1, y) = BlendColors(hData(iData(QuickVal + 1, y)), iData(QuickVal + 1, y), tmpSelDivider)
-                    iData(QuickVal, y) = BlendColors(hData(iData(QuickVal, y)), iData(QuickVal, y), tmpSelDivider)
+                    iData(quickVal + 2, y) = BlendColors(hData(iData(quickVal + 2, y)), iData(quickVal + 2, y), tmpSelDivider)
+                    iData(quickVal + 1, y) = BlendColors(hData(iData(quickVal + 1, y)), iData(quickVal + 1, y), tmpSelDivider)
+                    iData(quickVal, y) = BlendColors(hData(iData(quickVal, y)), iData(quickVal, y), tmpSelDivider)
                 End If
                 
             Next y
             Next x
             
         'Highlight style (Paint.NET)
-        Case SELECTION_RENDER_HIGHLIGHT
+        Case PDSR_Highlight
         
             'Extract RGB values from the passed color
             Dim newR As Long, newG As Long, newB As Long
@@ -2202,23 +2311,23 @@ Public Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
                         
             'Highlight the selected parts of the image
             For x = imgLeft To rightBound
-                QuickVal = x * xPxSizeInBytes
+                quickVal = x * xPxSizeInBytes
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
                 
                 'If this pixels is over an active pixel in the selection mask, mark it with the selected color
                 If tmpSelHolder = 255 Then
-                    iData(QuickVal + 2, y) = rData(iData(QuickVal + 2, y))
-                    iData(QuickVal + 1, y) = gData(iData(QuickVal + 1, y))
-                    iData(QuickVal, y) = bData(iData(QuickVal, y))
+                    iData(quickVal + 2, y) = rData(iData(quickVal + 2, y))
+                    iData(quickVal + 1, y) = gData(iData(quickVal + 1, y))
+                    iData(quickVal, y) = bData(iData(quickVal, y))
                     
                 'Partially selected pixels are rendered with antialiasing
                 ElseIf tmpSelHolder > 0 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(QuickVal + 2, y) = BlendColors(iData(QuickVal + 2, y), rData(iData(QuickVal + 2, y)), tmpSelDivider)
-                    iData(QuickVal + 1, y) = BlendColors(iData(QuickVal + 1, y), gData(iData(QuickVal + 1, y)), tmpSelDivider)
-                    iData(QuickVal, y) = BlendColors(iData(QuickVal, y), bData(iData(QuickVal, y)), tmpSelDivider)
+                    iData(quickVal + 2, y) = BlendColors(iData(quickVal + 2, y), rData(iData(quickVal + 2, y)), tmpSelDivider)
+                    iData(quickVal + 1, y) = BlendColors(iData(quickVal + 1, y), gData(iData(quickVal + 1, y)), tmpSelDivider)
+                    iData(quickVal, y) = BlendColors(iData(quickVal, y), bData(iData(quickVal, y)), tmpSelDivider)
                 End If
                 
             Next y
@@ -2249,55 +2358,55 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
     
-    If (sShape = sRectangle) Or (sShape = sCircle) Then
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft, selTop, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, selLeft + selWidth, selTop + selHeight, dstRight, dstBottom
-    ElseIf (sShape = sLine) Then
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x1, y1, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, x2, y2, dstRight, dstBottom
+    If (m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle) Then
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersLocked.Left, m_CornersLocked.Top, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersLocked.Left + m_CornersLocked.Width, m_CornersLocked.Top + m_CornersLocked.Height, dstRight, dstBottom
+    ElseIf (m_SelectionShape = ss_Line) Then
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersUnlocked.Left, m_CornersUnlocked.Top, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
     End If
     
     'New in version 6.6 is an awesome new path class, which makes the rendering steps much easier than they have historically been.
     Dim pdPath As pd2DPath
     Set pdPath = New pd2DPath
     
-    Select Case sShape
+    Select Case m_SelectionShape
     
-        Case sRectangle
+        Case ss_Rectangle
             
             'Add the selection rectangle to the path
-            If GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) > 0 Then
-                pdPath.AddRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, GetSelectionProperty_Long(SP_ROUNDED_CORNER_RADIUS) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue)
+            If (GetSelectionProperty_Long(sp_RoundedCornerRadius) > 0) Then
+                pdPath.AddRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, GetSelectionProperty_Long(sp_RoundedCornerRadius) * g_Zoom.GetZoomValue(m_parentPDImage.currentZoomValue)
             Else
                 pdPath.AddRectangle_Absolute dstLeft, dstTop, dstRight, dstBottom
             End If
             
             'If the selection is bordered, widen it now
-            'If (getSelectionProperty_Long(SP_AREA) = sBorder) And (Not getSelectionProperty_Boolean(SP_BORDER_WIDTH_IGNORE)) Then
-            '    pdPath.ConvertPath_PenTrace getSelectionProperty_Long(SP_BORDER_WIDTH)
+            'If (getSelectionProperty_Long(SP_AREA) = sa_Border) And (Not getSelectionProperty_Boolean(sp_BorderWidth_IGNORE)) Then
+            '    pdPath.ConvertPath_PenTrace getSelectionProperty_Long(sp_BorderWidth)
             'End If
                         
-        Case sCircle
+        Case ss_Circle
         
             'Add the ellipse to the path
             pdPath.AddEllipse_Absolute dstLeft, dstTop, dstRight, dstBottom
                     
-        Case sLine
+        Case ss_Line
         
             'Add the line to the path
             pdPath.AddLine dstLeft, dstTop, dstRight, dstBottom
             
             'Widen the path to encompass only the border of the line
             Dim penPathBorder As pd2DPen
-            Drawing2D.QuickCreateSolidPen penPathBorder, GetSelectionProperty_Long(SP_LINE_WIDTH) * g_Zoom.GetZoomValue(containingPDImage.currentZoomValue), , , P2_LJ_Round, P2_LC_Round
+            Drawing2D.QuickCreateSolidPen penPathBorder, GetSelectionProperty_Long(sp_LineWidth) * g_Zoom.GetZoomValue(m_parentPDImage.currentZoomValue), , , P2_LJ_Round, P2_LC_Round
             pdPath.ConvertPath_PenTrace penPathBorder
             
         'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used and the number of points
-        Case sPolygon, sLasso
+        Case ss_Polygon, ss_Lasso
         
-            If sShape = sPolygon Then numOfRenderPoints = m_numOfPolygonPoints Else numOfRenderPoints = m_numOfLassoPoints
+            If (m_SelectionShape = ss_Polygon) Then numOfRenderPoints = m_NumOfPolygonPoints Else numOfRenderPoints = m_NumOfLassoPoints
             
-            If numOfRenderPoints > 0 Then
+            If (numOfRenderPoints > 0) Then
             
                 'Convert the lasso or polygon array to viewport coordinate space
                 ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As POINTFLOAT
@@ -2307,7 +2416,7 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
                 
                 For i = 0 To numOfRenderPoints - 1
                     
-                    If (sShape = sPolygon) Then
+                    If (m_SelectionShape = ss_Polygon) Then
                         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
                     Else
                         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
@@ -2318,10 +2427,10 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
                 Next i
                 
                 'Add the converted shape to the path object
-                If sShape = sPolygon Then
-                    pdPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, GetSelectionProperty_Double(SP_POLYGON_CURVATURE)
+                If (m_SelectionShape = ss_Polygon) Then
+                    pdPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, GetSelectionProperty_Float(sp_PolygonCurvature)
                 Else
-                    pdPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Double(SP_SMOOTH_STROKE)
+                    pdPath.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
                 End If
                 
             End If
@@ -2341,26 +2450,26 @@ End Sub
 
 Private Sub Class_Initialize()
     
-    lockedIn = False
+    m_IsLocked = False
     
     'Initialize the selection mask for this object and mark it as "not ready" (because no mask has been drawn yet)
-    Set selMask = New pdDIB
-    isMaskReady = False
+    Set m_SelMask = New pdDIB
+    m_IsMaskReady = False
     
     'Note that a mask has never been created for this selection
-    maskHasBeenCreated = False
+    m_MaskHasBeenCreated = False
     
     'Mark it as not transformable... yet
-    isTransformable = False
+    m_IsTransformable = False
     
     'Prepare the property dictionary
     Set m_PropertyDict = New pdDictionary
     
     'No lasso or polygon points yet
-    m_numOfLassoPoints = 0
+    m_NumOfLassoPoints = 0
     ReDim m_LassoPoints(0) As POINTFLOAT
     
-    m_numOfPolygonPoints = 0
+    m_NumOfPolygonPoints = 0
     ReDim m_PolygonPoints(0) As POINTFLOAT
     
     'Polygon selections are (obviously) not yet closed
@@ -2370,9 +2479,9 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    If Not (selMask Is Nothing) Then
-        selMask.EraseDIB
-        Set selMask = Nothing
+    If (Not m_SelMask Is Nothing) Then
+        m_SelMask.EraseDIB
+        Set m_SelMask = Nothing
     End If
 
 End Sub
@@ -2390,306 +2499,199 @@ Private Sub PrepDIBSafeArray(ByRef srcDIB As pdDIB, ByRef tmpSA As SAFEARRAY2D)
     End With
 End Sub
 
-'Read all relevant information about a selection from file, and populate this selection with the data.
-' (NOTE: this function will not generate a selection mask or render the selection on-screen - it will only apply the stored values to
-'        the relevant variables!  The calling function must explicitly request a redraw if desired.)
-Public Function ReadSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
+'Create a selection from selection data previously saved to file
+' (NOTE: this function will not generate a selection mask or render the selection on-screen.  The calling function must explicitly
+'        request a render if they want one.)
+Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
     
-    'All file interactions are handled via pdFSO
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
+    'Like all other PD-specific files, selection files are just pdPackage instances
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    If cPackage.ReadPackageFromFile(srcFilename, SELECTION_IDENTIFIER, PD_SM_FileBacked) Then
     
-    If Not cFile.FileExist(srcFilename) Then
-        Message "Requested selection file could not be located.  Selection load abandoned."
-        ReadSelectionFromFile = False
-        Exit Function
-    End If
-    
-    'Note that our mask is not yet ready
-    isMaskReady = False
-    
-    Dim dibLoadedSuccessfully As Boolean
-    dibLoadedSuccessfully = False
-    
-    'Open the file
-    Dim hFile As Long
-    If cFile.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
-    
-        'Make sure this is actually a PhotoDemon selection file
-        Dim selectionIDCheck As Long
-        cFile.ReadDataFromFile hFile, VarPtr(selectionIDCheck), 4&
+        'Reset some of our internal trackers prior to reading the selection data
         
-        If (selectionIDCheck <> SELECTION_IDENTIFIER) Then
+        'First, note that our mask is not yet ready.  (Masks are generated on-demand, unless this is a raster selection,
+        ' in which case we'll load the actual mask straight from the file.)
+        m_IsMaskReady = False
+        
+        Dim dibLoadedSuccessfully As Boolean
+        dibLoadedSuccessfully = False
+        
+        'Retrieve the file-specific header from the package.  This contains details like selection format version, which we need
+        ' before we proceed with full parsing.
+        Dim minorHeader As String
+        If cPackage.GetNodeDataByName_String("SelHeader", True, minorHeader) Then
             
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdSelection.readSelectionFromFile was passed an invalid file: " & srcFilename
-            #End If
+            'Copy the string into an XML parser
+            Dim headerXML As pdParamXML
+            Set headerXML = New pdParamXML
+            headerXML.SetParamString minorHeader
             
-            cFile.CloseFileHandle hFile
-            ReadSelectionFromFile = False
+            'Verify selection version.  (At present, there's only one possible version.)
+            If (headerXML.GetLong("SelVersion", 0) = SELECTION_FILE_VERSION_2017) Then
             
-            Exit Function
+                'This is enough to validate the file.  Load the full selection header and initialize this object accordingly.
+                Dim majorHeader As String
+                If cPackage.GetNodeDataByName_String("SelHeader", False, majorHeader) Then
+                    
+                    Me.InitFromXML majorHeader
+                    
+                    'Use the minor header to populate a few extra settings
+                    m_IsLocked = headerXML.GetBool("SelIsLocked", False)
+                    m_IsTransformable = headerXML.GetBool("SelIsTransformable", True)
+                    
+                    'Raster selections (e.g. selections that can't be described with vectors) store a full copy of their selection mask
+                    ' in the selection file.  Load it conditionally.
+                    If (m_SelectionShape = ss_Raster) Then
+                        
+                        'Retrieve the original parent image's width and height.  If the original containing image had the same dimensions
+                        ' as our current image (e.g. during Undo/Redo operations), we can create the selection mask directly from the
+                        ' file data.  Otherwise, we have no choice but to perform a resize so that the old mask matches the new dimensions.
+                        Dim origWidth As Long, origHeight As Long
+                        origWidth = headerXML.GetLong("SelMaskWidth", m_parentPDImage.Width)
+                        origHeight = headerXML.GetLong("SelMaskHeight", m_parentPDImage.Height)
+                        
+                        Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                        
+                        'Dimensions match!  Load the source data directly into our selection mask
+                        If (origWidth = m_parentPDImage.Width) And (origHeight = m_parentPDImage.Height) Then
+                            
+                            With headerXML
+                                m_SelMask.CreateBlank origWidth, origHeight, .GetLong("SelMaskDepth", 32), 0, 0
+                            End With
+                            
+                            m_SelMask.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                            m_SelMask.SetInitialAlphaPremultiplicationState headerXML.GetBool("SelMaskAlphaPremultiplied", True)
+                            cPackage.GetNodeDataByName_UnsafeDstPointer "SelMask", False, tmpDIBPointer
+                        
+                        'Dimensions do not match.  Use an intermediary DIB to cache the original raster data, then resize it to match
+                        ' our current image.
+                        Else
+                        
+                            Dim tmpDIB As pdDIB
+                            Set tmpDIB = New pdDIB
+                            
+                            With headerXML
+                                tmpDIB.CreateBlank origWidth, origHeight, .GetLong("SelMaskDepth", 32), 0, 0
+                            End With
+                            
+                            tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+                            tmpDIB.SetInitialAlphaPremultiplicationState headerXML.GetBool("SelMaskAlphaPremultiplied", True)
+                            If cPackage.GetNodeDataByName_UnsafeDstPointer("SelMask", False, tmpDIBPointer) Then
+                                m_SelMask.CreateFromExistingDIB tmpDIB, m_parentPDImage.Width, m_parentPDImage.Height, True
+                            End If
+                            
+                        End If
+                        
+                        'Note that the mask has been created; this is crucial for successful raster loads
+                        m_MaskHasBeenCreated = True
+                        m_IsMaskReady = True
+                        
+                    End If
+                    
+                    'If this selection isn't a vector, we need to manually find its boundaries now
+                    If ((m_SelectionShape = ss_Raster) And (Not m_SelMask Is Nothing)) Then Me.FindNewBoundsManually
+                    
+                    'Polygon selections loaded from file are assumed to be closed
+                    m_PolygonClosed = True
+                    
+                    'If this selection was locked in at the time of its save, lock this selection in as well
+                    If (Not ignoreLockStatus) Then
+                        If m_IsLocked Then
+                            Me.LockIn
+                            m_parentPDImage.selectionActive = True
+                        Else
+                            Me.LockRelease
+                            m_parentPDImage.selectionActive = False
+                        End If
+                    End If
+                    
+                    ReadSelectionFromFile = True
+                    
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
+                    #End If
+                    ReadSelectionFromFile = False
+                End If
             
-        End If
-        
-        'Check to make sure this selection file verison is supported (not implemented right now, because there's only one selection version!)
-        Dim selectionVersionCheck As Long
-        cFile.ReadDataFromFile hFile, VarPtr(selectionVersionCheck), 4&
-        
-        'Size of the original image associated with this selection.  These values can be used to resize the selection mask as necessary if
-        ' the selection is saved in raster format, and its original image was a different size from this one.
-        Dim origWidth As Long, origHeight As Long
-        cFile.ReadDataFromFile hFile, VarPtr(origWidth), 4&
-        cFile.ReadDataFromFile hFile, VarPtr(origHeight), 4&
-        
-        'Retrieve the selection parameters into a string.
-        ' (TODO: make this Unicode-compatible, but note that we have to change the file version number to support this.)
-        Dim paramString As String, lenParamString As Long
-        cFile.ReadDataFromFile hFile, VarPtr(lenParamString), 4&
-        
-        Dim tmpParamBuffer() As Byte
-        ReDim tmpParamBuffer(0 To lenParamString - 1) As Byte
-        cFile.ReadDataFromFile hFile, VarPtr(tmpParamBuffer(0)), lenParamString
-        paramString = StrConv(tmpParamBuffer, vbUnicode)
-        
-        'Parse the parameter string into its individual components, and use those to initialize the rest of the selection
-        Me.InitFromParamString paramString
-        
-        'Was the selection locked in?  What about transformable?
-        cFile.ReadDataFromFile hFile, VarPtr(lockedIn), 2&
-        cFile.ReadDataFromFile hFile, VarPtr(isTransformable), 2&
-        
-        'Raster selections (e.g. selections that can't be described with vectors) store a full copy of their selection mask
-        ' in the selection file.  Load it conditionally.
-        If (sShape = sRaster) Then
-            
-            'If the original containing image had the same dimensions as the current image (e.g. during Undo/Redo operations),
-            ' we can create the selection mask directly from the file data.  Otherwise, we have no choice but to perform a
-            ' resize so that the old mask matches the new dimensions.
-            If (origWidth = containingPDImage.Width) And (origHeight = containingPDImage.Height) Then
-                dibLoadedSuccessfully = selMask.CreateFromFile(vbNullString, True, hFile)
             Else
-            
-                Dim tmpDIB As pdDIB
-                Set tmpDIB = New pdDIB
-                
-                dibLoadedSuccessfully = tmpDIB.CreateFromFile(vbNullString, True, hFile)
-                
-                'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
-                ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
-                If dibLoadedSuccessfully Then selMask.CreateFromExistingDIB tmpDIB, containingPDImage.Width, containingPDImage.Height, True
-            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header."
+                #End If
+                ReadSelectionFromFile = False
             End If
             
-            maskHasBeenCreated = True
-            isMaskReady = True
-            
-        End If
-        
-        'We have everything we need from the file!
-        cFile.CloseFileHandle hFile
-        
-    End If
-    
-    'MsgBox "read from file: " & vbCrLf & srcFilename & vbCrLf & lockedIn & vbCrLf & paramString
-    
-    'If this selection isn't a vector, we need to manually find its boundaries now
-    If (sShape = sRaster) And dibLoadedSuccessfully Then FindNewBoundsManually
-    
-    'Polygon selections loaded from file are assumed to be closed
-    m_PolygonClosed = True
-    
-    'If this selection was locked in at the time of its save, lock this selection in as well
-    If Not ignoreLockStatus Then
-        If lockedIn Then
-            LockIn
-            containingPDImage.selectionActive = True
         Else
-            LockRelease
-            containingPDImage.selectionActive = False
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdSelection failed to load a valid header from this saved selection file."
+            #End If
+            ReadSelectionFromFile = False
         End If
+        
     End If
-
-    ReadSelectionFromFile = True
-    
+        
 End Function
 
-'Write all relevant information about this selection out to a file.
-Public Function WriteSelectionToFile(ByVal dstFilename As String) As Boolean
-
-    'We use pdFSO for all file interactions, so Unicode paths are correctly supported
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-        
-    'Delete any existing file (overwrite)
-    If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
+'As of v7.0, pdPackager is used to read/write selection files.  Note that this function will blindly overwrite the destination
+' file if it exists; it's up to the caller to plan for this.
+Friend Function WriteSelectionToFile(ByVal dstFilename As String) As Boolean
     
-    'Open the target file
-    Dim hFile As Long
-    If cFile.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess) Then
+    Dim cPackage As pdPackager
+    Set cPackage = New pdPackager
+    cPackage.PrepareNewPackage , SELECTION_IDENTIFIER, , PD_SM_MemoryBacked
     
-        'Write identifiers first
-        Dim tmpLong As Long
+    'We now prepare two different XML packets for the packager.  One is the default vector selection descriptor PD uses internally;
+    ' the other is a set of file-specific descriptors that make it easier to recreate this selection at load-time.
+    Dim nodeIndex As Long
+    nodeIndex = cPackage.AddNode("SelHeader")
+    
+    'Write the default vector selection descriptor first
+    cPackage.AddNodeDataFromString nodeIndex, False, Me.GetSelectionAsXML(), PD_CE_Zstd, Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+    
+    'Prep a secondary descriptor
+    Dim maskWillBeEmbedded As Boolean
+    maskWillBeEmbedded = ((m_SelectionShape = ss_Raster) And m_MaskHasBeenCreated)
+    Dim tmpXML As pdParamXML
+    Set tmpXML = New pdParamXML
+    With tmpXML
+        .AddParam "SelVersion", SELECTION_FILE_VERSION_2017
+        .AddParam "SelParentImageWidth", m_parentPDImage.Width
+        .AddParam "SelParentImageHeight", m_parentPDImage.Height
+        .AddParam "SelIsLocked", Me.IsLockedIn
+        .AddParam "SelIsTransformable", m_IsTransformable
+        .AddParam "SelMaskEmbedded", maskWillBeEmbedded
         
-        tmpLong = SELECTION_IDENTIFIER
-        cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
+        'If we're going to embed a mask, we also need to store some mask-specific data
+        If maskWillBeEmbedded Then
+            .AddParam "SelMaskDepth", m_SelMask.GetDIBColorDepth
+            .AddParam "SelMaskWidth", m_SelMask.GetDIBWidth
+            .AddParam "SelMaskHeight", m_SelMask.GetDIBHeight
+            .AddParam "SelMaskStride", m_SelMask.GetDIBStride
+            .AddParam "SelMaskAlphaPremultiplied", m_SelMask.GetAlphaPremultiplication
+        End If
         
-        tmpLong = SELECTION_FILE_VERSION_2014
-        cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
-        
-        'Write the size of the attached DIB.  This is used to resize the selection mask (as necessary) if the selection is saved
-        ' in raster format, and its original image was a different size from this one.
-        cFile.WriteDataToFile hFile, VarPtr(containingPDImage.Width), 4&
-        cFile.WriteDataToFile hFile, VarPtr(containingPDImage.Height), 4&
-        
-        'Sometimes we write the selection's current state to file.  Other times (Undo/Redo, specifically) we write out the
-        ' selection's *previous* state.
-        Dim writeSelectionState As Boolean, writeTransformable As Boolean
-        Dim writeParamString As String
-        
-        writeSelectionState = lockedIn
-        writeTransformable = isTransformable
-        writeParamString = GetSelectionParamString()
-        
-        tmpLong = CLng(Len(writeParamString))
-        cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
-        
-        'For historic reasons, we write the param string as an ASCII string.  I would like to change this, but it requires a new
-        ' selection file version - TODO!
-        Dim tmpBytes() As Byte
-        tmpBytes = StrConv(writeParamString, vbFromUnicode)
-        cFile.WriteDataToFile hFile, VarPtr(tmpBytes(0)), tmpLong
-        
-        'Write out the selection's current state (locked or not), as well as its transformability.  At load-time, we'll use these
-        ' to determine if we need to load raster data or if we can recreate the mask using just the param string.
-        cFile.WriteDataToFile hFile, VarPtr(writeSelectionState), 2&
-        cFile.WriteDataToFile hFile, VarPtr(writeTransformable), 2&
-        
-        'If this selection is *not* transformable, we must also embed the full selection mask.
-        If (sShape = sRaster) And maskHasBeenCreated Then selMask.WriteToFile vbNullString, PD_CE_Lz4, True, hFile
-        
-        'All done!
-        cFile.CloseFileHandle hFile
-        
-        WriteSelectionToFile = True
-            
-    Else
-        WriteSelectionToFile = False
+    End With
+    
+    'Add the secondary descriptor to the same node (in the header chunk)
+    cPackage.AddNodeDataFromString nodeIndex, True, tmpXML.GetParamString(), PD_CE_Zstd, Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+    
+    'Finally, if this is a raster-type selection, add the full mask as well
+    If maskWillBeEmbedded Then
+        Dim maskDIBPointer As Long, maskDIBLength As Long
+        m_SelMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
+        nodeIndex = cPackage.AddNode("SelMask")
+        cPackage.AddNodeDataFromPointer nodeIndex, False, maskDIBPointer, maskDIBLength, PD_CE_Zstd, Compression.GetDefaultCompressionLevel(PD_CE_Zstd)
     End If
     
-End Function
-
-'By default, a pdSelection's parameter string contains absolute coordinates (e.g. "100, 100" for x1, y1).  When saving to
-' file or recording as part of a macro, we want to use relative formats (e.g. "0.5, 0.5" for a coordinate at the center of
-' an image).  This allows selections to be correctly applied to images of any size.  Thus, when writing to or reading from
-' a selection file, or when creating a paramstring for macro purposes, this function will be called; it automatically handles
-' the translation of all coordinate values between absolute and relative geometries.
-Private Function TranslateParamStringToRelativeFormat(ByVal paramString As String, ByVal toRelativeFormat As Boolean) As String
-
-    Dim tmpParser As pdParamString
-    Set tmpParser = New pdParamString
-    tmpParser.SetParamString paramString
+    WriteSelectionToFile = cPackage.WritePackageToFile(dstFilename)
     
-    Dim i As Long
-    
-    'Convert absolute values to relative values (typically used when WRITING a selection file)
-    If toRelativeFormat Then
-    
-        'All selection types have their left/top/width/height values normalized to [0, 1]. These values are stored in
-        ' positions [8, 11] inclusive.
-        tmpParser.SetNewValueAtLocation 8, Trim$(Str(CDbl(tmpParser.GetLong(8)) / CDbl(containingPDImage.Width)))
-        tmpParser.SetNewValueAtLocation 9, Trim$(Str(CDbl(tmpParser.GetLong(9)) / CDbl(containingPDImage.Height)))
-        tmpParser.SetNewValueAtLocation 10, Trim$(Str(CDbl(tmpParser.GetLong(10)) / CDbl(containingPDImage.Width)))
-        tmpParser.SetNewValueAtLocation 11, Trim$(Str(CDbl(tmpParser.GetLong(11)) / CDbl(containingPDImage.Height)))
-        
-        'Other transformable parameters vary by selection type, which is stored as the first parameter
-        Select Case tmpParser.GetLong(1)
-        
-            'Rectangles, ellipses, and lines all need their bounding rect transformed.  The bounding rect values are
-            ' stored in positions [12, 15] inclusive.
-            Case sRectangle, sCircle, sLine
-                
-                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
-                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
-                tmpParser.SetNewValueAtLocation 14, Trim$(Str(CDbl(tmpParser.GetLong(14)) / CDbl(containingPDImage.Width)))
-                tmpParser.SetNewValueAtLocation 15, Trim$(Str(CDbl(tmpParser.GetLong(15)) / CDbl(containingPDImage.Height)))
-            
-            'Lasso and polygon selections are more complicated.  Position [14] contains the number of points in both shapes.
-            ' Every parameter past that point needs to be transformed in an x/y pattern.
-            Case sLasso, sPolygon
-            
-                If tmpParser.GetLong(13) > 0 Then
-                    For i = 0 To tmpParser.GetLong(13) - 1
-                        tmpParser.SetNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) / CDbl(containingPDImage.Width)))
-                        tmpParser.SetNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) / CDbl(containingPDImage.Height)))
-                    Next i
-                End If
-            
-            'Magic wands only have a single x/y coordinate pair
-            Case sWand
-                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CDbl(tmpParser.GetLong(12)) / CDbl(containingPDImage.Width)))
-                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CDbl(tmpParser.GetLong(13)) / CDbl(containingPDImage.Height)))
-                
-            Case Else
-            
-        End Select
-    
-    'Convert relative values to absolute values (typically used when READING a selection file)
-    Else
-        
-        'All selection types have their left/top/width/height values normalized from [0, 1]. These values are stored in
-        ' positions [8, 11] inclusive.
-        tmpParser.SetNewValueAtLocation 8, Trim$(Str(CLng(tmpParser.GetDouble(8) * CDbl(containingPDImage.Width))))
-        tmpParser.SetNewValueAtLocation 9, Trim$(Str(CLng(tmpParser.GetDouble(9) * CDbl(containingPDImage.Height))))
-        tmpParser.SetNewValueAtLocation 10, Trim$(Str(CLng(tmpParser.GetDouble(10) * CDbl(containingPDImage.Width))))
-        tmpParser.SetNewValueAtLocation 11, Trim$(Str(CLng(tmpParser.GetDouble(11) * CDbl(containingPDImage.Height))))
-        
-        'Other transformable parameters vary by selection type, which is stored as the first parameter
-        Select Case tmpParser.GetLong(1)
-        
-            'Rectangles, ellipses, and lines all need their bounding rect transformed.  The bounding rect values are
-            ' stored in positions [12, 15] inclusive.
-            Case sRectangle, sCircle, sLine
-            
-                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
-                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
-                tmpParser.SetNewValueAtLocation 14, Trim$(Str(CLng(tmpParser.GetDouble(14) * CDbl(containingPDImage.Width))))
-                tmpParser.SetNewValueAtLocation 15, Trim$(Str(CLng(tmpParser.GetDouble(15) * CDbl(containingPDImage.Height))))
-                
-            'Lasso and polygon selections are more complicated.  Position [14] contains the number of points in each shape.
-            ' Every parameter past that point needs to be transformed in an x/y pattern.
-            Case sLasso, sPolygon
-            
-                If tmpParser.GetLong(13) > 0 Then
-                    For i = 0 To tmpParser.GetLong(13) - 1
-                        tmpParser.SetNewValueAtLocation 14 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(14 + i * 2)) * CDbl(containingPDImage.Width)))
-                        tmpParser.SetNewValueAtLocation 15 + i * 2, Trim$(Str(CDbl(tmpParser.GetDouble(15 + i * 2)) * CDbl(containingPDImage.Height)))
-                    Next i
-                End If
-                
-            'Magic wands only have a single x/y coordinate pair
-            Case sWand
-            
-                tmpParser.SetNewValueAtLocation 12, Trim$(Str(CLng(tmpParser.GetDouble(12) * CDbl(containingPDImage.Width))))
-                tmpParser.SetNewValueAtLocation 13, Trim$(Str(CLng(tmpParser.GetDouble(13) * CDbl(containingPDImage.Height))))
-            
-            Case Else
-            
-        End Select
-            
-    End If
-    
-    'Rebuild the parameter string
-    tmpParser.ReassembleModifiedParamString
-    
-    'Return the modified string
-    TranslateParamStringToRelativeFormat = tmpParser.GetParamString
-
 End Function
 
 'When working with raster selections (e.g. non-transformable ones), we still want to minimize selection processing time by processing the
 ' smallest possible rectangle that includes all selected pixels.  This function will scan the selection mask and populate the
-' selLeft/Top/Width/Height and boundLeft/Top/Width/Height values automatically, based on the mask's contents.
+' m_CornersLocked.Left/Top/Width/Height and m_Bounds.Left/Top/Width/Height values automatically, based on the mask's contents.
 '
 'By default, this function will mark a selection as type "Raster", since it's assumed that a vector selection would already have the data
 ' necessary to determine its own bounds.  This behavior can be overridden, but do so with caution, because incorrectly calculated bounds
@@ -2699,7 +2701,7 @@ End Function
 ' selection mask is blank.
 '
 'TODO: only check the blue channel, as the other channels are irrelevant
-Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False) As Boolean
+Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False) As Boolean
 
     'Message "Finding new selection boundaries..."
 
@@ -2709,36 +2711,36 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     'Because these states can be inferred, this function will automatically set certain selection parameters.  This behavior can
     ' be overriden, BUT DO NOT OVERRIDE IT without understanding the consequences - in particular, that a mismatch between
     ' vector selection data and the selection mask will cause errors in the mask-to-layer mapping code.
-    If Not overrideRasterState Then
+    If (Not overrideRasterState) Then
     
-        isTransformable = False
-        isMaskReady = True
+        m_IsTransformable = False
+        m_IsMaskReady = True
         
         'Because the selection is being converted to pure raster data, we must also update its shape
-        sShape = sRaster
+        m_SelectionShape = ss_Raster
         
     End If
     
     FindNewBoundsManually = True
     
     'Make sure the mask is ready for processing
-    If (Not isMaskReady) Then
-        Debug.Print "Creating new selection mask at the request of findNewBoundsManually()"
+    If (Not m_IsMaskReady) Then
+        Debug.Print "Creating new selection mask at the request of FindNewBoundsManually()"
         CreateSelectionMask
     End If
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim QuickVal As Long
+    Dim quickVal As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
-    PrepDIBSafeArray selMask, selMaskSA
+    PrepDIBSafeArray m_SelMask, selMaskSA
     CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
     
     Dim maskWidth As Long, maskHeight As Long
-    maskWidth = selMask.GetDIBWidth - 1
-    maskHeight = selMask.GetDIBHeight - 1
+    maskWidth = m_SelMask.GetDIBWidth - 1
+    maskHeight = m_SelMask.GetDIBHeight - 1
     
     Dim boundFound As Boolean
     
@@ -2748,18 +2750,18 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     Do
     
         For x = 0 To maskWidth
-            QuickVal = x * 3
-            If selMaskData(QuickVal, y) <> 0 Then
+            quickVal = x * 3
+            If (selMaskData(quickVal, y) <> 0) Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+            ElseIf (selMaskData(quickVal + 1, y) <> 0) Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+            ElseIf (selMaskData(quickVal + 2, y) <> 0) Then
                 boundFound = True
             End If
             
             If boundFound Then
-                selTop = y
-                boundTop = selTop
+                m_CornersLocked.Top = y
+                m_Bounds.Top = m_CornersLocked.Top
                 Exit For
             End If
             
@@ -2769,8 +2771,8 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         If (Not boundFound) And (y >= maskHeight) Then
             Debug.Print "No top boundary found - is mask blank?"
             boundFound = True
-            selTop = 0
-            boundTop = selTop
+            m_CornersLocked.Top = 0
+            m_Bounds.Top = m_CornersLocked.Top
             FindNewBoundsManually = False
         End If
         
@@ -2791,18 +2793,18 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     Do
     
         For x = 0 To maskWidth
-            QuickVal = x * 3
-            If selMaskData(QuickVal, y) <> 0 Then
+            quickVal = x * 3
+            If selMaskData(quickVal, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 1, y) <> 0 Then
+            ElseIf selMaskData(quickVal + 1, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(QuickVal + 2, y) <> 0 Then
+            ElseIf selMaskData(quickVal + 2, y) <> 0 Then
                 boundFound = True
             End If
             
             If boundFound Then
-                selHeight = y - selTop + 1
-                boundHeight = selHeight
+                m_CornersLocked.Height = y - m_CornersLocked.Top + 1
+                m_Bounds.Height = m_CornersLocked.Height
                 Exit For
             End If
             
@@ -2812,8 +2814,8 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         If (Not boundFound) And (y <= 0) Then
             Debug.Print "No bottom boundary found - is mask blank?"
             boundFound = True
-            selHeight = maskHeight - selTop + 1
-            boundHeight = selHeight
+            m_CornersLocked.Height = maskHeight - m_CornersLocked.Top + 1
+            m_Bounds.Height = m_CornersLocked.Height
             FindNewBoundsManually = False
         End If
         
@@ -2836,8 +2838,8 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
             End If
             
             If boundFound Then
-                selLeft = x \ 3
-                boundLeft = selLeft
+                m_CornersLocked.Left = x \ 3
+                m_Bounds.Left = m_CornersLocked.Left
                 Exit For
             End If
             
@@ -2847,8 +2849,8 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         If (Not boundFound) And (x >= maskWidth * 3) Then
             Debug.Print "No left boundary found - is mask blank?"
             boundFound = True
-            selLeft = 0
-            boundLeft = selLeft
+            m_CornersLocked.Left = 0
+            m_Bounds.Left = m_CornersLocked.Left
             FindNewBoundsManually = False
         End If
         
@@ -2872,8 +2874,8 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
             End If
             
             If boundFound Then
-                selWidth = (x \ 3) - selLeft + 1
-                boundWidth = selWidth
+                m_CornersLocked.Width = (x \ 3) - m_CornersLocked.Left + 1
+                m_Bounds.Width = m_CornersLocked.Width
                 Exit For
             End If
             
@@ -2883,8 +2885,8 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         If (Not boundFound) And (x <= 0) Then
             Debug.Print "No right boundary found - is mask blank?"
             boundFound = True
-            selWidth = maskWidth - selLeft + 1
-            boundWidth = selWidth
+            m_CornersLocked.Width = maskWidth - m_CornersLocked.Left + 1
+            m_Bounds.Width = m_CornersLocked.Width
             FindNewBoundsManually = False
         End If
         
@@ -2901,9 +2903,9 @@ Public Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
 End Function
 
 'External functions can use this function to request a thumbnail version of the selection mask.
-Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
-    If (selMask Is Nothing) Then
+    If (m_SelMask Is Nothing) Then
         RequestThumbnail = False
         Exit Function
     End If
@@ -2916,7 +2918,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    ConvertAspectRatio selMask.GetDIBWidth, selMask.GetDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    ConvertAspectRatio m_SelMask.GetDIBWidth, m_SelMask.GetDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
@@ -2933,7 +2935,7 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
     
     'Note that the user's thumbnail performance setting affects the quality used here.
-    RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, selMask, 0, 0, selMask.GetDIBWidth, selMask.GetDIBHeight, g_UserPreferences.GetThumbnailInterpolationPref())
+    RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, m_SelMask, 0, 0, m_SelMask.GetDIBWidth, m_SelMask.GetDIBHeight, g_UserPreferences.GetThumbnailInterpolationPref())
     
     'NOTE: now that selection masks are 32-bpp, the destination thumbnail DIB is going to have wonky alpha values in the selection
     ' mask region.  Premultiply alpha manually to compensate.

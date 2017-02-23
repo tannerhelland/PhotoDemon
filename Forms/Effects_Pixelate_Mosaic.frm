@@ -185,7 +185,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Calculate how many mosaic tiles will fit on the current image's size
@@ -214,7 +214,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To xLoop
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To yLoop
         
         'This sub loop is to gather all of the data for the current mosaic tile
@@ -224,7 +224,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
         dstYLoop = (y + 1) * BlockSizeY - 1
         
         For i = initXLoop To dstXLoop
-            QuickVal = i * qvDepth
+            quickVal = i * qvDepth
         For j = initYLoop To dstYLoop
         
             'If this particular pixel is off of the image, don't bother counting it
@@ -232,10 +232,10 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
             
             'Total up all the red, green, and blue values for the pixels within this
             'mosiac tile
-            r = r + srcImageData(QuickVal + 2, j)
-            g = g + srcImageData(QuickVal + 1, j)
-            b = b + srcImageData(QuickVal, j)
-            If qvDepth = 4 Then a = a + srcImageData(QuickVal + 3, j)
+            r = r + srcImageData(quickVal + 2, j)
+            g = g + srcImageData(quickVal + 1, j)
+            b = b + srcImageData(quickVal, j)
+            If qvDepth = 4 Then a = a + srcImageData(quickVal + 3, j)
             
             'Count this as a valid pixel
             numOfPixels = numOfPixels + 1
@@ -257,17 +257,17 @@ NextPixelatePixel1:
         'Now run a loop through the same pixels you just analyzed, only this time you're gonna
         'draw the averaged color over the top of them
         For i = initXLoop To dstXLoop
-            QuickVal = i * qvDepth
+            quickVal = i * qvDepth
         For j = initYLoop To dstYLoop
         
             'Same thing as above - if it's off the image, ignore it
             If i > finalX Or j > finalY Then GoTo NextPixelatePixel2
             
             'Set the pixel
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, j) = a
-            dstImageData(QuickVal + 2, j) = r
-            dstImageData(QuickVal + 1, j) = g
-            dstImageData(QuickVal, j) = b
+            If qvDepth = 4 Then dstImageData(quickVal + 3, j) = a
+            dstImageData(quickVal + 2, j) = r
+            dstImageData(quickVal + 1, j) = g
+            dstImageData(quickVal, j) = b
             
 NextPixelatePixel2:
 
@@ -332,8 +332,10 @@ Private Sub Form_Load()
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
-        sltWidth.Max = pdImages(g_CurrentImage).mainSelection.boundWidth
-        sltHeight.Max = pdImages(g_CurrentImage).mainSelection.boundHeight
+        Dim selBounds As RECTF
+        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+        sltWidth.Max = selBounds.Width
+        sltHeight.Max = selBounds.Height
     Else
         sltWidth.Max = pdImages(g_CurrentImage).Width
         sltHeight.Max = pdImages(g_CurrentImage).Height

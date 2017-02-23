@@ -583,8 +583,10 @@ Private Sub UserControl_Show()
         If Not (pdImages(g_CurrentImage) Is Nothing) And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
             If (pdImages(g_CurrentImage).GetNumOfLayers <> 0) Then
                 If pdImages(g_CurrentImage).selectionActive Then
-                    m_SrcImageWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-                    m_SrcImageHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+                    Dim selBounds As RECTF
+                    selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
+                    m_SrcImageWidth = selBounds.Width
+                    m_SrcImageHeight = selBounds.Height
                 Else
                     m_SrcImageWidth = pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth
                     m_SrcImageHeight = pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight

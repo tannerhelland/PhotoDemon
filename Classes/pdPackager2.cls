@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "pdPackager2"
+Attribute VB_Name = "pdPackager"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 ' that contain one or more "nodes" (e.g. pieces of data), compressed or uncompressed, in a VB-friendly structure.
 '
 'pdPackager v2.0 is not backwards compatible with pdPackage v1.0.  It is an entirely separate format, with features
-' and formatting that differs greatly from pdPackage v1.0.
+' and formatting that differs greatly from v1.0.
 '
 'Though I have created pdPackages specifically for use with PhotoDemon, this class should be easily usable by others
 ' with only minor modifications.  Note that compression support requires an explicit path to an STDCALL (sometimes
@@ -205,7 +205,7 @@ Private Type PDP_NODE
     NodeID As Long                          'Alternatively, calling functions can specify an optional 4-byte numerical ID.  Nodes can be
                                             ' read by 32-char name or 4-byte ID; this decision is up to the caller.
     OptionalNodeType As Long                'Calling functions can also assign each node a 4-byte TYPE identifier if they want.  This value
-                                            ' has no intrinsic meaning to this pdPackager class.
+                                            ' has no intrinsic meaning to this class.
     NodeFlags(0 To 3) As Long               '16 bytes of node-specific flags are allowed.  At present, these are mostly unused.
     
     'One of the unique features of pdPackages is that each node is allotted two entries in the data chunk.  These entries don't have
@@ -266,7 +266,7 @@ Private m_File As pdFSO
 ' directory assembly process much faster (because we don't have to ReDim Preserve the directory when we run out of space).
 ' Similarly, if you have some notion of how large the data chunk will be, you can supply it in advance.  There is generally
 ' no penalty to over-estimating space, as the buffer will be trimmed before writing it out to file.
-Public Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0, Optional ByVal estimatedDataChunkSize As Long = 0, Optional ByVal streamMode As PD_STREAM_MODE = PD_SM_MemoryBacked, Optional ByVal backingFilename As String = vbNullString)
+Friend Sub PrepareNewPackage(Optional ByVal numOfDataNodes As Long = 0, Optional ByVal optPackageID As Long = 0, Optional ByVal estimatedDataChunkSize As Long = 0, Optional ByVal streamMode As PD_STREAM_MODE = PD_SM_MemoryBacked, Optional ByVal backingFilename As String = vbNullString)
 
     'Reset all module-level storage structs related to writing a new pdPackage file
     
@@ -334,7 +334,7 @@ End Sub
 '
 'Importantly, this function returns the index of the added node, which external functions must then use to supply this node's
 ' actual data arrays.
-Public Function AddNode(Optional ByVal thisNodeName As String = "", Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
+Friend Function AddNode(Optional ByVal thisNodeName As String = "", Optional ByVal thisNodeID As Long = 0, Optional ByVal thisNodeType As Long = 0) As Long
 
     'Increment our active node count
     m_NumOfNodes = m_NumOfNodes + 1
@@ -385,7 +385,7 @@ End Function
 '    0 (uncompressed) to 9 (best possible compression).  zstd allows a value from 1 (fast, leaner compression) to 22 (slow,
 '    very intense compression).  The default value of -1 means "use default compression", and PD will choose an appropriate
 '    value for the given library.
-Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dataPointer As Long, ByVal dataLength As Long, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_NumOfNodes - 1) Then
@@ -483,12 +483,12 @@ Public Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
 End Function
 
 'Thin wrapper to addNodeDataFromPointer, above; if possible, use that function directly to avoid any unnecessary copying of arrays
-Public Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Friend Function AddNodeDataFromByteArray(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef DataBytes() As Byte, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
     AddNodeDataFromByteArray = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, VarPtr(DataBytes(0)), UBound(DataBytes) + 1, compressData, compressionLevel)
 End Function
 
 'Thin wrapper for addNodeDataFromPointer, above, but allows the user to supply a string.
-Public Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
+Friend Function AddNodeDataFromString(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef srcDataString As String, Optional ByVal compressData As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal compressionLevel As Long = -1) As Boolean
     If (Len(srcDataString) <> 0) Then
         AddNodeDataFromString = AddNodeDataFromPointer(nodeIndex, useHeaderBuffer, StrPtr(srcDataString), Len(srcDataString) * 2, compressData, compressionLevel)
     End If
@@ -509,7 +509,7 @@ End Function
 ' extracting by filename, it can't differentiate between these two unless you provide the relative path too.
 '
 'Returns: TRUE if successful.
-Public Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal storeUsingThisRelativePathAndFilename As String = "") As Boolean
+Friend Function AutoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal storeUsingThisRelativePathAndFilename As String = "") As Boolean
 
     'Attempt to load the file into a byte array
     Dim fileContents() As Byte
@@ -589,7 +589,7 @@ End Function
 '
 'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target folder(s) is restricted,
 ' or if memory runs out because the constructed package exceeds available memory.
-Public Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal preserveFolders As Boolean = True, Optional ByVal useCustomRelativeFolderBase As String = "", Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+Friend Function AutoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal preserveFolders As Boolean = True, Optional ByVal useCustomRelativeFolderBase As String = "", Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
 
     'As usual, our lovely pdFSO instance (m_File) is going to handle most the heavy lifting.  It will return the list of files to be added
     ' in a pdStringStack object, which we can then iterate at our leisure.
@@ -674,7 +674,7 @@ End Function
 '
 'Returns: TRUE if all files are added successfully, FALSE otherwise.  FALSE should not occur unless read access to target file(s) and/or folder(s)
 ' is restricted, or if memory runs out because the constructed package exceeds available memory.
-Public Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStack, Optional ByVal relativeFolderBase As String = "", Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True) As Boolean
+Friend Function AutoAddNodesFromStringStack(ByRef srcStringStack As pdStringStack, Optional ByVal relativeFolderBase As String = "", Optional ByVal OptionalNodeType As Long = 0, Optional ByVal recurseSubfolders As Boolean = True) As Boolean
     
     Dim autoAddSuccess As Boolean
     autoAddSuccess = True
@@ -734,7 +734,7 @@ End Function
 ' - secondPassDirectoryCompression: compress the directory chunk before writing it out to file.
 ' - thisIsATempFile: special WAPI flags related to temp files will be set.  Note that this flag does not affect file correctness in
 '                    any way; it simply specifies hints related to file caching.
-Public Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
+Friend Function WritePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As PD_COMPRESSION_ENGINES = PD_CE_NoCompression, Optional ByVal thisIsATempFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
     
     'Free any temporary compression buffers, as they are no longer needed
     Erase m_CompressionBuffer
@@ -1030,7 +1030,7 @@ Friend Function ReadPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     ' than the one flagged in the file.)  Try again using a different compression method.
                     If (Not decompressionResult) Then
                     
-                        InternalErrorMsg "WARNING!  pdPackager2.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
+                        InternalErrorMsg "WARNING!  pdPackager.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
                         
                         Dim i As PD_COMPRESSION_ENGINES
                         For i = PD_CE_ZLib To PD_CE_Lz4
@@ -1229,7 +1229,7 @@ Friend Function ReadPackageFromMemory(ByVal srcPointer As Long, ByVal srcLength 
                     ' than the one flagged in the file.)  Try again using a different compression method.
                     If (Not decompressionResult) Then
                     
-                        InternalErrorMsg "WARNING!  pdPackager2.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
+                        InternalErrorMsg "WARNING!  pdPackager.ReadPackageFromFile failed to decode directory; trying again with alternate decompressors..."
                         
                         Dim i As PD_COMPRESSION_ENGINES
                         For i = PD_CE_ZLib To PD_CE_Lz4
@@ -1317,20 +1317,20 @@ StopPackageMemoryRead:
 End Function
 
 'Returns the version of a loaded pdPackage.  Return value is meaningless if no package is loaded.
-Public Function GetPDPackageVersion() As Long
+Friend Function GetPDPackageVersion() As Long
     GetPDPackageVersion = m_FileHeader.PDP_Version
 End Function
 
 'Returns the current number of nodes in the package.  This is primarily designed to be used right after loading a pdPackage file;
 ' after this number is obtained, the caller can iterate through individual nodes, extracting data as they go.
-Public Function GetNumOfNodes() As Long
+Friend Function GetNumOfNodes() As Long
     GetNumOfNodes = m_NumOfNodes
 End Function
 
 'Given a node index, return relevant header data for that node.  This function will fail if the node index is out of bounds.
 ' There is generally no need to use this function, as the direct node data access functions will handle all this automatically.
 ' But I guess it's here if you need it.
-Public Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName As String, Optional ByRef dstNodeID As Long, Optional ByRef dstOptionalNodeType As Long) As Boolean
+Friend Function GetNodeInfo(ByVal nodeIndex As Long, Optional ByRef dstNodeName As String, Optional ByRef dstNodeID As Long, Optional ByRef dstOptionalNodeType As Long) As Boolean
 
     'Start by validating the node index we were passed.  If it's out of range, exit immediately.
     If (nodeIndex < 0) Or (nodeIndex > m_NumOfNodes - 1) Then
@@ -1376,7 +1376,7 @@ End Function
 ' this feature, make sure dstPath includes the filename and extension, e.g. dstPath = "C:\newFilename.ext"
 '
 'Returns TRUE if extraction was successful.  If a relative path must be constructed, a TRUE return means the path was successfully constructed.
-Public Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename As String, Optional ByVal dstPathIncludesFilename As Boolean = False, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePathIfPresent As Boolean = False) As Boolean
+Friend Function AutoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename As String, Optional ByVal dstPathIncludesFilename As Boolean = False, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePathIfPresent As Boolean = False) As Boolean
 
     'Node headers use a fixed-length 32 character string for storing names.  As such, we pad the file node type identifier to 32 chars.
     Dim nodeName32_1 As String * 32, nodeName32_2 As String * 32
@@ -1551,7 +1551,7 @@ End Function
 '
 'Returns: TRUE if all files are extracted successfully, FALSE otherwise.  FALSE should not occur unless write access to the target folder
 ' is restricted.
-Public Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePaths As Boolean = False) As Boolean
+Friend Function AutoExtractAllFiles(ByVal dstPath As String, Optional ByVal OptionalNodeType As Long = 0, Optional ByVal ignoreRelativePaths As Boolean = False) As Boolean
     
     'Enforce a trailing slash on dstPath, as we'll potentially be appending a lot of filenames to it
     dstPath = m_File.EnforcePathSlash(dstPath)
@@ -1719,7 +1719,7 @@ End Function
 '
 'For an explanation of the trimDstArray and dstFinalSize parameters, please see GetNodeDataByIndex(), below (which this function
 ' merely wraps).
-Public Function GetNodeIndexFromName(ByRef targetNodeName As String, Optional ByVal compareMode As VbCompareMethod = vbTextCompare) As Long
+Friend Function GetNodeIndexFromName(ByRef targetNodeName As String, Optional ByVal compareMode As VbCompareMethod = vbTextCompare) As Long
     
     'Node headers use a fixed-length 32 character string for storing names.  As such, pad the supplied node name to
     ' 32 chars as necessary.
@@ -1730,18 +1730,39 @@ Public Function GetNodeIndexFromName(ByRef targetNodeName As String, Optional By
     Dim i As Long, nodeIndex As Long
     nodeIndex = -1
     
-    For i = 0 To UBound(m_NodeDirectory)
-        If (StrComp(nodeName32, m_NodeDirectory(i).NodeName, compareMode) = 0) Then
-            nodeIndex = i
-            Exit For
-        End If
-    Next i
+    If (m_NumOfNodes > 0) Then
+        For i = 0 To UBound(m_NodeDirectory)
+            If (StrComp(nodeName32, m_NodeDirectory(i).NodeName, compareMode) = 0) Then
+                nodeIndex = i
+                Exit For
+            End If
+        Next i
+    End If
     
     GetNodeIndexFromName = nodeIndex
     
 End Function
 
-Public Function GetNodeDataByName(ByRef targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
+Friend Function GetNodeIndexFromID(ByVal targetNodeID As Long) As Long
+
+    'Search the node array for a matching ID.  Return -1 if no match is found,
+    Dim i As Long, nodeIndex As Long
+    nodeIndex = -1
+    
+    If (m_NumOfNodes > 0) Then
+        For i = 0 To UBound(m_NodeDirectory)
+            If (targetNodeID = m_NodeDirectory(i).NodeID) Then
+                nodeIndex = i
+                Exit For
+            End If
+        Next i
+    End If
+    
+    GetNodeIndexFromID = nodeIndex
+    
+End Function
+
+Friend Function GetNodeDataByName(ByRef targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
 
     Dim nodeIndex As Long
     nodeIndex = GetNodeIndexFromName(targetNodeName)
@@ -1755,56 +1776,58 @@ Public Function GetNodeDataByName(ByRef targetNodeName As String, ByVal useHeade
 
 End Function
 
-Public Function GetNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
+Friend Function GetNodeDataByName_String(ByRef targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByRef dstString As String) As Boolean
 
-    'Search the node array for a matching ID
-    Dim i As Long, nodeIndex As Long
-    nodeIndex = -1
+    Dim nodeIndex As Long
+    nodeIndex = GetNodeIndexFromName(targetNodeName)
     
-    If (m_NumOfNodes > 0) Then
-    
-        For i = 0 To UBound(m_NodeDirectory)
-            If (targetNodeID = m_NodeDirectory(i).NodeID) Then
-                nodeIndex = i
-                Exit For
-            End If
-        Next i
-        
-        'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
-        If (nodeIndex >= 0) Then
-            GetNodeDataByID = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), trimDstArray, dstFinalSize)
-        Else
-            GetNodeDataByID = False
-        End If
-        
+    'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
+    If (nodeIndex >= 0) Then
+        GetNodeDataByName_String = GetNodeDataByIndex_String(nodeIndex, useHeaderBuffer, dstString)
     Else
-        GetNodeDataByID = False
+        GetNodeDataByName_String = False
     End If
 
 End Function
 
-Public Function GetNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long) As Boolean
+Friend Function GetNodeDataByName_UnsafeDstPointer(ByRef targetNodeName As String, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long) As Boolean
+
+    Dim nodeIndex As Long
+    nodeIndex = GetNodeIndexFromName(targetNodeName)
+    
+    'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
+    If (nodeIndex >= 0) Then
+        GetNodeDataByName_UnsafeDstPointer = GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer)
+    Else
+        GetNodeDataByName_UnsafeDstPointer = False
+    End If
+
+End Function
+
+Friend Function GetNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
 
     'Search the node array for a matching ID
-    Dim i As Long, nodeIndex As Long
-    nodeIndex = -1
-    
-    If (m_NumOfNodes > 0) Then
-    
-        For i = 0 To UBound(m_NodeDirectory)
-            If (targetNodeID = m_NodeDirectory(i).NodeID) Then
-                nodeIndex = i
-                Exit For
-            End If
-        Next i
+    Dim nodeIndex As Long
+    nodeIndex = GetNodeIndexFromID(targetNodeID)
         
-        'If a matching node was found, use getNodeDataByIndex() to retrieve its data
-        If (nodeIndex >= 0) Then
-            GetNodeDataByID_UnsafeDstPointer = GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer)
-        Else
-            GetNodeDataByID_UnsafeDstPointer = False
-        End If
+    'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
+    If (nodeIndex >= 0) Then
+        GetNodeDataByID = GetNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), trimDstArray, dstFinalSize)
+    Else
+        GetNodeDataByID = False
+    End If
+    
+End Function
+
+Friend Function GetNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long) As Boolean
+
+    'Search the node array for a matching ID
+    Dim nodeIndex As Long
+    nodeIndex = GetNodeIndexFromID(targetNodeID)
         
+    'If a matching node was found, use GetNodeDataByIndex() to retrieve its data
+    If (nodeIndex >= 0) Then
+        GetNodeDataByID_UnsafeDstPointer = GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer)
     Else
         GetNodeDataByID_UnsafeDstPointer = False
     End If
@@ -1822,7 +1845,7 @@ End Function
 ' on each call to this function.  Instead, it is suggested that you set trimDstArray to FALSE, then read the final size
 ' actually returned by checking the optional dstFinalSize parameter.  This allows you to reuse destination arrays wherever
 ' possible, reducing allocations and greatly improving read performance.
-Public Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
+Friend Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstArray() As Byte, Optional ByVal trimDstArray As Boolean = True, Optional ByRef dstFinalSize As Long = 0) As Boolean
 
     'Retrieve the offset, packed size, and original (unpacked) size of the target data
     Dim dataOffset As Long, dataPackedSize As Long, dataOriginalSize As Long
@@ -1904,7 +1927,7 @@ End Function
 '
 'That said, note that PD only uses this function sparingly, when it is *absolutely certain of its safety*.  You would be wise to do the same.
 ' An incorrectly allocated destination buffer will cause mass destruction (and a guaranteed hard crash), so do not use this function ignorantly.
-Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long) As Boolean
+Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long) As Boolean
 
     'Retrieve the offset, packed size, and original (unpacked) size of the target data
     Dim dataOffset As Long, dataPackedSize As Long, dataOriginalSize As Long
@@ -1965,7 +1988,7 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                 ' than the one flagged in the file.)  Try again using a different compression method.
                 If (Not decompressionResult) Then
                 
-                    InternalErrorMsg "WARNING!  pdPackager2.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
+                    InternalErrorMsg "WARNING!  pdPackager.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
                     
                     For i = PD_CE_ZLib To PD_CE_Lz4
                         decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize, i)
@@ -2003,7 +2026,7 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                     ' than the one flagged in the file.)  Try again using a different compression method.
                     If (Not decompressionResult) Then
                     
-                        InternalErrorMsg "WARNING!  pdPackager2.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
+                        InternalErrorMsg "WARNING!  pdPackager.GetNodeDataByIndex_UnsafeDstPointer failed to decode node; trying again with alternate decompressors..."
                         
                         For i = PD_CE_ZLib To PD_CE_Lz4
                             decompressionResult = Compression.DecompressPtrToPtr(dstPointer, dataOriginalSize, VarPtr(m_CompressionBuffer(0)), dataPackedSize, cmpEngine)
@@ -2047,6 +2070,22 @@ Public Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
     'If we made it all the way here, the node has been successfully loaded!
     GetNodeDataByIndex_UnsafeDstPointer = True
 
+End Function
+
+'Shortcut function for casting a node to a destination string.  If you're extracting a bunch of nodes, this is not the most
+' performance-friendly solution (as new strings are created on every read), so it may be worthwhile to use your own string and
+' only resize it as necessary.
+Friend Function GetNodeDataByIndex_String(ByVal targetNodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByRef dstString As String) As Boolean
+    
+    Dim retBytes() As Byte, retSize As Long
+    If Me.GetNodeDataByIndex(targetNodeIndex, useHeaderBuffer, retBytes, False, retSize) Then
+        dstString = Space$(retSize \ 2)
+        CopyMemory ByVal StrPtr(dstString), ByVal VarPtr(retBytes(0)), retSize
+        GetNodeDataByIndex_String = True
+    Else
+        GetNodeDataByIndex_String = False
+    End If
+    
 End Function
 
 'Set an arbitrary 1-bit position [0-31] in a Long-type value to either 1 or 0.
@@ -2103,7 +2142,7 @@ Private Function GetBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
 End Function
 
 'Once a package has been loaded from file, you can use this function to check various flags in the file
-Public Function GetPackageFlag(ByVal flagToCheck As Byte, Optional ByVal checkLocation As PDP_FLAG_SOURCE = PDP_LOCATION_ANY, Optional ByVal nodeIndex As Long = 0) As Boolean
+Friend Function GetPackageFlag(ByVal flagToCheck As Byte, Optional ByVal checkLocation As PDP_FLAG_SOURCE = PDP_LOCATION_ANY, Optional ByVal nodeIndex As Long = 0) As Boolean
 
     'Check the relevant flag location
     Select Case checkLocation

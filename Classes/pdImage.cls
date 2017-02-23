@@ -870,7 +870,7 @@ Public Sub DeactivateImage()
     
     'Erase the selection manager (*very* important because of circular references)
     If Not (mainSelection Is Nothing) Then
-        Set mainSelection.containingPDImage = Nothing
+        mainSelection.SetParentReference Nothing
         Set mainSelection = Nothing
     End If
         
@@ -958,8 +958,8 @@ Private Sub Class_Initialize()
     'Initialize the main selection
     Set mainSelection = New pdSelection
     selectionActive = False
-    mainSelection.SetSelectionShape sRectangle
-    Set mainSelection.containingPDImage = Me
+    mainSelection.SetSelectionShape ss_Rectangle
+    mainSelection.SetParentReference Me
 
     'Initialize the metadata object (which may not get used, but this prevents errors if other functions try to access metadata)
     Set imgMetadata = New pdMetadata
@@ -1002,8 +1002,12 @@ Private Sub Class_Terminate()
     If (Not undoManager Is Nothing) Then Set undoManager.parentPDImage = Nothing
     Set undoManager = Nothing
     Set imgMetadata = Nothing
-    If (Not mainSelection Is Nothing) Then Set mainSelection.containingPDImage = Nothing
+    
+    'Note: if the main selection object has an active reference to us, it's circular, so this _Terminate() event won't be
+    ' called at all!
+    If (Not mainSelection Is Nothing) Then mainSelection.SetParentReference Nothing
     Set mainSelection = Nothing
+    
     Set canvasBuffer = Nothing
     Set compositeBuffer = Nothing
     Set imgStorage = Nothing
@@ -1060,7 +1064,9 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     'Start by initializing the destination DIB to the size of the active selection
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.CreateBlank mainSelection.boundWidth, mainSelection.boundHeight, 32, 0
+    Dim maskBounds As RECTF
+    maskBounds = mainSelection.GetBoundaryRect
+    dstDIB.CreateBlank maskBounds.Width, maskBounds.Height, 32, 0
     dstDIB.SetInitialAlphaPremultiplicationState True
     
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
@@ -1071,7 +1077,7 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     Dim selData() As Byte
     Dim selSA As SAFEARRAY2D
-    PrepSafeArray selSA, mainSelection.selMask
+    PrepSafeArray selSA, mainSelection.GetMaskDIB
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
@@ -1080,8 +1086,8 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim leftOffset As Long, topOffset As Long
-    leftOffset = mainSelection.boundLeft
-    topOffset = mainSelection.boundTop
+    leftOffset = maskBounds.Left
+    topOffset = maskBounds.Top
     
     Dim x As Long, y As Long
     Dim r As Long, g As Long, b As Long
@@ -1095,7 +1101,7 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     dstDIBCD = dstDIB.GetDIBColorDepth \ 8
     
     Dim selDIBCD As Long
-    selDIBCD = mainSelection.selMask.GetDIBColorDepth \ 8
+    selDIBCD = mainSelection.GetMaskDIB.GetDIBColorDepth \ 8
             
     For x = 0 To dstDIB.GetDIBWidth - 1
         dstQuickX = x * dstDIBCD
@@ -1180,7 +1186,7 @@ Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     'We now need pointers to two separate sets of image data: destination DIB, and selection mask.
     Dim selData() As Byte
     Dim selSA As SAFEARRAY2D
-    PrepSafeArray selSA, mainSelection.selMask
+    PrepSafeArray selSA, mainSelection.GetMaskDIB
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
@@ -1188,9 +1194,14 @@ Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     PrepSafeArray dstSA, imgLayers(targetLayerIndex).layerDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    Dim leftOffset As Long, topOffset As Long
-    leftOffset = mainSelection.boundLeft
-    topOffset = mainSelection.boundTop
+    Dim maskBounds As RECTF
+    maskBounds = mainSelection.GetBoundaryRect
+    
+    Dim leftBound As Long, topBound As Long, rightBound As Long, bottomBound As Long
+    leftBound = maskBounds.Left
+    topBound = maskBounds.Top
+    rightBound = leftBound + maskBounds.Width - 1
+    bottomBound = topBound + maskBounds.Height - 1
     
     Dim x As Long, y As Long
     Dim r As Long, g As Long, b As Long
@@ -1199,12 +1210,12 @@ Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     
     Dim dstDIBCD As Long, selDIBCD As Long, dstQuickX As Long, selQuickX As Long
     dstDIBCD = imgLayers(targetLayerIndex).layerDIB.GetDIBColorDepth \ 8
-    selDIBCD = mainSelection.selMask.GetDIBColorDepth \ 8
+    selDIBCD = mainSelection.GetMaskDIB.GetDIBColorDepth \ 8
             
-    For x = mainSelection.boundLeft To mainSelection.boundLeft + mainSelection.boundWidth - 1
+    For x = leftBound To rightBound
         dstQuickX = x * dstDIBCD
         selQuickX = x * selDIBCD
-    For y = mainSelection.boundTop To mainSelection.boundTop + mainSelection.boundHeight - 1
+    For y = topBound To bottomBound
         
         thisAlpha = selData(selQuickX, y)
         

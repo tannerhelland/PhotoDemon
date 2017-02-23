@@ -185,7 +185,7 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
     
     'Start by finding the matching internal struct
     Dim itemIndex As Long
-    itemIndex = DoesKeyExist(AsyncProp.PropertyName)
+    itemIndex = DoesKeyExist(AsyncProp.propertyName)
     
     If itemIndex >= 0 Then
     
@@ -242,9 +242,9 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
             
             If m_DownloadList(itemIndex).ExpectedChecksum <> 0 Then
                 
-                'Use pdPackager to checksum the retrieved data
-                Dim cPackage As pdPackager
-                Set cPackage = New pdPackager
+                'Use pdPackagerLegacy to checksum the retrieved data
+                Dim cPackage As pdPackagerLegacy
+                Set cPackage = New pdPackagerLegacy
                 
                 Dim chksumVerify As Long
                 chksumVerify = cPackage.ChecksumArbitraryArray(m_DownloadList(itemIndex).DataBytes)

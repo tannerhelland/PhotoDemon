@@ -737,17 +737,17 @@ Private Sub NewToolSelected()
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
                 If (g_CurrentTool = Selection_Handler.GetRelevantToolFromSelectShape()) Then
-                    SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.isTransformable
+                    SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.IsTransformable
                 
                 'A selection is already active, and it doesn't match the current tool type!
                 Else
                 
                     'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
-                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sRectangle) Then
-                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape sCircle
+                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Rectangle) Then
+                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Circle
                         
-                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sCircle) Then
-                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape sRectangle
+                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Circle) Then
+                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Rectangle
                         
                     'A selection exists, but it does not match the current tool, and it cannot be non-destructively
                     ' changed to the current type.  Remove it.
@@ -912,8 +912,8 @@ Public Sub ResetToolButtonStates()
         If ((Selection_Handler.GetRelevantToolFromSelectShape() <> g_CurrentTool) And Tool_Support.IsSelectionToolActive) Then
             
             'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
-            If ((g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sRectangle)) Or _
-                ((g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = sCircle)) Then
+            If ((g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Rectangle)) Or _
+                ((g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Circle)) Then
                 
                 'Simply update the shape and redraw the viewport
                 pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selection_Handler.GetSelectionShapeFromCurrentTool

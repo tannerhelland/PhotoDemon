@@ -427,8 +427,8 @@ Private Sub cmdExport_Click()
         targetResFile = g_UserPreferences.GetThemePath & cFSO.GetFilename(txtResourcePath.Text, True) & ".pdrc"
         
         'Prep a pdPackage
-        Dim cPackage As pdPackager2
-        Set cPackage = New pdPackager2
+        Dim cPackage As pdPackager
+        Set cPackage = New pdPackager
         cPackage.PrepareNewPackage lstResources.ListCount, PD_RES_IDENTIFIER, , PD_SM_FileBacked, targetResFile
         
         'Compression settings are still being tested.  Fast decompression time is important, but zstd yields

@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2364</langversion>
+<langversion>6.8.2365</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3351,12 +3351,7 @@ Please enter a numeric value.</original>
 
 <!-- BEGIN text for pdSelection.cls -->
 
-<phrase>
-<original>Requested selection file could not be located.  Selection load abandoned.</original>
-<translation>Запрошенный файл выбора не может быть найден. Выбор нагрузки отказались.</translation>
-</phrase>
-
-<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -13793,7 +13788,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Нажмите здесь, чтобы преобразовать этот слой к слою типографики.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 28 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14961,10 +14956,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2518</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12382 total words. -->
+<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

@@ -58,14 +58,14 @@ End Enum
 #End If
 
 'How should a selection be rendered?
-Public Enum SelectionRender
-    SELECTION_RENDER_HIGHLIGHT = 0
-    SELECTION_RENDER_LIGHTBOX = 1
-    SELECTION_RENDER_OUTLINE = 2
+Public Enum PD_SelectionRender
+    PDSR_Highlight = 0
+    PDSR_Lightbox = 1
+    PDSR_Outline = 2
 End Enum
 
 #If False Then
-    Const SELECTION_RENDER_HIGHLIGHT = 0, SELECTION_RENDER_LIGHTBOX = 1, SELECTION_RENDER_OUTLINE = 2
+    Private Const PDSR_Highlight = 0, PDSR_Lightbox = 1, PDSR_Outline = 2
 #End If
 
 'JPEG automatic quality detection modes

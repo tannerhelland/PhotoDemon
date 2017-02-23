@@ -160,7 +160,7 @@ Private m_CurrentThemeID As String
 
 'Failsafe copies of all theme files are embedded inside PhotoDemon.exe's resource segment.  We drop back to these if something
 ' goes wrong with the normal theme files.
-Private m_ThemeBackup As pdPackager2
+Private m_ThemeBackup As pdPackager
 
 Friend Function GetCurrentThemeID() As String
     GetCurrentThemeID = m_CurrentThemeID
@@ -619,7 +619,7 @@ Private Function CacheBackupThemes() As Boolean
     
         RaiseThemingError "Generating backup theme cache...", True
         
-        Set m_ThemeBackup = New pdPackager2
+        Set m_ThemeBackup = New pdPackager
         
         Dim tmpBytes() As Byte
         tmpBytes = LoadResData("MAINTHEME", "CUSTOM")
@@ -837,8 +837,8 @@ End Function
 Friend Sub BuildThemePackage()
 
     'This pdPackage instance does most the heavy lifting
-    Dim tmpPackage As pdPackager2
-    Set tmpPackage = New pdPackager2
+    Dim tmpPackage As pdPackager
+    Set tmpPackage = New pdPackager
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -863,7 +863,7 @@ Friend Sub BuildThemePackage()
 End Sub
 
 'Helper for BuildThemePackage(), above.  Not intended or designed for any other use.
-Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager2, ByRef cFile As pdFSO, ByRef srcFilename As String)
+Private Sub AddThemeFileToPackage(ByRef dstPackager As pdPackager, ByRef cFile As pdFSO, ByRef srcFilename As String)
     
     'Pull the source file into a string
     Dim tmpString As String
