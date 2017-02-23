@@ -2206,7 +2206,7 @@ Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
     Dim x As Long, y As Long
-    Dim quickVal As Long
+    Dim xStride As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -2271,21 +2271,21 @@ Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
                                     
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
-                quickVal = x * xPxSizeInBytes
+                xStride = x * xPxSizeInBytes
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
                 
                 'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
                 If tmpSelHolder = 0 Then
-                    iData(quickVal + 2, y) = hData(iData(quickVal + 2, y))
-                    iData(quickVal + 1, y) = hData(iData(quickVal + 1, y))
-                    iData(quickVal, y) = hData(iData(quickVal, y))
+                    iData(xStride + 2, y) = hData(iData(xStride + 2, y))
+                    iData(xStride + 1, y) = hData(iData(xStride + 1, y))
+                    iData(xStride, y) = hData(iData(xStride, y))
                 ElseIf tmpSelHolder < 255 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(quickVal + 2, y) = BlendColors(hData(iData(quickVal + 2, y)), iData(quickVal + 2, y), tmpSelDivider)
-                    iData(quickVal + 1, y) = BlendColors(hData(iData(quickVal + 1, y)), iData(quickVal + 1, y), tmpSelDivider)
-                    iData(quickVal, y) = BlendColors(hData(iData(quickVal, y)), iData(quickVal, y), tmpSelDivider)
+                    iData(xStride + 2, y) = BlendColors(hData(iData(xStride + 2, y)), iData(xStride + 2, y), tmpSelDivider)
+                    iData(xStride + 1, y) = BlendColors(hData(iData(xStride + 1, y)), iData(xStride + 1, y), tmpSelDivider)
+                    iData(xStride, y) = BlendColors(hData(iData(xStride, y)), iData(xStride, y), tmpSelDivider)
                 End If
                 
             Next y
@@ -2311,23 +2311,23 @@ Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
                         
             'Highlight the selected parts of the image
             For x = imgLeft To rightBound
-                quickVal = x * xPxSizeInBytes
+                xStride = x * xPxSizeInBytes
             For y = imgTop To bottomBound
             
                 tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
                 
                 'If this pixels is over an active pixel in the selection mask, mark it with the selected color
                 If tmpSelHolder = 255 Then
-                    iData(quickVal + 2, y) = rData(iData(quickVal + 2, y))
-                    iData(quickVal + 1, y) = gData(iData(quickVal + 1, y))
-                    iData(quickVal, y) = bData(iData(quickVal, y))
+                    iData(xStride + 2, y) = rData(iData(xStride + 2, y))
+                    iData(xStride + 1, y) = gData(iData(xStride + 1, y))
+                    iData(xStride, y) = bData(iData(xStride, y))
                     
                 'Partially selected pixels are rendered with antialiasing
                 ElseIf tmpSelHolder > 0 Then
                     tmpSelDivider = tmpSelHolder / 255
-                    iData(quickVal + 2, y) = BlendColors(iData(quickVal + 2, y), rData(iData(quickVal + 2, y)), tmpSelDivider)
-                    iData(quickVal + 1, y) = BlendColors(iData(quickVal + 1, y), gData(iData(quickVal + 1, y)), tmpSelDivider)
-                    iData(quickVal, y) = BlendColors(iData(quickVal, y), bData(iData(quickVal, y)), tmpSelDivider)
+                    iData(xStride + 2, y) = BlendColors(iData(xStride + 2, y), rData(iData(xStride + 2, y)), tmpSelDivider)
+                    iData(xStride + 1, y) = BlendColors(iData(xStride + 1, y), gData(iData(xStride + 1, y)), tmpSelDivider)
+                    iData(xStride, y) = BlendColors(iData(xStride, y), bData(iData(xStride, y)), tmpSelDivider)
                 End If
                 
             Next y
@@ -2636,7 +2636,7 @@ End Function
 
 'As of v7.0, pdPackager is used to read/write selection files.  Note that this function will blindly overwrite the destination
 ' file if it exists; it's up to the caller to plan for this.
-Friend Function WriteSelectionToFile(ByVal dstFilename As String) As Boolean
+Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal compressXML As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal xmlCompressionLevel As Long = -1, Optional ByVal compressRaster As PD_COMPRESSION_ENGINES = PD_CE_Zstd, Optional ByVal rasterCompressionLevel As Long = -1) As Boolean
     
     Dim cPackage As pdPackager
     Set cPackage = New pdPackager
@@ -2647,8 +2647,11 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String) As Boolean
     Dim nodeIndex As Long
     nodeIndex = cPackage.AddNode("SelHeader")
     
+    If (xmlCompressionLevel = -1) Then xmlCompressionLevel = Compression.GetDefaultCompressionLevel(compressXML)
+    If (rasterCompressionLevel = -1) Then rasterCompressionLevel = Compression.GetDefaultCompressionLevel(compressRaster)
+    
     'Write the default vector selection descriptor first
-    cPackage.AddNodeDataFromString nodeIndex, False, Me.GetSelectionAsXML(), PD_CE_Zstd, Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+    cPackage.AddNodeDataFromString nodeIndex, False, Me.GetSelectionAsXML(), compressXML, xmlCompressionLevel
     
     'Prep a secondary descriptor
     Dim maskWillBeEmbedded As Boolean
@@ -2675,14 +2678,14 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String) As Boolean
     End With
     
     'Add the secondary descriptor to the same node (in the header chunk)
-    cPackage.AddNodeDataFromString nodeIndex, True, tmpXML.GetParamString(), PD_CE_Zstd, Compression.GetMaxCompressionLevel(PD_CE_Zstd)
+    cPackage.AddNodeDataFromString nodeIndex, True, tmpXML.GetParamString(), compressXML, xmlCompressionLevel
     
     'Finally, if this is a raster-type selection, add the full mask as well
     If maskWillBeEmbedded Then
         Dim maskDIBPointer As Long, maskDIBLength As Long
         m_SelMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
         nodeIndex = cPackage.AddNode("SelMask")
-        cPackage.AddNodeDataFromPointer nodeIndex, False, maskDIBPointer, maskDIBLength, PD_CE_Zstd, Compression.GetDefaultCompressionLevel(PD_CE_Zstd)
+        cPackage.AddNodeDataFromPointer nodeIndex, False, maskDIBPointer, maskDIBLength, compressRaster, rasterCompressionLevel
     End If
     
     WriteSelectionToFile = cPackage.WritePackageToFile(dstFilename)
@@ -2731,7 +2734,7 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     
     'Point a standard 2D byte array at the selection mask
     Dim x As Long, y As Long
-    Dim quickVal As Long
+    Dim xStride As Long
     
     Dim selMaskData() As Byte
     Dim selMaskSA As SAFEARRAY2D
@@ -2750,12 +2753,12 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     Do
     
         For x = 0 To maskWidth
-            quickVal = x * 3
-            If (selMaskData(quickVal, y) <> 0) Then
+            xStride = x * 3
+            If (selMaskData(xStride, y) <> 0) Then
                 boundFound = True
-            ElseIf (selMaskData(quickVal + 1, y) <> 0) Then
+            ElseIf (selMaskData(xStride + 1, y) <> 0) Then
                 boundFound = True
-            ElseIf (selMaskData(quickVal + 2, y) <> 0) Then
+            ElseIf (selMaskData(xStride + 2, y) <> 0) Then
                 boundFound = True
             End If
             
@@ -2793,12 +2796,12 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     Do
     
         For x = 0 To maskWidth
-            quickVal = x * 3
-            If selMaskData(quickVal, y) <> 0 Then
+            xStride = x * 3
+            If selMaskData(xStride, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(quickVal + 1, y) <> 0 Then
+            ElseIf selMaskData(xStride + 1, y) <> 0 Then
                 boundFound = True
-            ElseIf selMaskData(quickVal + 2, y) <> 0 Then
+            ElseIf selMaskData(xStride + 2, y) <> 0 Then
                 boundFound = True
             End If
             

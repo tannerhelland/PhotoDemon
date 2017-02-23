@@ -1111,14 +1111,14 @@ Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     If normalizeToNewOrigin Then
         
         'Find the largest and smallest (x, y) coordinates
-        Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-        FindMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, MinY, maxX, MaxY
+        Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+        FindMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, minY, maxX, maxY
         
         'Normalize all points against the minimum values
         Dim i As Long
         For i = 0 To UBound(dstPoints)
             dstPoints(i).x = dstPoints(i).x + (normalizeX - minX)
-            dstPoints(i).y = dstPoints(i).y + (normalizeY - MinY)
+            dstPoints(i).y = dstPoints(i).y + (normalizeY - minY)
         Next i
         
     End If
@@ -1207,15 +1207,15 @@ Friend Sub GetLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal ApplyTran
     Me.GetLayerCornerCoordinates layerCorners, ApplyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
     
     'Find the largest and smallest (x, y) coordinates
-    Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-    FindMaxMinOfPointFs layerCorners, 4, minX, MinY, maxX, MaxY
+    Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+    FindMaxMinOfPointFs layerCorners, 4, minX, minY, maxX, maxY
     
     'The difference between max and min values define the boundary rect for this layer
     With dstRect
         .Left = minX
-        .Top = MinY
+        .Top = minY
         .Width = maxX - minX
-        .Height = MaxY - MinY
+        .Height = maxY - minY
     End With
     
 End Sub
@@ -1240,16 +1240,16 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     Me.GetLayerCornerCoordinates m_PlgPoints, True, False
     
     'From our boundary points, find the largest and smallest (x, y) values.  These give us a bounding box for the layer as a whole.
-    Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
-    FindMaxMinOfPointFs m_PlgPoints, 4, minX, MinY, maxX, MaxY
+    Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+    FindMaxMinOfPointFs m_PlgPoints, 4, minX, minY, maxX, maxY
     
     'Copy those values into a RECTF struct, for convenience
     Dim layerRect As RECTF
     With layerRect
         .Left = minX
-        .Top = MinY
+        .Top = minY
         .Width = maxX - minX
-        .Height = MaxY - MinY
+        .Height = maxY - minY
     End With
     
     'We now know two crucial pieces of data:
@@ -1282,13 +1282,13 @@ Friend Function GetAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
         intLayerWidth = Int(layerRect.Width + 0.999 + normalizeX)
     End If
     
-    If (MinY < 0) Then
+    If (minY < 0) Then
         dstY = 0
         normalizeY = 0
-        intLayerHeight = Int(MaxY + 0.999)
+        intLayerHeight = Int(maxY + 0.999)
     Else
-        dstY = Int(MinY)
-        normalizeY = MinY - dstY
+        dstY = Int(minY)
+        normalizeY = minY - dstY
         intLayerHeight = Int(layerRect.Height + 0.999 + normalizeY)
     End If
     
@@ -1347,7 +1347,7 @@ End Function
 ' of the layer *IN IMAGE COORDINATES*.
 
 'Given an array with at least upper bound 2, find the max and min x/y values.
-Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef MinY As Single, ByRef maxX As Single, ByRef MaxY As Single)
+Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef minY As Single, ByRef maxX As Single, ByRef maxY As Single)
     
     If (srcPoints(0).x < srcPoints(1).x) Then
         minX = srcPoints(0).x
@@ -1358,19 +1358,19 @@ Private Sub FindMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoin
     End If
     
     If (srcPoints(0).y < srcPoints(1).y) Then
-        MinY = srcPoints(0).y
-        MaxY = srcPoints(1).y
+        minY = srcPoints(0).y
+        maxY = srcPoints(1).y
     Else
-        MinY = srcPoints(1).y
-        MaxY = srcPoints(0).y
+        minY = srcPoints(1).y
+        maxY = srcPoints(0).y
     End If
     
     Dim i As Long
     For i = 2 To numOfPoints - 1
         If (srcPoints(i).x < minX) Then minX = srcPoints(i).x
-        If (srcPoints(i).y < MinY) Then MinY = srcPoints(i).y
+        If (srcPoints(i).y < minY) Then minY = srcPoints(i).y
         If (srcPoints(i).x > maxX) Then maxX = srcPoints(i).x
-        If (srcPoints(i).y > MaxY) Then MaxY = srcPoints(i).y
+        If (srcPoints(i).y > maxY) Then maxY = srcPoints(i).y
     Next i
     
 End Sub

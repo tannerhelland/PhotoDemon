@@ -804,7 +804,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
             undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True)
-            srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection"
+            srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
@@ -824,7 +824,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
             
         'Selection data only
         Case UNDO_SELECTION
-            undoSuccess = srcPDImage.mainSelection.WriteSelectionToFile(dstUndoFilename & ".selection")
+            undoSuccess = srcPDImage.mainSelection.WriteSelectionToFile(dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel)
             
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else
