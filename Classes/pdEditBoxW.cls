@@ -177,7 +177,7 @@ Private Type TagMSG
     wParam As Long
     lParam As Long
     msgTime As Long
-    msgPoint As PointAPI
+    msgPoint As POINTAPI
 End Type
 
 'System window handling APIs
@@ -725,7 +725,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         End If
         
         'If we previously cached a Unicode character in WM_KEYDOWN, cast it back to wParam now.
-        If (m_CharCache <> 0) Then
+        If ((Not msgEaten) And (m_CharCache <> 0)) Then
             msgEaten = True
             HandleEditBoxMsgs = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, m_CharCache, lParam)
             m_CharCache = 0
