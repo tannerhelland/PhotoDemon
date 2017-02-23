@@ -55,8 +55,8 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
-    Dim pdiReader As pdPackager2
-    Set pdiReader = New pdPackager2
+    Dim pdiReader As pdPackager
+    Set pdiReader = New pdPackager
     
     'Load the file into the pdPackager instance.  Note that this step will also validate the incoming file.
     ' (Also, prior to v7.0, PD would copy the entire source file into memory, then load the PDI from there.  This no longer occurs;
@@ -293,8 +293,8 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal pdiPath As String, ByRef dst
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
-    Dim pdiReader As pdPackager2
-    Set pdiReader = New pdPackager2
+    Dim pdiReader As pdPackager
+    Set pdiReader = New pdPackager
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -404,8 +404,8 @@ Public Function LoadSingleLayerFromPDI(ByVal pdiPath As String, ByRef dstLayer A
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
-    Dim pdiReader As pdPackager2
-    Set pdiReader = New pdPackager2
+    Dim pdiReader As pdPackager
+    Set pdiReader = New pdPackager
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -466,7 +466,7 @@ Public Function LoadSingleLayerFromPDI(ByVal pdiPath As String, ByRef dstLayer A
                 If pdiReader.GetNodeDataByID(targetLayerID, False, retBytes, False, retSize) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                    ' as vector layers were implemented after pdPackager was given Unicode compatibility.
+                    ' as vector layers were implemented after pdPackager received Unicode compatibility.
                     retString = Space$(retSize \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                     
@@ -541,10 +541,10 @@ Public Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As p
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
-    Dim pdiReader As pdPackager2
-    Set pdiReader = New pdPackager2
+    Dim pdiReader As pdPackager
+    Set pdiReader = New pdPackager
     
-    'Load the file into the pdPackager instance.  pdPackager It will cache the file contents, so we only have to do this once.
+    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
     If pdiReader.ReadPackageFromFile(pdiPath, PD_LAYER_IDENTIFIER) Then
     
@@ -598,8 +598,7 @@ Public Function LoadPhotoDemonLayer(ByVal pdiPath As String, ByRef dstLayer As p
                 
                 If pdiReader.GetNodeDataByIndex(0, False, retBytes, False, retSize) Then
                 
-                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                    ' as vector layers were implemented after pdPackager was given Unicode compatibility.
+                    'Convert the byte array to a Unicode string.
                     retString = Space$(retSize \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), retSize
                     
@@ -1310,13 +1309,13 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
     'PDI files require a parent pdImage container
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
     
-    'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
-    ' from the source file.
-    Dim pdiReader As pdPackager
-    Set pdiReader = New pdPackager
+    'First things first: create a legacy pdPackage instance.  It will handle all the messy business of extracting individual
+    ' data bits from the source file.
+    Dim pdiReader As pdPackagerLegacy
+    Set pdiReader = New pdPackagerLegacy
     pdiReader.Init_ZLib "", True, g_ZLibEnabled
     
-    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
+    'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
     If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
@@ -1421,7 +1420,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
                 If pdiReader.GetNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
                 
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                    ' as vector layers were implemented after pdPackager gained full Unicode compatibility.
+                    ' as vector layers were implemented after pdPackagerLegacy gained full Unicode compatibility.
                     retString = Space$((UBound(retBytes) + 1) \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                     
@@ -1562,11 +1561,11 @@ Private Function LoadPhotoDemonImageHeaderOnly_Legacy(ByVal pdiPath As String, B
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
-    Dim pdiReader As pdPackager
-    Set pdiReader = New pdPackager
+    Dim pdiReader As pdPackagerLegacy
+    Set pdiReader = New pdPackagerLegacy
     pdiReader.Init_ZLib "", True, g_ZLibEnabled
     
-    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
+    'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
     If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
@@ -1679,11 +1678,11 @@ Private Function LoadSingleLayerFromPDI_Legacy(ByVal pdiPath As String, ByRef ds
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
     ' from the source file.
-    Dim pdiReader As pdPackager
-    Set pdiReader = New pdPackager
+    Dim pdiReader As pdPackagerLegacy
+    Set pdiReader = New pdPackagerLegacy
     pdiReader.Init_ZLib "", True, g_ZLibEnabled
     
-    'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
+    'Load the file into the pdPackagerLegacy instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
     If pdiReader.ReadPackageFromFile(pdiPath, PD_IMAGE_IDENTIFIER) Then
     
@@ -1741,8 +1740,7 @@ Private Function LoadSingleLayerFromPDI_Legacy(ByVal pdiPath As String, ByRef ds
                 
                 If pdiReader.GetNodeDataByID(targetLayerID, False, retBytes, True) Then
                 
-                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                    ' as vector layers were implemented after pdPackager was given Unicode compatibility.
+                    'Convert the byte array to a Unicode string
                     retString = Space$((UBound(retBytes) + 1) \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                     

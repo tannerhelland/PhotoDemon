@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2364</langversion>
+<langversion>6.8.2365</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -3352,12 +3352,7 @@ Please masukkan nilai berangka.</translation>
 
 <!-- BEGIN text for pdSelection.cls -->
 
-<phrase>
-<original>Requested selection file could not be located.  Selection load abandoned.</original>
-<translation>Fail pilihan yang diminta tidak boleh ditempat. Beban Pemilihan terbengkalai.</translation>
-</phrase>
-
-<!-- pdSelection.cls contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- pdSelection.cls contains 0 phrases. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -13794,7 +13789,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Klik di sini untuk menukar lapisan ini kepada lapisan tipografi.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 60 phrases. 28 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14962,10 +14957,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2518</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12382 total words. -->
+<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

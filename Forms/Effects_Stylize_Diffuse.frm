@@ -122,8 +122,10 @@ Private Sub Form_Load()
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
-        iWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-        iHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+        Dim selBounds As RECTF
+        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+        iWidth = selBounds.Width
+        iHeight = selBounds.Height
     Else
         iWidth = pdImages(g_CurrentImage).Width
         iHeight = pdImages(g_CurrentImage).Height
@@ -185,7 +187,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValDiffuseX As Long, QuickValDiffuseY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     Dim maxX As Long
@@ -210,13 +212,13 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     
     'Loop through each pixel in the image, diffusing as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         DiffuseX = Rnd * xDiffuse - hDX
         DiffuseY = Rnd * yDiffuse - hDY
         
-        QuickValDiffuseX = (DiffuseX * qvDepth) + QuickVal
+        QuickValDiffuseX = (DiffuseX * qvDepth) + quickVal
         QuickValDiffuseY = DiffuseY + y
             
         'Make sure the diffused pixel is within image boundaries, and if not adjust it according to the user's
@@ -235,12 +237,12 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
             If QuickValDiffuseY > finalY Then QuickValDiffuseY = finalY
         End If
             
-        dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
-        dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
-        dstImageData(QuickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
+        dstImageData(quickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
+        dstImageData(quickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
+        dstImageData(quickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
         
         'Handle alpha as well, if present
-        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = srcImageData(QuickValDiffuseX + 3, QuickValDiffuseY)
+        If qvDepth = 4 Then dstImageData(quickVal + 3, y) = srcImageData(QuickValDiffuseX + 3, QuickValDiffuseY)
 
     Next y
         If toPreview = False Then

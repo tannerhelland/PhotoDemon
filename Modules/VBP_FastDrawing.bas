@@ -56,11 +56,11 @@ Public Type FilterInfo
     
     'The lowest coordinate the filter is allowed to check.  This is almost always the top-left of the image (0, 0).
     minX As Long
-    MinY As Long
+    minY As Long
     
     'The highest coordinate the filter is allowed to check.  This is almost always (width, height).
     maxX As Long
-    MaxY As Long
+    maxY As Long
     
     'The colorDepth of the current DIB, specified as BITS per pixel; this will always be 24 or 32
     colorDepth As Long
@@ -243,9 +243,9 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
         .Width = workingDIB.GetDIBWidth
         .Height = workingDIB.GetDIBHeight
         .minX = 0
-        .MinY = 0
+        .minY = 0
         .maxX = workingDIB.GetDIBWidth - 1
-        .MaxY = workingDIB.GetDIBHeight - 1
+        .maxY = workingDIB.GetDIBHeight - 1
         .colorDepth = workingDIB.GetDIBColorDepth
         .BytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
         .dibX = 0
@@ -304,9 +304,12 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     ' (For example: a selected area that extends outside the boundary of the current image.)  When this
     ' happens, we have to do some extra handling to render a correct image; basically, we must null-pad
     ' the current layer DIB to the size of the image, then extract the relevant bits after the fact.
-    Dim tmpLayer As pdLayer
-    If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then Set tmpLayer = New pdLayer
-    
+    Dim tmpLayer As pdLayer, selBounds As RECTF
+    If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+        Set tmpLayer = New pdLayer
+        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
+    End If
+            
     'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window.
     Dim dstWidth As Double, dstHeight As Double
     Dim srcWidth As Double, srcHeight As Double
@@ -329,8 +332,8 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
             'Now we can proceed to crop out the relevant parts of the layer from the selection boundary.
-            workingDIB.CreateBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
-            BitBlt workingDIB.GetDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, tmpLayer.layerDIB.GetDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            workingDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
+            BitBlt workingDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
             workingDIB.SetInitialAlphaPremultiplicationState pdImages(g_CurrentImage).GetActiveLayer.layerDIB.GetAlphaPremultiplication
             
         Else
@@ -366,8 +369,8 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             If previewTarget.ViewportFitFullImage Then
             
                 If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
-                    srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-                    srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+                    srcWidth = selBounds.Width
+                    srcHeight = selBounds.Height
                 Else
                     srcWidth = pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth
                     srcHeight = pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight
@@ -383,19 +386,19 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 ' to the selection boundaries.
                 If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
                 
-                    If (pdImages(g_CurrentImage).mainSelection.boundWidth < srcWidth) Then
-                        srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-                        If (pdImages(g_CurrentImage).mainSelection.boundHeight < srcHeight) Then srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
-                    ElseIf (pdImages(g_CurrentImage).mainSelection.boundHeight < srcHeight) Then
-                        srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+                    If (selBounds.Width < srcWidth) Then
+                        srcWidth = selBounds.Width
+                        If (selBounds.Height < srcHeight) Then srcHeight = selBounds.Height
+                    ElseIf (selBounds.Height < srcHeight) Then
+                        srcHeight = selBounds.Height
                     End If
                     
                 Else
                     
-                    If pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth < srcWidth Then
+                    If (pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth < srcWidth) Then
                         srcWidth = pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth
-                        If pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight < srcHeight Then srcHeight = pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight
-                    ElseIf pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight < srcHeight Then
+                        If (pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight < srcHeight) Then srcHeight = pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight
+                    ElseIf (pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight < srcHeight) Then
                         srcHeight = pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight
                     End If
                     
@@ -431,7 +434,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 ' that we do any further processing.)
                 Dim tmpDIB As pdDIB
                 Set tmpDIB = New pdDIB
-                tmpDIB.CreateBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
+                tmpDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
                 
                 'Before proceeding further, make a copy of the active layer, and null-pad it to the size of the parent image.
                 ' This will allow any possible selection to work, regardless of a layer's actual area.
@@ -439,7 +442,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 tmpLayer.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
                 
                 'NOW we can copy over the active layer's data, within the bounding box of the active selection
-                BitBlt tmpDIB.GetDIBDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpLayer.layerDIB.GetDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+                BitBlt tmpDIB.GetDIBDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpLayer.layerDIB.GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
                 
                 'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the selection
                 If previewTarget.ViewportFitFullImage Then
@@ -481,7 +484,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                     hOffset = previewTarget.offsetX
                     vOffset = previewTarget.offsetY
                     
-                    If workingDIB.GetDIBWidth <> newWidth Or workingDIB.GetDIBHeight <> newHeight Then
+                    If ((workingDIB.GetDIBWidth <> newWidth) Or (workingDIB.GetDIBHeight <> newHeight)) Then
                         workingDIB.CreateBlank newWidth, newHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
                     Else
                         workingDIB.ResetDIB
@@ -539,9 +542,9 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         .Width = workingDIB.GetDIBWidth
         .Height = workingDIB.GetDIBHeight
         .minX = 0
-        .MinY = 0
+        .minY = 0
         .maxX = workingDIB.GetDIBWidth - 1
-        .MaxY = workingDIB.GetDIBHeight - 1
+        .maxY = workingDIB.GetDIBHeight - 1
         .colorDepth = workingDIB.GetDIBColorDepth
         .BytesPerPixel = (workingDIB.GetDIBColorDepth \ 8)
         .dibX = 0
@@ -604,13 +607,17 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
     If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
-    
+        
+        'Retrieve the current selection boundaries
+        Dim selBounds As RECTF
+        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
+        
         'Before continuing further, create a copy of the selection mask at the relevant image size; note that "relevant size"
         ' is obviously calculated differently for previews.
         Dim selMaskCopy As pdDIB
         Set selMaskCopy = New pdDIB
-        selMaskCopy.CreateBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight
-        BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).mainSelection.selMask.GetDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+        selMaskCopy.CreateBlank selBounds.Width, selBounds.Height
+        BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).mainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
         
         'If this is a preview, resize the selection mask to match the preview size
         If isPreview Then
@@ -631,7 +638,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 vOffset = previewTarget.offsetY
                 
                 selMaskCopy.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-                BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).mainSelection.selMask.GetDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft + hOffset, pdImages(g_CurrentImage).mainSelection.boundTop + vOffset, vbSrcCopy
+                BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).mainSelection.GetMaskDC(), selBounds.Left + hOffset, selBounds.Top + vOffset, vbSrcCopy
                 
             End If
             
@@ -644,7 +651,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         'A few rare functions actually change the color depth of the image.  Check for that now, and make sure the workingDIB
         ' and workingDIBBackup DIBs are the same bit-depth.
-        If workingDIB.GetDIBColorDepth <> workingDIBBackup.GetDIBColorDepth Then
+        If (workingDIB.GetDIBColorDepth <> workingDIBBackup.GetDIBColorDepth) Then
             If workingDIB.GetDIBColorDepth = 24 Then
                 workingDIBBackup.ConvertTo24bpp
             Else
@@ -670,9 +677,10 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         PrepSafeArray dstSA, workingDIBBackup
         CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
         
-        Dim i As Long
-        Dim thisAlpha As Long
-        Dim blendAlpha As Double
+        Dim i As Long, thisAlpha As Long, blendAlpha As Double
+        
+        'TODO: figure out why the selection mask is always being copied at 24-bpp
+        Dim selMaskDepth As Long
         
         Dim dstQuickVal As Long, srcQuickX As Long
         dstQuickVal = pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth \ 8
@@ -731,7 +739,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
         
             If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.SetAlphaPremultiplication True
-            BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
+            BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
             
             'Un-pad any null pixels we may have added as part of the selection interaction
             pdImages(g_CurrentImage).GetActiveLayer.CropNullPaddedLayer

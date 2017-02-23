@@ -35,7 +35,7 @@ Private m_ResourcesAvailable As Boolean
 
 'Resources are stored in a persistent pdPackager instance.  You cannot rely on instantiation of this class
 ' for correct behavior; instead, query m_ResourcesAvailable.
-Private m_Resources As pdPackager2
+Private m_Resources As pdPackager
 
 'We use a temporary DIB to pull resources from file, prior to applying any real-time coloring changes.
 Private m_tmpDIB As pdDIB
@@ -134,7 +134,7 @@ End Function
 'Given a path to a .pdr file, attempt to load and validate it
 Private Function LoadResourceFile(ByRef srcPath As String) As Boolean
         
-    Set m_Resources = New pdPackager2
+    Set m_Resources = New pdPackager
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -157,7 +157,7 @@ Private Function LoadDefaultResource() As Boolean
     
     RaiseResourceError "Falling back to internal resource collection...", True
         
-    Set m_Resources = New pdPackager2
+    Set m_Resources = New pdPackager
     
     'Pull the relevant resource out of memory
     Dim tmpRes() As Byte

@@ -455,8 +455,8 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of compressing individual layers,
     ' and storing everything to a running byte stream.
-    Dim pdiWriter As pdPackager2
-    Set pdiWriter = New pdPackager2
+    Dim pdiWriter As pdPackager
+    Set pdiWriter = New pdPackager
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
@@ -570,8 +570,8 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal pdiPath As 
     If (Not suppressMessages) Then Message "Saving %1 layer...", sFileType
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
-    Dim pdiWriter As pdPackager2
-    Set pdiWriter = New pdPackager2
+    Dim pdiWriter As pdPackager
+    Set pdiWriter = New pdPackager
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.

@@ -337,9 +337,9 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
+    'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackagerLegacy object.
+    Dim cPackage As pdPackagerLegacy
+    Set cPackage = New pdPackagerLegacy
     cPackage.Init_ZLib "", True, g_ZLibEnabled
     
     If cPackage.ReadPackageFromFile(savedToThisFile) Then
@@ -409,7 +409,7 @@ Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As 
         End If
     
     Else
-        Debug.Print "WARNING! Language file downloaded, but pdPackager rejected it.  Language update abandoned."
+        Debug.Print "WARNING! Language file downloaded, but pdPackagerLegacy rejected it.  Language update abandoned."
         PatchLanguageFile = False
     End If
     
@@ -647,8 +647,8 @@ Public Function PatchProgramFiles() As Boolean
     tmpXML.WriteXMLToFile g_UserPreferences.GetUpdatePath & "patch.xml", True
     
     'The patching .exe is embedded inside the update package.  Extract it now.
-    Dim cPackage As pdPackager
-    Set cPackage = New pdPackager
+    Dim cPackage As pdPackagerLegacy
+    Set cPackage = New pdPackagerLegacy
     cPackage.Init_ZLib "", True, g_ZLibEnabled
     
     Dim patchFileName As String

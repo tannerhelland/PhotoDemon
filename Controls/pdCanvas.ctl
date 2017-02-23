@@ -683,12 +683,12 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
             
                     'If a selection is active, nudge it using the arrow keys
-                    If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> sRaster) Then
+                    If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
                         
                         markEventHandled = True
                         
                         'Disable automatic refresh requests
-                        pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = True
+                        pdImages(g_CurrentImage).mainSelection.SuspendAutoRefresh True
                         
                         'Calculate offsets
                         If (vkCode = VK_UP) Then vOffset = vOffset - 1
@@ -703,7 +703,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             
                             'Non-textbox-compatible selections are handled here
                             If (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_WAND) Then
-                                pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
+                                pdImages(g_CurrentImage).mainSelection.SuspendAutoRefresh False
                                 pdImages(g_CurrentImage).mainSelection.NudgeSelection hOffset, vOffset
                             
                             'Textbox-compatible selections are handled here
@@ -713,13 +713,13 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                                 toolpanel_Selections.tudSel(0).Value = toolpanel_Selections.tudSel(0).Value + hOffset
                                 toolpanel_Selections.tudSel(1).Value = toolpanel_Selections.tudSel(1).Value + vOffset
                                 
-                                If g_CurrentTool = SELECT_LINE Then
+                                If (g_CurrentTool = SELECT_LINE) Then
                                     toolpanel_Selections.tudSel(2).Value = toolpanel_Selections.tudSel(2).Value + hOffset
                                     toolpanel_Selections.tudSel(3).Value = toolpanel_Selections.tudSel(3).Value + vOffset
                                 End If
                                 
                                 'Update the screen
-                                pdImages(g_CurrentImage).mainSelection.rejectRefreshRequests = False
+                                pdImages(g_CurrentImage).mainSelection.SuspendAutoRefresh False
                                 pdImages(g_CurrentImage).mainSelection.UpdateViaTextBox
                             
                             End If
@@ -940,7 +940,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     sCheck = FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                     
                     'If a point of interest was clicked, initiate a transform
-                    If (sCheck <> -1) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> sPolygon) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> sRaster) Then
+                    If (sCheck <> -1) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Polygon) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
                         
                         'Initialize a selection transformation
                         pdImages(g_CurrentImage).mainSelection.SetTransformationType sCheck
@@ -1158,7 +1158,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
     
                 'First, check to see if a selection is both active and transformable.
-                If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> sRaster) Then
+                If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
                     
                     'If the SHIFT key is down, notify the selection engine that a square shape is requested
                     pdImages(g_CurrentImage).mainSelection.RequestSquare (Shift And vbShiftMask)
@@ -1323,19 +1323,22 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                     ' point falls outside the selection, clear the selection from the image.
-                    If ((clickEventAlsoFiring) And (FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((pdImages(g_CurrentImage).mainSelection.selWidth <= 0) And (pdImages(g_CurrentImage).mainSelection.selHeight <= 0)) Then
+                    Dim selBounds As RECTF
+                    selBounds = pdImages(g_CurrentImage).mainSelection.GetCornersLockedRect
+                    
+                    If ((clickEventAlsoFiring) And (FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)) Or ((selBounds.Width <= 0) And (selBounds.Height <= 0)) Then
                         
                         If (g_CurrentTool <> SELECT_WAND) Then
                             Process "Remove selection", , , IIf(m_SelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
                         Else
-                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                         End If
                     
                     'The mouse is being released after a significant move event, or on a point of interest to the current selection.
                     Else
                     
                         'If the selection is not raster-type, pass these final mouse coordinates to it
-                        If (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> sRaster) Then
+                        If (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
 
                             pdImages(g_CurrentImage).mainSelection.RequestSquare (Shift And vbShiftMask)
                             pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
@@ -1358,15 +1361,15 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                             
                                         'Creating a new selection
                                         Case -1
-                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                             
                                         'Moving an existing selection
                                         Case 8
-                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                             
                                         'Anything else is assumed to be resizing an existing selection
                                         Case Else
-                                            Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                             
                                     End Select
                                     
@@ -1376,16 +1379,16 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                             
                                         'Creating a new selection
                                         Case -1
-                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                             
                                         'Moving an existing selection
                                         Case Else
-                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                            Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                             
                                     End Select
                                     
                                 Case SELECT_WAND
-                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                             
                             End Select
                             
@@ -1423,13 +1426,13 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                             Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
                             
                                 Case pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints
-                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    Process "Move selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                     
                                 Case 0
                                     If clickEventAlsoFiring Then
-                                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                     Else
-                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                     End If
                                     
                                 Case -1
@@ -1443,12 +1446,12 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                                     Else
                                         
                                         pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                        Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                         
                                     End If
                                 
                                 Case Else
-                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                                    Process "Resize selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                                     
                             End Select
                             
@@ -1497,7 +1500,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'If the selection coordinates are valid, create it now.
                     Else
-                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionParamString, UNDO_SELECTION, g_CurrentTool
+                        Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                     End If
                     
                     'Force a redraw of the screen

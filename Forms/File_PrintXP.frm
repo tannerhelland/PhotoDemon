@@ -479,7 +479,7 @@ Private Sub Form_Load()
 End Sub
 
 'OK Button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
 
     On Error Resume Next
     
@@ -817,6 +817,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     dstHeight = dstPicture.ScaleHeight
     
     Dim srcWidth As Double, srcHeight As Double
+    Dim selBounds As RECTF
     
     'The source values need to be adjusted contingent on whether this is a selection or a full-image preview
     If useOtherPictureSrc Then
@@ -824,8 +825,9 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         srcHeight = otherPictureSrc.GetDIBHeight
     Else
         If pdImages(g_CurrentImage).selectionActive Then
-            srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
-            srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
+            selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
+            srcWidth = selBounds.Width
+            srcHeight = selBounds.Height
         Else
             srcWidth = pdImages(g_CurrentImage).GetActiveDIB().GetDIBWidth
             srcHeight = pdImages(g_CurrentImage).GetActiveDIB().GetDIBHeight
@@ -853,11 +855,13 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
             End If
         
         Else
+            
+            selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
         
             'Copy the current selection into a temporary DIB
             Set tmpDIB = New pdDIB
-            tmpDIB.CreateBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
-            BitBlt tmpDIB.GetDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            tmpDIB.CreateBlank selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth
+            BitBlt tmpDIB.GetDIBDC, 0, 0, selBounds.Width, selBounds.Height, pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, vbSrcCopy
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
             If pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth = 32 Then
