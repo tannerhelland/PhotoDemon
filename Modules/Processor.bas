@@ -954,84 +954,84 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Create/remove selections
         Case "Create selection"
-            Selection_Handler.CreateNewSelection cParams.GetParamString
+            Selections.CreateNewSelection cParams.GetParamString
         
         Case "Remove selection"
-            Selection_Handler.RemoveCurrentSelection
+            Selections.RemoveCurrentSelection
                     
         
         'Modify the existing selection in some way
         Case "Invert selection"
-            Selection_Handler.InvertCurrentSelection
+            Selections.InvertCurrentSelection
             
         Case "Grow selection"
             If ShowDialog Then
-                Selection_Handler.GrowCurrentSelection True
+                Selections.GrowCurrentSelection True
             Else
-                Selection_Handler.GrowCurrentSelection False, cParams.GetDouble(1)
+                Selections.GrowCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Shrink selection"
             If ShowDialog Then
-                Selection_Handler.ShrinkCurrentSelection True
+                Selections.ShrinkCurrentSelection True
             Else
-                Selection_Handler.ShrinkCurrentSelection False, cParams.GetDouble(1)
+                Selections.ShrinkCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Feather selection"
             If ShowDialog Then
-                Selection_Handler.FeatherCurrentSelection True
+                Selections.FeatherCurrentSelection True
             Else
-                Selection_Handler.FeatherCurrentSelection False, cParams.GetDouble(1)
+                Selections.FeatherCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Sharpen selection"
             If ShowDialog Then
-                Selection_Handler.SharpenCurrentSelection True
+                Selections.SharpenCurrentSelection True
             Else
-                Selection_Handler.SharpenCurrentSelection False, cParams.GetDouble(1)
+                Selections.SharpenCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Border selection"
             If ShowDialog Then
-                Selection_Handler.BorderCurrentSelection True
+                Selections.BorderCurrentSelection True
             Else
-                Selection_Handler.BorderCurrentSelection False, cParams.GetDouble(1)
+                Selections.BorderCurrentSelection False, cParams.GetDouble(1)
             End If
         
         'Erase selected area (from layer)
         Case "Erase selected area"
-            Selection_Handler.EraseSelectedArea cParams.GetLong(1)
+            Selections.EraseSelectedArea cParams.GetLong(1)
         
         'Load/save selection from/to file
         Case "Load selection"
             If ShowDialog Then
-                Selection_Handler.LoadSelectionFromFile True
+                Selections.LoadSelectionFromFile True
             Else
-                Selection_Handler.LoadSelectionFromFile False, cParams.GetParamString
+                Selections.LoadSelectionFromFile False, cParams.GetParamString
             End If
             
         Case "Save selection"
-            Selection_Handler.SaveSelectionToFile
+            Selections.SaveSelectionToFile
             
         'Export selected area as image (defaults to PNG, but user can select the actual format)
         Case "Export selected area as image"
-            Selection_Handler.ExportSelectedAreaAsImage
+            Selections.ExportSelectedAreaAsImage
         
         'Export selection mask as image (defaults to PNG, but user can select the actual format)
         Case "Export selection mask as image"
-            Selection_Handler.ExportSelectionMaskAsImage
+            Selections.ExportSelectionMaskAsImage
         
         ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
         Case "Move selection"
-            Selection_Handler.CreateNewSelection cParams.GetParamString
+            Selections.CreateNewSelection cParams.GetParamString
             
         ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is resized
         Case "Resize selection"
-            Selection_Handler.CreateNewSelection cParams.GetParamString
+            Selections.CreateNewSelection cParams.GetParamString
         
         Case "Select all"
-            Selection_Handler.SelectWholeImage
+            Selections.SelectWholeImage
         
         
         

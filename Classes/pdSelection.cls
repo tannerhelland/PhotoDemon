@@ -1523,7 +1523,7 @@ Friend Sub UpdateViaTextBox()
     m_RejectRefreshRequests = True
     
     Dim subpanelOffset As Long
-    subpanelOffset = Selection_Handler.GetSelectionSubPanelFromSelectionShape(pdImages(g_CurrentImage)) * 4
+    subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(g_CurrentImage)) * 4
     
     'Check all text box entries for validity, then update the corresponding selection values.
     Select Case m_SelectionShape
