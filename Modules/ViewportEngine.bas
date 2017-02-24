@@ -197,7 +197,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     If srcImage.selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.RenderCustom m_FrontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, Selection_Handler.GetCurrentPD_SelectionRenderMode, Selection_Handler.GetCurrentPD_SelectionRenderColor
+        srcImage.mainSelection.RenderCustom m_FrontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, Selections.GetCurrentPD_SelectionRenderMode, Selections.GetCurrentPD_SelectionRenderColor
     
     End If
     

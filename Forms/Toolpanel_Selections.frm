@@ -648,7 +648,7 @@ Private Sub cboSelRender_Click()
     End If
     
     'Redraw the viewport
-    Selection_Handler.NotifySelectionRenderChange
+    Selections.NotifySelectionRenderChange
     If SelectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
@@ -686,7 +686,7 @@ End Sub
 Private Sub csSelectionHighlight_ColorChanged()
     
     'Redraw the viewport
-    Selection_Handler.NotifySelectionRenderChange
+    Selections.NotifySelectionRenderChange
     If SelectionsAllowed(False) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
@@ -756,7 +756,7 @@ Private Sub Form_Load()
     
     'If a selection is already active, synchronize all UI elements to match
     If suspendActive Then
-        If pdImages(g_CurrentImage).selectionActive Then Selection_Handler.SyncTextToCurrentSelection g_CurrentImage
+        If pdImages(g_CurrentImage).selectionActive Then Selections.SyncTextToCurrentSelection g_CurrentImage
     End If
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
@@ -831,11 +831,11 @@ Public Sub UpdateSelectionPanelLayout()
     End If
     
     'Display the border slider as necessary
-    If (Selection_Handler.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selection_Handler.GetSelectionSubPanelFromCurrentTool > 0) Then
-        If cboSelArea(Selection_Handler.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border Then
-            sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Visible = True
+    If (Selections.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selections.GetSelectionSubPanelFromCurrentTool > 0) Then
+        If cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border Then
+            sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = True
         Else
-            sltSelectionBorder(Selection_Handler.GetSelectionSubPanelFromCurrentTool).Visible = False
+            sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = False
         End If
     End If
     

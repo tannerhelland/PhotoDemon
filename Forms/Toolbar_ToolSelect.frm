@@ -736,7 +736,7 @@ Private Sub NewToolSelected()
                 
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
-                If (g_CurrentTool = Selection_Handler.GetRelevantToolFromSelectShape()) Then
+                If (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
                     SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.IsTransformable
                 
                 'A selection is already active, and it doesn't match the current tool type!
@@ -889,7 +889,7 @@ Public Sub ResetToolButtonStates()
     Dim activeSelectionSubpanel As Long
     If Tool_Support.IsSelectionToolActive Then
     
-        activeSelectionSubpanel = Selection_Handler.GetSelectionSubPanelFromCurrentTool
+        activeSelectionSubpanel = Selections.GetSelectionSubPanelFromCurrentTool
         
         For i = 0 To toolpanel_Selections.ctlGroupSelectionSubcontainer.Count - 1
             toolpanel_Selections.ctlGroupSelectionSubcontainer(i).Visible = CBool(i = activeSelectionSubpanel)
@@ -909,14 +909,14 @@ Public Sub ResetToolButtonStates()
     If SelectionsAllowed(False) Then
         
         'Does the existing selection differ from the current one?
-        If ((Selection_Handler.GetRelevantToolFromSelectShape() <> g_CurrentTool) And Tool_Support.IsSelectionToolActive) Then
+        If ((Selections.GetRelevantToolFromSelectShape() <> g_CurrentTool) And Tool_Support.IsSelectionToolActive) Then
             
             'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
             If ((g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Rectangle)) Or _
                 ((g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Circle)) Then
                 
                 'Simply update the shape and redraw the viewport
-                pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selection_Handler.GetSelectionShapeFromCurrentTool
+                pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selections.GetSelectionShapeFromCurrentTool
                 SyncTextToCurrentSelection g_CurrentImage
                 Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
