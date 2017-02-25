@@ -176,7 +176,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
                 
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
+        Dim quickVal As Long, qvDepth As Long
         qvDepth = curDIBValues.BytesPerPixel
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -193,21 +193,21 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
         
         'The final step of the chroma blur function is to merge blurred color data with original luminance data
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(QuickVal + 2, y)
-            g = srcImageData(QuickVal + 1, y)
-            b = srcImageData(QuickVal, y)
+            r = srcImageData(quickVal + 2, y)
+            g = srcImageData(quickVal + 1, y)
+            b = srcImageData(quickVal, y)
             
             'Determine original HSL values
             tRGBToHSL r, g, b, h, s, origLuminance
             
             'Now, retrieve the gaussian pixels
-            r = GaussImageData(QuickVal + 2, y)
-            g = GaussImageData(QuickVal + 1, y)
-            b = GaussImageData(QuickVal, y)
+            r = GaussImageData(quickVal + 2, y)
+            g = GaussImageData(quickVal + 1, y)
+            b = GaussImageData(quickVal, y)
             
             'Determine HSL for the blurred data
             tRGBToHSL r, g, b, h, s, l
@@ -216,10 +216,10 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
             tHSLToRGB h, s, origLuminance, r, g, b
             
             'Apply the new RGB colors to the image
-            dstImageData(QuickVal + 2, y) = r
-            dstImageData(QuickVal + 1, y) = g
-            dstImageData(QuickVal, y) = b
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = srcImageData(QuickVal + 3, y)
+            dstImageData(quickVal + 2, y) = r
+            dstImageData(quickVal + 1, y) = g
+            dstImageData(quickVal, y) = b
+            If qvDepth = 4 Then dstImageData(quickVal + 3, y) = srcImageData(quickVal + 3, y)
             
         Next y
             If Not toPreview Then

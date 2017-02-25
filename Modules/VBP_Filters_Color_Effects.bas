@@ -35,7 +35,7 @@ Public Sub MenuInvert()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -45,11 +45,11 @@ Public Sub MenuInvert()
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
-        ImageData(QuickVal, y) = 255 Xor ImageData(QuickVal, y)
-        ImageData(QuickVal + 1, y) = 255 Xor ImageData(QuickVal + 1, y)
-        ImageData(QuickVal + 2, y) = 255 Xor ImageData(QuickVal + 2, y)
+        ImageData(quickVal, y) = 255 Xor ImageData(quickVal, y)
+        ImageData(quickVal + 1, y) = 255 Xor ImageData(quickVal + 1, y)
+        ImageData(quickVal + 2, y) = 255 Xor ImageData(quickVal + 2, y)
     Next y
         If (x And progBarCheck) = 0 Then
             If UserPressedESC() Then Exit For
@@ -90,7 +90,7 @@ Public Sub MenuCShift(ByVal sType As Byte)
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -103,20 +103,20 @@ Public Sub MenuCShift(ByVal sType As Byte)
     
     'After all that work, the Invert code itself is very small and unexciting!
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         If sType = 0 Then
-            r = ImageData(QuickVal, y)
-            g = ImageData(QuickVal + 2, y)
-            b = ImageData(QuickVal + 1, y)
+            r = ImageData(quickVal, y)
+            g = ImageData(quickVal + 2, y)
+            b = ImageData(quickVal + 1, y)
         Else
-            r = ImageData(QuickVal + 1, y)
-            g = ImageData(QuickVal, y)
-            b = ImageData(QuickVal + 2, y)
+            r = ImageData(quickVal + 1, y)
+            g = ImageData(quickVal, y)
+            b = ImageData(quickVal + 2, y)
         End If
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
     Next y
         If (x And progBarCheck) = 0 Then
             If UserPressedESC() Then Exit For
@@ -153,7 +153,7 @@ Public Sub MenuNegative()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -167,13 +167,13 @@ Public Sub MenuNegative()
     
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Use those to calculate hue and saturation
         tRGBToHSL r, g, b, h, s, l
@@ -182,9 +182,9 @@ Public Sub MenuNegative()
         tHSLToRGB h, s, 1 - l, r, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -222,7 +222,7 @@ Public Sub MenuInvertHue()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -236,13 +236,13 @@ Public Sub MenuInvertHue()
     
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Use those to calculate hue, saturation, and luminance
         tRGBToHSL r, g, b, h, s, l
@@ -254,9 +254,9 @@ Public Sub MenuInvertHue()
         tHSLToRGB h, s, l, r, g, b
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -296,7 +296,7 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -310,12 +310,12 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         If r = 0 Then r = 1
         If g = 0 Then g = 1
@@ -329,9 +329,9 @@ Public Sub MenuCompoundInvert(ByVal Divisor As Long)
         If newG > 255 Then newG = 255
         If newB > 255 Then newB = 255
         
-        ImageData(QuickVal + 2, y) = newR
-        ImageData(QuickVal + 1, y) = newG
-        ImageData(QuickVal, y) = newB
+        ImageData(quickVal + 2, y) = newR
+        ImageData(quickVal + 1, y) = newG
+        ImageData(quickVal, y) = newB
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -373,7 +373,7 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -386,12 +386,12 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         If useMax Then
             maxVal = Max3Int(r, g, b)
@@ -405,9 +405,9 @@ Public Sub FilterMaxMinChannel(ByVal useMax As Boolean)
             If b > minVal Then b = 0
         End If
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -446,7 +446,7 @@ Public Sub fxAutoEnhanceColors()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -459,12 +459,12 @@ Public Sub fxAutoEnhanceColors()
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate an accurate grayscale equivalent
         gray = (213 * r + 715 * g + 72 * b) \ 1000
@@ -481,9 +481,9 @@ Public Sub fxAutoEnhanceColors()
         If b > 255 Then b = 255
         If b < 0 Then b = 0
         
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -522,7 +522,7 @@ Public Sub fxAutoEnhanceContrast()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -551,16 +551,16 @@ Public Sub fxAutoEnhanceContrast()
     
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
-        ImageData(QuickVal + 2, y) = contrastLookup(r)
-        ImageData(QuickVal + 1, y) = contrastLookup(g)
-        ImageData(QuickVal, y) = contrastLookup(b)
+        ImageData(quickVal + 2, y) = contrastLookup(r)
+        ImageData(quickVal + 1, y) = contrastLookup(g)
+        ImageData(quickVal, y) = contrastLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -599,7 +599,7 @@ Public Sub fxAutoEnhanceLighting()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -639,16 +639,16 @@ Public Sub fxAutoEnhanceLighting()
     
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
-        ImageData(QuickVal + 2, y) = contrastLookup(r)
-        ImageData(QuickVal + 1, y) = contrastLookup(g)
-        ImageData(QuickVal, y) = contrastLookup(b)
+        ImageData(quickVal + 2, y) = contrastLookup(r)
+        ImageData(quickVal + 1, y) = contrastLookup(g)
+        ImageData(quickVal, y) = contrastLookup(b)
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -718,7 +718,7 @@ Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, By
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'Finally, a bunch of variables used in color calculation
@@ -726,20 +726,20 @@ Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, By
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
-        b = ImageData(QuickVal, y)
-        g = ImageData(QuickVal + 1, y)
-        r = ImageData(QuickVal + 2, y)
-        a = ImageData(QuickVal + 3, y)
+        b = ImageData(quickVal, y)
+        g = ImageData(quickVal + 1, y)
+        r = ImageData(quickVal + 2, y)
+        a = ImageData(quickVal + 3, y)
         
         If (r = oldQuad.Red) And (g = oldQuad.Green) And (b = oldQuad.Blue) And (a = oldQuad.alpha) Then
         
-            ImageData(QuickVal + 3, y) = newQuad.alpha
-            ImageData(QuickVal + 2, y) = newQuad.Red
-            ImageData(QuickVal + 1, y) = newQuad.Green
-            ImageData(QuickVal, y) = newQuad.Blue
+            ImageData(quickVal + 3, y) = newQuad.alpha
+            ImageData(quickVal + 2, y) = newQuad.Red
+            ImageData(quickVal + 1, y) = newQuad.Green
+            ImageData(quickVal, y) = newQuad.Blue
             
         End If
         

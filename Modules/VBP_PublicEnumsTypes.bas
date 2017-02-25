@@ -503,7 +503,7 @@ End Type
 '
 'This list of formats is based heavily off the matching list of FIF_ constants in the FreeImage module.  Changes there
 ' should ideally be reflected here, to avoid problems when offloading esoteric formats to FreeImage.
-Public Enum PHOTODEMON_IMAGE_FORMAT
+Public Enum PD_IMAGE_FORMAT
     PDIF_UNKNOWN = -1
     PDIF_BMP = 0
     PDIF_ICO = 1

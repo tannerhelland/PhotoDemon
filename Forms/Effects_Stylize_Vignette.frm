@@ -236,7 +236,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -296,7 +296,7 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
@@ -313,9 +313,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
             
             If nY2 > sRadiusMax Then
                 
-                dstImageData(QuickVal + 2, y) = BlendColors(newR, dstImageData(QuickVal + 2, y), vTransparency)
-                dstImageData(QuickVal + 1, y) = BlendColors(newG, dstImageData(QuickVal + 1, y), vTransparency)
-                dstImageData(QuickVal, y) = BlendColors(newB, dstImageData(QuickVal, y), vTransparency)
+                dstImageData(quickVal + 2, y) = BlendColors(newR, dstImageData(quickVal + 2, y), vTransparency)
+                dstImageData(quickVal + 1, y) = BlendColors(newG, dstImageData(quickVal + 1, y), vTransparency)
+                dstImageData(quickVal, y) = BlendColors(newB, dstImageData(quickVal, y), vTransparency)
                 
             'Otherwise, check for feathering
             Else
@@ -325,9 +325,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
                     blendVal = (nY2 - sRadiusMin) / vFeathering2
                     blendVal = blendVal * (1 - vTransparency)
                     
-                    dstImageData(QuickVal + 2, y) = BlendColors(dstImageData(QuickVal + 2, y), newR, blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(dstImageData(QuickVal + 1, y), newG, blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(dstImageData(QuickVal, y), newB, blendVal)
+                    dstImageData(quickVal + 2, y) = BlendColors(dstImageData(quickVal + 2, y), newR, blendVal)
+                    dstImageData(quickVal + 1, y) = BlendColors(dstImageData(quickVal + 1, y), newG, blendVal)
+                    dstImageData(quickVal, y) = BlendColors(dstImageData(quickVal, y), newB, blendVal)
                 End If
                     
             End If
@@ -337,9 +337,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         
             'If the values are going to be out-of-bounds, force them to black
             If (nX2 + nY2) > sRadiusCircular Then
-                dstImageData(QuickVal + 2, y) = BlendColors(newR, dstImageData(QuickVal + 2, y), vTransparency)
-                dstImageData(QuickVal + 1, y) = BlendColors(newG, dstImageData(QuickVal + 1, y), vTransparency)
-                dstImageData(QuickVal, y) = BlendColors(newB, dstImageData(QuickVal, y), vTransparency)
+                dstImageData(quickVal + 2, y) = BlendColors(newR, dstImageData(quickVal + 2, y), vTransparency)
+                dstImageData(quickVal + 1, y) = BlendColors(newG, dstImageData(quickVal + 1, y), vTransparency)
+                dstImageData(quickVal, y) = BlendColors(newB, dstImageData(quickVal, y), vTransparency)
                 
             'Otherwise, check for feathering
             Else
@@ -348,9 +348,9 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
                     blendVal = (nX2 + nY2 - sRadiusMin) / vFeathering2
                     blendVal = blendVal * (1 - vTransparency)
                     
-                    dstImageData(QuickVal + 2, y) = BlendColors(dstImageData(QuickVal + 2, y), newR, blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(dstImageData(QuickVal + 1, y), newG, blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(dstImageData(QuickVal, y), newB, blendVal)
+                    dstImageData(quickVal + 2, y) = BlendColors(dstImageData(quickVal + 2, y), newR, blendVal)
+                    dstImageData(quickVal + 1, y) = BlendColors(dstImageData(quickVal + 1, y), newG, blendVal)
+                    dstImageData(quickVal, y) = BlendColors(dstImageData(quickVal, y), newB, blendVal)
                 End If
                 
             End If

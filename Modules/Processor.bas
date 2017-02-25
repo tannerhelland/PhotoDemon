@@ -329,7 +329,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     If (Not ShowDialog) And (Not pdImages(g_CurrentImage) Is Nothing) Then
     
         'Only worry about this if a selection is actually active
-        If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) Then
+        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) Then
     
             Dim removeSelectionInAdvance As Boolean
             removeSelectionInAdvance = False
@@ -432,7 +432,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'First, check for on-canvas modifications to the selection (e.g. feathering slider changes, etc)
         If (Not pdImages(g_CurrentImage) Is Nothing) Then
         
-            If pdImages(g_CurrentImage).selectionActive And (createUndo <> UNDO_SELECTION) And (createUndo <> UNDO_EVERYTHING) Then
+            If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) And (createUndo <> UNDO_EVERYTHING) Then
             
                 'Ask the Undo engine to return the last selection param string it has on file
                 Dim lastSelParamString As String
@@ -2366,7 +2366,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog 
     ' as well as the image tab-bar.
     If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         Interface.NotifyImageChanged g_CurrentImage, targetLayerID
-        ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+        ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
     End If
     
     'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:

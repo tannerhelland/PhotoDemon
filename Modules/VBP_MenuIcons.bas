@@ -443,18 +443,20 @@ Public Sub CreateCustomFormIcons(ByRef srcImage As pdImage)
         ' (Taskbar icons are generally 32x32.  Form titlebar icons are generally 16x16.)
         Dim hIcon32 As Long, hIcon16 As Long
         hIcon32 = GetIconFromDIB(thumbDIB, , True)
-        hIcon16 = GetIconFromDIB(thumbDIB, 16, False)   'Truthfully, I have no idea why this icon must be treated as upside-down.  FreeImage bug, perhaps?
+        hIcon16 = GetIconFromDIB(thumbDIB, 16, False)   'Because FreeImage is stupid, it will have vertically flipped the source
+                                                        ' thumbDIB in the previous call.  That's why this uses FALSE as the
+                                                        ' final parameter.
         
-        'Each pdImage instance stores its custom icon handles, which simplifies the process of synchronizing PD's icons
+        'Each pdImage instance caches its custom icon handles, which simplifies the process of synchronizing PD's icons
         ' to any given image if the user is working with multiple images at once.  Retrieve the old handles now, so we
         ' can free them after we set the new ones.
         Dim oldIcon32 As Long, oldIcon16 As Long
-        oldIcon32 = srcImage.curFormIcon32
-        oldIcon16 = srcImage.curFormIcon16
+        oldIcon32 = srcImage.GetImageIcon(True)
+        oldIcon16 = srcImage.GetImageIcon(False)
         
         'Set the new icons, then free the old ones
-        srcImage.curFormIcon32 = hIcon32
-        srcImage.curFormIcon16 = hIcon16
+        srcImage.SetImageIcon True, hIcon32
+        srcImage.SetImageIcon False, hIcon16
         If (oldIcon32 <> 0) Then ReleaseIcon oldIcon32
         If (oldIcon16 <> 0) Then ReleaseIcon oldIcon16
         
@@ -490,7 +492,7 @@ End Sub
 
 Private Sub AddIconToList(ByVal hIcon As Long)
     
-    If m_numOfIcons > UBound(m_iconHandles) Then
+    If (m_numOfIcons > UBound(m_iconHandles)) Then
         ReDim Preserve m_iconHandles(0 To UBound(m_iconHandles) * 2 + 1) As Long
     End If
     
@@ -792,7 +794,7 @@ End Sub
 
 Public Sub MirrorCurrentIconsToWindow(ByVal targetHwnd As Long, Optional ByVal setLargeIconOnly As Boolean = False, Optional ByRef dstSmallIcon As Long = 0, Optional ByRef dstLargeIcon As Long = 0)
     If (g_OpenImageCount > 0) Then
-        ChangeWindowIcon targetHwnd, IIf(setLargeIconOnly, 0&, pdImages(g_CurrentImage).curFormIcon16), pdImages(g_CurrentImage).curFormIcon32, dstSmallIcon, dstLargeIcon
+        ChangeWindowIcon targetHwnd, IIf(setLargeIconOnly, 0&, pdImages(g_CurrentImage).GetImageIcon(False)), pdImages(g_CurrentImage).GetImageIcon(True), dstSmallIcon, dstLargeIcon
     Else
         ChangeWindowIcon targetHwnd, IIf(setLargeIconOnly, 0&, m_DefaultIconSmall), m_DefaultIconLarge, dstSmallIcon, dstLargeIcon
     End If

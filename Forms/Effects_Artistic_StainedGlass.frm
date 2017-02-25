@@ -187,7 +187,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Because this is a two-pass filter, we have to manually change the progress bar maximum to 2 * width
@@ -254,7 +254,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     
     'Loop through each pixel in the image, calculating nearest Voronoi points as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Use the Voronoi class to find the nearest points to this pixel
@@ -270,10 +270,10 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         If colorSamplingMethod = 1 Then
         
             'Retrieve RGBA values for this pixel
-            r = dstImageData(QuickVal + 2, y)
-            g = dstImageData(QuickVal + 1, y)
-            b = dstImageData(QuickVal, y)
-            If qvDepth = 4 Then a = dstImageData(QuickVal + 3, y)
+            r = dstImageData(quickVal + 2, y)
+            g = dstImageData(quickVal + 1, y)
+            b = dstImageData(quickVal, y)
+            If qvDepth = 4 Then a = dstImageData(quickVal + 3, y)
             
             'Store those RGBA values into their respective lookup "bin"
             rLookup(nearestPoint) = rLookup(nearestPoint) + r
@@ -317,11 +317,11 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             If thisPoint.y > finalY Then thisPoint.y = finalY
             
             'Retrieve the color at this Voronoi point's location, and assign it to the lookup arrays
-            QuickVal = thisPoint.x * qvDepth
-            rLookup(x) = dstImageData(QuickVal + 2, thisPoint.y)
-            gLookUp(x) = dstImageData(QuickVal + 1, thisPoint.y)
-            bLookup(x) = dstImageData(QuickVal, thisPoint.y)
-            If qvDepth = 4 Then aLookup(x) = dstImageData(QuickVal + 3, thisPoint.y)
+            quickVal = thisPoint.x * qvDepth
+            rLookup(x) = dstImageData(quickVal + 2, thisPoint.y)
+            gLookUp(x) = dstImageData(quickVal + 1, thisPoint.y)
+            bLookup(x) = dstImageData(quickVal, thisPoint.y)
+            If qvDepth = 4 Then aLookup(x) = dstImageData(quickVal + 3, thisPoint.y)
         
         'The user wants us to find the average color for each cell.  This is effectively just a blur operation;
         ' for each bin in the lookup table, divide the total RGBA values by the number of pixels in that bin.
@@ -348,7 +348,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
             
     'Loop through the image, changing colors to match our calculated Voronoi values
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Use the lookup table from step 1 to find the nearest and second-nearest Voronoi point indices for this pixel.
@@ -445,10 +445,10 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
         End If
         
         'Set the new RGBA values to the image
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
-        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = a
+        dstImageData(quickVal + 2, y) = r
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal, y) = b
+        If qvDepth = 4 Then dstImageData(quickVal + 3, y) = a
         
     Next y
         If (Not toPreview) Then

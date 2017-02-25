@@ -211,13 +211,13 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, edgeHandling, useBilinear, curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
@@ -262,14 +262,14 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Grab the current pixel values
-        newR = srcImageData(QuickVal + 2, y)
-        newG = srcImageData(QuickVal + 1, y)
-        newB = srcImageData(QuickVal, y)
-        If qvDepth = 4 Then newA = srcImageData(QuickVal + 3, y)
+        newR = srcImageData(quickVal + 2, y)
+        newG = srcImageData(quickVal + 1, y)
+        newB = srcImageData(quickVal, y)
+        If qvDepth = 4 Then newA = srcImageData(quickVal + 3, y)
         
         'Iterate through each fragment in turn, adding together their values as we go
         For n = 0 To numPoints
@@ -279,7 +279,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
             yOffset = y - yOffsetLookup(n)
                         
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.getColorsFromSource r, g, b, a, xOffset, yOffset, srcImageData
+            fSupport.GetColorsFromSource r, g, b, a, xOffset, yOffset, srcImageData
             
             'Add the retrieved values to our running average
             newR = newR + r
@@ -294,14 +294,14 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
         newG = newG \ numPointsCalc
         newB = newB \ numPointsCalc
                 
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal, y) = newB
         
         'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
             newA = newA \ numPointsCalc
-            dstImageData(QuickVal + 3, y) = newA
+            dstImageData(quickVal + 3, y) = newA
         End If
         
     Next y

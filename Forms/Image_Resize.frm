@@ -503,8 +503,8 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     End Select
     
     'If the image contains an active selection, automatically deactivate it
-    If pdImages(g_CurrentImage).selectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If pdImages(g_CurrentImage).IsSelectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 

@@ -201,7 +201,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
+        Dim quickVal As Long, qvDepth As Long
         qvDepth = curDIBValues.BytesPerPixel
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -228,18 +228,18 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = dstImageData(QuickVal + 2, y)
-            g = dstImageData(QuickVal + 1, y)
-            b = dstImageData(QuickVal, y)
+            r = dstImageData(quickVal + 2, y)
+            g = dstImageData(quickVal + 1, y)
+            b = dstImageData(quickVal, y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(QuickVal + 2, y)
-            g2 = srcImageData(QuickVal + 1, y)
-            b2 = srcImageData(QuickVal, y)
+            r2 = srcImageData(quickVal + 2, y)
+            g2 = srcImageData(quickVal + 1, y)
+            b2 = srcImageData(quickVal, y)
             
             tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
                             
@@ -264,17 +264,17 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
                 newG = BlendColors(newG, g, blendVal)
                 newB = BlendColors(newB, b, blendVal)
                 
-                dstImageData(QuickVal + 2, y) = newR
-                dstImageData(QuickVal + 1, y) = newG
-                dstImageData(QuickVal, y) = newB
+                dstImageData(quickVal + 2, y) = newR
+                dstImageData(quickVal + 1, y) = newG
+                dstImageData(quickVal, y) = newB
                 
                 If qvDepth = 4 Then
-                    a2 = srcImageData(QuickVal + 3, y)
-                    a = dstImageData(QuickVal + 3, y)
+                    a2 = srcImageData(quickVal + 3, y)
+                    a = dstImageData(quickVal + 3, y)
                     newA = (scaleFactor * a) + (invScaleFactor * a2)
                     If newA > 255 Then newA = 255
                     If newA < 0 Then newA = 0
-                    dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
+                    dstImageData(quickVal + 3, y) = BlendColors(newA, a, blendVal)
                 End If
                 
             End If

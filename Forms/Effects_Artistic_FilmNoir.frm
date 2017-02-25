@@ -191,7 +191,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -205,13 +205,13 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Starting by convert the pixel to its grayscale equivalent
         grayVal = (213 * r + 715 * g + 72 * b) / 1000
@@ -240,9 +240,9 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
         If grayByte > 255 Then grayByte = 255
         
         'Assign that gray value to each color channel
-        ImageData(QuickVal, y) = grayByte
-        ImageData(QuickVal + 1, y) = grayByte
-        ImageData(QuickVal + 2, y) = grayByte
+        ImageData(quickVal, y) = grayByte
+        ImageData(quickVal + 1, y) = grayByte
+        ImageData(quickVal + 2, y) = grayByte
         
     Next y
         If Not toPreview Then

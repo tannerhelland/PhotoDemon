@@ -621,7 +621,7 @@ Private Sub Form_Load()
     cboMapping.AddItem " reverse (outline defines source area)", 1
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(g_CurrentImage).selectionActive Then
+    If pdImages(g_CurrentImage).IsSelectionActive Then
         Dim selBounds As RECTF
         selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
         iWidth = selBounds.Width

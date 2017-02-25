@@ -756,7 +756,7 @@ Private Sub Form_Load()
     
     'If a selection is already active, synchronize all UI elements to match
     If suspendActive Then
-        If pdImages(g_CurrentImage).selectionActive Then Selections.SyncTextToCurrentSelection g_CurrentImage
+        If pdImages(g_CurrentImage).IsSelectionActive Then Selections.SyncTextToCurrentSelection g_CurrentImage
     End If
     
     'Update everything against the current theme.  This will also set tooltips for various controls.

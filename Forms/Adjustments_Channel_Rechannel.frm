@@ -224,7 +224,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -236,7 +236,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     
     'After all that work, the Rechannel code itself is relatively small and unexciting!
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         Select Case dstColorSpace
@@ -248,16 +248,16 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel red
                     Case 0
-                        ImageData(QuickVal, y) = 0
-                        ImageData(QuickVal + 1, y) = 0
+                        ImageData(quickVal, y) = 0
+                        ImageData(quickVal + 1, y) = 0
                     'Rechannel green
                     Case 1
-                        ImageData(QuickVal, y) = 0
-                        ImageData(QuickVal + 2, y) = 0
+                        ImageData(quickVal, y) = 0
+                        ImageData(quickVal + 2, y) = 0
                     'Rechannel blue
                     Case 2
-                        ImageData(QuickVal + 1, y) = 0
-                        ImageData(QuickVal + 2, y) = 0
+                        ImageData(quickVal + 1, y) = 0
+                        ImageData(quickVal + 2, y) = 0
                         
                 End Select
                 
@@ -268,25 +268,25 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 
                     'Rechannel cyan
                     Case 0
-                        ImageData(QuickVal, y) = 255
-                        ImageData(QuickVal + 1, y) = 255
+                        ImageData(quickVal, y) = 255
+                        ImageData(quickVal + 1, y) = 255
                     'Rechannel magenta
                     Case 1
-                        ImageData(QuickVal, y) = 255
-                        ImageData(QuickVal + 2, y) = 255
+                        ImageData(quickVal, y) = 255
+                        ImageData(quickVal + 2, y) = 255
                     'Rechannel yellow
                     Case 2
-                        ImageData(QuickVal + 1, y) = 255
-                        ImageData(QuickVal + 2, y) = 255
+                        ImageData(quickVal + 1, y) = 255
+                        ImageData(quickVal + 2, y) = 255
                         
                 End Select
             
             'Rechannel CMYK
             Case Else
             
-                cK = 255 - ImageData(QuickVal + 2, y)
-                mK = 255 - ImageData(QuickVal + 1, y)
-                yK = 255 - ImageData(QuickVal, y)
+                cK = 255 - ImageData(quickVal + 2, y)
+                mK = 255 - ImageData(quickVal + 1, y)
+                yK = 255 - ImageData(quickVal, y)
                 
                 cK = cK / 255
                 mK = mK / 255
@@ -300,29 +300,29 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
                 'cyan
                 If dstChannel = 0 Then
                     cK = ((cK - bK) / invBK) * 255
-                    ImageData(QuickVal + 2, y) = 255 - cK
-                    ImageData(QuickVal + 1, y) = 255
-                    ImageData(QuickVal, y) = 255
+                    ImageData(quickVal + 2, y) = 255 - cK
+                    ImageData(quickVal + 1, y) = 255
+                    ImageData(quickVal, y) = 255
                 
                 'magenta
                 ElseIf dstChannel = 1 Then
                     mK = ((mK - bK) / invBK) * 255
-                    ImageData(QuickVal + 2, y) = 255
-                    ImageData(QuickVal + 1, y) = 255 - mK
-                    ImageData(QuickVal, y) = 255
+                    ImageData(quickVal + 2, y) = 255
+                    ImageData(quickVal + 1, y) = 255 - mK
+                    ImageData(quickVal, y) = 255
                 
                 'yellow
                 ElseIf dstChannel = 2 Then
                     yK = ((yK - bK) / invBK) * 255
-                    ImageData(QuickVal + 2, y) = 255
-                    ImageData(QuickVal + 1, y) = 255
-                    ImageData(QuickVal, y) = 255 - yK
+                    ImageData(quickVal + 2, y) = 255
+                    ImageData(quickVal + 1, y) = 255
+                    ImageData(quickVal, y) = 255 - yK
                 
                 'key
                 Else
-                    ImageData(QuickVal + 2, y) = invBK * 255
-                    ImageData(QuickVal + 1, y) = invBK * 255
-                    ImageData(QuickVal, y) = invBK * 255
+                    ImageData(quickVal + 2, y) = invBK * 255
+                    ImageData(quickVal + 1, y) = invBK * 255
+                    ImageData(quickVal, y) = invBK * 255
                 End If
                 
         End Select

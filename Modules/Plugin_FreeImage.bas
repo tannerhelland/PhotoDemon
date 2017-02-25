@@ -569,7 +569,7 @@ Private Function FI_DetermineFiletype(ByVal srcFilename As String, ByRef dstDIB 
     End If
     
     'Store this file format inside the DIB
-    Dim internalFIF As PHOTODEMON_IMAGE_FORMAT
+    Dim internalFIF As PD_IMAGE_FORMAT
     internalFIF = fileFIF
     
     'All pixmap formats are condensed down to PNM, which greatly simplifies internal tracking
@@ -2895,7 +2895,7 @@ End Function
 '(Note that you could technically pass a bare DIB to this function, but because different dialogs provide varying levels of control
 ' over the source image, it's often easier to let the caller handle that step.  That way, they can cache a FI handle in the most
 ' relevant color depth, shaving previous ms off the actual export+import step.)
-Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdDIB, ByVal dstFormat As PHOTODEMON_IMAGE_FORMAT, Optional ByVal fi_SaveFlags As Long = 0, Optional ByVal fi_LoadFlags As Long = 0)
+Public Function GetExportPreview(ByRef srcFI_Handle As Long, ByRef dstDIB As pdDIB, ByVal dstFormat As PD_IMAGE_FORMAT, Optional ByVal fi_SaveFlags As Long = 0, Optional ByVal fi_LoadFlags As Long = 0)
     
     Dim fi_Size As Long
     If FreeImage_SaveToMemoryEx(dstFormat, srcFI_Handle, m_ExportPreviewBytes, fi_SaveFlags, False, fi_Size) Then

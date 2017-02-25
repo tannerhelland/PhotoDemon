@@ -824,7 +824,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
         srcWidth = otherPictureSrc.GetDIBWidth
         srcHeight = otherPictureSrc.GetDIBHeight
     Else
-        If pdImages(g_CurrentImage).selectionActive Then
+        If pdImages(g_CurrentImage).IsSelectionActive Then
             selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
             srcWidth = selBounds.Width
             srcHeight = selBounds.Height
@@ -843,7 +843,7 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     If Not useOtherPictureSrc Then
         
         'Check to see if a selection is active; if it isn't, simply render the full form
-        If Not pdImages(g_CurrentImage).selectionActive Then
+        If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
         
             If pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth = 32 Then
                 Set tmpDIB = New pdDIB

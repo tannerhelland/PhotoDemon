@@ -1991,13 +1991,13 @@ Public Function CropNullPaddedLayer() As Boolean
         'Repeat the above steps, but tracking the left edge instead.  Note also that we will only be scanning from wherever
         ' the top and bottom border detections arrived (to save processing time).
         pixelFails = False
-        Dim QuickVal As Long
+        Dim quickVal As Long
         
         For x = 0 To finalX
-            QuickVal = x * 4 + 3
+            quickVal = x * 4 + 3
         For y = initY To finalY
         
-            If srcImageData(QuickVal, y) <> 0 Then
+            If srcImageData(quickVal, y) <> 0 Then
                 pixelFails = True
                 Exit For
             End If
@@ -2013,10 +2013,10 @@ Public Function CropNullPaddedLayer() As Boolean
         pixelFails = False
         
         For x = finalX To newLeft Step -1
-            QuickVal = x * 4 + 3
+            quickVal = x * 4 + 3
         For y = initY To finalY
         
-            If srcImageData(QuickVal, y) <> 0 Then
+            If srcImageData(quickVal, y) <> 0 Then
                 pixelFails = True
                 Exit For
             End If
@@ -2234,7 +2234,7 @@ Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
     ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
     '        so perhaps the caller should specify an image x/y and a radius...?)
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).currentZoomValue))
+    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).GetZoom))
     
     'Find the smallest distance for this mouse position
     Dim minDistance As Double

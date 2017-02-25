@@ -231,8 +231,8 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If (thingToResize = PD_AT_WHOLEIMAGE) Then
         
         'If a selection is active, remove it now
-        If pdImages(g_CurrentImage).selectionActive Then
-            pdImages(g_CurrentImage).selectionActive = False
+        If pdImages(g_CurrentImage).IsSelectionActive Then
+            pdImages(g_CurrentImage).SetSelectionActive False
             pdImages(g_CurrentImage).mainSelection.LockRelease
         End If
                    

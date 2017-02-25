@@ -305,7 +305,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     ' happens, we have to do some extra handling to render a correct image; basically, we must null-pad
     ' the current layer DIB to the size of the image, then extract the relevant bits after the fact.
     Dim tmpLayer As pdLayer, selBounds As RECTF
-    If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
         Set tmpLayer = New pdLayer
         selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
     End If
@@ -324,7 +324,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         'Check for an active selection; if one is present, use that instead of the full DIB.  Note that no special processing is
         ' applied to the selected area - a full rectangle is passed to the source function, with no accounting for non-rectangular
         ' boundaries or feathering.  All that work is handled *after* the processing is complete.
-        If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
             
             'Before proceeding further, null-pad the layer in question.  This will allow any possible selection to work,
             ' regardless of the layer's actual area.
@@ -368,7 +368,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             'The full image is being previewed.  Retrieve the entire thing.
             If previewTarget.ViewportFitFullImage Then
             
-                If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
                     srcWidth = selBounds.Width
                     srcHeight = selBounds.Height
                 Else
@@ -384,7 +384,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 
                 'If a selection is active, and the selected area is smaller than the preview window, constrain the source area
                 ' to the selection boundaries.
-                If (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
                 
                     If (selBounds.Width < srcWidth) Then
                         srcWidth = selBounds.Width
@@ -426,7 +426,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             ' primary image.  If they cancel, we'll simply discard the temporary DIB.
             
             'Just like with a full image, if a selection is active, we only want to process the selected area.
-            If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+            If pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
             
                 'Start by chopping out the full rectangular bounding area of the selection, and placing it inside a temporary object.
                 ' This is done at the same color depth as the source image.  (Note that we do not do any preprocessing of the selection
@@ -528,7 +528,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     
     'If a selection is active, make a backup of the selected area.  (We do this regardless of whether the current
     ' action is a preview or not.)
-    If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
         If (workingDIBBackup Is Nothing) Then Set workingDIBBackup = New pdDIB
         workingDIBBackup.CreateFromExistingDIB workingDIB
     End If
@@ -606,7 +606,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
-    If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
         
         'Retrieve the current selection boundaries
         Dim selBounds As RECTF
@@ -682,8 +682,8 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'TODO: figure out why the selection mask is always being copied at 24-bpp
         Dim selMaskDepth As Long
         
-        Dim dstQuickVal As Long, srcQuickX As Long
-        dstQuickVal = pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth \ 8
+        Dim dstquickVal As Long, srcQuickX As Long
+        dstquickVal = pdImages(g_CurrentImage).GetActiveDIB().GetDIBColorDepth \ 8
             
         Dim workingDIBCD As Long
         workingDIBCD = workingDIB.GetDIBColorDepth \ 8
@@ -702,16 +702,16 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 
                 'This pixel completely replaces the destination one, so simply copy it over
                 Case 255
-                    For i = 0 To dstQuickVal - 1
-                        dstImageData(x * dstQuickVal + i, y) = wlImageData(x * workingDIBCD + i, y)
+                    For i = 0 To dstquickVal - 1
+                        dstImageData(x * dstquickVal + i, y) = wlImageData(x * workingDIBCD + i, y)
                     Next i
                         
                     'This pixel is antialiased or feathered, so it needs to be blended with the destination at the level specified
                     ' by the selection mask.
                     Case Else
                         blendAlpha = thisAlpha / 255
-                        For i = 0 To dstQuickVal - 1
-                            dstImageData(x * dstQuickVal + i, y) = BlendColors(dstImageData(x * dstQuickVal + i, y), wlImageData(x * workingDIBCD + i, y), blendAlpha)
+                        For i = 0 To dstquickVal - 1
+                            dstImageData(x * dstquickVal + i, y) = BlendColors(dstImageData(x * dstquickVal + i, y), wlImageData(x * workingDIBCD + i, y), blendAlpha)
                         Next i
                     
                 End Select
@@ -736,7 +736,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     If (Not isPreview) Then
         
         'If a selection is active, copy the processed area into its proper place.
-        If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
         
             If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.SetAlphaPremultiplication True
             BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
@@ -776,7 +776,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     Else
         
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
-        If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
             
             If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
                 workingDIBBackup.SetAlphaPremultiplication True

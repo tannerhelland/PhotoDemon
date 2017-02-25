@@ -2376,7 +2376,7 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             
             'Add the selection rectangle to the path
             If (GetSelectionProperty_Long(sp_RoundedCornerRadius) > 0) Then
-                pdPath.AddRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, GetSelectionProperty_Long(sp_RoundedCornerRadius) * g_Zoom.GetZoomValue(m_parentPDImage.currentZoomValue)
+                pdPath.AddRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, GetSelectionProperty_Long(sp_RoundedCornerRadius) * g_Zoom.GetZoomValue(m_parentPDImage.GetZoom)
             Else
                 pdPath.AddRectangle_Absolute dstLeft, dstTop, dstRight, dstBottom
             End If
@@ -2398,7 +2398,7 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             
             'Widen the path to encompass only the border of the line
             Dim penPathBorder As pd2DPen
-            Drawing2D.QuickCreateSolidPen penPathBorder, GetSelectionProperty_Long(sp_LineWidth) * g_Zoom.GetZoomValue(m_parentPDImage.currentZoomValue), , , P2_LJ_Round, P2_LC_Round
+            Drawing2D.QuickCreateSolidPen penPathBorder, GetSelectionProperty_Long(sp_LineWidth) * g_Zoom.GetZoomValue(m_parentPDImage.GetZoom), , , P2_LJ_Round, P2_LC_Round
             pdPath.ConvertPath_PenTrace penPathBorder
             
         'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used and the number of points
@@ -2600,10 +2600,10 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                     If (Not ignoreLockStatus) Then
                         If m_IsLocked Then
                             Me.LockIn
-                            m_parentPDImage.selectionActive = True
+                            m_parentPDImage.SetSelectionActive True
                         Else
                             Me.LockRelease
-                            m_parentPDImage.selectionActive = False
+                            m_parentPDImage.SetSelectionActive False
                         End If
                     End If
                     

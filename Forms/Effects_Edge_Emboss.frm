@@ -191,13 +191,13 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValRight As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValRight As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, EDGE_CLAMP, True, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, EDGE_CLAMP, True, curDIBValues.maxX, curDIBValues.maxY
     
     'During previews, adjust the distance parameter to compensate for preview size
     If toPreview Then eDistance = eDistance * curDIBValues.previewModifier
@@ -233,14 +233,14 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
         QuickValRight = (x + 1) * qvDepth
     For y = initY To finalY
     
         'Retrieve source RGB values
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(quickVal + 2, y)
+        g = srcImageData(quickVal + 1, y)
+        b = srcImageData(quickVal, y)
     
         'Move x according to the user's distance parameter
         nX = x + eDistance
@@ -251,7 +251,7 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
         
         'Use the filter support class to retrieve the pixel at that position, with interpolation and edge-wrapping
         ' automatically handled as necessary
-        fSupport.getColorsFromSource tR, tG, tB, tA, srcX, srcY, srcImageData
+        fSupport.GetColorsFromSource tR, tG, tB, tA, srcX, srcY, srcImageData
         
         'Calculate an emboss value for each color
         r = (r - tR) * eDepth + rBase
@@ -277,9 +277,9 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
             b = 0
         End If
 
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(quickVal + 2, y) = r
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal, y) = b
         
     Next y
         If Not toPreview Then

@@ -3044,6 +3044,7 @@ Dim lDataPtr As Long
 
 End Function
 
+'Modified LoadFromMemory function, created while testing unpredictable FreeImage LoadFromMemory failures
 Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal DataPtr As Long, ByVal sizeInBytes As Long, Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, Optional ByRef fileFormat As FREE_IMAGE_FORMAT = FIF_UNKNOWN) As Long
 
     Dim hStream As Long
@@ -3059,7 +3060,7 @@ Public Function FreeImage_LoadFromMemoryEx_Tanner(ByVal DataPtr As Long, ByVal s
    If (hStream) Then
    
       ' on success, detect image type
-      If fileFormat = FIF_UNKNOWN Then fileFormat = FreeImage_GetFileTypeFromMemory(hStream)
+      If (fileFormat = FIF_UNKNOWN) Then fileFormat = FreeImage_GetFileTypeFromMemory(hStream)
       
       If (fileFormat <> FIF_UNKNOWN) Then
          ' load the image from memory stream only, if known image type

@@ -28,11 +28,7 @@ Public Enum SelectionDialogType
 End Enum
 
 #If False Then
-    Const SEL_GROW = 0
-    Const SEL_SHRINK = 1
-    Const SEL_BORDER = 2
-    Const SEL_FEATHER = 3
-    Const SEL_SHARPEN = 4
+    Private Const SEL_GROW = 0, SEL_SHRINK = 1, SEL_BORDER = 2, SEL_FEATHER = 3, SEL_SHARPEN = 4
 #End If
 
 'This module caches the current selection mode and/or color, and the viewport pipeline retrieves these cached values as necessary
@@ -61,7 +57,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     'Use the passed parameter string to initialize the selection
     pdImages(g_CurrentImage).mainSelection.InitFromXML paramString
     pdImages(g_CurrentImage).mainSelection.LockIn
-    pdImages(g_CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).SetSelectionActive True
     
     'For lasso selections, mark the lasso as closed if the selection is being created anew
     If (pdImages(g_CurrentImage).mainSelection.GetSelectionShape() = ss_Lasso) Then pdImages(g_CurrentImage).mainSelection.SetLassoClosedState True
@@ -79,7 +75,7 @@ Public Sub RemoveCurrentSelection()
     
     'Release the selection object and mark it as inactive
     pdImages(g_CurrentImage).mainSelection.LockRelease
-    pdImages(g_CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).SetSelectionActive False
     
     'Reset any internal selection state trackers
     pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
@@ -97,14 +93,14 @@ Public Sub SelectWholeImage()
     
     'Unselect any existing selection
     pdImages(g_CurrentImage).mainSelection.LockRelease
-    pdImages(g_CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).SetSelectionActive False
     
     'Create a new selection at the size of the image
     pdImages(g_CurrentImage).mainSelection.SelectAll
     
     'Lock in this selection
     pdImages(g_CurrentImage).mainSelection.LockIn
-    pdImages(g_CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).SetSelectionActive True
     
     'Synchronize all user-facing controls to match
     SyncTextToCurrentSelection g_CurrentImage
@@ -167,7 +163,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
     
         Message "Loading selection..."
         pdImages(g_CurrentImage).mainSelection.ReadSelectionFromFile SelectionPath
-        pdImages(g_CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).SetSelectionActive True
         
         'Synchronize all user-facing controls to match
         SyncTextToCurrentSelection g_CurrentImage
@@ -219,7 +215,7 @@ End Sub
 Public Function ExportSelectedAreaAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If Not pdImages(g_CurrentImage).selectionActive Then
+    If Not pdImages(g_CurrentImage).IsSelectionActive Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectedAreaAsImage = False
         Exit Function
@@ -270,7 +266,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
-        tmpImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(saveFormat - 1)
+        tmpImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(saveFormat - 1)
                                 
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
@@ -289,7 +285,7 @@ End Function
 Public Function ExportSelectionMaskAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If Not pdImages(g_CurrentImage).selectionActive Then
+    If Not pdImages(g_CurrentImage).IsSelectionActive Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectionMaskAsImage = False
         Exit Function
@@ -337,7 +333,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.GetCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.GetCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
-        tmpImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(saveFormat - 1)
+        tmpImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(saveFormat - 1)
                                 
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         ExportSelectionMaskAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
@@ -472,13 +468,13 @@ End Sub
 Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As Long
     
     'If the current selection is of raster-type, return 0.
-    If srcImage.mainSelection.GetSelectionShape = ss_Raster Then
+    If (srcImage.mainSelection.GetSelectionShape = ss_Raster) Then
         FindNearestSelectionCoordinates = -1
         Exit Function
     End If
     
     'If the current selection is NOT active, return 0.
-    If Not srcImage.selectionActive Then
+    If (Not srcImage.IsSelectionActive) Then
         FindNearestSelectionCoordinates = -1
         Exit Function
     End If
@@ -502,7 +498,7 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
     
     'Adjust the mouseAccuracy value based on the current zoom value
     Dim mouseAccuracy As Double
-    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(srcImage.currentZoomValue))
+    mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(srcImage.GetZoom))
         
     'Find the smallest distance for this mouse position
     Dim minDistance As Double
@@ -675,7 +671,7 @@ Public Sub InvertCurrentSelection()
 
     'Unselect any existing selection
     pdImages(g_CurrentImage).mainSelection.LockRelease
-    pdImages(g_CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).SetSelectionActive False
         
     Message "Inverting selection..."
     
@@ -726,7 +722,7 @@ Public Sub InvertCurrentSelection()
     
     'Lock in this selection
     pdImages(g_CurrentImage).mainSelection.LockIn
-    pdImages(g_CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).SetSelectionActive True
         
     'Draw the new selection to the screen
     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -750,7 +746,7 @@ Public Sub FeatherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal f
     
         'Unselect any existing selection
         pdImages(g_CurrentImage).mainSelection.LockRelease
-        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).SetSelectionActive False
         
         'Use PD's built-in Gaussian blur function to apply the blur
         QuickBlurDIB pdImages(g_CurrentImage).mainSelection.GetMaskDIB, featherRadius, True
@@ -761,7 +757,7 @@ Public Sub FeatherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal f
         
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.LockIn
-        pdImages(g_CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -792,7 +788,7 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
     
         'Unselect any existing selection
         pdImages(g_CurrentImage).mainSelection.LockRelease
-        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).SetSelectionActive False
         
        'Point an array at the current selection mask
         Dim selMaskData() As Byte
@@ -904,7 +900,7 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.LockIn
-        pdImages(g_CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -935,7 +931,7 @@ Public Sub GrowCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal grow
     
         'Unselect any existing selection
         pdImages(g_CurrentImage).mainSelection.LockRelease
-        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).SetSelectionActive False
         
         'Use PD's built-in Median function to dilate the selected area
         Dim tmpDIB As pdDIB
@@ -951,7 +947,7 @@ Public Sub GrowCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal grow
         
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.LockIn
-        pdImages(g_CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -982,7 +978,7 @@ Public Sub ShrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sh
     
         'Unselect any existing selection
         pdImages(g_CurrentImage).mainSelection.LockRelease
-        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).SetSelectionActive False
         
         'Use PD's built-in Median function to erode the selected area
         Dim tmpDIB As pdDIB
@@ -999,7 +995,7 @@ Public Sub ShrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sh
         
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.LockIn
-        pdImages(g_CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -1030,7 +1026,7 @@ Public Sub BorderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal bo
     
         'Unselect any existing selection
         pdImages(g_CurrentImage).mainSelection.LockRelease
-        pdImages(g_CurrentImage).selectionActive = False
+        pdImages(g_CurrentImage).SetSelectionActive False
         
         'Bordering a selection requires two passes: a grow pass and a shrink pass.  The results of these two passes are then blended
         ' to create the final bordered selection.
@@ -1062,7 +1058,7 @@ Public Sub BorderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal bo
                 
         'Lock in this selection
         pdImages(g_CurrentImage).mainSelection.LockIn
-        pdImages(g_CurrentImage).selectionActive = True
+        pdImages(g_CurrentImage).SetSelectionActive True
                 
         SetProgBarVal 0
         ReleaseProgressBar
@@ -1227,7 +1223,7 @@ End Function
 Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
 
     'Activate the attached image's primary selection
-    pdImages(g_CurrentImage).selectionActive = True
+    pdImages(g_CurrentImage).SetSelectionActive True
     pdImages(g_CurrentImage).mainSelection.LockRelease
     
     'Reflect all current selection tool settings to the active selection object
@@ -1271,7 +1267,7 @@ End Sub
 Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Boolean
 
     If (g_OpenImageCount > 0) Then
-        If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
+        If pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
             If (Not pdImages(g_CurrentImage).mainSelection.GetAutoRefreshSuspend()) Then
                 If transformableMatters Then
                     SelectionsAllowed = pdImages(g_CurrentImage).mainSelection.IsTransformable
@@ -1313,7 +1309,7 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Or (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then
 
         'If a selection is active, nudge it using the arrow keys
-        If (pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster)) Then
+        If (pdImages(g_CurrentImage).IsSelectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster)) Then
             
             Dim canvasUpdateRequired As Boolean
             canvasUpdateRequired = False
@@ -1356,20 +1352,20 @@ End Sub
 Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
 
     'Delete key: if a selection is active, erase the selected area
-    If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).selectionActive Then
+    If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).IsSelectionActive Then
         markEventHandled = True
         Process "Erase selected area", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
     End If
     
     'Escape key: if a selection is active, clear it
-    If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).selectionActive Then
+    If (vkCode = VK_ESCAPE) And pdImages(g_CurrentImage).IsSelectionActive Then
         markEventHandled = True
         Process "Remove selection", , , UNDO_SELECTION
     End If
     
     'Backspace key: for lasso and polygon selections, retreat back one or more coordinates, giving the user a chance to
     ' correct any potential mistakes.
-    If ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And (vkCode = VK_BACK) And pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+    If ((g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_POLYGON)) And (vkCode = VK_BACK) And pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
         
         markEventHandled = True
         
@@ -1416,7 +1412,7 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
     Else
         
         'Check to see if a selection is already active.  If it is, see if the user is allowed to transform it.
-        If pdImages(g_CurrentImage).selectionActive Then
+        If pdImages(g_CurrentImage).IsSelectionActive Then
         
             'Check the mouse coordinates of this click.
             Dim sCheck As Long
@@ -1514,7 +1510,7 @@ Public Sub NotifySelectionMouseMove(ByVal srcCanvas As pdCanvas, ByVal Shift As 
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
 
             'First, check to see if a selection is both active and transformable.
-            If pdImages(g_CurrentImage).selectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
+            If pdImages(g_CurrentImage).IsSelectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
                 
                 'If the SHIFT key is down, notify the selection engine that a square shape is requested
                 pdImages(g_CurrentImage).mainSelection.RequestSquare (Shift And vbShiftMask)
@@ -1532,7 +1528,7 @@ Public Sub NotifySelectionMouseMove(ByVal srcCanvas As pdCanvas, ByVal Shift As 
         Case SELECT_LASSO
         
             'First, check to see if a selection is active
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).IsSelectionActive Then
                 
                 'Pass new points to the active selection
                 pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
@@ -1552,7 +1548,7 @@ Public Sub NotifySelectionMouseMove(ByVal srcCanvas As pdCanvas, ByVal Shift As 
         
         'Wand selections are easier than other selection types, because they don't support any special transforms
         Case SELECT_WAND
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).IsSelectionActive Then
                 pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
                 Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
             End If
@@ -1571,7 +1567,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_LASSO
         
             'If a selection was being drawn, lock it into place
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).IsSelectionActive Then
                 
                 'Check to see if this mouse location is the same as the initial mouse press. If it is, and that particular
                 ' point falls outside the selection, clear the selection from the image.
@@ -1654,7 +1650,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
         Case SELECT_POLYGON
         
             'If a selection was being drawn, lock it into place
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).IsSelectionActive Then
             
                 'Check to see if the selection is already locked in.  If it is, we need to check for an "erase selection" click.
                 eraseThisSelection = pdImages(g_CurrentImage).mainSelection.GetPolygonClosedState And clickEventAlsoFiring
@@ -1745,7 +1741,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
         Case SELECT_WAND
             
             'Failsafe check for active selections
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).IsSelectionActive Then
                 
                 'Supply the final coordinates to the selection engine (as the user may be dragging around the active point)
                 pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY

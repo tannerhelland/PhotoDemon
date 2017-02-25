@@ -62,8 +62,8 @@ Private inputDescriptions() As String
 Private outputDescriptions() As String
 
 'Array of corresponding image format constants
-Private inputPDIFs() As PHOTODEMON_IMAGE_FORMAT
-Private outputPDIFs() As PHOTODEMON_IMAGE_FORMAT
+Private inputPDIFs() As PD_IMAGE_FORMAT
+Private outputPDIFs() As PD_IMAGE_FORMAT
 
 'Array of common-dialog-formatted input/output filetypes.  (Common dialogs require different pipe-based formatting
 ' than normal lists, as you must add human-readable text descriptions to the list.)
@@ -77,7 +77,7 @@ Private m_cdOutputDefaultExtensions As String
 Private m_curFormatIndex As Long
 
 'Return the index of given input PDIF
-Public Function GetIndexOfInputPDIF(ByVal srcFIF As PHOTODEMON_IMAGE_FORMAT) As Long
+Public Function GetIndexOfInputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
     For i = 0 To GetNumOfInputFormats
@@ -143,7 +143,7 @@ Public Function GetCommonDialogInputFormats() As String
 End Function
 
 'Return the index of given output FIF
-Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PHOTODEMON_IMAGE_FORMAT) As Long
+Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PD_IMAGE_FORMAT) As Long
     
     Dim i As Long
     For i = 0 To GetNumOfOutputFormats
@@ -159,7 +159,7 @@ Public Function GetIndexOfOutputPDIF(ByVal srcFIF As PHOTODEMON_IMAGE_FORMAT) As
 End Function
 
 'Return the FIF (image format constant) at a given index
-Public Function GetOutputPDIF(ByVal dIndex As Long) As PHOTODEMON_IMAGE_FORMAT
+Public Function GetOutputPDIF(ByVal dIndex As Long) As PD_IMAGE_FORMAT
     If (dIndex >= 0) And (dIndex <= numOfInputFormats) Then
         GetOutputPDIF = outputPDIFs(dIndex)
     Else
@@ -206,7 +206,7 @@ Public Sub GenerateInputFormats()
     'Prepare a list of possible INPUT formats based on the plugins available to us
     ReDim inputExtensions(0 To 50) As String
     ReDim inputDescriptions(0 To 50) As String
-    ReDim inputPDIFs(0 To 50) As PHOTODEMON_IMAGE_FORMAT
+    ReDim inputPDIFs(0 To 50) As PD_IMAGE_FORMAT
 
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
 
@@ -297,7 +297,7 @@ Public Sub GenerateInputFormats()
     numOfInputFormats = m_curFormatIndex
     ReDim Preserve inputDescriptions(0 To numOfInputFormats) As String
     ReDim Preserve inputExtensions(0 To numOfInputFormats) As String
-    ReDim Preserve inputPDIFs(0 To numOfInputFormats) As PHOTODEMON_IMAGE_FORMAT
+    ReDim Preserve inputPDIFs(0 To numOfInputFormats) As PD_IMAGE_FORMAT
     
     'Now that all input files have been added, we can compile a common-dialog-friendly version of this index
     
@@ -319,7 +319,7 @@ Public Sub GenerateInputFormats()
 End Sub
 
 'Add support for another input format.  A descriptive string and extension list are required.
-Private Sub AddInputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PHOTODEMON_IMAGE_FORMAT)
+Private Sub AddInputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PD_IMAGE_FORMAT)
     
     'Increment the counter
     m_curFormatIndex = m_curFormatIndex + 1
@@ -349,7 +349,7 @@ Public Sub GenerateOutputFormats()
 
     ReDim outputExtensions(0 To 50) As String
     ReDim outputDescriptions(0 To 50) As String
-    ReDim outputPDIFs(0 To 50) As PHOTODEMON_IMAGE_FORMAT
+    ReDim outputPDIFs(0 To 50) As PD_IMAGE_FORMAT
 
     'Formats should be added in alphabetical order, as this class has no "sort" functionality.
     
@@ -387,7 +387,7 @@ Public Sub GenerateOutputFormats()
     numOfOutputFormats = m_curFormatIndex
     ReDim Preserve outputDescriptions(0 To numOfOutputFormats) As String
     ReDim Preserve outputExtensions(0 To numOfOutputFormats) As String
-    ReDim Preserve outputPDIFs(0 To numOfOutputFormats) As PHOTODEMON_IMAGE_FORMAT
+    ReDim Preserve outputPDIFs(0 To numOfOutputFormats) As PD_IMAGE_FORMAT
     
     'Now that all output files have been added, we can compile a common-dialog-friendly version of this index
     
@@ -411,7 +411,7 @@ Public Sub GenerateOutputFormats()
 End Sub
 
 'Add support for another output format.  A descriptive string and extension list are required.
-Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PHOTODEMON_IMAGE_FORMAT)
+Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionList As String, ByVal correspondingPDIF As PD_IMAGE_FORMAT)
     
     'Increment the counter
     m_curFormatIndex = m_curFormatIndex + 1
@@ -428,7 +428,7 @@ Private Sub AddOutputFormat(ByVal formatDescription As String, ByVal extensionLi
 End Sub
 
 'Given a PDIF (PhotoDemon image format constant), return the default extension.
-Public Function GetExtensionFromPDIF(ByVal srcPDIF As PHOTODEMON_IMAGE_FORMAT) As String
+Public Function GetExtensionFromPDIF(ByVal srcPDIF As PD_IMAGE_FORMAT) As String
 
     Select Case srcPDIF
     
@@ -527,7 +527,7 @@ Public Function GetExtensionFromPDIF(ByVal srcPDIF As PHOTODEMON_IMAGE_FORMAT) A
 End Function
 
 'This can be used to see if an output format supports multiple color depths.
-Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT) As Boolean
+Public Function DoesPDIFSupportMultipleColorDepths(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     
@@ -951,7 +951,7 @@ Public Function GetClosestColorDepth(ByVal outputPDIF As Long, ByVal desiredColo
 End Function
 
 'Given an output PDIF, return the ideal metadata format for that image format.
-Friend Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT) As PD_METADATA_FORMAT
+Friend Function GetIdealMetadataFormatFromPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As PD_METADATA_FORMAT
 
     Select Case outputPDIF
     
@@ -1004,7 +1004,7 @@ End Function
 'Given an output PDIF, return a BOOLEAN specifying whether Exif metadata is allowed for that image format.
 ' (Technically, ExifTool can write non-standard Exif chunks for formats like PNG and JPEG-2000, but PD prefers not to do this.
 '  If an Exif tag can't be converted to a corresponding XMP tag, it should simply be removed from the new file.)
-Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT) As Boolean
+Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     
@@ -1055,7 +1055,7 @@ Public Function IsExifAllowedForPDIF(ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT
 End Function
 
 'Given an output PDIF, return a BOOLEAN specifying whether PD has implemented an export dialog for that image format.
-Public Function IsExportDialogSupported(ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT) As Boolean
+Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As Boolean
 
     Select Case outputPDIF
     

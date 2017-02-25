@@ -426,7 +426,7 @@ Public Sub RestoreUndoData()
         'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
         If Len(parentPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
             
-            If parentPDImage.currentFileFormat = PDIF_PDI Then
+            If (parentPDImage.GetCurrentFileFormat = PDIF_PDI) Then
                 parentPDImage.SetSaveState True, pdSE_SavePDI
             Else
                 parentPDImage.SetSaveState True, pdSE_SaveFlat
@@ -1067,7 +1067,7 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
         xmlEngine.WriteTag "RelevantTool", undoStack(i).relevantTool
         
         'Close this undo entry
-        xmlEngine.closeTag "UndoEntry"
+        xmlEngine.CloseTag "UndoEntry"
         xmlEngine.WriteBlankLine
     
     Next i

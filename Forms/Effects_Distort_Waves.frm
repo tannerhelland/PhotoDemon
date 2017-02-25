@@ -187,13 +187,13 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, edgeHandling, (superSamplingAmount <> 1), curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -264,7 +264,7 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
                      
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Reset all supersampling values
@@ -291,7 +291,7 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
             srcY = y + Sin(nY) * yAmplitude
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.getColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
+            fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y
             
             'If adaptive supersampling is active, apply the "adaptive" aspect.  Basically, calculate a variance for the currently
             ' collected samples.  If variance is low, assume this pixel does not require further supersampling.
@@ -324,14 +324,14 @@ Public Sub WaveImage(ByVal xWavelength As Double, ByVal xAmplitude As Double, By
         newG = newG \ numSamplesUsed
         newB = newB \ numSamplesUsed
         
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal, y) = newB
         
         'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
             newA = newA \ numSamplesUsed
-            dstImageData(QuickVal + 3, y) = newA
+            dstImageData(quickVal + 3, y) = newA
         End If
                         
     Next y

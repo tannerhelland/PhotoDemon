@@ -155,7 +155,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -184,13 +184,13 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     
     'Loop through each pixel in the image, applying flame decay as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate a distance value using our precalculated look-up values.  Basically, this is the max distance
         ' a flame can travel, and it's directly tied to the pixel's luminance (brighter pixels travel further).
@@ -208,16 +208,16 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         
             For innerY = y To fTargetMin Step -1
                 
-                inR = ImageData(QuickVal + 2, innerY)
-                inG = ImageData(QuickVal + 1, innerY)
-                inB = ImageData(QuickVal, innerY)
+                inR = ImageData(quickVal + 2, innerY)
+                inG = ImageData(quickVal + 1, innerY)
+                inB = ImageData(quickVal, innerY)
                 
                 'Blend this pixel's value with the value at this pixel, using the distance traveled as our blend metric
                 fadeVal = (innerY - fTargetMin) / fDistance
                 
-                ImageData(QuickVal + 2, innerY) = BlendColors(inR, r, fadeVal)
-                ImageData(QuickVal + 1, innerY) = BlendColors(inG, g, fadeVal)
-                ImageData(QuickVal, innerY) = BlendColors(inB, b, fadeVal)
+                ImageData(quickVal + 2, innerY) = BlendColors(inR, r, fadeVal)
+                ImageData(quickVal + 1, innerY) = BlendColors(inG, g, fadeVal)
+                ImageData(quickVal, innerY) = BlendColors(inB, b, fadeVal)
                 
             Next innerY
         
@@ -234,13 +234,13 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     
     'Loop through the contour map one final time, recolor pixels to flame-like warm colors
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
@@ -252,9 +252,9 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         b = grayVal \ fxIntensity
         
         'Assign the new "fire" value to each color channel
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If Not toPreview Then

@@ -245,26 +245,26 @@ Public Function IsCanvasInteractionAllowed() As Boolean
     'Now, check a bunch of states that might indicate canvas interactions should not be allowed
     
     'If the main form is disabled, exit
-    If Not FormMain.Enabled Then IsCanvasInteractionAllowed = False
+    If (Not FormMain.Enabled) Then IsCanvasInteractionAllowed = False
         
     'If user input has been forcibly disabled by some other part of the program, exit
     If g_DisableUserInput Then IsCanvasInteractionAllowed = False
     
     'If no images have been loaded, exit
-    If g_OpenImageCount = 0 Then IsCanvasInteractionAllowed = False
+    If (g_OpenImageCount = 0) Then IsCanvasInteractionAllowed = False
     
     'If our own internal redraw suspension flag is set, exit
     If m_SuspendRedraws Then IsCanvasInteractionAllowed = False
     
     'If any of the previous checks succeeded, exit immediately
-    If Not IsCanvasInteractionAllowed Then Exit Function
+    If (Not IsCanvasInteractionAllowed) Then Exit Function
     
     'If there is no active images or valid layers, canvas interactions are also disallowed.  (This is primarily a failsafe check.)
-    If pdImages(g_CurrentImage) Is Nothing Then
+    If (pdImages(g_CurrentImage) Is Nothing) Then
         IsCanvasInteractionAllowed = False
     Else
-        If Not pdImages(g_CurrentImage).IsActive Then IsCanvasInteractionAllowed = False
-        If pdImages(g_CurrentImage).GetNumOfLayers = 0 Then IsCanvasInteractionAllowed = False
+        If (Not pdImages(g_CurrentImage).IsActive) Then IsCanvasInteractionAllowed = False
+        If (pdImages(g_CurrentImage).GetNumOfLayers = 0) Then IsCanvasInteractionAllowed = False
     End If
     
     'If the central processor is active, exit

@@ -376,7 +376,7 @@ Private Sub Form_Load()
     cmdBar.MarkPreviewStatus False
 
     'Note the current image's width and height, which will be needed to adjust the preview effect
-    If pdImages(g_CurrentImage).selectionActive Then
+    If pdImages(g_CurrentImage).IsSelectionActive Then
         Dim selBounds As RECTF
         selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect()
         iWidth = selBounds.Width
@@ -431,10 +431,4 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
-
 

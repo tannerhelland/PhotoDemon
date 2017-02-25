@@ -234,13 +234,13 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, edgeHandling, True, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, edgeHandling, True, curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -263,7 +263,7 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'For rotation to work correctly, x/y offsets must be calculated relative to the center of the image
@@ -298,7 +298,7 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
             ySample = hH + v
             
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
-            fSupport.getColorsFromSource r, g, b, a, xSample, ySample, srcImageData
+            fSupport.GetColorsFromSource r, g, b, a, xSample, ySample, srcImageData
             
             'Add the retrieved values to our running averages
             newR = newR + r
@@ -313,15 +313,15 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
         newG = newG \ AA_Samples
         newB = newB \ AA_Samples
         
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal, y) = newB
         
         'If the image has an alpha channel, repeat the calculation there too
         If qvDepth = 4 Then
             newA = newA \ AA_Samples
             If newA > 255 Then newA = 255
-            dstImageData(QuickVal + 3, y) = newA
+            dstImageData(quickVal + 3, y) = newA
         End If
         
     Next y

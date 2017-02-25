@@ -48,7 +48,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -153,7 +153,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                 
         'With all lookup values cached, start mapping
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
             'Calculate a source position for this pixel, considering the user-supplied angle
@@ -266,7 +266,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             'Convert the final calculated intensity back to byte range, and set the corresponding color in the
             ' destination array.
             target = 255 * f2
-            dstImageData(QuickVal + curChannel, y) = target
+            dstImageData(quickVal + curChannel, y) = target
             
         Next y
             If Not suppressMessages Then
