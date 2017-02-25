@@ -57,9 +57,9 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     ' tasks until after all possible failure states have been dealt with.
     Dim saveSuccessful As Boolean: saveSuccessful = False
     
-    'The caller must tell us which format they want us to use.  This value is stored in the .currentFileFormat property of the pdImage object.
-    Dim saveFormat As PHOTODEMON_IMAGE_FORMAT
-    saveFormat = srcImage.currentFileFormat
+    'The caller must tell us which format they want us to use.
+    Dim saveFormat As PD_IMAGE_FORMAT
+    saveFormat = srcImage.GetCurrentFileFormat
     
     'Retrieve a string representation as well; settings related to this format may be stored inside the pdImage's settings dictionary
     Dim saveExtension As String
@@ -231,7 +231,7 @@ End Function
 ' It should *only* be used during Batch Process operations, where there is no possibility of user interaction.
 ' Note that the input parameters are different, as the batch processor requires the user to set most export
 ' settings in advance (since we can't raise export dialogs mid-batch).
-Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, ByVal saveFormat As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
+Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPath As String, ByVal saveFormat As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
     
     'The important thing to note about this function is that it *requires* the image to be immediately unloaded
     ' after the save operation finishes.  To improve performance, the source pdImage object is not updated against
@@ -295,7 +295,7 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
     
 End Function
 
-Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
+Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDIF As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString)
     
     Dim saveIsMultipage As Boolean: saveIsMultipage = False
     
@@ -320,7 +320,7 @@ End Sub
 ' returned from the associated format-specific dialog.
 '
 'Returns: TRUE if dialog was closed via OK button; FALSE otherwise.
-Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, ByRef dstParamString As String, ByRef dstMetadataString As String) As Boolean
+Public Function GetExportParamsFromDialog(ByRef srcImage As pdImage, ByVal outputPDIF As PD_IMAGE_FORMAT, ByRef dstParamString As String, ByRef dstMetadataString As String) As Boolean
     
     'As a failsafe, make sure the requested format even *has* an export dialog!
     If g_ImageFormats.IsExportDialogSupported(outputPDIF) Then
@@ -366,7 +366,7 @@ End Function
 'Already have a save parameter string assembled?  Call this function to export directly to a given format, with no UI prompts.
 ' (I *DO NOT* recommend calling this function directly.  PD only uses it from within the main _SaveImage function, which also applies
 '  a number of failsafe checks against things like path accessibility and format compatibility.)
-Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath As String, ByVal outputPDIF As PHOTODEMON_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString) As Boolean
+Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath As String, ByVal outputPDIF As PD_IMAGE_FORMAT, Optional ByVal saveParameters As String = vbNullString, Optional ByVal metadataParameters As String = vbNullString) As Boolean
 
     'As a convenience, load the current set of parameters into an XML parser; some formats use this data to select an
     ' appropriate export engine (if multiples are available, e.g. both FreeImage and GDI+).

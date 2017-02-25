@@ -262,7 +262,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -295,12 +295,12 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(quickVal + 2, y)
+        g = srcImageData(quickVal + 1, y)
+        b = srcImageData(quickVal, y)
     
         u = xLookup(x)
         v = yLookup(y)
@@ -341,9 +341,9 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
         If newB > 255 Then newB = 255
             
         'Assign the new values to each color channel
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal, y) = newB
         
     Next y
         If Not toPreview Then

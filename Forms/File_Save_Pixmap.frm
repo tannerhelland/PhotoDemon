@@ -368,7 +368,7 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
         'Make sure the preview source is up-to-date
         If (m_FIHandle = 0) Then UpdatePreviewSource
         
-        Dim outputFormat As PHOTODEMON_IMAGE_FORMAT
+        Dim outputFormat As PD_IMAGE_FORMAT
         If (btsColorModel.ListIndex = 0) Or (btsColorModel.ListIndex = 1) Then
             outputFormat = PDIF_PPMRAW
         ElseIf (btsColorModel.ListIndex = 2) Then

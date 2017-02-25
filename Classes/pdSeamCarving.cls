@@ -99,7 +99,7 @@ Public Sub SetEnergyImage(ByRef srcDIB As pdDIB)
     'Prepare the module-level energy array
     ReDim m_Energy(0 To m_EnergyImage.GetDIBWidth - 1, 0 To m_EnergyImage.GetDIBHeight - 1) As Byte
     
-    Dim x As Long, y As Long, QuickVal As Long
+    Dim x As Long, y As Long, quickVal As Long
     Dim r As Long, g As Long, b As Long
     
     Dim grayLookUp(0 To 765) As Byte
@@ -109,12 +109,12 @@ Public Sub SetEnergyImage(ByRef srcDIB As pdDIB)
     Next x
     
     For x = 0 To srcDIB.GetDIBWidth - 1
-        QuickVal = x * 3
+        quickVal = x * 3
     For y = 0 To srcDIB.GetDIBHeight - 1
-        r = energyData(QuickVal + 2, y)
-        g = energyData(QuickVal + 1, y)
-        b = energyData(QuickVal, y)
-        'energyData(QuickVal, y) = grayLookUp(r + g + b)
+        r = energyData(quickVal + 2, y)
+        g = energyData(quickVal + 1, y)
+        b = energyData(quickVal, y)
+        'energyData(quickVal, y) = grayLookUp(r + g + b)
         m_Energy(x, y) = grayLookUp(r + g + b)
     Next y
     Next x

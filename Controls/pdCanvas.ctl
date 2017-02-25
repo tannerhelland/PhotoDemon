@@ -319,24 +319,19 @@ End Sub
 
 'Get/Set scroll bar value
 Public Function GetScrollValue(ByVal barType As PD_ORIENTATION) As Long
-    If barType = PD_HORIZONTAL Then GetScrollValue = hScroll.Value Else GetScrollValue = vScroll.Value
+    If (barType = PD_HORIZONTAL) Then GetScrollValue = hScroll.Value Else GetScrollValue = vScroll.Value
 End Function
 
 Public Sub SetScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Long)
     
-    Select Case barType
-    
-        Case PD_HORIZONTAL
-            hScroll.Value = newValue
-            
-        Case PD_VERTICAL
-            vScroll.Value = newValue
-        
-        Case PD_BOTH
-            hScroll.Value = newValue
-            vScroll.Value = newValue
-        
-    End Select
+    If (barType = PD_HORIZONTAL) Then
+        hScroll.Value = newValue
+    ElseIf (barType = PD_VERTICAL) Then
+        vScroll.Value = newValue
+    Else
+        hScroll.Value = newValue
+        vScroll.Value = newValue
+    End If
     
     'If automatic redraws are suspended, the scroll bars change events won't fire, so we must manually notify external UI elements
     If Me.GetRedrawSuspension Then RelayViewportChanges
@@ -345,24 +340,24 @@ End Sub
 
 'Get/Set scroll max/min
 Public Function GetScrollMax(ByVal barType As PD_ORIENTATION) As Long
-    If barType = PD_HORIZONTAL Then GetScrollMax = hScroll.Max Else GetScrollMax = vScroll.Max
+    If (barType = PD_HORIZONTAL) Then GetScrollMax = hScroll.Max Else GetScrollMax = vScroll.Max
 End Function
 
 Public Function GetScrollMin(ByVal barType As PD_ORIENTATION) As Long
-    If barType = PD_HORIZONTAL Then GetScrollMin = hScroll.Min Else GetScrollMin = vScroll.Min
+    If (barType = PD_HORIZONTAL) Then GetScrollMin = hScroll.Min Else GetScrollMin = vScroll.Min
 End Function
 
 Public Sub SetScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
-    If barType = PD_HORIZONTAL Then hScroll.Max = newMax Else vScroll.Max = newMax
+    If (barType = PD_HORIZONTAL) Then hScroll.Max = newMax Else vScroll.Max = newMax
 End Sub
 
 Public Sub SetScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
-    If barType = PD_HORIZONTAL Then hScroll.Min = newMin Else vScroll.Min = newMin
+    If (barType = PD_HORIZONTAL) Then hScroll.Min = newMin Else vScroll.Min = newMin
 End Sub
 
 'Set scroll bar LargeChange value
 Public Sub SetScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
-    If barType = PD_HORIZONTAL Then hScroll.LargeChange = newLargeChange Else vScroll.LargeChange = newLargeChange
+    If (barType = PD_HORIZONTAL) Then hScroll.LargeChange = newLargeChange Else vScroll.LargeChange = newLargeChange
 End Sub
 
 'Get/Set scrollbar visibility.  Note that visibility is only toggled as necessary, so this function is preferable to
@@ -381,36 +376,33 @@ Public Sub SetScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     Dim changesMade As Boolean
     changesMade = False
     
-    Select Case barType
+    If (barType = PD_HORIZONTAL) Then
+        If (newVisibility <> hScroll.Visible) Then
+            hScroll.Visible = newVisibility
+            changesMade = True
+        End If
     
-        Case PD_HORIZONTAL
-            If (newVisibility <> hScroll.Visible) Then
-                hScroll.Visible = newVisibility
-                changesMade = True
-            End If
-        
-        Case PD_VERTICAL
-            If (newVisibility <> vScroll.Visible) Then
-                vScroll.Visible = newVisibility
-                changesMade = True
-            End If
-        
-        Case PD_BOTH
-            If (newVisibility <> hScroll.Visible) Or (newVisibility <> vScroll.Visible) Then
-                hScroll.Visible = newVisibility
-                vScroll.Visible = newVisibility
-                changesMade = True
-            End If
+    ElseIf (barType = PD_VERTICAL) Then
+        If (newVisibility <> vScroll.Visible) Then
+            vScroll.Visible = newVisibility
+            changesMade = True
+        End If
     
-    End Select
+    Else
+        If (newVisibility <> hScroll.Visible) Or (newVisibility <> vScroll.Visible) Then
+            hScroll.Visible = newVisibility
+            vScroll.Visible = newVisibility
+            changesMade = True
+        End If
+
+    End If
     
     'When scroll bar visibility is changed, we must move the main canvas picture box to match
     If changesMade Then
     
         'The "center" button between the scroll bars has the same visibility as the scrollbars; it's only visible if both bars are visible
         cmdCenter.Visible = CBool(hScroll.Visible And vScroll.Visible)
-        
-        AlignCanvasView
+        Me.AlignCanvasView
         
     End If
     
@@ -572,18 +564,12 @@ Private Sub CanvasView_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shif
         
             'Back button: currently triggers Undo
             Case AC_BROWSER_BACKWARD, AC_UNDO
-            
-                If pdImages(g_CurrentImage).IsActive Then
-                    If pdImages(g_CurrentImage).undoManager.GetUndoState Then Process "Undo", , , UNDO_NOTHING
-                End If
-            
+                If pdImages(g_CurrentImage).undoManager.GetUndoState Then Process "Undo", , , UNDO_NOTHING
+                
             'Forward button: currently triggers Redo
             Case AC_BROWSER_FORWARD, AC_REDO
-            
-                If pdImages(g_CurrentImage).IsActive Then
-                    If pdImages(g_CurrentImage).undoManager.GetRedoState Then Process "Redo", , , UNDO_NOTHING
-                End If
-        
+                If pdImages(g_CurrentImage).undoManager.GetRedoState Then Process "Redo", , , UNDO_NOTHING
+                
         End Select
 
     End If
@@ -663,8 +649,8 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             curLayerIndex = curLayerIndex - 1
                         End If
                         
-                        If curLayerIndex < 0 Then curLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
-                        If curLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1 Then curLayerIndex = 0
+                        If (curLayerIndex < 0) Then curLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+                        If (curLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then curLayerIndex = 0
                         
                         'Activate the new layer
                         pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
@@ -680,7 +666,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         markEventHandled = True
                         pdImages(g_CurrentImage).GetActiveLayer.SetLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility)
                         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-                        SyncInterfaceToCurrentImage
+                        Interface.SyncInterfaceToCurrentImage
                     End If
                 
                 End If
@@ -734,7 +720,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     ' (NOTE: this should be fixed as of 6.6, as a dedicated picture box is now used for rendering)
     
     'Note whether a selection is active when mouse interactions began
-    m_SelectionActiveBeforeMouseEvents = (pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn)
+    m_SelectionActiveBeforeMouseEvents = (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn)
     
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
@@ -1399,11 +1385,11 @@ Private Function ShouldImageStripBeVisible() As Boolean
     
     'User preference = "Always visible"
     If ImageStrip.VisibilityMode = 0 Then
-        If g_OpenImageCount > 0 Then ShouldImageStripBeVisible = True
+        If (g_OpenImageCount > 0) Then ShouldImageStripBeVisible = True
     
     'User preference = "Visible if 2+ images loaded"
-    ElseIf ImageStrip.VisibilityMode = 1 Then
-        If g_OpenImageCount > 1 Then ShouldImageStripBeVisible = True
+    ElseIf (ImageStrip.VisibilityMode = 1) Then
+        If (g_OpenImageCount > 1) Then ShouldImageStripBeVisible = True
         
     'User preference = "Never visible"
     End If
@@ -1523,18 +1509,18 @@ Public Sub AlignCanvasView()
     
     'Move the CanvasView box into position first
     If (CanvasView.GetLeft <> cvLeft) Or (CanvasView.GetTop <> cvTop) Or (CanvasView.GetWidth <> cvWidth) Or (CanvasView.GetHeight <> cvHeight) Then
-        If cvWidth > 0 And cvHeight > 0 Then
+        If ((cvWidth > 0) And (cvHeight > 0)) Then
             CanvasView.SetPositionAndSize cvLeft, cvTop, cvWidth, cvHeight
         End If
     End If
     
     '...Followed by the scrollbars
     If (hScroll.Left <> hScrollLeft) Or (hScroll.Top <> hScrollTop) Or (hScroll.Width <> cvWidth) Then
-        If cvWidth > 0 Then hScroll.SetPositionAndSize hScrollLeft, hScrollTop, cvWidth, hScroll.GetHeight
+        If (cvWidth > 0) Then hScroll.SetPositionAndSize hScrollLeft, hScrollTop, cvWidth, hScroll.GetHeight
     End If
     
     If (vScroll.Left <> vScrollLeft) Or (vScroll.Top <> vScrollTop) Or (vScroll.Height <> cvHeight) Then
-        If cvHeight > 0 Then vScroll.SetPositionAndSize vScrollLeft, vScrollTop, vScroll.GetWidth, cvHeight
+        If (cvHeight > 0) Then vScroll.SetPositionAndSize vScrollLeft, vScrollTop, vScroll.GetWidth, cvHeight
     End If
     
     '...Followed by the "center" button (which sits between the scroll bars)
@@ -1589,7 +1575,10 @@ Private Sub UserControl_Show()
         ' retain their default Tahoma label.
         
         'Convert all labels to the current interface font
-        If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
+        If (Len(g_InterfaceFont) = 0) Then
+            Debug.Print "wrong font!!!!!!!!"
+            g_InterfaceFont = "Segoe UI"
+        End If
         
         'Request an update against the current theme
         ' TODO: do we really need to do this manually, or is PD's central theme function smart enough to do this on its own?

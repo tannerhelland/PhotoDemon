@@ -129,7 +129,7 @@ Private m_ImageCopy As pdImage
 
 'Similarly, when setting the relevant pdImage reference, our parent dialog will also notify us of the destination
 ' file format.  This affects what metadata settings we expose.
-Private m_DstFormat As PHOTODEMON_IMAGE_FORMAT
+Private m_DstFormat As PD_IMAGE_FORMAT
 
 'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
 ' but I've since attempted to wrap these into a single master control support class.
@@ -388,7 +388,7 @@ Public Sub Reset()
     chkThumbnail.Value = vbUnchecked
 End Sub
 
-Public Sub SetParentImage(ByRef srcImage As pdImage, ByVal destinationFormat As PHOTODEMON_IMAGE_FORMAT)
+Public Sub SetParentImage(ByRef srcImage As pdImage, ByVal destinationFormat As PD_IMAGE_FORMAT)
     Set m_ImageCopy = srcImage
     m_DstFormat = destinationFormat
     EvaluatePresenceOfMetadata

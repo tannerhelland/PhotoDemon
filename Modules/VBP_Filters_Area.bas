@@ -106,7 +106,7 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -146,12 +146,12 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
     'Temporary calculation variables
     Dim CalcX As Long, CalcY As Long
     
-    'QuickValInner is like QuickVal below, but for sub-loops
+    'quickValInner is like quickVal below, but for sub-loops
     Dim QuickValInner As Long
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Reset our values upon beginning analysis on a new pixel
@@ -241,9 +241,9 @@ Public Function ConvolveDIB(ByVal fullParamString As String, ByRef srcDIB As pdD
         End If
         
         'Copy the calculated value into the destination array
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(quickVal + 2, y) = r
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal, y) = b
         
     Next y
         If Not suppressMessages Then
@@ -293,7 +293,7 @@ Public Sub FilterGridBlur()
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -313,11 +313,11 @@ Public Sub FilterGridBlur()
         r = 0
         g = 0
         b = 0
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
         For y = initY To finalY
-            r = r + ImageData(QuickVal + 2, y)
-            g = g + ImageData(QuickVal + 1, y)
-            b = b + ImageData(QuickVal, y)
+            r = r + ImageData(quickVal + 2, y)
+            g = g + ImageData(quickVal + 1, y)
+            b = b + ImageData(quickVal, y)
         Next y
         rax(x) = r
         gax(x) = g
@@ -330,10 +330,10 @@ Public Sub FilterGridBlur()
         g = 0
         b = 0
         For x = initX To finalX
-            QuickVal = x * qvDepth
-            r = r + ImageData(QuickVal + 2, y)
-            g = g + ImageData(QuickVal + 1, y)
-            b = b + ImageData(QuickVal, y)
+            quickVal = x * qvDepth
+            r = r + ImageData(quickVal + 2, y)
+            g = g + ImageData(quickVal + 1, y)
+            b = b + ImageData(quickVal, y)
         Next x
         ray(y) = r
         gay(y) = g
@@ -344,7 +344,7 @@ Public Sub FilterGridBlur()
         
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Average the horizontal and vertical values for each color component
@@ -358,9 +358,9 @@ Public Sub FilterGridBlur()
         If b > 255 Then b = 255
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If (x And progBarCheck) = 0 Then

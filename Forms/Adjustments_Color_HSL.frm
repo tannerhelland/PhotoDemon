@@ -131,7 +131,7 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -145,13 +145,13 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Get the hue and saturation
         tRGBToHSL r, g, b, h, s, l
@@ -173,9 +173,9 @@ Public Sub AdjustImageHSL(ByVal hModifier As Double, ByVal sModifier As Double, 
         tHSLToRGB h, s, l, r, g, b
         
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If toPreview = False Then

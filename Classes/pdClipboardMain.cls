@@ -255,7 +255,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
             If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility Then
                 
                 'If a selection is active, erase the selected area.  Otherwise, wipe the whole layer.
-                If pdImages(g_CurrentImage).selectionActive Then
+                If pdImages(g_CurrentImage).IsSelectionActive Then
                     pdImages(g_CurrentImage).EraseProcessedSelection i
                 Else
                     Layer_Handler.EraseLayerByIndex i
@@ -267,7 +267,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
         Else
         
             'If a selection is active, erase the selected area.  Otherwise, delete the given layer.
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).IsSelectionActive Then
                 pdImages(g_CurrentImage).EraseProcessedSelection i
             Else
                 Layer_Handler.DeleteLayer i
@@ -1570,7 +1570,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     'The specific data we stash varies according to a few different parameters.
     
     'First, check for an active selection
-    If pdImages(g_CurrentImage).selectionActive Then
+    If pdImages(g_CurrentImage).IsSelectionActive Then
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "Clipboard stash update: generating processed selection area..."

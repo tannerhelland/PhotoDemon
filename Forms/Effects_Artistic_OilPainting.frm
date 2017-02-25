@@ -155,7 +155,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -199,12 +199,12 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To initY + mRadius
     
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(quickVal + 2, y)
+        g = srcImageData(quickVal + 1, y)
+        b = srcImageData(quickVal, y)
         l = lLookup(r + g + b)
         rValues(l) = rValues(l) + r
         gValues(l) = gValues(l) + g
@@ -217,7 +217,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     'Loop through each pixel in the image, tallying median values as we go
     For x = initX To finalX
             
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
         
         'Determine the bounds of the current median box in the X direction
         lbX = x - mRadius
@@ -446,9 +446,9 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
         If b > 255 Then b = 255
                 
         'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
+        dstImageData(quickVal + 2, y) = r
+        dstImageData(quickVal + 1, y) = g
+        dstImageData(quickVal, y) = b
         
     Next y
         atBottom = Not atBottom

@@ -59,7 +59,7 @@ End Function
 ' an imageID value.  That values is assigned when the object is added to the main pdImages() collection.
 Public Sub GetDefaultPDImageObject(ByRef dstImage As pdImage)
     If (dstImage Is Nothing) Then Set dstImage = New pdImage
-    dstImage.currentZoomValue = g_Zoom.GetZoom100Index
+    dstImage.SetZoom g_Zoom.GetZoom100Index
 End Sub
 
 'When loading an image file, there's a chance we won't be able to load the image correctly.  Because of that, we start
@@ -85,7 +85,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
     ' the user switches between loaded images).
     FormMain.mainCanvas(0).SetZoomDropDownIndex newZoomIndex
-    pdImages(g_CurrentImage).currentZoomValue = newZoomIndex
+    pdImages(g_CurrentImage).SetZoom newZoomIndex
     
     'Re-enable scrolling
     g_AllowViewportRendering = True
@@ -108,7 +108,7 @@ Public Sub FitOnScreen()
     
     'Set zoom to the "fit whole" index
     FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoomFitAllIndex
-    pdImages(g_CurrentImage).currentZoomValue = g_Zoom.GetZoomFitAllIndex
+    pdImages(g_CurrentImage).SetZoom g_Zoom.GetZoomFitAllIndex
     
     'Re-enable scrolling
     g_AllowViewportRendering = True

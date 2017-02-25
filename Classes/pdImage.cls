@@ -53,41 +53,12 @@ Public IsActive As Boolean
 Public Width As Long
 Public Height As Long
 
-'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
-' use the imageDPI value, which will return the average resolution of the two.
-Private xResolution As Double
-Private yResolution As Double
-Private imageDPI As Double
-
-'Current index of the zoom combo box; this must be stored so we can support MDI
-Public currentZoomValue As Long
-
-'Original image format.  This is derived from the equivalent FreeImage constant - see the enum for FREE_IMAGE_FORMAT for details
-Public originalFileFormat As PHOTODEMON_IMAGE_FORMAT
-
-'Current file format.  For example, if the user loads a .BMP file and uses "Save As" to save it as a .JPG, this variable will
-' represent "JPG" - while OriginalFileFormat will still represent "BMP".  (OriginalFileFormat is only set once, at load-time.)
-Public currentFileFormat As PHOTODEMON_IMAGE_FORMAT
-
-'Original color depth (a BPP value, most commonly 24 or 32, may be 8)
-Public originalColorDepth As Long
-
-'saveParameters let us save the image using settings the user has already specified (so we don't have to pester
-' them every time they save)
-Public saveParameters As String
-
 'Any random data relevant to the image can be stored in this Dictionary object.  It replaces the wide array of specific
 ' public variables we previously used.  Currently stored values include, but are not limited to:
 ' - "OriginalFileName"
 ' - "OriginalFileExtension"
 ' - "CurrentLocationOnDisk"
 Public imgStorage As pdDictionary
-    
-'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
-Private hasBeenSavedPDI As Boolean, hasBeenSavedFlat As Boolean
-    
-'A copy of the image's current icon (at 16 and 32px sizes)
-Public curFormIcon32 As Long, curFormIcon16 As Long
 
 'Persistent buffer, for storing the fully composited image.  This composite is only updated when absolutely necessary;
 ' otherwise, look at grabbing the dedicated canvasBuffer, below.
@@ -96,10 +67,15 @@ Public compositeBuffer As pdDIB
 'Image's canvas buffer.  This holds a composited version of the image, extracted and cropped to reflect the current viewport.
 ' It is cached here to make viewport rendering faster and more reliable.
 Public canvasBuffer As pdDIB
-    
-'Image's selection data (stored and handled by a mainSelection object)
+
+'Scratch layer.  This layer can be used for any temporary work relevant to this image (e.g. storing paintbrush strokes).
+' Note that no guarantees are made regarding the scratch layer's initialization, size, or other attributes.  You should
+' always verify scratch layer attributes (or call ResetScratchLayer) prior to utilizing it.
+Public ScratchLayer As pdLayer
+
+'Image's selection data (stored and handled by a pdSelection instance)
 Public mainSelection As pdSelection
-Public selectionActive As Boolean
+Private m_SelectionIsActive As Boolean
 
 'Metadata handler/storage class.  This class is automatically filled with an image file's metadata at load-time.
 ' NOTE: THE EXIFTOOL PLUGIN IS REQUIRED FOR METADATA HANDLING.
@@ -110,6 +86,32 @@ Public undoManager As pdUndo
     
 'Various viewport actions are now handled through a separate pdViewport class
 Public imgViewport As pdViewport
+
+'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
+' use the m_DPI value, which will return the average resolution of the two.
+Private m_XResolution As Double
+Private m_YResolution As Double
+Private m_DPI As Double
+
+'Current index of the associated zoom combo box; this is stored locally so zoom is preserved when switching images
+Private m_ZoomIndex As Long
+
+'Each pdImage stores two file format constants:
+' 1) Original file format.  This is the format the image was in when it was loaded from file (if applicable).
+'    Original file format is only set once, at load-time, and not changed during a given session.  We must retain
+'    it because this value tells us how to parse things like cached metadata (which is often format-specific).
+' 2) Current file format.  For example, if the user loads a .BMP file and uses "Save As" to save it as a .JPG,
+'    this will state "JPG" (while original file format is still "BMP").
+Private m_originalFileFormat As PD_IMAGE_FORMAT, m_currentFileFormat As PD_IMAGE_FORMAT
+
+'Original color depth (expressed as a standard BPP value, most commonly 32)
+Private m_OriginalColorDepth As Long
+    
+'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
+Private m_hasBeenSavedPDI As Boolean, m_hasBeenSavedFlat As Boolean
+
+'A copy of the current image, in small and large icon form (16 and 32px at 100% system DPI)
+Private m_curFormIcon16 As Long, m_curFormIcon32 As Long
 
 'Image layers!  All layers are stored in this array.
 Private imgLayers() As pdLayer
@@ -128,11 +130,6 @@ Private m_numOfLayersEverCreated As Long
 ' zero-based; e.g. right after an image file is loaded, this will be set to 1.
 Private m_numOfLayers As Long
 
-'Scratch layer.  This layer can be used for any temporary work relevant to this image (e.g. storing paintbrush strokes).
-' Note that no guarantees are made regarding the scratch layer's initialization, size, or other attributes.  You should
-' always verify scratch layer attributes (or call ResetScratchLayer) prior to utilizing it.
-Public ScratchLayer As pdLayer
-
 'Image compositor.  Previously, all compositing was done internally, but as compositing has grown more complex, I have decided
 ' to move all compositing work to an external class (to keep pdImage from getting too bloated).
 Private imgCompositor As pdCompositor
@@ -147,7 +144,60 @@ Private m_CompositeCacheClean As Boolean
 '
 'If the working space index is -1, the image has no working space.  Assume sRGB.
 Private m_WorkingSpaceIndex As Long
-    
+
+Friend Function GetCurrentFileFormat() As PD_IMAGE_FORMAT
+    GetCurrentFileFormat = m_currentFileFormat
+End Function
+
+Friend Sub SetCurrentFileFormat(ByVal newFormat As PD_IMAGE_FORMAT)
+    m_currentFileFormat = newFormat
+End Sub
+
+Friend Function GetImageIcon(ByVal getLargeIcon As Boolean)
+    If getLargeIcon Then
+        GetImageIcon = m_curFormIcon32
+    Else
+        GetImageIcon = m_curFormIcon16
+    End If
+End Function
+
+Friend Sub SetImageIcon(ByVal setLargeIcon As Boolean, ByVal newHandle As Long)
+    If setLargeIcon Then
+        m_curFormIcon32 = newHandle
+    Else
+        m_curFormIcon16 = newHandle
+    End If
+End Sub
+
+'Original color depth of this image, expressed as BPP (bits per pixel).  If this image was created internally,
+' the value will almost certainly be 32.  If imported from file, it will mirror the original value of the initial
+' pdDIB instance it was created from.
+Friend Function GetOriginalColorDepth() As Long
+    GetOriginalColorDepth = m_OriginalColorDepth
+End Function
+
+Friend Sub SetOriginalColorDepth(ByVal origColorDepth As Long)
+    m_OriginalColorDepth = origColorDepth
+End Sub
+
+Friend Function GetOriginalFileFormat() As PD_IMAGE_FORMAT
+    GetOriginalFileFormat = m_originalFileFormat
+End Function
+
+Friend Sub SetOriginalFileFormat(ByVal newFormat As PD_IMAGE_FORMAT)
+    m_originalFileFormat = newFormat
+End Sub
+
+'Zoom is stored as an index into PD's default zoom table.  To resolve these to actual floating-point modifiers,
+' use a pdZoom class instance.
+Friend Function GetZoom() As Long
+    GetZoom = m_ZoomIndex
+End Function
+
+Friend Sub SetZoom(ByVal newZoomIndex As Long)
+    m_ZoomIndex = newZoomIndex
+End Sub
+
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
 ' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
 
@@ -158,7 +208,7 @@ Private m_WorkingSpaceIndex As Long
 'The returned Long-type value is the CANONICAL ID of the new layer, NOT ITS INDEX.  (Returning its index would be pointless,
 ' as the calling function likely knows that in advance.)  Note that layers can be accessed by either ID or index; after
 ' calling this function, make sure to use the CANONICAL ID function with the returned value.
-Public Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
+Friend Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As Long
 
     'Start by seeing if the image has zero layers.  If it does, we can ignore layerPosition entirely.
     If (m_numOfLayersEverCreated = 0) Then
@@ -195,7 +245,7 @@ Public Function CreateBlankLayer(Optional ByVal layerPosition As Long = -1) As L
 
 End Function
 
-Public Sub RebuildCompositeBuffer(Optional ByVal renderScratchLayerIndex As Long = -1)
+Friend Sub RebuildCompositeBuffer(Optional ByVal renderScratchLayerIndex As Long = -1)
 
     'If the buffer is already clean, ignore this request
     If m_CompositeCacheClean Then
@@ -218,7 +268,7 @@ End Sub
 '
 'If the change involves a layer, an index *must* be specified, so the object can notify the layer of the change (allowing the
 ' layer to rebuild any internal caches or buffers, like layer styles).
-Public Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
+Friend Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
 
     'Separate handling by type.
     
@@ -268,7 +318,7 @@ End Sub
 ' object references, we ask the calling function to supply the DIB they want filled.  Optionally, they can also request a
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
-Public Sub GetCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
+Friend Sub GetCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
     
     'If the current composite cache is dirty, rebuild it
     If (Not m_CompositeCacheClean) Then RebuildCompositeBuffer
@@ -284,17 +334,17 @@ End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
-Public Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
+Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
     imgCompositor.GetCompositedRect Me, dstDIB, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, interpolationType, ignoreInternalCaches, levelOfDetail, renderScratchLayerIndex
 End Sub
 
 'Get the currently active layer index
-Public Function GetActiveLayerIndex() As Long
+Friend Function GetActiveLayerIndex() As Long
     GetActiveLayerIndex = m_curLayer
 End Function
 
 'Get the currently active layer canonical ID
-Public Function GetActiveLayerID() As Long
+Friend Function GetActiveLayerID() As Long
     If (m_curLayer > UBound(imgLayers)) Then
         GetActiveLayerID = imgLayers(0).GetLayerID
     Else
@@ -304,13 +354,13 @@ End Function
 
 'Get the number of layers in this image.  (Note: this function might return zero, so handle that condition correctly
 ' in calling functions!)
-Public Function GetNumOfLayers() As Long
+Friend Function GetNumOfLayers() As Long
     GetNumOfLayers = m_numOfLayers
 End Function
 
 'Retrieve a reference to the currently active layer's DIB.  This is effectively a shortcut function when we
 ' need quick access to the current layer's DIB.
-Public Function GetActiveDIB() As pdDIB
+Friend Function GetActiveDIB() As pdDIB
     If (m_numOfLayers <> 0) Then
         Set GetActiveDIB = imgLayers(m_curLayer).layerDIB
     Else
@@ -319,7 +369,7 @@ Public Function GetActiveDIB() As pdDIB
 End Function
 
 'Retrieve the currently active layer
-Public Function GetActiveLayer() As pdLayer
+Friend Function GetActiveLayer() As pdLayer
     If (m_numOfLayers > 0) Then
         If (m_curLayer > UBound(imgLayers)) Then m_curLayer = 0
         Set GetActiveLayer = imgLayers(m_curLayer)
@@ -329,7 +379,7 @@ Public Function GetActiveLayer() As pdLayer
 End Function
 
 'Set the currently active layer by its cardinal ID value
-Public Sub SetActiveLayerByID(ByVal newActiveLayerID As Long)
+Friend Sub SetActiveLayerByID(ByVal newActiveLayerID As Long)
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
@@ -343,7 +393,7 @@ Public Sub SetActiveLayerByID(ByVal newActiveLayerID As Long)
     
 End Sub
 
-Public Sub SetActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
+Friend Sub SetActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
 
     'Validate the incoming layer index
     If (newActiveLayerIndex < 0) Then newActiveLayerIndex = 0
@@ -354,7 +404,7 @@ Public Sub SetActiveLayerByIndex(ByVal newActiveLayerIndex As Long)
 End Sub
 
 'Retrieve a layer index using its canonical ID.
-Public Function GetLayerIndexFromID(ByVal requestedID As Long) As Long
+Friend Function GetLayerIndexFromID(ByVal requestedID As Long) As Long
     
     Dim i As Long
     For i = 0 To UBound(imgLayers)
@@ -371,7 +421,7 @@ End Function
 
 'Retrieve a layer at an arbitrary position.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!
-Public Function GetLayerByIndex(ByVal layerIndex As Long) As pdLayer
+Friend Function GetLayerByIndex(ByVal layerIndex As Long) As pdLayer
     
     'As a failsafe, validate the incoming layer index
     If (layerIndex > UBound(imgLayers)) Then
@@ -389,7 +439,7 @@ End Function
 
 'Retrieve a layer using its canonical ID.  Remember that layers in PD are zero-based, so the base layer is layer 0, not 1.
 ' Also, this function does not check bounds, so make sure the passed index is valid!
-Public Function GetLayerByID(ByVal requestedID As Long) As pdLayer
+Friend Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     
     Dim i As Long
     For i = 0 To m_numOfLayers - 1
@@ -405,7 +455,7 @@ Public Function GetLayerByID(ByVal requestedID As Long) As pdLayer
     
 End Function
 
-Public Function PointLayerAtNewObject(ByVal layerID As Long, ByRef newLayer As pdLayer) As Boolean
+Friend Function PointLayerAtNewObject(ByVal layerID As Long, ByRef newLayer As pdLayer) As Boolean
 
     Dim targetLayerIndex As Long
     targetLayerIndex = -1
@@ -433,7 +483,7 @@ Public Function PointLayerAtNewObject(ByVal layerID As Long, ByRef newLayer As p
 End Function
 
 'Simple function for moving a given layer up/down in the layer stack.
-Public Sub MoveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Boolean)
+Friend Sub MoveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Boolean)
 
     'Before doing anything else, make sure the requested move is a valid one
     If moveLayerUp Then
@@ -461,7 +511,7 @@ End Sub
 ' The destination layer index will be the *new* index of the source layer.  If the two indices match, the function will terminate.
 '
 'The function will return TRUE if the layers were moved successfully.
-Public Function MoveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
+Friend Function MoveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
 
     'Before doing anything else, make sure the requested move is a valid one
     If srcLayerIndex = dstLayerIndex Then
@@ -511,7 +561,7 @@ Public Function MoveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
 End Function
 
 'Used by various layer movement functions.  Given two layer indices, swap them.
-Public Sub SwapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
+Friend Sub SwapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As Long)
 
     'Create a temporary reference to the first layer
     Dim tmpLayerRef As pdLayer
@@ -529,7 +579,7 @@ Public Sub SwapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As
 End Sub
 
 'Delete a given layer.  The pdLayers stack will automatically be resized to match.
-Public Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
+Friend Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 
     'Validate the layer index
     If srcLayerIndex < 0 Or srcLayerIndex >= m_numOfLayers Then Exit Sub
@@ -549,6 +599,15 @@ Public Sub DeleteLayerByIndex(ByVal srcLayerIndex As Long)
 
 End Sub
 
+'Get/set active selection state
+Friend Function IsSelectionActive() As Boolean
+    IsSelectionActive = m_SelectionIsActive
+End Function
+
+Friend Sub SetSelectionActive(ByVal newState As Boolean)
+    m_SelectionIsActive = newState
+End Sub
+
 'Write all relevant image information to an external file (in XML format).  Note that this will not be a perfect copy of the
 ' current image's state, because some pdImage data is only relevant at run-time.  Also, some data structures (like metadata) are
 ' very difficult to handle properly; I am working on a solution to this, but have not finished it yet.
@@ -556,7 +615,7 @@ End Sub
 'In the event that you want to do something else with the XML data, I have now added an optional parameter.
 ' Mark "filePathIsActuallyString" as TRUE to treat the filename string as a destination buffer, and this function will
 ' write the XML data there (instead of treating it as a filename).
-Public Function WriteExternalData(ByRef dstFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
+Friend Function WriteExternalData(ByRef dstFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False) As Boolean
 
     On Error GoTo failedDataWrite
 
@@ -579,12 +638,12 @@ Public Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     ' properties independent of a given session (e.g. imageID); session-dependent properties will be recreated anew by PD.
     xmlEngine.WriteTag "Width", Width
     xmlEngine.WriteTag "Height", Height
-    xmlEngine.WriteTag "xResolution", xResolution
-    xmlEngine.WriteTag "yResolution", yResolution
-    xmlEngine.WriteTag "DPI", imageDPI
-    xmlEngine.WriteTag "OriginalFileFormat", originalFileFormat
-    xmlEngine.WriteTag "CurrentFileFormat", currentFileFormat
-    xmlEngine.WriteTag "OriginalColorDepth", originalColorDepth
+    xmlEngine.WriteTag "XResolution", m_XResolution
+    xmlEngine.WriteTag "YResolution", m_YResolution
+    xmlEngine.WriteTag "DPI", m_DPI
+    xmlEngine.WriteTag "OriginalFileFormat", m_originalFileFormat
+    xmlEngine.WriteTag "CurrentFileFormat", m_currentFileFormat
+    xmlEngine.WriteTag "OriginalColorDepth", m_OriginalColorDepth
     xmlEngine.WriteTag "numOfLayersEverCreated", m_numOfLayersEverCreated
     xmlEngine.WriteTag "numOfLayers", m_numOfLayers
     xmlEngine.WriteTag "curLayer", m_curLayer
@@ -628,7 +687,7 @@ End Function
 ' of the values we already have stored for this image.  The Undo/Redo engine may also specify non-destructive loading, in which case
 ' we assume that our existing layer stack is valid, but in the wrong order - so simply reorder the stack according to the data in the
 ' XML, instead of full-on recreating it from scratch.
-Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
+Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal filePathIsActuallyString As Boolean = False, Optional ByVal sourceIsUndoFile As Boolean = False, Optional ByVal loadNonDestructively As Boolean = False) As Boolean
 
     On Error GoTo failedDataRead
     
@@ -653,9 +712,9 @@ Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
         'The XML file checked out.  Start retrieving relevant values.
         Me.Width = xmlEngine.GetUniqueTag_Long("Width")
         Me.Height = xmlEngine.GetUniqueTag_Long("Height")
-        xResolution = xmlEngine.GetUniqueTag_Long("xResolution")
-        yResolution = xmlEngine.GetUniqueTag_Long("yResolution")
-        imageDPI = xmlEngine.GetUniqueTag_Long("DPI")
+        m_XResolution = xmlEngine.GetUniqueTag_Long("XResolution")
+        m_YResolution = xmlEngine.GetUniqueTag_Long("YResolution")
+        m_DPI = xmlEngine.GetUniqueTag_Long("DPI")
         
         'All settings past this point are only relevant when loading a file anew, not when it's being used as part of
         ' the Undo/Redo stack.
@@ -664,7 +723,7 @@ Public Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
             'These values are all stored in the PDI file, but they're not really relevant.  I will look at not storing
             ' them in the first place, but for now, just ignore them.
             'TODO: make a firm decision on what data does not belong in PDI files!
-            Me.originalColorDepth = xmlEngine.GetUniqueTag_Long("originalColorDepth")
+            Me.SetOriginalColorDepth xmlEngine.GetUniqueTag_Long("originalColorDepth")
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
             ' only as necessary.
@@ -710,17 +769,17 @@ End Function
 
 'Get/Set image resolution (in DPI).  Note that the vertical resolution is optional; if the two values
 ' differ, PD will average them when image DPI is requested.
-Public Function GetDPI() As Double
+Friend Function GetDPI() As Double
     
-    If imageDPI = 0 Then
+    If m_DPI = 0 Then
         GetDPI = 96
     Else
-        GetDPI = imageDPI
+        GetDPI = m_DPI
     End If
     
 End Function
 
-Public Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
+Friend Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sourceIsFreeImage As Boolean = False)
     
     'Many image types do not store resolution information; default to 96 in this case
     If xRes = 0 Then xRes = 96
@@ -736,36 +795,36 @@ Public Sub SetDPI(ByVal xRes As Double, ByVal yRes As Double, Optional ByVal sou
         If yRes = 72 Then yRes = 96
     End If
     
-    xResolution = xRes
-    yResolution = yRes
+    m_XResolution = xRes
+    m_YResolution = yRes
     
     'It is extremely rare for x/y resolution to differ, but just in case, calculate an average resolution as well
-    imageDPI = (xRes + yRes) \ 2
+    m_DPI = (xRes + yRes) \ 2
 
 End Sub
 
 'If the image has been saved to file in its current state, this will return TRUE.  Use this value to determine
 ' whether to enable a Save button, for example.
-Public Function GetSaveState(ByVal desiredSaveType As PD_SAVE_EVENT) As Boolean
+Friend Function GetSaveState(ByVal desiredSaveType As PD_SAVE_EVENT) As Boolean
     
     Select Case desiredSaveType
     
         Case pdSE_AnySave
-            GetSaveState = hasBeenSavedPDI Or hasBeenSavedFlat
+            GetSaveState = m_hasBeenSavedPDI Or m_hasBeenSavedFlat
         
         Case pdSE_SavePDI
-            GetSaveState = hasBeenSavedPDI
+            GetSaveState = m_hasBeenSavedPDI
         
         Case pdSE_SaveFlat
-            GetSaveState = hasBeenSavedFlat
+            GetSaveState = m_hasBeenSavedFlat
     
     End Select
     
 End Function
 
-'Outside actions (such as saving) can affect the HasBeenSaved variable.  However, because we need to do additional
+'Outside actions (such as saving) can affect the m_hasBeenSaved variable.  However, because we need to do additional
 ' processing based on the state of this variable, we provide this interface.
-Public Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As PD_SAVE_EVENT)
+Friend Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As PD_SAVE_EVENT)
     
     'The image has just been saved
     If newSaveState Then
@@ -778,11 +837,11 @@ Public Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As 
                 
             'Image has been saved to PDI format, meaning layers are intact
             Case pdSE_SavePDI
-                hasBeenSavedPDI = True
+                m_hasBeenSavedPDI = True
                 
             'Image has been saved to some flat format (JPEG, PNG, etc)
             Case pdSE_SaveFlat
-                hasBeenSavedFlat = True
+                m_hasBeenSavedFlat = True
             
         End Select
         
@@ -792,8 +851,8 @@ Public Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As 
     
     'Some change has occurred, meaning the image has not been saved (to any format) in its current state
     Else
-        hasBeenSavedPDI = False
-        hasBeenSavedFlat = False
+        m_hasBeenSavedPDI = False
+        m_hasBeenSavedFlat = False
     End If
         
 End Sub
@@ -801,17 +860,17 @@ End Sub
 'Working space index related to color management.  It is the index of this image's current working spcae profile, as it is
 ' found in the ColorManagement module's ICC profile cache.  (Accessing by index is way faster than doing large byte array
 ' comparisons, which is why we do it this way.)
-Public Function GetWorkingSpaceIndex() As Long
+Friend Function GetWorkingSpaceIndex() As Long
     GetWorkingSpaceIndex = m_WorkingSpaceIndex
 End Function
 
-Public Sub SetWorkingSpaceIndex(ByVal newIndex As Long)
+Friend Sub SetWorkingSpaceIndex(ByVal newIndex As Long)
     m_WorkingSpaceIndex = newIndex
 End Sub
 
 'External functions can use this function to request a thumbnail version of the contained image.  Note that the full
 ' image must be re-composited on every request, so please do not call this function unless absolutely necessary!
-Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
+Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal thumbnailSize As Long = 64) As Boolean
     
     'Uncomment the two lines below (and another at the end of the function) to profile different thumbnail resize strategies
     'Dim startTime As Double
@@ -862,30 +921,32 @@ Public Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
 End Function
 
 'When this DIB is no longer being used, we can deactivate it to save on resources.
-Public Sub DeactivateImage()
+Friend Sub DeactivateImage()
+    
+    FreeInternalIcons
     
     'Erase any internal image buffers
-    If Not (compositeBuffer Is Nothing) Then Set compositeBuffer = Nothing
-    If Not (canvasBuffer Is Nothing) Then Set canvasBuffer = Nothing
+    If (Not compositeBuffer Is Nothing) Then Set compositeBuffer = Nothing
+    If (Not canvasBuffer Is Nothing) Then Set canvasBuffer = Nothing
     
     'Erase the selection manager (*very* important because of circular references)
-    If Not (mainSelection Is Nothing) Then
+    If (Not mainSelection Is Nothing) Then
         mainSelection.SetParentReference Nothing
         Set mainSelection = Nothing
     End If
         
     'Deactivate the Undo/Redo handler (*very* important because of circular references)
-    If Not (undoManager Is Nothing) Then
+    If (Not undoManager Is Nothing) Then
         undoManager.ClearUndos
         Set undoManager.parentPDImage = Nothing
         Set undoManager = Nothing
     End If
     
     'Release the viewport renderer
-    If Not (imgViewport Is Nothing) Then Set imgViewport = Nothing
+    If (Not imgViewport Is Nothing) Then Set imgViewport = Nothing
     
     'Release the compositor
-    If Not (imgCompositor Is Nothing) Then Set imgCompositor = Nothing
+    If (Not imgCompositor Is Nothing) Then Set imgCompositor = Nothing
     
     'Release all layers
     Dim i As Long
@@ -903,7 +964,17 @@ Public Sub DeactivateImage()
     IsActive = False
     
 End Sub
-    
+
+Private Sub FreeInternalIcons()
+    If (m_curFormIcon16 <> 0) Then
+        Icons_and_Cursors.ReleaseIcon m_curFormIcon16
+        m_curFormIcon16 = 0
+    End If
+    If (m_curFormIcon32 <> 0) Then
+        Icons_and_Cursors.ReleaseIcon m_curFormIcon32
+        m_curFormIcon32 = 0
+    End If
+End Sub
 'If the images's size has somehow changed, this can be called to update it.
 '
 'The first optional parameter, assumed to be TRUE, makes the image the same size as its base layer.  This is helpful when
@@ -912,7 +983,7 @@ End Sub
 'If this is another type of resize action, such as a canvas resize, the caller must supply the new width/height values desired.
 '
 'Note that this function performs NO VALIDATION on the passed width/height values.  Make sure they are correct in advance!
-Public Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+Friend Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     If useBaseLayer Then
         Me.Width = imgLayers(0).GetLayerWidth(False)
@@ -928,16 +999,12 @@ Public Function UpdateSize(Optional ByVal useBaseLayer As Boolean = True, Option
 End Function
 
 'INITIALIZE class
-'TODO 7.0: solve the nasty circular reference problem created here.  Circular references are not freed automatically
-' by VB (see http://www.vbaccelerator.com/home/VB/Code/Techniques/Dealing_with_Circular_References/article.html),
-' as neither object's Terminate event is ever called.  This leads to memory issues when many pdImage objects are
-' created, as they are in Batch Processing and other operations.
 Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
     IsActive = False
-    hasBeenSavedPDI = False
-    hasBeenSavedFlat = False
+    m_hasBeenSavedPDI = False
+    m_hasBeenSavedFlat = False
 
     'Initialize the public storage dictionary
     Set imgStorage = New pdDictionary
@@ -957,7 +1024,7 @@ Private Sub Class_Initialize()
 
     'Initialize the main selection
     Set mainSelection = New pdSelection
-    selectionActive = False
+    m_SelectionIsActive = False
     mainSelection.SetSelectionShape ss_Rectangle
     mainSelection.SetParentReference Me
 
@@ -994,8 +1061,7 @@ End Sub
 Private Sub Class_Terminate()
     
     'Manually release any remaining classes and/or resources
-    Icons_and_Cursors.ReleaseIcon Me.curFormIcon16
-    Icons_and_Cursors.ReleaseIcon Me.curFormIcon32
+    FreeInternalIcons
     
     Set imgCompositor = Nothing
     Set imgViewport = Nothing
@@ -1028,7 +1094,7 @@ End Sub
 ' mind as to whether it's an issue that needs resolving or not.  I will revisit in the future, once I have a better idea of
 ' the workflow implications.
 ' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
-Public Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
+Friend Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
 
     'Create a blank destination DIB at the size of the image
     dstDIB.CreateBlank Width, Height, 32, 0
@@ -1039,10 +1105,10 @@ Public Sub RetrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As
 End Sub
 
 'Return a DIB that contains the currently selected area, fully processed according to the selection mask
-Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False, Optional ByVal useMergedImage As Boolean = False) As Boolean
+Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal preMultipliedAlphaState As Boolean = False, Optional ByVal useMergedImage As Boolean = False) As Boolean
 
     'If this image does not contain an active selection, exit now.
-    If (Not IsActive) Or (Not selectionActive) Then
+    If (Not Me.IsActive) Or (Not m_SelectionIsActive) Then
         RetrieveProcessedSelection = False
         Exit Function
     End If
@@ -1169,10 +1235,10 @@ Public Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
 End Function
 
 'Erase the currently selected area of a layer, with new alpha applied according to the selection mask
-Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boolean
+Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boolean
 
     'If this image does not contain an active selection, exit now.
-    If (Not IsActive) Or (Not selectionActive) Or (targetLayerIndex < 0) Or (targetLayerIndex >= m_numOfLayers) Then
+    If (Not Me.IsActive) Or (Not m_SelectionIsActive) Or (targetLayerIndex < 0) Or (targetLayerIndex >= m_numOfLayers) Then
         EraseProcessedSelection = False
         Exit Function
     End If
@@ -1285,7 +1351,7 @@ Public Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
 End Function
 
 'Get number of visible/hidden layers
-Public Function GetNumOfVisibleLayers() As Long
+Friend Function GetNumOfVisibleLayers() As Long
 
     Dim i As Long, visLayerCount As Long
     visLayerCount = 0
@@ -1298,7 +1364,7 @@ Public Function GetNumOfVisibleLayers() As Long
 
 End Function
 
-Public Function GetNumOfHiddenLayers() As Long
+Friend Function GetNumOfHiddenLayers() As Long
 
     Dim i As Long, hidLayerCount As Long
     hidLayerCount = 0
@@ -1312,7 +1378,7 @@ Public Function GetNumOfHiddenLayers() As Long
 End Function
 
 'Estimate the RAM usage for this image, based on the number of layers and the size of each layer
-Public Function EstimateRAMUsage() As Double
+Friend Function EstimateRAMUsage() As Double
 
     EstimateRAMUsage = 0
 
@@ -1331,7 +1397,7 @@ Public Function EstimateRAMUsage() As Double
 End Function
 
 'Helper function to identify the presence of vector layers.  PD's UI synchonization service makes use of this.
-Public Function GetNumOfVectorLayers() As Long
+Friend Function GetNumOfVectorLayers() As Long
 
     Dim i As Long, vectorLayerCount As Long
     vectorLayerCount = 0
@@ -1345,7 +1411,7 @@ Public Function GetNumOfVectorLayers() As Long
 End Function
 
 'Helper function to identify the presence of raster layers.  PD's UI synchonization service makes use of this.
-Public Function GetNumOfRasterLayers() As Long
+Friend Function GetNumOfRasterLayers() As Long
 
     Dim i As Long, rasterLayerCount As Long
     rasterLayerCount = 0
@@ -1359,7 +1425,7 @@ Public Function GetNumOfRasterLayers() As Long
 End Function
 
 'Want to use this image's scratch layer for something?  Call this function to validate the layer's current attributes.
-Public Sub ResetScratchLayer(Optional ByVal resetLayerSettingsToo As Boolean = False)
+Friend Sub ResetScratchLayer(Optional ByVal resetLayerSettingsToo As Boolean = False)
 
     'In the future, it may be helpful to know when the scratch layer is first being created
     Dim firstInitialization As Boolean

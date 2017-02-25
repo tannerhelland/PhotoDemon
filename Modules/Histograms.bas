@@ -50,7 +50,7 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'These variables will hold temporary histogram values
@@ -78,13 +78,13 @@ Public Sub FillHistogramArrays(ByRef hData() As Double, ByRef hDataLog() As Doub
     
     'Run a quick loop through the image, gathering what we need to calculate our histogram
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'We have to gather the red, green, and blue in order to calculate luminance
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Rather than generate authentic luminance (which requires a costly HSL conversion routine), we use a simpler average value.
         l = lumLookup(r + g + b)

@@ -521,7 +521,7 @@ Public Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -541,18 +541,18 @@ Public Function ApplyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     
     'Now we can loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Assign the look-up table values
-        ImageData(QuickVal + 2, y) = rLUT(r)
-        ImageData(QuickVal + 1, y) = gLUT(g)
-        ImageData(QuickVal, y) = bLUT(b)
+        ImageData(quickVal + 2, y) = rLUT(r)
+        ImageData(quickVal + 1, y) = gLUT(g)
+        ImageData(quickVal, y) = bLUT(b)
         
     Next y
         If Not suppressMessages Then
@@ -603,7 +603,7 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -623,13 +623,13 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
         
     'Now we can loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
         grayVal = (213 * r + 715 * g + 72 * b) \ 1000
@@ -637,9 +637,9 @@ Public Function ApplyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
         grayByte = gLUT(grayVal)
         
         'Assign the look-up table values
-        ImageData(QuickVal + 2, y) = grayByte
-        ImageData(QuickVal + 1, y) = grayByte
-        ImageData(QuickVal, y) = grayByte
+        ImageData(quickVal + 2, y) = grayByte
+        ImageData(quickVal + 1, y) = grayByte
+        ImageData(quickVal, y) = grayByte
         
     Next y
         If Not suppressMessages Then
@@ -692,7 +692,7 @@ Public Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = srcDIB.GetDIBColorDepth \ 8
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -712,18 +712,18 @@ Public Function ApplyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() A
     
     'Now we can loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Get the source pixel color values
-        b = ImageData(QuickVal, y)
-        g = ImageData(QuickVal + 1, y)
-        r = ImageData(QuickVal + 2, y)
+        b = ImageData(quickVal, y)
+        g = ImageData(quickVal + 1, y)
+        r = ImageData(quickVal + 2, y)
         
         'Assign the look-up table values
-        ImageData(QuickVal, y) = cLut(b)
-        ImageData(QuickVal + 1, y) = cLut(g)
-        ImageData(QuickVal + 2, y) = cLut(r)
+        ImageData(quickVal, y) = cLut(b)
+        ImageData(quickVal + 1, y) = cLut(g)
+        ImageData(quickVal + 2, y) = cLut(r)
         
     Next y
         If Not suppressMessages Then

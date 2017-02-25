@@ -582,7 +582,7 @@ Private Sub UserControl_Show()
         ' auto-load dimensions from the active window.
         If Not (pdImages(g_CurrentImage) Is Nothing) And (m_SrcImageWidth = 0) And (m_SrcImageWidth = 0) Then
             If (pdImages(g_CurrentImage).GetNumOfLayers <> 0) Then
-                If pdImages(g_CurrentImage).selectionActive Then
+                If pdImages(g_CurrentImage).IsSelectionActive Then
                     Dim selBounds As RECTF
                     selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
                     m_SrcImageWidth = selBounds.Width

@@ -142,7 +142,7 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -195,13 +195,13 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
     
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         'Get red, green, and blue values from the array
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
                 
         'Convert the RGB values the HSV space
         fRGBtoHSV r / 255, g / 255, b / 255, h, s, l
@@ -229,9 +229,9 @@ Public Sub ApplyRainbowEffect(ByVal hueOffset As Double, ByVal rainbowAngle As D
         b = BlendColors(b, bFloat * 255, rainbowStrength)
         
         'Assign the new RGB values back into the array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
+        ImageData(quickVal + 2, y) = r
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal, y) = b
         
     Next y
         If Not toPreview Then

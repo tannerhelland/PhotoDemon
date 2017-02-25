@@ -253,13 +253,13 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'Create a filter support class, which will aid with edge handling and interpolation
     Dim fSupport As pdFilterSupport
     Set fSupport = New pdFilterSupport
-    fSupport.setDistortParameters qvDepth, EDGE_CLAMP, useBilinear, curDIBValues.maxX, curDIBValues.MaxY
+    fSupport.SetDistortParameters qvDepth, EDGE_CLAMP, useBilinear, curDIBValues.maxX, curDIBValues.maxY
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -298,7 +298,7 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
                   
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
@@ -328,7 +328,7 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
         srcY = midY + sDistance * Sin(theta)
         
         'The lovely .setPixels routine will handle edge detection and interpolation for us as necessary
-        fSupport.setPixels x, y, srcX, srcY, srcImageData, dstImageData
+        fSupport.SetPixels x, y, srcX, srcY, srcImageData, dstImageData
                 
     Next y
         If Not toPreview Then

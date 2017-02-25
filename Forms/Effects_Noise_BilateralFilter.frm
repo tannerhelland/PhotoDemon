@@ -253,7 +253,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickValDst As Long, QuickValSrc As Long, QuickYSrc As Long, qvDepth As Long
+    Dim quickValDst As Long, quickValSrc As Long, QuickYSrc As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
@@ -279,8 +279,8 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickValDst = x * qvDepth
-        QuickValSrc = (x + kernelRadius) * qvDepth
+        quickValDst = x * qvDepth
+        quickValSrc = (x + kernelRadius) * qvDepth
     For y = initY To finalY
     
         sCoefR = 0
@@ -292,9 +292,9 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
         
         QuickYSrc = y + kernelRadius
         
-        srcR0 = srcImageData(QuickValSrc + 2, QuickYSrc)
-        srcG0 = srcImageData(QuickValSrc + 1, QuickYSrc)
-        srcB0 = srcImageData(QuickValSrc, QuickYSrc)
+        srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
+        srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
+        srcB0 = srcImageData(quickValSrc, QuickYSrc)
         
         'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
         ' don't matter, but since we're doing it, for y, mirror it to x.)
@@ -352,9 +352,9 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
         newB = sMembB / sCoefB
                 
         'Assign the new values to each color channel
-        dstImageData(QuickValDst + 2, y) = newR
-        dstImageData(QuickValDst + 1, y) = newG
-        dstImageData(QuickValDst, y) = newB
+        dstImageData(quickValDst + 2, y) = newR
+        dstImageData(quickValDst + 1, y) = newG
+        dstImageData(quickValDst, y) = newB
         
     Next y
         If Not toPreview Then

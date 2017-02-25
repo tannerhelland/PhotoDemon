@@ -110,7 +110,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_WAND ', SELECT_LASSO
             
             'Next, check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
-            If srcImage.selectionActive Then
+            If srcImage.IsSelectionActive Then
                 
                 'Retrieve a copy of the current image's intersection rect, which controls boundaries for any selection overlays
                 Dim intRect As RECTF
@@ -194,7 +194,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRect
     
     'Check to see if a selection is active.
-    If srcImage.selectionActive Then
+    If srcImage.IsSelectionActive Then
     
         'If it is, composite the selection against the front buffer
         srcImage.mainSelection.RenderCustom m_FrontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, Selections.GetCurrentPD_SelectionRenderMode, Selections.GetCurrentPD_SelectionRenderColor
@@ -255,7 +255,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     yScroll_Image = dstCanvas.GetScrollValue(PD_VERTICAL)
     
     'Next, let's calculate these *in the canvas coordinate space* (e.g. with zoom applied)
-    If m_ZoomRatio = 0 Then m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.currentZoomValue)
+    If m_ZoomRatio = 0 Then m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.GetZoom)
     xScroll_Canvas = xScroll_Image * m_ZoomRatio
     yScroll_Canvas = yScroll_Image * m_ZoomRatio
     
@@ -556,7 +556,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, 2 for 200%, etc.
     ' We can't generate this automatically, because specialty zoom values (like "fit to window") must be externally generated
     ' by PD's zoom handler.
-    m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.currentZoomValue)
+    m_ZoomRatio = g_Zoom.GetZoomValue(srcImage.GetZoom)
     
     'Next, we're going to calculate a bunch of rects in various coordinate spaces.  Because PD 7.0 added the ability to scroll past the
     ' edge of the image (at any zoom), these rects are crucial for figuring out the overlap between the zoomed image, and the available
@@ -640,13 +640,13 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     End With
     
     'As a convenience to the user, we also make each scroll bar's LargeChange parameter proportional to the scroll bar's maximum value.
-    If (hScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.currentZoomValue) <= 1) Then
+    If (hScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
         dstCanvas.SetScrollLargeChange PD_HORIZONTAL, hScrollMax \ 16
     Else
         dstCanvas.SetScrollLargeChange PD_HORIZONTAL, 1
     End If
     
-    If (vScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.currentZoomValue) <= 1) Then
+    If (vScrollMax > 15) And (g_Zoom.GetZoomValue(srcImage.GetZoom) <= 1) Then
         dstCanvas.SetScrollLargeChange PD_VERTICAL, vScrollMax \ 16
     Else
         dstCanvas.SetScrollLargeChange PD_VERTICAL, 1
@@ -729,8 +729,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
                 
                 'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new scroll bar values.
-                dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.GetZoomValue(srcImage.currentZoomValue)
-                dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.GetZoomValue(srcImage.currentZoomValue)
+                dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.GetZoomValue(srcImage.GetZoom)
+                dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.GetZoomValue(srcImage.GetZoom)
                 
         End Select
         

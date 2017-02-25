@@ -182,7 +182,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
+        Dim quickVal As Long, qvDepth As Long
         qvDepth = curDIBValues.BytesPerPixel
                 
         'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
@@ -195,25 +195,25 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                 
         'Invert the source DIB, and optionally, apply grayscale as well
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
-            r = srcImageData(QuickVal + 2, y)
-            g = srcImageData(QuickVal + 1, y)
-            b = srcImageData(QuickVal, y)
+            r = srcImageData(quickVal + 2, y)
+            g = srcImageData(quickVal + 1, y)
+            b = srcImageData(quickVal, y)
             
             'Normally, we invert the raw pixel data only...
             If pencilStyle <> 1 Then
-                srcImageData(QuickVal + 2, y) = 255 - r
-                srcImageData(QuickVal + 1, y) = 255 - g
-                srcImageData(QuickVal, y) = 255 - b
+                srcImageData(quickVal + 2, y) = 255 - r
+                srcImageData(quickVal + 1, y) = 255 - g
+                srcImageData(quickVal, y) = 255 - b
             
             '...but for the "luminous" color mode, we also convert the image to grayscale
             Else
                 g = grayLookUp(r + g + b)
-                srcImageData(QuickVal + 2, y) = 255 - g
-                srcImageData(QuickVal + 1, y) = 255 - g
-                srcImageData(QuickVal, y) = 255 - g
+                srcImageData(quickVal + 2, y) = 255 - g
+                srcImageData(quickVal + 1, y) = 255 - g
+                srcImageData(quickVal, y) = 255 - g
             End If
             
         Next y
@@ -296,12 +296,12 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         
         'Adjust vibrance
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
-            r = srcImageData(QuickVal + 2, y)
-            g = srcImageData(QuickVal + 1, y)
-            b = srcImageData(QuickVal, y)
+            r = srcImageData(quickVal + 2, y)
+            g = srcImageData(quickVal + 1, y)
+            b = srcImageData(quickVal, y)
                 
             'Calculate the gray value using different methods for each pencil style
             Select Case pencilStyle
@@ -338,9 +338,9 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                 
             End Select
             
-            srcImageData(QuickVal + 2, y) = r
-            srcImageData(QuickVal + 1, y) = g
-            srcImageData(QuickVal, y) = b
+            srcImageData(quickVal + 2, y) = r
+            srcImageData(quickVal + 1, y) = g
+            srcImageData(quickVal, y) = b
             
         Next y
             If Not toPreview Then

@@ -173,7 +173,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -267,12 +267,12 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     
     'Loop through each pixel in the image, converting stored fog values to RGB triplets
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
-        dstImageData(QuickVal + 2, y) = fogArray(x, y)
-        dstImageData(QuickVal + 1, y) = fogArray(x, y)
-        dstImageData(QuickVal, y) = fogArray(x, y)
+        dstImageData(quickVal + 2, y) = fogArray(x, y)
+        dstImageData(quickVal + 1, y) = fogArray(x, y)
+        dstImageData(quickVal, y) = fogArray(x, y)
           
     Next y
         If (Not toPreview) Then

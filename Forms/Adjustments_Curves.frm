@@ -276,7 +276,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -327,18 +327,18 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = transferMap(0, ImageData(QuickVal + 2, y))
-        g = transferMap(1, ImageData(QuickVal + 1, y))
-        b = transferMap(2, ImageData(QuickVal, y))
+        r = transferMap(0, ImageData(quickVal + 2, y))
+        g = transferMap(1, ImageData(quickVal + 1, y))
+        b = transferMap(2, ImageData(quickVal, y))
                 
         'Assign the new values to each color channel
-        ImageData(QuickVal + 2, y) = transferMap(3, r)
-        ImageData(QuickVal + 1, y) = transferMap(3, g)
-        ImageData(QuickVal, y) = transferMap(3, b)
+        ImageData(quickVal + 2, y) = transferMap(3, r)
+        ImageData(quickVal + 1, y) = transferMap(3, g)
+        ImageData(quickVal, y) = transferMap(3, b)
         
     Next y
         If Not toPreview Then

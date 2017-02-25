@@ -36,7 +36,7 @@ End Enum
 '  heuristics entirely.  Similarly, for a format like GIF, this function will return 8-bpp as the recommended
 '  color depth, *but you still need to deal with the alpha result*.  You may need to forcibly crop alpha to 0 and 255
 '  prior to exporting the GIF; PD provides a dialog for this.
-Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstFormat As PHOTODEMON_IMAGE_FORMAT, Optional ByRef currentAlphaStatus As PD_ALPHA_STATUS = PDAS_NoAlpha, Optional ByRef uniqueColorCount As Long = 257, Optional ByRef isTrueColor As Boolean = True, Optional ByRef isGrayscale As Boolean = False, Optional ByRef isMonochrome As Boolean = False) As Long
+Public Function AutoDetectOutputColorDepth(ByRef srcDIB As pdDIB, ByRef dstFormat As PD_IMAGE_FORMAT, Optional ByRef currentAlphaStatus As PD_ALPHA_STATUS = PDAS_NoAlpha, Optional ByRef uniqueColorCount As Long = 257, Optional ByRef isTrueColor As Boolean = True, Optional ByRef isGrayscale As Boolean = False, Optional ByRef isMonochrome As Boolean = False) As Long
     
     Dim colorCheckSuccessful As Boolean: colorCheckSuccessful = False
     

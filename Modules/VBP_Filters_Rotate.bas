@@ -25,8 +25,8 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     '      (NOTE: for left/top, all layer offsets will need to be adjusted to match.)
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
@@ -243,7 +243,7 @@ End Sub
 Public Sub SeeIfCropCanBeAppliedNonDestructively()
     
     'First, make sure there is an active selection
-    If (Not pdImages(g_CurrentImage).selectionActive) Then
+    If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -284,7 +284,7 @@ End Sub
 Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean = False)
     
     'First, make sure there is an active selection
-    If Not pdImages(g_CurrentImage).selectionActive Then
+    If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -466,7 +466,7 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
     
     'The selection is now going to be out of sync with the image.  Forcibly clear it.
     pdImages(g_CurrentImage).mainSelection.LockRelease
-    pdImages(g_CurrentImage).selectionActive = False
+    pdImages(g_CurrentImage).SetSelectionActive False
     pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
     SyncTextToCurrentSelection g_CurrentImage
     
@@ -489,8 +489,8 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
     If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
@@ -548,8 +548,8 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
@@ -608,8 +608,8 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
@@ -705,8 +705,8 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
@@ -765,8 +765,8 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If flipAllLayers And pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 
@@ -938,8 +938,8 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     Message "Fitting image canvas around layer..."
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
@@ -985,8 +985,8 @@ Public Sub MenuFitCanvasToAllLayers()
     Message "Fitting image canvas around layer..."
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     
@@ -1052,8 +1052,8 @@ End Sub
 Public Sub TrimImage()
 
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 

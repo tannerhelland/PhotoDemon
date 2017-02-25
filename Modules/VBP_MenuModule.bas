@@ -236,7 +236,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     'The user's preference is the default value (0) or no previous saves have occurred, meaning we need to suggest a Save As format based
     ' on the current image contents.  This is a fairly complex process, so we offload it to a separate function.
     Else
-        Dim suggestedSaveFormat As PHOTODEMON_IMAGE_FORMAT, suggestedFileExtension As String
+        Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
         suggestedSaveFormat = GetSuggestedSaveFormatAndExtension(srcImage, suggestedFileExtension)
         
         'Now that we have a suggested save format, we need to convert that into its matching Common Dialog filter index.
@@ -267,7 +267,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
         ' 2) the global user preferences manager (which needs to remember things like the output folder, so we can remember it)
         
         'Store all image-level attributes
-        srcImage.currentFileFormat = g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
+        srcImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
         
         'Store all global-preference attributes
         Dim cFile As pdFSO
@@ -286,10 +286,10 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     
 End Function
 
-Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, ByRef dstSuggestedExtension As String) As PHOTODEMON_IMAGE_FORMAT
+Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, ByRef dstSuggestedExtension As String) As PD_IMAGE_FORMAT
     
     'First, see if the image has a file format already.  If it does, we need to suggest that preferentially
-    GetSuggestedSaveFormatAndExtension = srcImage.currentFileFormat
+    GetSuggestedSaveFormatAndExtension = srcImage.GetCurrentFileFormat
     If (GetSuggestedSaveFormatAndExtension = PDIF_UNKNOWN) Then
     
         'This image must have come from a source where the best save format isn't clear (like a generic clipboard DIB).
@@ -529,9 +529,9 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
         
         'Reset the file format markers; at save-time engine, PD will run heuristics on the image's contents and suggest a better format accordingly.
-        newImage.originalFileFormat = PDIF_UNKNOWN
-        newImage.currentFileFormat = PDIF_UNKNOWN
-        newImage.originalColorDepth = 32
+        newImage.SetOriginalFileFormat PDIF_UNKNOWN
+        newImage.SetCurrentFileFormat PDIF_UNKNOWN
+        newImage.SetOriginalColorDepth 32
         
         'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
         ' (PD detects this state if a pdImage object does not supply a location on disk)
@@ -552,7 +552,7 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
         ' update the zoom combo box to match the zoom assigned by the window-fit function.
         g_AllowViewportRendering = False
-        FormMain.mainCanvas(0).SetZoomDropDownIndex newImage.currentZoomValue
+        FormMain.mainCanvas(0).SetZoomDropDownIndex newImage.GetZoom
     
         'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
         g_AllowViewportRendering = True

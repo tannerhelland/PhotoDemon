@@ -210,7 +210,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
                 
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
+        Dim quickVal As Long, qvDepth As Long
         qvDepth = curDIBValues.BytesPerPixel
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -224,20 +224,20 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(QuickVal + 2, y)
-            g = srcImageData(QuickVal + 1, y)
-            b = srcImageData(QuickVal, y)
+            r = srcImageData(quickVal + 2, y)
+            g = srcImageData(quickVal + 1, y)
+            b = srcImageData(quickVal, y)
             
             tDelta = (213 * r + 715 * g + 72 * b) \ 1000
             
             'Now, retrieve the gaussian pixels
-            r2 = GaussImageData(QuickVal + 2, y)
-            g2 = GaussImageData(QuickVal + 1, y)
-            b2 = GaussImageData(QuickVal, y)
+            r2 = GaussImageData(quickVal + 2, y)
+            g2 = GaussImageData(quickVal + 1, y)
+            b2 = GaussImageData(quickVal, y)
             
             'Calculate a delta between the two
             tDelta = tDelta - ((213 * r2 + 715 * g2 + 72 * b2) \ 1000)
@@ -248,20 +248,20 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
             
                 If tDelta > gThreshold Then
                     If tDelta <> 0 Then blendVal = 1 - (gThreshold / tDelta) Else blendVal = 0
-                    dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), GaussImageData(quickVal + 2, y), blendVal)
+                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), GaussImageData(quickVal + 1, y), blendVal)
+                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), GaussImageData(quickVal, y), blendVal)
+                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), GaussImageData(quickVal + 3, y), blendVal)
                 End If
             
             Else
             
                 If tDelta <= gThreshold Then
                     If gThreshold <> 0 Then blendVal = 1 - (tDelta / gThreshold) Else blendVal = 1
-                    dstImageData(QuickVal + 2, y) = BlendColors(srcImageData(QuickVal + 2, y), GaussImageData(QuickVal + 2, y), blendVal)
-                    dstImageData(QuickVal + 1, y) = BlendColors(srcImageData(QuickVal + 1, y), GaussImageData(QuickVal + 1, y), blendVal)
-                    dstImageData(QuickVal, y) = BlendColors(srcImageData(QuickVal, y), GaussImageData(QuickVal, y), blendVal)
-                    If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = BlendColors(srcImageData(QuickVal + 3, y), GaussImageData(QuickVal + 3, y), blendVal)
+                    dstImageData(quickVal + 2, y) = BlendColors(srcImageData(quickVal + 2, y), GaussImageData(quickVal + 2, y), blendVal)
+                    dstImageData(quickVal + 1, y) = BlendColors(srcImageData(quickVal + 1, y), GaussImageData(quickVal + 1, y), blendVal)
+                    dstImageData(quickVal, y) = BlendColors(srcImageData(quickVal, y), GaussImageData(quickVal, y), blendVal)
+                    If qvDepth = 4 Then dstImageData(quickVal + 3, y) = BlendColors(srcImageData(quickVal + 3, y), GaussImageData(quickVal + 3, y), blendVal)
                 End If
         
             End If

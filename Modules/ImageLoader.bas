@@ -910,7 +910,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If selectionDataLoaded Then
     
         'Activate the selection as necessary
-        pdImages(g_CurrentImage).selectionActive = pdImages(g_CurrentImage).mainSelection.IsLockedIn
+        pdImages(g_CurrentImage).SetSelectionActive pdImages(g_CurrentImage).mainSelection.IsLockedIn
         
         'Synchronize the text boxes as necessary
         SyncTextToCurrentSelection g_CurrentImage
@@ -920,7 +920,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
-    If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.RequestNewMask
+    If pdImages(g_CurrentImage).IsSelectionActive Then pdImages(g_CurrentImage).mainSelection.RequestNewMask
         
     'Render the image to the screen, if requested
     If Not suspendRedraw Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -964,9 +964,9 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
         CascadeLoadGenericImage = ImageImporter.LoadSVG(srcFile, dstDIB, dstImage)
         If CascadeLoadGenericImage Then
             decoderUsed = PDIDE_SVGPARSER
-            dstImage.originalFileFormat = PDIF_SVG
+            dstImage.SetOriginalFileFormat PDIF_SVG
             dstImage.SetDPI 96, 96
-            dstImage.originalColorDepth = 32
+            dstImage.SetOriginalColorDepth 32
         End If
         
     #End If
@@ -991,11 +991,11 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             
             decoderUsed = PDIDE_FREEIMAGE
             
-            dstImage.originalFileFormat = dstDIB.GetOriginalFormat
+            dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
             dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
-            dstImage.originalColorDepth = dstDIB.GetOriginalColorDepth
+            dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
             
-            If (dstImage.originalFileFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then
+            If (dstDIB.GetOriginalFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then
                 dstImage.imgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
             End If
             
@@ -1016,9 +1016,9 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             
             If CascadeLoadGenericImage Then
                 decoderUsed = PDIDE_GDIPLUS
-                dstImage.originalFileFormat = dstDIB.GetOriginalFormat
+                dstImage.SetOriginalFileFormat dstDIB.GetOriginalFormat
                 dstImage.SetDPI dstDIB.GetDPI, dstDIB.GetDPI
-                dstImage.originalColorDepth = dstDIB.GetOriginalColorDepth
+                dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
             End If
                 
         End If
@@ -1058,8 +1058,8 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             'PDI images require zLib, and are only loaded via a custom routine (obviously, since they are PhotoDemon's native format)
             CascadeLoadInternalImage = LoadPhotoDemonImage(srcFile, dstDIB, dstImage)
             
-            dstImage.originalFileFormat = PDIF_PDI
-            dstImage.originalColorDepth = 32
+            dstImage.SetOriginalFileFormat PDIF_PDI
+            dstImage.SetOriginalColorDepth 32
             dstImage.NotifyImageChanged UNDO_EVERYTHING
             decoderUsed = PDIDE_INTERNAL
             
@@ -1072,8 +1072,8 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
             ' to fail if zLib goes missing.
             CascadeLoadInternalImage = LoadRawImageBuffer(srcFile, dstDIB, dstImage)
             
-            dstImage.originalFileFormat = PDIF_UNKNOWN
-            dstImage.originalColorDepth = 32
+            dstImage.SetOriginalFileFormat PDIF_UNKNOWN
+            dstImage.SetOriginalColorDepth 32
             dstImage.NotifyImageChanged UNDO_EVERYTHING
             decoderUsed = PDIDE_INTERNAL
             
@@ -1084,7 +1084,7 @@ Public Function CascadeLoadInternalImage(ByVal internalFormatID As Long, ByRef s
         '(TODO: settle on a single tmp file format, so we don't have to play this game??)
         Case PDIF_TMPFILE
             CascadeLoadInternalImage = ImageImporter.CascadeLoadGenericImage(srcFile, dstImage, dstDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
-            dstImage.originalFileFormat = PDIF_UNKNOWN
+            dstImage.SetOriginalFileFormat PDIF_UNKNOWN
             
     End Select
     
@@ -1098,29 +1098,29 @@ Private Sub EstimateMissingMetadata(ByRef dstImage As pdImage, ByRef srcFileExte
     Select Case srcFileExtension
                 
         Case "GIF"
-            dstImage.originalFileFormat = PDIF_GIF
-            dstImage.originalColorDepth = 8
+            dstImage.SetOriginalFileFormat PDIF_GIF
+            dstImage.SetOriginalColorDepth 8
             
         Case "ICO"
-            dstImage.originalFileFormat = FIF_ICO
+            dstImage.SetOriginalFileFormat FIF_ICO
         
         Case "JIF", "JFIF", "JPG", "JPEG", "JPE"
-            dstImage.originalFileFormat = PDIF_JPEG
-            dstImage.originalColorDepth = 24
+            dstImage.SetOriginalFileFormat PDIF_JPEG
+            dstImage.SetOriginalColorDepth 24
             
         Case "PNG"
-            dstImage.originalFileFormat = PDIF_PNG
+            dstImage.SetOriginalFileFormat PDIF_PNG
         
         Case "TIF", "TIFF"
-            dstImage.originalFileFormat = PDIF_TIFF
+            dstImage.SetOriginalFileFormat PDIF_TIFF
         
         Case "PDI", "TMP", "PDTMP", "TMPDIB", "PDTMPDIB"
-            dstImage.originalFileFormat = PDIF_JPEG
-            dstImage.originalColorDepth = 24
+            dstImage.SetOriginalFileFormat PDIF_JPEG
+            dstImage.SetOriginalColorDepth 32
         
         'Treat anything else as a BMP file
         Case Else
-            dstImage.originalFileFormat = PDIF_BMP
+            dstImage.SetOriginalFileFormat PDIF_BMP
             
     End Select
     
@@ -1230,7 +1230,7 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     Dim cFile As pdFSO
     Set cFile = New pdFSO
             
-    If Len(suggestedFilename) = 0 Then
+    If (Len(suggestedFilename) = 0) Then
     
         'The calling routine didn't specify a custom image name, so we can assume this is a normal image file.
         'Prep all default attributes using the filename itself.
@@ -1239,7 +1239,7 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
         targetImage.imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(srcFile)
         
         'Note the image's save state; PDI files are specially marked as having been "saved losslessly".
-        If targetImage.currentFileFormat = PDIF_PDI Then
+        If (targetImage.GetCurrentFileFormat = PDIF_PDI) Then
             targetImage.SetSaveState True, pdSE_SavePDI
         Else
             targetImage.SetSaveState True, pdSE_SaveFlat
@@ -1284,7 +1284,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     
     'If the "view 100%" option is checked instead, reset the zoom listbox to match and paint the main window immediately
     Else
-        FormMain.mainCanvas(0).SetZoomDropDownIndex srcImage.currentZoomValue
+        FormMain.mainCanvas(0).SetZoomDropDownIndex srcImage.GetZoom
         g_AllowViewportRendering = True
         Viewport_Engine.Stage1_InitializeBuffer srcImage, FormMain.mainCanvas(0), VSR_ResetToZero
     End If

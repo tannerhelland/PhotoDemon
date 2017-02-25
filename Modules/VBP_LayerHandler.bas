@@ -1024,7 +1024,7 @@ Public Function GetRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         
             'Calculate PD's global mouse accuracy value, per the current image's zoom
             Dim mouseAccuracy As Double
-            mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).currentZoomValue))
+            mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.GetZoomValue(pdImages(g_CurrentImage).GetZoom))
             
             'Inflate the rect we were passed
             InflateRect layerRect, mouseAccuracy, mouseAccuracy
@@ -1123,7 +1123,7 @@ End Function
 Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     
     'First, make sure there is an active selection
-    If Not pdImages(g_CurrentImage).selectionActive Then
+    If Not pdImages(g_CurrentImage).IsSelectionActive Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -1228,9 +1228,9 @@ Public Function GenerateInitialLayerName(ByRef srcFile As String, Optional ByVal
     'If a multipage image is loaded as individual layers, each layer will receive a custom name to reflect its position in the
     ' original file.  (For example, when loading .ICO files with multiple icons inside, PD will automatically add the name and
     ' original bit-depth to each layer, as relevant.)
-    If imageHasMultiplePages Or (srcImage.originalFileFormat = FIF_ICO) Then
+    If imageHasMultiplePages Or (srcImage.GetOriginalFileFormat = FIF_ICO) Then
         
-        Select Case srcImage.originalFileFormat
+        Select Case srcImage.GetOriginalFileFormat
         
             'GIFs are called "frames" instead of pages
             Case PDIF_GIF

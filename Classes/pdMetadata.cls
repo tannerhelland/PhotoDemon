@@ -463,7 +463,7 @@ Private Function CalculateIdealGroupName(ByRef dstMetadata As PDMetadataItem, By
     'Next, ExifTool breaks down EXIF tags into their individual IFD blocks.  Simplify all of these under a single "Exif" header.
     ' (For TIFFs, which may have multiple pages, we handle this differently.)
     If (Not (pdImages(parentImageID) Is Nothing)) Then
-        If (pdImages(parentImageID).originalFileFormat <> PDIF_TIFF) Then
+        If (pdImages(parentImageID).GetOriginalFileFormat <> PDIF_TIFF) Then
             If InStr(1, groupNameCheck, "IFD1", vbBinaryCompare) > 0 Then
                 dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("Exif (thumbnail)")
             ElseIf InStr(1, groupNameCheck, "IFD", vbBinaryCompare) > 0 Then
@@ -658,10 +658,10 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     If ppMayBeNeeded Then
         
         'Check for PNGs that do not possess an ICC profile
-        ppMayBeNeeded = CBool(pdImages(parentImageID).originalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
+        ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
         
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
-        If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).originalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).imgStorage.GetEntry_Boolean("MultipageImportActive", False))
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).imgStorage.GetEntry_Boolean("MultipageImportActive", False))
         
         'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some esoteric formats),
         ' we may be able to use ExifTool to manually retrieve the full profile data.
@@ -676,7 +676,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
     If ppMayBeNeeded Then
         
         'PNG-specific tags:
-        If (pdImages(parentImageID).originalFileFormat = PDIF_PNG) Then
+        If (pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) Then
         
             'First up are some PNG chunks that require special handling.  The PNG spec (http://www.libpng.org/pub/png/spec/1.2/png-1.2-pdg.html)
             ' provides instructions on which color modification chunks should be given preference, and we mirror that behavior here.  PD's order
@@ -863,7 +863,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         End If
         
         'TIFF-specific tags:
-        If (pdImages(parentImageID).originalFileFormat = PDIF_TIFF) Then
+        If (pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) Then
         
             'Look for page name tags.  If found, assign them to their matching image layers.
             Dim i As Long

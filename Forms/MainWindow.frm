@@ -3475,7 +3475,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         
             'If a selection is active, the Undo/Redo engine can simply back up the current layer contents.  If, however, no selection is active,
             ' we must delete the entire layer.  That requires a backup of the full image contents.
-            If pdImages(g_CurrentImage).selectionActive Then
+            If pdImages(g_CurrentImage).IsSelectionActive Then
                 Process "Cut from layer", False, , UNDO_LAYER, , True
             Else
                 Process "Cut from layer", False, , UNDO_IMAGE, , True

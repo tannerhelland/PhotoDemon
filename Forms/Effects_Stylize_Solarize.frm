@@ -101,7 +101,7 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -117,13 +117,13 @@ Public Sub SolarizeImage(ByVal Threshold As Byte, Optional ByVal toPreview As Bo
         
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Perform the solarize in a single line, thanks to our pre-built look-up table
-        ImageData(QuickVal + 2, y) = sLookup(ImageData(QuickVal + 2, y))
-        ImageData(QuickVal + 1, y) = sLookup(ImageData(QuickVal + 1, y))
-        ImageData(QuickVal, y) = sLookup(ImageData(QuickVal, y))
+        ImageData(quickVal + 2, y) = sLookup(ImageData(quickVal + 2, y))
+        ImageData(quickVal + 1, y) = sLookup(ImageData(quickVal + 1, y))
+        ImageData(quickVal, y) = sLookup(ImageData(quickVal, y))
         
     Next y
         If Not toPreview Then

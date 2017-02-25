@@ -214,7 +214,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -226,14 +226,14 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     
     'Apply the filter
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
         
         grayVal = grayMap(x, y)
         
-        ImageData(QuickVal, y) = bLookup(grayVal)
-        ImageData(QuickVal + 1, y) = gLookUp(grayVal)
-        ImageData(QuickVal + 2, y) = rLookup(grayVal)
+        ImageData(quickVal, y) = bLookup(grayVal)
+        ImageData(quickVal + 1, y) = gLookUp(grayVal)
+        ImageData(quickVal + 2, y) = rLookup(grayVal)
         
     Next y
         If (x And progBarCheck) = 0 Then

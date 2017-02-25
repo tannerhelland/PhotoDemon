@@ -182,7 +182,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -200,12 +200,12 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     Dim thisGradient As Double
     
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         'Calculate HSL-compatible luminance
         v = GetLuminance(r, g, b)
@@ -249,9 +249,9 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
         End If
                 
         'Finally, apply the new RGB values to the image by blending them with their original color at the user's requested strength.
-        ImageData(QuickVal + 2, y) = BlendColors(r, newR, Strength)
-        ImageData(QuickVal + 1, y) = BlendColors(g, newG, Strength)
-        ImageData(QuickVal, y) = BlendColors(b, newB, Strength)
+        ImageData(quickVal + 2, y) = BlendColors(r, newR, Strength)
+        ImageData(quickVal + 1, y) = BlendColors(g, newG, Strength)
+        ImageData(quickVal, y) = BlendColors(b, newB, Strength)
         
     Next y
         If Not toPreview Then

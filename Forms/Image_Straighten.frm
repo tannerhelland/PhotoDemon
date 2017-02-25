@@ -97,8 +97,8 @@ End Property
 Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingToRotate As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE, Optional ByVal isPreview As Boolean = False)
         
     'If the image contains an active selection, disable it before transforming the canvas
-    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).selectionActive And (Not isPreview) Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).IsSelectionActive And (Not isPreview) Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
 

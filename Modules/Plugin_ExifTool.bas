@@ -883,7 +883,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'See if the output file format supports metadata.  If it doesn't, exit now.
     ' (Note that we return TRUE despite not writing any metadata - this lets the caller know that there were no errors.)
     Dim outputMetadataFormat As PD_METADATA_FORMAT
-    outputMetadataFormat = g_ImageFormats.GetIdealMetadataFormatFromPDIF(srcPDImage.currentFileFormat)
+    outputMetadataFormat = g_ImageFormats.GetIdealMetadataFormatFromPDIF(srcPDImage.GetCurrentFileFormat)
     
     If (outputMetadataFormat = PDMF_NONE) Then
         Message "This file format does not support metadata.  Metadata processing skipped."
@@ -897,7 +897,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' image they might be entire useful pages!)
     Dim saveIsMultipage As Boolean, saveIsMultipageTIFF As Boolean
     saveIsMultipage = srcPDImage.imgStorage.GetEntry_Boolean("MultipageExportActive", False)
-    If saveIsMultipage Then saveIsMultipageTIFF = CBool(srcPDImage.currentFileFormat = PDIF_TIFF) Else saveIsMultipageTIFF = False
+    If saveIsMultipage Then saveIsMultipageTIFF = CBool(srcPDImage.GetCurrentFileFormat = PDIF_TIFF) Else saveIsMultipageTIFF = False
     
     'If an additional metadata parameter string was supplied, create a parser for it.  This may contain specialized
     ' processing instructions.
@@ -1071,7 +1071,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Size tags are written to different areas based on the type of metadata being written.  JPEGs require special rules; see the spec
     ' for details: http://www.cipa.jp/std/documents/e/DC-008-2012_E.pdf
-    If (srcPDImage.currentFileFormat = PDIF_JPEG) Then
+    If (srcPDImage.GetCurrentFileFormat = PDIF_JPEG) Then
         cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageWidth=" & vbCrLf
         cmdParams = cmdParams & "-" & tagGroupPrefix & "ImageHeight=" & vbCrLf
     Else
@@ -1089,7 +1089,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'JPEGs have the unique issue of needing their resolution values also updated in the JFIF header, so we make
     ' an additional request here for JPEGs specifically.
-    If (srcPDImage.currentFileFormat = PDIF_JPEG) Then
+    If (srcPDImage.GetCurrentFileFormat = PDIF_JPEG) Then
         cmdParams = cmdParams & "-JFIF:XResolution=" & srcPDImage.GetDPI() & vbCrLf
         cmdParams = cmdParams & "-JFIF:YResolution=" & srcPDImage.GetDPI() & vbCrLf
         cmdParams = cmdParams & "-JFIF:ResolutionUnit=inches" & vbCrLf
@@ -1124,7 +1124,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'If the output format does not support Exif whatsoever, we can ask ExifTool to forcibly remove any remaining Exif tags.
     ' (This includes any tags it was unable to convert to XMP or IPTC format.)
-    If (Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.currentFileFormat)) And srcFileAvailable Then
+    If (Not g_ImageFormats.IsExifAllowedForPDIF(srcPDImage.GetCurrentFileFormat)) And srcFileAvailable Then
         cmdParams = cmdParams & "-exif:all=" & vbCrLf
     End If
     

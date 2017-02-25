@@ -170,8 +170,8 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     End If
     
     'If we're rotating an entire image, and a selection tool is active, disable the selection before rotating
-    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).selectionActive And (Not isPreview) Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).IsSelectionActive And (Not isPreview) Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     

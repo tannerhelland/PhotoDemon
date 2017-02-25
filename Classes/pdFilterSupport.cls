@@ -40,12 +40,12 @@ Private m_DstX As Long, m_DstY As Long
 'A function may want to force parts of an image to a certain color.  This simplified function can be used to do that.
 Friend Sub ForcePixels(ByRef x As Long, ByRef y As Long, ByRef newR As Long, ByRef newG As Long, ByRef newB As Long, ByRef newA As Long, ByRef dstData() As Byte)
 
-    Dim QuickVal As Long
-    QuickVal = x * m_ColorDepth
-    dstData(QuickVal, y) = newB
-    dstData(QuickVal + 1, y) = newG
-    dstData(QuickVal + 2, y) = newR
-    If m_ColorDepth = 4 Then dstData(QuickVal + 3, y) = newA
+    Dim quickVal As Long
+    quickVal = x * m_ColorDepth
+    dstData(quickVal, y) = newB
+    dstData(quickVal + 1, y) = newG
+    dstData(quickVal + 2, y) = newR
+    If m_ColorDepth = 4 Then dstData(quickVal + 3, y) = newA
 
 End Sub
 
@@ -117,26 +117,26 @@ Friend Sub SetPixels(ByRef x As Long, ByRef y As Long, ByRef srcX As Double, ByR
     fixDistort = FixDistortEdges(srcX, srcY)
     
     'Now, interpolate as necessary
-    Dim i As Long, QuickVal As Long, QuickVal2 As Long
+    Dim i As Long, quickVal As Long, quickVal2 As Long
     
-    QuickVal = x * m_ColorDepth
+    quickVal = x * m_ColorDepth
     
     'fixDistort will only be set to TRUE when the current pixel needs to be erased
     If fixDistort Then
         For i = 0 To m_ColorDepthLoop
-            dstData(QuickVal + i, y) = 0
+            dstData(quickVal + i, y) = 0
         Next i
     Else
         If m_Interpolate Then
             For i = 0 To m_ColorDepthLoop
-                dstData(QuickVal + i, y) = PInterpolate(srcX, srcY, srcData, i)
+                dstData(quickVal + i, y) = PInterpolate(srcX, srcY, srcData, i)
             Next i
         Else
     
-            QuickVal2 = Int(srcX) * m_ColorDepth
+            quickVal2 = Int(srcX) * m_ColorDepth
         
             For i = 0 To m_ColorDepthLoop
-                dstData(QuickVal + i, y) = srcData(QuickVal2 + i, Int(srcY))
+                dstData(quickVal + i, y) = srcData(quickVal2 + i, Int(srcY))
             Next i
         End If
     End If

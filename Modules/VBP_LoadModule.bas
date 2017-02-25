@@ -154,12 +154,12 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         pdDebug.LogAction "Determining filetype..."
     #End If
     
-    If Not (targetImage Is Nothing) Then targetImage.originalFileFormat = FIF_UNKNOWN
+    If Not (targetImage Is Nothing) Then targetImage.SetOriginalFileFormat FIF_UNKNOWN
     
     Dim srcFileExtension As String
     srcFileExtension = UCase$(GetExtension(srcFile))
     
-    Dim internalFormatID As PHOTODEMON_IMAGE_FORMAT
+    Dim internalFormatID As PD_IMAGE_FORMAT
     internalFormatID = CheckForInternalFiles(srcFileExtension)
     
     'Files with a PD-specific format have now been specially marked, while generic files (JPEG, PNG, etc) have not.
@@ -203,7 +203,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     End If
     
     'Eventually, the user may choose to save this image in a new format, but for now, the original and current formats are identical
-    targetImage.currentFileFormat = targetImage.originalFileFormat
+    targetImage.SetCurrentFileFormat targetImage.GetOriginalFileFormat
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Format-specific parsing complete.  Running a few failsafe checks on the new pdImage object..."
@@ -287,11 +287,11 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 
             End Select
             
-            pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.originalFileFormat)), , True
+            pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
             pdDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
             pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.imgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
             pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
-            pdDebug.LogAction vbTab & "Original color depth: " & targetImage.originalColorDepth, , True
+            pdDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
             pdDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.HasICCData, , True
             pdDebug.LogAction vbTab & "Multiple pages embedded: " & CStr(imageHasMultiplePages), , True
             pdDebug.LogAction vbTab & "Number of layers: " & targetImage.GetNumOfLayers, , True
@@ -375,7 +375,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or ICON.
             ' (TIFFs don't require this, as all pages are typically the same size.)
-            If (targetImage.GetNumOfLayers > 1) And (targetImage.originalFileFormat <> PDIF_TIFF) Then
+            If (targetImage.GetNumOfLayers > 1) And (targetImage.GetOriginalFileFormat <> PDIF_TIFF) Then
                 For pageTracker = 1 To targetImage.GetNumOfLayers - 1
                     targetImage.GetLayerByIndex(pageTracker).SetLayerVisibility False
                 Next pageTracker
@@ -655,7 +655,7 @@ End Function
 
 'Given a source filename's extension, return the estimated filetype (as an FIF_ constant) if the image format is specific to PD.
 ' This lets us quickly redirect PD-specific files to our own internal functions.
-Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As PHOTODEMON_IMAGE_FORMAT
+Private Function CheckForInternalFiles(ByRef srcFileExtension As String) As PD_IMAGE_FORMAT
     
     CheckForInternalFiles = FIF_UNKNOWN
     

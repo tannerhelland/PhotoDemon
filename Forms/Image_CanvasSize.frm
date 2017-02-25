@@ -362,8 +362,8 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, srcHeight)
     
     'If the image contains an active selection, disable it before transforming the canvas
-    If pdImages(g_CurrentImage).selectionActive Then
-        pdImages(g_CurrentImage).selectionActive = False
+    If pdImages(g_CurrentImage).IsSelectionActive Then
+        pdImages(g_CurrentImage).SetSelectionActive False
         pdImages(g_CurrentImage).mainSelection.LockRelease
     End If
     

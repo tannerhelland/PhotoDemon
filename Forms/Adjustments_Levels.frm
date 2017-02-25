@@ -1181,7 +1181,7 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -1297,18 +1297,18 @@ Public Sub MapImageLevels(ByRef listOfLevels As String, Optional ByVal toPreview
     
     'Now we can finally loop through each pixel in the image, converting values as we go
     For x = initX To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = newLevels(0, ImageData(QuickVal + 2, y))
-        g = newLevels(1, ImageData(QuickVal + 1, y))
-        b = newLevels(2, ImageData(QuickVal, y))
+        r = newLevels(0, ImageData(quickVal + 2, y))
+        g = newLevels(1, ImageData(quickVal + 1, y))
+        b = newLevels(2, ImageData(quickVal, y))
         
         'Assign new values looking the lookup table
-        ImageData(QuickVal + 2, y) = newLevels(3, r)
-        ImageData(QuickVal + 1, y) = newLevels(3, g)
-        ImageData(QuickVal, y) = newLevels(3, b)
+        ImageData(quickVal + 2, y) = newLevels(3, r)
+        ImageData(quickVal + 1, y) = newLevels(3, g)
+        ImageData(quickVal, y) = newLevels(3, b)
         
     Next y
         If Not toPreview Then

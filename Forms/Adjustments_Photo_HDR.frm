@@ -181,7 +181,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
+    Dim quickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -217,12 +217,12 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = initY To initY + mRadius
     
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(quickVal + 2, y)
+        g = srcImageData(quickVal + 1, y)
+        b = srcImageData(quickVal, y)
         rValues(r) = rValues(r) + 1
         gValues(g) = gValues(g) + 1
         bValues(b) = bValues(b) + 1
@@ -236,7 +236,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     'Loop through each pixel in the image, tallying median values as we go
     For x = initX To finalX
             
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
         
         'Determine the bounds of the current median box in the X direction
         lbX = x - mRadius
@@ -444,9 +444,9 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         ' the full histogram here - just the histogram up to the current pixel.
         
         'Update our copies of the original RGB values of the current pixel
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+        r = srcImageData(quickVal + 2, y)
+        g = srcImageData(quickVal + 1, y)
+        b = srcImageData(quickVal, y)
         
         'Histogram equalization applies a unique scale factor based on the number of pixels in the histogram
         ' (Because our sliding-box technique generates different pixel counts along edge regions, we can't
@@ -489,9 +489,9 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         newB = BlendColors(b, bValuesEq(b), blendStrength)
         
         'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, y) = newR
-        dstImageData(QuickVal + 1, y) = newG
-        dstImageData(QuickVal, y) = newB
+        dstImageData(quickVal + 2, y) = newR
+        dstImageData(quickVal + 1, y) = newG
+        dstImageData(quickVal, y) = newB
         
     Next y
         atBottom = Not atBottom
@@ -584,7 +584,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
         
         'These values will help us access locations in the array more quickly.
         ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim QuickVal As Long, qvDepth As Long
+        Dim quickVal As Long, qvDepth As Long
         qvDepth = curDIBValues.BytesPerPixel
         
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -608,18 +608,18 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
         
         'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
         For x = initX To finalX
-            QuickVal = x * qvDepth
+            quickVal = x * qvDepth
         For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = dstImageData(QuickVal + 2, y)
-            g = dstImageData(QuickVal + 1, y)
-            b = dstImageData(QuickVal, y)
+            r = dstImageData(quickVal + 2, y)
+            g = dstImageData(quickVal + 1, y)
+            b = dstImageData(quickVal, y)
             
             'Now, retrieve the gaussian pixels
-            r2 = srcImageData(QuickVal + 2, y)
-            g2 = srcImageData(QuickVal + 1, y)
-            b2 = srcImageData(QuickVal, y)
+            r2 = srcImageData(quickVal + 2, y)
+            g2 = srcImageData(quickVal + 1, y)
+            b2 = srcImageData(quickVal, y)
             
             tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
             
@@ -647,17 +647,17 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
             If s > 1 Then s = 1
             tHSLToRGB h, s, l, newR, newG, newB
             
-            dstImageData(QuickVal + 2, y) = newR
-            dstImageData(QuickVal + 1, y) = newG
-            dstImageData(QuickVal, y) = newB
+            dstImageData(quickVal + 2, y) = newR
+            dstImageData(quickVal + 1, y) = newG
+            dstImageData(quickVal, y) = newB
             
             If qvDepth = 4 Then
-                a2 = srcImageData(QuickVal + 3, y)
-                a = dstImageData(QuickVal + 3, y)
+                a2 = srcImageData(quickVal + 3, y)
+                a = dstImageData(quickVal + 3, y)
                 newA = (scaleFactor * a) + (invScaleFactor * a2)
                 If newA > 255 Then newA = 255
                 If newA < 0 Then newA = 0
-                dstImageData(QuickVal + 3, y) = BlendColors(newA, a, blendVal)
+                dstImageData(quickVal + 3, y) = BlendColors(newA, a, blendVal)
             End If
                                     
         Next y

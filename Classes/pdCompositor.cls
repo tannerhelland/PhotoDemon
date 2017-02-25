@@ -1865,7 +1865,7 @@ Private Sub FastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = targetDIB.GetDIBColorDepth \ 8
     
     'Adjustment values
@@ -1939,13 +1939,13 @@ Private Sub FastLayerExposureContrastClarity(ByRef targetLayer As pdLayer, ByRef
         
     'Now we can loop through each pixel in the image, converting values as we go
     For x = 0 To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = 0 To finalY
             
         'Apply the changes in one fell swoop
-        ImageData(QuickVal, y) = eccLUT(ImageData(QuickVal, y))
-        ImageData(QuickVal + 1, y) = eccLUT(ImageData(QuickVal + 1, y))
-        ImageData(QuickVal + 2, y) = eccLUT(ImageData(QuickVal + 2, y))
+        ImageData(quickVal, y) = eccLUT(ImageData(quickVal, y))
+        ImageData(quickVal + 1, y) = eccLUT(ImageData(quickVal + 1, y))
+        ImageData(quickVal + 2, y) = eccLUT(ImageData(quickVal + 2, y))
         
     Next y
     Next x
@@ -1973,7 +1973,7 @@ Private Sub FastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim quickVal As Long, qvDepth As Long
     qvDepth = targetDIB.GetDIBColorDepth \ 8
     
     'Adjustment values
@@ -2053,13 +2053,13 @@ Private Sub FastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         
     'Now we can loop through each pixel in the image, converting values as we go
     For x = 0 To finalX
-        QuickVal = x * qvDepth
+        quickVal = x * qvDepth
     For y = 0 To finalY
             
         'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+        r = ImageData(quickVal + 2, y)
+        g = ImageData(quickVal + 1, y)
+        b = ImageData(quickVal, y)
         
         If vibranceAdjustment <> 0 Then
         
@@ -2086,9 +2086,9 @@ Private Sub FastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         End If
             
         'Apply the new values
-        ImageData(QuickVal + 2, y) = rLUT(r)
-        ImageData(QuickVal + 1, y) = gLUT(g)
-        ImageData(QuickVal, y) = bLUT(b)
+        ImageData(quickVal + 2, y) = rLUT(r)
+        ImageData(quickVal + 1, y) = gLUT(g)
+        ImageData(quickVal, y) = bLUT(b)
         
     Next y
     Next x

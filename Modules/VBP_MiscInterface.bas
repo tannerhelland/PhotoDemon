@@ -273,7 +273,7 @@ Public Sub SyncInterfaceToCurrentImage()
         
         'TODO: move selection settings into the tool handler; they're too low-level for this function
         'If a selection is active on this image, update the text boxes to match
-        If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
+        If pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
             SetUIGroupState PDUI_Selections, True
             SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.IsTransformable()
             SyncTextToCurrentSelection g_CurrentImage
@@ -438,13 +438,13 @@ Private Sub SyncUI_CurrentImageSettings()
     If (pdImages(g_CurrentImage).Width <> 0) Then DisplaySize pdImages(g_CurrentImage)
             
     'Update the form's icon to match the current image; if a custom icon is not available, use the stock PD one
-    If (pdImages(g_CurrentImage).curFormIcon32 = 0) Or (pdImages(g_CurrentImage).curFormIcon16 = 0) Then CreateCustomFormIcons pdImages(g_CurrentImage)
-    ChangeAppIcons pdImages(g_CurrentImage).curFormIcon16, pdImages(g_CurrentImage).curFormIcon32
+    If (pdImages(g_CurrentImage).GetImageIcon(False) = 0) Or (pdImages(g_CurrentImage).GetImageIcon(True) = 0) Then CreateCustomFormIcons pdImages(g_CurrentImage)
+    ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If (pdImages(g_CurrentImage).Width <> 0) Then
         g_AllowViewportRendering = False
-        FormMain.mainCanvas(0).SetZoomDropDownIndex pdImages(g_CurrentImage).currentZoomValue
+        FormMain.mainCanvas(0).SetZoomDropDownIndex pdImages(g_CurrentImage).GetZoom
         g_AllowViewportRendering = True
     End If
     

@@ -3491,7 +3491,7 @@ Private Function pvPtrToStrW(ByVal lpsz As Long) As String
 End Function
 
 'Given a GUID string, return a Long-type image format identifier
-Private Function GetFIFFromGUID(ByRef srcGUID As String) As PHOTODEMON_IMAGE_FORMAT
+Private Function GetFIFFromGUID(ByRef srcGUID As String) As PD_IMAGE_FORMAT
 
     Select Case srcGUID
     
