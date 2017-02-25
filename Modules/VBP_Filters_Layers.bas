@@ -81,16 +81,19 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
     
         'If GDI+ 1.1 exists, use it for a faster blur operation.  If only v1.0 is found, fall back to one of our internal blur functions.
         '
-        'ADDENDUM JAN '15: it has come to my attention that GDI+ exhibits broken behavior on Windows 8, if the radius is less than 20px.
-        '                   (Only a horizontal blur is applied, for reasons unknown.)  I have added an extra check for these circumstances,
-        '                   and will revisit once Windows 10 builds have stabilized.
+        'ADDENDUM JAN '15: GDI+ exhibits broken behavior on Windows 8+, if the radius is less than 20px.  (Only a horizontal blur
+        ' is applied, for reasons unknown.)  This problem has persisted throug multiple Windows 10 builds as well, so I think it's
+        ' unlikely to be fixed.
+        '
+        'Either way, we provide necessary internal fallbacks to compensate, and external functions can always request that we
+        ' avoid GDI+ if they don't want to deal with the headache.
         Dim gdiPlusIsAcceptable As Boolean
         
         'Attempt to see if GDI+ v1.1 (or later) is available.
         If GDI_Plus.IsGDIPlusV11Available And useGDIPlusIfAvailable Then
         
             'Next, make sure one of two things are true:
-            ' 1) We are on Windows 7, OR
+            ' 1) We are on Windows 7, OR...
             ' 2) We are on Windows 8+ and the blur radius is > 20.  Below this radius, Windows 8 doesn't blur correctly,
             '    and we've gone long enough without a patch (years!) that I don't expect MS to fix it.
             If g_IsWin8OrLater And (blurRadius <= 20) Then
@@ -104,27 +107,23 @@ Public Function QuickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
             gdiPlusIsAcceptable = False
         End If
         
-        Dim tmpDIB As pdDIB
+        'If we think GDI+ will work, try it now.  (Note that GDI+ blurs are prone to failure, so we *definitely*
+        ' need to provide a fallback mechanism.
+        If gdiPlusIsAcceptable Then gdiPlusIsAcceptable = GDIPlusBlurDIB(srcDIB, blurRadius * 2, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight)
         
-        If gdiPlusIsAcceptable Then
+        'If GDI+ is unacceptable (or if it failed), use our internal quick blur functionality.
+        If (Not gdiPlusIsAcceptable) Then
         
-            'GDI+ blurs are prone to failure, so as a failsafe, provide a fallback to internal PD mechanisms.
-            If Not GDIPlusBlurDIB(srcDIB, blurRadius * 2, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight) Then
-                
-                Set tmpDIB = New pdDIB
-                tmpDIB.CreateFromExistingDIB srcDIB
-                CreateApproximateGaussianBlurDIB blurRadius, tmpDIB, srcDIB, 1, True
-                
-            End If
-            
-        Else
-            
+            'Create a copy of the current DIB; we need this to hold an intermediate blur copy
+            Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
             tmpDIB.CreateFromExistingDIB srcDIB
-            CreateApproximateGaussianBlurDIB blurRadius, tmpDIB, srcDIB, 1, True
-            
+            If (CreateHorizontalBlurDIB(blurRadius, blurRadius, srcDIB, tmpDIB, True) <> 0) Then
+                QuickBlurDIB = (CreateVerticalBlurDIB(blurRadius, blurRadius, tmpDIB, srcDIB, True) <> 0)
+            End If
+        
         End If
-    
+        
     End If
     
     QuickBlurDIB = True
@@ -1241,18 +1240,12 @@ End Function
 '
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal numIterations As Long = 3, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    'Create an extra temp DIB.  This will contain the intermediate copy of our horizontal/vertical blurs.
-    Dim gaussDIB As pdDIB
-    Set gaussDIB = New pdDIB
-    gaussDIB.CreateFromExistingDIB srcDIB
-    dstDIB.CreateFromExistingDIB gaussDIB
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If modifyProgBarMax = -1 Then modifyProgBarMax = gaussDIB.GetDIBWidth * numIterations + gaussDIB.GetDIBHeight * numIterations
-    If Not suppressMessages Then SetProgBarMax modifyProgBarMax
+    If (modifyProgBarMax = -1) Then modifyProgBarMax = srcDIB.GetDIBWidth * numIterations + srcDIB.GetDIBHeight * numIterations
+    If (Not suppressMessages) Then SetProgBarMax modifyProgBarMax
     
     progBarCheck = FindBestProgBarValue()
     
@@ -1276,7 +1269,13 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     End If
     
     'Box blurs require a radius of at least 1, so force it to that
-    If comparableRadius < 1 Then comparableRadius = 1
+    If (comparableRadius < 1) Then comparableRadius = 1
+    
+    'Create an extra intermediate DIB.  This is needed to cache the results of the horizontal blur, before we apply the vertical pass to it.
+    Dim gaussDIB As pdDIB
+    Set gaussDIB = New pdDIB
+    gaussDIB.CreateFromExistingDIB srcDIB
+    dstDIB.CreateFromExistingDIB gaussDIB
     
     'Iterate a box blur, switching between the gauss and destination DIBs as we go
     Dim i As Long
@@ -1302,8 +1301,8 @@ End Function
 
 'Given two DIBs, fill one with a gaussian-blur version of the other.
 ' This is an extremely optimized, integer-based version of a standard gaussian blur routine.  It uses some standard optimizations
-' (e.g. separable kernels) as well as a number of VB-specific optimizations.  As such, it may not be appropriate for direct translation to
-' other languages.
+' (e.g. separable kernels) as well as a number of VB-specific optimizations.  As such, it may not be appropriate for direct
+' translation to other languages.
 '
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
@@ -2170,8 +2169,18 @@ End Function
 'Given two DIBs, fill one with a horizontally blurred version of the other.  A highly-optimized modified accumulation algorithm
 ' is used to improve performance.
 'Input: left and right distance to blur (I call these radii, because the final box size is (leftoffset + rightoffset + 1)
+'
+'IMPORTANT NOTE!  As of v7.0, this function was modified to *require* 32-bpp source images.  Passing it 24-bpp images will fail.
 Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
+    
+    'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
+    If (srcDIB.GetDIBColorDepth <> 32) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  CreateHorizontalBlurDIB requires 32-bpp inputs.  Function abandoned."
+        #End If
+        Exit Function
+    End If
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -2192,15 +2201,12 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     finalX = srcDIB.GetDIBWidth - 1
     finalY = srcDIB.GetDIBHeight - 1
         
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickValInner As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    Dim xStride As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then
+    If (Not suppressMessages) Then
         If modifyProgBarMax = -1 Then
             SetProgBarMax finalX
         Else
@@ -2213,16 +2219,16 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     xRadius = finalX - initX
     
     'Limit the left and right offsets to the width of the image
-    If lRadius > xRadius Then lRadius = xRadius
-    If rRadius > xRadius Then rRadius = xRadius
+    If (lRadius > xRadius) Then lRadius = xRadius
+    If (rRadius > xRadius) Then rRadius = xRadius
         
-    'The number of pixels in the current horizontal line are tracked dynamically.
+    'The number of pixels in the current horizontal line are tracked dynamically.  (This lets us weight edges differently,
+    ' yielding a much nicer blur along boundary pixels.)
     Dim numOfPixels As Long
     numOfPixels = 0
-            
-    'Blurring takes a lot of variables
+    
+    'Left and right bounds of the current accumulator
     Dim lbX As Long, ubX As Long
-    Dim obuX As Boolean
     
     'This horizontal blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
     ' we will store the accumulated blur total for each horizontal line, and only update it when we move one column to the right.
@@ -2235,46 +2241,30 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     'Populate the initial arrays.  We can ignore the left offset at this point, as we are starting at column 0 (and there are no
     ' pixels left of that!)
     For x = initX To initX + rRadius - 1
-        quickVal = x * qvDepth
+        xStride = x * 4
     For y = initY To finalY
-    
-        rTotals(y) = rTotals(y) + srcImageData(quickVal + 2, y)
-        gTotals(y) = gTotals(y) + srcImageData(quickVal + 1, y)
-        bTotals(y) = bTotals(y) + srcImageData(quickVal, y)
-        If qvDepth = 4 Then aTotals(y) = aTotals(y) + srcImageData(quickVal + 3, y)
-        
+        bTotals(y) = bTotals(y) + srcImageData(xStride, y)
+        gTotals(y) = gTotals(y) + srcImageData(xStride + 1, y)
+        rTotals(y) = rTotals(y) + srcImageData(xStride + 2, y)
+        aTotals(y) = aTotals(y) + srcImageData(xStride + 3, y)
     Next y
-        'Increase the pixel tally
         numOfPixels = numOfPixels + 1
     Next x
                 
     'Loop through each column in the image, tallying blur values as we go
     For x = initX To finalX
-            
-        quickVal = x * qvDepth
         
-        'Determine the loop bounds of the current blur box in the X direction
-        lbX = x - lRadius
-        If lbX < 0 Then lbX = 0
-        ubX = x + rRadius
-        
-        If ubX > finalX Then
-            obuX = True
-            ubX = finalX
-        Else
-            obuX = False
-        End If
-                
         'Remove trailing values from the blur collection if they lie outside the processing radius
-        If lbX > 0 Then
+        lbX = x - lRadius
+        If (lbX > 0) Then
         
-            QuickValInner = (lbX - 1) * qvDepth
+            xStride = (lbX - 1) * 4
         
             For y = initY To finalY
-                rTotals(y) = rTotals(y) - srcImageData(QuickValInner + 2, y)
-                gTotals(y) = gTotals(y) - srcImageData(QuickValInner + 1, y)
-                bTotals(y) = bTotals(y) - srcImageData(QuickValInner, y)
-                If qvDepth = 4 Then aTotals(y) = aTotals(y) - srcImageData(QuickValInner + 3, y)
+                bTotals(y) = bTotals(y) - srcImageData(xStride, y)
+                gTotals(y) = gTotals(y) - srcImageData(xStride + 1, y)
+                rTotals(y) = rTotals(y) - srcImageData(xStride + 2, y)
+                aTotals(y) = aTotals(y) - srcImageData(xStride + 3, y)
             Next y
             
             numOfPixels = numOfPixels - 1
@@ -2282,15 +2272,16 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         End If
         
         'Add leading values to the blur box if they lie inside the processing radius
-        If Not obuX Then
+        ubX = x + rRadius
+        If (ubX <= finalX) Then
         
-            QuickValInner = ubX * qvDepth
+            xStride = ubX * 4
             
             For y = initY To finalY
-                rTotals(y) = rTotals(y) + srcImageData(QuickValInner + 2, y)
-                gTotals(y) = gTotals(y) + srcImageData(QuickValInner + 1, y)
-                bTotals(y) = bTotals(y) + srcImageData(QuickValInner, y)
-                If qvDepth = 4 Then aTotals(y) = aTotals(y) + srcImageData(QuickValInner + 3, y)
+                bTotals(y) = bTotals(y) + srcImageData(xStride, y)
+                gTotals(y) = gTotals(y) + srcImageData(xStride + 1, y)
+                rTotals(y) = rTotals(y) + srcImageData(xStride + 2, y)
+                aTotals(y) = aTotals(y) + srcImageData(xStride + 3, y)
             Next y
             
             numOfPixels = numOfPixels + 1
@@ -2298,18 +2289,16 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         End If
             
         'Process the current column.  This simply involves calculating blur values, and applying them to the destination image
+        xStride = x * 4
         For y = initY To finalY
-                
-            'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(quickVal + 2, y) = rTotals(y) \ numOfPixels
-            dstImageData(quickVal + 1, y) = gTotals(y) \ numOfPixels
-            dstImageData(quickVal, y) = bTotals(y) \ numOfPixels
-            If qvDepth = 4 Then dstImageData(quickVal + 3, y) = aTotals(y) \ numOfPixels
-    
+            dstImageData(xStride, y) = bTotals(y) \ numOfPixels
+            dstImageData(xStride + 1, y) = gTotals(y) \ numOfPixels
+            dstImageData(xStride + 2, y) = rTotals(y) \ numOfPixels
+            dstImageData(xStride + 3, y) = aTotals(y) \ numOfPixels
         Next y
         
         'Halt for external events, like ESC-to-cancel and progress bar updates
-        If Not suppressMessages Then
+        If (Not suppressMessages) Then
             If (x And progBarCheck) = 0 Then
                 If UserPressedESC() Then Exit For
                 SetProgBarVal x + modifyProgBarOffset
@@ -2332,8 +2321,18 @@ End Function
 'Given two DIBs, fill one with a vertically blurred version of the other.  A highly-optimized modified accumulation algorithm
 ' is used to improve performance.
 'Input: up and down distance to blur (I call these radii, because the final box size is (upoffset + downoffset + 1)
+'
+'IMPORTANT NOTE!  As of v7.0, this function was modified to *require* 32-bpp source images.  Passing it 24-bpp images will fail.
 Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
+    
+    'As of v7.0, only 32-bpp RGBA images are supported.  (This matches internal design changes to PD.)
+    If (srcDIB.GetDIBColorDepth <> 32) Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  CreateVerticalBlurDIB requires 32-bpp inputs.  Function abandoned."
+        #End If
+        Exit Function
+    End If
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -2356,8 +2355,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcDIB.GetDIBColorDepth \ 8
+    Dim xStride As Long, quickY As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2375,8 +2373,8 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     yRadius = finalY - initY
     
     'Limit the up and down offsets to the height of the image
-    If uRadius > yRadius Then uRadius = yRadius
-    If dRadius > yRadius Then dRadius = yRadius
+    If (uRadius > yRadius) Then uRadius = yRadius
+    If (dRadius > yRadius) Then dRadius = yRadius
         
     'The number of pixels in the current vertical line are tracked dynamically.
     Dim numOfPixels As Long
@@ -2384,7 +2382,6 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
             
     'Blurring takes a lot of variables
     Dim lbY As Long, ubY As Long
-    Dim obuY As Boolean
         
     'This vertical blur algorithm is based on the principle of "not redoing work that's already been done."  To that end,
     ' we will store the accumulated blur total for each vertical line, and only update it when we move one row down.
@@ -2398,42 +2395,30 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     ' pixels above that!)
     For y = initY To initY + dRadius - 1
     For x = initX To finalX
-        quickVal = x * qvDepth
-        rTotals(x) = rTotals(x) + srcImageData(quickVal + 2, y)
-        gTotals(x) = gTotals(x) + srcImageData(quickVal + 1, y)
-        bTotals(x) = bTotals(x) + srcImageData(quickVal, y)
-        If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(quickVal + 3, y)
+        xStride = x * 4
+        bTotals(x) = bTotals(x) + srcImageData(xStride, y)
+        gTotals(x) = gTotals(x) + srcImageData(xStride + 1, y)
+        rTotals(x) = rTotals(x) + srcImageData(xStride + 2, y)
+        aTotals(x) = aTotals(x) + srcImageData(xStride + 3, y)
     Next x
-        'Increase the pixel tally
         numOfPixels = numOfPixels + 1
     Next y
                 
     'Loop through each row in the image, tallying blur values as we go
     For y = initY To finalY
-        
-        'Determine the loop bounds of the current blur box in the Y direction
-        lbY = y - uRadius
-        If lbY < 0 Then lbY = 0
-        ubY = y + dRadius
-        
-        If ubY > finalY Then
-            obuY = True
-            ubY = finalY
-        Else
-            obuY = False
-        End If
                 
         'Remove trailing values from the blur collection if they lie outside the processing radius
-        If lbY > 0 Then
+        lbY = y - uRadius
+        If (lbY > 0) Then
         
-            QuickY = lbY - 1
+            quickY = lbY - 1
         
             For x = initX To finalX
-                quickVal = x * qvDepth
-                rTotals(x) = rTotals(x) - srcImageData(quickVal + 2, QuickY)
-                gTotals(x) = gTotals(x) - srcImageData(quickVal + 1, QuickY)
-                bTotals(x) = bTotals(x) - srcImageData(quickVal, QuickY)
-                If qvDepth = 4 Then aTotals(x) = aTotals(x) - srcImageData(quickVal + 3, QuickY)
+                xStride = x * 4
+                bTotals(x) = bTotals(x) - srcImageData(xStride, quickY)
+                gTotals(x) = gTotals(x) - srcImageData(xStride + 1, quickY)
+                rTotals(x) = rTotals(x) - srcImageData(xStride + 2, quickY)
+                aTotals(x) = aTotals(x) - srcImageData(xStride + 3, quickY)
             Next x
             
             numOfPixels = numOfPixels - 1
@@ -2441,16 +2426,17 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         End If
         
         'Add leading values to the blur box if they lie inside the processing radius
-        If Not obuY Then
+        ubY = y + dRadius
+        If (ubY <= finalY) Then
         
-            QuickY = ubY
+            quickY = ubY
             
             For x = initX To finalX
-                quickVal = x * qvDepth
-                rTotals(x) = rTotals(x) + srcImageData(quickVal + 2, QuickY)
-                gTotals(x) = gTotals(x) + srcImageData(quickVal + 1, QuickY)
-                bTotals(x) = bTotals(x) + srcImageData(quickVal, QuickY)
-                If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(quickVal + 3, QuickY)
+                xStride = x * 4
+                bTotals(x) = bTotals(x) + srcImageData(xStride, quickY)
+                gTotals(x) = gTotals(x) + srcImageData(xStride + 1, quickY)
+                rTotals(x) = rTotals(x) + srcImageData(xStride + 2, quickY)
+                aTotals(x) = aTotals(x) + srcImageData(xStride + 3, quickY)
             Next x
             
             numOfPixels = numOfPixels + 1
@@ -2460,18 +2446,18 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         'Process the current row.  This simply involves calculating blur values, and applying them to the destination image.
         For x = initX To finalX
             
-            quickVal = x * qvDepth
+            xStride = x * 4
             
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(quickVal + 2, y) = rTotals(x) \ numOfPixels
-            dstImageData(quickVal + 1, y) = gTotals(x) \ numOfPixels
-            dstImageData(quickVal, y) = bTotals(x) \ numOfPixels
-            If qvDepth = 4 Then dstImageData(quickVal + 3, y) = aTotals(x) \ numOfPixels
+            dstImageData(xStride, y) = bTotals(x) \ numOfPixels
+            dstImageData(xStride + 1, y) = gTotals(x) \ numOfPixels
+            dstImageData(xStride + 2, y) = rTotals(x) \ numOfPixels
+            dstImageData(xStride + 3, y) = aTotals(x) \ numOfPixels
     
         Next x
         
         'Halt for external events, like ESC-to-cancel and progress bar updates
-        If Not suppressMessages Then
+        If (Not suppressMessages) Then
             If (y And progBarCheck) = 0 Then
                 If UserPressedESC() Then Exit For
                 SetProgBarVal y + modifyProgBarOffset
