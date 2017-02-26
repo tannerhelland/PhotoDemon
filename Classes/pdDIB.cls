@@ -316,6 +316,15 @@ Public Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
     CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
 End Sub
 
+Friend Sub WrapLongArrayAroundDIB(ByRef srcArray() As Long, ByRef srcSafeArray As SAFEARRAY2D)
+    PrepInternalLongSafeArray srcSafeArray
+    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+End Sub
+
+Public Sub UnwrapLongArrayFromDIB(ByRef srcArray() As Long)
+    CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
+End Sub
+
 'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
 ' alpha accordingly, if the DIB will be rendered to the screen.
 Public Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
@@ -1484,6 +1493,19 @@ Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
         .Bounds(0).cElements = m_dibHeight
         .Bounds(1).lBound = 0
         .Bounds(1).cElements = m_dibStride
+        .pvData = m_dibBits
+    End With
+End Sub
+
+Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
+    With dstSafeArray
+        .cbElements = 4
+        .cDims = 2
+        .cLocks = 1
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = m_dibHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = m_dibWidth
         .pvData = m_dibBits
     End With
 End Sub
