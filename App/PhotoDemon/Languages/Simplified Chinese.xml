@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2264</langversion>
+<langversion>6.8.2265</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2345,7 +2345,37 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>寻找选区边界</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>删除选定区域</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>松开鼠标按钮来完成套索选择</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>创建选区</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>移动选择</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>调整大小的选择</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>点击第一个点完成多边形选择</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3678,43 +3708,13 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>删除选定区域</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift键：保护层的宽高比</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>松开鼠标按钮来完成套索选择</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>目标层：%1</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>创建选区</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>移动选择</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>调整大小的选择</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>点击第一个点完成多边形选择</translation>
 </phrase>
 
 <phrase>
@@ -3737,7 +3737,7 @@ Please enter a numeric value.</original>
 <translation>居中在图像视窗内</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14944,8 +14944,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

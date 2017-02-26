@@ -258,7 +258,7 @@ Friend Function GetEntry_Double(ByVal entryKey As String, Optional ByVal default
 
 End Function
 
-Friend Function GetEntry_String(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As String = "", Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
+Friend Function GetEntry_String(ByVal entryKey As String, Optional ByVal defaultValueIfMissing As String = vbNullString, Optional ByVal assumeLocaleInvariantNumber As Boolean = False) As String
 
     Dim keyIndex As Long
     keyIndex = GetIndexOfEntry(entryKey)
@@ -278,7 +278,7 @@ Friend Function GetEntry_String(ByVal entryKey As String, Optional ByVal default
             testString = m_DictEntries(keyIndex).dItem
             
             If Text_Support.IsNumberLocaleUnaware(testString) Then
-                GetEntry_String = Trim$(Str(Val(testString)))
+                GetEntry_String = Trim$(Str$(Val(testString)))
             Else
                 GetEntry_String = testString
             End If

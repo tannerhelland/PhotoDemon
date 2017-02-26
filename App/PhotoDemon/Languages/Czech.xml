@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2365</langversion>
+<langversion>6.8.2366</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2342,7 +2342,37 @@ In té doby, zkuste uložení obrázku do alternativního formátu. Můžete si 
 <translation>Nalezení hranici výběru</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Vymazat vybranou oblast</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Uvolněním tlačítka myši k dokončení laso výběru</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>Vytvořte výběr</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>Posun</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Změna velikosti výběru</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Klikněte na první bod pro dokončení volby polygon</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3676,43 +3706,13 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Vymazat vybranou oblast</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift: zachování poměru stran vrstvy</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Uvolněním tlačítka myši k dokončení laso výběru</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>Cílová vrstva: 1%</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>Vytvořte výběr</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>Posun</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Změna velikosti výběru</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Klikněte na první bod pro dokončení volby polygon</translation>
 </phrase>
 
 <phrase>
@@ -3735,7 +3735,7 @@ Please enter a numeric value.</original>
 <translation>Vycentrování obrazu uvnitř výřezu</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14936,8 +14936,8 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

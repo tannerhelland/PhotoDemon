@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.192</langversion>
+<langversion>6.6.193</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2344,7 +2344,37 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Mencari pilihan sempadan</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Menghapus kawasan yang dipilih</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Lepaskan butang tetikus untuk melengkapkan pilihan lasso</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>membuat pilihan</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>pemilihan langkah</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Saiz semula pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3678,43 +3708,13 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Menghapus kawasan yang dipilih</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift utama: mengekalkan nisbah aspek lapisan</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Lepaskan butang tetikus untuk melengkapkan pilihan lasso</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>Lapisan Sasaran: %1</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>membuat pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>pemilihan langkah</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Saiz semula pemilihan</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
 </phrase>
 
 <phrase>
@@ -3737,7 +3737,7 @@ Please masukkan nilai berangka.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14953,8 +14953,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

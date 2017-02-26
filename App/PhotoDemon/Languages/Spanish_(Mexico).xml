@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.253</langversion>
+<langversion>6.7.254</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -2344,7 +2344,37 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 <translation>Encontrar borde de selección</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Borrar área seleccionada</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Suelte el botón del ratón para completar la selección de lazo</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>Cree selección</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>mueva la selección</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Cambiar el tamaño de la selección</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Haga clic en el primer punto para completar la selección de polígonos</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3678,43 +3708,13 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Borrar área seleccionada</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Tecla de mayúsculas: la relación de aspecto de capa preservar</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Suelte el botón del ratón para completar la selección de lazo</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>Capa de destino: %1</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>Cree selección</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>mueva la selección</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Cambiar el tamaño de la selección</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Haga clic en el primer punto para completar la selección de polígonos</translation>
 </phrase>
 
 <phrase>
@@ -3737,7 +3737,7 @@ Please válida Introduzca un valor numérico.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14948,8 +14948,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

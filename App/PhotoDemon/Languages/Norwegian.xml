@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2365</langversion>
+<langversion>6.8.2366</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2352,7 +2352,37 @@ In mellomtiden  kan du prøve å lagre bildet til et alternativt format. Du kan 
 <translation>Finne utvalg grensen</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Slett valgte området</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Slipp museknappen  for å fullføre  lasso utvalget</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>Opprett utvalg</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>Flytt utvalg</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Endre størrelse på utvalg</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Klikk på det første punktet for å fullføre  polygonet utvalg</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3686,43 +3716,13 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Slett valgte området</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Skift-tast: bevare lag størrelsesforhold </translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Slipp museknappen  for å fullføre  lasso utvalget</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>Mållag: %1</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>Opprett utvalg</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>Flytt utvalg</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Endre størrelse på utvalg</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Klikk på det første punktet for å fullføre  polygonet utvalg</translation>
 </phrase>
 
 <phrase>
@@ -3745,7 +3745,7 @@ Please enter a numeric value.</original>
 <translation>Sentrer bilde inne i view</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14958,8 +14958,8 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>
