@@ -66,11 +66,10 @@ Public Enum PD_SelectionShape
     ss_Lasso = 4
     ss_Wand = 5
     ss_Raster = 6
-    ss_AllNonRasterShapes = 50
 End Enum
 
 #If False Then
-    Private Const ss_Unknown = -1, ss_Rectangle = 0, ss_Circle = 1, ss_Line = 2, ss_Polygon = 3, ss_Lasso = 4, ss_Wand = 5, ss_Raster = 6, ss_AllNonRasterShapes = 50
+    Private Const ss_Unknown = -1, ss_Rectangle = 0, ss_Circle = 1, ss_Line = 2, ss_Polygon = 3, ss_Lasso = 4, ss_Wand = 5, ss_Raster = 6
 #End If
 
 Private m_SelectionShape As PD_SelectionShape
@@ -123,15 +122,10 @@ Public Enum PD_SelectionProperty
     sp_WandSearchMode = 9
     sp_WandSampleMerged = 10
     sp_WandCompareMethod = 11
-    sp_RoundedCornerModified = 12
-    sp_BorderWidthModified = 13
-    sp_BorderWidthIgnore = 14
 End Enum
 
 #If False Then
-    Private Const sp_Area = 0, sp_Smoothing = 1, sp_BorderWidth = 2, sp_FeatheringRadius = 3, sp_RoundedCornerRadius = 4, sp_LineWidth = 5
-    Private Const sp_SmoothStroke = 6, sp_PolygonCurvature = 7, sp_WandTolerance = 8, sp_WandSearchMode = 9, sp_WandSampleMerged = 10
-    Private Const sp_WandCompareMethod = 11, sp_RoundedCornerModified = 12, sp_BorderWidthModified = 13, sp_BorderWidthIgnore = 14
+    Private Const sp_Area = 0, sp_Smoothing = 1, sp_BorderWidth = 2, sp_FeatheringRadius = 3, sp_RoundedCornerRadius = 4, sp_LineWidth = 5, sp_SmoothStroke = 6, sp_PolygonCurvature = 7, sp_WandTolerance = 8, sp_WandSearchMode = 9, sp_WandSampleMerged = 10, sp_WandCompareMethod = 11
 #End If
 
 'The coordinates of the current selection (if rectangular)
@@ -216,10 +210,12 @@ Friend Function GetBoundaryRect() As RECTF
 End Function
 
 Friend Function GetMaskDC() As Long
+    If (Not m_IsMaskReady) Then CreateSelectionMask
     If (Not m_SelMask Is Nothing) Then GetMaskDC = m_SelMask.GetDIBDC
 End Function
 
 Friend Function GetMaskDIB() As pdDIB
+    If (Not m_IsMaskReady) Then CreateSelectionMask
     Set GetMaskDIB = m_SelMask
 End Function
 
@@ -238,7 +234,7 @@ End Function
 'Selection properties can be retrieved via these functions.  Note that the default function returns a STRING; this is because
 ' properties are saved/loaded as XML.  To retrieve a numeric value, use the _Long or _Float function variants.
 Friend Function GetSelectionProperty(ByVal propertyName As PD_SelectionProperty) As String
-    GetSelectionProperty = m_PropertyDict.GetEntry_String(propertyName, "", True)
+    GetSelectionProperty = m_PropertyDict.GetEntry_String(propertyName, vbNullString, True)
 End Function
 
 Friend Function GetSelectionProperty_Long(ByVal propertyName As PD_SelectionProperty, Optional ByVal defaultValueIfMissing As Long = 0) As Long
@@ -256,7 +252,7 @@ End Function
 'Selection properties can be set via this function
 Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVal propertyValue As Variant)
     
-    'If this value already exists in the collection, we don't need to waste time adding it
+    'If this key+value pair already exists in the collection, don't waste time adding it
     If m_PropertyDict.DoesKeyExist(propertyName) Then
         If (m_PropertyDict.GetEntry_Variant(propertyName) = propertyValue) Then Exit Sub
     End If
@@ -1661,8 +1657,8 @@ Private Sub CreateSelectionMask()
     
     'Start by creating a blank mask (this will also erase any existing mask)
     If ((m_SelMask.GetDIBWidth <> m_parentPDImage.Width) Or (m_SelMask.GetDIBHeight <> m_parentPDImage.Height)) Then
-        m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, maskBackColor
-        m_SelMask.SetAlphaPremultiplication False
+        m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, maskBackColor, maskBackByte
+        m_SelMask.SetInitialAlphaPremultiplicationState True
     Else
         m_SelMask.ResetDIB maskBackByte
     End If
@@ -2732,14 +2728,12 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
         CreateSelectionMask
     End If
     
-    'Point a standard 2D byte array at the selection mask
+    'Point a standard int array at the selection mask
     Dim x As Long, y As Long
-    Dim xStride As Long
     
-    Dim selMaskData() As Byte
+    Dim selMaskData() As Long
     Dim selMaskSA As SAFEARRAY2D
-    PrepDIBSafeArray m_SelMask, selMaskSA
-    CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+    m_SelMask.WrapLongArrayAroundDIB selMaskData, selMaskSA
     
     Dim maskWidth As Long, maskHeight As Long
     maskWidth = m_SelMask.GetDIBWidth - 1
@@ -2753,16 +2747,11 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     Do
     
         For x = 0 To maskWidth
-            xStride = x * 3
-            If (selMaskData(xStride, y) <> 0) Then
-                boundFound = True
-            ElseIf (selMaskData(xStride + 1, y) <> 0) Then
-                boundFound = True
-            ElseIf (selMaskData(xStride + 2, y) <> 0) Then
-                boundFound = True
-            End If
             
-            If boundFound Then
+            'In the future, if we decide to let the user select individual color channels, this code will need to be reworked.
+            ' For now, however, all pixels are rendered as grayscale, so we can shortcut and just check for non-zero entries.
+            If (selMaskData(x, y) <> 0) Then
+                boundFound = True
                 m_CornersLocked.Top = y
                 m_Bounds.Top = m_CornersLocked.Top
                 Exit For
@@ -2785,42 +2774,24 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     
     'If the selection mask is empty, abandon ship
     If (Not FindNewBoundsManually) Then
-        CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+        m_SelMask.UnwrapLongArrayFromDIB selMaskData
         Exit Function
     End If
     
-    'Next, find the bottom bound
+    'Next, find the bottom bound.  Note that we skip the "is mask blank" check, as we've already handled that case above.
     boundFound = False
     y = maskHeight
     
     Do
     
         For x = 0 To maskWidth
-            xStride = x * 3
-            If selMaskData(xStride, y) <> 0 Then
+            If (selMaskData(x, y) <> 0) Then
                 boundFound = True
-            ElseIf selMaskData(xStride + 1, y) <> 0 Then
-                boundFound = True
-            ElseIf selMaskData(xStride + 2, y) <> 0 Then
-                boundFound = True
-            End If
-            
-            If boundFound Then
                 m_CornersLocked.Height = y - m_CornersLocked.Top + 1
                 m_Bounds.Height = m_CornersLocked.Height
                 Exit For
             End If
-            
         Next x
-        
-        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (y <= 0) Then
-            Debug.Print "No bottom boundary found - is mask blank?"
-            boundFound = True
-            m_CornersLocked.Height = maskHeight - m_CornersLocked.Top + 1
-            m_Bounds.Height = m_CornersLocked.Height
-            FindNewBoundsManually = False
-        End If
         
         y = y - 1
     
@@ -2832,76 +2803,42 @@ Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Bool
     Do
     
         For y = 0 To maskHeight
-            If selMaskData(x, y) <> 0 Then
+            If (selMaskData(x, y) <> 0) Then
                 boundFound = True
-            ElseIf selMaskData(x + 1, y) <> 0 Then
-                boundFound = True
-            ElseIf selMaskData(x + 2, y) <> 0 Then
-                boundFound = True
-            End If
-            
-            If boundFound Then
-                m_CornersLocked.Left = x \ 3
+                m_CornersLocked.Left = x
                 m_Bounds.Left = m_CornersLocked.Left
                 Exit For
             End If
             
         Next y
         
-        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (x >= maskWidth * 3) Then
-            Debug.Print "No left boundary found - is mask blank?"
-            boundFound = True
-            m_CornersLocked.Left = 0
-            m_Bounds.Left = m_CornersLocked.Left
-            FindNewBoundsManually = False
-        End If
-        
-        x = x + 3
+        x = x + 1
     
     Loop While (Not boundFound)
     
     'Finally, find the right bound
     boundFound = False
-    x = maskWidth * 3
+    x = maskWidth
     
     Do
     
         For y = 0 To maskHeight
-            If selMaskData(x, y) <> 0 Then
+            If (selMaskData(x, y) <> 0) Then
                 boundFound = True
-            ElseIf selMaskData(x + 1, y) <> 0 Then
-                boundFound = True
-            ElseIf selMaskData(x + 2, y) <> 0 Then
-                boundFound = True
-            End If
-            
-            If boundFound Then
-                m_CornersLocked.Width = (x \ 3) - m_CornersLocked.Left + 1
+                m_CornersLocked.Width = x - m_CornersLocked.Left + 1
                 m_Bounds.Width = m_CornersLocked.Width
                 Exit For
             End If
-            
         Next y
         
-        'Blank masks shouldn't be possible, but if they are, mark the boundary as found to prevent a program lock
-        If (Not boundFound) And (x <= 0) Then
-            Debug.Print "No right boundary found - is mask blank?"
-            boundFound = True
-            m_CornersLocked.Width = maskWidth - m_CornersLocked.Left + 1
-            m_Bounds.Width = m_CornersLocked.Width
-            FindNewBoundsManually = False
-        End If
-        
-        x = x - 3
+        x = x - 1
         
     Loop While (Not boundFound)
     
     'All selection boundaries have now been located
     
     'Release our temporary byte array and exit
-    CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
-    Erase selMaskData
+    m_SelMask.UnwrapLongArrayFromDIB selMaskData
     
 End Function
 

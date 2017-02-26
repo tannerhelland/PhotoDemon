@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.46</langversion>
+<langversion>1.0.47</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2352,7 +2352,37 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Наоѓање на границата избор</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Избриши ги избраните област</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Ослободете го копчето од глувчето за да се заврши на ласо избор</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>Креирај избор</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>избор потег</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Менување на големината избор</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Кликнете на првата точка да се заврши изборот на полигон</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3686,43 +3716,13 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Избриши ги избраните област</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift копчето: запазување сооднос слој аспект</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Ослободете го копчето од глувчето за да се заврши на ласо избор</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>Целна слој: %1</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>Креирај избор</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>избор потег</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Менување на големината избор</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Кликнете на првата точка да се заврши изборот на полигон</translation>
 </phrase>
 
 <phrase>
@@ -3745,7 +3745,7 @@ Please enter a numeric value.</original>
 <translation>Центарот на сликата во гледиштето</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14958,8 +14958,8 @@ If сеуште изберете да го исклучите ажурирања
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

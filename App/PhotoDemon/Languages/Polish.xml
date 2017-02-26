@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2365</langversion>
+<langversion>6.8.2366</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2340,7 +2340,37 @@ In międzyczasie spróbuj zapisywania obrazu w alternatywnym formacie. Można r�
 <translation>Znalezienie wyboru granicę</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Kasowanie wybranego obszaru</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Zwolnij przycisk myszy, aby zakończyć wybór lasso</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>Utwórz zaznaczenie</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>wybór Move</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>resize wybór</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Kliknij na pierwszy punkt, aby zakończyć wybór wielokąta</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3674,43 +3704,13 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Kasowanie wybranego obszaru</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Klawisz Shift: zachować proporcje warstwy</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Zwolnij przycisk myszy, aby zakończyć wybór lasso</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>warstwa docelowa: %1</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>Utwórz zaznaczenie</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>wybór Move</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>resize wybór</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Kliknij na pierwszy punkt, aby zakończyć wybór wielokąta</translation>
 </phrase>
 
 <phrase>
@@ -3733,7 +3733,7 @@ Please enter a numeric value.</original>
 <translation>Wyśrodkować obraz wewnątrz rzutni</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14936,8 +14936,8 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

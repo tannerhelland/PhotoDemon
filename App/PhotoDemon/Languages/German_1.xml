@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.250</langversion>
+<langversion>6.7.251</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -2342,7 +2342,37 @@ Versuchen Sie bitte vorläufig, das Bild in einem anderen Format zu speichern. S
 <translation>Rand der Auswahl finden</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Auswahl löschen</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Maustaste loslassen, um die Auswahl komplett zu machen</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>Auswahl erstellen</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>Auswahl bewegen</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Auswahl verändern</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Klicken Sie nochmal auf den ersten Punkt, um die Vieleckauswahl komplett zu machen </translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3676,43 +3706,13 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Auswahl löschen</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Mit Umschalttaste: Seitenverhältnis der Ebene beibehalten</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Maustaste loslassen, um die Auswahl komplett zu machen</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>Zielebene: %1</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>Auswahl erstellen</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>Auswahl bewegen</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Auswahl verändern</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Klicken Sie nochmal auf den ersten Punkt, um die Vieleckauswahl komplett zu machen </translation>
 </phrase>
 
 <phrase>
@@ -3735,7 +3735,7 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <translation></translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14946,8 +14946,8 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>

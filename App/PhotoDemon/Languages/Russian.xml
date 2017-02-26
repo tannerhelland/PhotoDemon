@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2365</langversion>
+<langversion>6.8.2366</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2352,7 +2352,37 @@ In Тем временем, пожалуйста, попытайтесь сох�
 <translation>Обнаружение границы выделения</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 15 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
+<phrase>
+<original>Erase selected area</original>
+<translation>Стереть выбранную область</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Отпустите кнопку мыши, чтобы завершить лассо</translation>
+</phrase>
+
+<phrase>
+<original>Create selection</original>
+<translation>Создание выбор</translation>
+</phrase>
+
+<phrase>
+<original>Move selection</original>
+<translation>Переместить выделение</translation>
+</phrase>
+
+<phrase>
+<original>Resize selection</original>
+<translation>Изменение размера выбор</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Нажмите на первую точку для завершения выбора полигона</translation>
+</phrase>
+
+<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -3686,43 +3716,13 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
-<original>Erase selected area</original>
-<translation>Стереть выбранную область</translation>
-</phrase>
-
-<phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Сдвиг ключ: сохранение пропорций слоя</translation>
 </phrase>
 
 <phrase>
-<original>Release the mouse button to complete the lasso selection</original>
-<translation>Отпустите кнопку мыши, чтобы завершить лассо</translation>
-</phrase>
-
-<phrase>
 <original>Target layer: %1</original>
 <translation>Целевой уровень: 1%</translation>
-</phrase>
-
-<phrase>
-<original>Create selection</original>
-<translation>Создание выбор</translation>
-</phrase>
-
-<phrase>
-<original>Move selection</original>
-<translation>Переместить выделение</translation>
-</phrase>
-
-<phrase>
-<original>Resize selection</original>
-<translation>Изменение размера выбор</translation>
-</phrase>
-
-<phrase>
-<original>Click on the first point to complete the polygon selection</original>
-<translation>Нажмите на первую точку для завершения выбора полигона</translation>
 </phrase>
 
 <phrase>
@@ -3745,7 +3745,7 @@ Please enter a numeric value.</original>
 <translation>Центр изображения в окне просмотра</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 26 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 23 phrases. 7 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -14958,8 +14958,8 @@ If вы все еще отключить обновления, не забудь
 
 <phrasecount>2518</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1953 are duplicates, so only 2518 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4469 phrases. -->
+<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
 <!-- These 2518 phrases contain approximately 12371 total words. -->
 
 </pdData>
