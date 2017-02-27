@@ -3,16 +3,17 @@ Attribute VB_Name = "Plugin_FreeImage"
 'FreeImage Interface (Advanced)
 'Copyright 2012-2017 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 26/February/17
-'Last update: new helper function to accelerate parsing of multipage images
+'Last updated: 27/February/17
+'Last update: new helper function to accelerate parsing of multipage images; performance improvements when loading
+'             24-bpp images
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
 ' and quality.
 '
 'Please note that this module relies heavily on Carsten Klein's FreeImage wrapper for VB (included in this project
-' as Outside_FreeImageV3; see that file for license details).  Thanks to Carsten for his work on integrating FreeImage
-' into classic VB.
+' as Outside_FreeImageV3; see that file for license details).  Thank you to Carsten for his work on simplifying
+' FreeImage usage from classic VB.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -299,7 +300,7 @@ End Function
 ' encodings, ICC profile behaviors, etc.
 '
 'RETURNS: PD_SUCCESS if successful; some other code if the load fails.  Review debug messages for additional info.
-Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDIB As Long, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_DataType As FREE_IMAGE_TYPE, ByRef specialClipboardHandlingRequired As Boolean, ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False) As PD_OPERATION_OUTCOME
+Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDIB As Long, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_DataType As FREE_IMAGE_TYPE, ByRef specialClipboardHandlingRequired As Boolean, ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByRef multiDibIsDetached As Boolean = False) As PD_OPERATION_OUTCOME
     
     On Error GoTo FiObject_Error
     
@@ -312,6 +313,10 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     ' If the image has successfully been moved into the target pdDIB object, this *must* be set to TRUE.  (Otherwise, a
     ' failsafe check at the end of this function will perform an auto-copy.)
     Dim dstDIBFinished As Boolean: dstDIBFinished = False
+    
+    'When working with a multipage image, we may need to "detach" the current page DIB from its parent multipage handle.
+    ' If this happens, we'll note it, so we know to use the standalone unload function in the future.
+    multiDibIsDetached = False
     
     'Intermediate FreeImage objects may also be required during the transform process
     Dim new_hDIB As Long, fi_hasTransparency As Boolean
@@ -331,7 +336,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         Dim cmykConversionSuccessful As Boolean
         If dstDIB.ICCProfile.HasICCData Then
             cmykConversionSuccessful = ConvertCMYKFiDIBToRGB(fi_hDIB, dstDIB)
-            If cmykConversionSuccessful Then FI_Unload fi_hDIB, fi_multi_hDIB
+            If cmykConversionSuccessful Then FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
             dstDIBFinished = True
         End If
         
@@ -370,7 +375,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
             ' the color-managed result directly into a pdDIB object.
             If hdrICCSuccess Then
                 If (Not dstDIBFinished) And (new_hDIB <> 0) Then
-                    FI_Unload fi_hDIB, fi_multi_hDIB
+                    FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                     fi_hDIB = new_hDIB
                     new_hDIB = 0
                 End If
@@ -393,16 +398,16 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
             If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then
                 
                 'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
-                If Not (targetImage Is Nothing) Then targetImage.imgStorage.AddEntry "Tone-mapping", True
+                If (Not targetImage Is Nothing) Then targetImage.imgStorage.AddEntry "Tone-mapping", True
                 
                 'Replace the primary FI_DIB handle with the new one, then carry on with loading
-                If (new_hDIB <> fi_hDIB) Then FI_Unload fi_hDIB, fi_multi_hDIB
+                If (new_hDIB <> fi_hDIB) Then FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                 fi_hDIB = new_hDIB
                 FI_DebugMsg "Tone mapping complete.", suppressDebugData
                 
             'The tone-mapper will return 0 if it failed.  If this happens, we cannot proceed with loading.
             Else
-                FI_Unload fi_hDIB, fi_multi_hDIB
+                FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                 If (toneMappingOutcome <> PD_SUCCESS) Then FI_GetFIObjectIntoDIB = toneMappingOutcome Else FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
                 FI_DebugMsg "Tone-mapping canceled due to user request or error.  Abandoning image import.", suppressDebugData
                 Exit Function
@@ -417,11 +422,17 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     
     
     '****************************************************************************
-    ' If the image is < 24bpp, upsample it to 24bpp or 32bpp
+    ' If the image is < 32bpp, upsample it to 32bpp
     '****************************************************************************
     
-    'Similarly, check for low-bit-depth images
-    If (Not dstDIBFinished) And (fi_BPP < 24) Then
+    'The source image should now be in one of two bit-depths:
+    ' 1) 32-bpp RGBA
+    ' 2) Some bit-depth less than 32-bpp RGBA
+    '
+    'In the second case, we want to upsample the data to 32-bpp RGBA, adding an opaque alpha channel as necessary.
+    ' (In the past, this block only triggered if the BPP was below 24, but I'm now relying on FreeImage to apply
+    '  any necessary 24- to 32-bpp conversions as well.)
+    If (Not dstDIBFinished) And (fi_BPP < 32) Then
         
         'If the image is grayscale, and it has an ICC profile, we need to apply that prior to continuing.
         ' (Grayscale images have grayscale ICC profiles which the default ICC profile handler can't address.)
@@ -438,7 +449,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
                 
                 If GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB) Then
                     If (Not dstDIBFinished) And (new_hDIB <> 0) Then
-                        FI_Unload fi_hDIB, fi_multi_hDIB
+                        FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                         fi_hDIB = new_hDIB
                         new_hDIB = 0
                     End If
@@ -449,16 +460,12 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         
         If (Not dstDIBFinished) Then
         
-            'Conversion to higher bit depths is contingent on the presence of an alpha channel
-            fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
-            If fi_hasTransparency Then
-                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
-            Else
-                new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_24BPP, False)
-            End If
+            'In the past, we would check for an alpha channel here (something like "fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)"),
+            ' but that is no longer necessary.  We instead rely on FreeImage to convert to 32-bpp regardless of transparency status.
+            new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
             
             If (new_hDIB <> fi_hDIB) Then
-                FI_Unload fi_hDIB, fi_multi_hDIB
+                FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                 fi_hDIB = new_hDIB
             End If
             
@@ -466,7 +473,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
             
     End If
     
-    'By this point, we have loaded the image, and it is guaranteed to be at 24 or 32 bit color depth.  Verify it one final time.
+    'By this point, we have loaded the image, and it is guaranteed to be at 32 bit color depth.  Verify it one final time.
     If (fi_hDIB <> 0) Then fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
     
@@ -481,7 +488,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         new_hDIB = 0
         If GenerateICCCorrectedFIDIB(fi_hDIB, dstDIB, dstDIBFinished, new_hDIB) Then
             If (Not dstDIBFinished) And (new_hDIB <> 0) Then
-                FI_Unload fi_hDIB, fi_multi_hDIB
+                FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                 fi_hDIB = new_hDIB
                 new_hDIB = 0
             End If
@@ -582,7 +589,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
                 SetDIBitsToDevice dstDIB.GetDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
             Else
                 FI_DebugMsg "Import via FreeImage failed (couldn't create DIB).", suppressDebugData
-                FI_Unload fi_hDIB, fi_multi_hDIB
+                FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
                 FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
                 Exit Function
             End If
@@ -599,7 +606,7 @@ FiObject_Error:
     
     FI_DebugMsg "VB-specific error occurred inside FI_GetFIObjectIntoDIB.  Err #: " & Err.Number & ", " & Err.Description, suppressDebugData
     If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
-    FI_Unload fi_hDIB, fi_multi_hDIB
+    FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
     FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
     
 End Function
@@ -639,6 +646,7 @@ Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef d
     Dim fi_BPP As Long, fi_DataType As FREE_IMAGE_TYPE
     Dim specialClipboardHandlingRequired As Boolean, loadSuccess As Boolean
     Dim newLayerID As Long, newLayerName As String
+    Dim multiDibIsDetached As Boolean
     
     'Start iterating pages!
     Dim pageToLoad As Long
@@ -664,11 +672,10 @@ Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef d
             
             'Copy/transform the FreeImage object into a guaranteed 24- or 32-bpp destination DIB
             specialClipboardHandlingRequired = False
-            loadSuccess = (FI_GetFIObjectIntoDIB(fi_hDIB, fi_multi_hDIB, fileFIF, fi_DataType, specialClipboardHandlingRequired, srcFilename, dstDIB, pageToLoad, showMessages, targetImage, suppressDebugData) = PD_SUCCESS)
+            loadSuccess = (FI_GetFIObjectIntoDIB(fi_hDIB, fi_multi_hDIB, fileFIF, fi_DataType, specialClipboardHandlingRequired, srcFilename, dstDIB, pageToLoad, showMessages, targetImage, suppressDebugData, multiDibIsDetached) = PD_SUCCESS)
             
             'Regardless of outcome, free ("unlock" in FI parlance) FreeImage's copy of this page
-            FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
-            fi_hDIB = 0
+            FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
             
             If loadSuccess Then
             
@@ -684,6 +691,10 @@ Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef d
                 
             End If
             
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Failed to lock page #" & pageToLoad
+            #End If
         End If
     
     Next pageToLoad
@@ -867,15 +878,27 @@ End Function
 ' to multipage behavior if the multipage handle is non-zero.
 '
 'On success, any unloaded handles will be forcibly reset to zero.
-Private Sub FI_Unload(ByRef srcFIHandle As Long, Optional ByRef srcFIMultipageHandle As Long = 0)
-    If (srcFIMultipageHandle = 0) Then
+Private Sub FI_Unload(ByRef srcFIHandle As Long, Optional ByRef srcFIMultipageHandle As Long = 0, Optional ByVal leaveMultiHandleOpen As Boolean = False, Optional ByRef fiDibIsDetached As Boolean = False)
+    If ((srcFIMultipageHandle = 0) Or fiDibIsDetached) Then
         If (srcFIHandle <> 0) Then FreeImage_UnloadEx srcFIHandle
         srcFIHandle = 0
     Else
-        If (srcFIHandle <> 0) Then FreeImage_UnlockPage srcFIMultipageHandle, srcFIHandle, False
-        FreeImage_CloseMultiBitmap srcFIMultipageHandle
-        srcFIMultipageHandle = 0
-        srcFIHandle = 0
+        
+        If (srcFIHandle <> 0) Then
+            FreeImage_UnlockPage srcFIMultipageHandle, srcFIHandle, False
+            srcFIHandle = 0
+        End If
+        
+        'Now comes a weird bit of special handling.  It may be desirable to unlock a page, but leave the base multipage image open.
+        ' (When loading a multipage image, this yields much better performance.)  However, we need to note that the resulting
+        ' DIB handle is now "detached", meaning we can't use UnlockPage on it in the future.
+        If (Not leaveMultiHandleOpen) Then
+            FreeImage_CloseMultiBitmap srcFIMultipageHandle
+            srcFIMultipageHandle = 0
+        Else
+            fiDibIsDetached = True
+        End If
+        
     End If
 End Sub
 
