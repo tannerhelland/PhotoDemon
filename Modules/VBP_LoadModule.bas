@@ -346,36 +346,25 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
             targetImage.imgStorage.AddEntry "MultipageImportActive", True
             
-            Dim pageTracker As Long
+            'We now have several options for loading the remaining pages in this file.
             
-            'Call LoadFileAsNewImage again for each individual frame in the multipage file
-            For pageTracker = 1 To numOfPages - 1
-                
-                'Create a blank layer in the receiving image, and retrieve a pointer to it
-                newLayerID = targetImage.CreateBlankLayer
-                
-                'Load the next page into the temporary DIB
-                targetDIB.ResetDIB 0
-                loadSuccessful = FI_LoadImage_V5(srcFile, targetDIB, pageTracker)
-                
-                'If the load was successful, copy the DIB into place
-                If loadSuccessful Then
-                
-                    'Copy the newly loaded DIB into the target pdImage object
-                    ImageImporter.ForceTo32bppMode targetDIB
-                    newLayerName = Layer_Handler.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB, pageTracker)
-                    targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, targetImage, True
-                    
-                'If the load was unsuccessful, delete the placeholder layer we created
-                Else
-                    targetImage.DeleteLayerByIndex pdImages(g_CurrentImage).GetLayerIndexFromID(newLayerID)
-                End If
-            
-            Next pageTracker
+            'For most images, the easiest path would be to keep calling the standard FI_LoadImage function(), passing it updated
+            ' page numbers as we go.  This ensures that all the usual fallbacks and detailed edge-case handling (like ICC profiles
+            ' that vary by page) are handled correctly.
+            '
+            'However, it also means that the source file is loaded/unloaded on each frame, because the FreeImage load function
+            ' was never meant to be used like this.  This isn't a problem for images with a few pages, but if the image is large
+            ' and/or if it has tons of frames (like a length animated GIF), we could be here awhile.
+            '
+            'As of 7.0, a better solution exists: ask FreeImage to cache the source file, and keep it cached until all frames
+            ' have been loaded.  This is *way* faster, and it also lets us bypass a bunch of per-file validation checks
+            ' (since we already know the source file is okay).
+            loadSuccessful = Plugin_FreeImage.FinishLoadingMultipageImage(srcFile, targetDIB, numOfPages, , targetImage, , suggestedFilename)
             
             'As a convenience, make all but the first page/frame/icon invisible when the source is a GIF or ICON.
             ' (TIFFs don't require this, as all pages are typically the same size.)
             If (targetImage.GetNumOfLayers > 1) And (targetImage.GetOriginalFileFormat <> PDIF_TIFF) Then
+                Dim pageTracker As Long
                 For pageTracker = 1 To targetImage.GetNumOfLayers - 1
                     targetImage.GetLayerByIndex(pageTracker).SetLayerVisibility False
                 Next pageTracker

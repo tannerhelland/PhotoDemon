@@ -47,7 +47,7 @@ End Sub
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
 ' conversion is running - this is because the batch conversion tool appropriates the scroll bar.
 Public Function GetProgBarMax() As Long
-    If Not curProgBar Is Nothing Then GetProgBarMax = curProgBar.Max Else GetProgBarMax = 1
+    If (Not curProgBar Is Nothing) Then GetProgBarMax = curProgBar.Max Else GetProgBarMax = 1
 End Function
 
 Public Sub SetProgBarMax(ByVal pbVal As Long)
@@ -57,7 +57,7 @@ Public Sub SetProgBarMax(ByVal pbVal As Long)
         Dim prevProgBarValue As Long
         
         'Create a new progress bar as necessary
-        If curProgBar Is Nothing Then
+        If (curProgBar Is Nothing) Then
             Set curProgBar = New cProgressBarOfficial
             
             'Assign the progress bar control to its container picture box on the primary canvas, then display it.
@@ -77,7 +77,7 @@ Public Sub SetProgBarMax(ByVal pbVal As Long)
         curProgBar.Max = pbVal
         
         'Set the progress bar's current value
-        If prevProgBarValue <= curProgBar.Max Then
+        If (prevProgBarValue <= curProgBar.Max) Then
             curProgBar.Value = prevProgBarValue
         Else
             curProgBar.Value = 0
@@ -90,9 +90,9 @@ End Sub
 
 Public Sub SetProgBarVal(ByVal pbVal As Long)
     
-    If MacroStatus <> MacroBATCH Then
+    If (MacroStatus <> MacroBATCH) Then
         
-        If Not curProgBar Is Nothing Then
+        If (Not curProgBar Is Nothing) Then
             curProgBar.Value = pbVal
             curProgBar.Refresh
             
@@ -123,9 +123,7 @@ Public Function FindBestProgBarValue() As Long
     
     'Find the nearest power of two to that value, rounded down
     Dim nearestP2 As Long
-    
     nearestP2 = Log(progBarRange) / Log(2#)
-    
     FindBestProgBarValue = (2 ^ nearestP2) - 1
     
 End Function
@@ -136,7 +134,7 @@ Public Sub ReleaseProgressBar()
     Debug.Print "Releasing progress bar..."
 
     'Briefly display a full progress bar before exiting
-    If Not curProgBar Is Nothing Then
+    If (Not curProgBar Is Nothing) Then
         curProgBar.Value = curProgBar.Max
         curProgBar.Refresh
     

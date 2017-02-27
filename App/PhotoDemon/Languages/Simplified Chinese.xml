@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2265</langversion>
+<langversion>6.8.2266</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1694,11 +1694,16 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 </phrase>
 
 <phrase>
+<original>Multipage image found.  Loading page #%1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying tone-mapping</original>
 <translation>应用色调映射</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Plugin_FreeImage.bas-->
 
@@ -14942,10 +14947,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12371 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12378 total words. -->
 
 </pdData>
