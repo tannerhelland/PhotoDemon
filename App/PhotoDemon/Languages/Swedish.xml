@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2366</langversion>
+<langversion>6.8.2367</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1697,11 +1697,16 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 </phrase>
 
 <phrase>
+<original>Multipage image found.  Loading page #%1 of %2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying tone-mapping</original>
 <translation>Tillämpa ton-kartläggning</translation>
 </phrase>
 
-<!-- Plugin_FreeImage.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Plugin_FreeImage.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Plugin_FreeImage.bas-->
 
@@ -14951,10 +14956,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2518</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4469 phrases. -->
-<!-- 1951 are duplicates, so only 2518 unique phrases have been written to file. -->
-<!-- These 2518 phrases contain approximately 12371 total words. -->
+<!-- As of this build, PhotoDemon contains 4471 phrases. -->
+<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 12378 total words. -->
 
 </pdData>

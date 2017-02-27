@@ -3,8 +3,8 @@ Attribute VB_Name = "Plugin_FreeImage"
 'FreeImage Interface (Advanced)
 'Copyright 2012-2017 by Tanner Helland
 'Created: 3/September/12
-'Last updated: 03/May/16
-'Last update: continued work on improving the GetFIDib_SpecificColorMode() function
+'Last updated: 26/February/17
+'Last update: new helper function to accelerate parsing of multipage images
 '
 'This module represents a new - and significantly more comprehensive - approach to loading images via the
 ' FreeImage libary. It handles a variety of decisions on a per-format basis to ensure optimal load speed
@@ -228,7 +228,83 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     '****************************************************************************
-    ' If the image is in an unacceptable bit-depth, convert it to a standard 24 or 32bpp image.
+    ' Copy/transform the FreeImage object into the destination pdDIB object
+    '****************************************************************************
+    
+    'Converting any arbitrary chunk of image bytes into a valid 24- or 32-bpp image is a non-trivial task.
+    ' As such, we split this specialized handling into its own function.
+    
+    '(Also, I know it seems weird, but the target function needs to run some heuristics on the incoming data to see if it
+    ' came from the Windows clipboard.  If it did, we have to apply some special post-processing to the image data,
+    ' to compensate for GDI's propensity to strip alpha data.)
+    Dim specialClipboardHandlingRequired As Boolean
+    
+    FI_LoadImage_V5 = FI_GetFIObjectIntoDIB(fi_hDIB, fi_multi_hDIB, fileFIF, fi_DataType, specialClipboardHandlingRequired, srcFilename, dstDIB, pageToLoad, showMessages, targetImage, suppressDebugData)
+    If (FI_LoadImage_V5 = PD_SUCCESS) Then
+    
+        'The FI data now exists inside a pdDIB object, at 24- or 32-bpp.
+        
+        '****************************************************************************
+        ' Release all remaining FreeImage-specific structures and links
+        '****************************************************************************
+        
+        FI_Unload fi_hDIB, fi_multi_hDIB
+        FI_DebugMsg "Image load successful.  FreeImage handle released.", suppressDebugData
+        
+        
+        '****************************************************************************
+        ' Finalize alpha values in the target image
+        '****************************************************************************
+        
+        'If this image came from the clipboard, and its alpha state is unknown, we're going to force all alpha values
+        ' to 255 to avoid potential driver-specific issues with the PrtScrn key.
+        If specialClipboardHandlingRequired Then
+            FI_DebugMsg "Image came from the clipboard; finalizing alpha now...", suppressDebugData
+            dstDIB.ForceNewAlpha 255
+        End If
+        
+        'Regardless of original bit-depth, the final PhotoDemon image will always be 32-bits, with pre-multiplied alpha.
+        dstDIB.SetInitialAlphaPremultiplicationState True
+        
+        
+        '****************************************************************************
+        ' Load complete
+        '****************************************************************************
+        
+        'Confirm this load as successful
+        FI_LoadImage_V5 = PD_SUCCESS
+    
+    'If the source function failed, there's nothing we can do here; the incorrect error code will have already been set,
+    ' so we can simply bail.
+    End If
+    
+    
+    Exit Function
+    
+    '****************************************************************************
+    ' Error handling
+    '****************************************************************************
+    
+FreeImageV5_Error:
+    
+    FI_DebugMsg "VB-specific error occurred inside FI_LoadImage_V5.  Err #: " & Err.Number & ", " & Err.Description, suppressDebugData
+    If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
+    FI_Unload fi_hDIB, fi_multi_hDIB
+    FI_LoadImage_V5 = PD_FAILURE_GENERIC
+    
+End Function
+
+'Given a valid handle to a FreeImage object (and/or multipage object, as relevant), get the FreeImage object into a pdDIB object.
+' While this sounds simple, it really isn't, primarily because we have to deal with all possible color depths, alpha-channel
+' encodings, ICC profile behaviors, etc.
+'
+'RETURNS: PD_SUCCESS if successful; some other code if the load fails.  Review debug messages for additional info.
+Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDIB As Long, ByVal fileFIF As FREE_IMAGE_FORMAT, ByVal fi_DataType As FREE_IMAGE_TYPE, ByRef specialClipboardHandlingRequired As Boolean, ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal pageToLoad As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False) As PD_OPERATION_OUTCOME
+    
+    On Error GoTo FiObject_Error
+    
+    '****************************************************************************
+    ' If the image is in an unacceptable bit-depth, start by converting it to a standard 24 or 32bpp image.
     '****************************************************************************
     
     'As much as possible, we prefer to convert bit-depth using the existing FreeImage handle as the source, and the target
@@ -269,6 +345,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     End If
     
     'Between attempted conversions, we reset the BPP tracker (as it may have changed)
+    Dim fi_BPP As Long
     If (fi_hDIB <> 0) Then fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
     
@@ -326,7 +403,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
             'The tone-mapper will return 0 if it failed.  If this happens, we cannot proceed with loading.
             Else
                 FI_Unload fi_hDIB, fi_multi_hDIB
-                If (toneMappingOutcome <> PD_SUCCESS) Then FI_LoadImage_V5 = toneMappingOutcome Else FI_LoadImage_V5 = PD_FAILURE_GENERIC
+                If (toneMappingOutcome <> PD_SUCCESS) Then FI_GetFIObjectIntoDIB = toneMappingOutcome Else FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
                 FI_DebugMsg "Tone-mapping canceled due to user request or error.  Abandoning image import.", suppressDebugData
                 Exit Function
             End If
@@ -422,7 +499,7 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     ' the image did not come from the clipboard.  (Clipboard images requires special treatment.)
     '****************************************************************************
     
-    Dim specialClipboardHandlingRequired As Boolean, tmpClipboardInfo As PD_Clipboard_Info
+    Dim tmpClipboardInfo As PD_Clipboard_Info
     specialClipboardHandlingRequired = False
     
     If (Not dstDIBFinished) And (fi_BPP = 32) Then
@@ -475,8 +552,6 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
     'Note that certain code paths may have already populated the pdDIB object.  We only need to perform this step if the image
     ' data still resides inside a FreeImage handle.
     If (Not dstDIBFinished) And (fi_hDIB <> 0) Then
-    
-        FI_DebugMsg "Requesting memory for final image transfer...", suppressDebugData
         
         'Get width and height from the file, and create a new DIB to match
         Dim fi_Width As Long, fi_Height As Long
@@ -487,65 +562,138 @@ Public Function FI_LoadImage_V5(ByVal srcFilename As String, ByRef dstDIB As pdD
         ' values; check for this, and if it happens, abandon the load immediately.  (This is not ideal, because it leaks memory
         ' - but it prevents a hard program crash, so I consider it the lesser of two evils.)
         If (fi_Width > 1000000) Or (fi_Height > 1000000) Then
-            FI_LoadImage_V5 = PD_FAILURE_GENERIC
+            FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
             Exit Function
         Else
-            If dstDIB.CreateBlank(fi_Width, fi_Height, fi_BPP, 0, 0) Then
-                FI_DebugMsg "Memory secured.  Finalizing image load...", suppressDebugData
+        
+            'Our caller may be reusing the same image across multiple loads.  To improve performance, only create a new
+            ' object if necessary; otherwise, reuse the previous instance.
+            Dim dibReady As Boolean
+            If (dstDIB.GetDIBWidth = fi_Width) And (dstDIB.GetDIBHeight = fi_Height) And (dstDIB.GetDIBColorDepth = fi_BPP) Then
+                dstDIB.ResetDIB 0
+                dibReady = True
+            Else
+                FI_DebugMsg "Requesting memory for final image transfer...", suppressDebugData
+                dibReady = dstDIB.CreateBlank(fi_Width, fi_Height, fi_BPP, 0, 0)
+                If dibReady Then FI_DebugMsg "Memory secured.  Finalizing image load...", suppressDebugData
+            End If
+            
+            If dibReady Then
                 SetDIBitsToDevice dstDIB.GetDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
             Else
                 FI_DebugMsg "Import via FreeImage failed (couldn't create DIB).", suppressDebugData
                 FI_Unload fi_hDIB, fi_multi_hDIB
-                FI_LoadImage_V5 = PD_FAILURE_GENERIC
+                FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
                 Exit Function
             End If
         End If
         
     End If
     
-    '****************************************************************************
-    ' Release all FreeImage-specific structures and links
-    '****************************************************************************
-    
-    FI_Unload fi_hDIB, fi_multi_hDIB
-    FI_DebugMsg "Image load successful.  FreeImage handle released.", suppressDebugData
-    
-    
-    '****************************************************************************
-    ' Finalize alpha values in the target image
-    '****************************************************************************
-    
-    'If this image came from the clipboard, and its alpha state is unknown, we're going to force all alpha values
-    ' to 255 to avoid potential driver-specific issues with the PrtScrn key.
-    If specialClipboardHandlingRequired Then
-        FI_DebugMsg "Image came from the clipboard; finalizing alpha now...", suppressDebugData
-        dstDIB.ForceNewAlpha 255
-    End If
-    
-    'Regardless of original bit-depth, the final PhotoDemon image will always be 32-bits, with pre-multiplied alpha.
-    dstDIB.SetInitialAlphaPremultiplicationState True
-    
-    
-    '****************************************************************************
-    ' Load complete
-    '****************************************************************************
-    
-    'Mark this load as successful
-    FI_LoadImage_V5 = PD_SUCCESS
+    'If we made it all the way here, we have successfully moved the original FreeImage object into the destination pdDIB object.
+    FI_GetFIObjectIntoDIB = PD_SUCCESS
     
     Exit Function
     
-    '****************************************************************************
-    ' Error handling
-    '****************************************************************************
+FiObject_Error:
     
-FreeImageV5_Error:
-    
-    FI_DebugMsg "VB-specific error occurred inside FI_LoadImage_V5.  Err #: " & Err.Number & ", " & Err.Description, suppressDebugData
+    FI_DebugMsg "VB-specific error occurred inside FI_GetFIObjectIntoDIB.  Err #: " & Err.Number & ", " & Err.Description, suppressDebugData
     If showMessages Then Message "Import via FreeImage failed (Err # %1)", Err.Number
     FI_Unload fi_hDIB, fi_multi_hDIB
-    FI_LoadImage_V5 = PD_FAILURE_GENERIC
+    FI_GetFIObjectIntoDIB = PD_FAILURE_GENERIC
     
+End Function
+
+'After the first page of a multipage image has been loaded successfully, call this function to load the remaining pages into the
+' destination object.
+Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef dstDIB As pdDIB, Optional ByVal numOfPages As Long = 0, Optional ByVal showMessages As Boolean = True, Optional ByRef targetImage As pdImage = Nothing, Optional ByVal suppressDebugData As Boolean = False, Optional ByVal suggestedFilename As String = vbNullString) As PD_OPERATION_OUTCOME
+
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    
+    'Get a multipage handle to the source file
+    Dim fileFIF As FREE_IMAGE_FORMAT
+    fileFIF = FI_DetermineFiletype(srcFilename, dstDIB)
+    
+    Dim fi_ImportFlags As FREE_IMAGE_LOAD_OPTIONS
+    fi_ImportFlags = FI_DetermineImportFlags(srcFilename, fileFIF, Not showMessages)
+    
+    Dim fi_hDIB As Long, fi_multi_hDIB As Long
+    If (fileFIF = PDIF_GIF) Then
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_GIF, srcFilename, , , , fi_ImportFlags Or FILO_GIF_PLAYBACK)
+    ElseIf (fileFIF = FIF_ICO) Then
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , fi_ImportFlags)
+    Else
+        fi_multi_hDIB = FreeImage_OpenMultiBitmap(PDIF_TIFF, srcFilename, , , , fi_ImportFlags)
+    End If
+    
+    'FreeImage handles icon files poorly; a workaround is required to get them to return any masks as pre-built alpha channels.
+    If (fileFIF = FIF_ICO) Then
+        If (FreeImage_GetBPP(fi_hDIB) < 32) Then
+            FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+            FreeImage_CloseMultiBitmap fi_multi_hDIB
+            fi_multi_hDIB = FreeImage_OpenMultiBitmap(FIF_ICO, srcFilename, , , , FILO_ICO_MAKEALPHA)
+        End If
+    End If
+    
+    'We are now going to keep that source file open for the duration of the load process.
+    Dim fi_BPP As Long, fi_DataType As FREE_IMAGE_TYPE
+    Dim specialClipboardHandlingRequired As Boolean, loadSuccess As Boolean
+    Dim newLayerID As Long, newLayerName As String
+    
+    'Start iterating pages!
+    Dim pageToLoad As Long
+    For pageToLoad = 1 To numOfPages - 1
+        
+        Message "Multipage image found.  Loading page #%1 of %2...", CStr(pageToLoad + 1), numOfPages
+        If ((pageToLoad And 7) = 0) Then ProgressBars.Replacement_DoEvents FormMain.hWnd
+        
+        'Lock the current page
+        fi_hDIB = FreeImage_LockPage(fi_multi_hDIB, pageToLoad)
+        If (fi_hDIB <> 0) Then
+            
+            'Store various bits of file metadata before proceeding
+            dstDIB.SetOriginalFreeImageColorDepth FreeImage_GetBPP(fi_hDIB)
+            fi_BPP = FreeImage_GetBPP(fi_hDIB)
+            fi_DataType = FreeImage_GetImageType(fi_hDIB)
+            dstDIB.SetDPI FreeImage_GetResolutionX(fi_hDIB), FreeImage_GetResolutionY(fi_hDIB), True
+            FI_LoadBackgroundColor fi_hDIB, dstDIB
+            dstDIB.SetOriginalColorDepth FreeImage_GetBPP(fi_hDIB)
+            
+            'Retrieve a matching ICC profile, if any
+            If FreeImage_HasICCProfile(fi_hDIB) Then FI_LoadICCProfile fi_hDIB, dstDIB
+            
+            'Copy/transform the FreeImage object into a guaranteed 24- or 32-bpp destination DIB
+            specialClipboardHandlingRequired = False
+            loadSuccess = (FI_GetFIObjectIntoDIB(fi_hDIB, fi_multi_hDIB, fileFIF, fi_DataType, specialClipboardHandlingRequired, srcFilename, dstDIB, pageToLoad, showMessages, targetImage, suppressDebugData) = PD_SUCCESS)
+            
+            'Regardless of outcome, free ("unlock" in FI parlance) FreeImage's copy of this page
+            FreeImage_UnlockPage fi_multi_hDIB, fi_hDIB, False
+            fi_hDIB = 0
+            
+            If loadSuccess Then
+            
+                'Make sure the DIB meets new v7.0 requirements (including premultiplied alpha)
+                If specialClipboardHandlingRequired Then dstDIB.ForceNewAlpha 255
+                dstDIB.SetInitialAlphaPremultiplicationState True
+                ImageImporter.ForceTo32bppMode dstDIB
+                
+                'Create a blank layer in the receiving image, and retrieve a pointer to it
+                newLayerID = targetImage.CreateBlankLayer
+                newLayerName = Layer_Handler.GenerateInitialLayerName(srcFilename, suggestedFilename, True, targetImage, dstDIB, pageToLoad)
+                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, dstDIB, targetImage, True
+                
+            End If
+            
+        End If
+    
+    Next pageToLoad
+    
+    'Release our original multipage image handle, then exit
+    FI_Unload fi_hDIB, fi_multi_hDIB
+    FI_DebugMsg "Multipage image load successful.  Original FreeImage handle released.", suppressDebugData
+    
+    FinishLoadingMultipageImage = PD_SUCCESS
+
 End Function
 
 'Given a path to a file and a destination pdDIB object, detect the file's type and store it inside the target DIB.
