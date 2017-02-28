@@ -30,8 +30,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Spinner (formerly Text+UpDown) custom control
 'Copyright 2013-2017 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 24/May/16
-'Last update: migrate to the new Drawing2D classes
+'Last updated: 27/February/17
+'Last update: extend "significant digits" property to support any arbitrary precision
 '
 'Software like PhotoDemon requires a lot of controls.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -998,25 +998,18 @@ End Sub
 'Because this control can contain either decimal or float values, we want to make sure any entered strings adhere
 ' to strict formatting rules.
 Private Function GetFormattedStringValue(ByVal srcValue As Double) As String
-
-    Select Case m_SigDigits
     
-        Case 0
-            GetFormattedStringValue = Format$(CStr(srcValue), "#0")
+    Dim formatString As String
+    If (m_SigDigits = 0) Then
+        formatString = "#0"
+    Else
+        formatString = "#0." & String$(m_SigDigits, "0")
+    End If
+    
+    GetFormattedStringValue = Format$(CStr(srcValue), formatString)
         
-        Case 1
-            GetFormattedStringValue = Format$(CStr(srcValue), "#0.0")
-            
-        Case 2
-            GetFormattedStringValue = Format$(CStr(srcValue), "#0.00")
-            
-        Case Else
-            GetFormattedStringValue = Format$(CStr(srcValue), "#0.000")
-    
-    End Select
-    
     'Perform a final check for control enablement.  If the control is disabled, we do not (currently) display anything.
-    If Not Me.Enabled Then GetFormattedStringValue = ""
+    If (Not Me.Enabled) Then GetFormattedStringValue = ""
 
 End Function
 
