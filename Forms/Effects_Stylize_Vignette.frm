@@ -24,6 +24,16 @@ Begin VB.Form FormVignette
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButtonStrip btsShape 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   3960
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "shape"
+   End
    Begin PhotoDemon.pdSlider sltXCenter 
       Height          =   405
       Left            =   6000
@@ -33,7 +43,7 @@ Begin VB.Form FormVignette
       _ExtentX        =   5106
       _ExtentY        =   873
       Max             =   1
-      SigDigits       =   2
+      SigDigits       =   4
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
@@ -48,18 +58,6 @@ Begin VB.Form FormVignette
       _ExtentX        =   21325
       _ExtentY        =   1323
    End
-   Begin PhotoDemon.pdRadioButton optShape 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   5340
-      Width           =   2700
-      _ExtentX        =   4763
-      _ExtentY        =   582
-      Caption         =   "fit to image"
-      Value           =   -1  'True
-   End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
       Left            =   120
@@ -71,21 +69,10 @@ Begin VB.Form FormVignette
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.pdRadioButton optShape 
-      Height          =   360
-      Index           =   1
-      Left            =   8880
-      TabIndex        =   4
-      Top             =   5340
-      Width           =   2700
-      _ExtentX        =   4763
-      _ExtentY        =   582
-      Caption         =   "circular"
-   End
    Begin PhotoDemon.pdSlider sltRadius 
       Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
@@ -100,11 +87,11 @@ Begin VB.Form FormVignette
    Begin PhotoDemon.pdSlider sltFeathering 
       Height          =   705
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2280
+      TabIndex        =   4
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   1270
+      _ExtentY        =   1244
       Caption         =   "softness"
       Min             =   1
       Max             =   100
@@ -113,39 +100,39 @@ Begin VB.Form FormVignette
    End
    Begin PhotoDemon.pdSlider sltTransparency 
       Height          =   705
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   3120
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1270
-      Caption         =   "strength"
+      Left            =   9000
+      TabIndex        =   5
+      Top             =   3000
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   1244
+      Caption         =   "opacity"
       Min             =   1
       Max             =   100
       Value           =   100
       DefaultValue    =   100
    End
    Begin PhotoDemon.pdColorSelector colorPicker 
-      Height          =   930
+      Height          =   810
       Left            =   6000
-      TabIndex        =   8
-      Top             =   3900
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1640
+      TabIndex        =   6
+      Top             =   3000
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   1429
       Caption         =   "color"
       curColor        =   0
    End
    Begin PhotoDemon.pdSlider sltYCenter 
       Height          =   405
       Left            =   9000
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
       _ExtentY        =   873
       Max             =   1
-      SigDigits       =   2
+      SigDigits       =   4
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
@@ -175,17 +162,35 @@ Begin VB.Form FormVignette
       FontSize        =   12
       ForeColor       =   4210752
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
+   Begin PhotoDemon.pdSlider sltAspectRatio 
+      Height          =   705
       Left            =   6000
-      Top             =   4980
-      Width           =   5895
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "shape"
-      FontSize        =   12
-      ForeColor       =   4210752
+      TabIndex        =   9
+      Top             =   5010
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   1244
+      Caption         =   "aspect ratio"
+      Min             =   0.2
+      Max             =   4
+      SigDigits       =   3
+      ScaleStyle      =   1
+      ScaleExponent   =   5
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
+   End
+   Begin PhotoDemon.pdSlider sltAngle 
+      Height          =   705
+      Left            =   9000
+      TabIndex        =   10
+      Top             =   5010
+      Width           =   2895
+      _ExtentX        =   5106
+      _ExtentY        =   1244
+      Caption         =   "angle"
+      Max             =   360
+      SigDigits       =   1
    End
 End
 Attribute VB_Name = "FormVignette"
@@ -197,11 +202,11 @@ Attribute VB_Exposed = False
 'Image Vignette tool
 'Copyright 2013-2017 by Tanner Helland
 'Created: 31/January/13
-'Last updated: 09/January/14
-'Last update: added center-point selection capabilities
+'Last updated: 27/February/17
+'Last update: large performance improvements; added "custom shape" mode
 '
 'This tool allows the user to apply vignetting to an image.  Many options are available, and all should be
-' self-explanatory!
+' self-explanatory.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -210,41 +215,62 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'To improve performance, we cache a temporary DIB at form level; the DIB is freed with the form.
+Private m_OverlayDIB As pdDIB
+
 'Apply vignetting to an image
-Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double, ByVal vTransparency As Double, ByVal vMode As Boolean, ByVal newColor As Long, Optional ByVal centerPosX As Double = 0.5, Optional ByVal centerPosY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying vignetting..."
-        
-    'Extract the RGB values of the vignetting color
-    Dim newR As Byte, newG As Byte, newB As Byte
-    newR = Colors.ExtractRed(newColor)
-    newG = Colors.ExtractGreen(newColor)
-    newB = Colors.ExtractBlue(newColor)
+    If (Not toPreview) Then Message "Applying vignetting..."
     
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
+    'Parse out individual parameters from the incoming XML packet.  (Note that not all modes will use all settings.)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString vignetteParams
+    
+    Dim maxRadius As Double, vFeathering As Double, vTransparency As Double, vMode As Long
+    Dim vColor As Long, centerPosX As Double, centerPosY As Double, vAspectRatio As Double, vAngle As Double
+    
+    With cParams
+        maxRadius = .GetDouble("vignette_radius", 50#)
+        vFeathering = .GetDouble("vignette_softness", 0#)
+        vTransparency = .GetDouble("vignette_strength", 100#)
+        vMode = .GetLong("vignette_shape", 0)
+        centerPosX = .GetDouble("vignette_centerx", 0.5)
+        centerPosY = .GetDouble("vignette_centery", 0.5)
+        vColor = .GetLong("vignette_color", vbBlack)
+        vAspectRatio = .GetDouble("vignette_aspectratio", 1#)
+        vAngle = .GetDouble("vignette_angle", 0#)
+    End With
+    
+    'Prep a working copy of the source image, and note that we leave the color data premultiplied.
+    ' (We're only going to be blending atop the source, so we don't need to un-premultiply it.)
+    Dim dstImageData() As Long
     Dim dstSA As SAFEARRAY2D
-    PrepImageData dstSA, toPreview, dstPic
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    PrepImageData dstSA, toPreview, dstPic, , , True
     
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     finalX = curDIBValues.Right
     finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim quickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     progBarCheck = FindBestProgBarValue()
-        
-    'Calculate the center of the image
+    
+    'Prep an overlay at the same size as the underlying image.  (We're going to render the vignette to
+    ' this overlay, then merge down onto the existing image at the very end.)
+    If (m_OverlayDIB Is Nothing) Then Set m_OverlayDIB = New pdDIB
+    If (m_OverlayDIB.GetDIBWidth = workingDIB.GetDIBWidth) And (m_OverlayDIB.GetDIBHeight = workingDIB.GetDIBHeight) Then
+        m_OverlayDIB.ResetDIB 0
+    Else
+        m_OverlayDIB.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, 32, 0, 0
+        m_OverlayDIB.SetInitialAlphaPremultiplicationState True
+    End If
+    
+    m_OverlayDIB.WrapLongArrayAroundDIB dstImageData, dstSA
+    
+    'Calculate the center of the image, in absolute pixels
     Dim midX As Double, midY As Double
     midX = CDbl(finalX - initX) * centerPosX
     midX = midX + initX
@@ -255,48 +281,82 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
     Dim nX As Double, nY As Double
     Dim nX2 As Double, nY2 As Double
             
-    'Radius is based off the smaller of the two dimensions - width or height
+    'Radius is based off the smaller of the two dimensions - width or height.  (This is used in the "circle" mode.)
     Dim tWidth As Long, tHeight As Long
     tWidth = curDIBValues.Width
     tHeight = curDIBValues.Height
+    
     Dim sRadiusW As Double, sRadiusH As Double
     Dim sRadiusW2 As Double, sRadiusH2 As Double
+    Dim minDimension As Double
     
-    sRadiusW = tWidth * (maxRadius / 100)
+    If (vMode = 0) Or (vMode = 1) Then
+        sRadiusW = tWidth * (maxRadius / 100)
+        sRadiusH = tHeight * (maxRadius / 100)
+    Else
+        If (tWidth < tHeight) Then minDimension = tWidth Else minDimension = tHeight
+        sRadiusW = minDimension * (maxRadius / 100) * vAspectRatio
+        sRadiusH = minDimension * (maxRadius / 100) * (1 / vAspectRatio)
+    End If
+    
     sRadiusW2 = sRadiusW * sRadiusW
-    sRadiusH = tHeight * (maxRadius / 100)
     sRadiusH2 = sRadiusH * sRadiusH
     
     'Adjust the vignetting to be a proportion of the image's maximum radius.  This ensures accurate correlations
     ' between the preview and the final result.
     Dim vFeathering2 As Double
     
-    If vMode Then
+    If (vMode = 0) Then
         vFeathering2 = (vFeathering / 100) * (sRadiusW * sRadiusH)
-    Else
-        If sRadiusW < sRadiusH Then
-            vFeathering2 = (vFeathering / 100) * (sRadiusW * sRadiusW)
-        Else
-            vFeathering2 = (vFeathering / 100) * (sRadiusH * sRadiusH)
-        End If
+    ElseIf (vMode = 1) Then
+        If (sRadiusW < sRadiusH) Then minDimension = sRadiusW Else minDimension = sRadiusH
+        vFeathering2 = (vFeathering / 100) * (minDimension * minDimension)
+    ElseIf (vMode = 2) Then
+        vFeathering = 1# - (vFeathering / 100)
+        If (vFeathering = 1#) Then vFeathering = 0.99999
     End If
     
-    'Modify the transparency to be on a scale of [0, 1]
-    vTransparency = 1 - (vTransparency / 100)
-    
+    'Calculate the smaller of the two radii.  (Used for "circular" mode.)
     Dim sRadiusCircular As Double, sRadiusMax As Double, sRadiusMin As Double
-    If sRadiusW < sRadiusH Then
-        sRadiusCircular = sRadiusW2
-    Else
-        sRadiusCircular = sRadiusH2
-    End If
+    If (sRadiusW < sRadiusH) Then sRadiusCircular = sRadiusW2 Else sRadiusCircular = sRadiusH2
     sRadiusMin = sRadiusCircular - vFeathering2
     
+    'In "custom aspect ratio" mode, we want to cache a few other relevant values
+    Dim vCos As Double, vSin As Double
+    vAngle = vAngle * (PI / 180#)
+    vCos = Cos(vAngle)
+    vSin = Sin(vAngle)
+    
+    Dim tmpH As Double, tmpV As Double
+    
     Dim blendVal As Double
-        
-    'Loop through each pixel in the image, converting values as we go
+    
+    'Build a lookup table of vignette values.  Because we're just applying the vignette to a standalone layer,
+    ' we can treat the vignette as a constant color scaled from transparent to opaque.  This makes it *very*
+    ' fast to apply.
+    Dim vLookup() As Long
+    ReDim vLookup(0 To 255) As Long
+    Dim tmpQuad As RGBQUAD
+    
+    'Extract the RGB values of the vignetting color
+    Dim newR As Byte, newG As Byte, newB As Byte
+    newR = Colors.ExtractRed(vColor)
+    newG = Colors.ExtractGreen(vColor)
+    newB = Colors.ExtractBlue(vColor)
+    
+    For x = 0 To 255
+        With tmpQuad
+            .alpha = x
+            blendVal = CSng(x / 255)
+            .Red = Int(blendVal * CSng(newR))
+            .Green = Int(blendVal * CSng(newG))
+            .Blue = Int(blendVal * CSng(newB))
+        End With
+        CopyMemory ByVal VarPtr(vLookup(x)), ByVal VarPtr(tmpQuad), 4&
+    Next x
+    
+    'And that's it!  Loop through each pixel in the image, converting values as we go.
     For x = initX To finalX
-        quickVal = x * qvDepth
     For y = initY To finalY
     
         'Remap the coordinates around a center point of (0, 0)
@@ -304,79 +364,107 @@ Public Sub ApplyVignette(ByVal maxRadius As Double, ByVal vFeathering As Double,
         nY = y - midY
         nX2 = nX * nX
         nY2 = nY * nY
-                
+        
+        'Based on the current render mode, figure out if this pixel lies...
+        ' 1) Outside the vignette (so it's forced to the vignette color)
+        ' 2) Inside the vignette (so it's left alone)
+        ' 3) Somewhere between (1) and (2) (so it's feathered, per the caller's parameters)
+        
         'Fit to image (elliptical)
-        If vMode Then
-                
-            'If the values are going to be out-of-bounds, force them to black
+        If (vMode = 0) Then
+            
             sRadiusMax = sRadiusH2 - ((sRadiusH2 * nX2) / sRadiusW2)
             
-            If nY2 > sRadiusMax Then
-                
-                dstImageData(quickVal + 2, y) = BlendColors(newR, dstImageData(quickVal + 2, y), vTransparency)
-                dstImageData(quickVal + 1, y) = BlendColors(newG, dstImageData(quickVal + 1, y), vTransparency)
-                dstImageData(quickVal, y) = BlendColors(newB, dstImageData(quickVal, y), vTransparency)
-                
-            'Otherwise, check for feathering
+            'Outside
+            If (nY2 > sRadiusMax) Then
+                dstImageData(x, y) = vLookup(255)
+            
+            'Inside
             Else
+                
                 sRadiusMin = sRadiusMax - vFeathering2
                 
-                If nY2 >= sRadiusMin Then
+                'Feathered
+                If (nY2 >= sRadiusMin) Then
                     blendVal = (nY2 - sRadiusMin) / vFeathering2
-                    blendVal = blendVal * (1 - vTransparency)
-                    
-                    dstImageData(quickVal + 2, y) = BlendColors(dstImageData(quickVal + 2, y), newR, blendVal)
-                    dstImageData(quickVal + 1, y) = BlendColors(dstImageData(quickVal + 1, y), newG, blendVal)
-                    dstImageData(quickVal, y) = BlendColors(dstImageData(quickVal, y), newB, blendVal)
+                    dstImageData(x, y) = vLookup(blendVal * 255)
                 End If
                     
             End If
                 
         'Circular
-        Else
+        ElseIf (vMode = 1) Then
         
-            'If the values are going to be out-of-bounds, force them to black
-            If (nX2 + nY2) > sRadiusCircular Then
-                dstImageData(quickVal + 2, y) = BlendColors(newR, dstImageData(quickVal + 2, y), vTransparency)
-                dstImageData(quickVal + 1, y) = BlendColors(newG, dstImageData(quickVal + 1, y), vTransparency)
-                dstImageData(quickVal, y) = BlendColors(newB, dstImageData(quickVal, y), vTransparency)
+            'Outside
+            If ((nX2 + nY2) > sRadiusCircular) Then
+                dstImageData(x, y) = vLookup(255)
                 
-            'Otherwise, check for feathering
+            'Inside
             Else
                 
-                If (nX2 + nY2) >= sRadiusMin Then
+                'Feathered
+                If ((nX2 + nY2) >= sRadiusMin) Then
                     blendVal = (nX2 + nY2 - sRadiusMin) / vFeathering2
-                    blendVal = blendVal * (1 - vTransparency)
-                    
-                    dstImageData(quickVal + 2, y) = BlendColors(dstImageData(quickVal + 2, y), newR, blendVal)
-                    dstImageData(quickVal + 1, y) = BlendColors(dstImageData(quickVal + 1, y), newG, blendVal)
-                    dstImageData(quickVal, y) = BlendColors(dstImageData(quickVal, y), newB, blendVal)
+                    dstImageData(x, y) = vLookup(blendVal * 255)
                 End If
                 
             End If
                 
+        'Custom
+        Else
+        
+            tmpH = vCos * nX + vSin * nY
+            tmpV = vSin * nX - vCos * nY
+            sRadiusMax = (tmpH * tmpH / sRadiusW2) + (tmpV * tmpV / sRadiusH2)
+            
+            'Outside
+            If (sRadiusMax > 1#) Then
+                dstImageData(x, y) = vLookup(255)
+            Else
+            
+                'Feathered
+                If (sRadiusMax >= vFeathering) Then
+                    blendVal = 1# - (1 - sRadiusMax) / (1 - vFeathering)
+                    dstImageData(x, y) = vLookup(blendVal * 255)
+                End If
+            
+            End If
+        
         End If
                         
     Next y
-        If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
-                If UserPressedESC() Then Exit For
+        If (Not toPreview) Then
+            If ((x And progBarCheck) = 0) Then
+                If Interface.UserPressedESC() Then Exit For
                 SetProgBarVal x
             End If
         End If
     Next x
     
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+    'Merge the final result onto the working layer
+    Dim tmpCompositor As pdCompositor
+    Set tmpCompositor = New pdCompositor
+    tmpCompositor.QuickMergeTwoDibsOfEqualSize workingDIB, m_OverlayDIB, , vTransparency
+    
+    m_OverlayDIB.UnwrapLongArrayFromDIB dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    FinalizeImageData toPreview, dstPic
+    FinalizeImageData toPreview, dstPic, True
         
 End Sub
 
+Private Sub btsShape_Click(ByVal buttonIndex As Long)
+    UpdateShapeVisibility
+    UpdatePreview
+End Sub
+
+Private Sub UpdateShapeVisibility()
+    sltAspectRatio.Visible = (btsShape.ListIndex = 2)
+    sltAngle.Visible = sltAspectRatio.Visible
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Vignetting", , BuildParams(sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Vignetting", , GetFunctionParams(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -392,10 +480,19 @@ Private Sub colorPicker_ColorChanged()
 End Sub
 
 Private Sub Form_Load()
+    
     cmdBar.MarkPreviewStatus False
+    
+    btsShape.AddItem "fit to image", 0
+    btsShape.AddItem "circular", 1
+    btsShape.AddItem "custom", 2
+    btsShape.ListIndex = 0
+    UpdateShapeVisibility
+    
     ApplyThemeAndTranslations Me
     cmdBar.MarkPreviewStatus True
     UpdatePreview
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -420,6 +517,14 @@ Private Sub optShape_Click(Index As Integer)
     UpdatePreview
 End Sub
 
+Private Sub sltAngle_Change()
+    UpdatePreview
+End Sub
+
+Private Sub sltAspectRatio_Change()
+    UpdatePreview
+End Sub
+
 Private Sub sltFeathering_Change()
     UpdatePreview
 End Sub
@@ -434,8 +539,29 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyVignette GetFunctionParams(), True, pdFxPreview
 End Sub
+
+Private Function GetFunctionParams() As String
+
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+        .AddParam "vignette_radius", sltRadius.Value
+        .AddParam "vignette_softness", sltFeathering.Value
+        .AddParam "vignette_strength", sltTransparency.Value
+        .AddParam "vignette_shape", btsShape.ListIndex
+        .AddParam "vignette_centerx", sltXCenter.Value
+        .AddParam "vignette_centery", sltYCenter.Value
+        .AddParam "vignette_color", colorPicker.Color
+        .AddParam "vignette_aspectratio", sltAspectRatio.Value
+        .AddParam "vignette_angle", sltAngle.Value
+    End With
+    
+    GetFunctionParams = cParams.GetParamString()
+
+End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub pdFxPreview_ViewportChanged()
@@ -449,4 +575,3 @@ End Sub
 Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
-

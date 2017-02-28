@@ -1826,7 +1826,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormVignette
             Else
-                FormVignette.ApplyVignette cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5), cParams.GetDouble(6, 0.5), cParams.GetDouble(7, 0.5)
+                FormVignette.ApplyVignette cXMLParams.GetParamString()
             End If
             
         
