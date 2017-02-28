@@ -97,7 +97,8 @@ End Enum
     Private Const ss_None = 0, ss_Antialiased = 1, ss_FullyFeathered = 2
 #End If
 
-'Is a special drawing display mode in use?
+'Is a special drawing display mode in use?  Depending on the selection type + display mode, we may be able to skip certain
+' time-consuming steps (like generating a path outline for a wand-type selection).
 Public Enum PD_SelectionDisplay
     sd_Normal = 0
     sd_Outline = 1
@@ -105,6 +106,17 @@ End Enum
 
 #If False Then
     Private Const sd_Normal = 0, sd_Outline = 1
+#End If
+
+'Note that selection transforms may use values other than the ones listed.  (For example, polygon transforms will identify an actual
+' index in the point array using some value >= 0.)
+Public Enum PD_SelectionTransform
+    st_Undefined = -1
+    st_MoveAll = -2
+End Enum
+
+#If False Then
+    Private Const st_Undefined = -1, st_MoveAll = -2
 #End If
 
 'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
@@ -148,7 +160,7 @@ Private m_MoveXDist As Single, m_MoveYDist As Single
 Private m_RejectRefreshRequests As Boolean
 
 'What is the current transformation mode? (This is important for dragging to resize the selection.)
-Private m_SelTransformationType As Long
+Private m_SelTransformationType As PD_SelectionTransform
 
 'Is transformation mode active?
 Private m_TransformModeActive As Boolean
@@ -604,15 +616,15 @@ Friend Sub RequestNewMask()
 End Sub
 
 'Get/set a transformation type
-Friend Function GetTransformationType() As Long
+Friend Function GetTransformationType() As PD_SelectionTransform
     If m_TransformModeActive Then
         GetTransformationType = m_SelTransformationType
     Else
-        GetTransformationType = -1
+        GetTransformationType = st_Undefined
     End If
 End Function
 
-Friend Sub SetTransformationType(ByVal newTransType As Long)
+Friend Sub SetTransformationType(ByVal newTransType As PD_SelectionTransform)
     m_SelTransformationType = newTransType
 End Sub
 

@@ -1450,7 +1450,7 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
                         Else
                             
                             'Remove transformation mode (if any)
-                            pdImages(g_CurrentImage).mainSelection.SetTransformationType -1
+                            pdImages(g_CurrentImage).mainSelection.SetTransformationType st_Undefined
                             pdImages(g_CurrentImage).mainSelection.OverrideTransformMode False
                             
                             'Add the new point
@@ -1600,7 +1600,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                         If (g_CurrentTool = SELECT_LASSO) Then
                         
                             'Creating a new selection
-                            If (pdImages(g_CurrentImage).mainSelection.GetTransformationType = -1) Then
+                            If (pdImages(g_CurrentImage).mainSelection.GetTransformationType = st_Undefined) Then
                                 Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                             
                             'Moving an existing selection
@@ -1611,11 +1611,11 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                         'All other selection types use identical transform identifiers
                         Else
                         
-                            Dim transformType As Long
+                            Dim transformType As PD_SelectionTransform
                             transformType = pdImages(g_CurrentImage).mainSelection.GetTransformationType
                             
                             'Creating a new selection
-                            If (transformType = -1) Then
+                            If (transformType = st_Undefined) Then
                                 Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                             
                             'Moving an existing selection
