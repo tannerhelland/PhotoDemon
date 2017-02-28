@@ -213,11 +213,10 @@ End Sub
 
 'Determine which language to use.  This can be done one of several ways:
 ' 1) If the user has already specified a language, use that one (obviously)
-' 2) If the user has not specified a language, and this is not the first time they have run the program, default to English.
+' 2) If the user has not specified a language, and this is *not* the first time they have run the program,
+'     assume they're using English.
 ' 3) If this is the first time PhotoDemon has been run on this machine, estimate what language to present based on the
 '     current system language.  If a matching language is available, present that.  If not, present English.
-'     (In the future, the user will be presented with an actual "choose your language" dialog if the system language
-'      is NOT set to English.)
 Friend Sub DetermineLanguage()
 
     'FOR TESTING PURPOSES ONLY: uncomment the line below to trick the program into thinking it is being run for the first time.
@@ -234,22 +233,22 @@ Friend Sub DetermineLanguage()
     If g_IsFirstRun Then
     
         Dim curLangID As String
-        curLangID = "en-US" 'GetDefaultUserLanguage()
-                
+        curLangID = GetDefaultUserLanguage()        'Want to default to PD's stock translation?  Set this to "en-US"
+        
         'Compare the full language ID (language and region) against language files available in the Languages folder.
         ' If an exact match is found, present that as the default program language.
         m_currentLanguage = IsExactLanguageMatch(curLangID)
         
         'If an exact match is not found, try comparing just the language part of the code.  If a match is found,
         ' present that as the default language - and note that we also need to show the language selection dialog.
-        If m_currentLanguage = -1 Then
+        If (m_currentLanguage = -1) Then
             m_currentLanguage = IsApproximateLanguageMatch(curLangID)
             m_reasonForLanguageDialog = LANGREASON_APPROXIMATEMATCH
             m_needToShowLanguageDialog = True
         End If
         
         'If we still can't find a match, present the language selection screen in English.
-        If m_currentLanguage = -1 Then
+        If (m_currentLanguage = -1) Then
             m_currentLanguage = m_defaultLanguage
             m_reasonForLanguageDialog = LANGREASON_NOMATCH
             m_needToShowLanguageDialog = True
@@ -295,38 +294,39 @@ Private Function GetLangIndexFromFile(ByVal srcFile As String) As Long
     
 End Function
 
-'Given a language ID (as a string), try to find an approximate match (just language, region doesn't matter) in the m_availableLanguages array
+'Given a language ID (as a string), try to find an approximate match (just language, region doesn't matter) in the
+' current language collection.
 Private Function IsApproximateLanguageMatch(ByRef srcLangID As String)
 
+    IsApproximateLanguageMatch = -1
+    
+    'Why search the language collection backward?  PD supplies multiple translations for some languages, and the second
+    ' of the two (alphabetically speaking) tends to be the better one.
     Dim i As Long
-    For i = 0 To m_numOfLanguages - 1
-        If (StrComp(Left$(srcLangID, 2), Left$(m_AvailableLanguages(i).langID, 2), vbTextCompare) = 0) Then
+    For i = m_numOfLanguages - 1 To 0 Step -1
+        If (StrComp(LCase$(Left$(srcLangID, 2)), LCase$(Left$(m_AvailableLanguages(i).langID, 2)), vbBinaryCompare) = 0) Then
             IsApproximateLanguageMatch = i
-            'pdMsgBox "Approximate language match found: " & m_availableLanguages(i).langID
             Exit Function
         End If
     Next i
     
-    'If we made it all the way here, no match was found.  Return -1
-    IsApproximateLanguageMatch = -1
-
 End Function
 
-'Given a language ID (as a string), try to find an exact match (language AND region) in the m_availableLanguages array
+'Given a language ID (as a string), try to find an exact match (language AND region) in the current language collection.
 Private Function IsExactLanguageMatch(ByRef srcLangID As String)
 
+    IsExactLanguageMatch = -1
+    
+    'Why search the language collection backward?  PD supplies multiple translations for some languages, and the second
+    ' of the two (alphabetically speaking) tends to be the better one.
     Dim i As Long
-    For i = 0 To m_numOfLanguages - 1
-        If (StrComp(srcLangID, m_AvailableLanguages(i).langID, vbTextCompare) = 0) Then
+    For i = m_numOfLanguages - 1 To 0 Step -1
+        If (StrComp(LCase$(srcLangID), LCase$(m_AvailableLanguages(i).langID), vbBinaryCompare) = 0) Then
             IsExactLanguageMatch = i
-            'pdMsgBox "Exact language match found: " & m_availableLanguages(i).langID
             Exit Function
         End If
     Next i
     
-    'If we made it all the way here, no match was found.  Return -1
-    IsExactLanguageMatch = -1
-
 End Function
 
 'ALWAYS CALL DetermineLanguage BEFORE THIS STAGE!
@@ -374,7 +374,7 @@ Private Function GetDefaultUserLanguage() As String
     abbrLang = LCase$(GetSpecificLocaleInfo(LOCALE_SISO639LANGNAME))
     
     'Get the ISO 4166 abbreviated country/region name (e.g. "US" for "United States")
-    abbrRegion = LCase$(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
+    abbrRegion = UCase$(GetSpecificLocaleInfo(LOCALE_SISO3166CTRYNAME))
     
     'Return the language codes
     GetDefaultUserLanguage = abbrLang & "-" & abbrRegion

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2367</langversion>
+<langversion>6.8.2368</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10365,6 +10365,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>Applying vignetting</original>
+<translation>memohon vignetting</translation>
+</phrase>
+
+<phrase>
 <original>fit to image</original>
 <translation>sesuai untuk imej</translation>
 </phrase>
@@ -10374,12 +10379,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>pekeliling</translation>
 </phrase>
 
-<phrase>
-<original>Applying vignetting</original>
-<translation>memohon vignetting</translation>
-</phrase>
-
-<!-- Effects_Stylize_Vignette.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -14964,8 +14964,8 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4474 phrases. -->
+<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
 <!-- These 2519 phrases contain approximately 12378 total words. -->
 
 </pdData>

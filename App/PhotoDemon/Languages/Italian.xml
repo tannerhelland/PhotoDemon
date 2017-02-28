@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.252</langversion>
+<langversion>6.7.253</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -10354,6 +10354,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
+<original>Applying vignetting</original>
+<translation>Applicazione della vignettatura</translation>
+</phrase>
+
+<phrase>
 <original>fit to image</original>
 <translation>adatta all'immagine</translation>
 </phrase>
@@ -10363,12 +10368,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>circolare</translation>
 </phrase>
 
-<phrase>
-<original>Applying vignetting</original>
-<translation>Applicazione della vignettatura</translation>
-</phrase>
-
-<!-- Effects_Stylize_Vignette.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -14951,8 +14951,8 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4474 phrases. -->
+<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
 <!-- These 2519 phrases contain approximately 12378 total words. -->
 
 </pdData>
