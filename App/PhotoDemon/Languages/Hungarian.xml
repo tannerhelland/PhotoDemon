@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2367</langversion>
+<langversion>6.8.2368</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10347,6 +10347,11 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
+<original>Applying vignetting</original>
+<translation>alkalmazása vignettálás</translation>
+</phrase>
+
+<phrase>
 <original>fit to image</original>
 <translation>illik kép</translation>
 </phrase>
@@ -10356,12 +10361,7 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <translation>kör alakú</translation>
 </phrase>
 
-<phrase>
-<original>Applying vignetting</original>
-<translation>alkalmazása vignettálás</translation>
-</phrase>
-
-<!-- Effects_Stylize_Vignette.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -14939,8 +14939,8 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4474 phrases. -->
+<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
 <!-- These 2519 phrases contain approximately 12378 total words. -->
 
 </pdData>

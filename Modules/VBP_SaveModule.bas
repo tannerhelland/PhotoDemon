@@ -397,7 +397,7 @@ Private Function ExportToSpecificFormat(ByRef srcImage As pdImage, ByRef dstPath
         'Note: if one or more compression libraries are missing, PDI export is not guaranteed to work.
         Case PDIF_PDI
             ExportToSpecificFormat = SavePhotoDemonImage(srcImage, dstPath, , PD_CE_Zstd, PD_CE_Zstd, False, , 5)
-            
+                        
         Case PDIF_PNG
             ExportToSpecificFormat = ImageExporter.ExportPNG(srcImage, dstPath, saveParameters, metadataParameters)
         

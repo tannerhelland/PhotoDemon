@@ -6,8 +6,8 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2266</langversion>
-<langstatus>未完成</langstatus>
+<langversion>6.8.2509</langversion>
+<langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
 
@@ -1674,7 +1674,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>扫描取消</translation>
 </phrase>
 
 <phrase>
@@ -1695,7 +1695,7 @@ To enable scanner support, please copy the EZTW32.dll file (available for downlo
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>发现多页图像。开始加载页面 #%1 of %2</translation>
 </phrase>
 
 <phrase>
@@ -3777,7 +3777,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>compositing color</original>
-<translation></translation>
+<translation>合成颜色</translation>
 </phrase>
 
 <phrase>
@@ -3787,17 +3787,17 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparency format</original>
-<translation></translation>
+<translation>透明度格式</translation>
 </phrase>
 
 <phrase>
 <original>color format</original>
-<translation></translation>
+<translation>颜色格式</translation>
 </phrase>
 
 <phrase>
 <original>transparency cut-off</original>
-<translation></translation>
+<translation>透明度截止</translation>
 </phrase>
 
 <phrase>
@@ -3807,7 +3807,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>transparent color</original>
-<translation></translation>
+<translation>透明色</translation>
 </phrase>
 
 <phrase>
@@ -4219,7 +4219,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>review metadata before saving</original>
-<translation></translation>
+<translation>保存前查看元数据</translation>
 </phrase>
 
 <phrase>
@@ -5131,22 +5131,22 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>最大值</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>最小值</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>左移</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>右移</translation>
 </phrase>
 
 <phrase>
@@ -5186,7 +5186,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>显示</translation>
 </phrase>
 
 <phrase>
@@ -5201,7 +5201,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK（负片）</translation>
 </phrase>
 
 <phrase>
@@ -5621,7 +5621,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Palettize</original>
-<translation></translation>
+<translation>彩色展示</translation>
 </phrase>
 
 <phrase>
@@ -5746,7 +5746,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>主题</translation>
 </phrase>
 
 <phrase>
@@ -5801,7 +5801,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>建立主题包</translation>
 </phrase>
 
 <phrase>
@@ -5896,7 +5896,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Support us with a small donation (thank you!)</original>
-<translation></translation>
+<translation>支持我们一个小的捐赠（谢谢！）</translation>
 </phrase>
 
 <phrase>
@@ -5916,22 +5916,22 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>&Visit PhotoDemon website</original>
-<translation></translation>
+<translation>&V 访问PhotoDemon网站</translation>
 </phrase>
 
 <phrase>
 <original>Download PhotoDemon source code</original>
-<translation></translation>
+<translation>下载PhotoDemon源代码</translation>
 </phrase>
 
 <phrase>
 <original>Read license and terms of use</original>
-<translation></translation>
+<translation>阅读许可证和使用条款</translation>
 </phrase>
 
 <phrase>
 <original>&About</original>
-<translation></translation>
+<translation>&A 关于</translation>
 </phrase>
 
 <phrase>
@@ -8387,72 +8387,72 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>主题和语言</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>图标</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>界面颜色</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>界面主题</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>语言</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>暗色</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>亮色</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>棕色</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>粉红色</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>紫色</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>蓝绿色</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>默认</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>单色</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>翻译 %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -10226,12 +10226,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>dithering</original>
-<translation></translation>
+<translation>抖动</translation>
 </phrase>
 
 <phrase>
 <original>reduce color bleed</original>
-<translation></translation>
+<translation>减少颜色渗色</translation>
 </phrase>
 
 <phrase>
@@ -10241,7 +10241,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>preserve white and black</original>
-<translation></translation>
+<translation>保持白色和黑色</translation>
 </phrase>
 
 <phrase>
@@ -10251,7 +10251,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>median cut</original>
-<translation></translation>
+<translation>中值切割法</translation>
 </phrase>
 
 <phrase>
@@ -10261,7 +10261,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>NeuQuant</original>
-<translation></translation>
+<translation>神经网络法</translation>
 </phrase>
 
 <phrase>
@@ -10271,12 +10271,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Generating optimal palette</original>
-<translation></translation>
+<translation>生成最佳调色板</translation>
 </phrase>
 
 <phrase>
 <original>Applying new palette to image</original>
-<translation></translation>
+<translation>将新调色板应用于图像</translation>
 </phrase>
 
 <!-- Effects_Stylize_Palettize.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -10354,6 +10354,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Applying vignetting</original>
+<translation>应用渐晕</translation>
+</phrase>
+
+<phrase>
 <original>fit to image</original>
 <translation>适合到图像</translation>
 </phrase>
@@ -10363,12 +10368,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>圆</translation>
 </phrase>
 
-<phrase>
-<original>Applying vignetting</original>
-<translation>应用渐晕</translation>
-</phrase>
-
-<!-- Effects_Stylize_Vignette.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -12043,22 +12043,22 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>PNG type</original>
-<translation></translation>
+<translation>PNG类型</translation>
 </phrase>
 
 <phrase>
 <original>basic settings</original>
-<translation></translation>
+<translation>基本设置</translation>
 </phrase>
 
 <phrase>
 <original>advanced settings</original>
-<translation></translation>
+<translation>高级设置</translation>
 </phrase>
 
 <phrase>
 <original>metadata settings</original>
-<translation></translation>
+<translation>元数据设置</translation>
 </phrase>
 
 <phrase>
@@ -12068,7 +12068,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>write interlaced PNG</original>
-<translation></translation>
+<translation>写隔行扫描PNG</translation>
 </phrase>
 
 <phrase>
@@ -12078,7 +12078,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>embed background color (bKGD chunk)</original>
-<translation></translation>
+<translation>嵌入背景颜色（bKGD块）</translation>
 </phrase>
 
 <phrase>
@@ -12088,7 +12088,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>optimization (OptiPNG)</original>
-<translation></translation>
+<translation>优化（OptiPNG）</translation>
 </phrase>
 
 <phrase>
@@ -13593,7 +13593,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>设置</translation>
 </phrase>
 
 <phrase>
@@ -14949,8 +14949,8 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4474 phrases. -->
+<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
 <!-- These 2519 phrases contain approximately 12378 total words. -->
 
 </pdData>

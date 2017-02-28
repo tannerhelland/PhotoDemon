@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2367</langversion>
+<langversion>6.8.2368</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -10364,6 +10364,11 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 </phrase>
 
 <phrase>
+<original>Applying vignetting</original>
+<translation>Bruk av vignettering </translation>
+</phrase>
+
+<phrase>
 <original>fit to image</original>
 <translation>passe til bilde</translation>
 </phrase>
@@ -10373,12 +10378,7 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <translation>sirkulær</translation>
 </phrase>
 
-<phrase>
-<original>Applying vignetting</original>
-<translation>Bruk av vignettering </translation>
-</phrase>
-
-<!-- Effects_Stylize_Vignette.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Stylize_Vignette.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Vignette.frm-->
 
@@ -14963,8 +14963,8 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4471 phrases. -->
-<!-- 1952 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4474 phrases. -->
+<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
 <!-- These 2519 phrases contain approximately 12378 total words. -->
 
 </pdData>
