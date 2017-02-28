@@ -721,6 +721,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
             If ((wParam = VK_RETURN) Or (wParam = VK_TAB)) Then
                 HandleEditBoxMsgs = 0
                 msgEaten = True
+                RaiseEvent KeyPress(wParam, msgEaten)
             End If
         End If
         
