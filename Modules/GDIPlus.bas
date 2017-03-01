@@ -3840,11 +3840,6 @@ Public Function GetGdipBitmapHandleFromDIB(ByRef dstBitmapHandle As Long, ByRef 
 
 End Function
 
-'Retrieving a bitmap from a DC is a messy and performance-intensive process.  Avoid it if at all possible.
-Public Function GetGdipBitmapHandleFromDC(ByVal srcDC As Long) As Long
-
-End Function
-
 'Because of the way GDI+ texture brushes work, it is significantly easier to initialize one from a full DIB object
 ' (which *always* guarantees bitmap bits will be available) vs a GDI+ Graphics object, which is more like a DC in
 ' that it could be a non-bitmap, or dimensionless, or other weird criteria.
