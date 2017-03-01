@@ -46,7 +46,7 @@ Option Explicit
 
 'Language-related API calls
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
-Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String, ByVal cchData As Long) As Long
+Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As Long, ByVal cchData As Long) As Long
 
 'Constants related to API language calls
 Private Const LOCALE_USER_DEFAULT = &H400
@@ -385,7 +385,7 @@ End Function
 Private Function GetSpecificLocaleInfo(ByVal lInfo As Long) As String
     Dim sBuffer As String, sRet As String
     sBuffer = String$(256, 0)
-    sRet = GetLocaleInfo(LOCALE_USER_DEFAULT, lInfo, sBuffer, Len(sBuffer))
+    sRet = GetLocaleInfo(LOCALE_USER_DEFAULT, lInfo, StrPtr(sBuffer), Len(sBuffer))
     If (sRet > 0) Then
         GetSpecificLocaleInfo = Left$(sBuffer, sRet - 1)
     Else
