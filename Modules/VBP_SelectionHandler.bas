@@ -451,49 +451,40 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
     
 End Sub
 
-'This sub will return a constant correlating to the nearest selection point. Its return values are:
-' -1 - Cursor is not near a selection point
-' 0 - NW corner
-' 1 - NE corner
-' 2 - SE corner
-' 3 - SW corner
-' 4 - N edge
-' 5 - E edge
-' 6 - S edge
-' 7 - W edge
-' 8 - interior of selection, not near a corner or edge (e.g. move the selection)
+'Given an (x, y) pair in IMAGE coordinate space (not screen or canvas space), return a constant if the point is a valid
+' "point of interest" to this selection.  Standard UI mouse distances are allowed (meaning zoom is factored into the
+' algorithm).
 '
-'Note that the x and y values this function is passed are assumed to already be in the IMAGE coordinate space, not the SCREEN or CANVAS
-' coordinate space.
-Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As Long
+'The result of this function is typically passed to something like pdSelection.SetActiveSelectionPOI(), which will cache
+' the point of interest and use it to interpret subsequent mouse events (e.g. click-dragging a selection to a new position).
+'
+'Note that only certain POIs are hard-coded.  Some selections (e.g. polygons) can return other values outside the enum,
+' typically indices into an internal selection point array.
+'
+'This sub will return a constant correlating to the nearest selection point.  See the relevant enum for details.
+Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As PD_SelectionPOI
     
-    'If the current selection is of raster-type, return 0.
-    If (srcImage.mainSelection.GetSelectionShape = ss_Raster) Then
-        FindNearestSelectionCoordinates = -1
+    'If the current selection is...
+    ' 1) raster-type, or...
+    ' 2) inactive...
+    '...disallow POIs entirely.  (These types of selections do not support on-canvas interactions.)
+    If (srcImage.mainSelection.GetSelectionShape = ss_Raster) Or (Not srcImage.IsSelectionActive) Then
+        IsCoordSelectionPOI = poi_Undefined
         Exit Function
     End If
     
-    'If the current selection is NOT active, return 0.
-    If (Not srcImage.IsSelectionActive) Then
-        FindNearestSelectionCoordinates = -1
-        Exit Function
-    End If
-        
-    'Calculate points of interest for the current selection.  Said points will be corners (for rectangle and circle selections),
-    ' or line endpoints (for line selections).
-    Dim tLeft As Long, tTop As Long, tRight As Long, tBottom As Long, tmpRectF As RECTF
+    'We're now going to compare the passed coordinate against a hard-coded list of "points of interest."  These POIs
+    ' differ by selection type, as different selections allow for different levels of interaction.  (For example, a polygon
+    ' selection behaves differently when a point is dragged, vs a rectangular selection.)
+    
+    'Regardless of selection type, start by establishing boundaries for the current selection.
+    'Calculate points of interest for the current selection.  Individual selection types define what is considered a POI,
+    ' but in most cases, corners or interior clicks tend to allow some kind of user interaction.
+    Dim tmpRectF As RECTF
     If (srcImage.mainSelection.GetSelectionShape = ss_Rectangle) Or (srcImage.mainSelection.GetSelectionShape = ss_Circle) Then
         tmpRectF = srcImage.mainSelection.GetCornersLockedRect()
-        tLeft = tmpRectF.Left
-        tTop = tmpRectF.Top
-        tRight = tmpRectF.Left + tmpRectF.Width
-        tBottom = tmpRectF.Top + tmpRectF.Height
     Else
         tmpRectF = srcImage.mainSelection.GetBoundaryRect()
-        tLeft = tmpRectF.Left
-        tTop = tmpRectF.Top
-        tRight = tmpRectF.Left + tmpRectF.Width
-        tBottom = tmpRectF.Top + tmpRectF.Height
     End If
     
     'Adjust the mouseAccuracy value based on the current zoom value
@@ -505,12 +496,12 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
     minDistance = mouseAccuracy
     
     Dim closestPoint As Long
-    closestPoint = -1
+    closestPoint = poi_Undefined
     
     'Some selection types (lasso, polygon) must use a more complicated region for hit-testing.  GDI+ will be used for this.
     Dim gdipRegionHandle As Long, gdipHitCheck As Boolean
     
-    Dim poiList() As POINTAPI
+    'Other selection types will use a generic list of points (like the corners of the current selection)
     Dim poiListFloat() As POINTFLOAT
     
     'If we made it here, this mouse location is worth evaluating.  How we evaluate it depends on the shape of the current selection.
@@ -520,67 +511,97 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
         Case ss_Rectangle, ss_Circle
     
             'Corners get preference, so check them first.
-            ReDim poiList(0 To 3) As POINTAPI
+            ReDim poiListFloat(0 To 3) As POINTFLOAT
             
-            poiList(0).x = tLeft
-            poiList(0).y = tTop
-            poiList(1).x = tRight
-            poiList(1).y = tTop
-            poiList(2).x = tRight
-            poiList(2).y = tBottom
-            poiList(3).x = tLeft
-            poiList(3).y = tBottom
+            With tmpRectF
+                poiListFloat(0).x = .Left
+                poiListFloat(0).y = .Top
+                poiListFloat(1).x = .Left + .Width
+                poiListFloat(1).y = .Top
+                poiListFloat(2).x = .Left + .Width
+                poiListFloat(2).y = .Top + .Height
+                poiListFloat(3).x = .Left
+                poiListFloat(3).y = .Top + .Height
+            End With
             
             'Used the generalized point comparison function to see if one of the points matches
-            closestPoint = FindClosestPointInArray(imgX, imgY, minDistance, poiList)
+            closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
             
-            'Was a close point found? If yes, then return that value
-            If closestPoint <> -1 Then
-                FindNearestSelectionCoordinates = closestPoint
-                Exit Function
-            End If
-        
-            'If we're at this line of code, a closest corner was not found.  Check edges next.
-            ' (Unfortunately, we don't yet have a generalized function for edge checking, so this must be done manually.)
-            Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
-            
-            nDist = DistanceOneDimension(imgY, tTop)
-            eDist = DistanceOneDimension(imgX, tRight)
-            sDist = DistanceOneDimension(imgY, tBottom)
-            wDist = DistanceOneDimension(imgX, tLeft)
-            
-            If (nDist <= minDistance) And (imgX > (tLeft - minDistance)) And (imgX < (tRight + minDistance)) Then
-                minDistance = nDist
-                closestPoint = 4
-            End If
-            
-            If (eDist <= minDistance) And (imgY > (tTop - minDistance)) And (imgY < (tBottom + minDistance)) Then
-                minDistance = eDist
-                closestPoint = 5
-            End If
-            
-            If (sDist <= minDistance) And (imgX > (tLeft - minDistance)) And (imgX < (tRight + minDistance)) Then
-                minDistance = sDist
-                closestPoint = 6
-            End If
-            
-            If (wDist <= minDistance) And (imgY > (tTop - minDistance)) And (imgY < (tBottom + minDistance)) Then
-                minDistance = wDist
-                closestPoint = 7
-            End If
-            
-            'Was a close point found? If yes, then return that value.
-            If closestPoint <> -1 Then
-                FindNearestSelectionCoordinates = closestPoint
-                Exit Function
-            End If
-        
-            'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
-            ' image's boundaries, and if it is, return the "move selection" ID, then exit.
-            If (imgX > tLeft) And (imgX < tRight) And (imgY > tTop) And (imgY < tBottom) Then
-                FindNearestSelectionCoordinates = 8
+            'Did one of the corner points match?  If so, map it to a valid constant and return.
+            If (closestPoint <> poi_Undefined) Then
+                
+                If (closestPoint = 0) Then
+                    IsCoordSelectionPOI = poi_CornerNW
+                ElseIf (closestPoint = 1) Then
+                    IsCoordSelectionPOI = poi_CornerNE
+                ElseIf (closestPoint = 2) Then
+                    IsCoordSelectionPOI = poi_CornerSE
+                ElseIf (closestPoint = 3) Then
+                    IsCoordSelectionPOI = poi_CornerSW
+                End If
+                
             Else
-                FindNearestSelectionCoordinates = -1
+        
+                'If we're at this line of code, a closest corner was not found.  Check edges next.
+                ' (Unfortunately, we don't yet have a generalized function for edge checking, so this must be done manually.)
+                '
+                'Note that edge checks are a little weird currently, because we check one-dimensional distance between each
+                ' side, and if that's a hit, we see if the point also lies between the bounds in the *other* direction.
+                ' This allows the user to use the entire selection side to perform a stretch.
+                Dim nDist As Double, eDist As Double, sDist As Double, wDist As Double
+                
+                With tmpRectF
+                    nDist = DistanceOneDimension(imgY, .Top)
+                    eDist = DistanceOneDimension(imgX, .Left + .Width)
+                    sDist = DistanceOneDimension(imgY, .Top + .Height)
+                    wDist = DistanceOneDimension(imgX, .Left)
+                
+                    If (nDist <= minDistance) Then
+                        If (imgX > (.Left - minDistance)) And (imgX < (.Left + .Width + minDistance)) Then
+                            minDistance = nDist
+                            closestPoint = poi_EdgeN
+                        End If
+                    End If
+                    
+                    If (eDist <= minDistance) Then
+                        If (imgY > (.Top - minDistance)) And (imgY < (.Top + .Height + minDistance)) Then
+                            minDistance = eDist
+                            closestPoint = poi_EdgeE
+                        End If
+                    End If
+                    
+                    If (sDist <= minDistance) Then
+                        If (imgX > (.Left - minDistance)) And (imgX < (.Left + .Width + minDistance)) Then
+                            minDistance = sDist
+                            closestPoint = poi_EdgeS
+                        End If
+                    End If
+                    
+                    If (wDist <= minDistance) Then
+                        If (imgY > (.Top - minDistance)) And (imgY < (.Top + .Height + minDistance)) Then
+                            minDistance = wDist
+                            closestPoint = poi_EdgeW
+                        End If
+                    End If
+                
+                End With
+                
+                'Was a close point found? If yes, then return that value.
+                If (closestPoint <> poi_Undefined) Then
+                    IsCoordSelectionPOI = closestPoint
+                    
+                Else
+            
+                    'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
+                    ' image's boundaries, and if it is, return the "move selection" ID, then exit.
+                    If Math_Functions.IsPointInRectF(imgX, imgY, tmpRectF) Then
+                        IsCoordSelectionPOI = poi_Interior
+                    Else
+                        IsCoordSelectionPOI = poi_Undefined
+                    End If
+                    
+                End If
+                
             End If
             
         Case ss_Line
@@ -589,7 +610,7 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             Dim xCoord As Double, yCoord As Double
             Dim firstDist As Double, secondDist As Double
             
-            closestPoint = -1
+            closestPoint = poi_Undefined
             
             srcImage.mainSelection.GetSelectionCoordinates 1, xCoord, yCoord
             firstDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
@@ -601,7 +622,7 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             If (secondDist <= minDistance) Then closestPoint = 1
             
             'Was a close point found? If yes, then return that value.
-            FindNearestSelectionCoordinates = closestPoint
+            IsCoordSelectionPOI = closestPoint
             Exit Function
         
         Case ss_Polygon
@@ -613,24 +634,25 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             closestPoint = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
             
             'Was a close point found? If yes, then return that value
-            If closestPoint <> -1 Then
-                FindNearestSelectionCoordinates = closestPoint
-                Exit Function
-            End If
-            
+            If (closestPoint <> poi_Undefined) Then
+                IsCoordSelectionPOI = closestPoint
+                
             'If no polygon point was a hit, our final check is to see if the mouse lies within the polygon itself.  This will trigger
             ' a move transformation.
-            
-            'Create a GDI+ region from the current selection points
-            gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.GetGdipRegionForSelection()
-            
-            'Check the point for a hit
-            gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
-            
-            'Release the GDI+ region
-            GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
-            
-            If gdipHitCheck Then FindNearestSelectionCoordinates = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints Else FindNearestSelectionCoordinates = -1
+            Else
+                
+                'Create a GDI+ region from the current selection points
+                gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.GetGdipRegionForSelection()
+                
+                'Check the point for a hit
+                gdipHitCheck = GDI_Plus.IsPointInGDIPlusRegion(imgX, imgY, gdipRegionHandle)
+                
+                'Release the GDI+ region
+                GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
+                
+                If gdipHitCheck Then IsCoordSelectionPOI = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints Else IsCoordSelectionPOI = poi_Undefined
+                
+            End If
         
         Case ss_Lasso
             'Create a GDI+ region from the current selection points
@@ -642,10 +664,10 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             'Release the GDI+ region
             GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
             
-            If gdipHitCheck Then FindNearestSelectionCoordinates = 0 Else FindNearestSelectionCoordinates = -1
+            If gdipHitCheck Then IsCoordSelectionPOI = 0 Else IsCoordSelectionPOI = poi_Undefined
         
         Case ss_Wand
-            closestPoint = -1
+            closestPoint = poi_Undefined
             
             srcImage.mainSelection.GetSelectionCoordinates 1, xCoord, yCoord
             firstDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
@@ -653,11 +675,11 @@ Public Function FindNearestSelectionCoordinates(ByVal imgX As Double, ByVal imgY
             If (firstDist <= minDistance) Then closestPoint = 0
             
             'Was a close point found? If yes, then return that value.
-            FindNearestSelectionCoordinates = closestPoint
+            IsCoordSelectionPOI = closestPoint
             Exit Function
         
         Case Else
-            FindNearestSelectionCoordinates = -1
+            IsCoordSelectionPOI = poi_Undefined
             Exit Function
             
     End Select
@@ -1293,12 +1315,12 @@ Public Sub NotifySelectionRenderChange()
     m_CurSelectionColor = toolpanel_Selections.csSelectionHighlight.Color
 End Sub
 
-Public Function GetCurrentPD_SelectionRenderMode() As PD_SelectionRender
-    GetCurrentPD_SelectionRenderMode = m_CurSelectionMode
+Public Function GetSelectionRenderMode() As PD_SelectionRender
+    GetSelectionRenderMode = m_CurSelectionMode
 End Function
 
-Public Function GetCurrentPD_SelectionRenderColor() As Long
-    GetCurrentPD_SelectionRenderColor = m_CurSelectionColor
+Public Function GetSelectionRenderColor() As Long
+    GetSelectionRenderColor = m_CurSelectionColor
 End Function
 
 'Keypresses on a source canvas are passed here.  The caller doesn't need pass anything except relevant keycodes, and a reference
@@ -1415,14 +1437,14 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
         If pdImages(g_CurrentImage).IsSelectionActive Then
         
             'Check the mouse coordinates of this click.
-            Dim sCheck As Long
-            sCheck = Selections.FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Dim sCheck As PD_SelectionPOI
+            sCheck = Selections.IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
             
             'If a point of interest was clicked, initiate a transform
-            If (sCheck <> -1) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Polygon) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
+            If (sCheck <> poi_Undefined) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Polygon) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
                 
                 'Initialize a selection transformation
-                pdImages(g_CurrentImage).mainSelection.SetTransformationType sCheck
+                pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI sCheck
                 pdImages(g_CurrentImage).mainSelection.SetInitialTransformCoordinates imgX, imgY
                                 
             'If a point of interest was *not* clicked, erase any existing selection and start a new one
@@ -1435,7 +1457,7 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
                     
                     'First, see if the selection is locked in.  If it is, treat this is a regular transformation.
                     If pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
-                        pdImages(g_CurrentImage).mainSelection.SetTransformationType sCheck
+                        pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI sCheck
                         pdImages(g_CurrentImage).mainSelection.SetInitialTransformCoordinates imgX, imgY
                     
                     'Selection is not locked in, meaning the user is still constructing it.
@@ -1444,13 +1466,13 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
                         'If the user clicked on the initial polygon point, attempt to close the polygon
                         If (sCheck = 0) And (pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints > 2) Then
                             pdImages(g_CurrentImage).mainSelection.SetPolygonClosedState True
-                            pdImages(g_CurrentImage).mainSelection.SetTransformationType 0
+                            pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI 0
                         
                         'The user did not click the initial polygon point, meaning we should add this coordinate as a new polygon point.
                         Else
                             
-                            'Remove transformation mode (if any)
-                            pdImages(g_CurrentImage).mainSelection.SetTransformationType st_Undefined
+                            'Remove the current transformation mode (if any)
+                            pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI poi_Undefined
                             pdImages(g_CurrentImage).mainSelection.OverrideTransformMode False
                             
                             'Add the new point
@@ -1458,11 +1480,11 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
                                 Selections.InitSelectionByPoint imgX, imgY
                             Else
                                 
-                                If (sCheck = -1) Or (sCheck = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints) Then
+                                If (sCheck = poi_Undefined) Or (sCheck = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints) Then
                                     pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                                    pdImages(g_CurrentImage).mainSelection.SetTransformationType pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints - 1
+                                    pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints - 1
                                 Else
-                                    pdImages(g_CurrentImage).mainSelection.SetTransformationType sCheck
+                                    pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI sCheck
                                 End If
                                 
                             End If
@@ -1491,8 +1513,8 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
             
             'Polygon selections require special handling, as usual.  After creating the initial point, we want to immediately initiate
             ' transform mode, because dragging the mouse will simply move the newly created point.
-            If g_CurrentTool = SELECT_POLYGON Then
-                pdImages(g_CurrentImage).mainSelection.SetTransformationType pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints - 1
+            If (g_CurrentTool = SELECT_POLYGON) Then
+                pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints - 1
                 pdImages(g_CurrentImage).mainSelection.OverrideTransformMode True
             End If
             
@@ -1574,7 +1596,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                 Dim selBounds As RECTF
                 selBounds = pdImages(g_CurrentImage).mainSelection.GetCornersLockedRect
                 
-                eraseThisSelection = ((clickEventAlsoFiring) And (FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1))
+                eraseThisSelection = ((clickEventAlsoFiring) And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1))
                 If (Not eraseThisSelection) Then eraseThisSelection = ((selBounds.Width <= 0) And (selBounds.Height <= 0))
                 
                 If eraseThisSelection Then
@@ -1600,7 +1622,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                         If (g_CurrentTool = SELECT_LASSO) Then
                         
                             'Creating a new selection
-                            If (pdImages(g_CurrentImage).mainSelection.GetTransformationType = st_Undefined) Then
+                            If (pdImages(g_CurrentImage).mainSelection.GetActiveSelectionPOI = poi_Undefined) Then
                                 Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                             
                             'Moving an existing selection
@@ -1611,11 +1633,11 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                         'All other selection types use identical transform identifiers
                         Else
                         
-                            Dim transformType As PD_SelectionTransform
-                            transformType = pdImages(g_CurrentImage).mainSelection.GetTransformationType
+                            Dim transformType As PD_SelectionPOI
+                            transformType = pdImages(g_CurrentImage).mainSelection.GetActiveSelectionPOI
                             
                             'Creating a new selection
-                            If (transformType = st_Undefined) Then
+                            If (transformType = poi_Undefined) Then
                                 Process "Create selection", , pdImages(g_CurrentImage).mainSelection.GetSelectionAsXML, UNDO_SELECTION, g_CurrentTool
                             
                             'Moving an existing selection
@@ -1654,7 +1676,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
             
                 'Check to see if the selection is already locked in.  If it is, we need to check for an "erase selection" click.
                 eraseThisSelection = pdImages(g_CurrentImage).mainSelection.GetPolygonClosedState And clickEventAlsoFiring
-                eraseThisSelection = eraseThisSelection And (FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage)) = -1)
+                eraseThisSelection = eraseThisSelection And (IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage)) = -1)
                 
                 If eraseThisSelection Then
                     Process "Remove selection", , , IIf(wasSelectionActiveBeforeMouseEvents, UNDO_SELECTION, UNDO_NOTHING), g_CurrentTool
@@ -1667,7 +1689,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                         'Polygons use a different transform numbering convention than other selection tools, because the number
                         ' of points involved aren't fixed.
                         Dim polyPoint As Long
-                        polyPoint = Selections.FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+                        polyPoint = Selections.IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
                         
                         'Move selection
                         If (polyPoint = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints) Then

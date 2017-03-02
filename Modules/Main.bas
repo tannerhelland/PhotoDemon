@@ -51,29 +51,32 @@ Private Const NUMBER_OF_LOADING_STEPS As Long = 18
 'PhotoDemon starts here.  Main() is necessary as a start point (vs a form) to make sure that theming is implemented
 ' correctly.  Note that this code is irrelevant within the IDE.
 Public Sub Main()
-
-    Dim iccex As InitCommonControlsExStruct
-    
-    'For descriptions of these constants, visit: http://msdn.microsoft.com/en-us/library/bb775507%28VS.85%29.aspx
-    iccex.lngSize = LenB(iccex)
-    Const ICC_BAR_CLASSES As Long = &H4&
-    Const ICC_STANDARD_CLASSES As Long = &H4000&
-    Const ICC_WIN95_CLASSES As Long = &HFF&
-    iccex.lngICC = ICC_STANDARD_CLASSES Or ICC_BAR_CLASSES Or ICC_WIN95_CLASSES
     
     'InitCommonControlsEx requires IEv3 or above, which shouldn't be a problem on any modern system.  But just in case,
     ' continue loading even if the common control module load fails.
     On Error Resume Next
     
     'The following block of code prevents XP crashes when VB usercontrols are present in a project (as they are in PhotoDemon)
+    
+    'Make sure shell32 is loaded
     Dim strShellName As String
     strShellName = "shell32.dll"
     hShellModule = LoadLibrary(StrPtr(strShellName))
+    
+    'Make sure comctl32 is loaded.  (For details on these constants, visit http://msdn.microsoft.com/en-us/library/bb775507%28VS.85%29.aspx)
+    Dim iccex As InitCommonControlsExStruct
+    With iccex
+        .lngSize = LenB(iccex)
+        Const ICC_BAR_CLASSES As Long = &H4&
+        Const ICC_STANDARD_CLASSES As Long = &H4000&
+        Const ICC_WIN95_CLASSES As Long = &HFF&
+        .lngICC = ICC_STANDARD_CLASSES Or ICC_BAR_CLASSES Or ICC_WIN95_CLASSES
+    End With
     InitCommonControlsEx iccex
     
-    'If an error occurs, attempt to initiate the Win9x version
+    'If an error occurs, attempt to initiate the Win9x version, then reset error handling
     If Err Then
-        InitCommonControls ' try Win9x version
+        InitCommonControls
         Err.Clear
     End If
     

@@ -1723,7 +1723,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
             'The move tool is unique because it will request a redraw of the viewport when the POI changes, so that the current
             ' POI can be highlighted.
-            If m_LastPointOfInterest <> curPOI Then
+            If (m_LastPointOfInterest <> curPOI) Then
                 m_LastPointOfInterest = curPOI
                 Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
             End If
@@ -1731,39 +1731,27 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case SELECT_RECT, SELECT_CIRC
         
             'When transforming selections, the cursor image depends on its proximity to a point of interest.
-            '
-            'For a rectangle or circle selection, the possible transform IDs are:
-            ' -1 - Cursor is not near a selection point
-            ' 0 - NW corner
-            ' 1 - NE corner
-            ' 2 - SE corner
-            ' 3 - SW corner
-            ' 4 - N edge
-            ' 5 - E edge
-            ' 6 - S edge
-            ' 7 - W edge
-            ' 8 - interior of selection, not near a corner or edge
-            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
             
-                Case -1
+                Case poi_Undefined
                     CanvasView.RequestCursor_System IDC_ARROW
-                Case 0
+                Case poi_CornerNW
                     CanvasView.RequestCursor_System IDC_SIZENWSE
-                Case 1
+                Case poi_CornerNE
                     CanvasView.RequestCursor_System IDC_SIZENESW
-                Case 2
+                Case poi_CornerSE
                     CanvasView.RequestCursor_System IDC_SIZENWSE
-                Case 3
+                Case poi_CornerSW
                     CanvasView.RequestCursor_System IDC_SIZENESW
-                Case 4
+                Case poi_EdgeN
                     CanvasView.RequestCursor_System IDC_SIZENS
-                Case 5
+                Case poi_EdgeE
                     CanvasView.RequestCursor_System IDC_SIZEWE
-                Case 6
+                Case poi_EdgeS
                     CanvasView.RequestCursor_System IDC_SIZENS
-                Case 7
+                Case poi_EdgeW
                     CanvasView.RequestCursor_System IDC_SIZEWE
-                Case 8
+                Case poi_Interior
                     CanvasView.RequestCursor_System IDC_SIZEALL
             
             End Select
@@ -1776,9 +1764,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' -1 - Cursor is not near an endpoint
             ' 0 - Near x1/y1
             ' 1 - Near x2/y2
-            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
             
-                Case -1
+                Case poi_Undefined
                     CanvasView.RequestCursor_System IDC_ARROW
                 Case 0
                     CanvasView.RequestCursor_System IDC_SIZEALL
@@ -1789,10 +1777,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         
          Case SELECT_POLYGON
             
-            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
             
-                '-1: mouse is outside the lasso selection area
-                Case -1
+                Case poi_Undefined
                     CanvasView.RequestCursor_System IDC_ARROW
                 
                 'numOfPolygonPoints: mouse is inside the polygon, but not over a polygon node
@@ -1811,10 +1798,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         
         Case SELECT_LASSO
             
-            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
             
-                '-1: mouse is outside the lasso selection area
-                Case -1
+                Case poi_Undefined
                     CanvasView.RequestCursor_System IDC_ARROW
                 
                 '0: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
@@ -1830,10 +1816,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
         Case SELECT_WAND
         
-            Select Case FindNearestSelectionCoordinates(imgX, imgY, pdImages(g_CurrentImage))
+            Select Case IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
             
-                '-1: mouse is outside the lasso selection area
-                Case -1
+                Case poi_Undefined
                     CanvasView.RequestCursor_System IDC_ARROW
                 
                 '0: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor

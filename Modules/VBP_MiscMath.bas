@@ -51,26 +51,13 @@ End Function
 
 'See if a point lies inside a rect (float)
 Public Function IsPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTF) As Boolean
-
-    'There's no GDI function for floating-point rects, so we must do this manually
     With srcRect
-    
-        'Check x boundaries
         If (ptX >= .Left) And (ptX <= (.Left + .Width)) Then
-        
-            'Check y boundaries
-            If (ptY >= .Top) And (ptY <= (.Top + .Height)) Then
-                IsPointInRectF = True
-            Else
-                IsPointInRectF = False
-            End If
-        
+            IsPointInRectF = ((ptY >= .Top) And (ptY <= (.Top + .Height)))
         Else
             IsPointInRectF = False
         End If
-    
     End With
-
 End Function
 
 'Find the union rect of two floating-point rects.  (This is the smallest rect that contains both rects.)
@@ -575,7 +562,7 @@ End Function
 
 Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
     dstRadius = Sqr((srcX - centerX) * (srcX - centerX) + (srcY - centerY) * (srcY - centerY))
-    dstAngle = Math_Functions.Atan2((srcY - centerY), (srcX - centerX))
+    dstAngle = Math_Functions.Atan2_Faster((srcY - centerY), (srcX - centerX))
 End Sub
 
 Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
@@ -593,12 +580,12 @@ End Sub
 'This is a modified modulo function; it handles negative values specially to ensure they work with certain distort functions
 Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor
-    If Modulo < 0 Then Modulo = Modulo + Divisor
+    If (Modulo < 0) Then Modulo = Modulo + Divisor
 End Function
 
 'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
 Public Function LoWord(ByRef dw As Long) As Integer
-   If dw And &H8000& Then
+   If (dw And &H8000&) Then
       LoWord = &H8000& Or (dw And &H7FFF&)
    Else
       LoWord = dw And &HFFFF&
@@ -619,14 +606,14 @@ Public Function FindClosestPointInArray(ByVal targetX As Double, ByVal targetY A
     Dim i As Long
     For i = LBound(poiArray) To UBound(poiArray)
         tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
-        If tmpDistance < curMinDistance Then
+        If (tmpDistance < curMinDistance) Then
             curMinDistance = tmpDistance
             curMinIndex = i
         End If
     Next i
     
     'If the distance of the closest point falls below the allowed threshold, return that point's index.
-    If curMinDistance < minAllowedDistance Then
+    If (curMinDistance < minAllowedDistance) Then
         FindClosestPointInArray = curMinIndex
     Else
         FindClosestPointInArray = -1
@@ -648,14 +635,14 @@ Public Function FindClosestPointInFloatArray(ByVal targetX As Double, ByVal targ
     Dim i As Long
     For i = LBound(poiArray) To UBound(poiArray)
         tmpDistance = DistanceTwoPoints(targetX, targetY, poiArray(i).x, poiArray(i).y)
-        If tmpDistance < curMinDistance Then
+        If (tmpDistance < curMinDistance) Then
             curMinDistance = tmpDistance
             curMinIndex = i
         End If
     Next i
     
     'If the distance of the closest point falls below the allowed threshold, return that point's index.
-    If curMinDistance < minAllowedDistance Then
+    If (curMinDistance < minAllowedDistance) Then
         FindClosestPointInFloatArray = curMinIndex
     Else
         FindClosestPointInFloatArray = -1
