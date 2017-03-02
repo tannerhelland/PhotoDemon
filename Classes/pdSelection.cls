@@ -108,15 +108,33 @@ End Enum
     Private Const sd_Normal = 0, sd_Outline = 1
 #End If
 
-'Note that selection transforms may use values other than the ones listed.  (For example, polygon transforms will identify an actual
-' index in the point array using some value >= 0.)
-Public Enum PD_SelectionTransform
-    st_Undefined = -1
-    st_MoveAll = -2
+'Points of interest.  These are typically used to associate a current mouse position with a relevant point in the active object
+' (e.g. a selection or layer).  Note that the hard-coded constants are negative, by design; complex shapes (like arbitrary
+' polygons) will use >= 0 values to identify actual indices in their point array, which may also be valid POIs in some contexts.
+Public Enum PD_SelectionPOI
+
+    'An undefined POI just means "the mouse isn't over this object at all"
+    poi_Undefined = -1
+    
+    'The mouse is somewhere in the interior of this object, but not near a corner or edge
+    poi_Interior = -2
+    
+    'Corner POI constants.  Depending on context, this may mean the corner of a complex shape's bounding box (vs the shape itself).
+    poi_CornerNW = -3
+    poi_CornerNE = -4
+    poi_CornerSE = -5
+    poi_CornerSW = -6
+    
+    'Edge POI constants.  Depending on context, this may mean the edge of a complex shape's bounding box (vs the shape itself).
+    poi_EdgeN = -7
+    poi_EdgeE = -8
+    poi_EdgeS = -9
+    poi_EdgeW = -10
+    
 End Enum
 
 #If False Then
-    Private Const st_Undefined = -1, st_MoveAll = -2
+    Private Const poi_Undefined = -1, poi_Interior = -2, poi_CornerNW = -3, poi_CornerNE = -4, poi_CornerSE = -5, poi_CornerSW = -6, poi_EdgeN = -7, poi_EdgeE = -8, poi_EdgeS = -9, poi_EdgeW = -10
 #End If
 
 'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
@@ -159,8 +177,9 @@ Private m_MoveXDist As Single, m_MoveYDist As Single
 'Is this selection requesting text box updates? Because if it is, ignore external requests to update.
 Private m_RejectRefreshRequests As Boolean
 
-'What is the current transformation mode? (This is important for dragging to resize the selection.)
-Private m_SelTransformationType As PD_SelectionTransform
+'Is a current "point of interest" selected?  (Note that different selection shapes may use this value differently; only certain values
+' are hard-coded across multiple shapes.)
+Private m_CurrentPOI As PD_SelectionPOI
 
 'Is transformation mode active?
 Private m_TransformModeActive As Boolean
@@ -615,17 +634,18 @@ Friend Sub RequestNewMask()
 
 End Sub
 
-'Get/set a transformation type
-Friend Function GetTransformationType() As PD_SelectionTransform
+'Get/set a transformation type.  Note that this class only caches POIs *while a transformation is active*.  For generic things like
+' MouseOver events, the current POI (if any) must be obtained manually via Selections.IsCoordSelectionPOI().
+Friend Function GetActiveSelectionPOI() As PD_SelectionPOI
     If m_TransformModeActive Then
-        GetTransformationType = m_SelTransformationType
+        GetActiveSelectionPOI = m_CurrentPOI
     Else
-        GetTransformationType = st_Undefined
+        GetActiveSelectionPOI = poi_Undefined
     End If
 End Function
 
-Friend Sub SetTransformationType(ByVal newTransType As PD_SelectionTransform)
-    m_SelTransformationType = newTransType
+Friend Sub SetActiveSelectionPOI(ByVal newPOI As PD_SelectionPOI)
+    m_CurrentPOI = newPOI
 End Sub
 
 Friend Sub OverrideTransformMode(ByVal newOverride As Boolean)
@@ -736,7 +756,7 @@ Friend Sub FillBoundsUsingGDIPlus()
 End Sub
 
 'Takes x and y coordinates (from a _MouseDown event, typically) and uses them in a manner specified by the current transform operation.
-' Note that this this should only be called after a transformation type has been set (via SetTransformationType(), above).
+' Note that this this should only be called after a transformation type has been set (via SetActiveSelectionPOI(), above).
 Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
 
     'If new transform coordinates are being set, this selection must be "unlocked" first
@@ -752,14 +772,14 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
     If ((m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle)) Then
         
         'Based on the transform mode, set the initial points accordingly
-        Select Case m_SelTransformationType
+        Select Case m_CurrentPOI
         
-            'Case -1 should never occur, because -1 means "no point of interest clicked"
-            Case -1
+            'Failsafe check for undefined transforms
+            Case poi_Undefined
                 Debug.Print "Selection transform initiated on a non-existent point - FIX THIS!"
-                
-            '0 - NW corner
-            Case 0
+            
+            'Corners
+            Case poi_CornerNW
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left + m_CornersLocked.Width
                     .Top = m_CornersLocked.Top + m_CornersLocked.Height
@@ -767,8 +787,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Bottom = m_CornersLocked.Top
                 End With
             
-            '1 - NE corner
-            Case 1
+            Case poi_CornerNE
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
                     .Top = m_CornersLocked.Top + m_CornersLocked.Height
@@ -776,8 +795,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Bottom = y
                 End With
             
-            '2 - SE corner
-            Case 2
+            Case poi_CornerSE
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
                     .Top = m_CornersLocked.Top
@@ -785,8 +803,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Bottom = y
                 End With
             
-            '3 - SW corner
-            Case 3
+            Case poi_CornerSW
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left + m_CornersLocked.Width
                     .Top = m_CornersLocked.Top
@@ -794,8 +811,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Bottom = y
                 End With
             
-            '4 - N edge
-            Case 4
+            Case poi_EdgeN
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
                     .Right = m_CornersLocked.Left + m_CornersLocked.Width
@@ -803,8 +819,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Bottom = y
                 End With
             
-            '5 - E edge
-            Case 5
+            Case poi_EdgeE
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
                     .Right = x
@@ -812,8 +827,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Bottom = m_CornersLocked.Top + m_CornersLocked.Height
                 End With
             
-            '6 - S edge
-            Case 6
+            Case poi_EdgeS
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left
                     .Right = m_CornersLocked.Left + m_CornersLocked.Width
@@ -821,8 +835,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                     .Bottom = y
                 End With
             
-            '7 - W edge
-            Case 7
+            Case poi_EdgeW
                 With m_CornersUnlocked
                     .Left = m_CornersLocked.Left + m_CornersLocked.Width
                     .Right = x
@@ -831,7 +844,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
                 End With
             
             '8 - interior of selection, not near a corner or edge
-            Case 8
+            Case poi_Interior
                 With m_CornersUnlocked
                     m_MoveXDist = x - m_CornersLocked.Left
                     m_MoveYDist = y - m_CornersLocked.Top
@@ -843,10 +856,10 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
     ElseIf (m_SelectionShape = ss_Line) Then
     
         'Based on the transform mode, set the initial points accordingly
-        Select Case m_SelTransformationType
+        Select Case m_CurrentPOI
     
-            'Case -1 should never occur, but if it does - treat this like a normal initial coordinate call
-            Case -1
+            'Case "undefined" should never occur, but if it does - treat this like a normal initial coordinate call
+            Case poi_Undefined
                 With m_CornersUnlocked
                     .Left = x
                     .Top = y
@@ -874,7 +887,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
     ElseIf (m_SelectionShape = ss_Polygon) Then
     
         'Based on the transform mode, set the initial points accordingly
-        Select Case m_SelTransformationType
+        Select Case m_CurrentPOI
     
             'Interior of the selection, which triggers a move transformation
             Case m_NumOfPolygonPoints
@@ -896,7 +909,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
     ElseIf (m_SelectionShape = ss_Lasso) Then
     
         'Based on the transform mode, set the initial points accordingly
-        Select Case m_SelTransformationType
+        Select Case m_CurrentPOI
     
             'Interior of the selection, which triggers a move transformation
             Case 0
@@ -1024,34 +1037,31 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             Case ss_Rectangle, ss_Circle
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case m_SelTransformationType
+                Select Case m_CurrentPOI
                 
                     'Case -1 should never occur, but if it does - treat this like a normal subsequent coordinate call
-                    'Cases 1-4 can similarly be treated like a normal subsequent coordinate call
-                    ' (See SetInitialTransformCoordinates for details on what the different cases mean.  And yes, I should convert
-                    '  these to constants instead of numbers... :P)
-                    Case 0 To 3
+                    Case poi_Undefined
+                    
+                    'Corners
+                    Case poi_CornerNW, poi_CornerNE, poi_CornerSE, poi_CornerSW
                         m_CornersUnlocked.Right = x
                         m_CornersUnlocked.Bottom = y
                     
-                    '4 - N edge
-                    Case 4
+                    'Edges
+                    Case poi_EdgeN
                         m_CornersUnlocked.Bottom = y
                         
-                    '5 - E edge
-                    Case 5
+                    Case poi_EdgeE
                         m_CornersUnlocked.Right = x
                         
-                    '6 - S edge
-                    Case 6
+                    Case poi_EdgeS
                         m_CornersUnlocked.Bottom = y
                         
-                    '7 - W edge
-                    Case 7
+                    Case poi_EdgeW
                         m_CornersUnlocked.Right = x
                         
-                    '8 - interior of selection, not near a corner or edge (e.g. move the selection, but don't resize it)
-                    Case 8
+                    'Interior
+                    Case poi_Interior
                         With m_CornersUnlocked
                             .Left = x - m_MoveXDist
                             .Top = y - m_MoveYDist
@@ -1067,7 +1077,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             Case ss_Line
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case m_SelTransformationType
+                Select Case m_CurrentPOI
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
                     Case -1
@@ -1091,7 +1101,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             Case ss_Polygon
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case m_SelTransformationType
+                Select Case m_CurrentPOI
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
                     Case -1
@@ -1109,7 +1119,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                     'Anything else is just moving a polygon point
                     Case Else
                     
-                        With m_PolygonPoints(m_SelTransformationType)
+                        With m_PolygonPoints(m_CurrentPOI)
                             .x = x
                             .y = y
                         End With
@@ -1123,7 +1133,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
             Case ss_Lasso
             
                 'Based on the transform mode, set the initial points accordingly
-                Select Case m_SelTransformationType
+                Select Case m_CurrentPOI
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
                     Case -1
