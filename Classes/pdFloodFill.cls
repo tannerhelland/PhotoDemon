@@ -578,7 +578,7 @@ Private Function FloodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
             'We know the floodfill map at this position is unfilled, so we don't even need to retrieve the value to
             ' calculate proper AA.
             finalResult = aaStrength * constMultiplier
-            fImageData(x) = fLookup(finalResult)
+            fImageData(x, y) = fLookup(finalResult)
             
         End If
         
