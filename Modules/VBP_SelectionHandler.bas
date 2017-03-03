@@ -3,9 +3,8 @@ Attribute VB_Name = "Selections"
 'Selection Interface
 'Copyright 2013-2017 by Tanner Helland
 'Created: 21/June/13
-'Last updated: 13/January/15
-'Last update: fix selection export to file functions to work with layers.  (Not sure how I missed that prior to 6.4's
-'              launch, ugh!)  Thanks to Frans van Beers for reporting the issue.
+'Last updated: 03/March/17
+'Last update: large-scale overhaul to match new 7.0 features and changes in pdSelection.
 '
 'Selection tools have existed in PhotoDemon for awhile, but this module is the first to support Process varieties of
 ' selection operations - e.g. internal actions like "Process "Create Selection"".  Selection commands must be passed

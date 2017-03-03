@@ -1649,12 +1649,12 @@ Private Function RenderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     '4) After all boundary rect modifications are made, we need to perform a failsafe check to make sure width and height aren't negative.
     With boundingRect
         
-        If .Width < 0 Then
+        If (.Width < 0) Then
             .Left = .Left + .Width
             .Width = 0
         End If
         
-        If .Height < 0 Then
+        If (.Height < 0) Then
             .Top = .Top + .Height
             .Height = 0
         End If
