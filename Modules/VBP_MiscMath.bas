@@ -650,6 +650,28 @@ Public Function FindClosestPointInFloatArray(ByVal targetX As Double, ByVal targ
 
 End Function
 
+'Given an array of points (in floating-point format), calculate the center point of the bounding rect.
+Public Sub FindCenterOfFloatPoints(ByRef dstPoint As POINTFLOAT, ByRef srcPoints() As POINTFLOAT)
+
+    Dim curMinX As Single, curMinY As Single, curMaxX As Single, curMaxY As Single
+    curMinX = 9999999:   curMaxX = -9999999:   curMinY = 9999999:   curMaxY = -9999999
+    
+    'From the array of supplied points, find minimum and maximum (x, y) values
+    Dim i As Long
+    For i = LBound(srcPoints) To UBound(srcPoints)
+        With srcPoints(i)
+            If (.x < curMinX) Then curMinX = .x
+            If (.x > curMaxX) Then curMaxX = .x
+            If (.y < curMinY) Then curMinY = .y
+            If (.y > curMaxY) Then curMaxY = .y
+        End With
+    Next i
+    
+    dstPoint.x = (curMaxX + curMinX) * 0.5
+    dstPoint.y = (curMaxY + curMinY) * 0.5
+    
+End Sub
+
 'Given a rectangle (as defined by width and height, not position), calculate the bounding rect required by a rotation of that rectangle.
 Public Sub FindBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstWidth As Double, ByRef dstHeight As Double, Optional ByVal padToIntegerValues As Boolean = True)
 
