@@ -776,10 +776,10 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
                     ' over a layer, it will return -1.
-                    If layerUnderMouse > -1 Then
+                    If (layerUnderMouse > -1) Then
                     
                         'If the layer under the mouse is not already active, activate it now
-                        If layerUnderMouse <> pdImages(g_CurrentImage).GetActiveLayerIndex Then
+                        If (layerUnderMouse <> pdImages(g_CurrentImage).GetActiveLayerIndex) Then
                             Layer_Handler.SetActiveLayerByIndex layerUnderMouse, False
                             Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                         End If

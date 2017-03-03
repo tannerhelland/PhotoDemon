@@ -479,13 +479,13 @@ Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLef
         .l_OffsetX = topLeftX
         .l_OffsetY = topLeftY
         
-        If GetLayerWidth(False) <> 0 Then
+        If (Me.GetLayerWidth(False) <> 0) Then
             SetLayerCanvasXModifier (bottomRightX - topLeftX) / GetLayerWidth(False)
         Else
             SetLayerCanvasXModifier 1#
         End If
         
-        If GetLayerHeight(False) <> 0 Then
+        If (Me.GetLayerHeight(False) <> 0) Then
             SetLayerCanvasYModifier (bottomRightY - topLeftY) / GetLayerHeight(False)
         Else
             SetLayerCanvasYModifier 1#
@@ -1095,7 +1095,7 @@ Friend Sub GetLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     dstPoints(2).y = Me.GetLayerHeight(includeNonDestructiveScaling)
     
     'If the third point exists, fill it too
-    If UBound(dstPoints) = 3 Then
+    If (UBound(dstPoints) >= 3) Then
         dstPoints(3).x = Me.GetLayerWidth(includeNonDestructiveScaling)
         dstPoints(3).y = Me.GetLayerHeight(includeNonDestructiveScaling)
     End If

@@ -97,10 +97,6 @@ Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     'Make a copy of the current layer coordinates, with any affine transforms applied (rotation, etc)
     srcLayer.GetLayerCornerCoordinates m_InitLayerCoords_Transformed
     
-    'Make a copy of the layer's rotational center point
-    m_InitLayerRotateCenterX = srcLayer.GetLayerRotateCenterX
-    m_InitLayerRotateCenterY = srcLayer.GetLayerRotateCenterY
-    
     'Make a copy of the current layer coordinates, *without* affine transforms applied.  This is basically the rect of
     ' the layer as it would appear if no affine modifiers were active (e.g. without rotation, etc)
     Dim i As Long
@@ -108,11 +104,16 @@ Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
         Drawing.ConvertImageCoordsToLayerCoords srcImage, srcLayer, m_InitLayerCoords_Transformed(i).x, m_InitLayerCoords_Transformed(i).y, m_InitLayerCoords_Pure(i).x, m_InitLayerCoords_Pure(i).y
     Next i
     
-    'Cache the layer's aspect ratio.  Note that this *does include any current non-destructive transforms*!
+    'Make a copy of the layer's rotational center point, in absolute image coordinates
+    m_InitLayerRotateCenterX = m_InitLayerCoords_Pure(0).x + (srcLayer.GetLayerRotateCenterX * (m_InitLayerCoords_Pure(1).x - m_InitLayerCoords_Pure(0).x))
+    m_InitLayerRotateCenterY = m_InitLayerCoords_Pure(0).y + (srcLayer.GetLayerRotateCenterY * (m_InitLayerCoords_Pure(2).y - m_InitLayerCoords_Pure(0).y))
+    
+    'Cache the layer's aspect ratio.  Note that this *does not include any current non-destructive transforms*!
+    ' (We will use this to handle the SHIFT key, which typically means "preserve original image aspect ratio".)
     If (srcLayer.GetLayerHeight(False) <> 0) Then
         m_LayerAspectRatio = srcLayer.GetLayerWidth(False) / srcLayer.GetLayerHeight(False)
     Else
-        m_LayerAspectRatio = 1
+        m_LayerAspectRatio = 1#
     End If
     
     'If a relevant POI was supplied, store it as well.  Note that not all tools make use of this.
@@ -122,10 +123,8 @@ End Sub
 
 'The drag-to-pan tool uses this function to set the initial scroll bar values for a pan operation
 Public Sub SetInitialCanvasScrollValues(ByRef srcCanvas As pdCanvas)
-
     m_InitHScroll = srcCanvas.GetScrollValue(PD_HORIZONTAL)
     m_InitVScroll = srcCanvas.GetScrollValue(PD_VERTICAL)
-
 End Sub
 
 'The drag-to-pan tool uses this function to actually scroll the viewport area
@@ -206,13 +205,14 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     Dim newX As Double, newY As Double, newWidth As Double, newHeight As Double
     
     'The way we assign new offsets and/or sizes to the layer depends on the POI (point of interest) the user is interacting with.
-    ' Layers currently support five points of interest: each of their 4 corners, and anywhere in the layer interior
-    ' (for moving the layer).
+    ' Layers currently support nine points of interest: each of their 4 corners, 4 rotational points (lying on the center of
+    ' each edge), and anywhere in the layer interior (for moving the layer).
     
-    'Because the various POI evaluators share similar code (they all just set a new boundary rect), this value will be set to TRUE
-    ' if a POI was successfully evaluated.  This triggers a set of uniform code checks, including safe boundaries and SHIFT key handling.
-    Dim poiCleanupRequired As Boolean
-    poiCleanupRequired = False
+    'If this layer has an active rotation transform (e.g. srcLayer.GetLayerAngle <> 0), we may need to modify the layer's
+    ' rotational center to compensate for positional and width/height changes.  This is only necessary for move/resize events,
+    ' *not* rotation events (which is confusing, I know, but rotation events use a fixed rotation point).
+    Dim rotateCleanupRequired As Boolean
+    rotateCleanupRequired = False
     
     'Check the POI we were given, and update the layer accordingly.
     With srcLayer
@@ -229,80 +229,60 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             ' I'll keep the others short.
             Case 0
                 
-                'The new (x, y) offset for this layer is simply the current mouse coordinates, transformed to the layer's coordinate space
-                newLeft = curLayerX
-                newTop = curLayerY
+                'The opposite corner coordinate (bottom-left) stays in exactly the same place
+                newRight = m_InitLayerCoords_Pure(1).x
+                newBottom = m_InitLayerCoords_Pure(3).y
                 
-                'As of PD 7.0, corner interactions cause the layer to naturally resize around its current center point.  As such, we need
-                ' to calculate new width/height values now.
-                newRight = m_InitLayerCoords_Pure(3).x - hOffsetLayer
-                newBottom = m_InitLayerCoords_Pure(3).y - vOffsetLayer
+                'Set the new left/top position to match the mouse coordinates, while also accounting for the shift key
+                ' (which locks the current aspect ratio).
+                If ((newRight - curLayerX) > 1) Then newLeft = curLayerX Else newLeft = newRight - 1#
+                If isShiftDown Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
+                If ((newBottom - newTop) < 1) Then newTop = newBottom - 1
                 
-                poiCleanupRequired = True
+                'Immediately relay the new coordinates to the source layer
+                srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
+                
+                'A helper block at the end of this function cleans up any rotation-related parameters to match the new coordinate
+                rotateCleanupRequired = True
                 
             '1: top-right corner
             Case 1
             
-                'Calculate a new boundary rect
-                newRight = curLayerX
-                newTop = curLayerY
-                newLeft = m_InitLayerCoords_Pure(0).x - hOffsetLayer
-                newBottom = m_InitLayerCoords_Pure(3).y - vOffsetLayer
+                newLeft = m_InitLayerCoords_Pure(0).x
+                newBottom = m_InitLayerCoords_Pure(2).y
                 
-                poiCleanupRequired = True
+                If ((curLayerX - newLeft) > 1) Then newRight = curLayerX Else newRight = newLeft + 1#
+                If isShiftDown Then newTop = newBottom - (newRight - newLeft) / m_LayerAspectRatio Else newTop = curLayerY
+                If ((newBottom - newTop) < 1) Then newTop = newBottom - 1
+                
+                srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
+                rotateCleanupRequired = True
                 
             '2: bottom-left
             Case 2
                 
-                'Calculate a new boundary rect
-                newLeft = curLayerX
-                newBottom = curLayerY
-                newRight = m_InitLayerCoords_Pure(3).x - hOffsetLayer
-                newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
+                newRight = m_InitLayerCoords_Pure(1).x
+                newTop = m_InitLayerCoords_Pure(0).y
                 
-                poiCleanupRequired = True
+                If ((newRight - curLayerX) > 1) Then newLeft = curLayerX Else newLeft = newRight - 1#
+                If isShiftDown Then newBottom = (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
+                If ((newBottom - newTop) < 1) Then newBottom = newTop + 1
+                
+                srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
+                rotateCleanupRequired = True
                 
             '3: bottom-right
             Case 3
                 
-                'Calculate a new boundary rect
-                newRight = curLayerX
-                newBottom = curLayerY
-                newLeft = m_InitLayerCoords_Pure(0).x - hOffsetLayer
-                newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
+                newLeft = m_InitLayerCoords_Pure(0).x
+                newTop = m_InitLayerCoords_Pure(0).y
                 
-                poiCleanupRequired = True
+                If ((curLayerX - newLeft) > 1) Then newRight = curLayerX Else newRight = newLeft + 1#
+                If isShiftDown Then newBottom = (newRight - newLeft) / m_LayerAspectRatio Else newBottom = curLayerY
+                If ((newBottom - newTop) < 1) Then newBottom = newTop + 1
                 
-                'If you want to resize the layer in one dimension only (instead of equally resizing it around its center),
-                ' you can do so with the following block of code.  Why I have not enabled this code everywhere?  The problem
-                ' still left to solve is what to do with the layer's center rotation coordinates after the mouse is released.
-                
-                'Ideally, we would re-center the rotation center to [0.5, 0.5], but I haven't sat down and figured out the
-                ' geometry necessary to redefine the layer that way.  (At a glance, both the layer offsets would also need
-                ' to be modified, too; this gets messy rather quickly.)
-                
-                'Anyway, my idea of maintaining the layer's current center point is a good one.  It solves the problem of
-                ' the layer corners being "jittery" during the drag, but for it to work persistently, the center point would
-                ' need to be reset after the mouse is released (so that subsequent rotate/resize events are intuitive).
-                'Dim origWidth As Single, origHeight As Single
-                'origWidth = m_InitLayerCoords_Pure(1).x - m_InitLayerCoords_Pure(0).x
-                'origHeight = m_InitLayerCoords_Pure(2).y - m_InitLayerCoords_Pure(0).y
-                '
-                'Dim origRotateX As Single, origRotateY As Single
-                'origRotateX = (m_InitLayerRotateCenterX * origWidth)
-                'origRotateY = (m_InitLayerRotateCenterY * origHeight)
-                '
-                'newRight = curLayerX
-                'newBottom = curLayerY
-                'newLeft = m_InitLayerCoords_Pure(0).x
-                'newTop = m_InitLayerCoords_Pure(0).y
-                '
-                'Dim adjustedWidth As Single, adjustedHeight As Single
-                'adjustedWidth = (newRight - m_InitLayerCoords_Pure(0).x)
-                'adjustedHeight = (newBottom - m_InitLayerCoords_Pure(0).y)
-                '
-                'srcLayer.SetLayerRotateCenterX origRotateX / adjustedWidth
-                'srcLayer.SetLayerRotateCenterY origRotateY / adjustedHeight
+                srcLayer.SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
+                rotateCleanupRequired = True
                 
             '4-7: rotation nodes
             Case 4 To 7
@@ -317,18 +297,18 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 'The first non-intersecting point varies by rotation node (as they lie in 90-degree increments).  Note that the
                 ' 100 offset is totally arbitrary; we just need a line of some non-zero length for the angle calculation to work.
-                If m_curPOI = 4 Then
-                    pt1.x = ptIntersect.x + 100
+                If (m_curPOI = 4) Then
+                    pt1.x = ptIntersect.x + 100#
                     pt1.y = ptIntersect.y
-                ElseIf m_curPOI = 5 Then
+                ElseIf (m_curPOI = 5) Then
                     pt1.x = ptIntersect.x
-                    pt1.y = ptIntersect.y + 100
-                ElseIf m_curPOI = 6 Then
-                    pt1.x = ptIntersect.x - 100
+                    pt1.y = ptIntersect.y + 100#
+                ElseIf (m_curPOI = 6) Then
+                    pt1.x = ptIntersect.x - 100#
                     pt1.y = ptIntersect.y
                 Else
                     pt1.x = ptIntersect.x
-                    pt1.y = ptIntersect.y - 100
+                    pt1.y = ptIntersect.y - 100#
                 End If
                                                 
                 'The second non-intersecting point is the current mouse position.
@@ -380,25 +360,59 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             
         End Select
         
-        'If a POI was successfully evaluated, we need to perform some generic clean-up on the calculated boundary rect.
-        ' (Note that moving the layer doesn't trigger these checks, as movement alone can't result in invalid bounds.)
-        If poiCleanupRequired Then
+        'If this layer is moved and/or resized while rotation is active, we need to adjust the layer's rotational center
+        ' point to match the new position and/or size.
+        If rotateCleanupRequired Then
         
-            'If the SHIFT key is down, lock the image's aspect ratio
-            If isShiftDown Then
+            'The goal here is to modify the layer's point of rotation so that it remains fixed in space, even though
+            ' the layer's offsets and/or dimensions are changing in real-time.  (If we allow the point of rotation to
+            ' auto-calculate to the center of the image, as it does by default, the layer will "jump around" during
+            ' mouse interactions because the center of the image is constantly changing due to the corresponding
+            ' position/dimension changes.)
             
-                newHeight = (newRight - newLeft) / m_LayerAspectRatio
+            'First, while the user is still moving the mouse, we want to set a new, temporary layer rotation point that is
+            ' identical to the original rotation point in absolute image coordinates.  (Rotation points are stored as
+            ' *ratios* inside pdLayer, e.g. [0.5, 0.5] for the center of the image, which helpfully makes them independent
+            ' of current layer width/height - helpful everywhere but here, alas.  Inside this function, we must manually
+            ' convert those ratios to an absolute physical coordinate, and we want to make sure that physical coordinate
+            ' remains fixed during the duration of the interaction.)
+            Dim adjustedWidth As Single, adjustedHeight As Single
+            adjustedWidth = (newRight - newLeft)
+            adjustedHeight = (newBottom - newTop)
+            srcLayer.SetLayerRotateCenterX (m_InitLayerRotateCenterX - newLeft) / adjustedWidth
+            srcLayer.SetLayerRotateCenterY (m_InitLayerRotateCenterY - newTop) / adjustedHeight
+            
+            'If the mouse has just been released, we want to reset the layer's rotational point to its default value
+            ' (the center of the image).  This ensures that future move/size events behave as expected.
+            '
+            '(Note that resetting the rotational center point requires us to redefine the layer's offsets to match
+            ' any new positions and/or dimensions the user has set via on-canvas mouse input.)
+            If finalizeTransform Then
+            
+                'Note the layer's "proper" center of rotation, in absolute image coordinates
+                Dim tmpPoints() As POINTFLOAT
+                ReDim tmpPoints(0 To 3) As POINTFLOAT
+                srcLayer.GetLayerCornerCoordinates tmpPoints
                 
-                'Shift the top coordinate offset to compensate for the newly calculated height
-                newY = newTop + (newBottom - newTop) / 2
-                newBottom = newY + (newHeight / 2)
-                newTop = newBottom - newHeight
+                Dim curCenter As POINTFLOAT
+                Math_Functions.FindCenterOfFloatPoints curCenter, tmpPoints
+                
+                'Reset the layer's center of rotation
+                srcLayer.SetLayerRotateCenterX 0.5
+                srcLayer.SetLayerRotateCenterY 0.5
+                
+                'Resetting the rotational point will cause the layer to "jump" to a new position.  Retrieve the
+                ' layer's new center of rotation, in absolute coordinates.
+                srcLayer.GetLayerCornerCoordinates tmpPoints
+                Dim newCenter As POINTFLOAT
+                Math_Functions.FindCenterOfFloatPoints newCenter, tmpPoints
+                
+                'Apply new (x, y) layer offsets to ensure that the layer's on-screen position hasn't changed
+                srcLayer.SetLayerOffsetX srcLayer.GetLayerOffsetX + (curCenter.x - newCenter.x)
+                srcLayer.SetLayerOffsetY srcLayer.GetLayerOffsetY + (curCenter.y - newCenter.y)
                 
             End If
-            
-            'Make sure the new (x, y) values don't result in negative width/height modifiers
-            If (newRight > newLeft) And (newBottom > newTop) Then .SetOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
-        
+                
         End If
         
     End With
@@ -419,9 +433,8 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
         'As a convenience to the user, layer resize and move operations are listed separately.
         Select Case m_curPOI
         
-            'Move/resize transformations.
+            'Move/resize transformations
             Case 0 To 3
-            
                 With srcImage.GetActiveLayer
                     Process "Resize layer (on-canvas)", False, BuildParams(.GetLayerOffsetX, .GetLayerOffsetY, .GetLayerCanvasXModifier, .GetLayerCanvasYModifier), UNDO_LAYERHEADER
                 End With
