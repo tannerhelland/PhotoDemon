@@ -40,7 +40,7 @@ Private m_InitLayerRotateCenterX As Single, m_InitLayerRotateCenterY As Single
 
 'If a point of interest is being modified by a tool action, its ID will be stored here.  Make sure to clear this value
 ' (to -1, which means "no point of interest") when you are finished with it (typically after MouseUp).
-Private m_curPOI As Long
+Private m_CurPOI As PD_PointOfInterest
 
 'Some tools require complicated synchronization between UI elements (e.g. text up/downs that display coordinates), and PD internals
 ' (e.g. layer positions).  To prevent infinite update loops (UI change > internal change > UI change > ...), tools can mark their
@@ -79,12 +79,12 @@ End Function
 Public Sub TerminateGenericToolTracking()
     
     'Reset the current POI, if any
-    m_curPOI = -1
+    m_CurPOI = poi_Undefined
     
 End Sub
 
 'The move tool uses this function to set various initial parameters for layer interactions.
-Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As Long = -1)
+Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As PD_PointOfInterest = poi_Undefined)
     
     'Cache the initial mouse values.  Note that, per the parameter names, these must have already been converted to the image's
     ' coordinate space (NOT the canvas's!)
@@ -117,7 +117,7 @@ Public Sub SetInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     End If
     
     'If a relevant POI was supplied, store it as well.  Note that not all tools make use of this.
-    m_curPOI = relevantPOI
+    m_CurPOI = relevantPOI
         
 End Sub
 
@@ -217,17 +217,17 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     'Check the POI we were given, and update the layer accordingly.
     With srcLayer
     
-        Select Case m_curPOI
+        Select Case m_CurPOI
             
             '-1: the mouse is not over the layer.  Do nothing.
-            Case -1
+            Case poi_Undefined
                 Tool_Support.SetToolBusyState False
                 srcCanvas.SetRedrawSuspension False
                 Exit Sub
                 
             '0: the mouse is dragging the top-left corner of the layer.  The comments here are uniform for all POIs, so for brevity's sake,
             ' I'll keep the others short.
-            Case 0
+            Case poi_CornerNW
                 
                 'The opposite corner coordinate (bottom-left) stays in exactly the same place
                 newRight = m_InitLayerCoords_Pure(1).x
@@ -246,7 +246,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 rotateCleanupRequired = True
                 
             '1: top-right corner
-            Case 1
+            Case poi_CornerNE
             
                 newLeft = m_InitLayerCoords_Pure(0).x
                 newBottom = m_InitLayerCoords_Pure(2).y
@@ -259,7 +259,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 rotateCleanupRequired = True
                 
             '2: bottom-left
-            Case 2
+            Case poi_CornerSW
                 
                 newRight = m_InitLayerCoords_Pure(1).x
                 newTop = m_InitLayerCoords_Pure(0).y
@@ -272,7 +272,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 rotateCleanupRequired = True
                 
             '3: bottom-right
-            Case 3
+            Case poi_CornerSE
                 
                 newLeft = m_InitLayerCoords_Pure(0).x
                 newTop = m_InitLayerCoords_Pure(0).y
@@ -285,7 +285,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 rotateCleanupRequired = True
                 
             '4-7: rotation nodes
-            Case 4 To 7
+            Case poi_EdgeN, poi_EdgeE, poi_EdgeS, poi_EdgeW
             
                 'Layer rotation is different because it involves finding the angle between two lines; specifically, the angle between
                 ' a flat origin line and the current node-to-origin line of the rotation node.
@@ -297,16 +297,16 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 'The first non-intersecting point varies by rotation node (as they lie in 90-degree increments).  Note that the
                 ' 100 offset is totally arbitrary; we just need a line of some non-zero length for the angle calculation to work.
-                If (m_curPOI = 4) Then
+                If (m_CurPOI = poi_EdgeE) Then
                     pt1.x = ptIntersect.x + 100#
                     pt1.y = ptIntersect.y
-                ElseIf (m_curPOI = 5) Then
+                ElseIf (m_CurPOI = poi_EdgeS) Then
                     pt1.x = ptIntersect.x
                     pt1.y = ptIntersect.y + 100#
-                ElseIf (m_curPOI = 6) Then
+                ElseIf (m_CurPOI = poi_EdgeW) Then
                     pt1.x = ptIntersect.x - 100#
                     pt1.y = ptIntersect.y
-                Else
+                ElseIf (m_CurPOI = poi_EdgeN) Then
                     pt1.x = ptIntersect.x
                     pt1.y = ptIntersect.y - 100#
                 End If
@@ -340,13 +340,13 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to
                 ' match the difference between the relevant coordinate of the intersecting lines.  (The relevant coordinate varies
                 ' based on the orientation of the default, non-rotated line defined by ptIntersect and pt1.)
-                If (m_curPOI = 4) Then
+                If (m_CurPOI = poi_EdgeE) Then
                     If (pt2.y < pt1.y) Then newAngle = -newAngle
-                ElseIf (m_curPOI = 5) Then
+                ElseIf (m_CurPOI = poi_EdgeS) Then
                     If (pt2.x > pt1.x) Then newAngle = -newAngle
-                ElseIf (m_curPOI = 6) Then
+                ElseIf (m_CurPOI = poi_EdgeW) Then
                     If (pt2.y > pt1.y) Then newAngle = -newAngle
-                Else
+                ElseIf (m_CurPOI = poi_EdgeN) Then
                     If (pt2.x < pt1.x) Then newAngle = -newAngle
                 End If
                 
@@ -354,7 +354,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 .SetLayerAngle newAngle
                             
             '5: interior of the layer (e.g. move the layer instead of resize it)
-            Case 8
+            Case poi_Interior
                 .SetLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
                 .SetLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
             
@@ -431,22 +431,22 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     If finalizeTransform Then
         
         'As a convenience to the user, layer resize and move operations are listed separately.
-        Select Case m_curPOI
+        Select Case m_CurPOI
         
             'Move/resize transformations
-            Case 0 To 3
+            Case poi_CornerNW, poi_CornerNE, poi_CornerSW, poi_CornerSE
                 With srcImage.GetActiveLayer
                     Process "Resize layer (on-canvas)", False, BuildParams(.GetLayerOffsetX, .GetLayerOffsetY, .GetLayerCanvasXModifier, .GetLayerCanvasYModifier), UNDO_LAYERHEADER
                 End With
                 
             'Rotation
-            Case 4 To 7
+            Case poi_EdgeE, poi_EdgeS, poi_EdgeW, poi_EdgeN
                 With srcImage.GetActiveLayer
                     Process "Rotate layer (on-canvas)", False, BuildParams(.GetLayerAngle), UNDO_LAYERHEADER
                 End With
             
             'Move-only transformations
-            Case 8
+            Case poi_Interior
                 
                 With srcImage.GetActiveLayer
                     Process "Move layer", False, BuildParams(.GetLayerOffsetX, .GetLayerOffsetY), UNDO_LAYERHEADER
@@ -461,7 +461,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     Else
     
         'Manually request a canvas redraw
-        Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas, False, m_curPOI
+        Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas, False, m_CurPOI
     
     End If
     

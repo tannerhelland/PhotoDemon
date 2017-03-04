@@ -67,7 +67,7 @@ Private m_TimeStage2 As Double, m_TimeStage3 As Double, m_TimeStage4 As Double, 
 'Note also that this stage is the only one to make use of the optional POI ID parameter.  If supplied, it will forward this to any
 ' UI functions that accept POI identifiers.  (Because the viewport is agnostic to underlying UI complexities, by design, it is up to
 ' the caller to optimize POI-based requests, e.g. not forwarding them unless the POI has changed, etc)
-Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
+Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
 
     Dim startTime As Currency
     VB_Hacks.GetHighResTime startTime
@@ -159,7 +159,7 @@ End Sub
 '
 'After this stage, the only things that should be rendered onto the canvas are uncolored UI elements, like custom-drawn cursors or
 ' control nodes.
-Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
+Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
     
     Dim startTime As Currency
     VB_Hacks.GetHighResTime startTime
@@ -219,7 +219,7 @@ End Sub
 '
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
-Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1, Optional ByVal renderScratchLayerIndex As Long = -1)
+Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal renderScratchLayerIndex As Long = -1)
     
     Dim startTime As Currency
     VB_Hacks.GetHighResTime startTime
@@ -396,7 +396,7 @@ End Sub
 '
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
-Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1, Optional ByVal renderScratchLayerIndex As Long = -1)
+Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal renderScratchLayerIndex As Long = -1)
     
     'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
     ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.

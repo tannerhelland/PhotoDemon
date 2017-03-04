@@ -503,7 +503,7 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     tmpPath.AddLine layerCorners(0).x, layerCorners(0).y, layerCorners(1).x, layerCorners(1).y
     tmpPath.AddLine layerCorners(1).x, layerCorners(1).y, layerCorners(3).x, layerCorners(3).y
     tmpPath.AddLine layerCorners(3).x, layerCorners(3).y, layerCorners(2).x, layerCorners(2).y
-    tmpPath.AddLine layerCorners(2).x, layerCorners(2).y, layerCorners(0).x, layerCorners(0).y
+    tmpPath.CloseCurrentFigure
     
     'Render the final UI
     Dim cSurface As pd2DSurface
@@ -515,7 +515,7 @@ Public Sub DrawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
 End Sub
 
 'On the current viewport, render standard PD transformation nodes (layer corners, currently) atop the active layer.
-Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
+Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
 
     'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
     ' mean this is no longer guaranteed.
@@ -536,6 +536,19 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
     
+    'Convert the POI value, if any, to an index into our list of layer coordinates
+    If (curPOI <> poi_Undefined) Then
+        If (curPOI = poi_CornerNW) Then
+            curPOI = 0
+        ElseIf (curPOI = poi_CornerNE) Then
+            curPOI = 1
+        ElseIf (curPOI = poi_CornerSW) Then
+            curPOI = 2
+        ElseIf (curPOI = poi_CornerSE) Then
+            curPOI = 3
+        End If
+    End If
+    
     'Use GDI+ to render four corner circles
     Dim i As Long
     For i = 0 To 3
@@ -551,7 +564,7 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
 End Sub
 
 'As of PD 7.0, on-canvas rotation is now supported.  Use this function to render the current rotation node.
-Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
+Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
     
     'Retrieve the layer rotate node position from the specified layer, and convert it into the canvas coordinate space
     Dim layerRotateNodes() As POINTFLOAT
@@ -563,17 +576,27 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True
     
+    'Convert the POI value, if any, to an index into our list of layer coordinates
+    If (curPOI <> poi_Undefined) Then
+        If (curPOI = poi_EdgeE) Then
+            curPOI = 1
+        ElseIf (curPOI = poi_EdgeS) Then
+            curPOI = 2
+        ElseIf (curPOI = poi_EdgeW) Then
+            curPOI = 3
+        ElseIf (curPOI = poi_EdgeN) Then
+            curPOI = 4
+        End If
+    End If
+    
     'As a convenience to the user, we draw some additional UI features if a rotation node is actively hovered by the mouse.
-    If (curPOI >= 4) And (curPOI <= 7) Then
-        
-        Dim relevantPoint As Long
-        relevantPoint = curPOI - 3
+    If (curPOI >= 1) And (curPOI <= 4) Then
         
         'First, draw a line from the center of the layer to the rotation node, to provide visual feedback on where the rotation
         ' will actually occur.
         Dim tmpPath As pd2DPath
         Set tmpPath = New pd2DPath
-        tmpPath.AddLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y
+        tmpPath.AddLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(curPOI).x, layerRotateNodes(curPOI).y
         
         m_Painter.DrawPath cSurface, m_PenUIBase, tmpPath
         m_Painter.DrawPath cSurface, m_PenUITop, tmpPath
@@ -587,7 +610,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         
             'Start by finding the distance of the rotation line.
             Dim rRadius As Double
-            rRadius = Math_Functions.DistanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y)
+            rRadius = Math_Functions.DistanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(curPOI).x, layerRotateNodes(curPOI).y)
             
             'From there, bounds are easy-peasy
             Dim rotateBoundRect As RECTF
@@ -616,7 +639,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             
             'We need to modify the default layer angle depending on the current POI
             Dim relevantAngle As Double
-            relevantAngle = srcLayer.GetLayerAngle + ((relevantPoint - 1) * 90)
+            relevantAngle = srcLayer.GetLayerAngle + ((curPOI - 1) * 90)
             tmpPath.AddArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
             
             Dim prevLineCap As PD_2D_LineCap
@@ -642,7 +665,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
     
     Dim i As Long
     For i = 1 To 4
-        If (curPOI = i + 3) Then
+        If (curPOI = i) Then
             m_Painter.DrawCircleF cSurface, m_PenUIBaseHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
             m_Painter.DrawCircleF cSurface, m_PenUITopHighlight, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius
         Else

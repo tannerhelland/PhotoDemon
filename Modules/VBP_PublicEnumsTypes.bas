@@ -606,3 +606,33 @@ End Enum
 #If False Then
     Private Const PDDM_None = 0, PDDM_Ordered_Bayer4x4 = 1, PDDM_Ordered_Bayer8x8 = 2, PDDM_FalseFloydSteinberg = 3, PDDM_FloydSteinberg = 4, PDDM_JarvisJudiceNinke = 5, PDDM_Stucki = 6, PDDM_Burkes = 7, PDDM_Sierra3 = 8, PDDM_SierraTwoRow = 9, PDDM_SierraLite = 10, PDDM_Atkinson = 11
 #End If
+
+'Points of interest.  These are typically used to associate a current mouse position with a relevant point in the active object
+' (e.g. a selection or layer).  Note that the hard-coded constants are negative, by design; complex shapes (like arbitrary
+' polygons) may use >= 0 values to identify actual indices in their point array; depending on context, these can also be valid
+' interaction point for the user.
+Public Enum PD_PointOfInterest
+
+    'An undefined POI just means "the mouse isn't over this object at all"
+    poi_Undefined = -1
+    
+    'The mouse is somewhere in the interior of this object, but not on a corner or edge
+    poi_Interior = -2
+    
+    'Corner POI constants.  Depending on context, this may mean the corner of a complex shape's bounding box (vs the shape itself).
+    poi_CornerNW = -3
+    poi_CornerNE = -4
+    poi_CornerSE = -5
+    poi_CornerSW = -6
+    
+    'Edge POI constants.  Depending on context, this may mean the edge of a complex shape's bounding box (vs the shape itself).
+    poi_EdgeN = -7
+    poi_EdgeE = -8
+    poi_EdgeS = -9
+    poi_EdgeW = -10
+    
+End Enum
+
+#If False Then
+    Private Const poi_Undefined = -1, poi_Interior = -2, poi_CornerNW = -3, poi_CornerNE = -4, poi_CornerSE = -5, poi_CornerSW = -6, poi_EdgeN = -7, poi_EdgeE = -8, poi_EdgeS = -9, poi_EdgeW = -10
+#End If

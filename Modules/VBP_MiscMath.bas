@@ -804,9 +804,9 @@ Public Sub GetIntClampedRectF(ByRef srcRectF As RECTF)
 End Sub
 
 Public Function ClampL(ByVal srcL As Long, ByVal minL As Long, ByVal maxL As Long) As Long
-    If srcL < minL Then
+    If (srcL < minL) Then
         ClampL = minL
-    ElseIf srcL > maxL Then
+    ElseIf (srcL > maxL) Then
         ClampL = maxL
     Else
         ClampL = srcL
@@ -814,9 +814,9 @@ Public Function ClampL(ByVal srcL As Long, ByVal minL As Long, ByVal maxL As Lon
 End Function
 
 Public Function ClampF(ByVal srcF As Double, ByVal minF As Double, ByVal maxF As Double) As Double
-    If srcF < minF Then
+    If (srcF < minF) Then
         ClampF = minF
-    ElseIf srcF > maxF Then
+    ElseIf (srcF > maxF) Then
         ClampF = maxF
     Else
         ClampF = srcF

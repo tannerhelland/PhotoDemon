@@ -108,35 +108,6 @@ End Enum
     Private Const sd_Normal = 0, sd_Outline = 1
 #End If
 
-'Points of interest.  These are typically used to associate a current mouse position with a relevant point in the active object
-' (e.g. a selection or layer).  Note that the hard-coded constants are negative, by design; complex shapes (like arbitrary
-' polygons) will use >= 0 values to identify actual indices in their point array, which may also be valid POIs in some contexts.
-Public Enum PD_SelectionPOI
-
-    'An undefined POI just means "the mouse isn't over this object at all"
-    poi_Undefined = -1
-    
-    'The mouse is somewhere in the interior of this object, but not near a corner or edge
-    poi_Interior = -2
-    
-    'Corner POI constants.  Depending on context, this may mean the corner of a complex shape's bounding box (vs the shape itself).
-    poi_CornerNW = -3
-    poi_CornerNE = -4
-    poi_CornerSE = -5
-    poi_CornerSW = -6
-    
-    'Edge POI constants.  Depending on context, this may mean the edge of a complex shape's bounding box (vs the shape itself).
-    poi_EdgeN = -7
-    poi_EdgeE = -8
-    poi_EdgeS = -9
-    poi_EdgeW = -10
-    
-End Enum
-
-#If False Then
-    Private Const poi_Undefined = -1, poi_Interior = -2, poi_CornerNW = -3, poi_CornerNE = -4, poi_CornerSE = -5, poi_CornerSW = -6, poi_EdgeN = -7, poi_EdgeE = -8, poi_EdgeS = -9, poi_EdgeW = -10
-#End If
-
 'When accessing properties, use the following enum.  The property dictionary automatically handles the interface between these
 ' values and the dictionary itself.
 Public Enum PD_SelectionProperty
@@ -179,7 +150,7 @@ Private m_RejectRefreshRequests As Boolean
 
 'Is a current "point of interest" selected?  (Note that different selection shapes may use this value differently; only certain values
 ' are hard-coded across multiple shapes.)
-Private m_CurrentPOI As PD_SelectionPOI
+Private m_CurrentPOI As PD_PointOfInterest
 
 'Is transformation mode active?
 Private m_TransformModeActive As Boolean
@@ -636,7 +607,7 @@ End Sub
 
 'Get/set a transformation type.  Note that this class only caches POIs *while a transformation is active*.  For generic things like
 ' MouseOver events, the current POI (if any) must be obtained manually via Selections.IsCoordSelectionPOI().
-Friend Function GetActiveSelectionPOI() As PD_SelectionPOI
+Friend Function GetActiveSelectionPOI() As PD_PointOfInterest
     If m_TransformModeActive Then
         GetActiveSelectionPOI = m_CurrentPOI
     Else
@@ -644,7 +615,7 @@ Friend Function GetActiveSelectionPOI() As PD_SelectionPOI
     End If
 End Function
 
-Friend Sub SetActiveSelectionPOI(ByVal newPOI As PD_SelectionPOI)
+Friend Sub SetActiveSelectionPOI(ByVal newPOI As PD_PointOfInterest)
     m_CurrentPOI = newPOI
 End Sub
 

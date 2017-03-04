@@ -2227,7 +2227,7 @@ End Sub
 'INPUTS: current mouse coords, already translated into the LAYER coordinate space (not the canvas coordinate space!)
 '
 'OUTPUT: index of the POI, if any.  If the mouse is not over a POI, -1 is returned.
-Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Long) As Long
+Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Long) As PD_PointOfInterest
     
     'MouseAccuracy in PD is a global value, but because we are working in image coordinates, we must compensate for the
     ' current zoom value.  (Otherwise, when zoomed out the user would be forced to work with tighter accuracy!)
@@ -2241,8 +2241,8 @@ Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
     minDistance = mouseAccuracy
     
     'When a point within the accuracy limit is found, its index will be assigned to this variable
-    Dim closestPoint As Long
-    closestPoint = -1
+    Dim closestPoint As PD_PointOfInterest
+    closestPoint = poi_Undefined
     
     'To facilitate the notion of "generalized point of interest" handling, coordinate checks are performed against
     ' an array of potential POI targets.  While arrays may not make as much sense as something like a RECT (when
@@ -2268,7 +2268,7 @@ Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
             poiList(3).y = GetLayerOffsetY + GetLayerHeight(True)
             
             'As of PD 7.7, rotation handles are also provided.  Note that changes to these positions *must be mirrored* in the
-            ' getLayerRotationNodeCoordinates() function above!
+            ' GetLayerRotationNodeCoordinates() function above!
             poiList(4).x = GetLayerOffsetX + GetLayerWidth(True)
             poiList(4).y = GetLayerOffsetY + GetLayerHeight(True) \ 2
             
@@ -2285,17 +2285,37 @@ Public Function CheckForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
             closestPoint = FindClosestPointInArray(layerX, layerY, minDistance, poiList)
             
             'If a corner was clicked, return its value and exit
-            If closestPoint <> -1 Then
-                CheckForPointOfInterest = closestPoint
+            If (closestPoint <> poi_Undefined) Then
+            
+                'Map the POI index to a human-friendly constant.
+                If (closestPoint = 0) Then
+                    CheckForPointOfInterest = poi_CornerNW
+                ElseIf (closestPoint = 1) Then
+                    CheckForPointOfInterest = poi_CornerNE
+                ElseIf (closestPoint = 2) Then
+                    CheckForPointOfInterest = poi_CornerSW
+                ElseIf (closestPoint = 3) Then
+                    CheckForPointOfInterest = poi_CornerSE
+                ElseIf (closestPoint = 4) Then
+                    CheckForPointOfInterest = poi_EdgeE
+                ElseIf (closestPoint = 5) Then
+                    CheckForPointOfInterest = poi_EdgeS
+                ElseIf (closestPoint = 6) Then
+                    CheckForPointOfInterest = poi_EdgeW
+                ElseIf (closestPoint = 7) Then
+                    CheckForPointOfInterest = poi_EdgeN
+                End If
+                
                 Exit Function
+                
             End If
             
             'If we're at this line of code, a POI was not clicked. Perform one final check to see if the mouse is within
             ' the layer's boundaries, and if it is, return the "move" ID, then exit.
             If (layerX > poiList(0).x) And (layerX < poiList(1).x) And (layerY > poiList(0).y) And (layerY < poiList(2).y) Then
-                CheckForPointOfInterest = 8
+                CheckForPointOfInterest = poi_Interior
             Else
-                CheckForPointOfInterest = -1
+                CheckForPointOfInterest = poi_Undefined
             End If
     
     End Select
