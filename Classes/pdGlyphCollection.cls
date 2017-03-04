@@ -154,7 +154,7 @@ Private m_FontAscent As Long, m_FontDescent As Long, m_FontHeight As Long
 ' can shortcut some steps if (for example) font setting change but the string does not.
 Private m_LastFont As Long, m_LastDC As Long, m_LastString As String
 
-'When setting alignment, we improve performance in the inner loop by calculating running linewidths as we go.  To prevent churn,
+'When setting alignment, we improve performance in the inner loop by calculating running line widths as we go.  To prevent churn,
 ' we use a module-level array and only reset it as necessary.
 Private m_LineWidths() As Single
 Private Const DEFAULT_INITIAL_LINE_COUNT As Long = 16
@@ -830,7 +830,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     
     'Debug.Print "Bounds for this text region: (" & boundingRect.Left & ", " & boundingRect.Top & ") - (" & boundingRectRight & ", " & boundingRectBottom & ")"
     
-    Dim currentLine As Long, linebreakImpossible As Boolean
+    Dim currentLine As Long, linebreakImpossible As Boolean, lastGlyphLineVerified As Long
     currentLine = 0
     linebreakImpossible = False
     
@@ -944,7 +944,11 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                 timeToBreakLine = False
                                 
                             Else
-                             
+                                
+                                'Note that we have not checked any glyphs surrounding this line break.  (We need to know this when
+                                ' testing for "impossible to break" lines, below.)
+                                lastGlyphLineVerified = -1
+                                
                                 'Loop backward until we find a viable breaking position.
                                 For j = curGlyph - 1 To 0 Step -1
                                 
@@ -975,6 +979,11 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                         m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(j).AdvanceWidth
                                     End If
                                     
+                                    'Because this glyph has been removed from the running line width, note that it has been "checked".
+                                    ' (We need this index in case this line is un-breakable; when that happens, we need to re-add all
+                                    ' the removed line widths to the line in question.)
+                                    lastGlyphLineVerified = j
+                                    
                                     'If this is a valid softbreak position, mark it and exit immediately
                                     If (m_Glyphs(j).isSoftBreak Or m_Glyphs(j).isWhiteSpace) Then
                                         curGlyph = j
@@ -985,9 +994,39 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                 
                                 'Note that j reaching 0 is okay; this just means we reached the start of the string, but didn't find
                                 ' a valid breakpoint.
+                                If (j = 0) Then linebreakImpossible = True
                                 
                                 'If a line break isn't possible, we have no choice but to break on this character.  Leave the curGlyph
-                                ' pointer where it is; nothing else is required.
+                                ' pointer where it is, but (and I know this is weird) loop back through all the characters we just removed
+                                ' from our running line width.  Since they are now "stuck" on the current line, we have no choice but to
+                                ' add their widths back into the current line's width.
+                                If linebreakImpossible Then
+                                
+                                    'If one or more glyph widths were removed from this line, add them back in now
+                                    If (lastGlyphLineVerified >= 0) Then
+                                        
+                                        'Because the current glyph is the invalid one (e.g. the one that will be
+                                        ' forcibly "shoved" onto the next line), we don't want to include it in our
+                                        ' line width calculations.
+                                        If (lastGlyphLineVerified < curGlyph) Then
+                                            
+                                            For j = lastGlyphLineVerified To curGlyph - 1
+                                            
+                                                'This glyph is stuck on the current line.  Return its width to the
+                                                ' running line width counter.
+                                                If ((m_Glyphs(j).AdvanceWidth + customCharOffset) > 0) Then
+                                                    m_LineWidths(currentLine) = m_LineWidths(currentLine) + (m_Glyphs(j).AdvanceWidth + customCharOffset)
+                                                Else
+                                                    m_LineWidths(currentLine) = m_LineWidths(currentLine) + m_Glyphs(j).AdvanceWidth
+                                                End If
+                                            
+                                            Next j
+                                            
+                                        End If
+                                        
+                                    End If
+                                
+                                End If
                                 
                             'End failsafe check (If/Else curGlyph = 0 and we're being forced to break)
                             End If
@@ -1195,7 +1234,7 @@ Private Function CalculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     
     'At this point, each glyph is now correctly positioned according to a default left/top alignment.  We have also marked the first and
     ' last glyph on every line, and assigned each glyph a line ID.
-    
+        
     'As a convenience to subsequent functions, we are now going to mark all-whitespace lines as being zero-width.  This solves some complex
     ' problems when attempting to place underline and strikeout styles, as whitespace-only lines should not have underline/strikeout applied.
     Dim curLine As Long, numOfLines As Long
