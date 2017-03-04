@@ -217,12 +217,12 @@ Private m_IsMouseOverCanvas As Boolean
 Private m_InitMouseX As Double, m_InitMouseY As Double
 
 'On the canvas's MouseDown event, this control will mark the relevant point of interest index for the active layer (if any).
-' If a point of interest has not been selected, this value will be reset to -1.
-Private m_CurPointOfInterest As Long
+' If a point of interest has not been selected, this value will be reset to poi_Undefined (-1).
+Private m_CurPOI As PD_PointOfInterest
 
 'As some POI interactions may cause the canvas to redraw, we also cache the *last* point of interest.  When this mismatches the
 ' current one, a UI-only viewport redraw is requested, and the last/current point values are synched.
-Private m_LastPointOfInterest As Long
+Private m_LastPOI As PD_PointOfInterest
 
 'To improve performance, we can ask the canvas to not refresh itself until we say so.
 Private m_SuspendRedraws As Boolean
@@ -756,7 +756,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
-        m_CurPointOfInterest = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
+        m_CurPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
@@ -809,12 +809,8 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                 If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
                 
                     'Did the user click on a POI for this layer?  If they did, the user is editing the current text layer.
-                    If m_CurPointOfInterest >= 0 Then
-                        userIsEditingCurrentTextLayer = True
-                    Else
-                        userIsEditingCurrentTextLayer = False
-                    End If
-                
+                    userIsEditingCurrentTextLayer = (m_CurPOI <> poi_Undefined)
+                    
                 'The current active layer is not a text layer.
                 Else
                     userIsEditingCurrentTextLayer = False
@@ -831,9 +827,9 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Create a new text layer directly; note that we *do not* pass this command through the central processor, as we do not
                     ' want the delay associated with full Undo/Redo creation.
-                    If g_CurrentTool = VECTOR_TEXT Then
+                    If (g_CurrentTool = VECTOR_TEXT) Then
                         Layer_Handler.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY, True
-                    ElseIf g_CurrentTool = VECTOR_FANCYTEXT Then
+                    ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
                         Layer_Handler.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", imgX, imgY, True
                     End If
                     
@@ -1054,7 +1050,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
                 '(Note that this function branches according to two states: whether this click is creating a new text layer (which requires a full
                 ' image stack Undo/Redo), or whether we are simply modifying an existing layer.
-                If Tool_Support.GetCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER Then
+                If (Tool_Support.GetCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER) Then
                     
                     'Mark the current tool as busy to prevent any unwanted UI syncing
                     Tool_Support.SetToolBusyState True
@@ -1074,18 +1070,10 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         End With
                         
                         'If the current text box is empty, set some new text to orient the user
-                        If g_CurrentTool = VECTOR_TEXT Then
-                            
-                            If Len(toolpanel_Text.txtTextTool.Text) = 0 Then
-                                toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
-                            End If
-                            
+                        If (g_CurrentTool = VECTOR_TEXT) Then
+                            If (Len(toolpanel_Text.txtTextTool.Text) = 0) Then toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
                         Else
-                        
-                            If Len(toolpanel_FancyText.txtTextTool.Text) = 0 Then
-                                toolpanel_FancyText.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
-                            End If
-                        
+                            If (Len(toolpanel_FancyText.txtTextTool.Text) = 0) Then toolpanel_FancyText.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
                         End If
                         
                         'Manually synchronize the new size values against their on-screen UI elements
@@ -1096,7 +1084,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
                     'If the user already specified a size, use their values to finalize the layer size
                     Else
-                        TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                        Tool_Support.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
                     End If
                     
                     'Release the tool engine
@@ -1145,7 +1133,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
     If (Button = vbRightButton) Then m_RMBDown = False
     
     'Reset any tracked point of interest value for this layer
-    m_CurPointOfInterest = -1
+    m_CurPOI = poi_Undefined
         
     'Reset the mouse movement tracker
     m_NumOfMouseMovements = 0
@@ -1153,7 +1141,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
 End Sub
 
 Public Sub CanvasView_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    If Not IsCanvasInteractionAllowed() Then Exit Sub
+    If (Not IsCanvasInteractionAllowed()) Then Exit Sub
     If hScroll.Visible Then hScroll.RelayMouseWheelEvent False, Button, Shift, x, y, scrollAmount
 End Sub
 
@@ -1348,8 +1336,8 @@ Private Sub UserControl_Initialize()
         AlignCanvasView
         
         'Reset any POI trackers
-        m_CurPointOfInterest = -1
-        m_LastPointOfInterest = -1
+        m_CurPOI = poi_Undefined
+        m_LastPOI = poi_Undefined
         
     End If
     
@@ -1358,9 +1346,7 @@ End Sub
 Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     
     'Regardless of viewport state, cache the current scroll bar value inside the current image
-    If Not pdImages(g_CurrentImage) Is Nothing Then
-        pdImages(g_CurrentImage).imgViewport.SetHScrollValue hScroll.Value
-    End If
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).imgViewport.SetHScrollValue hScroll.Value
     
     If (Not Me.GetRedrawSuspension) Then
         
@@ -1375,7 +1361,7 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
 End Sub
 
 Public Sub UpdateCanvasLayout()
-    If g_OpenImageCount = 0 Then Me.ClearCanvas Else Me.AlignCanvasView
+    If (g_OpenImageCount = 0) Then Me.ClearCanvas Else Me.AlignCanvasView
     StatusBar.ReflowStatusBar (g_OpenImageCount > 0)
 End Sub
 
@@ -1384,7 +1370,7 @@ Private Function ShouldImageStripBeVisible() As Boolean
     ShouldImageStripBeVisible = False
     
     'User preference = "Always visible"
-    If ImageStrip.VisibilityMode = 0 Then
+    If (ImageStrip.VisibilityMode = 0) Then
         If (g_OpenImageCount > 0) Then ShouldImageStripBeVisible = True
     
     'User preference = "Visible if 2+ images loaded"
@@ -1651,7 +1637,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
     If ((Not g_IsProgramRunning) Or g_ProgramShuttingDown) Then Exit Sub
     
     'Some cursor functions operate on a POI basis
-    Dim curPOI As Long
+    Dim curPOI As PD_PointOfInterest
 
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
@@ -1680,32 +1666,32 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             Select Case curPOI
             
                 'Mouse is not over the current layer
-                Case -1
+                Case poi_Undefined
                     CanvasView.RequestCursor_System IDC_ARROW
                     
                 'Mouse is over the top-left corner
-                Case 0
+                Case poi_CornerNW
                     CanvasView.RequestCursor_System IDC_SIZENWSE
                     
                 'Mouse is over the top-right corner
-                Case 1
+                Case poi_CornerNE
                     CanvasView.RequestCursor_System IDC_SIZENESW
                     
                 'Mouse is over the bottom-left corner
-                Case 2
+                Case poi_CornerSW
                     CanvasView.RequestCursor_System IDC_SIZENESW
                     
                 'Mouse is over the bottom-right corner
-                Case 3
+                Case poi_CornerSE
                     CanvasView.RequestCursor_System IDC_SIZENWSE
                     
                 'Mouse is over a rotation handle
-                Case 4 To 7
+                Case poi_EdgeE, poi_EdgeS, poi_EdgeW, poi_EdgeN
                     CanvasView.RequestCursor_System IDC_SIZEALL
                     'CanvasView.RequestCursor_PNG "cursor_rotate", 7, 7
                     
                 'Mouse is within the layer, but not over a specific node
-                Case 8
+                Case poi_Interior
                 
                     'This case is unique because if the user has elected to ignore transparent pixels, they cannot move a layer
                     ' by dragging the mouse within a transparent region of the layer.  Thus, before changing the cursor,
@@ -1713,7 +1699,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     ' the Move cursor.  (Note that this works because the getLayerUnderMouse function, called during the MouseMove
                     ' event, automatically factors the transparency check into its calculation.  Thus we don't have to
                     ' re-evaluate the setting here.)
-                    If m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex Then
+                    If (m_LayerAutoActivateIndex = pdImages(g_CurrentImage).GetActiveLayerIndex) Then
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
                         CanvasView.RequestCursor_System IDC_ARROW
@@ -1723,8 +1709,8 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
             'The move tool is unique because it will request a redraw of the viewport when the POI changes, so that the current
             ' POI can be highlighted.
-            If (m_LastPointOfInterest <> curPOI) Then
-                m_LastPointOfInterest = curPOI
+            If (m_LastPOI <> curPOI) Then
+                m_LastPOI = curPOI
                 Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
             End If
             
@@ -1842,39 +1828,39 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 Select Case curPOI
     
                     'Mouse is not over the current layer
-                    Case -1
+                    Case poi_Undefined
                         CanvasView.RequestCursor_System IDC_IBEAM
     
                     'Mouse is over the top-left corner
-                    Case 0
+                    Case poi_CornerNW
                         CanvasView.RequestCursor_System IDC_SIZENWSE
                     
                     'Mouse is over the top-right corner
-                    Case 1
+                    Case poi_CornerNE
                         CanvasView.RequestCursor_System IDC_SIZENESW
                     
                     'Mouse is over the bottom-left corner
-                    Case 2
+                    Case poi_CornerSW
                         CanvasView.RequestCursor_System IDC_SIZENESW
                     
                     'Mouse is over the bottom-right corner
-                    Case 3
+                    Case poi_CornerSE
                         CanvasView.RequestCursor_System IDC_SIZENWSE
                         
                     'Mouse is over a rotation handle
-                    Case 4 To 7
+                    Case poi_EdgeE, poi_EdgeS, poi_EdgeW, poi_EdgeN
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     
                     'Mouse is within the layer, but not over a specific node
-                    Case 8
+                    Case poi_Interior
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     
                 End Select
                 
                 'Similar to the move tool, texts tools will request a redraw of the viewport when the POI changes, so that the current
                 ' POI can be highlighted.
-                If (m_LastPointOfInterest <> curPOI) Then
-                    m_LastPointOfInterest = curPOI
+                If (m_LastPOI <> curPOI) Then
+                    m_LastPOI = curPOI
                     Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
                 End If
                 

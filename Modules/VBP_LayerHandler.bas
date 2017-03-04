@@ -1055,7 +1055,7 @@ End Function
 Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, Optional ByVal givePreferenceToCurrentLayer As Boolean = True) As Long
 
     Dim tmpRGBA As RGBQUAD
-    Dim curPOI As Long
+    Dim curPOI As PD_PointOfInterest
     
     'Note that the caller passes us an (x, y) coordinate pair in the IMAGE coordinate space.  We will be using these coordinates to
     ' generate various new coordinate pairs in individual LAYER coordinate spaces  (This became necessary in PD 7.0, as layers
@@ -1074,7 +1074,7 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
         curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
         
         'If the mouse is over a point of interest, return this layer and immediately exit
-        If (curPOI >= 0) And (curPOI <= 7) Then
+        If (curPOI <> poi_Undefined) Then
             GetLayerUnderMouse = pdImages(g_CurrentImage).GetActiveLayerIndex
             Exit Function
         End If
@@ -1096,12 +1096,12 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
             If GetRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
             
                 'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
-                If Not CBool(toolpanel_MoveSize.chkIgnoreTransparent) Then
+                If (Not CBool(toolpanel_MoveSize.chkIgnoreTransparent)) Then
                     GetLayerUnderMouse = i
                     Exit Function
                 Else
                 
-                    If tmpRGBA.alpha > 0 Then
+                    If (tmpRGBA.alpha > 0) Then
                         GetLayerUnderMouse = i
                         Exit Function
                     End If
@@ -1123,7 +1123,7 @@ End Function
 Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     
     'First, make sure there is an active selection
-    If Not pdImages(g_CurrentImage).IsSelectionActive Then
+    If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
         Message "No active selection found.  Crop abandoned."
         Exit Sub
     End If
@@ -1131,8 +1131,8 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     Message "Cropping layer to selected area..."
     
     'Because PD is awesome, we already have a function capable of doing this!
-    If g_CurrentImage <= UBound(pdImages) Then
-        If Not pdImages(g_CurrentImage) Is Nothing Then
+    If (g_CurrentImage <= UBound(pdImages)) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then
             pdImages(g_CurrentImage).EraseProcessedSelection layerIndex
         End If
     End If
@@ -1190,7 +1190,7 @@ End Function
 Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
 
     '-1 tells us to rasterize all vector layers
-    If srcLayerIndex = -1 Then
+    If (srcLayerIndex = -1) Then
     
         Dim i As Long
         For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1

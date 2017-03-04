@@ -461,7 +461,7 @@ End Sub
 ' typically indices into an internal selection point array.
 '
 'This sub will return a constant correlating to the nearest selection point.  See the relevant enum for details.
-Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As PD_SelectionPOI
+Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, ByRef srcImage As pdImage) As PD_PointOfInterest
     
     'If the current selection is...
     ' 1) raster-type, or...
@@ -1436,7 +1436,7 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
         If pdImages(g_CurrentImage).IsSelectionActive Then
         
             'Check the mouse coordinates of this click.
-            Dim sCheck As PD_SelectionPOI
+            Dim sCheck As PD_PointOfInterest
             sCheck = Selections.IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
             
             'If a point of interest was clicked, initiate a transform
@@ -1632,7 +1632,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                         'All other selection types use identical transform identifiers
                         Else
                         
-                            Dim transformType As PD_SelectionPOI
+                            Dim transformType As PD_PointOfInterest
                             transformType = pdImages(g_CurrentImage).mainSelection.GetActiveSelectionPOI
                             
                             'Creating a new selection
