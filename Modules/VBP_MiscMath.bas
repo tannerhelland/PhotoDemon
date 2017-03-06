@@ -29,24 +29,12 @@ Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect A
 
 'See if a point lies inside a rect (integer)
 Public Function IsPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
-
-    If PtInRect(srcRect, ptX, ptY) = 0 Then
-        IsPointInRect = False
-    Else
-        IsPointInRect = True
-    End If
-
+    IsPointInRect = (PtInRect(srcRect, ptX, ptY) <> 0)
 End Function
 
 'See if a point lies inside a RectL struct
 Public Function IsPointInRectL(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTL) As Boolean
-
-    If PtInRectL(srcRect, ptX, ptY) = 0 Then
-        IsPointInRectL = False
-    Else
-        IsPointInRectL = True
-    End If
-
+    IsPointInRectL = (PtInRectL(srcRect, ptX, ptY) <> 0)
 End Function
 
 'See if a point lies inside a rect (float)
@@ -122,6 +110,10 @@ Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcR
     End With
 
 End Sub
+
+Public Function Frac(ByVal srcValue As Double) As Double
+    Frac = srcValue - Int(srcValue)
+End Function
 
 'Given an arbitrary output range and input range, convert a value from the input range to the output range
 ' Thank you to expert coder Audioglider for contributing this function.
