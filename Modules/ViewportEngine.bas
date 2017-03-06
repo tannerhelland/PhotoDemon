@@ -185,19 +185,22 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         BitBlt m_FrontBuffer.GetDIBDC, 0, 0, srcImage.canvasBuffer.GetDIBWidth, srcImage.canvasBuffer.GetDIBHeight, srcImage.canvasBuffer.GetDIBDC, 0, 0, vbSrcCopy
     End If
     
-    '*Now* is when we want to apply color management to the front buffer.  At present, UI elements drawn atop the canvas are not
-    ' color-managed (for performance reasons).  I may revisit this in the future.
-    ColorManagement.ApplyDisplayColorManagement m_FrontBuffer, , False
-    
-    'Retrieve a copy of the intersected viewport rect, which we forward to the selection engine (if a selection is active)
+    'Retrieve a copy of the intersected viewport rect; subsequent rendering ops may use this to optimize their operations
     Dim viewportIntersectRect As RECTF
     srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRect
     
-    'Check to see if a selection is active.
-    If srcImage.IsSelectionActive Then
+    '*Now* is when we want to apply color management to the front buffer.  (For performance reasons, UI elements drawn atop the canvas are not
+    ' color-managed - only the image itself is.)  Note also that although the front buffer is 32-bpp, it is always fully opaque, so we can
+    ' notify the color management engine that alpha bytes can be completely ignored.
+    ColorManagement.ApplyDisplayColorManagement_RectF m_FrontBuffer, viewportIntersectRect, , False
     
-        'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.RenderCustom m_FrontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, Selections.GetSelectionRenderMode, Selections.GetSelectionRenderColor
+    'Check to see if a selection is active.  If it is, we want to render it now, directly atop the front buffer.  This allows any
+    ' subsequent overlays (e.g. brush outlines) to appear "on top" of the selection, without us needing to redraw the selection outline
+    ' on every overlay render.
+    If srcImage.IsSelectionActive Then
+        
+        'The selection engine handles the actual rendering process
+        srcImage.mainSelection.RenderCustom m_FrontBuffer, srcImage, dstCanvas, viewportIntersectRect, Selections.GetSelectionRenderMode, Selections.GetSelectionRenderColor
     
     End If
     
@@ -655,9 +658,6 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'Scroll bars are now prepped and ready!
     
     'With all scroll bar data assembled, we have enough information to create the back buffer.
-    ' (TODO: roll the canvas color over to the central themer.)
-    ' (TODO: creating the back buffer as 32-bit screws up selection rendering, because the current selection engine always assumes
-    '         a 24-bit target.  Look at fixing this!)
     If (srcImage.canvasBuffer.GetDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.GetDIBHeight <> CanvasRect_ActualPixels.Height) Then
         srcImage.canvasBuffer.CreateBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 32, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
     Else

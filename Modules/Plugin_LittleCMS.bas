@@ -724,7 +724,7 @@ End Function
 ' the pdDIB object or this function will crash and burn.
 Public Function LCMS_ApplyTransformToDIB_RectF(ByRef srcDIB As pdDIB, ByVal hTransform As Long, ByRef dstRectF As RECTF) As Boolean
     
-    If (Not (srcDIB Is Nothing)) And (hTransform <> 0) Then
+    If ((Not srcDIB Is Nothing) And (hTransform <> 0)) Then
         
         'Start by determining a few values generic to this DIB
         Dim i As Long, iWidth As Long, iScanWidth As Long, iScanStart As Long
@@ -737,12 +737,14 @@ Public Function LCMS_ApplyTransformToDIB_RectF(ByRef srcDIB As pdDIB, ByVal hTra
         pxSizeBytes = srcDIB.GetDIBColorDepth \ 8
         
         Dim perLineOffset As Long, perLinePixels As Long
-        perLineOffset = (dstRectF.Left * pxSizeBytes)
-        perLinePixels = dstRectF.Width
+        perLineOffset = (Int(dstRectF.Left) * pxSizeBytes)
+        perLinePixels = Int(dstRectF.Width + Math_Functions.Frac(dstRectF.Left) + 0.9999)
+        If (Int(dstRectF.Left) + perLinePixels > srcDIB.GetDIBWidth - 1) Then perLinePixels = (srcDIB.GetDIBWidth - 1) - Int(dstRectF.Left)
         
         Dim startLine As Long, stopLine As Long
-        startLine = dstRectF.Top
-        stopLine = dstRectF.Top + dstRectF.Height
+        startLine = Int(dstRectF.Top)
+        stopLine = Int(dstRectF.Top + dstRectF.Height + 0.9999)
+        If (stopLine > srcDIB.GetDIBHeight - 1) Then stopLine = srcDIB.GetDIBHeight - 1
         
         For i = startLine To stopLine
             cmsDoTransform hTransform, iScanStart + i * iScanWidth + perLineOffset, iScanStart + i * iScanWidth + perLineOffset, perLinePixels
