@@ -297,7 +297,7 @@ End Sub
 
 'See if the mouse is over the clickable portion of the control
 Private Function IsMouseOverClickArea(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
-    IsMouseOverClickArea = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ClickableRect)
+    IsMouseOverClickArea = PDMath.IsPointInRectF(mouseX, mouseY, m_ClickableRect)
 End Function
 
 Private Sub UserControl_Initialize()
@@ -422,7 +422,7 @@ Private Sub UpdateControlLayout()
     End With
     
     'The clickable rect is the union of the radio button and caption rect.  Calculate it now.
-    Math_Functions.UnionRectF m_ClickableRect, m_RadioButtonRect, m_CaptionRect
+    PDMath.UnionRectF m_ClickableRect, m_RadioButtonRect, m_CaptionRect
     
     'If the caption still does not fit within the available area (typically because we reached the minimum allowable font
     ' size, but the caption was *still* too long), set a module-level failure state to TRUE.  This notifies the renderer

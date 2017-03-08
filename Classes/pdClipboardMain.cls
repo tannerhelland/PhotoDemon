@@ -2031,7 +2031,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
                     .biHeight = m_ClipboardDIB.GetDIBHeight
                     .biPlanes = 1
                     .biBitCount = m_ClipboardDIB.GetDIBColorDepth
-                    .biXPelsPerMeter = Math_Functions.ConvertDPIToPels(m_ClipboardDIB.GetDPI)
+                    .biXPelsPerMeter = PDMath.ConvertDPIToPels(m_ClipboardDIB.GetDPI)
                     .biYPelsPerMeter = .biXPelsPerMeter
                     
                     'Even though we don't specify BI_BITFIELDS as the compression scheme, some software will disregard DIBv5 alpha
@@ -2049,7 +2049,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
                     .biHeight = m_ClipboardDIB.GetDIBHeight
                     .biPlanes = 1
                     .biBitCount = m_ClipboardDIB.GetDIBColorDepth
-                    .biXPelsPerMeter = Math_Functions.ConvertDPIToPels(m_ClipboardDIB.GetDPI)
+                    .biXPelsPerMeter = PDMath.ConvertDPIToPels(m_ClipboardDIB.GetDPI)
                     .biYPelsPerMeter = .biXPelsPerMeter
                 End With
             End If

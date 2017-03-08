@@ -472,7 +472,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
         
     Dim curFolder As String, chkFile As String
     Dim fileValid As Boolean
-        
+    
     'The first folder doesn't get added to the destination collection, but all other folders do.
     Dim isNotFirstFolder As Boolean
     isNotFirstFolder = False
@@ -480,9 +480,9 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     Do While cFoldersToCheck.PopString(curFolder)
         
         'DirW does all the heavy lifting on the actual folder iteration steps
-        chkFile = DirW(curFolder)
+        chkFile = Me.DirW(curFolder)
     
-        Do While Len(chkFile) <> 0
+        Do While (Len(chkFile) <> 0)
             
             'See if this chkFile iteration contains a folder
             If ((GetAttributesOfLastDirWReturn And vbDirectory) <> 0) Then
@@ -518,7 +518,7 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
             End If
             
             'Get the next file
-            chkFile = DirW()
+            chkFile = Me.DirW()
         
         Loop
         
@@ -567,7 +567,7 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     Do While cFoldersToCheck.PopString(curFolder)
         
         'DirW does all the heavy lifting on the actual folder iteration steps
-        chkFile = DirW(curFolder)
+        chkFile = Me.DirW(curFolder)
     
         Do While (Len(chkFile) <> 0)
             
@@ -588,7 +588,7 @@ Friend Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
             End If
             
             'Get the next file
-            chkFile = DirW()
+            chkFile = Me.DirW()
         
         Loop
         

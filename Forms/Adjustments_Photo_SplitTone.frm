@@ -156,7 +156,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     'Convert balance mix value to [1,0]; it will be used to blend split-toned colors at a varying scale (low balance
     ' favors the shadow tone, high balance favors the highlight tone).
     Dim balGradient As Double, invBalGradient As Double
-    invBalGradient = Math_Functions.ConvertRange(-100, 100, 0, 1, Balance)
+    invBalGradient = PDMath.ConvertRange(-100, 100, 0, 1, Balance)
     balGradient = 1 - invBalGradient
     
     'Prevent divide-by-zero errors, below
@@ -164,7 +164,7 @@ Public Sub SplitTone(ByVal highlightColor As Long, ByVal shadowColor As Long, By
     If balGradient <= 0 Then balGradient = 0.0000001
     
     'Strength controls the ratio at which the split-toned pixels are merged with the original pixels.  We want it on a [0, 1] scale.
-    Strength = Math_Functions.ConvertRange(0, 100, 0, 1, Strength)
+    Strength = PDMath.ConvertRange(0, 100, 0, 1, Strength)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

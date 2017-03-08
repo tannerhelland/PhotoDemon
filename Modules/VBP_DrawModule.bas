@@ -610,7 +610,7 @@ Public Sub DrawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         
             'Start by finding the distance of the rotation line.
             Dim rRadius As Double
-            rRadius = Math_Functions.DistanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(curPOI).x, layerRotateNodes(curPOI).y)
+            rRadius = PDMath.DistanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(curPOI).x, layerRotateNodes(curPOI).y)
             
             'From there, bounds are easy-peasy
             Dim rotateBoundRect As RECTF

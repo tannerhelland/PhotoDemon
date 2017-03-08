@@ -1049,11 +1049,11 @@ Private Sub CalcPoints_VoxelTraversal(ByVal srcX As Single, ByVal srcY As Single
     'Calculate deltas and termination conditions.  Note that these are all floating-point values, so we could
     ' theoretically support sub-pixel traversal conditions.  (At present, we only traverse full pixels.)
     Dim dx As Single, tDeltaX As Single, tMaxX As Single
-    If (stepX <> 0) Then tDeltaX = Math_Functions.Min2Float_Single(CSng(stepX) / (srcX - m_MouseX), 10000000#) Else tDeltaX = 10000000#
+    If (stepX <> 0) Then tDeltaX = PDMath.Min2Float_Single(CSng(stepX) / (srcX - m_MouseX), 10000000#) Else tDeltaX = 10000000#
     If (stepX > 0) Then tMaxX = tDeltaX * (1 - m_MouseX + Int(m_MouseX)) Else tMaxX = tDeltaX * (m_MouseX - Int(m_MouseX))
     
     Dim dy As Single, tDeltaY As Single, tMaxY As Single
-    If (stepY <> 0) Then tDeltaY = Math_Functions.Min2Float_Single(CSng(stepY) / (srcY - m_MouseY), 10000000#) Else tDeltaY = 10000000#
+    If (stepY <> 0) Then tDeltaY = PDMath.Min2Float_Single(CSng(stepY) / (srcY - m_MouseY), 10000000#) Else tDeltaY = 10000000#
     If (stepY > 0) Then tMaxY = tDeltaY * (1 - m_MouseY + Int(m_MouseY)) Else tMaxY = tDeltaY * (m_MouseY - Int(m_MouseY))
     
     'After some testing, I'm pretty pleased with the integer-only results of the traversal algorithm,
@@ -1209,7 +1209,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
     'If this is *not* the first modified rect calculation, union this rect with our previous update rect
     If m_UnionRectRequired And (Not isFirstStroke) Then
         tmpOldRectF = m_ModifiedRectF
-        Math_Functions.UnionRectF m_ModifiedRectF, tmpRectF, tmpOldRectF
+        PDMath.UnionRectF m_ModifiedRectF, tmpRectF, tmpOldRectF
     Else
         m_UnionRectRequired = True
         m_ModifiedRectF = tmpRectF
@@ -1220,7 +1220,7 @@ Private Sub UpdateModifiedRect(ByVal newX As Single, ByVal newY As Single, ByVal
         m_TotalModifiedRectF = tmpRectF
     Else
         tmpOldRectF = m_TotalModifiedRectF
-        Math_Functions.UnionRectF m_TotalModifiedRectF, tmpRectF, tmpOldRectF
+        PDMath.UnionRectF m_TotalModifiedRectF, tmpRectF, tmpOldRectF
     End If
     
 End Sub

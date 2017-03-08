@@ -804,7 +804,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
     internalPadding = Interface.FixDPI(PD_TT_INTERNAL_PADDING)
     
     With ttRect
-        .Width = internalPadding * 2 + Math_Functions.Max2Int(ttCaptionWidth, ttTitleWidth)
+        .Width = internalPadding * 2 + PDMath.Max2Int(ttCaptionWidth, ttTitleWidth)
         If (ttTitleHeight > 0) Then
             .Height = internalPadding * 2 + ttCaptionHeight + ttTitleHeight + Interface.FixDPI(PD_TT_TITLE_PADDING)
         Else

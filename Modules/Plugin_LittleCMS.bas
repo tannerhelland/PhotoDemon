@@ -738,7 +738,7 @@ Public Function LCMS_ApplyTransformToDIB_RectF(ByRef srcDIB As pdDIB, ByVal hTra
         
         Dim perLineOffset As Long, perLinePixels As Long
         perLineOffset = (Int(dstRectF.Left) * pxSizeBytes)
-        perLinePixels = Int(dstRectF.Width + Math_Functions.Frac(dstRectF.Left) + 0.9999)
+        perLinePixels = Int(dstRectF.Width + PDMath.Frac(dstRectF.Left) + 0.9999)
         If (Int(dstRectF.Left) + perLinePixels > srcDIB.GetDIBWidth - 1) Then perLinePixels = (srcDIB.GetDIBWidth - 1) - Int(dstRectF.Left)
         
         Dim startLine As Long, stopLine As Long

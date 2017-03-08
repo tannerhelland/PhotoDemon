@@ -3211,7 +3211,7 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
-    Math_Functions.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight, False
+    PDMath.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight, False
     
     'Use these dimensions to size the destination image, as requested by the user
     If dstDIBAlreadySized Then
@@ -3231,7 +3231,7 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     ' which is how we draw both the rotation and the corner extensions.
     Dim listOfPoints() As POINTFLOAT
     ReDim listOfPoints(0 To 3) As POINTFLOAT
-    Math_Functions.FindCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
+    PDMath.FindCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
     
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
@@ -3269,9 +3269,9 @@ Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         'For each corner of the rotated square, convert the point to polar coordinates, then shrink the radius by one.
         Dim tmpAngle As Double, tmpRadius As Double, tmpX As Double, tmpY As Double
         For i = 0 To 3
-            Math_Functions.ConvertCartesianToPolar tmpPoints(i).x, tmpPoints(i).y, tmpRadius, tmpAngle, cx, cy
+            PDMath.ConvertCartesianToPolar tmpPoints(i).x, tmpPoints(i).y, tmpRadius, tmpAngle, cx, cy
             tmpRadius = tmpRadius - 1#
-            Math_Functions.ConvertPolarToCartesian tmpAngle, tmpRadius, tmpX, tmpY, cx, cy
+            PDMath.ConvertPolarToCartesian tmpAngle, tmpRadius, tmpX, tmpY, cx, cy
             tmpPoints(i).x = tmpX
             tmpPoints(i).y = tmpY
         Next i
@@ -3306,7 +3306,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
     ' do this, the rotation will chop off the image's corners!
     Dim nWidth As Double, nHeight As Double
-    Math_Functions.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight
+    PDMath.FindBoundarySizeOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, nWidth, nHeight
     
     'Use these dimensions to size the destination image
     If dstDIB Is Nothing Then Set dstDIB = New pdDIB
@@ -3320,7 +3320,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     ' which is how we draw both the rotation and the corner extensions.
     Dim listOfPoints() As POINTFLOAT
     ReDim listOfPoints(0 To 3) As POINTFLOAT
-    Math_Functions.FindCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
+    PDMath.FindCornersOfRotatedRect srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, rotateAngle, listOfPoints, True
     
     'Calculate the size difference between the source and destination images.  We need to add this offset to all
     ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.

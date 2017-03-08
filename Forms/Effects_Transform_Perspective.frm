@@ -786,18 +786,24 @@ End Sub
 
 'Simple distance routine to see if a location on the picture box is near an existing point
 Private Function CheckClick(ByVal x As Long, ByVal y As Long) As Long
-    Dim dist As Double
-    Dim i As Long
-    For i = 0 To 3
-        dist = pDistance(x, y, m_nPoints(i).pX, m_nPoints(i).pY)
-        'If we're close to an existing point, return the index of that point
-        If dist < g_MouseAccuracy Then
-            CheckClick = i
-            Exit Function
-        End If
-    Next i
+    
     'Returning -1 says we're not close to an existing point
     CheckClick = -1
+    
+    Dim dist As Double
+    Dim i As Long
+    
+    For i = 0 To 3
+        dist = pDistance(x, y, m_nPoints(i).pX, m_nPoints(i).pY)
+        
+        'If we're close to an existing point, return the index of that point
+        If (dist < g_MouseAccuracy) Then
+            CheckClick = i
+            Exit For
+        End If
+        
+    Next i
+    
 End Function
 
 'Simple distance formula here - we use this to calculate if the user has clicked on (or near) a point

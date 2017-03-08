@@ -604,7 +604,7 @@ Public Sub ContinueLoadingProgram()
     
     'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
     ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
-    g_MouseAccuracy = FixDPIFloat(6)
+    g_MouseAccuracy = FixDPIFloat(7)
     
     'Allow main form components to load any control-specific preferences they may utilize
     FormMain.mainCanvas(0).ReadUserPreferences

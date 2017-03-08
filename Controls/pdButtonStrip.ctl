@@ -417,7 +417,7 @@ Private Function IsMouseOverButton(ByVal mouseX As Single, ByVal mouseY As Singl
     Dim i As Long
     For i = 0 To m_numOfButtons - 1
     
-        If Math_Functions.IsPointInRect(mouseX, mouseY, m_Buttons(i).btBounds) Then
+        If PDMath.IsPointInRect(mouseX, mouseY, m_Buttons(i).btBounds) Then
             IsMouseOverButton = i
             Exit Function
         End If
@@ -824,7 +824,7 @@ End Sub
 'Because the control may consist of a non-clickable region (the caption) and a clickable region (the buttonstrip),
 ' we can't blindly assign a hand cursor to the entire control.
 Private Sub UpdateCursor(ByVal x As Single, ByVal y As Single)
-    If Math_Functions.IsPointInRect(x, y, m_ButtonStripRect) Then
+    If PDMath.IsPointInRect(x, y, m_ButtonStripRect) Then
         ucSupport.RequestCursor IDC_HAND
     Else
         ucSupport.RequestCursor IDC_DEFAULT

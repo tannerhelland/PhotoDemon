@@ -637,7 +637,7 @@ End Sub
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
     
     Dim mouseCheck As Boolean
-    mouseCheck = Math_Functions.IsPointInRectF(mouseX, mouseY, m_ComboRect)
+    mouseCheck = PDMath.IsPointInRectF(mouseX, mouseY, m_ComboRect)
     
     If m_MouseInComboRect <> mouseCheck Then
         m_MouseInComboRect = mouseCheck

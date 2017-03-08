@@ -169,7 +169,7 @@ End Sub
 'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     If (Button And pdLeftButton) <> 0 Then
-        If Math_Functions.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
+        If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
     End If
 End Sub
 
@@ -189,7 +189,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     m_LastMouseX = x: m_LastMouseY = y
     
     'Set the cursor depending on whether the mouse is inside the image portion of the navigator control
-    If Math_Functions.IsPointInRectF(x, y, m_ImageRegion) Then
+    If PDMath.IsPointInRectF(x, y, m_ImageRegion) Then
         ucSupport.RequestCursor IDC_HAND
     Else
         ucSupport.RequestCursor IDC_DEFAULT
@@ -390,7 +390,7 @@ Private Sub RedrawBackBuffer()
                 Dim useHighlightColor As Boolean
                 
                 If m_MouseInsideBox Then
-                    useHighlightColor = Math_Functions.IsPointInRectF(m_LastMouseX, m_LastMouseY, relativeRect)
+                    useHighlightColor = PDMath.IsPointInRectF(m_LastMouseX, m_LastMouseY, relativeRect)
                 Else
                     useHighlightColor = False
                 End If

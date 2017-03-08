@@ -178,7 +178,7 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideBrushRect = Math_Functions.IsPointInRectF(mouseX, mouseY, m_BrushRect)
+    m_MouseInsideBrushRect = PDMath.IsPointInRectF(mouseX, mouseY, m_BrushRect)
     If m_MouseInsideBrushRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 

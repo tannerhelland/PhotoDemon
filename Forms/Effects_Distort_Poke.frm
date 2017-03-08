@@ -339,7 +339,7 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
         
             'Next, map them to polar coordinates and apply the stretch
             radius = Sqr(nX * nX + nY * nY)
-            theta = Math_Functions.Atan2_Fastest(nY, nX)
+            theta = PDMath.Atan2_Fastest(nY, nX)
             
             radius = radius ^ pokeStrength
             

@@ -131,7 +131,7 @@ Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single,
         Dim thumbImageWidth As Long, thumbImageHeight As Long
         
         'Start by determining proper dimensions for the resized thumbnail image.
-        Math_Functions.ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, thumbDIB.GetDIBWidth, thumbDIB.GetDIBHeight, thumbImageWidth, thumbImageHeight
+        PDMath.ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, thumbDIB.GetDIBWidth, thumbDIB.GetDIBHeight, thumbImageWidth, thumbImageHeight
         
         'From there, solve for the top-left corner of the centered image
         If thumbImageWidth < thumbDIB.GetDIBWidth Then

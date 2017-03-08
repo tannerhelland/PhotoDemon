@@ -271,9 +271,9 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
             'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
             ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
             If g_LCMSEnabled Then
-                cDistance = Math_Functions.Distance3D_FastFloat(labValues(x), labValues(x + 1), labValues(x + 2), labL2f, labA2f, labB2f)
+                cDistance = PDMath.Distance3D_FastFloat(labValues(x), labValues(x + 1), labValues(x + 2), labL2f, labA2f, labB2f)
             Else
-                cDistance = Math_Functions.DistanceThreeDimensions(labValues(x), labValues(x + 1), labValues(x + 2), labL2, labA2, labB2)
+                cDistance = PDMath.DistanceThreeDimensions(labValues(x), labValues(x + 1), labValues(x + 2), labL2, labA2, labB2)
             End If
             
             'If the distance is below the erasure threshold, remove it completely

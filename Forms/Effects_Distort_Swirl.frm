@@ -339,7 +339,7 @@ Public Sub SwirlImage(ByVal swirlAngle As Double, ByVal swirlRadius As Double, B
                 sDistance = Sqr(sDistance)
                 
                 'Calculate theta
-                theta = Math_Functions.Atan2_Fastest(nY, nX) + swirlAngle * ((sRadius - sDistance) / sRadius)
+                theta = PDMath.Atan2_Fastest(nY, nX) + swirlAngle * ((sRadius - sDistance) / sRadius)
             
                 srcX = midX + (sDistance * Cos(theta))
                 srcY = midY + (sDistance * Sin(theta))

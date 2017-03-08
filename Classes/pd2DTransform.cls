@@ -90,7 +90,7 @@ End Function
 
 'Translate the entire path by some amount in polar coordinates (angle + radius).  Radius is in degrees.
 Friend Function ApplyTranslation_Polar(ByVal translateAngle As Single, ByVal translateRadius As Single, Optional ByVal angleIsInDegrees As Boolean = True, Optional ByVal transformOrder As PD_2D_TransformOrder = P2_TO_Append) As Boolean
-    If angleIsInDegrees Then translateAngle = Math_Functions.DegreesToRadians(translateAngle)
+    If angleIsInDegrees Then translateAngle = PDMath.DegreesToRadians(translateAngle)
     ApplyTranslation_Polar = Me.ApplyTranslation(translateRadius * Cos(translateAngle), translateRadius * Sin(translateAngle), transformOrder)
 End Function
 

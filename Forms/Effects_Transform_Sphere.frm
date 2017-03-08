@@ -349,7 +349,7 @@ Public Sub SpherizeImage(ByVal sphereAngle As Double, ByVal xOffset As Double, B
             
             'Next, map them to polar coordinates and apply the spherification
             radius = Sqr(nX * nX + nY * nY)
-            theta = Math_Functions.Atan2_Fastest(nY, nX)
+            theta = PDMath.Atan2_Fastest(nY, nX)
             
             radius = Asin(radius) * twoDivByPI
             

@@ -190,7 +190,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsidePenRect = Math_Functions.IsPointInRectF(mouseX, mouseY, m_PenRect)
+    m_MouseInsidePenRect = PDMath.IsPointInRectF(mouseX, mouseY, m_PenRect)
     If m_MouseInsidePenRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
