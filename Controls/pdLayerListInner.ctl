@@ -305,7 +305,7 @@ Private Sub ucSupport_DoubleClickCustom(ByVal Button As PDMouseButtonConstants, 
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
     
-    If (Math_Functions.IsPointInRect(x, y, m_NameRect) And (Button = pdLeftButton)) Then
+    If (PDMath.IsPointInRect(x, y, m_NameRect) And (Button = pdLeftButton)) Then
     
         'Move the text layer box into position
         txtLayerName.SetPositionAndSize m_NameEditRect.Left, m_NameEditRect.Top, m_NameEditRect.Right - m_NameEditRect.Left, m_NameEditRect.Bottom - m_NameEditRect.Top
@@ -369,7 +369,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             'Check the clicked position against a series of rects, each one representing a unique interaction.
             
             'Has the user clicked a visibility rectangle?
-            If Math_Functions.IsPointInRect(x, y, m_VisibilityRect) Then
+            If PDMath.IsPointInRect(x, y, m_VisibilityRect) Then
                 Layer_Handler.SetLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerVisibility, True
                 actionInitiated = True
             
@@ -1134,7 +1134,7 @@ Private Sub RedrawBackBuffer()
                 m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_LayerHoverRect.Left, m_LayerHoverRect.Top, m_LayerHoverRect.Right, m_LayerHoverRect.Bottom
                 
                 'Next, if the mouse is specifically within the
-                If Math_Functions.IsPointInRect(m_MouseX, m_MouseY, m_VisibilityRect) Then
+                If PDMath.IsPointInRect(m_MouseX, m_MouseY, m_VisibilityRect) Then
                     Drawing2D.QuickCreateSolidPen cPen, 3, paintColor
                     m_Painter.DrawRectangleF_AbsoluteCoords cSurface, cPen, m_VisibilityRect.Left, m_VisibilityRect.Top, m_VisibilityRect.Right, m_VisibilityRect.Bottom
                 End If

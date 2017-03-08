@@ -177,7 +177,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     If Me.Enabled And ((Button And pdLeftButton) <> 0) Then
         
         'We do not raise events for clicking the "new" option.  Only the "old" option.
-        If Math_Functions.IsPointInRectF(x, y, m_OldItemRect) Then
+        If PDMath.IsPointInRectF(x, y, m_OldItemRect) Then
             RaiseEvent OldItemClicked
         End If
         
@@ -199,7 +199,7 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     Dim oldHoverCheck As Boolean
     oldHoverCheck = m_OldItemIsHovered
-    m_OldItemIsHovered = Math_Functions.IsPointInRectF(x, y, m_OldItemRect)
+    m_OldItemIsHovered = PDMath.IsPointInRectF(x, y, m_OldItemRect)
     If m_OldItemIsHovered Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
     If (oldHoverCheck <> m_OldItemIsHovered) Then RedrawBackBuffer
 End Sub
@@ -308,7 +308,7 @@ Private Sub UpdateControlLayout()
     Set tmpFont = Nothing
     
     Dim largestWidth As Long
-    largestWidth = Math_Functions.Max2Int(newCaptionRect.Width, oldCaptionRect.Width) + hTextPadding * 2
+    largestWidth = PDMath.Max2Int(newCaptionRect.Width, oldCaptionRect.Width) + hTextPadding * 2
     
     'The captions are right-aligned against the new and old sample boxes (which are stacked atop each other)
     newCaptionRect.Top = m_NewItemRect.Top + (m_NewItemRect.Height - newCaptionRect.Height) \ 2 - 1

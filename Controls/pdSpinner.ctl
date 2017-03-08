@@ -353,7 +353,7 @@ Public Sub SetHeight(ByVal newHeight As Long)
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If Math_Functions.IsPointInRectF(x, y, m_ResetRect) Then
+    If PDMath.IsPointInRectF(x, y, m_ResetRect) Then
         Me.Reset
         RaiseEvent ResetClick
     End If
@@ -376,7 +376,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     'Determine mouse button state for the up and down button areas
     If ((Button = pdLeftButton) And Me.Enabled) Then
     
-        If Math_Functions.IsPointInRectF(x, y, m_UpRect) Then
+        If PDMath.IsPointInRectF(x, y, m_UpRect) Then
             m_MouseDownUpButton = True
             m_MouseDownDownButton = False
             m_MouseDownResetButton = False
@@ -392,7 +392,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         
             m_MouseDownUpButton = False
         
-            If Math_Functions.IsPointInRectF(x, y, m_DownRect) Then
+            If PDMath.IsPointInRectF(x, y, m_DownRect) Then
                 m_MouseDownDownButton = True
                 m_MouseDownResetButton = False
                 MoveValueUp
@@ -400,7 +400,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 m_DownButtonTimer.StartTimer
             Else
                 m_MouseDownDownButton = False
-                m_MouseDownResetButton = Math_Functions.IsPointInRectF(x, y, m_ResetRect)
+                m_MouseDownResetButton = PDMath.IsPointInRectF(x, y, m_ResetRect)
             End If
             
         End If
@@ -432,18 +432,18 @@ End Sub
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
     
     'Determine mouse hover state for the up and down button areas
-    If Math_Functions.IsPointInRectF(x, y, m_UpRect) Then
+    If PDMath.IsPointInRectF(x, y, m_UpRect) Then
         m_MouseOverUpButton = True
         m_MouseOverDownButton = False
         m_MouseOverResetButton = False
     Else
         m_MouseOverUpButton = False
-        If Math_Functions.IsPointInRectF(x, y, m_DownRect) Then
+        If PDMath.IsPointInRectF(x, y, m_DownRect) Then
             m_MouseOverDownButton = True
             m_MouseOverResetButton = False
         Else
             m_MouseOverDownButton = False
-            m_MouseOverResetButton = Math_Functions.IsPointInRectF(x, y, m_ResetRect)
+            m_MouseOverResetButton = PDMath.IsPointInRectF(x, y, m_ResetRect)
         End If
     End If
     

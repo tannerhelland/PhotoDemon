@@ -1787,7 +1787,7 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
         
         Dim tmpRectF As RECTF
         CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
-        Math_Functions.GetIntClampedRectF tmpRectF
+        PDMath.GetIntClampedRectF tmpRectF
         initX = tmpRectF.Left
         initY = tmpRectF.Top
         finalX = initX + tmpRectF.Width

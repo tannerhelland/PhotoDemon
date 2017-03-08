@@ -186,7 +186,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
 End Sub
 
 Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
-    m_MouseInsideGradientRect = Math_Functions.IsPointInRectF(mouseX, mouseY, m_GradientRect)
+    m_MouseInsideGradientRect = PDMath.IsPointInRectF(mouseX, mouseY, m_GradientRect)
     If m_MouseInsideGradientRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 

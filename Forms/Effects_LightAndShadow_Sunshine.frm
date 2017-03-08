@@ -305,7 +305,7 @@ Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpo
         u = xLookup(x)
         v = yLookup(y)
         
-        t = (Math_Functions.Atan2_Fastest(u, v) / PI_DOUBLE + 0.51) * m_Count
+        t = (PDMath.Atan2_Fastest(u, v) / PI_DOUBLE + 0.51) * m_Count
         i = Floor(t)
         t = t - i
         i = i Mod m_Count

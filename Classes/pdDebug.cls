@@ -228,7 +228,7 @@ Private Function GetLogID() As Long
     chkFile = cFile.DirW(m_logPath & "DebugReport_*.log")
     
     'Continue checking potential autosave XML entries until all have been analyzed
-    Do While Len(chkFile) <> 0
+    Do While (Len(chkFile) <> 0)
         
         'Log this file and increment the file counter
         logFiles(numFiles) = m_logPath & chkFile
@@ -241,7 +241,7 @@ Private Function GetLogID() As Long
     
     'logFiles() will now contain a list of all debug logs in the current folder.  If there are already 10 entries, we want
     ' to find the oldest file in the list, and steal its ID number.
-    If numFiles = 10 Then
+    If (numFiles = 10) Then
     
         Dim minDate As Date, minID As Long
         
@@ -252,7 +252,7 @@ Private Function GetLogID() As Long
         'Loop through all other files; if an earlier date is found, mark that as the minimum date and ID
         Dim i As Long
         For i = 1 To 9
-            If FileSystem.FileAnyDateTime(logFiles(i)) < minDate Then
+            If (FileSystem.FileAnyDateTime(logFiles(i)) < minDate) Then
                 minDate = FileSystem.FileAnyDateTime(logFiles(i))
                 minID = i
             End If

@@ -645,7 +645,7 @@ Public Function QuickLoadPicture(ByRef dstObject As Object, ByVal srcPath As Str
                     
                         'Calculate the correct target size, and use that size when painting.
                         Dim newWidth As Long, newHeight As Long
-                        Math_Functions.ConvertAspectRatio srcSurface.GetSurfaceWidth, srcSurface.GetSurfaceHeight, dstSurface.GetSurfaceWidth, dstSurface.GetSurfaceHeight, newWidth, newHeight
+                        PDMath.ConvertAspectRatio srcSurface.GetSurfaceWidth, srcSurface.GetSurfaceHeight, dstSurface.GetSurfaceWidth, dstSurface.GetSurfaceHeight, newWidth, newHeight
                         
                         dstSurface.SetSurfaceResizeQuality P2_RQ_Bicubic
                         QuickLoadPicture = cPainter.DrawSurfaceResizedI(dstSurface, (dstSurface.GetSurfaceWidth - newWidth) \ 2, (dstSurface.GetSurfaceHeight - newHeight) \ 2, newWidth, newHeight, srcSurface)

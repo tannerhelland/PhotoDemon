@@ -384,7 +384,7 @@ Private Function IsMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Opt
         
         'Calculate an angle for this pixel
         Dim pxAngle As Double
-        pxAngle = Math_Functions.Atan2(y, x)
+        pxAngle = PDMath.Atan2(y, x)
         
         'ATan2() returns an angle that is positive for counter-clockwise angles (y > 0), and negative for
         ' clockwise angles (y < 0), on the range [-Pi, +Pi].  Convert this angle to the absolute range [0, 1],
@@ -400,7 +400,7 @@ End Function
 Private Function IsMouseInsideSVBox(ByVal x As Single, ByVal y As Single, Optional ByVal calculateSV As Boolean = False, Optional ByRef dstSaturation As Double, Optional ByRef dstValue As Double) As Boolean
     
     'Hit-detection is easy, since we cache the box coordinates when recreating the corresponding DIB
-    IsMouseInsideSVBox = Math_Functions.IsPointInRectF(x, y, m_SVRectF)
+    IsMouseInsideSVBox = PDMath.IsPointInRectF(x, y, m_SVRectF)
     
     'If the caller wants us to calculate saturation and value outputs, do so now
     If calculateSV Then
@@ -607,7 +607,7 @@ Private Sub CreateColorWheel()
             nY = y - m_HueWheelCenterY
             
             'Calculate an angle for this pixel
-            pxAngle = Math_Functions.Atan2_Fastest(nY, nX)
+            pxAngle = PDMath.Atan2_Fastest(nY, nX)
             
             'ATan2() returns an angle that is positive for counter-clockwise angles (y > 0), and negative for
             ' clockwise angles (y < 0), on the range [-Pi, +Pi].  Convert this angle to the absolute range [0, 1],
@@ -724,7 +724,7 @@ Private Sub CreateSVSquare()
     'While we're here, let's also calculate the top-left rendering origin for the square, so we don't have to do it in the core
     ' rendering function.
     Dim tmpX As Double, tmpY As Double
-    Math_Functions.ConvertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
+    PDMath.ConvertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
     m_SVRectF.Left = tmpX
     m_SVRectF.Top = tmpY
     
@@ -812,10 +812,10 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         'Next, calculate (x, y) coordinates for the four corners of the slice.  We use these as the endpoints for the radial lines
         ' marking either side of the "slice".
         Dim x1 As Double, x2 As Double, x3 As Double, x4 As Double, y1 As Double, y2 As Double, y3 As Double, y4 As Double
-        Math_Functions.ConvertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x1, y1, m_HueWheelCenterX, m_HueWheelCenterY
-        Math_Functions.ConvertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x2, y2, m_HueWheelCenterX, m_HueWheelCenterY
-        Math_Functions.ConvertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x3, y3, m_HueWheelCenterX, m_HueWheelCenterY
-        Math_Functions.ConvertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x4, y4, m_HueWheelCenterX, m_HueWheelCenterY
+        PDMath.ConvertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x1, y1, m_HueWheelCenterX, m_HueWheelCenterY
+        PDMath.ConvertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x2, y2, m_HueWheelCenterX, m_HueWheelCenterY
+        PDMath.ConvertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x3, y3, m_HueWheelCenterX, m_HueWheelCenterY
+        PDMath.ConvertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x4, y4, m_HueWheelCenterX, m_HueWheelCenterY
         
         'Add those two lines to the path object, and place connecting arcs between them
         slicePath.AddLine x1, y1, x2, y2

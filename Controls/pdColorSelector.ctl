@@ -419,11 +419,11 @@ End Sub
 'Returns TRUE if the mouse is inside the clickable region of the primary color selector
 ' (e.g. NOT the caption area, if one exists)
 Private Function IsMouseInPrimaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    IsMouseInPrimaryButton = Math_Functions.IsPointInRect(x, y, m_PrimaryColorRect)
+    IsMouseInPrimaryButton = PDMath.IsPointInRect(x, y, m_PrimaryColorRect)
 End Function
 
 Private Function IsMouseInSecondaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    IsMouseInSecondaryButton = Math_Functions.IsPointInRect(x, y, m_SecondaryColorRect)
+    IsMouseInSecondaryButton = PDMath.IsPointInRect(x, y, m_SecondaryColorRect)
 End Function
 
 'Redraw the entire control, including the caption (if present)

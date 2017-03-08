@@ -416,7 +416,7 @@ Public Function IsMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcIm
         ' If the target point lies inside this, it's over the image!
         Dim intRect As RECTF
         srcImage.imgViewport.GetIntersectRectCanvas intRect
-        IsMouseOverImage = Math_Functions.IsPointInRectF(x1, y1, intRect)
+        IsMouseOverImage = PDMath.IsPointInRectF(x1, y1, intRect)
         
     Else
         IsMouseOverImage = False

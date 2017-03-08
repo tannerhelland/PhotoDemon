@@ -28,9 +28,9 @@ Attribute VB_Exposed = False
 '
 'To that end, multiple coordinate sets are used within this class.  Individual shapes have their own coordinate collections;
 ' these vary from simple coordinate pairs, as with rectangle selections, to large variable-size arrays, as with a lasso
-' selection.  From these, a uniform set of m_CornersLocked.Left, m_CornersLocked.Top, m_CornersLocked.Width, and m_CornersLocked.Height values are calculated, which define the
-' boundaries of the raw geometric shape constructed by the selection.  These four values are primarily used internally, or to
-' show the user the size of their created shape (rectangle and elliptical selections allow the user to modify these values
+' selection.  From these, a uniform set of boundaries are calculated and stored inside the m_CornersLocked RectF; these define
+' the boundaries of the raw geometric shape constructed by the selection.  These boundary values are primarily used internally,
+' or to show the user the size of their created shape (rectangle and elliptical selections allow the user to modify these values
 ' via text box), but generally they should not be used externally.
 '
 'At selection mask creation time, a final bounding rect (used by variables m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, and m_Bounds.Height)
@@ -170,6 +170,11 @@ Private m_MaskHasBeenCreated As Boolean
 ' functions modify the selection in some way (e.g. Select menu dialogs), they need to set this to TRUE to prevent the engine from attempting
 ' to recreate a mask from existing vector data.
 Private m_IsMaskReady As Boolean
+
+'To improve viewport performance, a resampled copy of the current mask is always maintained at the current viewport size.
+' This copy must be regenerated whenever the mask or viewport position/zoom changes, obviously.
+Private m_ViewportMask As pdDIB
+Private m_IsViewportMaskReady As Boolean
 
 'Some types of transformations (basic shapes, like rectangles, etc), are transformable, meaning that after they are created, the user can
 ' click on them again to resize or move them.  Complex transformations (magic wand, lasso, etc), may not be transformable.  This boolean
@@ -1486,7 +1491,7 @@ Friend Sub RetreatLassoPosition(ByRef newCursorX_ImgCoords As Double, ByRef newC
     Do While (netDistance < 10) And (newLassoIndex > 0)
     
         'Calculate a distance between this coordinate and the previous one.
-        netDistance = netDistance + Math_Functions.DistanceTwoPoints(m_LassoPoints(newLassoIndex).x, m_LassoPoints(newLassoIndex).y, m_LassoPoints(newLassoIndex - 1).x, m_LassoPoints(newLassoIndex - 1).y)
+        netDistance = netDistance + PDMath.DistanceTwoPoints(m_LassoPoints(newLassoIndex).x, m_LassoPoints(newLassoIndex).y, m_LassoPoints(newLassoIndex - 1).x, m_LassoPoints(newLassoIndex - 1).y)
     
         'Decrement the test index and repeat
         newLassoIndex = newLassoIndex - 1
@@ -2082,14 +2087,16 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
     
+    'Rectangular and circle selections store their corner coordinates in the "locked" rect
     If (m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle) Then
         Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersLocked.Left, m_CornersLocked.Top, dstLeft, dstTop
         Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersLocked.Left + m_CornersLocked.Width, m_CornersLocked.Top + m_CornersLocked.Height, dstRight, dstBottom
+    
+    '...other selection types use the "unlocked" rect.  (I don't know why this is; I'm working on fixing it.)
     Else
         Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersUnlocked.Left, m_CornersUnlocked.Top, dstLeft, dstTop
         Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
     End If
-    
     
     'If this selection is in vector format, we have the option of drawing transform circles at appropriate locations
     ' for the selection's shape.
@@ -2150,11 +2157,20 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     
 End Sub
 
-'Render the current selection mask using one of several methods.  Note that this code operates entirely independent of selection type.
-' It only requires that valid selection boundaries be specified in advance, which it uses to accelerate the render process.
+'Render the current selection mask using one of several methods.  Required inputs include:
+' 1) Destination DIB, assumed to be the front buffer (e.g. the full composite image has already been rendered to this surface, in its
+'     proper location, and any color management has already been applied to it)
+' 2) Source image (we could technically pull from our local copy, but I'd like to remove that dependency in the future)
+' 3) Destination canvas (which determines things like the current zoom and scroll position)
+' 4) Viewport intersection rect (e.g. the rect of the front buffer where the image current resides; this may be the same size as
+'     the viewport DIB itself, or if the image is small and/or zoomed out, it may be a smaller size)
+' 5) Rendering options, if relevant.  (TODO: instead of passing these settings, have this renderer pull them directly from the
+'     Selection module - the viewport shouldn't have to know such granular selection data.)
+'
+'Note that this code renders *all* selection types.
 ' (Also note that the renderColor default constant evaluates to RGB(112, 183, 255), but VB doesn't let us use RGB inside a function dec.)
 ' TODO: allow light box translucency to be set by the user
-Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long, ByVal imgWidth As Long, ByVal imgHeight As Long, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
+Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef viewportIntersectRect As RECTF, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If m_RejectRefreshRequests Then Exit Sub
@@ -2162,34 +2178,67 @@ Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     'Is the selection mask ready to be used?  If not, prepare it now.
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
-    'A few different criteria can cause us to abandon this function in favor of renderOutlineOnly (which, per its name,
+    'A few different criteria can cause us to abandon this function in favor of RenderOutlineOnly (which, per its name,
     ' renders the active selection as just an outline):
-    ' 1) The user has specified outline-only mode, and this is not a raster or magic wand selection.  (Those don't support outline mode at present.)
+    ' 1) The user has specified outline-only mode, and this is not a raster or magic wand selection.
+    '    (Those don't support outline mode at present.)
     ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn)
     ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
     '
-    'If any of the above are true, we will reroute control to renderOutlineOnly
+    'If any of the above are true, we will reroute control to RenderOutlineOnly
     If ((renderType = PDSR_Outline) And (m_SelectionShape <> ss_Wand) And (m_SelectionShape <> ss_Raster)) Or _
         ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)) Or _
         ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed)) Then
         
         RenderOutlineOnly dstDIB, srcImage, dstCanvas
         Exit Sub
-            
+        
     End If
     
-    'Wand and raster selections cannot be rendered in outline mode; if this happens, forcibly switch the mode to HIGHLIGHT.
+    'Similarly, wand and raster selections cannot be rendered in outline mode, even if the caller requests it.
+    ' (PD's UI prevents this from happening, but as a fallback, add a forcible switch to HIGHLIGHT mode.)
     If (renderType = PDSR_Outline) And ((m_SelectionShape = ss_Wand) Or (m_SelectionShape = ss_Raster)) Then renderType = PDSR_Highlight
     
+    'TEMPORARY FIX: restore the old image dimension parameters, copying the results from the viewport rect.
+    Dim imgLeft As Long, imgTop As Long, imgWidth As Long, imgHeight As Long
+    With viewportIntersectRect
+        imgLeft = Int(.Left)
+        imgTop = Int(.Top)
+        imgWidth = Int(PDMath.Frac(.Left) + .Width + 0.9999)
+        imgHeight = Int(PDMath.Frac(.Top) + .Height + 0.9999)
+    End With
     
+    'STILL OKAY: converting bounds to canvas coords
     'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
     '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
     '   in effect.)
     Dim dstLeft As Double, dstRight As Double
     Dim dstTop As Double, dstBottom As Double
-    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_Bounds.Left, m_Bounds.Top, dstLeft, dstTop
-    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_Bounds.Left + m_Bounds.Width, m_Bounds.Top + m_Bounds.Height, dstRight, dstBottom
+    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left, m_Bounds.Top, dstLeft, dstTop
+    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left + m_Bounds.Width, m_Bounds.Top + m_Bounds.Height, dstRight, dstBottom
+    
+'    '******************************************
+'    'New project: resampling the current selection mask to match the on-screen image size, then using *that* for mask blending.
+'    'Start by using GDI+ to generate a temp mask at the same size as the viewport intersection rect
+'    Dim tmpDIB As pdDIB
+'    Set tmpDIB = New pdDIB
+'    tmpDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
+'
+'    Dim isZoomedIn As Boolean
+'    isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
+'
+'    If isZoomedIn Then
+'        GDI_Plus.GDIPlus_StretchBlt tmpDIB, dstLeft - viewportIntersectRect.Left, dstTop - viewportIntersectRect.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_NearestNeighbor, , , True, True
+'    Else
+'        GDI_Plus.GDIPlus_StretchBlt tmpDIB, dstLeft - viewportIntersectRect.Left, dstTop - viewportIntersectRect.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_HighQualityBilinear, , , , True
+'    End If
+'
+'    'TEMPORARY TEST ONLY!  Copy our result over the top of the destination DIB.
+'    BitBlt srcImage.canvasBuffer.GetDIBDC, imgLeft, imgTop, imgWidth, imgHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+'
+'    Exit Sub
+'    '******************************************
     
     'Several different selection rendering methods use the same variables.  I've declared the common ones here.
     Dim iData() As Byte
@@ -2201,8 +2250,8 @@ Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     Dim selMaskSA As SAFEARRAY2D
     
     Dim srcWidth As Long, srcHeight As Long
-    srcWidth = m_parentPDImage.Width - 1
-    srcHeight = m_parentPDImage.Height - 1
+    srcWidth = srcImage.Width - 1
+    srcHeight = srcImage.Height - 1
     
     'Just to be safe, declare some bounding variables in advance as well.  PhotoDemon now allows selections to lie off the image, so
     ' we must make sure we don't attempt to render selection pixels in any out-of-bound regions.
@@ -2223,14 +2272,14 @@ Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     
     ReDim xLookup(imgLeft To rightBound) As Long
     For x = imgLeft To rightBound
-        Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, x, imgTop, newX, newY, True
+        Drawing.ConvertCanvasCoordsToImageCoords dstCanvas, srcImage, x, imgTop, newX, newY, True
         newXInt = Int(newX)
         xLookup(x) = newXInt * xPxSizeInBytes
     Next x
     
     ReDim yLookup(imgTop To bottomBound) As Long
     For y = imgTop To bottomBound
-        Drawing.ConvertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, imgLeft, y, newX, newY, True
+        Drawing.ConvertCanvasCoordsToImageCoords dstCanvas, srcImage, imgLeft, y, newX, newY, True
         yLookup(y) = Int(newY)
     Next y
     
@@ -2257,7 +2306,7 @@ Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
             For x = 0 To 255
                 hData(x) = x \ 3
             Next x
-                                    
+            
             'Dim the non-active parts of the image
             For x = imgLeft To rightBound
                 xStride = x * xPxSizeInBytes
@@ -2348,11 +2397,11 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
     Dim dstTop As Double, dstBottom As Double
     
     If (m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle) Then
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersLocked.Left, m_CornersLocked.Top, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersLocked.Left + m_CornersLocked.Width, m_CornersLocked.Top + m_CornersLocked.Height, dstRight, dstBottom
+        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersLocked.Left, m_CornersLocked.Top, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersLocked.Left + m_CornersLocked.Width, m_CornersLocked.Top + m_CornersLocked.Height, dstRight, dstBottom
     ElseIf (m_SelectionShape = ss_Line) Then
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersUnlocked.Left, m_CornersUnlocked.Top, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), srcImage, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
+        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersUnlocked.Left, m_CornersUnlocked.Top, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
     End If
     
     'New in version 6.6 is an awesome new path class, which makes the rendering steps much easier than they have historically been.
@@ -2387,7 +2436,7 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
             
             'Widen the path to encompass only the border of the line
             Dim penPathBorder As pd2DPen
-            Drawing2D.QuickCreateSolidPen penPathBorder, GetSelectionProperty_Long(sp_LineWidth) * g_Zoom.GetZoomValue(m_parentPDImage.GetZoom), , , P2_LJ_Round, P2_LC_Round
+            Drawing2D.QuickCreateSolidPen penPathBorder, GetSelectionProperty_Long(sp_LineWidth) * g_Zoom.GetZoomValue(srcImage.GetZoom), , , P2_LJ_Round, P2_LC_Round
             pdPath.ConvertPath_PenTrace penPathBorder
             
         'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used and the number of points

@@ -593,7 +593,7 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
             
                     'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
                     ' image's boundaries, and if it is, return the "move selection" ID, then exit.
-                    If Math_Functions.IsPointInRectF(imgX, imgY, tmpRectF) Then
+                    If PDMath.IsPointInRectF(imgX, imgY, tmpRectF) Then
                         IsCoordSelectionPOI = poi_Interior
                     Else
                         IsCoordSelectionPOI = poi_Undefined

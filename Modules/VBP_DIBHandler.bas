@@ -604,7 +604,7 @@ Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransp
             
                 Dim tmpRectF As RECTF
                 CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
-                Math_Functions.GetIntClampedRectF tmpRectF
+                PDMath.GetIntClampedRectF tmpRectF
                 initX = tmpRectF.Left
                 initY = tmpRectF.Top
                 finalX = initX + tmpRectF.Width
@@ -675,7 +675,7 @@ Public Function ApplyTransparencyTable(ByRef srcDIB As pdDIB, ByRef srcTranspare
             
                 Dim tmpRectF As RECTF
                 CopyMemory_Strict VarPtr(tmpRectF), ptrToRectF, LenB(tmpRectF)
-                Math_Functions.GetIntClampedRectF tmpRectF
+                PDMath.GetIntClampedRectF tmpRectF
                 initX = tmpRectF.Left
                 initY = tmpRectF.Top
                 finalX = initX + tmpRectF.Width

@@ -430,7 +430,7 @@ Private Sub m_DownButtonTimer_Timer()
     'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
     ' timer once the value equals the value under the mouse.
     If m_MouseDownTrack Then
-        If Math_Functions.IsPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value > m_initTrackValue) Then m_DownButtonTimer.StopTimer
+        If PDMath.IsPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value > m_initTrackValue) Then m_DownButtonTimer.StopTimer
     End If
 
 End Sub
@@ -449,7 +449,7 @@ Private Sub m_UpButtonTimer_Timer()
     'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
     ' timer once the value equals the value under the mouse.
     If m_MouseDownTrack Then
-        If Math_Functions.IsPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value < m_initTrackValue) Then m_UpButtonTimer.StopTimer
+        If PDMath.IsPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value < m_initTrackValue) Then m_UpButtonTimer.StopTimer
     End If
     
 End Sub
@@ -529,7 +529,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
             Case pdLeftButton
                 
                 'Determine mouse button state for the up and down button areas
-                If Math_Functions.IsPointInRectL(x, y, upLeftRect) Then
+                If PDMath.IsPointInRectL(x, y, upLeftRect) Then
                     m_MouseDownUpButton = True
                     
                     'Adjust the value immediately
@@ -543,7 +543,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                     m_MouseDownUpButton = False
                 End If
                 
-                If Math_Functions.IsPointInRectL(x, y, downRightRect) Then
+                If PDMath.IsPointInRectL(x, y, downRightRect) Then
                     m_MouseDownDownButton = True
                     MoveValueUp
                     m_DownButtonTimer.Interval = Interface.GetKeyboardDelay() * 1000
@@ -553,7 +553,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                 End If
                 
                 'Determine button state for the thumb
-                If Math_Functions.IsPointInRectF(x, y, thumbRect) Then
+                If PDMath.IsPointInRectF(x, y, thumbRect) Then
                     m_MouseDownThumb = True
                     
                     'Store initial x/y/value values at this location
@@ -568,7 +568,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
                     
                     'Now we perform a special check for the mouse being inside the track area.  (We do it here so that
                     ' the mouse being over the thumb (which lies *inside* the track) doesn't set this to TRUE.)
-                    If Math_Functions.IsPointInRectL(x, y, trackRect) Then
+                    If PDMath.IsPointInRectL(x, y, trackRect) Then
                         
                         m_MouseDownTrack = True
                         
@@ -663,28 +663,28 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     Else
     
         'Determine mouse hover state for the up and down button areas
-        If Math_Functions.IsPointInRectL(x, y, upLeftRect) Then
+        If PDMath.IsPointInRectL(x, y, upLeftRect) Then
             m_MouseOverUpButton = True
             m_MouseOverTrack = False
         Else
             m_MouseOverUpButton = False
         End If
         
-        If Math_Functions.IsPointInRectL(x, y, downRightRect) Then
+        If PDMath.IsPointInRectL(x, y, downRightRect) Then
             m_MouseOverDownButton = True
             m_MouseOverTrack = False
         Else
             m_MouseOverDownButton = False
         End If
             
-        If Math_Functions.IsPointInRectF(x, y, thumbRect) Then
+        If PDMath.IsPointInRectF(x, y, thumbRect) Then
             m_MouseOverThumb = True
             m_MouseOverTrack = False
         Else
             m_MouseOverThumb = False
             
             'Do a special check for the track now
-            If Math_Functions.IsPointInRectL(x, y, trackRect) Then
+            If PDMath.IsPointInRectL(x, y, trackRect) Then
                 m_MouseOverTrack = True
                 
                 'Cache the mouse positions, so we know where to draw the orientation dot

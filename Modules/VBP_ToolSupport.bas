@@ -334,7 +334,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 'Find the angle between the two lines we've calculated
                 Dim newAngle As Double
-                newAngle = Math_Functions.AngleBetweenTwoIntersectingLines(ptIntersect, pt1, pt2, True)
+                newAngle = PDMath.AngleBetweenTwoIntersectingLines(ptIntersect, pt1, pt2, True)
                 
                 'Because the angle function finds the absolute inner angle, it will never be greater than 180 degrees.  This also means
                 ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to
@@ -395,7 +395,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 srcLayer.GetLayerCornerCoordinates tmpPoints
                 
                 Dim curCenter As POINTFLOAT
-                Math_Functions.FindCenterOfFloatPoints curCenter, tmpPoints
+                PDMath.FindCenterOfFloatPoints curCenter, tmpPoints
                 
                 'Reset the layer's center of rotation
                 srcLayer.SetLayerRotateCenterX 0.5
@@ -405,7 +405,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 ' layer's new center of rotation, in absolute coordinates.
                 srcLayer.GetLayerCornerCoordinates tmpPoints
                 Dim newCenter As POINTFLOAT
-                Math_Functions.FindCenterOfFloatPoints newCenter, tmpPoints
+                PDMath.FindCenterOfFloatPoints newCenter, tmpPoints
                 
                 'Apply new (x, y) layer offsets to ensure that the layer's on-screen position hasn't changed
                 srcLayer.SetLayerOffsetX srcLayer.GetLayerOffsetX + (curCenter.x - newCenter.x)

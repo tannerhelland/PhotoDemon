@@ -448,13 +448,13 @@ Private Function GetHistoryItemUnderMouse(ByVal srcX As Single, ByVal srcY As Si
     
     'First, shortcut the function by seeing if the mouse is even inside the history area.  (If a caption is in use,
     ' this may not be true.)
-    If Math_Functions.IsPointInRectF(srcX, srcY, m_HistoryRect) Then
+    If PDMath.IsPointInRectF(srcX, srcY, m_HistoryRect) Then
     
         If (m_HistoryCount > 0) Then
             
             Dim i As Long
             For i = 0 To m_HistoryCount - 1
-                If Math_Functions.IsPointInRectF(srcX, srcY, m_HistoryItems(i).ItemRect) Then
+                If PDMath.IsPointInRectF(srcX, srcY, m_HistoryItems(i).ItemRect) Then
                     GetHistoryItemUnderMouse = i
                     Exit For
                 End If

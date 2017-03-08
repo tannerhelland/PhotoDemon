@@ -598,10 +598,10 @@ Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long,
     
         'Calculate (x, y) coordinates for the four corners of this subregion.  We use these as the endpoints for the radial lines
         ' marking either side of the "slice".
-        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), innerRadius, x1, y1, centerX, centerY
-        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), outerRadius, x2, y2, centerX, centerY
-        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), innerRadius, x3, y3, centerX, centerY
-        Math_Functions.ConvertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), outerRadius, x4, y4, centerX, centerY
+        PDMath.ConvertPolarToCartesian PDMath.DegreesToRadians(startAngle), innerRadius, x1, y1, centerX, centerY
+        PDMath.ConvertPolarToCartesian PDMath.DegreesToRadians(startAngle), outerRadius, x2, y2, centerX, centerY
+        PDMath.ConvertPolarToCartesian PDMath.DegreesToRadians(startAngle + sweepAngle), innerRadius, x3, y3, centerX, centerY
+        PDMath.ConvertPolarToCartesian PDMath.DegreesToRadians(startAngle + sweepAngle), outerRadius, x4, y4, centerX, centerY
         
         'Add the two divider lines to the current path object, and place connecting arcs between them
         m_ColorRegions(i).AddLine x1, y1, x2, y2
@@ -660,32 +660,32 @@ Private Sub CalculateVariantColors()
                 rNew = rNew + (rNew - grayNew) * 0.4
                 gNew = gNew + (gNew - grayNew) * 0.4
                 bNew = bNew + (bNew - grayNew) * 0.4
-                rNew = Math_Functions.ClampL(rNew, 0, 255)
-                gNew = Math_Functions.ClampL(gNew, 0, 255)
-                bNew = Math_Functions.ClampL(bNew, 0, 255)
+                rNew = PDMath.ClampL(rNew, 0, 255)
+                gNew = PDMath.ClampL(gNew, 0, 255)
+                bNew = PDMath.ClampL(bNew, 0, 255)
             
             Case CV_ValueUp
                 
                 'Use a fake value calculation
-                rNew = Math_Functions.ClampL(rNew + rgbChange, 0, 255)
-                gNew = Math_Functions.ClampL(gNew + rgbChange, 0, 255)
-                bNew = Math_Functions.ClampL(bNew + rgbChange, 0, 255)
+                rNew = PDMath.ClampL(rNew + rgbChange, 0, 255)
+                gNew = PDMath.ClampL(gNew + rgbChange, 0, 255)
+                bNew = PDMath.ClampL(bNew + rgbChange, 0, 255)
                 
             Case CV_RedUp
-                rNew = Math_Functions.ClampL(rNew + rgbChange, 0, 255)
+                rNew = PDMath.ClampL(rNew + rgbChange, 0, 255)
                 
             Case CV_GreenUp
-                gNew = Math_Functions.ClampL(gNew + rgbChange, 0, 255)
+                gNew = PDMath.ClampL(gNew + rgbChange, 0, 255)
                 
             Case CV_BlueUp
-                bNew = Math_Functions.ClampL(bNew + rgbChange, 0, 255)
+                bNew = PDMath.ClampL(bNew + rgbChange, 0, 255)
                 
             Case CV_ValueDown
                 
                 'Use a fake value calculation
-                rNew = Math_Functions.ClampL(rNew - rgbChange, 0, 255)
-                gNew = Math_Functions.ClampL(gNew - rgbChange, 0, 255)
-                bNew = Math_Functions.ClampL(bNew - rgbChange, 0, 255)
+                rNew = PDMath.ClampL(rNew - rgbChange, 0, 255)
+                gNew = PDMath.ClampL(gNew - rgbChange, 0, 255)
+                bNew = PDMath.ClampL(bNew - rgbChange, 0, 255)
             
             Case CV_SaturationDown
                 
@@ -694,9 +694,9 @@ Private Sub CalculateVariantColors()
                 rNew = rNew + (grayNew - rNew) * 0.3
                 gNew = gNew + (grayNew - gNew) * 0.3
                 bNew = bNew + (grayNew - bNew) * 0.3
-                rNew = Math_Functions.ClampL(rNew, 0, 255)
-                gNew = Math_Functions.ClampL(gNew, 0, 255)
-                bNew = Math_Functions.ClampL(bNew, 0, 255)
+                rNew = PDMath.ClampL(rNew, 0, 255)
+                gNew = PDMath.ClampL(gNew, 0, 255)
+                bNew = PDMath.ClampL(bNew, 0, 255)
             
             Case CV_HueDown
                 hNew = hNew - hChange
@@ -704,13 +704,13 @@ Private Sub CalculateVariantColors()
                 Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
             
             Case CV_BlueDown
-                bNew = Math_Functions.ClampL(bNew - rgbChange, 0, 255)
+                bNew = PDMath.ClampL(bNew - rgbChange, 0, 255)
                 
             Case CV_GreenDown
-                gNew = Math_Functions.ClampL(gNew - rgbChange, 0, 255)
+                gNew = PDMath.ClampL(gNew - rgbChange, 0, 255)
                 
             Case CV_RedDown
-                rNew = Math_Functions.ClampL(rNew - rgbChange, 0, 255)
+                rNew = PDMath.ClampL(rNew - rgbChange, 0, 255)
         
         End Select
         

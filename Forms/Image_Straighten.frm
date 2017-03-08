@@ -149,7 +149,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
     If isPreview Then
         
         'Start by calculating the corner points of the image, when rotated at the specified angle
-        Math_Functions.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
+        PDMath.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
         
         'Next, we need to calculate a scaling factor for the image.  Straightening applies a sort of auto-crop
         ' to the image to remove empty corners; by solving a triangle equation using the image diagonal, we
@@ -235,7 +235,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             If (thingToRotate = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
             'Calculating the corner points of the layer, when rotated at the specified angle.
-            Math_Functions.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
+            PDMath.FindCornersOfRotatedRect srcWidth, srcHeight, rotationAngle, rotatePoints
             
             'Next, we need to calculate a scaling factor for the image.  Straightening applies a sort of auto-crop
             ' to the image to remove empty corners; by solving a triangle equation using the image diagonal, we

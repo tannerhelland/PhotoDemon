@@ -1,9 +1,9 @@
-Attribute VB_Name = "Math_Functions"
+Attribute VB_Name = "PDMath"
 '***************************************************************************
 'Specialized Math Routines
 'Copyright 2013-2017 by Tanner Helland and Audioglider
 'Created: 13/June/13
-'Last updated: 12/January/16
+'Last updated: 12/January/17
 'Last update: added two optimized Atan2() variants, each with trade-offs between accuracy and performance.
 '
 'Many of these functions are older than the create date above, but I did not organize them into a consistent module
@@ -554,7 +554,7 @@ End Function
 
 Public Sub ConvertCartesianToPolar(ByVal srcX As Double, ByVal srcY As Double, ByRef dstRadius As Double, ByRef dstAngle As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
     dstRadius = Sqr((srcX - centerX) * (srcX - centerX) + (srcY - centerY) * (srcY - centerY))
-    dstAngle = Math_Functions.Atan2_Faster((srcY - centerY), (srcX - centerX))
+    dstAngle = PDMath.Atan2_Faster((srcY - centerY), (srcX - centerX))
 End Sub
 
 Public Sub ConvertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)

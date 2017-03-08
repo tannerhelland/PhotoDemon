@@ -293,7 +293,7 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
         'Update the image's size
         If (thingToRotate = PD_AT_WHOLEIMAGE) And resizeToFit Then
             Dim newWidth As Double, newHeight As Double
-            Math_Functions.FindBoundarySizeOfRotatedRect pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, rotationAngle, newWidth, newHeight, False
+            PDMath.FindBoundarySizeOfRotatedRect pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, rotationAngle, newWidth, newHeight, False
             pdImages(g_CurrentImage).UpdateSize False, newWidth, newHeight
             DisplaySize pdImages(g_CurrentImage)
         End If

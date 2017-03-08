@@ -483,7 +483,7 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     Else
         Dim tmpRectF As RECTF
         GetKnobRectF tmpRectF
-        overSlider = Math_Functions.IsPointInRectF(mouseX, mouseY, tmpRectF)
+        overSlider = PDMath.IsPointInRectF(mouseX, mouseY, tmpRectF)
     End If
     
     'See if the mouse is within distance of the slider's center
@@ -493,7 +493,7 @@ Private Function IsMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
         
         'If the mouse is not over the slider itself, check the background track as well
         If alsoCheckBackgroundTrack Then
-            If Math_Functions.IsPointInRectF(mouseX, mouseY, m_SliderTrackRect) Then
+            If PDMath.IsPointInRectF(mouseX, mouseY, m_SliderTrackRect) Then
                 IsMouseOverSlider = True
             Else
                 IsMouseOverSlider = False

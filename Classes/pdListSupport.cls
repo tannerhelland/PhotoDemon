@@ -490,12 +490,12 @@ Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, 
             tmpRect.Height = m_Items(i).itemHeight
             
             If checkXAsWell Then
-                If Math_Functions.IsPointInRectF(srcX, srcY, tmpRect) Then
+                If PDMath.IsPointInRectF(srcX, srcY, tmpRect) Then
                     ListIndexByPosition = i
                     Exit For
                 End If
             Else
-                If Math_Functions.IsPointInRectF(1&, srcY, tmpRect) Then
+                If PDMath.IsPointInRectF(1&, srcY, tmpRect) Then
                     ListIndexByPosition = i
                     Exit For
                 End If
@@ -783,7 +783,7 @@ Private Sub UpdateHoveredIndex(ByVal x As Long, ByVal y As Long, Optional ByVal 
     
     Dim oldMouseInsideList As Boolean
     oldMouseInsideList = m_MouseInsideList
-    m_MouseInsideList = Math_Functions.IsPointInRectF(x, y, m_ListRectF)
+    m_MouseInsideList = PDMath.IsPointInRectF(x, y, m_ListRectF)
     
     Dim tmpListIndex As Long
     If m_MouseInsideList Then tmpListIndex = Me.ListIndexByPosition(x, y) Else tmpListIndex = -1
