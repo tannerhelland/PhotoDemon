@@ -286,6 +286,8 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         'Transfer focus back to the layer box itself (instead of letting Windows forward it somewhere random)
         g_WindowManager.SetFocusAPI Me.hWnd
         
+    Else
+        preventFurtherHandling = False
     End If
 
 End Sub
@@ -293,6 +295,7 @@ End Sub
 'If the text box loses focus mid-edit, hide it and discard any changes
 Private Sub txtLayerName_LostFocusAPI()
     If txtLayerName.Visible Then txtLayerName.Visible = False
+    m_LayerNameEditMode = False
 End Sub
 
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean, lReturn As Long)
@@ -393,7 +396,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
         End If
         
     End If
-    
+        
 End Sub
 
 'Key events are TODO
