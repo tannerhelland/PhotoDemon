@@ -374,6 +374,22 @@ Public Function KeyboardHookProcAccelerator(ByVal nCode As Long, ByVal wParam As
     End If
 End Function
 
+'Same idea as the three previous functions, but for individual pdEditBox instances
+Public Function NotifyEditBoxHookNeeded(ByRef srcPDEditBox As pdEditBoxW) As Long
+    Set m_EditBoxRef = srcPDEditBox
+    NotifyEditBoxHookNeeded = SetWindowsHookExW(WH_KEYBOARD, AddressOf KeyboardHookProcEditBox, App.hInstance, App.ThreadID)
+End Function
+
+Public Sub NotifyEditBoxHookNotNeeded(ByVal objPointer As Long)
+    If (ObjPtr(m_EditBoxRef) = objPointer) Then Set m_EditBoxRef = Nothing
+End Sub
+
+Public Function KeyboardHookProcEditBox(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    If (Not m_EditBoxRef Is Nothing) Then
+        KeyboardHookProcEditBox = m_EditBoxRef.EditBoxKeyboardProc(nCode, wParam, lParam)
+    End If
+End Function
+
 'If you have any hack-related cleanup that needs to be performed at shutdown time, use this function.
 Public Sub ShutdownCleanup()
     Set m_EditBoxRef = Nothing

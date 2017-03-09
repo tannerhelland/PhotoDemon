@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Text Box control
 'Copyright 2014-2017 by Tanner Helland
 'Created: 03/November/14
-'Last updated: 20/February/17
-'Last update: greatly simplify Unicode handling
+'Last updated: 09/March/17
+'Last update: add back a minimal hooking solution, to solve issues with VB eating arrow keys
 '
 'This class contains code that was formerly implemented directly inside the pdTextBox user control.  To simplify
 ' the embedding of this window into other user controls (like pdSpinner), I've separated the text box events into
@@ -29,12 +29,8 @@ Attribute VB_Exposed = False
 ' 1) I deliberately do not expose all text box properties (just the ones most relevant to PD).
 ' 2) Focus is currently problematic.  A fix is in-progress.  TODO!
 ' 3) To allow use of arrow keys and other control keys, this control must hook the keyboard.  (If it does not,
-'    any parent VB window will eat control keypresses, because it doesn't know about windows created via the API!)
-'    A byproduct of this is that accelerators flat-out WILL NOT WORK while this control has focus.  I haven't yet
-'    settled on a good way to handle this; what I may end up doing is manually forwarding any key combinations that
-'    use Alt to the default window handler, but I'm not sure this will help.  TODO!
-' 4) Dynamic hooking can occasionally cause trouble in the IDE, particularly when used with break points.  It should
-'    be perfectly stable once compiled.
+'    any parent VB window will eat control keypresses, because it doesn't know about windows created via WAPI.)
+' 4) Dynamic hooking can occasionally cause trouble in the IDE, particularly when used with break points.  Avoid 'em.
 ' 5) This class relies on a number of functions in the UserControl_Support module, such as sharing GDI brushes and
 '    fonts between all pdEditBoxW instances (to reduce GDI object count).
 '
@@ -217,6 +213,7 @@ Private Const WM_NEXTDLGCTL As Long = &H28
 Private Const WM_CTLCOLOREDIT As Long = &H133
 Private Const WM_CTLCOLORSTATIC As Long = &H138
 Private Const WM_DESTROY As Long = &H2
+Private Const WM_GETDLGCODE As Long = &H87
 
 Private Const EN_UPDATE As Long = &H400
 Private Const EM_GETSEL As Long = &HB0
@@ -254,6 +251,10 @@ Private m_BackColor As Long, m_TextColor As Long
 
 'On the first MOUSE_UP event after the control receives focus, we select all text if the user did not make a manual text selection.
 Private m_JustGotFocus As Boolean
+
+'Keyboard hooking is used to bypass VB's propensity for eating arrow keypresses
+Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
+Private m_HookID As Long
 
 Public Property Get BackColor() As Long
     BackColor = m_BackColor
@@ -713,7 +714,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     ' ???? chars, despite use of a Unicode window - and that ultimately defeats the whole point of a Unicode text box, no?
     
     If (uiMsg = WM_CHAR) Then
-    
+        
         'On a single-line text box, pressing Enter will cause a ding.  (It's insane that this is the default behavior.)
         ' To prevent this, we capture return presses and forcibly terminate them.  If the user wants to do something with
         ' Enter keypresses on these controls, they will have already handled the key event in the hook proc.
@@ -761,6 +762,8 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'Forcibly disable PD's main accelerator control
         FormMain.pdHotkeys.DeactivateHook
         
+        InstallKeyboardHook
+        
         'Raise a matching notification
         If (Not m_HasFocus) Then
             m_HasFocus = True
@@ -771,6 +774,8 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         m_JustGotFocus = True
         
     ElseIf (uiMsg = WM_KILLFOCUS) Then
+        
+        RemoveKeyboardHook
         
         'Re-enable PD's main accelerator control
         FormMain.pdHotkeys.ActivateHook
@@ -784,7 +789,9 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     'Depending how our parent control is unloaded, the API edit box may receive a WM_DESTROY message before
     ' this class is terminated.  If that happens, we'll manually invoke our own internal DestroyWindow code.
     ElseIf (uiMsg = WM_DESTROY) Then
-    
+        
+        RemoveKeyboardHook
+        
         If DestroyEditBox Then
             HandleEditBoxMsgs = 0
             msgEaten = True
@@ -793,6 +800,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     'Failsafe window destruction check
     ElseIf (uiMsg = WM_NCDESTROY) Then
     
+        RemoveKeyboardHook
         VB_Hacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHasBeenSubclassed = False
         'Note that we deliberately *do not* eat this message, as VB's default wndproc needs to perform its own teardown
@@ -862,6 +870,7 @@ Private Function HandleParentMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal
         VB_Hacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHasBeenSubclassed = False
         'Note that we deliberately *do not* eat this message, as VB's default wndproc needs to perform its own teardown
+    
     End If
         
 End Function
@@ -881,4 +890,76 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     If (Not msgEaten) Then ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
+End Function
+
+'On focus events, keyboard hooks are set or removed accordingly.  See the VB_Hacks module for details.
+Private Sub InstallKeyboardHook()
+    If g_IsProgramRunning Then
+        If (m_HookID = 0) Then m_HookID = VB_Hacks.NotifyEditBoxHookNeeded(Me)
+    End If
+End Sub
+
+Private Sub RemoveKeyboardHook()
+    If (m_HookID <> 0) Then
+        UnhookWindowsHookEx m_HookID
+        m_HookID = 0
+        VB_Hacks.NotifyEditBoxHookNotNeeded ObjPtr(Me)
+    End If
+End Sub
+
+Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef msgEaten As Boolean) As Long
+    
+    'Only respond to actual key presses (not just message peeks)
+    If (nCode = 0) Then
+        
+        'For the most part, we can safely ignore key presses, and instead let the default window handler handle them.
+        ' The main outlier is arrow keys; VB intercepts and eat these (under the faulty assumption that they're
+        ' meant for dialog navigation).  As such, we have to watch for incoming arrow keypresses, and when they occur,
+        ' manually forward them to the edit box.
+        
+        'Bit 31 of lParam is 0 if a key is being pressed, and 1 if it is being released.  We check this in advance,
+        ' so we don't double-raise key events.
+        If (lParam >= 0) Then
+        
+            'Key up/down events are raised twice; once in a transitionary stage, and once again in a final stage.
+            ' To prevent double-raising events, check the transitionary state before proceeding
+            If ((lParam And 1) <> 0) And ((lParam And 3) = 1) Then
+
+                'Check for arrow keys and forward them manually.  (Also, eat these messages so no one else receives them.)
+                If (wParam = VK_LEFT) Or (wParam = VK_UP) Or (wParam = VK_RIGHT) Or (wParam = VK_DOWN) Then
+                    SendMessage m_EditBoxHwnd, WM_KEYDOWN, wParam, ByVal (lParam And &H51111111)
+                    msgEaten = True
+                End If
+            
+            End If
+        End If
+    End If
+    
+End Function
+
+'VB_Hacks will forward hooked messages here, while a hook is active
+Friend Function EditBoxKeyboardProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    
+    'If we've shut down our internal hook handling code, ignore this event completely if.
+    If (m_HookID <> 0) Then
+
+        Dim msgEaten As Boolean: msgEaten = False
+        
+        'MSDN states that negative codes must be passed to the next hook, without processing
+        ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)
+        If (nCode >= 0) Then
+            EditBoxKeyboardProc = HandleKeyProc(nCode, wParam, lParam, msgEaten)
+        End If
+        
+        'Per MSDN, return the value of CallNextHookEx, contingent on whether or not we handled the keypress internally.
+        ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
+        ' the pressed keys (and raise its own corresponding WM_CHAR events, etc).
+        If (Not msgEaten) Then
+            EditBoxKeyboardProc = CallNextHookEx(0&, nCode, wParam, lParam)
+        Else
+            EditBoxKeyboardProc = 1&
+        End If
+        
+    End If
+
 End Function
