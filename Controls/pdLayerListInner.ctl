@@ -396,12 +396,12 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
         End If
         
     End If
-        
+    
 End Sub
 
 'Key events are TODO
 Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-    
+        
     'Ignore user interaction while in drag/drop mode
     If m_InOLEDragDropMode Then Exit Sub
     

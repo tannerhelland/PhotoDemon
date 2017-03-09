@@ -581,7 +581,7 @@ End Sub
 'Cache the current dimensions of the underlying UC.  Returns TRUE if dimensions were retrieved successfully.
 Private Function CacheWindowDimensions() As Boolean
     
-    If (Not m_MoveSize Is Nothing) Then
+    If ((Not m_MoveSize Is Nothing) And g_IsProgramRunning) Then
         m_Width = m_MoveSize.GetWidth
         m_Height = m_MoveSize.GetHeight
         CacheWindowDimensions = True
@@ -1045,11 +1045,11 @@ Friend Function GetControlTop() As Long
 End Function
 
 Friend Function GetControlWidth() As Long
-    GetControlWidth = m_MoveSize.GetWidth
+    If g_IsProgramRunning Then GetControlWidth = m_MoveSize.GetWidth Else GetControlWidth = m_Width
 End Function
 
 Friend Function GetControlHeight() As Long
-    GetControlHeight = m_MoveSize.GetHeight
+    If g_IsProgramRunning Then GetControlHeight = m_MoveSize.GetHeight Else GetControlHeight = m_Height
 End Function
 
 Friend Function IsMouseInside() As Boolean
@@ -1093,8 +1093,8 @@ End Sub
 Friend Sub RequestNewPosition(Optional ByVal newLeft As Long = -100, Optional ByVal newTop As Long = -100, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
     
     'Fill in missing parameters
-    If newLeft = -100 Then newLeft = m_MoveSize.GetLeft
-    If newTop = -100 Then newTop = m_MoveSize.GetTop
+    If (newLeft = -100) Then newLeft = m_MoveSize.GetLeft
+    If (newTop = -100) Then newTop = m_MoveSize.GetTop
     
     m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
     If (newLeft <> m_MoveSize.GetLeft) Or (newTop <> m_MoveSize.GetTop) Then
@@ -1165,6 +1165,15 @@ Friend Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
         End If
     End If
     
+End Sub
+
+'To support minimal rendering inside the IDE, this class must be notified of IDE resize events (as we don't want to subclass
+' inside the designer)
+Friend Sub NotifyIDEResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    m_Width = newWidth \ 15
+    m_Height = newHeight \ 15
+    RaiseEvent RepaintRequired(True)
+    Me.RequestRepaint True
 End Sub
 
 'To support IDE painting of windowless controls, we have to jump through some unpleasant hoops.  This sub needs to be called from

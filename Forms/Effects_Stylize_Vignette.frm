@@ -4,7 +4,7 @@ Begin VB.Form FormVignette
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Apply Vignetting"
-   ClientHeight    =   6540
+   ClientHeight    =   6645
    ClientLeft      =   -15
    ClientTop       =   225
    ClientWidth     =   12090
@@ -20,7 +20,7 @@ Begin VB.Form FormVignette
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   436
+   ScaleHeight     =   443
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
@@ -53,7 +53,7 @@ Begin VB.Form FormVignette
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5790
+      Top             =   5895
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
