@@ -1419,7 +1419,7 @@ Public Declare Function FreeImage_Load Lib "FreeImage.dll" Alias "_FreeImage_Loa
 
 Public Declare Function FreeImage_LoadUInt Lib "FreeImage.dll" Alias "_FreeImage_LoadU@12" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal fileName As Long, _
+           ByVal srcFilename As Long, _
   Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
 Public Declare Function FreeImage_LoadFromHandle Lib "FreeImage.dll" Alias "_FreeImage_LoadFromHandle@16" ( _
@@ -1437,7 +1437,7 @@ Private Declare Function FreeImage_SaveInt Lib "FreeImage.dll" Alias "_FreeImage
 Private Declare Function FreeImage_SaveUInt Lib "FreeImage.dll" Alias "_FreeImage_SaveU@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
            ByVal Bitmap As Long, _
-           ByVal fileName As Long, _
+           ByVal srcFilename As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Private Declare Function FreeImage_SaveToHandleInt Lib "FreeImage.dll" Alias "_FreeImage_SaveToHandle@20" ( _
@@ -1569,7 +1569,7 @@ Public Declare Function FreeImage_GetFileType Lib "FreeImage.dll" Alias "_FreeIm
   Optional ByVal Size As Long) As FREE_IMAGE_FORMAT
   
 Public Declare Function FreeImage_GetFileTypeU Lib "FreeImage.dll" Alias "_FreeImage_GetFileTypeU@8" ( _
-           ByVal fileName As Long, _
+           ByVal srcFilename As Long, _
   Optional ByVal Size As Long) As FREE_IMAGE_FORMAT
 
 Public Declare Function FreeImage_GetFileTypeFromHandle Lib "FreeImage.dll" Alias "_FreeImage_GetFileTypeFromHandle@12" ( _
@@ -1775,7 +1775,7 @@ Public Declare Function FreeImage_GetFIFFromFilename Lib "FreeImage.dll" Alias "
            ByVal srcFilename As String) As FREE_IMAGE_FORMAT
 
 Public Declare Function FreeImage_GetFIFFromFilenameU Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFilenameU@4" ( _
-           ByVal fileName As Long) As FREE_IMAGE_FORMAT
+           ByVal srcFilename As Long) As FREE_IMAGE_FORMAT
 
 Private Declare Function FreeImage_FIFSupportsReadingInt Lib "FreeImage.dll" Alias "_FreeImage_FIFSupportsReading@4" ( _
            ByVal Format As FREE_IMAGE_FORMAT) As Long
@@ -2546,7 +2546,7 @@ Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_Save = CBool(FreeImage_SaveUInt(Format, Bitmap, StrPtr(fileName), Flags) = 1)
+   FreeImage_Save = CBool(FreeImage_SaveUInt(Format, Bitmap, StrPtr(srcFilename), Flags) = 1)
 
 End Function
 
@@ -2789,7 +2789,7 @@ Public Function FreeImage_OpenMultiBitmap(ByVal Format As FREE_IMAGE_FORMAT, _
                                  Optional ByVal KeepCacheInMemory As Boolean, _
                                  Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
-   FreeImage_OpenMultiBitmap = FreeImage_OpenMultiBitmapInt(Format, fileName, IIf(CreateNew, 1, 0), _
+   FreeImage_OpenMultiBitmap = FreeImage_OpenMultiBitmapInt(Format, srcFilename, IIf(CreateNew, 1, 0), _
          IIf(ReadOnly And Not CreateNew, 1, 0), IIf(KeepCacheInMemory, 1, 0), Flags)
 
 End Function
@@ -3555,9 +3555,9 @@ Dim i As Long
    ' This function tests, whether a given complete filename is valid
    ' for a certain image format (fif).
 
-   i = InStrRev(fileName, ".")
+   i = InStrRev(srcFilename, ".")
    If (i > 0) Then
-      strExtension = Mid$(fileName, i + 1)
+      strExtension = Mid$(srcFilename, i + 1)
       FreeImage_IsFilenameValidForFIF = (InStr(1, _
                                                FreeImage_GetFIFExtensionList(Format) & ",", _
                                                strExtension & ",", _
@@ -4945,10 +4945,10 @@ Const vbInvalidPictureError As Long = 481
    ' usage of these parameters.
    
 
-   Format = FreeImage_GetFileTypeU(StrPtr(fileName))
+   Format = FreeImage_GetFileTypeU(StrPtr(srcFilename))
    If (Format <> FIF_UNKNOWN) Then
       If (FreeImage_FIFSupportsReading(Format)) Then
-         FreeImage_LoadEx = FreeImage_LoadUInt(Format, StrPtr(fileName), Options)
+         FreeImage_LoadEx = FreeImage_LoadUInt(Format, StrPtr(srcFilename), Options)
          If (FreeImage_LoadEx) Then
             
             If ((Not IsMissing(Width)) Or _
@@ -4971,7 +4971,7 @@ Const vbInvalidPictureError As Long = 481
 
 End Function
 
-Public Function LoadPictureEx(Optional ByRef fileName As Variant, _
+Public Function LoadPictureEx(Optional ByRef srcFilename As Variant, _
                               Optional ByRef Options As FREE_IMAGE_LOAD_OPTIONS, _
                               Optional ByRef Width As Variant, _
                               Optional ByRef Height As Variant, _
@@ -4994,8 +4994,8 @@ Dim hDIB As Long
    ' FreeImage's header-only loading option.
 
 
-   If (Not IsMissing(fileName)) Then
-      hDIB = FreeImage_LoadEx(fileName, (Options And (Not FILO_LOAD_NOPIXELS)), _
+   If (Not IsMissing(srcFilename)) Then
+      hDIB = FreeImage_LoadEx(srcFilename, (Options And (Not FILO_LOAD_NOPIXELS)), _
             Width, Height, InPercent, Filter, Format)
       Set LoadPictureEx = FreeImage_GetOlePicture(hDIB, , True)
    End If
@@ -5085,13 +5085,13 @@ Dim strExtension As String
       End If
       
       If (Format = FIF_UNKNOWN) Then
-         Format = FreeImage_GetFIFFromFilenameU(StrPtr(fileName))
+         Format = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
       End If
       If (Format <> FIF_UNKNOWN) Then
          If ((FreeImage_FIFSupportsWriting(Format)) And _
              (FreeImage_FIFSupportsExportType(Format, FIT_BITMAP))) Then
             
-            If (Not FreeImage_IsFilenameValidForFIF(Format, fileName)) Then
+            If (Not FreeImage_IsFilenameValidForFIF(Format, srcFilename)) Then
                'Edit by Tanner: don't prevent me from writing whatever file extensions I damn well please!  ;)
                'strExtension = "." & FreeImage_GetPrimaryExtensionFromFIF(Format)
             End If
@@ -5148,7 +5148,7 @@ Dim strExtension As String
                End If
             End If
             
-            FreeImage_SaveEx = FreeImage_Save(Format, Bitmap, fileName & strExtension, Options)
+            FreeImage_SaveEx = FreeImage_Save(Format, Bitmap, srcFilename & strExtension, Options)
             If ((bIsNewDIB) Or (UnloadSource)) Then
                Call FreeImage_Unload(Bitmap)
             End If
@@ -5169,7 +5169,7 @@ Dim strExtension As String
 End Function
 
 Public Function SavePictureEx(ByRef Picture As IPicture, _
-                              ByRef fileName As String, _
+                              ByRef srcFilename As String, _
                      Optional ByRef Format As FREE_IMAGE_FORMAT, _
                      Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
                      Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
@@ -5195,7 +5195,7 @@ Const vbInvalidPictureError As Long = 481
    If (Not Picture Is Nothing) Then
       hDIB = FreeImage_CreateFromOlePicture(Picture)
       If (hDIB) Then
-         SavePictureEx = FreeImage_SaveEx(hDIB, fileName, Format, Options, _
+         SavePictureEx = FreeImage_SaveEx(hDIB, srcFilename, Format, Options, _
                                           colorDepth, Width, Height, InPercent, _
                                           FILTER_BICUBIC, True)
       Else
@@ -5208,7 +5208,7 @@ Const vbInvalidPictureError As Long = 481
 End Function
 
 Public Function SaveImageContainerEx(ByRef Container As Object, _
-                                     ByRef fileName As String, _
+                                     ByRef srcFilename As String, _
                             Optional ByVal IncludeDrawings As Boolean, _
                             Optional ByRef Format As FREE_IMAGE_FORMAT, _
                             Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
@@ -5231,7 +5231,7 @@ Public Function SaveImageContainerEx(ByRef Container As Object, _
    ' more detailed description.
                             
    Call SavePictureEx(pGetIOlePictureFromContainer(Container, IncludeDrawings), _
-            fileName, Format, Options, colorDepth, Width, Height, InPercent, Filter)
+            srcFilename, Format, Options, colorDepth, Width, Height, InPercent, Filter)
 
 End Function
 
@@ -5241,12 +5241,12 @@ Public Function FreeImage_OpenMultiBitmapEx(ByVal srcFilename As String, _
                                    Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
                                    Optional ByRef Format As FREE_IMAGE_FORMAT) As Long
 
-   Format = FreeImage_GetFileTypeU(StrPtr(fileName))
+   Format = FreeImage_GetFileTypeU(StrPtr(srcFilename))
    If (Format <> FIF_UNKNOWN) Then
       Select Case Format
       
       Case FIF_TIFF, FIF_GIF, FIF_ICO
-         FreeImage_OpenMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, fileName, False, _
+         FreeImage_OpenMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, srcFilename, False, _
                ReadOnly, KeepCacheInMemory, Flags)
       
       Case Else
@@ -5267,14 +5267,14 @@ Public Function FreeImage_CreateMultiBitmapEx(ByVal srcFilename As String, _
                                      Optional ByRef Format As FREE_IMAGE_FORMAT) As Long
 
    If (Format = FIF_UNKNOWN) Then
-      Format = FreeImage_GetFIFFromFilenameU(StrPtr(fileName))
+      Format = FreeImage_GetFIFFromFilenameU(StrPtr(srcFilename))
    End If
    
    If (Format <> FIF_UNKNOWN) Then
       Select Case Format
       
       Case FIF_TIFF, FIF_GIF, FIF_ICO
-         FreeImage_CreateMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, fileName, True, _
+         FreeImage_CreateMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, srcFilename, True, _
                False, KeepCacheInMemory, Flags)
       
       Case Else
