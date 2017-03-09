@@ -57,7 +57,7 @@ End Sub
 Friend Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long, ByRef a As Long, ByRef srcX As Double, ByRef srcY As Double, ByRef srcData() As Byte, Optional ByRef origX As Long, Optional ByRef origY As Long)
     
     'Cache the original x/y values as necessary
-    If m_EdgeMethod = EDGE_ORIGINAL Then
+    If (m_EdgeMethod = EDGE_ORIGINAL) Then
         m_DstX = origX
         m_DstY = origY
     End If
@@ -74,7 +74,7 @@ Friend Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long
         r = 0
         g = 0
         b = 0
-        If m_ColorDepth = 4 Then a = 0
+        If (m_ColorDepth = 4) Then a = 0
     Else
     
         'Interpolate a new pixel value
@@ -83,7 +83,7 @@ Friend Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long
             b = PInterpolate(srcX, srcY, srcData, 0)
             g = PInterpolate(srcX, srcY, srcData, 1)
             r = PInterpolate(srcX, srcY, srcData, 2)
-            If m_ColorDepth = 4 Then a = PInterpolate(srcX, srcY, srcData, 3)
+            If (m_ColorDepth = 4) Then a = PInterpolate(srcX, srcY, srcData, 3)
         
         'Round to the nearest coordinate value
         Else
@@ -94,7 +94,7 @@ Friend Sub GetColorsFromSource(ByRef r As Long, ByRef g As Long, ByRef b As Long
             b = srcData(quickValX, quickValY)
             g = srcData(quickValX + 1, quickValY)
             r = srcData(quickValX + 2, quickValY)
-            If m_ColorDepth = 4 Then a = srcData(quickValX + 3, quickValY)
+            If (m_ColorDepth = 4) Then a = srcData(quickValX + 3, quickValY)
             
         End If
         

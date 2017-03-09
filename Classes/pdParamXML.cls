@@ -50,16 +50,16 @@ Option Compare Binary
 'Current parameter string.
 Private m_ParamString As String
 
-Public Function GetParamString() As String
+Friend Function GetParamString() As String
     GetParamString = m_ParamString
 End Function
 
 'If you obtain a parameter string from elsewhere (e.g. a PDI file), you can simple pass it as-is to this function
-Public Sub SetParamString(ByRef srcString As String)
+Friend Sub SetParamString(ByRef srcString As String)
     m_ParamString = srcString
 End Sub
 
-Public Sub Reset(Optional ByVal paramStringVersion As Double = 1#)
+Friend Sub Reset(Optional ByVal paramStringVersion As Double = 1#)
     m_ParamString = "<version>" & Trim$(Str(paramStringVersion)) & "</version>"
 End Sub
 
@@ -72,7 +72,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'If a function changes drastically enough, it is free to use the "created-by-default" version tag to adjust handling as necessary.
-Public Function GetParamVersion() As Double
+Friend Function GetParamVersion() As Double
     
     Dim versionString As String
     If GetParamValue("version", versionString) Then
@@ -83,12 +83,12 @@ Public Function GetParamVersion() As Double
     
 End Function
 
-Public Sub SetParamVersion(Optional ByVal newVersion As Double = 1#)
+Friend Sub SetParamVersion(Optional ByVal newVersion As Double = 1#)
     UpdateParam "version", newVersion, True
 End Sub
 
 'Simple check to see if a parameter exists
-Public Function DoesParamExist(ByRef paramName As String) As Boolean
+Friend Function DoesParamExist(ByRef paramName As String) As Boolean
     
     'Make the parameter name XML-safe
     paramName = GetXMLSafeName(paramName)
@@ -102,7 +102,7 @@ Public Function DoesParamExist(ByRef paramName As String) As Boolean
 End Function
 
 'Retrieve various type-specific parameters.  Note that these ultimately wrap getParamValue; they simply cast the result explicitly.
-Public Function GetBool(ByVal paramName As String, Optional ByVal defaultReturn As Boolean = False) As Boolean
+Friend Function GetBool(ByVal paramName As String, Optional ByVal defaultReturn As Boolean = False) As Boolean
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetBool = CBool(Trim$(paramValue))
@@ -111,7 +111,7 @@ Public Function GetBool(ByVal paramName As String, Optional ByVal defaultReturn 
     End If
 End Function
 
-Public Function GetByte(ByVal paramName As String, Optional ByVal defaultReturn As Byte = 0) As Byte
+Friend Function GetByte(ByVal paramName As String, Optional ByVal defaultReturn As Byte = 0) As Byte
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetByte = CByte(Trim$(paramValue))
@@ -120,7 +120,7 @@ Public Function GetByte(ByVal paramName As String, Optional ByVal defaultReturn 
     End If
 End Function
 
-Public Function GetInteger(ByVal paramName As String, Optional ByVal defaultReturn As Integer = 0) As Integer
+Friend Function GetInteger(ByVal paramName As String, Optional ByVal defaultReturn As Integer = 0) As Integer
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetInteger = CInt(CDblCustom(Trim$(paramValue)))
@@ -129,7 +129,7 @@ Public Function GetInteger(ByVal paramName As String, Optional ByVal defaultRetu
     End If
 End Function
 
-Public Function GetLong(ByVal paramName As String, Optional ByVal defaultReturn As Long = 0) As Long
+Friend Function GetLong(ByVal paramName As String, Optional ByVal defaultReturn As Long = 0) As Long
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetLong = CLng(CDblCustom(Trim$(paramValue)))
@@ -138,7 +138,7 @@ Public Function GetLong(ByVal paramName As String, Optional ByVal defaultReturn 
     End If
 End Function
 
-Public Function GetSingle(ByVal paramName As String, Optional ByVal defaultReturn As Single = 0#) As Single
+Friend Function GetSingle(ByVal paramName As String, Optional ByVal defaultReturn As Single = 0#) As Single
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetSingle = CDblCustom(Trim$(paramValue))
@@ -147,7 +147,7 @@ Public Function GetSingle(ByVal paramName As String, Optional ByVal defaultRetur
     End If
 End Function
 
-Public Function GetDouble(ByVal paramName As String, Optional ByVal defaultReturn As Double = 0#) As Double
+Friend Function GetDouble(ByVal paramName As String, Optional ByVal defaultReturn As Double = 0#) As Double
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetDouble = CDblCustom(Trim$(paramValue))
@@ -156,7 +156,7 @@ Public Function GetDouble(ByVal paramName As String, Optional ByVal defaultRetur
     End If
 End Function
 
-Public Function GetString(ByVal paramName As String, Optional ByVal defaultReturn As String = "") As String
+Friend Function GetString(ByVal paramName As String, Optional ByVal defaultReturn As String = "") As String
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetString = paramValue
@@ -165,7 +165,7 @@ Public Function GetString(ByVal paramName As String, Optional ByVal defaultRetur
     End If
 End Function
 
-Public Function GetVariant(ByVal paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
+Friend Function GetVariant(ByVal paramName As String, Optional ByVal defaultReturn As Variant = Empty) As Variant
     Dim paramValue As String
     If GetParamValue(paramName, paramValue) Then
         GetVariant = CVar(paramValue)
@@ -218,7 +218,7 @@ Private Function GetParamValue(ByVal paramName As String, ByRef dstString As Str
 End Function
 
 'Blindly add a parameter to the master string.  No special checks (e.g. duplicates) are applied; use updateParam if you need those.
-Public Function AddParam(ByVal paramName As String, ByVal paramValue As Variant) As Boolean
+Friend Function AddParam(ByVal paramName As String, ByVal paramValue As Variant) As Boolean
     
     'Convert the parameter value into a string.  We handle this manually to minimize the chance of locale issues.
     Dim strParamValue As String
@@ -267,7 +267,7 @@ Public Function AddParam(ByVal paramName As String, ByVal paramValue As Variant)
 End Function
 
 'Want to add multiple parameters at once?  Use this function, and call it using the order "Name", Value, "Name 2", Value 2...
-Public Function AddMultipleParams(ParamArray allParams() As Variant) As Boolean
+Friend Function AddParamList(ParamArray allParams() As Variant) As Boolean
     
     On Error GoTo multiParamFailure
     
@@ -294,28 +294,28 @@ Public Function AddMultipleParams(ParamArray allParams() As Variant) As Boolean
     
     End If
     
-    AddMultipleParams = True
+    AddParamList = True
     
     Exit Function
     
 multiParamFailure:
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "WARNING!  Parse failure in pdParamXML.addMultipleParams()."
+        pdDebug.LogAction "WARNING!  Parse failure in pdParamXML.AddParamList()."
     #End If
     
-    AddMultipleParams = False
+    AddParamList = False
 
 End Function
 
 'Add an existing XML string to this one.  The incoming string is not modified in any way, so please make sure it contains
 ' valid XML!
-Public Sub AddXMLString(ByRef srcString As String)
+Friend Sub AddXMLString(ByRef srcString As String)
     m_ParamString = m_ParamString & srcString
 End Sub
 
 'Update a given parameter.  If the parameter is not found, it will be added to the string. (Create-if-missing behavior can be toggled.)
-Public Function UpdateParam(ByVal paramName As String, ByVal paramValue As String, Optional ByVal createIfMissing As Boolean = True) As Boolean
+Friend Function UpdateParam(ByVal paramName As String, ByVal paramValue As String, Optional ByVal createIfMissing As Boolean = True) As Boolean
     
     'Make the parameter name and value XML-safe
     paramName = GetXMLSafeName(paramName)
@@ -371,7 +371,7 @@ End Function
 
 'Given a string, replace any characters that are not allowed with underscores; this is used as a failsafe when adding
 ' new parameters to the master string.
-Public Function GetXMLSafeName(ByRef srcString As String) As String
+Friend Function GetXMLSafeName(ByRef srcString As String) As String
     
     'Remove any incidental white space before processing
     GetXMLSafeName = Trim$(srcString)
@@ -416,13 +416,9 @@ End Function
 Private Function CDblCustom(ByVal srcString As String) As Double
 
     'Replace commas with periods
-    If InStr(1, srcString, ",") > 0 Then srcString = Replace$(srcString, ",", ".")
+    If (InStr(1, srcString, ",") > 0) Then srcString = Replace$(srcString, ",", ".")
     
     'We can now use Val() to convert to Double
-    If IsNumberLocaleUnaware(srcString) Then
-        CDblCustom = Val(srcString)
-    Else
-        CDblCustom = 0
-    End If
-
+    If IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0
+    
 End Function

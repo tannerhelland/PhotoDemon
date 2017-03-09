@@ -701,7 +701,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If (Not g_IsProgramRunning) Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 'If the track style is some kind of custom gradient, make sure our internal gradient backdrop is valid before the control

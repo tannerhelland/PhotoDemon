@@ -360,7 +360,7 @@ Private Const OBJ_BITMAP As Long = 7
 Private Const COLORONCOLOR As Long = 3
 
 'MSIMG32
-Private Declare Function AlphaBlend Lib "MSIMG32.dll" ( _
+Private Declare Function AlphaBlend Lib "msimg32.dll" ( _
     ByVal hdcDest As Long, _
     ByVal nXOriginDest As Long, _
     ByVal nYOriginDest As Long, _
@@ -1414,7 +1414,7 @@ Public Declare Function FreeImage_HasPixelsInt Lib "FreeImage.dll" Alias "_FreeI
 
 Public Declare Function FreeImage_Load Lib "FreeImage.dll" Alias "_FreeImage_Load@12" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal fileName As String, _
+           ByVal srcFilename As String, _
   Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
 Public Declare Function FreeImage_LoadUInt Lib "FreeImage.dll" Alias "_FreeImage_LoadU@12" ( _
@@ -1431,7 +1431,7 @@ Public Declare Function FreeImage_LoadFromHandle Lib "FreeImage.dll" Alias "_Fre
 Private Declare Function FreeImage_SaveInt Lib "FreeImage.dll" Alias "_FreeImage_Save@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
            ByVal Bitmap As Long, _
-           ByVal fileName As String, _
+           ByVal srcFilename As String, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Private Declare Function FreeImage_SaveUInt Lib "FreeImage.dll" Alias "_FreeImage_SaveU@16" ( _
@@ -1565,7 +1565,7 @@ Private Declare Function FreeImage_SetThumbnailInt Lib "FreeImage.dll" Alias "_F
 
 ' Filetype functions
 Public Declare Function FreeImage_GetFileType Lib "FreeImage.dll" Alias "_FreeImage_GetFileType@8" ( _
-           ByVal fileName As String, _
+           ByVal srcFilename As String, _
   Optional ByVal Size As Long) As FREE_IMAGE_FORMAT
   
 Public Declare Function FreeImage_GetFileTypeU Lib "FreeImage.dll" Alias "_FreeImage_GetFileTypeU@8" ( _
@@ -1772,7 +1772,7 @@ Private Declare Function FreeImage_GetFIFDescriptionInt Lib "FreeImage.dll" Alia
            ByVal Format As FREE_IMAGE_FORMAT) As Long
 
 Public Declare Function FreeImage_GetFIFFromFilename Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFilename@4" ( _
-           ByVal fileName As String) As FREE_IMAGE_FORMAT
+           ByVal srcFilename As String) As FREE_IMAGE_FORMAT
 
 Public Declare Function FreeImage_GetFIFFromFilenameU Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFilenameU@4" ( _
            ByVal fileName As Long) As FREE_IMAGE_FORMAT
@@ -1815,7 +1815,7 @@ Public Declare Function FreeImage_RegisterExternalPlugin Lib "FreeImage.dll" Ali
 ' Multipage functions
 Private Declare Function FreeImage_OpenMultiBitmapInt Lib "FreeImage.dll" Alias "_FreeImage_OpenMultiBitmap@24" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal fileName As String, _
+           ByVal srcFilename As String, _
            ByVal CreateNew As Long, _
            ByVal ReadOnly As Long, _
            ByVal KeepCacheInMemory As Long, _
@@ -2541,7 +2541,7 @@ End Function
 
 Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
                                ByVal Bitmap As Long, _
-                               ByVal fileName As String, _
+                               ByVal srcFilename As String, _
                       Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
@@ -2783,7 +2783,7 @@ End Function
 
 
 Public Function FreeImage_OpenMultiBitmap(ByVal Format As FREE_IMAGE_FORMAT, _
-                                          ByVal fileName As String, _
+                                          ByVal srcFilename As String, _
                                  Optional ByVal CreateNew As Boolean, _
                                  Optional ByVal ReadOnly As Boolean, _
                                  Optional ByVal KeepCacheInMemory As Boolean, _
@@ -3546,7 +3546,7 @@ Public Function FreeImage_IsExtensionValidForFIF(ByVal Format As FREE_IMAGE_FORM
 End Function
 
 Public Function FreeImage_IsFilenameValidForFIF(ByVal Format As FREE_IMAGE_FORMAT, _
-                                                ByVal fileName As String, _
+                                                ByVal srcFilename As String, _
                                        Optional ByVal Compare As VbCompareMethod = vbBinaryCompare) As Boolean
                                                 
 Dim strExtension As String
@@ -4919,7 +4919,7 @@ End Function
 
 
 
-Public Function FreeImage_LoadEx(ByVal fileName As String, _
+Public Function FreeImage_LoadEx(ByVal srcFilename As String, _
                         Optional ByVal Options As FREE_IMAGE_LOAD_OPTIONS, _
                         Optional ByVal Width As Variant, _
                         Optional ByVal Height As Variant, _
@@ -5003,7 +5003,7 @@ Dim hDIB As Long
 End Function
 
 Public Function FreeImage_SaveEx(ByVal Bitmap As Long, _
-                                 ByVal fileName As String, _
+                                 ByVal srcFilename As String, _
                         Optional ByVal Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN, _
                         Optional ByVal Options As FREE_IMAGE_SAVE_OPTIONS, _
                         Optional ByVal colorDepth As FREE_IMAGE_COLOR_DEPTH, _
@@ -5235,7 +5235,7 @@ Public Function SaveImageContainerEx(ByRef Container As Object, _
 
 End Function
 
-Public Function FreeImage_OpenMultiBitmapEx(ByVal fileName As String, _
+Public Function FreeImage_OpenMultiBitmapEx(ByVal srcFilename As String, _
                                    Optional ByVal ReadOnly As Boolean, _
                                    Optional ByVal KeepCacheInMemory As Boolean, _
                                    Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
@@ -5261,7 +5261,7 @@ Public Function FreeImage_OpenMultiBitmapEx(ByVal fileName As String, _
    
 End Function
 
-Public Function FreeImage_CreateMultiBitmapEx(ByVal fileName As String, _
+Public Function FreeImage_CreateMultiBitmapEx(ByVal srcFilename As String, _
                                      Optional ByVal KeepCacheInMemory As Boolean, _
                                      Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
                                      Optional ByRef Format As FREE_IMAGE_FORMAT) As Long

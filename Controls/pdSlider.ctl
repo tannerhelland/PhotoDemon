@@ -426,6 +426,13 @@ Private Sub tudPrimary_Resize()
     UpdateControlLayout
 End Sub
 
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If (Not g_IsProgramRunning) Then
+        If updateLayoutToo Then UpdateControlLayout
+        ucSupport.RequestRepaint True
+    End If
+End Sub
+
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
     If (Not m_InternalResizeActive) Then UpdateControlLayout
 End Sub
@@ -435,6 +442,7 @@ Private Sub UserControl_Initialize()
     'Initialize a master user control support class
     Set ucSupport = New pdUCSupport
     ucSupport.RegisterControl UserControl.hWnd
+    ucSupport.RequestExtraFunctionality True, , , False
     ucSupport.RequestCaptionSupport False
         
 End Sub
@@ -496,7 +504,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+    If (Not g_IsProgramRunning) Then ucSupport.NotifyIDEResize UserControl.Width, UserControl.Height
 End Sub
 
 Private Sub UserControl_Show()
@@ -598,6 +606,7 @@ Private Sub UpdateControlLayout()
     
     'Inside the IDE, use a line of dummy code to force a redraw of the control outline
     If (Not g_IsProgramRunning) Then
+        pdssPrimary.Visible = False
         Dim bufferDC As Long
         bufferDC = ucSupport.GetBackBufferDC(True)
     End If

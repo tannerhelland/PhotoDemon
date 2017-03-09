@@ -345,9 +345,9 @@ Public Sub ApplyPokeDistort(ByVal pokeStrength As Double, ByVal edgeHandling As 
             
             'Convert them back to the Cartesian plane
             nX = radius * Cos(theta)
-            srcX = (tWidth * (nX + centerX)) / 2
+            srcX = (tWidth * (nX + centerX)) * 0.5
             nY = radius * Sin(theta)
-            srcY = (tHeight * (nY + centerY)) / 2
+            srcY = (tHeight * (nY + centerY)) * 0.5
         
             'Use the filter support class to interpolate and edge-wrap pixels as necessary
             fSupport.GetColorsFromSource r, g, b, a, srcX, srcY, srcImageData, x, y

@@ -288,6 +288,13 @@ Public Function AngleBetweenTwoIntersectingLines(ByRef ptIntersect As POINTFLOAT
     
 End Function
 
+'Fast arctangent estimation.  Max error 0.0015 radians (0.085944 degrees), first found here: http://nghiaho.com/?p=997
+' IMPORTANT NOTE: only works for (x) values on the range [-1, 1]; as such, it should only be used with normalized values.
+' Because many PD functions do not normalize prior to calling Atn(), I've commented this out for now to reduce confusion.
+'Public Function Atn_Fast(ByVal x As Double) As Double
+'    Atn_Fast = PI_14 * x - x * (Abs(x) - 1) * (0.2447 + 0.0663 * Abs(x))
+'End Function
+
 'Return the arctangent of two values (rise / run); unlike VB's integrated Atn() function, this return is quadrant-specific.
 ' (It also circumvents potential DBZ errors when horizontal.)
 Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
