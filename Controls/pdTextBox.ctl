@@ -284,7 +284,7 @@ End Sub
 Private Sub m_EditBox_TabPress(ByVal focusDirectionForward As Boolean)
 
     'We can handle this tab press one of two ways, based on the TabBehavior property
-    If m_TabMode = TabDefaultBehavior Then
+    If (m_TabMode = TabDefaultBehavior) Then
         
         'Immediately forward focus to the next control
         UserControl_Support.ForwardFocusToNewControl Me, focusDirectionForward
@@ -458,7 +458,7 @@ Private Sub UserControl_GotFocus()
 End Sub
 
 Private Sub UserControl_Hide()
-    If Not (m_EditBox Is Nothing) Then m_EditBox.Visible = False
+    If (Not m_EditBox Is Nothing) Then m_EditBox.Visible = False
 End Sub
 
 Private Sub UserControl_Initialize()
