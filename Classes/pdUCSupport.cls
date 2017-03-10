@@ -128,6 +128,11 @@ Private m_CaptionRect As RECT
 ' Same goes for mouse buttons.
 Private m_MouseInsideUC As Boolean, m_MouseButtonState As Long
 
+'Controls can register themselves as "non-interactive".  This is useful for things like pdSlider, which is really
+' just a glorified container for a pdSliderStandalone and pdSpinner combination.  "Non-interactive" controls have their
+' cursor automatically managed by this class.
+Private m_ControlIsNotInteractive As Boolean
+
 'Visibility is also tracked via the API
 Private m_Visibility As Boolean
 
@@ -258,7 +263,8 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
             Set m_MouseEvents = New pdInputMouse
             If g_IsProgramRunning Then
                 m_MouseEvents.AddInputTracker m_hWnd, appCommandEvents
-                If (Not controlIsInteractive) Then m_MouseEvents.SetSystemCursor IDC_ARROW
+                m_ControlIsNotInteractive = (Not controlIsInteractive)
+                If m_ControlIsNotInteractive Then m_MouseEvents.SetSystemCursor IDC_ARROW
             End If
         End If
         
@@ -762,9 +768,15 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
     m_MouseInsideUC = True
     HideTooltip True
+    
+    'Non-interactive controls get automatic cursor management from us
+    If m_ControlIsNotInteractive Then m_MouseEvents.SetSystemCursor IDC_ARROW
+    
     RaiseEvent MouseEnter(Button, Shift, x, y)
+    
 End Sub
 
 'On hover, request a tooltip (if one exists)

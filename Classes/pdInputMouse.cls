@@ -356,7 +356,7 @@ Public Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConsta
     
     'Load the relevant cursor handle
     Dim tmpCursorHandle As Long
-    If systemCursorType = IDC_DEFAULT Then
+    If (systemCursorType = IDC_DEFAULT) Then
         tmpCursorHandle = LoadCursor(0, IDC_ARROW)
     Else
         tmpCursorHandle = LoadCursor(0, systemCursorType)
