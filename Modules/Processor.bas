@@ -1433,19 +1433,12 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         
         'Distort filters
-        
-        Case "Apply lens distortion"
-            If ShowDialog Then
-                ShowPDDialog vbModal, FormLens
-            Else
-                FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
-            End If
-            
+                    
         Case "Correct lens distortion"
             If ShowDialog Then
                 ShowPDDialog vbModal, FormLensCorrect
             Else
-                FormLensCorrect.ApplyLensCorrection cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5)
+                FormLensCorrect.CorrectLensDistortion cXMLParams.GetParamString()
             End If
         
         Case "Donut"
@@ -1455,6 +1448,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 FormDonut.ApplyDonutDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6), cParams.GetDouble(7), cParams.GetDouble(8)
             End If
         
+        Case "Apply lens distortion"
+            If ShowDialog Then
+                ShowPDDialog vbModal, FormLens
+            Else
+                FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
+            End If
+            
         Case "Miscellaneous distort"
             If ShowDialog Then
                 ShowPDDialog vbModal, FormMiscDistorts

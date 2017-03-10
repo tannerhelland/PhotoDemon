@@ -261,9 +261,9 @@ Public Sub InitializeMenus()
         AddMenuItem "Kuwahara filter...", "effects_kuwahara", 7, 1, 8
         AddMenuItem "Symmetric nearest-neighbor...", "effects_snn", 7, 1, 9
     AddMenuItem "Distort", "effects_distort", 7, 2
-        AddMenuItem "Apply lens distortion...", "effects_applylensdistort", 7, 2, 0
-        AddMenuItem "Correct existing lens distortion...", "effects_fixlensdistort", 7, 2, 1
-        AddMenuItem "Donut...", "effects_donut", 7, 2, 3
+        AddMenuItem "Correct existing distortion...", "effects_fixlensdistort", 7, 2, 0
+        AddMenuItem "Donut...", "effects_donut", 7, 2, 2
+        AddMenuItem "Lens...", "effects_lens", 7, 2, 3
         AddMenuItem "Pinch and whirl...", "effects_pinchandwhirl", 7, 2, 4
         AddMenuItem "Poke...", "effects_poke", 7, 2, 5
         AddMenuItem "Ripple...", "effects_ripple", 7, 2, 6

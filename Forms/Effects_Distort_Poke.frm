@@ -60,7 +60,7 @@ Begin VB.Form FormPoke
       _ExtentX        =   5106
       _ExtentY        =   873
       Max             =   1
-      SigDigits       =   2
+      SigDigits       =   3
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
@@ -74,7 +74,7 @@ Begin VB.Form FormPoke
       _ExtentX        =   5106
       _ExtentY        =   873
       Max             =   1
-      SigDigits       =   2
+      SigDigits       =   3
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
@@ -130,12 +130,12 @@ Begin VB.Form FormPoke
       Height          =   435
       Index           =   0
       Left            =   6120
-      Top             =   1650
+      Top             =   1560
       Width           =   5655
       _ExtentX        =   0
       _ExtentY        =   0
       Alignment       =   2
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      Caption         =   "you can also set a center position by clicking the preview window"
       FontSize        =   9
       ForeColor       =   4210752
       Layout          =   1

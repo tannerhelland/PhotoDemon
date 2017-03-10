@@ -1039,19 +1039,19 @@ Begin VB.Form FormMain
          Caption         =   "Distort"
          Index           =   2
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Apply lens distortion..."
+            Caption         =   "Correct existing distortion..."
             Index           =   0
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Correct existing lens distortion..."
+            Caption         =   "-"
             Index           =   1
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "-"
+            Caption         =   "Donut..."
             Index           =   2
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Donut..."
+            Caption         =   "Lens..."
             Index           =   3
          End
          Begin VB.Menu MnuDistortEffects 
@@ -3352,22 +3352,22 @@ End Sub
 Private Sub MnuDistortEffects_Click(Index As Integer)
 
     Select Case Index
-    
-        'Apply lens distort
-        Case 0
-            Process "Apply lens distortion", True
         
-        'Remove lens distort
-        Case 1
+        'Correct existing distortion(s)
+        Case 0
             Process "Correct lens distortion", True
         
         '<separator>
-        Case 2
+        Case 1
         
         'Donut
-        Case 3
+        Case 2
             Process "Donut", True
-            
+        
+        'Lens
+        Case 3
+            Process "Apply lens distortion", True
+        
         'Pinch and whirl
         Case 4
             Process "Pinch and whirl", True
