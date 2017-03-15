@@ -1,4 +1,4 @@
-Attribute VB_Name = "Text_Support"
+Attribute VB_Name = "TextSupport"
 '***************************************************************************
 'Miscellaneous functions related to specialized text handling
 'Copyright 2000-2017 by Tanner Helland

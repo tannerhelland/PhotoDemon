@@ -341,7 +341,7 @@ Private Sub cmdBarMini_OKClick()
         PluginManager.LoadPluginGroup True
         PluginManager.LoadPluginGroup False
         ApplyAllMenuIcons
-        Icons_and_Cursors.ResetMenuIcons
+        IconsAndCursors.ResetMenuIcons
         g_ImageFormats.GenerateInputFormats
         g_ImageFormats.GenerateOutputFormats
     End If

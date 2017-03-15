@@ -804,20 +804,20 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 
 Private Sub bsText_BrushChanged()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FillBrush, bsText.Brush
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -827,25 +827,25 @@ Private Sub bsText_GotFocusAPI()
 End Sub
 
 Private Sub bsText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillBrush, bsText.Brush
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillBrush, bsText.Brush
 End Sub
 
 Private Sub bsTextBackground_BrushChanged()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackgroundBrush, bsTextBackground.Brush
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -855,16 +855,16 @@ Private Sub bsTextBackground_GotFocusAPI()
 End Sub
 
 Private Sub bsTextBackground_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
 End Sub
 
 Private Sub btnFontStyles_Click(Index As Integer)
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update whichever style was toggled
     Select Case Index
@@ -888,10 +888,10 @@ Private Sub btnFontStyles_Click(Index As Integer)
     End Select
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -930,19 +930,19 @@ Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
         'Bold
         Case 0
-            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
+            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
             
         'Italic
         Case 1
-            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
+            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
         
         'Underline
         Case 2
-            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
+            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
         
         'Strikeout
         Case 3
-            If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
+            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
     
     End Select
     
@@ -980,20 +980,20 @@ End Sub
 
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_HorizontalAlignment, buttonIndex
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1003,7 +1003,7 @@ Private Sub btsHAlignment_GotFocusAPI()
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
 End Sub
 
 Private Sub btsMain_Click(ByVal buttonIndex As Long)
@@ -1012,20 +1012,20 @@ End Sub
 
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_VerticalAlignment, buttonIndex
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1035,25 +1035,25 @@ Private Sub btsVAlignment_GotFocusAPI()
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
 Private Sub cboCharCase_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharRemap, cboCharCase.ListIndex
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1063,25 +1063,25 @@ Private Sub cboCharCase_GotFocusAPI()
 End Sub
 
 Private Sub cboCharCase_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
 End Sub
 
 Private Sub cboCharMirror_Click()
 
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharMirror, cboCharMirror.ListIndex
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -1091,25 +1091,25 @@ Private Sub cboCharMirror_GotFocusAPI()
 End Sub
 
 Private Sub cboCharMirror_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
 End Sub
 
 Private Sub cboTextFontFace_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer font size
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1119,25 +1119,25 @@ Private Sub cboTextFontFace_GotFocusAPI()
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer text
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1147,25 +1147,25 @@ Private Sub cboTextRenderingHint_GotFocusAPI()
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
 End Sub
 
 Private Sub cboWordWrap_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer text
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_WordWrap, cboWordWrap.ListIndex
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1175,25 +1175,25 @@ Private Sub cboWordWrap_GotFocusAPI()
 End Sub
 
 Private Sub cboWordWrap_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
 End Sub
 
 Private Sub chkBackground_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackgroundActive, CBool(chkBackground.Value)
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1203,25 +1203,25 @@ Private Sub chkBackground_GotFocusAPI()
 End Sub
 
 Private Sub chkBackground_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value)
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value)
 End Sub
 
 Private Sub chkBackgroundBorder_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1231,25 +1231,25 @@ Private Sub chkBackgroundBorder_GotFocusAPI()
 End Sub
 
 Private Sub chkBackgroundBorder_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
 End Sub
 
 Private Sub chkFillText_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer text
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FillActive, CBool(chkFillText.Value)
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1259,25 +1259,25 @@ Private Sub chkFillText_GotFocusAPI()
 End Sub
 
 Private Sub chkFillText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillActive, chkFillText.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillActive, chkFillText.Value
 End Sub
 
 Private Sub chkHinting_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer text
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_TextHinting, CBool(chkHinting.Value)
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1287,25 +1287,25 @@ Private Sub chkHinting_GotFocusAPI()
 End Sub
 
 Private Sub chkHinting_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
 End Sub
 
 Private Sub chkOutlineText_Click()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer text
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_OutlineActive, CBool(chkOutlineText.Value)
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1315,13 +1315,13 @@ Private Sub chkOutlineText_GotFocusAPI()
 End Sub
 
 Private Sub chkOutlineText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlineActive, chkOutlineText.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlineActive, chkOutlineText.Value
 End Sub
 
 Private Sub Form_Load()
     
     'Disable any layer updates as a result of control changes during the load process
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Generate a list of fonts
     If g_IsProgramRunning Then
@@ -1410,7 +1410,7 @@ Private Sub Form_Load()
         
     End If
     
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
 End Sub
 
@@ -1445,7 +1445,7 @@ Private Sub lblConvertLayerConfirm_Click()
     
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.UpdateAgainstCurrentLayer
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     SyncInterfaceToCurrentImage
     
 End Sub
@@ -1461,20 +1461,20 @@ End Sub
 
 Private Sub psText_PenChanged()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_OutlinePen, psText.Pen
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1484,25 +1484,25 @@ Private Sub psText_GotFocusAPI()
 End Sub
 
 Private Sub psText_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlinePen, psText.Pen
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlinePen, psText.Pen
 End Sub
 
 Private Sub psTextBackground_PenChanged()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_BackBorderPen, psTextBackground.Pen
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1512,25 +1512,25 @@ Private Sub psTextBackground_GotFocusAPI()
 End Sub
 
 Private Sub psTextBackground_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
 End Sub
 
 Private Sub sltCharInflation_Change()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharInflation, sltCharInflation.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1540,25 +1540,25 @@ Private Sub sltCharInflation_GotFocusAPI()
 End Sub
 
 Private Sub sltCharInflation_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
 End Sub
 
 Private Sub sltCharOrientation_Change()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharOrientation, sltCharOrientation.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1568,25 +1568,25 @@ Private Sub sltCharOrientation_GotFocusAPI()
 End Sub
 
 Private Sub sltCharOrientation_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
 End Sub
 
 Private Sub sltCharSpacing_Change()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharSpacing, sltCharSpacing.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1596,25 +1596,25 @@ Private Sub sltCharSpacing_GotFocusAPI()
 End Sub
 
 Private Sub sltCharSpacing_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
 End Sub
 
 Private Sub tudJitter_Change(Index As Integer)
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
         
     'Update the current layer text alignment
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_CharJitterX + Index, tudJitter(Index).Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1624,25 +1624,25 @@ Private Sub tudJitter_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub tudJitter_LostFocusAPI(Index As Integer)
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
 End Sub
 
 Private Sub tudLineSpacing_Change()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the setting
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_LineSpacing, tudLineSpacing.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1652,16 +1652,16 @@ Private Sub tudLineSpacing_GotFocusAPI()
 End Sub
 
 Private Sub tudLineSpacing_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value
 End Sub
 
 Private Sub tudMargin_Change(Index As Integer)
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current setting
     Select Case Index
@@ -1681,10 +1681,10 @@ Private Sub tudMargin_Change(Index As Integer)
     End Select
         
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1712,7 +1712,7 @@ End Sub
 
 Private Sub tudMargin_LostFocusAPI(Index As Integer)
     
-    If Tool_Support.CanvasToolsAllowed Then
+    If Tools.CanvasToolsAllowed Then
         
         Select Case Index
         
@@ -1736,20 +1736,20 @@ End Sub
 
 Private Sub tudTextFontSize_Change()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer font size
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_FontSize, tudTextFontSize.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1759,25 +1759,25 @@ Private Sub tudTextFontSize_GotFocusAPI()
 End Sub
 
 Private Sub tudTextFontSize_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
 End Sub
 
 Private Sub txtTextTool_Change()
     
-    'If tool changes are not allowed, exit.  (Note that this also queries Tool_Support.GetToolBusyState)
-    If (Not Tool_Support.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
+    'If tool changes are not allowed, exit.  (Note that this also queries Tools.GetToolBusyState)
+    If (Not Tools.CanvasToolsAllowed) Or (Not CurrentLayerIsText) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Update the current layer text
     pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty ptp_Text, txtTextTool.Text
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
 End Sub
 
@@ -1787,7 +1787,7 @@ Private Sub txtTextTool_GotFocusAPI()
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
 
 'Most objects on this form can avoid doing any work if the current layer is not a text layer.

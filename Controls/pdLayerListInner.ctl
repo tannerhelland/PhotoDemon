@@ -271,7 +271,7 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         pdImages(g_CurrentImage).GetActiveLayer.SetLayerName txtLayerName.Text
         
         'If the user changed the name, set an Undo/Redo point now
-        If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetActiveLayer.GetLayerName
+        If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).GetActiveLayer.GetLayerName
         
         'Re-enable hotkeys now that editing is finished
         m_LayerNameEditMode = False
@@ -373,7 +373,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
             
             'Has the user clicked a visibility rectangle?
             If PDMath.IsPointInRect(x, y, m_VisibilityRect) Then
-                Layer_Handler.SetLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerVisibility, True
+                Layers.SetLayerVisibilityByIndex clickedLayer, Not pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerVisibility, True
                 actionInitiated = True
             
             'The user has not clicked any item of interest.  Assume that they want to make the clicked layer
@@ -383,8 +383,8 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
                 'See if the clicked layer differs from the current active layer
                 If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerID <> pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerID) Then
                     Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility
-                    Layer_Handler.SetActiveLayerByIndex clickedLayer, False
-                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                    Layers.SetActiveLayerByIndex clickedLayer, False
+                    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 End If
                 
             End If
@@ -416,26 +416,26 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     
         'Up key activates the next layer upward
         If (vkCode = VK_UP) And (pdImages(g_CurrentImage).GetActiveLayerIndex < pdImages(g_CurrentImage).GetNumOfLayers - 1) Then
-            Layer_Handler.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex + 1, True
+            Layers.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex + 1, True
         End If
         
         'Down key activates the next layer downward
         If (vkCode = VK_DOWN) And pdImages(g_CurrentImage).GetActiveLayerIndex > 0 Then
-            Layer_Handler.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex - 1, True
+            Layers.SetActiveLayerByIndex pdImages(g_CurrentImage).GetActiveLayerIndex - 1, True
         End If
         
         'Right key increases active layer opacity
         If (vkCode = VK_RIGHT) And (pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility) Then
             'TODO!  Bubble up opacity changes
             'sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity + 10
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Left key decreases active layer opacity
         If (vkCode = VK_LEFT) And (pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility) Then
             'TODO!  Bubble up opacity changes
             'sltLayerOpacity.Value = pdImages(g_CurrentImage).GetActiveLayer.GetLayerOpacity - 10
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Delete key: delete the active layer (if allowed)
@@ -471,7 +471,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                 pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
-                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 SyncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box
@@ -486,7 +486,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         'Space bar: toggle active layer visibility
         If (vkCode = VK_SPACE) Then
             pdImages(g_CurrentImage).GetActiveLayer.SetLayerVisibility (Not pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility)
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             SyncInterfaceToCurrentImage
         End If
         
@@ -584,7 +584,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             Me.RequestRedraw True
             
             'Redraw the viewport
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         End If
         
@@ -627,7 +627,7 @@ Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVa
                 Me.RequestRedraw True
                 
                 'Redraw the viewport
-                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
             End If
             
@@ -1076,7 +1076,7 @@ Private Sub RedrawBackBuffer()
                         drawString = tmpLayerRef.GetLayerName
                         
                         'Retrieve a matching font object from the UI font cache, and prep it with the proper display settings
-                        Set layerFont = Font_Management.GetMatchingUIFont(10, False, False, False)
+                        Set layerFont = Fonts.GetMatchingUIFont(10, False, False, False)
                         If layerIsSelected Then
                             If layerIsHovered Then paintColor = fontColorSelectedHover Else paintColor = fontColorSelected
                         Else

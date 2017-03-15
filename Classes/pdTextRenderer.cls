@@ -51,7 +51,7 @@ Attribute VB_Exposed = False
 ' - Actual rendering duties are handled by GDI+.
 '
 'Dependencies:
-'  - Font_Management module, which handles some of the messier bits of GDI interaction
+'  - Fonts module, which handles some of the messier bits of GDI interaction
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -1302,12 +1302,12 @@ Private Function CreateGDIFont() As Boolean
     Dim tmpLogFont As LOGFONTW
     
     'Use the font management module to populate the struct
-    Font_Management.FillLogFontW_Basic tmpLogFont, m_FontFace, m_FontBold, m_FontItalic, m_FontUnderline, m_FontStrikeout
-    Font_Management.FillLogFontW_Size tmpLogFont, m_FontSize, m_FontSizeUnit
-    Font_Management.FillLogFontW_Quality tmpLogFont, ConvertTextAAToGdipTextHint
+    Fonts.FillLogFontW_Basic tmpLogFont, m_FontFace, m_FontBold, m_FontItalic, m_FontUnderline, m_FontStrikeout
+    Fonts.FillLogFontW_Size tmpLogFont, m_FontSize, m_FontSizeUnit
+    Fonts.FillLogFontW_Quality tmpLogFont, ConvertTextAAToGdipTextHint
     
     'Attempt to create a matching GDI font
-    If Font_Management.CreateGDIFont(tmpLogFont, m_GDIFont) Then
+    If Fonts.CreateGDIFont(tmpLogFont, m_GDIFont) Then
         
         'Success!  Note that GDI is an acceptable engine for this font, and return success
         Debug.Print "GDI font creation worked!  Proceeding with rendering."
@@ -1460,7 +1460,7 @@ Private Function RenderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     
     'We can, however, use GDI to calculate it instead.  (TODO: cache this value, and only re-check it if the string and/or font changes.)
     Dim firstCharABCWidth As ABCFLOAT
-    If Font_Management.GetABCWidthOfGlyph(m_GDIFont, AscW(Left$(srcString, 1)), firstCharABCWidth) Then
+    If Fonts.GetABCWidthOfGlyph(m_GDIFont, AscW(Left$(srcString, 1)), firstCharABCWidth) Then
         
         'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
         ' extra pixel to account for possible antialiasing along the border.)
@@ -1773,7 +1773,7 @@ Private Function RenderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     'A left-side overhang is possible on some fonts, particularly fonts where italics have to be synthesized.
     ' There's no automatic way to handle this, so we do it manually (as usual).
     Dim firstCharABCWidth As ABCFLOAT
-    If Font_Management.GetABCWidthOfGlyph(m_TmpGdiDIB.GetDIBDC, AscW(Left$(srcString, 1)), firstCharABCWidth, True) Then
+    If Fonts.GetABCWidthOfGlyph(m_TmpGdiDIB.GetDIBDC, AscW(Left$(srcString, 1)), firstCharABCWidth, True) Then
         
         'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
         ' extra pixel to account for possible antialiasing along the border.)

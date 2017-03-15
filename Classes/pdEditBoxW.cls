@@ -468,12 +468,12 @@ Public Function CreateEditBox(ByVal parentHwnd As Long, Optional ByVal x1 As Lon
             If g_IsProgramRunning Then
                 
                 'Subclass the edit box itself
-                m_EditBoxSubclassed = VB_Hacks.StartSubclassing(m_EditBoxHwnd, Me)
+                m_EditBoxSubclassed = VBHacks.StartSubclassing(m_EditBoxHwnd, Me)
                 
                 'Subclass the edit box's parent window.  This is necessary for handling certain update messages.
                 If (Not m_ParentHasBeenSubclassed) Then
                     m_ParentHWnd = parentHwnd
-                    m_ParentHasBeenSubclassed = VB_Hacks.StartSubclassing(parentHwnd, Me)
+                    m_ParentHasBeenSubclassed = VBHacks.StartSubclassing(parentHwnd, Me)
                 End If
                 
                 'Add a mouse handler (which performs its own subclassing)
@@ -514,12 +514,12 @@ Public Function DestroyEditBox() As Boolean
         If (Not m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
         
         If m_EditBoxSubclassed Then
-            VB_Hacks.StopSubclassing m_EditBoxHwnd, Me
+            VBHacks.StopSubclassing m_EditBoxHwnd, Me
             m_EditBoxSubclassed = False
         End If
         
         If m_ParentHasBeenSubclassed Then
-            If (m_ParentHWnd <> 0) Then VB_Hacks.StopSubclassing m_ParentHWnd, Me
+            If (m_ParentHWnd <> 0) Then VBHacks.StopSubclassing m_ParentHWnd, Me
             m_ParentHasBeenSubclassed = False
             m_ParentHWnd = 0
         End If
@@ -581,7 +581,7 @@ End Sub
 'Given the current font size, return the suggested height of an edit box.  Parent controls can use this to auto-size
 ' themselves in preparation of actually creating the API window.
 Public Function SuggestedHeight() As Long
-    SuggestedHeight = Font_Management.GetDefaultStringHeight(m_FontSize)
+    SuggestedHeight = Fonts.GetDefaultStringHeight(m_FontSize)
 End Function
 
 'Create the brush and font used to render the edit box background and text.  Normally, we only sync these values with the API window
@@ -729,7 +729,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         'If we previously cached a Unicode character in WM_KEYDOWN, cast it back to wParam now.
         If ((Not msgEaten) And (m_CharCache <> 0)) Then
             msgEaten = True
-            HandleEditBoxMsgs = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, m_CharCache, lParam)
+            HandleEditBoxMsgs = VBHacks.DefaultSubclassProc(hWnd, uiMsg, m_CharCache, lParam)
             m_CharCache = 0
         End If
     
@@ -801,7 +801,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     ElseIf (uiMsg = WM_NCDESTROY) Then
     
         RemoveKeyboardHook
-        VB_Hacks.StopSubclassing m_ParentHWnd, Me
+        VBHacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHasBeenSubclassed = False
         'Note that we deliberately *do not* eat this message, as VB's default wndproc needs to perform its own teardown
 
@@ -867,7 +867,7 @@ Private Function HandleParentMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal
         End If
         
     ElseIf (uiMsg = WM_NCDESTROY) Then
-        VB_Hacks.StopSubclassing m_ParentHWnd, Me
+        VBHacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHasBeenSubclassed = False
         'Note that we deliberately *do not* eat this message, as VB's default wndproc needs to perform its own teardown
     
@@ -888,14 +888,14 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     End If
     
-    If (Not msgEaten) Then ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    If (Not msgEaten) Then ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
 End Function
 
-'On focus events, keyboard hooks are set or removed accordingly.  See the VB_Hacks module for details.
+'On focus events, keyboard hooks are set or removed accordingly.  See the VBHacks module for details.
 Private Sub InstallKeyboardHook()
     If g_IsProgramRunning Then
-        If (m_HookID = 0) Then m_HookID = VB_Hacks.NotifyEditBoxHookNeeded(Me)
+        If (m_HookID = 0) Then m_HookID = VBHacks.NotifyEditBoxHookNeeded(Me)
     End If
 End Sub
 
@@ -903,7 +903,7 @@ Private Sub RemoveKeyboardHook()
     If (m_HookID <> 0) Then
         UnhookWindowsHookEx m_HookID
         m_HookID = 0
-        VB_Hacks.NotifyEditBoxHookNotNeeded ObjPtr(Me)
+        VBHacks.NotifyEditBoxHookNotNeeded ObjPtr(Me)
     End If
 End Sub
 
@@ -937,7 +937,7 @@ Private Function HandleKeyProc(ByVal nCode As Long, ByVal wParam As Long, ByVal 
     
 End Function
 
-'VB_Hacks will forward hooked messages here, while a hook is active
+'VBHacks will forward hooked messages here, while a hook is active
 Friend Function EditBoxKeyboardProc(ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
     
     'If we've shut down our internal hook handling code, ignore this event completely if.

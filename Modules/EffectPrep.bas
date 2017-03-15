@@ -1,4 +1,4 @@
-Attribute VB_Name = "FastDrawing"
+Attribute VB_Name = "EffectPrep"
 '***************************************************************************
 'Fast API Graphics Routines Interface
 'Copyright 2001-2017 by Tanner Helland
@@ -768,7 +768,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Pass control to the viewport renderer, which will perform the actual rendering
-        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         Message "Finished."
     

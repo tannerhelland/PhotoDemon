@@ -271,10 +271,10 @@ End Sub
 Private Function FillListWithOpenApplications(ByVal dstListbox As pdListBox) As Long
     
     dstListbox.Clear
-    Call EnumWindows(AddressOf Screen_Capture.EnumWindowsProc, 0&)
+    Call EnumWindows(AddressOf ScreenCapture.EnumWindowsProc, 0&)
     
     'Retrieve the list of window names and hWnds
-    Screen_Capture.GetAllWindowNamesAndHWnds m_WindowNames, m_WindowHWnds
+    ScreenCapture.GetAllWindowNamesAndHWnds m_WindowNames, m_WindowHWnds
     
     'Fill the list box with the retrieved list of window names
     Dim i As Long
@@ -298,7 +298,7 @@ Private Sub UpdatePreview()
 
     'Full screen capture was requested
     If (btsSource.ListIndex = 0) Then
-        Screen_Capture.GetDesktopAsDIB tmpDIB
+        ScreenCapture.GetDesktopAsDIB tmpDIB
         tmpDIB.RenderToPictureBox picPreview
     
     'Specific window capture was requested
@@ -308,7 +308,7 @@ Private Sub UpdatePreview()
             'Make sure the function returns successfully; if a window is unloaded after the listbox has been
             ' filled, the function will (obviously) fail to capture the screen contents.
             Dim minimizeCheck As Boolean
-            If Screen_Capture.GetHwndContentsAsDIB(tmpDIB, CLng(m_WindowHWnds.GetString(lstWindows.ListIndex)), chkChrome, minimizeCheck) Then
+            If ScreenCapture.GetHwndContentsAsDIB(tmpDIB, CLng(m_WindowHWnds.GetString(lstWindows.ListIndex)), chkChrome, minimizeCheck) Then
                 tmpDIB.RenderToPictureBox picPreview, , True
                 lblMinimizedWarning.Visible = minimizeCheck
             Else

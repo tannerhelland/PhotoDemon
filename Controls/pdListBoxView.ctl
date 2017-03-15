@@ -121,7 +121,7 @@ End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
     m_FontSize = newSize
-    listSupport.DefaultItemHeight = Font_Management.GetDefaultStringHeight(m_FontSize) + LIST_PADDING_VERTICAL * 2
+    listSupport.DefaultItemHeight = Fonts.GetDefaultStringHeight(m_FontSize) + LIST_PADDING_VERTICAL * 2
     PropertyChanged "FontSize"
 End Property
 
@@ -471,7 +471,7 @@ Private Sub RedrawBackBuffer()
             
             'This control doesn't maintain its own fonts; instead, it borrows it from the public PD UI font cache, as necessary
             Dim tmpFont As pdFont, textPadding As Single
-            Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize)
+            Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize)
             textPadding = LIST_PADDING_HORIZONTAL
             If listHasFocus Then textPadding = textPadding - 1
             

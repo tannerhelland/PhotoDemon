@@ -1,4 +1,4 @@
-Attribute VB_Name = "Public_Enums_and_Types"
+Attribute VB_Name = "Public_EnumsAndTypes"
 Option Explicit
 
 Public Type RECTF_RB

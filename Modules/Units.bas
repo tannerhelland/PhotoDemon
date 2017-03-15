@@ -1,4 +1,4 @@
-Attribute VB_Name = "Unit_Conversion_Functions"
+Attribute VB_Name = "Units"
 '***************************************************************************
 'Unit Conversion Functions
 'Copyright 2014-2017 by Tanner Helland

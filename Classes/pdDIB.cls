@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2012-2017 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 12/June/16
-'Last update: clean-up some esoteric functions by moving them to the DIB_Support module.
+'Last update: clean-up some esoteric functions by moving them to the DIBs module.
 '
 'This class is the core of PhotoDemon.  Any image interactions are handled through this lightweight Windows DIB wrapper, and as you
 ' might expect, a number of other capabilities are built into the class.
@@ -114,7 +114,7 @@ Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPo
 Private Declare Function VarPtrArray Lib "msvbvm60" Alias "VarPtr" (Ptr() As Any) As Long
 
 'DIB API functions
-' (Note that these are currently declared in FastDrawing as well)
+' (Note that these are currently declared in EffectPrep as well)
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBitsInfo As BITMAPINFOHEADER, ByVal wUsage As Long, lpBits As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long

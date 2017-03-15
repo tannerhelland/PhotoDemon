@@ -1,4 +1,4 @@
-Attribute VB_Name = "Uniscribe_Interface"
+Attribute VB_Name = "Uniscribe"
 '***************************************************************************
 'Uniscribe API Types
 'Copyright 2015-2017 by Tanner Helland
@@ -312,7 +312,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
             Next i
             
         Else
-            If (Not VB_Hacks.IsArrayInitialized(m_ScriptFontNames)) Then
+            If (Not VBHacks.IsArrayInitialized(m_ScriptFontNames)) Then
                 ReDim m_ScriptFontNames(0 To INITIAL_SCRIPT_CACHE_SIZE - 1) As String
                 ReDim m_ScriptCache(0 To INITIAL_SCRIPT_CACHE_SIZE - 1) As PD_FONT_PROPERTY
             End If
@@ -320,7 +320,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
         
         'Create a dummy font handle matching the current name
         Dim tmpFont As Long, tmpDC As Long
-        If Font_Management.QuickCreateFontAndDC(srcFontName, tmpFont, tmpDC) Then
+        If Fonts.QuickCreateFontAndDC(srcFontName, tmpFont, tmpDC) Then
             
             'As of May 2015, OpenType only supports 114 tags, so a font can't return more values than this!
             ' (We actually size it to 114 + 1, just in case Uniscribe gets picky about having a little extra breathing room.)
@@ -354,7 +354,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                     
                     'NOTE: if you want, you can also preserve the full list of supported scripts.  PD doesn't do this at present,
                     ' because it greatly increases the copying time required for structs (as the list of potential scripts is
-                    ' 100+ items).  To use this capability, you must also go into the Font_Management module and uncomment
+                    ' 100+ items).  To use this capability, you must also go into the Fonts module and uncomment
                     ' the .SupportedScripts array inside the PD_FONT_PROPERTY definition.
                     'ReDim dstFontProperty.SupportedScripts(0 To numTagsReceived - 1) As Long
                     'CopyMemoryStrict VarPtr(dstFontProperty.SupportedScripts(0)), VarPtr(m_ScriptTags(0)), numTagsReceived * 4
@@ -417,7 +417,7 @@ Public Function GetScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
             End If
             
             'Remember to free our temporary font and DC when we're done with them
-            Font_Management.QuickDeleteFontAndDC tmpFont, tmpDC
+            Fonts.QuickDeleteFontAndDC tmpFont, tmpDC
             
             'Also, let Uniscribe know we're done with our copy of their cache
             ScriptFreeCache tmpCache

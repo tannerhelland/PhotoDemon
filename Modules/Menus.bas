@@ -410,7 +410,7 @@ Public Sub ApplyIconsToMenus()
     For i = 0 To m_NumOfMenus - 1
         If (Len(m_Menus(i).ME_ResImage) <> 0) Then
             With m_Menus(i)
-                Icons_and_Cursors.AddMenuIcon .ME_ResImage, .ME_TopMenu, .ME_SubMenu, .ME_SubSubMenu
+                IconsAndCursors.AddMenuIcon .ME_ResImage, .ME_TopMenu, .ME_SubMenu, .ME_SubSubMenu
             End With
         End If
     Next i

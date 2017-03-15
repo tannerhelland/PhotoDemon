@@ -277,7 +277,7 @@ Friend Function ReadBytes(ByRef dstBytes() As Byte, Optional ByVal readLength As
         
         'Check to see if our destination array is already initialized to the perfect size.  If it is, we don't need to
         ' allocate new memory.
-        If VB_Hacks.IsArrayInitialized(dstBytes) Then
+        If VBHacks.IsArrayInitialized(dstBytes) Then
             
             arrLBound = LBound(dstBytes)
             arrUBound = UBound(dstBytes)

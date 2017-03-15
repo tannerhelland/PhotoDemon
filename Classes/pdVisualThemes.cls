@@ -883,7 +883,7 @@ Friend Sub AddWindowPainter(ByVal srcHwnd As Long)
         ' add it to our subclassed list.
         If (Not m_SubclassedHWnds.DoesKeyExist(srcHwnd)) Then
             m_SubclassedHWnds.AddEntry srcHwnd, 0
-            VB_Hacks.StartSubclassing srcHwnd, Me
+            VBHacks.StartSubclassing srcHwnd, Me
         End If
         
     End If
@@ -893,7 +893,7 @@ Friend Sub RemoveWindowPainter(ByVal srcHwnd As Long)
     
     'Remove this entry from our subclassed list (which is double-checked when this class is unloaded)
     If g_IsProgramRunning Then
-        VB_Hacks.StopSubclassing srcHwnd, Me
+        VBHacks.StopSubclassing srcHwnd, Me
         m_SubclassedHWnds.DeleteEntry srcHwnd
         m_SubclassedHWnds.TrimDeletedEntries
     End If
@@ -931,7 +931,7 @@ Private Sub Class_Terminate()
             Dim i As Long, tmpHWnd As Long
             For i = 0 To m_SubclassedHWnds.GetNumOfEntries - 1
                 tmpHWnd = CLng(m_SubclassedHWnds.GetKeyByIndex(i))
-                If (tmpHWnd <> 0) Then VB_Hacks.StopSubclassing tmpHWnd, Me
+                If (tmpHWnd <> 0) Then VBHacks.StopSubclassing tmpHWnd, Me
             Next i
         End If
     End If
@@ -985,13 +985,13 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     ElseIf (uiMsg = WM_NCDESTROY) Then
         
         m_SubclassedHWnds.DeleteEntry hWnd
-        VB_Hacks.StopSubclassing hWnd, Me
+        VBHacks.StopSubclassing hWnd, Me
         
         'Allow VB to continue with its own internal teardown process
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     Else
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     End If
     
 End Function

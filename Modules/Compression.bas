@@ -135,7 +135,7 @@ Private m_CompressorAvailable() As Boolean
 Public Function InitializeCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES, ByRef pathToDLLFolder As String) As Boolean
     
     'Keep track of which compression engines have been initialized
-    If (Not VB_Hacks.IsArrayInitialized(m_CompressorAvailable)) Then
+    If (Not VBHacks.IsArrayInitialized(m_CompressorAvailable)) Then
         ReDim m_CompressorAvailable(0 To NUM_OF_COMPRESSION_ENGINES - 1) As Boolean
         m_CompressorAvailable(PD_CE_NoCompression) = True
     End If
@@ -169,7 +169,7 @@ End Function
 Public Sub ShutDownCompressionEngine(ByVal whichEngine As PD_COMPRESSION_ENGINES)
 
     'Keep track of which compression engines have been initialized
-    If VB_Hacks.IsArrayInitialized(m_CompressorAvailable) Then
+    If VBHacks.IsArrayInitialized(m_CompressorAvailable) Then
         
         'Skip termination if the compressor has already been shut down
         If m_CompressorAvailable(whichEngine) Then

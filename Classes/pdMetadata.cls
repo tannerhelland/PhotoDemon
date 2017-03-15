@@ -362,7 +362,7 @@ Public Function LoadAllMetadata(ByRef mdString As String, ByVal parentImageID As
     Dim xmlLines() As String
     xmlLines = Split(mdString, vbCrLf)
     
-    If VB_Hacks.IsArrayInitialized(xmlLines) Then
+    If VBHacks.IsArrayInitialized(xmlLines) Then
         
         'With the data successfully split, we now want to advance the parser to the first valid tag entry.
         Dim curLine As Long: curLine = 0
@@ -789,7 +789,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                             'Refresh the screen to reflect the new colors.  (This is necessary because metadata is parsed asynchronously,
                             ' so the image may already be visible on the screen!)
                             If (parentImageID = g_CurrentImage) Then
-                                Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                                ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
                                 Interface.NotifyImageChanged parentImageID
                             End If
                             
@@ -848,7 +848,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                     
                     'Refresh the screen to reflect the new colors
                     If (parentImageID = g_CurrentImage) Then
-                        Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                        ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
                         Interface.NotifyImageChanged parentImageID
                     End If
                     
@@ -918,7 +918,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
                         ImageImporter.ApplyPostLoadICCHandling pdImages(parentImageID).GetActiveDIB
                         
                         If (parentImageID = g_CurrentImage) Then
-                            Viewport_Engine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
+                            ViewportEngine.Stage1_InitializeBuffer pdImages(parentImageID), FormMain.mainCanvas(0)
                             Interface.NotifyImageChanged parentImageID
                         End If
                         

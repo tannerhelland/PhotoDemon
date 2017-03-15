@@ -59,7 +59,7 @@ End Sub
 
 Private Sub Class_Terminate()
     If (m_hWnd <> 0) Then
-        VB_Hacks.StopSubclassing m_hWnd, Me
+        VBHacks.StopSubclassing m_hWnd, Me
         m_hWnd = 0
     End If
 End Sub
@@ -72,13 +72,13 @@ Public Sub StartFocusTracking(ByVal srcHwnd As Long)
     
         'Release any existing subclassers
         If (m_hWnd <> 0) Then
-            VB_Hacks.StopSubclassing m_hWnd, Me
+            VBHacks.StopSubclassing m_hWnd, Me
             m_hWnd = 0
         End If
         
         'Subclass all necessary messages for proper focus detection
         m_hWnd = srcHwnd
-        If (m_hWnd <> 0) Then VB_Hacks.StartSubclassing m_hWnd, Me
+        If (m_hWnd <> 0) Then VBHacks.StartSubclassing m_hWnd, Me
         
     End If
     
@@ -140,7 +140,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         End If
         
         'Allow default focus handlers to still trigger
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     'This message doesn't really apply to most uses of this class, but we cover it for completeness' sake
     ElseIf (uiMsg = WM_NCACTIVATE) Then
@@ -158,7 +158,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
         'We *always* want to proceed with default handling, so we ignore this advice and forcibly allow
         ' DefSubclassProc to request the behavior it wants.
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     'Window is losing focus
     ElseIf (uiMsg = WM_KILLFOCUS) Then
@@ -169,7 +169,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             RaiseEvent LostFocusReliable
         End If
         
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     'Window is gaining focus
     ElseIf (uiMsg = WM_SETFOCUS) Then
@@ -180,20 +180,20 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             RaiseEvent GotFocusReliable
         End If
         
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     ElseIf (uiMsg = WM_NCDESTROY) Then
         
         If (hWnd <> 0) Then
-            VB_Hacks.StopSubclassing hWnd, Me
+            VBHacks.StopSubclassing hWnd, Me
             m_hWnd = 0
         End If
         
         'Allow VB's normal teardown to occur
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     Else
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     End If
     
 End Function

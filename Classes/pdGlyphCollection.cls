@@ -198,13 +198,13 @@ Public Sub NotifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal 
     m_oldFontHandle = SelectObject(m_tmpDIB.GetDIBDC, m_GDIFont)
     
     'Retrieve basic text metrics for this font, and cache any metrics required on the inner glyph parsing loop
-    Font_Management.FillTextMetrics m_tmpDIB.GetDIBDC, m_TextMetrics
+    Fonts.FillTextMetrics m_tmpDIB.GetDIBDC, m_TextMetrics
     m_FontAscent = m_TextMetrics.tmAscent
     m_FontDescent = m_TextMetrics.tmDescent
     m_FontHeight = m_TextMetrics.tmHeight
     
     'Also retrieve outline text metrics, which include basic text metrics plus a whole bunch more.
-    Font_Management.FillOutlineTextMetrics m_tmpDIB.GetDIBDC, m_OutlineTextMetrics
+    Fonts.FillOutlineTextMetrics m_tmpDIB.GetDIBDC, m_OutlineTextMetrics
     
     'Cache the underline and strikeout values as well
     m_StyleUnderline = underlineActive

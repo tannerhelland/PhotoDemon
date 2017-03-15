@@ -325,7 +325,7 @@ Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
     '       in advance.)
     
     'Convert the reference image into a 2D byte array, which is much faster to access and process.
-    DIB_Support.GetDIBGrayscaleMap m_ShapeImage, m_ReferenceMap
+    DIBs.GetDIBGrayscaleMap m_ShapeImage, m_ReferenceMap
     m_ShapeImage.EraseDIB
     
 End Sub

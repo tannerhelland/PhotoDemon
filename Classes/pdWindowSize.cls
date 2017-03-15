@@ -95,7 +95,7 @@ Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEv
             
             'Activate the subclasser conditionally; some UCs don't need to receive API size/move events
             m_SubclassActive = subclassMoveSizeEvents
-            If m_SubclassActive Then VB_Hacks.StartSubclassing m_hWnd, Me
+            If m_SubclassActive Then VBHacks.StartSubclassing m_hWnd, Me
             
             'Cache an initial set of window dimensions
             UpdateWinRect
@@ -203,7 +203,7 @@ End Sub
 
 Private Sub EndSubclassing()
     If (m_hWnd <> 0) Then
-        If m_SubclassActive Then VB_Hacks.StopSubclassing m_hWnd, Me
+        If m_SubclassActive Then VBHacks.StopSubclassing m_hWnd, Me
         m_hWnd = 0
     End If
     m_SubclassActive = False
@@ -224,6 +224,6 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     End If
     
-    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
 
 End Function

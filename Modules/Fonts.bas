@@ -1,4 +1,4 @@
-Attribute VB_Name = "Font_Management"
+Attribute VB_Name = "Fonts"
 '***************************************************************************
 'PhotoDemon Font Manager
 'Copyright 2013-2017 by Tanner Helland
@@ -10,7 +10,7 @@ Attribute VB_Name = "Font_Management"
 'For many years, PhotoDemon has used the pdFont class for GDI text rendering.  Unfortunately, that class was designed before I
 ' knew much about GDI font management, and it has some sketchy design considerations that make it a poor fit for PD's text tool.
 '
-'As part of a broader overhaul to PD's text management, this new Font_Management module has been created.  Its job is to manage a
+'As part of a broader overhaul to PD's text management, this new Fonts module has been created.  Its job is to manage a
 ' font cache for this system, which individual font classes can then query for things like font existence, style, and more.
 '
 'Obviously, this class relies heavily on WAPI.  Functions are documented to the best of my knowledge and ability.
@@ -305,7 +305,7 @@ Public Type PD_FONT_PROPERTY
     Supports_Thai As Boolean
     numSupportedScripts As Integer
     
-    'At present, this item is unused.  See the Uniscribe_Interface.GetScriptsSupportedByFont() function for more details.
+    'At present, this item is unused.  See the Uniscribe.GetScriptsSupportedByFont() function for more details.
     'SupportedScripts() As Long
     
 End Type
@@ -355,7 +355,7 @@ Public Function FindFontSizeWordWrap(ByRef srcString As String, ByVal pxWidth As
     
     'Retrieve a handle to a matching pdFont object
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(initialFontSize, isBold, isItalic, isUnderline)
+    Set tmpFont = Fonts.GetMatchingUIFont(initialFontSize, isBold, isItalic, isUnderline)
     
     'Return a smaller font size, as necessary, to fit the requested pixel width
     FindFontSizeWordWrap = tmpFont.GetMaxFontSizeToFitWordWrap(srcString, pxWidth, pxHeight, initialFontSize)
@@ -393,7 +393,7 @@ End Function
 ' create a redundant font object just to measure text.
 Public Function GetDefaultStringHeight(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
+    Set tmpFont = Fonts.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
     GetDefaultStringHeight = tmpFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
     Set tmpFont = Nothing
 End Function
@@ -402,7 +402,7 @@ End Function
 ' create a redundant font object just to measure text.
 Public Function GetDefaultStringWidth(ByRef srcString As String, ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
+    Set tmpFont = Fonts.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
     GetDefaultStringWidth = tmpFont.GetWidthOfString(srcString)
     Set tmpFont = Nothing
 End Function
@@ -545,7 +545,7 @@ Public Sub BuildFontCacheProperties()
             'For i = 0 To UBound(g_PDFontProperties)
                 
                 'I'm temporarily disabling this while I investigate some performance issues on slow PCs
-                'Uniscribe_Interface.getScriptsSupportedByFont m_PDFontCache.GetString(i), g_PDFontProperties(i)
+                'Uniscribe.getScriptsSupportedByFont m_PDFontCache.GetString(i), g_PDFontProperties(i)
                 
                 'Debug only: list fonts that support CJK forms
                 'If g_PDFontProperties(i).Supports_CJK Then Debug.Print "Supports CJK: " & m_PDFontCache.GetString(i)
@@ -619,11 +619,11 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
                 FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
                 
                 'Use the standard point-based formula
-                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
+                .lfHeight = Fonts.ConvertToGDIFontSize(FontSize)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
             Case pdfu_Point
-                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
+                .lfHeight = Fonts.ConvertToGDIFontSize(FontSize)
         
         End Select
         

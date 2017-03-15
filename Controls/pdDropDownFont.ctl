@@ -230,7 +230,7 @@ Private m_Colors As pdThemeColors
 ' own copy of the font list, and if for some reason the list changes, this function can be called again to reset the font list.
 Public Sub InitializeFontList()
     Me.Clear
-    Font_Management.GetCopyOfSystemFontList m_listOfFonts
+    Fonts.GetCopyOfSystemFontList m_listOfFonts
     CopyFontsToListManager
 End Sub
 
@@ -309,8 +309,8 @@ Public Property Let FontSize(ByVal newSize As Single)
     
     'A *ton* of rendering metrics are tied to the current font size.  All must be refreshed upon a change.
     m_LargestWidth = 0
-    m_IdealComboBoxHeight = Font_Management.GetDefaultStringHeight(m_FontSize) + COMBO_PADDING_VERTICAL * 2
-    lbPrimary.ListItemHeight = Font_Management.GetDefaultStringHeight(m_FontSize) * 2 + 2
+    m_IdealComboBoxHeight = Fonts.GetDefaultStringHeight(m_FontSize) + COMBO_PADDING_VERTICAL * 2
+    lbPrimary.ListItemHeight = Fonts.GetDefaultStringHeight(m_FontSize) * 2 + 2
     listSupport.DefaultItemHeight = lbPrimary.ListItemHeight
     
     PropertyChanged "FontSize"
@@ -370,7 +370,7 @@ Public Sub SetWidthAutomatically()
     
         Dim i As Long
         For i = 0 To listSupport.ListCount - 1
-            testWidth = Font_Management.GetDefaultStringWidth(listSupport.List(i, True), m_FontSize)
+            testWidth = Fonts.GetDefaultStringWidth(listSupport.List(i, True), m_FontSize)
             If (testWidth > newWidth) Then newWidth = testWidth
         Next i
     
@@ -467,7 +467,7 @@ Private Sub lbPrimary_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As L
     
     'Paint the font name in the default UI font
     Dim tmpFont As pdFont, textPadding As Single
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize)
+    Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize)
     textPadding = COMBO_PADDING_HORIZONTAL
     
     Dim tmpString As String
@@ -800,7 +800,7 @@ Private Sub RaiseListBox()
         
         'Font names are rendered in the current UI font
         Dim curFont As pdFont
-        Set curFont = Font_Management.GetMatchingUIFont(m_FontSize)
+        Set curFont = Fonts.GetMatchingUIFont(m_FontSize)
         curFont.AttachToDC tmpDC
         
         'Find the longest font name
@@ -954,7 +954,7 @@ Private Sub RaiseListBox()
         End If
         
         If (Not subclassActive) And (Not m_SubclassActive) Then
-            VB_Hacks.StartSubclassing m_ParentHWnd, Me
+            VBHacks.StartSubclassing m_ParentHWnd, Me
             m_SubclassActive = True
         End If
         
@@ -1004,7 +1004,7 @@ End Sub
 Private Sub RemoveSubclass()
     On Error GoTo UnsubclassUnnecessary
     If ((m_ParentHWnd <> 0) And m_SubclassActive) Then
-        VB_Hacks.StopSubclassing m_ParentHWnd, Me
+        VBHacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHWnd = 0
         m_SubclassActive = False
     End If
@@ -1146,7 +1146,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         If (Me.ListIndex <> -1) Then
         
             Dim tmpFont As pdFont
-            Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
+            Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
             tmpFont.SetFontColor ddColorText
             tmpFont.SetTextAlignment vbLeftJustify
             tmpFont.AttachToDC bufferDC
@@ -1210,13 +1210,13 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         ElseIf (uiMsg = WM_NCDESTROY) Then
             HideListBox
             Set m_SubclassReleaseTimer = Nothing
-            VB_Hacks.StopSubclassing hWnd, Me
+            VBHacks.StopSubclassing hWnd, Me
             m_ParentHWnd = 0
         End If
     End If
     
     'Never eat parent window messages; just peek at them
-    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     m_InSubclassNow = False
     

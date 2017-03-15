@@ -284,7 +284,7 @@ Public Sub SyncInterfaceToCurrentImage()
         
         'Finally, synchronize various tool settings.  I've optimized this so that only the settings relative to the current tool
         ' are updated; others will be modified if/when the active tool is changed.
-        Tool_Support.SyncToolOptionsUIToCurrentLayer
+        Tools.SyncToolOptionsUIToCurrentLayer
         
     End If
         
@@ -535,7 +535,7 @@ Private Sub SetUIMode_NoImages()
     If (Not g_WindowManager Is Nothing) Then
         g_WindowManager.SetWindowCaptionW FormMain.hWnd, Interface.GetWindowCaption(Nothing)
     Else
-        FormMain.Caption = Update_Support.GetPhotoDemonNameAndVersion()
+        FormMain.Caption = Updates.GetPhotoDemonNameAndVersion()
     End If
         
     'Ask the canvas to reset itself.  Note that this also covers the status bar area and the image tabstrip, if they were
@@ -543,8 +543,8 @@ Private Sub SetUIMode_NoImages()
     FormMain.mainCanvas(0).ClearCanvas
         
     'Restore the default taskbar and titlebar icons and clear the custom icon cache
-    Icons_and_Cursors.ResetAppIcons
-    Icons_and_Cursors.DestroyAllIcons
+    IconsAndCursors.ResetAppIcons
+    IconsAndCursors.DestroyAllIcons
         
     'With all menus reset to their default values, we can now redraw all associated menu icons.
     ' (IMPORTANT: this function must be called whenever menu captions change, because icons are associated by caption.)
@@ -758,7 +758,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             'If selections are not active, clear all the selection value textboxes.
             ' (Note: as of 7.0, PD unloads tool panels when it's done using them.  That means that we only need to
             '  update this information if the given panel is actually visible.)
-            If Tool_Support.IsSelectionToolActive Then
+            If Tools.IsSelectionToolActive Then
             
                 If (Not newState) Then
                     For i = 0 To toolpanel_Selections.tudSel.Count - 1
@@ -805,7 +805,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
         'Transformable selection controls specifically
         Case PDUI_SelectionTransforms
             
-            If Tool_Support.IsSelectionToolActive Then
+            If Tools.IsSelectionToolActive Then
             
                 'Under certain circumstances, it is desirable to disable only the selection location boxes
                 For i = 0 To toolpanel_Selections.tudSel.Count - 1
@@ -860,7 +860,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             minLayerUIValue_Height = -1 * maxLayerUIValue_Height
             
             'Mark the tool engine as busy; this prevents control changes from triggering viewport redraws
-            Tool_Support.SetToolBusyState True
+            Tools.SetToolBusyState True
             
             'Enable/disable all UI elements as necessary
             If (g_CurrentTool = NAV_MOVE) Then
@@ -907,7 +907,7 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             End If
             
             'Free the tool engine
-            Tool_Support.SetToolBusyState False
+            Tools.SetToolBusyState False
         
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case PDUI_NonDestructiveFX
@@ -1110,7 +1110,7 @@ Public Sub FixPopupWindow(ByVal targetHwnd As Long, Optional ByVal windowIsLoadi
         
         'We could dynamically resize our tracking collection to precisely match the number of open windows, but this would only
         ' save us a few bytes.  Since we know we'll never exceed NESTED_POPUP_LIMIT, we just default to the max size off the bat.
-        If (Not VB_Hacks.IsArrayInitialized(m_PopupHWnds)) Then
+        If (Not VBHacks.IsArrayInitialized(m_PopupHWnds)) Then
             m_NumOfPopupHWnds = 0
             ReDim m_PopupHWnds(0 To NESTED_POPUP_LIMIT - 1) As Long
             ReDim m_PopupIconsSmall(0 To NESTED_POPUP_LIMIT - 1) As Long
@@ -1127,14 +1127,14 @@ Public Sub FixPopupWindow(ByVal targetHwnd As Long, Optional ByVal windowIsLoadi
         
         'While here, cache the window's current icons.  (VB may insert its own default icons for some window types.)
         ' When the dialog is closed, we will restore these icons to avoid leaking any of PD's custom icons.
-        Icons_and_Cursors.MirrorCurrentIconsToWindow targetHwnd, True, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
+        IconsAndCursors.MirrorCurrentIconsToWindow targetHwnd, True, m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
         m_NumOfPopupHWnds = m_NumOfPopupHWnds + 1
         
     Else
     
         m_NumOfPopupHWnds = m_NumOfPopupHWnds - 1
         If (m_NumOfPopupHWnds >= 0) Then
-            Icons_and_Cursors.ChangeWindowIcon m_PopupHWnds(m_NumOfPopupHWnds), m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
+            IconsAndCursors.ChangeWindowIcon m_PopupHWnds(m_NumOfPopupHWnds), m_PopupIconsSmall(m_NumOfPopupHWnds), m_PopupIconsLarge(m_NumOfPopupHWnds)
         Else
             m_NumOfPopupHWnds = 0
             #If DEBUGMODE = 1 Then
@@ -1342,7 +1342,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
     
     For Each eControl In dstForm.Controls
         
-        VB_Hacks.GetHighResTime startTime
+        VBHacks.GetHighResTime startTime
         
         'This is a bit weird, but PD still uses generic picture boxes in various places.  Picture boxes get confused
         ' by all the weird run-time UI APIs we call, so to ensure that their cursors work properly, we use the API
@@ -1464,7 +1464,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         End If
         
         'Want to measure time on a per-control basis?  Use this line to do so
-        'timeDict.AddEntry eControl.Name, VB_Hacks.GetTimerDifferenceNow(startTime)
+        'timeDict.AddEntry eControl.Name, VBHacks.GetTimerDifferenceNow(startTime)
         
     Next
     
@@ -1606,9 +1606,9 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     
     'Append the current PhotoDemon version number and exit
     If (Len(captionBase) <> 0) Then
-        GetWindowCaption = captionBase & "  -  " & Update_Support.GetPhotoDemonNameAndVersion()
+        GetWindowCaption = captionBase & "  -  " & Updates.GetPhotoDemonNameAndVersion()
     Else
-        GetWindowCaption = Update_Support.GetPhotoDemonNameAndVersion()
+        GetWindowCaption = Updates.GetPhotoDemonNameAndVersion()
     End If
     
     'When devs send me screenshots, it's helpful to see if they're running in the IDE or not, as this can explain some issues
@@ -1640,7 +1640,7 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
             m_LastUILimitingSize_Small = newLimitingSize_Small
             m_LastUILimitingSize_Large = newLimitingSize_Large
             
-            If Tool_Support.IsSelectionToolActive Then
+            If Tools.IsSelectionToolActive Then
             
                 'Certain selection tools are size-limited by the current image; update those now!
                 toolpanel_Selections.sltCornerRounding.Max = m_LastUILimitingSize_Small
@@ -1987,7 +1987,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
     End Select
     
     'If the user requested any padding, apply it now
-    If (dibPadding > 0) Then padDIB GetRuntimeUIDIB, dibPadding
+    If (dibPadding > 0) Then PadDIB GetRuntimeUIDIB, dibPadding
     
 End Function
 
@@ -2109,7 +2109,7 @@ Public Sub NotifyImageAdded(Optional ByVal newImageIndex As Long = -1)
     If (newImageIndex < 0) Then newImageIndex = g_CurrentImage
     
     'Generate an initial set of taskbar and titlebar icons
-    Icons_and_Cursors.CreateCustomFormIcons pdImages(newImageIndex)
+    IconsAndCursors.CreateCustomFormIcons pdImages(newImageIndex)
     
     'Notify the image tabstrip of the addition.  (It has to make quite a few internal changes to accommodate new images.)
     FormMain.mainCanvas(0).NotifyTabstripAddNewThumb newImageIndex

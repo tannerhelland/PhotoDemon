@@ -63,7 +63,7 @@ Private Sub IMRUList_AfterListCleared()
         Next i
         
         'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
-        Icons_and_Cursors.ResetMenuIcons
+        IconsAndCursors.ResetMenuIcons
         
     End If
     
@@ -101,7 +101,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
         Next i
         
         'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
-        Icons_and_Cursors.ResetMenuIcons
+        IconsAndCursors.ResetMenuIcons
         
     End If
     
@@ -133,7 +133,7 @@ Private Sub IMRUList_AfterListLoad(ByRef mruManager As pdMRUManager)
     End If
     
     'Because the "clear list" menu entry sits at the bottom, we must refresh icons when the list is modified
-    Icons_and_Cursors.ResetMenuIcons
+    IconsAndCursors.ResetMenuIcons
     
 End Sub
 

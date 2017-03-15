@@ -518,7 +518,7 @@ End Function
 Friend Sub CheckAvailableLanguages()
         
     Dim startTime As Currency
-    VB_Hacks.GetHighResTime startTime
+    VBHacks.GetHighResTime startTime
         
     m_numOfLanguages = 0
     ReDim m_AvailableLanguages(0 To 99) As pdLanguageFile
@@ -538,8 +538,8 @@ Friend Sub CheckAvailableLanguages()
     End If
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / load cache file", VB_Hacks.GetTimerDifferenceNow(startTime)
-        VB_Hacks.GetHighResTime startTime
+        pdDebug.LogTiming "pdTranslate / load cache file", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
     #End If
     
     'If the cache exists, we won't write it back out to file unless it somehow changes during this session
@@ -557,16 +557,16 @@ Friend Sub CheckAvailableLanguages()
     m_numOfLanguages = TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(False), 0, "Official")
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / scan files in official folder", VB_Hacks.GetTimerDifferenceNow(startTime)
-        VB_Hacks.GetHighResTime startTime
+        pdDebug.LogTiming "pdTranslate / scan files in official folder", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
     #End If
     
     'Find all available USER language files
     m_numOfLanguages = m_numOfLanguages + TallyLanguageFilesInFolder(g_UserPreferences.GetLanguagePath(True), m_numOfLanguages, "Unofficial")
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / scan files in user folder", VB_Hacks.GetTimerDifferenceNow(startTime)
-        VB_Hacks.GetHighResTime startTime
+        pdDebug.LogTiming "pdTranslate / scan files in user folder", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
     #End If
     
     'Add a dummy entry for PhotoDemon's default language (en-US)
@@ -602,8 +602,8 @@ Friend Sub CheckAvailableLanguages()
     Set m_LangCacheXML = Nothing
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "pdTranslate / everything else", VB_Hacks.GetTimerDifferenceNow(startTime)
-        VB_Hacks.GetHighResTime startTime
+        pdDebug.LogTiming "pdTranslate / everything else", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
     #End If
     
     'TESTING: display the info we retrieved

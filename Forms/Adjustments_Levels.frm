@@ -1056,10 +1056,10 @@ Private Sub PrepHistogramOverlays()
     Dim hMaxPosition() As Byte
     
     'Gather histogram data for the current layer
-    Histogram_Analysis.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
+    Histograms.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
     'Use that data to generate DIBs for the histogram data
-    Histogram_Analysis.GenerateHistogramImages hData, hMax, m_hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
+    Histograms.GenerateHistogramImages hData, hMax, m_hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
     
 End Sub
 

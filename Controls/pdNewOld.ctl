@@ -293,7 +293,7 @@ Private Sub UpdateControlLayout()
     ' same column, so we need to know which is larger (in terms of pixels).
     Dim newCaptionRect As RECTF, oldCaptionRect As RECTF
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
+    Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
     
     With newCaptionRect
         .Width = tmpFont.GetWidthOfString(m_NewCaptionTranslated)
@@ -378,7 +378,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         
         'Next, paint the "new" and "old" captions
         Dim tmpFont As pdFont
-        Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
+        Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
         
         With tmpFont
             .SetTextAlignment vbLeftJustify

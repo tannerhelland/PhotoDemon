@@ -967,11 +967,11 @@ End Sub
 
 Private Sub FreeInternalIcons()
     If (m_curFormIcon16 <> 0) Then
-        Icons_and_Cursors.ReleaseIcon m_curFormIcon16
+        IconsAndCursors.ReleaseIcon m_curFormIcon16
         m_curFormIcon16 = 0
     End If
     If (m_curFormIcon32 <> 0) Then
-        Icons_and_Cursors.ReleaseIcon m_curFormIcon32
+        IconsAndCursors.ReleaseIcon m_curFormIcon32
         m_curFormIcon32 = 0
     End If
 End Sub
@@ -1080,7 +1080,7 @@ Private Sub Class_Terminate()
     
     'Forcibly release all image layers
     Dim i As Long
-    If VB_Hacks.IsArrayInitialized(imgLayers) Then
+    If VBHacks.IsArrayInitialized(imgLayers) Then
         For i = 0 To UBound(imgLayers)
             Set imgLayers(i) = Nothing
         Next i

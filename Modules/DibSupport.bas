@@ -1,4 +1,4 @@
-Attribute VB_Name = "DIB_Support"
+Attribute VB_Name = "DIBs"
 '***************************************************************************
 'DIB Support Functions
 'Copyright 2012-2017 by Tanner Helland
@@ -442,7 +442,7 @@ Public Function MakeDIBGrayscale(ByRef srcDIB As pdDIB, Optional ByVal numOfShad
         MakeDIBGrayscale = True
         
     Else
-        Debug.Print "WARNING! Non-existent DIB passed to DIB_Support.MakeDIBGrayscale()."
+        Debug.Print "WARNING! Non-existent DIB passed to DIBs.MakeDIBGrayscale()."
         MakeDIBGrayscale = False
     End If
 
@@ -879,7 +879,7 @@ Public Function ColorizeDIB(ByRef srcDIB As pdDIB, ByVal newColor As Long) As Bo
             
         End If
     Else
-        Debug.Print "WARNING!  DIB_Support.ColorizeDIB() requires a 32-bpp DIB to operate correctly."
+        Debug.Print "WARNING!  DIBs.ColorizeDIB() requires a 32-bpp DIB to operate correctly."
     End If
     
 End Function
@@ -975,7 +975,7 @@ Public Function OutlineDIB(ByRef srcDIB As pdDIB, ByRef outlinePen As pd2DPen, O
             
         End If
     Else
-        Debug.Print "WARNING!  DIB_Support.OutlineDIB() requires a 32-bpp DIB to operate correctly."
+        Debug.Print "WARNING!  DIBs.OutlineDIB() requires a 32-bpp DIB to operate correctly."
     End If
     
 End Function

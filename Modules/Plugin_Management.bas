@@ -136,7 +136,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
         If (loadHighPriorityPlugins = IsPluginHighPriority(i)) Then
             
             #If DEBUGMODE = 1 Then
-                VB_Hacks.GetHighResTime startTime
+                VBHacks.GetHighResTime startTime
             #End If
         
             'Before doing anything else, see if the plugin file actually exists.
@@ -157,7 +157,7 @@ Public Sub LoadPluginGroup(Optional ByVal loadHighPriorityPlugins As Boolean = T
             FinalizePluginInitialization i, m_PluginInitialized(i)
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
+                pdDebug.LogAction GetPluginName(i) & " initialized in " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000#), "#####0") & " ms"
             #End If
             
         End If
@@ -794,17 +794,17 @@ Public Sub TerminateAllPlugins()
 End Sub
 
 'Given an arbitrary filename, return a string with that file's version (as retrieved from file metadata).
-Private Function RetrieveGenericVersionString(ByVal fullFileName As String) As String
+Private Function RetrieveGenericVersionString(ByVal FullFileName As String) As String
     
     'Start by retrieving the required version buffer size (and bail if there's no version info)
     Dim lBufferLen As Long, tmpLong As Long
-    lBufferLen = GetFileVersionInfoSize(fullFileName, tmpLong)
+    lBufferLen = GetFileVersionInfoSize(FullFileName, tmpLong)
     If lBufferLen < 1 Then Exit Function
     
     'Pull the version info into a dedicated struct
     Dim sBuffer() As Byte
     ReDim sBuffer(0 To lBufferLen - 1) As Byte
-    tmpLong = GetFileVersionInfo(fullFileName, 0&, lBufferLen, sBuffer(0))
+    tmpLong = GetFileVersionInfo(FullFileName, 0&, lBufferLen, sBuffer(0))
     
     Dim lVerPointer As Long, lVerbufferLen As Long
     tmpLong = VerQueryValue(sBuffer(0), "\", lVerPointer, lVerbufferLen)

@@ -219,7 +219,7 @@ Friend Function RetrieveHashedData(ByRef dstBytes() As Byte, ByRef dataLength As
         If (CryptGetHashParam(m_HashHandle, PDHP_HASHSIZE, VarPtr(dataLength), hashPtrLength, 0&) <> 0) Then
             
             'Prep the destination array
-            If VB_Hacks.IsArrayInitialized(dstBytes) Then
+            If VBHacks.IsArrayInitialized(dstBytes) Then
                 If (UBound(dstBytes) < dataLength - 1) Then ReDim dstBytes(0 To dataLength - 1) As Byte
             Else
                 ReDim dstBytes(0 To dataLength - 1) As Byte

@@ -101,7 +101,7 @@ Public Sub PrepareRestOfSplash()
         ' transparency.  (It's faster, and works more smoothly than attempting to use layered Windows, especially on XP.)
         Dim captureRect As RECTL
         GetWindowRect Me.hWnd, captureRect
-        Screen_Capture.GetPartialDesktopAsDIB m_splashDIB, captureRect
+        ScreenCapture.GetPartialDesktopAsDIB m_splashDIB, captureRect
         
         Dim formLeft As Long, formTop As Long, formWidth As Long, formHeight As Long
         formLeft = captureRect.Left

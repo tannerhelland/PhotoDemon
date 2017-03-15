@@ -176,7 +176,7 @@ Private Sub SafelyReleaseHook()
             m_HookingActive = False
             If (m_HookID <> 0) Then UnhookWindowsHookEx m_HookID
             m_HookID = 0
-            VB_Hacks.NotifyAcceleratorHookNotNeeded ObjPtr(Me)
+            VBHacks.NotifyAcceleratorHookNotNeeded ObjPtr(Me)
         End If
         
         'Also deactivate the failsafe timer
@@ -240,7 +240,7 @@ Public Function ActivateHook() As Boolean
         'If we're already hooked, don't attempt to hook again
         If (Not m_HookingActive) Then
             
-            m_HookID = VB_Hacks.NotifyAcceleratorHookNeeded(Me)
+            m_HookID = VBHacks.NotifyAcceleratorHookNeeded(Me)
             m_HookingActive = (m_HookID <> 0)
             
             #If DEBUGMODE = 1 Then
@@ -266,7 +266,7 @@ Public Sub DeactivateHook(Optional ByVal forciblyReleaseInstantly As Boolean = T
         
         If forciblyReleaseInstantly Then
             m_HookingActive = False
-            VB_Hacks.NotifyAcceleratorHookNotNeeded ObjPtr(Me)
+            VBHacks.NotifyAcceleratorHookNotNeeded ObjPtr(Me)
             If (m_HookID <> 0) Then UnhookWindowsHookEx m_HookID
             m_HookID = 0
         Else

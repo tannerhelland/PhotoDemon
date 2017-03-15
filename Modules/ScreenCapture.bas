@@ -1,4 +1,4 @@
-Attribute VB_Name = "Screen_Capture"
+Attribute VB_Name = "ScreenCapture"
 '***************************************************************************
 'Screen Capture Interface
 'Copyright 1999-2017 by Tanner Helland

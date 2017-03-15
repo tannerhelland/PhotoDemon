@@ -878,7 +878,7 @@ Public Function SetClipboardData_DelayedRendering(ByVal clipFormatID As Predefin
         
         'If we haven't already, subclass the main window and start listening for three clipboard-related messages
         If ((Not m_OwnerSubclassed) And g_IsProgramRunning And (m_OwnerHWnd <> 0)) Then
-            m_OwnerSubclassed = VB_Hacks.StartSubclassing(m_OwnerHWnd, Me)
+            m_OwnerSubclassed = VBHacks.StartSubclassing(m_OwnerHWnd, Me)
         End If
         
         'Set a null-copy of the current data to the clipboard.  This tells the clipboard that we're willing to provide this data
@@ -911,7 +911,7 @@ Private Sub Class_Terminate()
             pdDebug.LogAction "Terminating clipboard subclasser.  I hope all clipboard formats have been rendered already..."
         #End If
         
-        VB_Hacks.StopSubclassing m_OwnerHWnd, Me
+        VBHacks.StopSubclassing m_OwnerHWnd, Me
         m_OwnerSubclassed = False
         
         'Not that it matters, but also remove the delayed rendering flag, as a reminder that we no longer have access to that clipboard data
@@ -945,13 +945,13 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     ElseIf (uiMsg = WM_NCDESTROY) Then
         m_OwnerSubclassed = False
-        VB_Hacks.StopSubclassing hWnd, Me
+        VBHacks.StopSubclassing hWnd, Me
         
         'Allow VB to continue with its own internal teardown process
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     Else
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     End If
     
 End Function

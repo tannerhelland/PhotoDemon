@@ -291,7 +291,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
         End If
         
         'Fit the new image on-screen and redraw its viewport
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         Message "Straighten complete."
         SetProgBarVal 0

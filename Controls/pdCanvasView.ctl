@@ -399,7 +399,7 @@ Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
         Me.ClearCanvas
     Else
         Debug.Print "Main viewport requested its own redraw, likely due to a buffer size change."
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
     
 End Sub

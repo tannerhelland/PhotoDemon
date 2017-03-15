@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 ' how the median cut algorithm works, see http://www.leptonica.com/papers/mediancut.pdf
 '
 'For best results, I *strongly* suggest that you resample images to a smaller size before calculating
-' an optimized palette via this class.  Specifically, the DIB_Support.ResizeDIBByPixelCount() function
+' an optimized palette via this class.  Specifically, the DIBs.ResizeDIBByPixelCount() function
 ' allows you to resize an image to a specific number of pixels, which will greatly improve this class's
 ' performance without harming the final palette's quality.  (In fact, the natural "softening" that comes
 ' with resampling may actually improve the final palette.)

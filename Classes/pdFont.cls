@@ -459,7 +459,7 @@ End Function
 
 Public Sub SetFontSize(ByVal newFontSize As Single)
     m_origFontSize = newFontSize
-    m_currentLogFont.lfHeight = Font_Management.ConvertToGDIFontSize(newFontSize)
+    m_currentLogFont.lfHeight = Fonts.ConvertToGDIFontSize(newFontSize)
 End Sub
 
 Public Sub SetFontStrikeout(ByVal newStrikeout As Boolean)
@@ -626,7 +626,7 @@ Private Sub Class_Initialize()
     ' the current OS, so external functions do not need to set this manually.
     With m_currentLogFont
     
-        .lfHeight = Font_Management.ConvertToGDIFontSize(11#)
+        .lfHeight = Fonts.ConvertToGDIFontSize(11#)
         .lfWidth = 0        'This will automatically set the width based on the height
         
         .lfEscapement = 0   'Used for rotation; not utilized at present

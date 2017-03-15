@@ -132,8 +132,8 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
     'Next, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
     Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
-    Layer_Handler.FillRectForLayerF bottomLayer, bottomRect, True, True
-    Layer_Handler.FillRectForLayerF topLayer, topRect, True, True
+    Layers.FillRectForLayerF bottomLayer, bottomRect, True, True
+    Layers.FillRectForLayerF topLayer, topRect, True, True
     UnionRectF finalRect, topRect, bottomRect
     
     'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass this rect entirely, e.g. if the
@@ -298,7 +298,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
-        VB_Hacks.GetHighResTime startTime
+        VBHacks.GetHighResTime startTime
     #End If
     
     Dim xOffset As Double, yOffset As Double
@@ -309,10 +309,10 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     'Start by finding the union rect of the two layers.  This is the smallest rectangle that holds both layers.
     ' (Note that this calculation occurs in the *image's* coordinate space.)
     Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
-    Layer_Handler.FillRectForLayerF bottomLayer, bottomRect, True, True
+    Layers.FillRectForLayerF bottomLayer, bottomRect, True, True
     
     If (ptrToPaintbrushRectF = 0) Then
-        Layer_Handler.FillRectForLayerF paintLayer, topRect, True, True
+        Layers.FillRectForLayerF paintLayer, topRect, True, True
     Else
         CopyMemory ByVal VarPtr(topRect), ByVal ptrToPaintbrushRectF, LenB(topRect)
     End If
@@ -458,7 +458,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     'The paintbrush layer has been merged successfully!  Any further actions (like resetting the paint layer) must be handled by the caller.
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Merged two layers paint-style.  Time taken: " & Format$(CStr(VB_Hacks.GetTimerDifferenceNow(startTime)) * 1000, "###0.00") & " ms."
+        pdDebug.LogAction "Merged two layers paint-style.  Time taken: " & Format$(CStr(VBHacks.GetTimerDifferenceNow(startTime)) * 1000, "###0.00") & " ms."
     #End If
     
 End Sub
@@ -911,12 +911,12 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
     'TODO: some kind of fancy function that finds the intersection between a rotated/skewed image's boundary polygon instead of its full rect.
     '      The full rect may indicate overlap, but if the overlap is only a transparent corner region, we can still skip this layer.
     If srcLayer.AffineTransformsActive(False) Then
-        Layer_Handler.FillRectForLayerF srcLayer, layerRectAffine, True, True
+        Layers.FillRectForLayerF srcLayer, layerRectAffine, True, True
         layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRectAffine)
     
     'Layers without affine transforms use a shortcut intersection approach.
     Else
-        Layer_Handler.FillRectForLayerF srcLayer, layerRect, True, False
+        Layers.FillRectForLayerF srcLayer, layerRect, True, False
         layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect)
     End If
     
@@ -1387,12 +1387,12 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     'TODO: some kind of fancy function that finds the intersection between a rotated/skewed image's boundary polygon instead of its full rect.
     '      The full rect may indicate overlap, but if the overlap is only a transparent corner region, we can still skip this layer.
     If srcLayer.AffineTransformsActive(False) Then
-        Layer_Handler.FillRectForLayerF srcLayer, layerRectAffine, True, True
+        Layers.FillRectForLayerF srcLayer, layerRectAffine, True, True
         layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRectAffine)
     
     'Layers without affine transforms use a shortcut intersection approach.
     Else
-        Layer_Handler.FillRectForLayerF srcLayer, layerRect, True, False
+        Layers.FillRectForLayerF srcLayer, layerRect, True, False
         layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect)
     End If
     
@@ -1644,7 +1644,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     
     'Start by calculating the intersection rect between the paintbrush image (which is always the full size of the base image),
     ' and the current viewport
-    Layer_Handler.FillRectForLayerF srcImage.ScratchLayer, layerRect, False, False
+    Layers.FillRectForLayerF srcImage.ScratchLayer, layerRect, False, False
     layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect)
     
     Dim nonStandardBlendingActive As Boolean

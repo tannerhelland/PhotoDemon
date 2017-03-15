@@ -192,7 +192,7 @@ Public Sub ShowDialog()
     Dim warningIconSize As Long
     warningIconSize = FixDPI(32)
     Dim warningDIB As pdDIB
-    If Icons_and_Cursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
+    If IconsAndCursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
         picWarning.BackColor = g_Themer.GetGenericUIColor(UI_Background)
         warningDIB.AlphaBlendToDC picWarning.hDC, , (picWarning.ScaleWidth - warningDIB.GetDIBWidth) \ 2, (picWarning.ScaleHeight - warningDIB.GetDIBHeight) \ 2
         picWarning.Picture = picWarning.Image
@@ -237,7 +237,7 @@ Private Sub cmdCancel_Click()
 End Sub
 
 'OK button
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     userAnswer = vbYes
     Me.Hide
 End Sub
@@ -272,9 +272,9 @@ Private Function DisplayAutosaveEntries() As Boolean
     ' Our goal now is to present that image data to the user, so they can select which images (if any) they want us
     ' to restore.
     
-    'The Autosave_Handler module will already contain a list of all Undo XML files found by the Autosave engine.
+    'The Autosaves module will already contain a list of all Undo XML files found by the Autosave engine.
     ' It has stored this data in its private m_XmlEntries() array.  We can request a copy of this array as follows:
-    Autosave_Handler.GetXMLAutosaveEntries m_XmlEntries(), m_numOfXMLFound
+    Autosaves.GetXMLAutosaveEntries m_XmlEntries(), m_numOfXMLFound
     
     'All XML entries will now have been matched up with their latest Undo entry.  Fill the listbox with their data,
     ' ignoring any entries that do not have binary image data attached.

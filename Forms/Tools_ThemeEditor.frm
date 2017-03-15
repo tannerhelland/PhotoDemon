@@ -502,7 +502,7 @@ Private Sub cmdExport_Click()
                         
                         'See how many colors this DIB has.  If it's 256 or less, we can write it to file
                         ' using a palette.
-                        cCount = DIB_Support.GetDIBAs8bpp_RGBA(tmpDIB, testPalette, testPixels)
+                        cCount = DIBs.GetDIBAs8bpp_RGBA(tmpDIB, testPalette, testPixels)
                         
                         'If this image only has [0, 255] unique RGBA entries, we can store it as a paletted image
                         ' and conserve a bunch of file space!
@@ -526,7 +526,7 @@ Private Sub cmdExport_Click()
                     If m_Resources(i).ResSupportsColoration Then
                         
                         Dim tmpBytes() As Byte
-                        If DIB_Support.RetrieveTransparencyTable(tmpDIB, tmpBytes) Then
+                        If DIBs.RetrieveTransparencyTable(tmpDIB, tmpBytes) Then
                         
                             'Apply our previously calculated lookup table to the transparency bytes
                             For y = 0 To tmpDIB.GetDIBHeight - 1
@@ -945,11 +945,11 @@ Private Sub UpdatePreview()
                     m_PreviewDIB.CreateFromExistingDIB m_PreviewDIBOriginal
                     
                     If (btsBackcolor.ListIndex = 0) Then
-                        DIB_Support.ColorizeDIB m_PreviewDIB, csLight.Color
+                        DIBs.ColorizeDIB m_PreviewDIB, csLight.Color
                     ElseIf (btsBackcolor.ListIndex = 1) Then
-                        DIB_Support.ColorizeDIB m_PreviewDIB, csDark.Color
+                        DIBs.ColorizeDIB m_PreviewDIB, csDark.Color
                     ElseIf (btsBackcolor.ListIndex = 2) Then
-                        DIB_Support.ColorizeDIB m_PreviewDIB, csMenu.Color
+                        DIBs.ColorizeDIB m_PreviewDIB, csMenu.Color
                     End If
                     m_PreviewDIB.RenderToPictureBox picPreview, False, True, True
                     

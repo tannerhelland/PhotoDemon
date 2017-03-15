@@ -147,7 +147,7 @@ Public Sub ShowDialog()
     Dim warningIconSize As Long
     warningIconSize = FixDPI(32)
     Dim warningDIB As pdDIB
-    If Icons_and_Cursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
+    If IconsAndCursors.LoadResourceToDIB("generic_warning", warningDIB, warningIconSize, warningIconSize, 0) Then
         picWarning.BackColor = g_Themer.GetGenericUIColor(UI_Background)
         warningDIB.AlphaBlendToDC picWarning.hDC, , (picWarning.ScaleWidth - warningDIB.GetDIBWidth) \ 2, (picWarning.ScaleHeight - warningDIB.GetDIBHeight) \ 2
         picWarning.Picture = picWarning.Image
@@ -174,7 +174,7 @@ Public Sub ShowDialog()
 
 End Sub
 
-Private Sub cmdOK_Click()
+Private Sub CmdOK_Click()
     If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Boolean "Core", "Display IDE Warning", False
     Me.Hide
 End Sub

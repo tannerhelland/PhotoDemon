@@ -147,7 +147,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     
     'Retrieve a normalized luminance map of the current image
     Dim grayMap() As Byte
-    DIB_Support.GetDIBGrayscaleMap workingDIB, grayMap, True
+    DIBs.GetDIBGrayscaleMap workingDIB, grayMap, True
     
     'If the user specified a non-zero smoothness, apply it now
     If steelSmoothness > 0 Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.GetDIBWidth, workingDIB.GetDIBHeight, steelSmoothness, 3

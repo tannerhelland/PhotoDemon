@@ -243,7 +243,7 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                         Dim srcBytes() As Byte
                         ReDim srcBytes(0 To imgWidth - 1, 0 To imgHeight - 1) As Byte
                         LoadImageResource = m_Resources.GetNodeDataByIndex_UnsafeDstPointer(nodeIndex, False, VarPtr(srcBytes(0, 0)))
-                        If LoadImageResource Then LoadImageResource = DIB_Support.ApplyTransparencyTable(m_tmpDIB, srcBytes)
+                        If LoadImageResource Then LoadImageResource = DIBs.ApplyTransparencyTable(m_tmpDIB, srcBytes)
                     Else
                         
                         'See if the DIB was stored using a palette system
@@ -267,7 +267,7 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                                     CopyMemory ByVal VarPtr(tmpPixels(0, 0)), ByVal VarPtr(origData(numColors * 4)), imgWidth * imgHeight
                                     
                                     'Build a matching 32-bpp DIB from the palette and pixel data
-                                    LoadImageResource = DIB_Support.GetRGBADIB_FromPalette(m_tmpDIB, numColors, tmpPalette, tmpPixels)
+                                    LoadImageResource = DIBs.GetRGBADIB_FromPalette(m_tmpDIB, numColors, tmpPalette, tmpPixels)
                                 
                                 End If
                                 
@@ -309,14 +309,14 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                     
                     If m_ThemeIconsMonochrome And (Not suspendMonochrome) Then
                         If dstIsMenu Then targetColor = m_ThemeIconColorMenu Else targetColor = m_ThemeIconColor
-                        DIB_Support.ColorizeDIB dstDIB, targetColor
+                        DIBs.ColorizeDIB dstDIB, targetColor
                     
                     'If the user does *not* want monochrome icons, we have more flexibility in how we deal with coloration.
                     Else
                         
                         'If a custom color was specified, apply it now.
                         If (customColor <> -1) Then
-                            DIB_Support.ColorizeDIB dstDIB, customColor
+                            DIBs.ColorizeDIB dstDIB, customColor
                         Else
                         
                             'If the image supports real-time coloration, apply it now (based on the currently selected theme).
@@ -338,7 +338,7 @@ Friend Function LoadImageResource(ByRef imgResName As String, ByRef dstDIB As pd
                                     End If
                                 End If
                                 
-                                DIB_Support.ColorizeDIB dstDIB, targetColor
+                                DIBs.ColorizeDIB dstDIB, targetColor
                             
                             End If
                             

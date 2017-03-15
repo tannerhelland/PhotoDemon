@@ -1,4 +1,4 @@
-Attribute VB_Name = "File_Menu"
+Attribute VB_Name = "FileMenu"
 '***************************************************************************
 'File Menu Handler
 'Copyright 2001-2017 by Tanner Helland
@@ -301,7 +301,7 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
         Else
         
             'Query the only layer in the image.  If it has meaningful alpha values, we'll suggest PNG; otherwise, JPEG.
-            If DIB_Support.IsDIBAlphaBinary(srcImage.GetActiveDIB, False) Then
+            If DIBs.IsDIBAlphaBinary(srcImage.GetActiveDIB, False) Then
                 GetSuggestedSaveFormatAndExtension = PDIF_JPEG
             Else
                 GetSuggestedSaveFormatAndExtension = PDIF_PNG
@@ -472,7 +472,7 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
     
     'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
     Dim newImage As pdImage
-    Image_Canvas_Handler.GetDefaultPDImageObject newImage
+    CanvasManager.GetDefaultPDImageObject newImage
     
     'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
     Dim newLayerID As Long
@@ -515,8 +515,8 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         newImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
         
         'Make the newly created layer the active layer
-        Image_Canvas_Handler.AddImageToMasterCollection newImage
-        Layer_Handler.SetActiveLayerByID newLayerID, False, False
+        CanvasManager.AddImageToMasterCollection newImage
+        Layers.SetActiveLayerByID newLayerID, False, False
         
         'Update the pdImage container to be the same size as its (newly created) base layer
         newImage.UpdateSize
@@ -554,9 +554,9 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         g_AllowViewportRendering = False
         FormMain.mainCanvas(0).SetZoomDropDownIndex newImage.GetZoom
     
-        'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
+        'Now that the image's window has been fully sized and moved around, use ViewportEngine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
         g_AllowViewportRendering = True
-        Viewport_Engine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
+        ViewportEngine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
         
         'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
         FormMain.mainCanvas(0).UpdateCanvasLayout

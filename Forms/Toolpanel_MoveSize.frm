@@ -329,20 +329,20 @@ End Sub
 Private Sub cboLayerResizeQuality_Click()
     
     'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If (Not Tool_Support.CanvasToolsAllowed) Then Exit Sub
+    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Apply the new quality mode
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerResizeQuality cboLayerResizeQuality.ListIndex
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -365,16 +365,16 @@ End Sub
 
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()
-    Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 End Sub
 
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
-    Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 End Sub
 
 Private Sub chkRotateNode_Click()
-    Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
@@ -398,7 +398,7 @@ End Sub
 
 Private Sub Form_Load()
     
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Initialize move tool panels
     btsMoveOptions.AddItem "size and position", 0
@@ -426,7 +426,7 @@ Private Sub Form_Load()
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme
     
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
 End Sub
 
@@ -443,20 +443,20 @@ End Sub
 Private Sub sltLayerAngle_Change()
     
     'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If (Not Tool_Support.CanvasToolsAllowed) Then Exit Sub
+    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Notify the layer of the setting change
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerAngle sltLayerAngle.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -476,20 +476,20 @@ End Sub
 Private Sub sltLayerShearX_Change()
     
     'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    If Not Tools.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Notify the layer of the setting change
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearX sltLayerShearX.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -509,20 +509,20 @@ End Sub
 Private Sub sltLayerShearY_Change()
     
     'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    If Not Tools.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Notify the layer of the setting change
     pdImages(g_CurrentImage).GetActiveLayer.SetLayerShearY sltLayerShearY.Value
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -542,11 +542,11 @@ End Sub
 Private Sub tudLayerMove_Change(Index As Integer)
     
     'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    If Not Tools.CanvasToolsAllowed Then Exit Sub
     
     'Mark the tool engine as busy
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     Select Case Index
     
@@ -569,10 +569,10 @@ Private Sub tudLayerMove_Change(Index As Integer)
     End Select
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
     If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
@@ -585,8 +585,8 @@ End Sub
 Private Sub tudLayerMove_FinalChange(Index As Integer)
     
     'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.CanvasToolsAllowed Then Exit Sub
+    ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
+    If Not Tools.CanvasToolsAllowed Then Exit Sub
     
     Select Case Index
         

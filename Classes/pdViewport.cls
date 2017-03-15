@@ -28,7 +28,7 @@ Attribute VB_Exposed = False
 '
 'This class was completely overhauled prior to the 7.0 release, as part of prepping for paint tools.  It now stores
 ' a lot more viewport-specific data, which greatly simplifies tasks like coordinate space conversions in other
-' functions.  Almost everything in this class is created by the Viewport_Engine module, so look there for details
+' functions.  Almost everything in this class is created by the ViewportEngine module, so look there for details
 ' on how various structs are calculated and filled.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -39,7 +39,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'As of version 7.0, the first stage of the viewport pipeline uses RectF structs to store the calculated
-' coordinate regions.  See the Viewport_Engine module for more details on how these structs are used.
+' coordinate regions.  See the ViewportEngine module for more details on how these structs are used.
 Private ImageRect_CanvasCoords As RECTF
 Private ImageRect_TranslatedCanvasCoords As RECTF
 Private CanvasRect_ImageCoords As RECTF

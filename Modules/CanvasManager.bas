@@ -1,4 +1,4 @@
-Attribute VB_Name = "Image_Canvas_Handler"
+Attribute VB_Name = "CanvasManager"
 '***************************************************************************
 'Image Canvas Handler (formerly Image Window Handler)
 'Copyright 2002-2017 by Tanner Helland
@@ -91,7 +91,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    If (Not suppressRendering) Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+    If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
     'Notify external UI elements of the change
     FormMain.mainCanvas(0).RelayViewportChanges
@@ -114,7 +114,7 @@ Public Sub FitOnScreen()
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
     'Notify external UI elements of the change
     FormMain.mainCanvas(0).RelayViewportChanges
@@ -137,7 +137,7 @@ Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = Fal
     FormMain.mainCanvas(0).SetRedrawSuspension False
         
     'Now fix scrollbars and everything
-    If Not suspendImmediateRedraw Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If Not suspendImmediateRedraw Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Notify external UI elements of the change
     FormMain.mainCanvas(0).RelayViewportChanges
@@ -172,7 +172,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         If redrawScreen Then
         
             If (g_OpenImageCount > 0) Then
-                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
+                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
             Else
                 FormMain.mainCanvas(0).ClearCanvas
             End If
@@ -186,11 +186,11 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     If (g_OpenImageCount = 0) Then
         
         'Unload the backbuffer of the primary canvas
-        Viewport_Engine.EraseViewportBuffers
+        ViewportEngine.EraseViewportBuffers
         
         'Allow any tool panels to redraw themselves.  (Some tool panels dynamically change their contents based on the current image, so if no
         ' images are loaded, their contents may shift.)
-        Tool_Support.SyncToolOptionsUIToCurrentLayer
+        Tools.SyncToolOptionsUIToCurrentLayer
         
     End If
     
@@ -386,7 +386,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
     If (Not (pdImages(g_CurrentImage) Is Nothing)) And refreshScreen Then
         
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
         
         'Reflow any image-window-specific chrome (status bar, rulers, etc)
         FormMain.mainCanvas(0).AlignCanvasView
@@ -395,7 +395,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         Interface.NotifyNewActiveImage g_CurrentImage
         
         'Make sure any tool initializations that vary by image are up-to-date.
-        Tool_Support.InitializeToolsDependentOnImage
+        Tools.InitializeToolsDependentOnImage
         
     End If
     

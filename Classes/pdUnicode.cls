@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 'Last updated: 09/February/17
 'Last update: let the system parse command-line parameters for us, and return the result inside a pdStringStack
 'Dependencies: pdSystemInfo (for determining OS version, among other things)
-'              Uniscribe_Interface module (Uniscribe is unavoidable for some advanced text processing)
+'              Uniscribe module (Uniscribe is unavoidable for some advanced text processing)
 '
 'This class provides a variety of helper functions for dealing with Unicode text.  A number of other PD classes (e.g. pdFSO) rely on it.
 '

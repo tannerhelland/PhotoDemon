@@ -1,4 +1,4 @@
-Attribute VB_Name = "Update_Support"
+Attribute VB_Name = "Updates"
 '***************************************************************************
 'Automatic Software Updater (note: at present this doesn't technically DO the updating (e.g. overwriting program files), it just CHECKS for updates)
 'Copyright 2012-2017 by Tanner Helland
@@ -815,15 +815,15 @@ End Function
 Public Sub StandardUpdateChecks()
 
     'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is successfully applied, for example.
-    g_ProgramStartedViaRestart = Update_Support.WasProgramStartedViaRestart
+    g_ProgramStartedViaRestart = Updates.WasProgramStartedViaRestart
         
     'Before updating, clear out any temp files leftover from previous updates.  (Replacing files at run-time is messy business, and Windows
     ' is unpredictable about allowing replaced files to be deleted.)
-    Update_Support.CleanPreviousUpdateFiles
+    Updates.CleanPreviousUpdateFiles
         
     'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
-    allowedToUpdate = Update_Support.IsItTimeForAnUpdate()
+    allowedToUpdate = Updates.IsItTimeForAnUpdate()
     
     'If PD was restarted by an internal restart, disallow an update check now, as we would have just applied one (which caused the restart)
     If g_ProgramStartedViaRestart Then allowedToUpdate = False

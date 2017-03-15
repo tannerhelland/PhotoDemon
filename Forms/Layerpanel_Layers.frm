@@ -292,7 +292,7 @@ Private Sub cboAlphaMode_Click()
     If (g_OpenImageCount > 0) Then
         If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
             pdImages(g_CurrentImage).GetActiveLayer.SetLayerAlphaMode cboAlphaMode.ListIndex
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
     End If
 
@@ -304,7 +304,7 @@ Private Sub cboAlphaMode_GotFocusAPI()
 End Sub
 
 Private Sub cboAlphaMode_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex
 End Sub
 
 'Change the blend mode of the active layer
@@ -317,7 +317,7 @@ Private Sub cboBlendMode_Click()
     If (g_OpenImageCount > 0) Then
         If (Not pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
             pdImages(g_CurrentImage).GetActiveLayer.SetLayerBlendMode cboBlendMode.ListIndex
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
     End If
 
@@ -329,7 +329,7 @@ Private Sub cboBlendMode_GotFocusAPI()
 End Sub
 
 Private Sub cboBlendMode_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex
 End Sub
 
 'Layer action buttons - move layers up/down, delete layers, etc.
@@ -401,7 +401,7 @@ Private Sub sltLayerOpacity_Change()
     If (g_OpenImageCount > 0) Then
         If Not (pdImages(g_CurrentImage).GetActiveLayer Is Nothing) Then
             pdImages(g_CurrentImage).GetActiveLayer.SetLayerOpacity sltLayerOpacity.Value
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
     End If
 
@@ -413,7 +413,7 @@ Private Sub sltLayerOpacity_GotFocusAPI()
 End Sub
 
 Private Sub sltLayerOpacity_LostFocusAPI()
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value
 End Sub
 
 'Whenever the layer toolbox is resized, we must reflow all objects to fill the available space.  Note that we do not do

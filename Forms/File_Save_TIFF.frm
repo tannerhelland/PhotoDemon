@@ -720,7 +720,7 @@ Private Sub UpdatePreviewSource()
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SAFEARRAY2D
-        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
+        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'To reduce the chance of bugs, we use the same parameter parsing technique as the core TIFF encoder
         Dim cParams As pdParamXML

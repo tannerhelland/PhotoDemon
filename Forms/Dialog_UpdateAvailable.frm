@@ -144,9 +144,9 @@ Private Sub Form_Load()
         
     'Set the release announcement URL
     Dim raURL As String
-    raURL = Update_Support.GetReleaseAnnouncementURL
+    raURL = Updates.GetReleaseAnnouncementURL
     If (Len(raURL) <> 0) Then
-        lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in %1", Update_Support.GetUpdateVersion_Friendly)
+        lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in %1", Updates.GetUpdateVersion_Friendly)
         lblReleaseAnnouncement.Visible = True
         lblReleaseAnnouncement.URL = raURL
     Else

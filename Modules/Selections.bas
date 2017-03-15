@@ -65,7 +65,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     Selections.SyncTextToCurrentSelection g_CurrentImage
     
     'Draw the new selection to the screen
-    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -83,7 +83,7 @@ Public Sub RemoveCurrentSelection()
     SyncTextToCurrentSelection g_CurrentImage
         
     'Redraw the image (with selection removed)
-    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -105,7 +105,7 @@ Public Sub SelectWholeImage()
     SyncTextToCurrentSelection g_CurrentImage
     
     'Draw the new selection to the screen
-    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -168,7 +168,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         SyncTextToCurrentSelection g_CurrentImage
                 
         'Draw the new selection to the screen
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         Message "Selection loaded successfully"
     
     End If
@@ -230,7 +230,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     pdImages(g_CurrentImage).RetrieveProcessedSelection tmpDIB, False, True
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not DIB_Support.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.ConvertTo24bpp
+    If Not DIBs.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.ConvertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
@@ -361,7 +361,7 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
         Dim subpanelOffset As Long
         subpanelOffset = Selections.GetSelectionSubPanelFromSelectionShape(pdImages(formID)) * 4
         
-        If Tool_Support.IsSelectionToolActive Then
+        If Tools.IsSelectionToolActive Then
         
             'Additional syncing is done if the selection is transformable; if it is not transformable, clear and lock the location text boxes
             If pdImages(formID).mainSelection.IsTransformable Then
@@ -440,7 +440,7 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
         SetUIGroupState PDUI_Selections, False
         SetUIGroupState PDUI_SelectionTransforms, False
         
-        If Tool_Support.IsSelectionToolActive Then
+        If Tools.IsSelectionToolActive Then
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
                 If (toolpanel_Selections.tudSel(i).Value <> 0) Then toolpanel_Selections.tudSel(i).Value = 0
             Next i
@@ -746,7 +746,7 @@ Public Sub InvertCurrentSelection()
     pdImages(g_CurrentImage).SetSelectionActive True
         
     'Draw the new selection to the screen
-    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -786,7 +786,7 @@ Public Sub FeatherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal f
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 
@@ -929,7 +929,7 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 
@@ -976,7 +976,7 @@ Public Sub GrowCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal grow
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -1024,7 +1024,7 @@ Public Sub ShrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sh
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -1087,7 +1087,7 @@ Public Sub BorderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal bo
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -1099,7 +1099,7 @@ Public Sub EraseSelectedArea(ByVal targetLayerIndex As Long)
     pdImages(g_CurrentImage).EraseProcessedSelection targetLayerIndex
     
     'Redraw the active viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -1278,7 +1278,7 @@ Public Sub InitSelectionByPoint(ByVal x As Double, ByVal y As Double)
     SetUIGroupState PDUI_SelectionTransforms, True
     
     'Redraw the screen
-    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                         
 End Sub
 
@@ -1357,7 +1357,7 @@ Public Sub NotifySelectionKeyDown(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
             'Redraw the viewport if necessary
             If canvasUpdateRequired Then
                 markEventHandled = True
-                Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas
             End If
             
         End If
@@ -1415,7 +1415,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
         End If
         
         'Redraw the screen to reflect this new change.
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
     
     End If
                 
@@ -1428,7 +1428,7 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
     
         'Magic wand selections never transform - they only generate anew
         Selections.InitSelectionByPoint imgX, imgY
-        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
         
     Else
         
@@ -1493,7 +1493,7 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
                             pdImages(g_CurrentImage).mainSelection.OverrideTransformMode True
                             
                             'Redraw the screen
-                            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                            ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
                             
                         End If
                     
@@ -1543,7 +1543,7 @@ Public Sub NotifySelectionMouseMove(ByVal srcCanvas As pdCanvas, ByVal Shift As 
             End If
             
             'Force a redraw of the viewport
-            If (numOfCanvasMoveEvents > 1) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+            If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
         
         'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
         Case SELECT_LASSO
@@ -1565,13 +1565,13 @@ Public Sub NotifySelectionMouseMove(ByVal srcCanvas As pdCanvas, ByVal Shift As 
             #End If
             
             'Force a redraw of the viewport
-            If (numOfCanvasMoveEvents > 1) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+            If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
         
         'Wand selections are easier than other selection types, because they don't support any special transforms
         Case SELECT_WAND
             If pdImages(g_CurrentImage).IsSelectionActive Then
                 pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
             End If
     
     End Select
@@ -1656,7 +1656,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                 End If
                 
                 'Creating a brand new selection always necessitates a redraw of the current canvas
-                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
                 
             'If the selection is not active, make sure it stays that way
             Else
@@ -1751,7 +1751,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                 End If
                 
                 'After all selection settings have been applied, forcibly redraw the source canvas
-                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
             
             '(Failsafe check) - if a selection is not active, make sure it stays that way
             Else
@@ -1778,7 +1778,7 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
                 End If
                 
                 'Force a redraw of the screen
-                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
                 
             'Failsafe check for inactive selections
             Else

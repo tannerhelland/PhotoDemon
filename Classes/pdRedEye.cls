@@ -71,8 +71,8 @@ Public Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight A
     
     'Alias our internal arrays around the ones provided by the caller.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the red-eye detector has been shut down.
-    VB_Hacks.Alias2DArray_Byte srcHighlights, m_HighlightData, m_HighlightSA
-    VB_Hacks.Alias2DArray_Integer srcRegions, m_RegionIDs, m_RegionSA
+    VBHacks.Alias2DArray_Byte srcHighlights, m_HighlightData, m_HighlightSA
+    VBHacks.Alias2DArray_Integer srcRegions, m_RegionIDs, m_RegionSA
     
     'Reset all internal tracking arrays
     m_RegionStackHeight = INITIAL_REGION_STACK_HEIGHT - 1
@@ -95,8 +95,8 @@ Public Function ReleaseRedEyeEngine(ByRef srcHighlights() As Byte, ByRef srcRegi
     
     'The only termination task that really matters is releasing our array aliases; if we don't do this, memory will
     ' either leak, or VB will straight-up crash.
-    VB_Hacks.Unalias2DArray_Byte srcHighlights, m_HighlightData
-    VB_Hacks.Unalias2DArray_Integer srcRegions, m_RegionIDs
+    VBHacks.Unalias2DArray_Byte srcHighlights, m_HighlightData
+    VBHacks.Unalias2DArray_Integer srcRegions, m_RegionIDs
     
     ReleaseRedEyeEngine = True
     

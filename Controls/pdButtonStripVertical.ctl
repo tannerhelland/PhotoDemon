@@ -715,7 +715,7 @@ Private Sub UpdateControlLayout()
         End If
         
         'Retrieve the expected size of the string, in pixels
-        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
+        Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize, m_FontBold)
         strWidth = tmpFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
         
         'If the string is too long for its containing button, activate word wrap and measure again
@@ -732,7 +732,7 @@ Private Sub UpdateControlLayout()
             ' in German), we will forcibly set a smaller font size for this caption alone.
             ElseIf tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated) Then
                 m_Buttons(i).btFontSize = tmpFont.GetMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
-                Set tmpFont = Font_Management.GetMatchingUIFont(m_Buttons(i).btFontSize, m_FontBold)
+                Set tmpFont = Fonts.GetMatchingUIFont(m_Buttons(i).btFontSize, m_FontBold)
                 strHeight = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
             End If
             
@@ -893,11 +893,11 @@ Private Sub RedrawBackBuffer()
                     
                     '(Remember that a font size of "0" means that text fits inside this button at the control's default font size)
                     If .btFontSize = 0 Then
-                        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
+                        Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize, m_FontBold)
                         
                     'Text does not fit the button area; use the custom font size we calculated in a previous step
                     Else
-                        Set tmpFont = Font_Management.GetMatchingUIFont(.btFontSize, m_FontBold)
+                        Set tmpFont = Fonts.GetMatchingUIFont(.btFontSize, m_FontBold)
                     End If
                     
                     'Render the text onto the button

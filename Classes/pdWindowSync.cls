@@ -84,7 +84,7 @@ Private Sub EndSubclassing()
         If (m_windowDict.GetNumOfEntries > 0) Then
             Dim i As Long
             For i = 0 To m_windowDict.GetNumOfEntries - 1
-                VB_Hacks.StopSubclassing m_windowDict.GetKeyByIndex(i), Me
+                VBHacks.StopSubclassing m_windowDict.GetKeyByIndex(i), Me
                 m_windowDict.DeleteEntry m_windowDict.GetKeyByIndex(i)
             Next i
         End If
@@ -106,7 +106,7 @@ Public Sub SynchronizeWindows(ByVal parentHwnd As Long, ByVal childHwnd As Long)
             m_windowDict.AddEntry strKey, childHwnd
             
             'Subclass size messages from the parent window
-            VB_Hacks.StartSubclassing parentHwnd, Me, childHwnd
+            VBHacks.StartSubclassing parentHwnd, Me, childHwnd
             
             'Make the associated window a child of the parent; this automates position and visibility handling
             SetParent childHwnd, parentHwnd
@@ -170,6 +170,6 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
     End If
     
-    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
 End Function

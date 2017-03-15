@@ -231,7 +231,7 @@ Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
         FormMain.mainCanvas(0).SetScrollValue PD_VERTICAL, newVscroll
         FormMain.mainCanvas(0).SetRedrawSuspension False
         
-        Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
     End If
 

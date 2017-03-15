@@ -101,7 +101,7 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         m_FontCollection(m_FontPointer).CreateFontObject
         
         'If extended font caching is active, retrieve those values now
-        If m_ExtendedPropertiesActive Then Uniscribe_Interface.GetScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
+        If m_ExtendedPropertiesActive Then Uniscribe.GetScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
         
         'Return this index
         AddFontToCache = m_FontPointer
@@ -266,7 +266,7 @@ Public Function SetExtendedPropertyCaching(ByVal newSetting As Boolean) As Boole
         Dim i As Long
         For i = 0 To UBound(m_FontCollection)
             If Not m_FontCollection(i) Is Nothing Then
-                Uniscribe_Interface.GetScriptsSupportedByFont m_FontCollection(i).GetFontFace, m_ExtendedProperties(i)
+                Uniscribe.GetScriptsSupportedByFont m_FontCollection(i).GetFontFace, m_ExtendedProperties(i)
             End If
         Next i
         

@@ -173,7 +173,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     #If DEBUGMODE = 1 Then
         Dim timeAtUndoStart As Currency
-        VB_Hacks.GetHighResTime timeAtUndoStart
+        VBHacks.GetHighResTime timeAtUndoStart
     #End If
     
     'If the caller is okay with us coalescing this into the previous entry, test for coalescence acceptability
@@ -220,7 +220,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
-        VB_Hacks.GetHighResTime startTime
+        VBHacks.GetHighResTime startTime
     #End If
     
     'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
@@ -253,7 +253,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     End Select
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Undo thumbnail request took: " & Format$(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
+        Debug.Print "Undo thumbnail request took: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "###0.00") & " ms"
     #End If
     
     'Increase our Undo count
@@ -284,7 +284,7 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     If UNDO_DEBUG_MODE Then DebugUndo "new Undo entry created"
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Time taken for total Undo process: " & Format$(VB_Hacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
+        Debug.Print "Time taken for total Undo process: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "###0.00") & " ms"
     #End If
     
 End Sub
@@ -386,7 +386,7 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     WriteUndoDataToXML GenerateUndoHeaderFilename()
     
     'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     Message "Image successfully restored."
     
@@ -578,7 +578,7 @@ Public Sub RestoreUndoData()
         End If
         
         'Now that all layers have been updated against their most recent diff, we can finally redraw the screen
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -1017,7 +1017,7 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     ' better profile it, detailed timing measurements are currently reported in nightly builds.
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
-        VB_Hacks.GetHighResTime startTime
+        VBHacks.GetHighResTime startTime
     #End If
     
     'Create a pdXML class, which will help us assemble the XML file
@@ -1073,16 +1073,16 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     Next i
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Undo engine XML generation took " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
-        VB_Hacks.GetHighResTime startTime
+        Debug.Print "Undo engine XML generation took " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        VBHacks.GetHighResTime startTime
     #End If
     
     'With all Undo data successfully written, close the XML data and write it out to file.
     xmlEngine.WriteXMLToFile dstFilename, True
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Undo engine XML file write took " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
-        VB_Hacks.GetHighResTime startTime
+        Debug.Print "Undo engine XML file write took " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        VBHacks.GetHighResTime startTime
     #End If
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
@@ -1092,7 +1092,7 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     End If
     
     #If DEBUGMODE = 1 Then
-        Debug.Print "Undo engine thumbnail write took " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
+        Debug.Print "Undo engine thumbnail write took " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms"
     #End If
     
 End Sub

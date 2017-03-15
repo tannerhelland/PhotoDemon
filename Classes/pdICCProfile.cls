@@ -141,7 +141,7 @@ End Function
 Public Function IsEqual(ByRef srcProfile As pdICCProfile) As Boolean
 
     If (srcProfile.GetICCDataSize = Me.GetICCDataSize) Then
-        IsEqual = VB_Hacks.MemCmp(Me.GetICCDataPointer, srcProfile.GetICCDataPointer, Me.GetICCDataSize)
+        IsEqual = VBHacks.MemCmp(Me.GetICCDataPointer, srcProfile.GetICCDataPointer, Me.GetICCDataSize)
     Else
         IsEqual = False
     End If

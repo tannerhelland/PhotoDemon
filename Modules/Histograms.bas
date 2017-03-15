@@ -1,4 +1,4 @@
-Attribute VB_Name = "Histogram_Analysis"
+Attribute VB_Name = "Histograms"
 '***************************************************************************
 'Histogram Analysis tools
 'Copyright 2000-2017 by Tanner Helland
