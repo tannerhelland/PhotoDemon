@@ -603,14 +603,14 @@ Public Function GetSharedGDIFont(ByVal requestedSize As Single) As Long
         
         'Font creation is cumbersome, but PD provides some helper functions to simplify it
         Dim tmpLogFont As LOGFONTW
-        Font_Management.FillLogFontW_Basic tmpLogFont, g_InterfaceFont, False, False, False, False
-        Font_Management.FillLogFontW_Size tmpLogFont, requestedSize, pdfu_Point
-        Font_Management.FillLogFontW_Quality tmpLogFont, TextRenderingHintClearTypeGridFit
+        Fonts.FillLogFontW_Basic tmpLogFont, g_InterfaceFont, False, False, False, False
+        Fonts.FillLogFontW_Size tmpLogFont, requestedSize, pdfu_Point
+        Fonts.FillLogFontW_Quality tmpLogFont, TextRenderingHintClearTypeGridFit
         
         'Update the cache entry with new stats (including the created font)
         m_SharedFonts(m_numOfSharedFonts).FontSize = requestedSize
         m_SharedFonts(m_numOfSharedFonts).numOfOwners = 1
-        If (Not Font_Management.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle)) Then
+        If (Not Fonts.CreateGDIFont(tmpLogFont, m_SharedFonts(m_numOfSharedFonts).fontHandle)) Then
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  UserControl_Support.GetSharedGDIFont() failed to create a new UI font handle."
             #End If
@@ -635,7 +635,7 @@ Public Sub ReleaseSharedGDIFontByHandle(ByVal requestedHandle As Long)
             If (m_SharedFonts(i).fontHandle = requestedHandle) Then
                 m_SharedFonts(i).numOfOwners = m_SharedFonts(i).numOfOwners - 1
                 If (m_SharedFonts(i).numOfOwners = 0) Then
-                    Font_Management.DeleteGDIFont m_SharedFonts(i).fontHandle
+                    Fonts.DeleteGDIFont m_SharedFonts(i).fontHandle
                     m_SharedFonts(i).fontHandle = 0
                     m_SharedFonts(i).FontSize = 0
                 End If
@@ -761,7 +761,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
     ' and the title (if any), with text contents auto-wrapped if the tooltip is too long.
     Dim ttCaptionWidth As Long, ttCaptionHeight As Long
     Dim ttFont As pdFont
-    Set ttFont = Font_Management.GetMatchingUIFont(10)
+    Set ttFont = Fonts.GetMatchingUIFont(10)
     
     Dim availableWidth As Long
     availableWidth = Interface.FixDPI(PD_TT_MAX_WIDTH)
@@ -780,7 +780,7 @@ Public Sub ShowUCTooltip(ByVal ownerHwnd As Long, ByRef srcControlRect As RECTL,
     'We now have a precise width/height measurement for the tooltip caption.  Repeat the steps for the tooltip title, if any.
     Dim ttTitleWidth As Long, ttTitleHeight As Long
     If (Len(ttTitle) > 0) Then
-        Set ttFont = Font_Management.GetMatchingUIFont(10, True)
+        Set ttFont = Fonts.GetMatchingUIFont(10, True)
         ttTitleWidth = ttFont.GetWidthOfString(ttTitle)
         
         If (ttTitleWidth > availableWidth) Then

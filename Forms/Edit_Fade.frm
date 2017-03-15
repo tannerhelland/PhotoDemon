@@ -194,13 +194,13 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         Dim tmpSafeArray As SAFEARRAY2D
         
         'Retrieve the preview box portion of the previous layer image
-        FastDrawing.ResetPreviewIDs
+        EffectPrep.ResetPreviewIDs
         PreviewNonStandardImage tmpSafeArray, m_prevLayerDIB, pdFxPreview, True
         If (m_prevLayerDIBCopy Is Nothing) Then Set m_prevLayerDIBCopy = New pdDIB
         m_prevLayerDIBCopy.CreateFromExistingDIB workingDIB
         
         'Retrieve the preview box portion of the current layer image
-        FastDrawing.ResetPreviewIDs
+        EffectPrep.ResetPreviewIDs
         PreviewNonStandardImage tmpSafeArray, m_curLayerDIB, pdFxPreview, True
         If (m_curLayerDIBCopy Is Nothing) Then Set m_curLayerDIBCopy = New pdDIB
         m_curLayerDIBCopy.CreateFromExistingDIB workingDIB
@@ -231,7 +231,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).GetLayerIndexFromID(m_relevantLayerID)
         
         SyncInterfaceToCurrentImage
-        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         SetProgBarVal 0
         ReleaseProgressBar

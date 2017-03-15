@@ -781,7 +781,7 @@ Private Function LoadImageFromStream(ByRef bvData() As Byte, ByRef hImage As Lon
     On Local Error GoTo LoadImageFromStream_Error
     
     Dim IStream As IUnknown
-    Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(bvData(0)), UBound(bvData) - LBound(bvData) + 1)
+    Set IStream = VBHacks.GetStreamFromVBArray(VarPtr(bvData(0)), UBound(bvData) - LBound(bvData) + 1)
     If Not (IStream Is Nothing) Then
         If GdipLoadImageFromStream(IStream, hImage) = 0 Then LoadImageFromStream = True
     End If
@@ -875,7 +875,7 @@ End Function
 
 Private Function SetSubclassing() As Boolean
     If g_IsProgramRunning Then
-        m_SubclassActive = VB_Hacks.StartSubclassing(m_hWnd, Me)
+        m_SubclassActive = VBHacks.StartSubclassing(m_hWnd, Me)
         SetSubclassing = m_SubclassActive
     Else
         SetSubclassing = True
@@ -885,7 +885,7 @@ End Function
 Private Function StopSubclassing() As Boolean
 
     If (m_SubclassActive And (m_hWnd <> 0)) Then
-        VB_Hacks.StopSubclassing m_hWnd, Me
+        VBHacks.StopSubclassing m_hWnd, Me
         m_SubclassActive = False
         StopSubclassing = True
     Else
@@ -1048,7 +1048,7 @@ Private Function HandleMeasureItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
     
     'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
     ' and once it's done, we'll overwrite the image handling bits with our own code.)
-    HandleMeasureItem = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    HandleMeasureItem = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     Dim MIS As MEASUREITEMSTRUCT
     CopyMemory MIS, ByVal lParam, Len(MIS)
@@ -1080,7 +1080,7 @@ Private Function HandleDrawItem(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal w
     
     'Start by calling the default wndproc.  (We want to let the default menu handler populate bits like text,
     ' and once it's done, we'll overwrite the image handling bits with our own code.)
-    HandleDrawItem = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    HandleDrawItem = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     Dim DIS As DRAWITEMSTRUCT
     Dim isDisabled As Boolean, isCheckStyle As Boolean, isChecked As Boolean
@@ -1138,10 +1138,10 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         ISubclass_WindowMsg = HandleDrawItem(hWnd, uiMsg, wParam, lParam, msgEaten)
     
     ElseIf (uiMsg = WM_NCDESTROY) Then
-        VB_Hacks.StopSubclassing hWnd, Me
+        VBHacks.StopSubclassing hWnd, Me
         m_SubclassActive = False
     End If
     
-    If (Not msgEaten) Then ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    If (Not msgEaten) Then ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
 End Function

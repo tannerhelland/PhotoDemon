@@ -88,7 +88,7 @@ End Sub
 
 Private Sub EndSubclassing()
     If (m_hWnd <> 0) Then
-        VB_Hacks.StopSubclassing m_hWnd, Me
+        VBHacks.StopSubclassing m_hWnd, Me
         m_hWnd = 0
     End If
 End Sub
@@ -106,7 +106,7 @@ Public Sub StartPainter(ByVal srcHwnd As Long, Optional ByVal isAPIWindow As Boo
     
         'Subclass all necessary messages for proper window painting
         If (m_hWnd <> 0) Then
-            VB_Hacks.StartSubclassing m_hWnd, Me
+            VBHacks.StartSubclassing m_hWnd, Me
             m_WantEraseMessages = wantEraseMessages
         End If
     
@@ -206,10 +206,10 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     ElseIf (uiMsg = WM_NCDESTROY) Then
         EndSubclassing
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     Else
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     End If
     
 End Function

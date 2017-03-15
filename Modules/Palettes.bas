@@ -60,7 +60,7 @@ End Type
 ' combination of performance, low memory usage, and high-quality output.
 '
 'Because palette generation is a time-consuming task, the source DIB should generally be shrunk to a much smaller
-' version of itself.  I built a function specifically for this: DIB_Support.ResizeDIBByPixelCount().  That function
+' version of itself.  I built a function specifically for this: DIBs.ResizeDIBByPixelCount().  That function
 ' resizes an image to a target pixel count, and I wouldn't recommend a net size any larger than ~50,000 pixels.
 Public Function GetOptimizedPalette(ByRef srcDIB As pdDIB, ByRef dstPalette() As RGBQUAD, Optional ByVal numOfColors As Long = 256) As Boolean
     

@@ -87,7 +87,7 @@ Private m_VScrollMax As Single, m_VScrollValue As Single
 Private m_HScrollAllowed As Boolean, m_VScrollAllowed As Boolean
 
 'This UniqueID is generated when the UC is first shown.  Any actions that cause the preview area to change
-' (e.g. changing zoom, panning the image, etc) cause the ID to change.  This value is used by the FastDrawing module
+' (e.g. changing zoom, panning the image, etc) cause the ID to change.  This value is used by the EffectPrep module
 ' when generating a base preview DIB; if the UniqueID hasn't changed since the last request, the previous base preview
 ' DIB is copied instead of generating a new one from scratch.
 Private m_UniqueID As Double
@@ -230,7 +230,7 @@ End Sub
 
 Private Sub ucSupport_VisibilityChange(ByVal newVisibility As Boolean)
     m_UniqueID = Timer
-    If (Not newVisibility) Then FastDrawing.ResetPreviewIDs Else RedrawBackBuffer
+    If (Not newVisibility) Then EffectPrep.ResetPreviewIDs Else RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -611,7 +611,7 @@ End Sub
 Private Sub UserControl_Terminate()
     If Not (m_OriginalImage Is Nothing) Then m_OriginalImage.EraseDIB
     If Not (m_fxImage Is Nothing) Then m_fxImage.EraseDIB
-    FastDrawing.ResetPreviewIDs
+    EffectPrep.ResetPreviewIDs
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)

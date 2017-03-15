@@ -290,7 +290,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 ptrToTopLayerAlternateRectF = VarPtr(tmpRectF)
             End If
             
-            DIB_Support.RetrieveTransparencyTable bottomDIB, m_AlphaCopy, ptrToTopLayerAlternateRectF
+            DIBs.RetrieveTransparencyTable bottomDIB, m_AlphaCopy, ptrToTopLayerAlternateRectF
             Exit Sub
         End If
     
@@ -432,7 +432,7 @@ Private Sub PostProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
             ptrToTopLayerAlternateRectF = VarPtr(tmpRectF)
         End If
             
-        DIB_Support.ApplyTransparencyTable bottomDIB, m_AlphaCopy, ptrToTopLayerAlternateRectF
+        DIBs.ApplyTransparencyTable bottomDIB, m_AlphaCopy, ptrToTopLayerAlternateRectF
     End If
     
 End Sub

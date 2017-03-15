@@ -1,4 +1,4 @@
-Attribute VB_Name = "Icons_and_Cursors"
+Attribute VB_Name = "IconsAndCursors"
 '***************************************************************************
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2017 by Tanner Helland
@@ -529,7 +529,7 @@ Public Function CreateIconFromResource(ByVal resTitle As String) As Long
     Dim hBitmap As Long, hIcon As Long
     
     Dim IStream As IUnknown
-    Set IStream = VB_Hacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
+    Set IStream = VBHacks.GetStreamFromVBArray(VarPtr(ImageData(0)), UBound(ImageData) - LBound(ImageData) + 1)
     
     If Not (IStream Is Nothing) Then
         
@@ -607,7 +607,7 @@ Public Function CreateCursorFromResource(ByVal resTitle As String, Optional ByVa
         
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  Icons_and_Cursors.CreateCursorFromResource failed to find the resource: " & resTitle
+            pdDebug.LogAction "WARNING!  IconsAndCursors.CreateCursorFromResource failed to find the resource: " & resTitle
         #End If
     End If
     
@@ -823,7 +823,7 @@ Public Sub SetThunderMainIcon()
     ResetAppIcons
     
     Dim tmHWnd As Long
-    tmHWnd = VB_Hacks.GetThunderMainHWnd()
+    tmHWnd = VBHacks.GetThunderMainHWnd()
     SendMessageA tmHWnd, WM_SETICON, ICON_SMALL, ByVal m_DefaultIconLarge
     SendMessageA tmHWnd, WM_SETICON, ICON_BIG, ByVal m_DefaultIconSmall
 

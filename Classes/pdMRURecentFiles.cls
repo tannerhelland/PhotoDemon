@@ -265,7 +265,7 @@ Private Sub IMRUList_AfterFileAdded(ByRef mruManager As pdMRUManager, ByVal newF
     End If
     
     'Note that thumbnail icons in the sub-menu need to be reset after this action; this is handled by PD's separate menu icon manager
-    Icons_and_Cursors.ResetMenuIcons
+    IconsAndCursors.ResetMenuIcons
     
 End Sub
 
@@ -316,7 +316,7 @@ End Sub
 
 'Whenever the maximum file limit is changed, menu icons need to be reset
 Private Sub IMRUList_OnMaxLimitChanged(Manager As pdMRUManager)
-    Icons_and_Cursors.ResetMenuIcons
+    IconsAndCursors.ResetMenuIcons
 End Sub
 
 'Individual entries can be cleared via this function

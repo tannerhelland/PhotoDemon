@@ -679,7 +679,7 @@ Private Sub cmdUpdateLossyPreview_Click()
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SAFEARRAY2D
-        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
+        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, False
         
         'Create a FreeImage copy of the current preview image
         If (m_FIHandle <> 0) Then Plugin_FreeImage.ReleaseFreeImageObject m_FIHandle
@@ -705,7 +705,7 @@ Private Sub cmdUpdateLossyPreview_Click()
                 
                 'If successful, pngquant will overwrite the original file with its optimized copy.  Retrieve it now.
                 If Loading.QuickLoadImageToDIB(tmpFilename, workingDIB, False) Then
-                    FastDrawing.FinalizeNonstandardPreview Me.pdFxPreview, False
+                    EffectPrep.FinalizeNonstandardPreview Me.pdFxPreview, False
                     updateSuccess = True
                 End If
                 
@@ -793,7 +793,7 @@ Private Sub UpdatePreviewSource()
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SAFEARRAY2D
-        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
+        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'To reduce the chance of bugs, we use the same parameter parsing technique as the core PNG encoder
         Dim cParams As pdParamXML

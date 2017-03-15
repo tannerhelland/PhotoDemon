@@ -483,7 +483,7 @@ Private Sub UpdatePreviewSource()
         'Because the user can change the preview viewport, we can't guarantee that the preview region hasn't changed
         ' since the last preview.  Prep a new preview now.
         Dim tmpSafeArray As SAFEARRAY2D
-        FastDrawing.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
+        EffectPrep.PreviewNonStandardImage tmpSafeArray, m_CompositedImage, pdFxPreview, True
         
         'Convert the DIB to a FreeImage-compatible handle, at a color-depth that matches the current settings.
         ' (Note that one way or another, we'll always be converting the image to an 8-bpp mode.)

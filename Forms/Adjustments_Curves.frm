@@ -634,11 +634,11 @@ Private Sub Form_Load()
     isMouseDown = False
     
     'Fill the histogram arrays
-    Histogram_Analysis.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
+    Histograms.FillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
     'Generate matching overlay images
-    Histogram_Analysis.GenerateHistogramImages hData, hMax, hDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
-    Histogram_Analysis.GenerateHistogramImages hDataLog, hMaxLog, hLogDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+    Histograms.GenerateHistogramImages hData, hMax, hDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+    Histograms.GenerateHistogramImages hDataLog, hMaxLog, hLogDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
         
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me

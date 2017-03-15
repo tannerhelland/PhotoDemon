@@ -285,7 +285,7 @@ Public Function AddInputTracker(ByVal targetHwnd As Long, Optional ByVal alsoTra
         m_MouseTrackingActive = False
         
         'Attach a subclasser to the target hWnd
-        VB_Hacks.StartSubclassing m_hWnd, Me
+        VBHacks.StartSubclassing m_hWnd, Me
                     
         'If enter, leave, and hover events are desired, immediately start mouse tracking
         m_MouseTrackingActive = RequestMouseTrackingForHwnd
@@ -346,7 +346,7 @@ End Sub
 ' to ensure immediately release of the subclasser.
 Public Sub Shutdown()
     If (m_hWnd <> 0) Then
-        VB_Hacks.StopSubclassing m_hWnd, Me
+        VBHacks.StopSubclassing m_hWnd, Me
         m_hWnd = 0
     End If
 End Sub
@@ -378,7 +378,7 @@ End Sub
 Public Sub SetPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
     
     Dim tmpCursorHandle As Long
-    tmpCursorHandle = Icons_and_Cursors.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
+    tmpCursorHandle = IconsAndCursors.RequestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
     
     If (m_CursorHandle <> tmpCursorHandle) Then
         m_CursorHandle = tmpCursorHandle
@@ -1225,11 +1225,11 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     
     'Failsafe check for parent window destruction
     ElseIf (uiMsg = WM_NCDESTROY) Then
-        VB_Hacks.StopSubclassing hWnd, Me
+        VBHacks.StopSubclassing hWnd, Me
         m_hWnd = 0
         
     End If
     
-    If (Not msgEaten) Then ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    If (Not msgEaten) Then ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
 End Function

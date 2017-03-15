@@ -22,7 +22,7 @@ Attribute VB_Exposed = False
 ' implements a basic timer message handler, meaning it behaves roughly identically to a VB timer control.  On Windows 8
 ' or later, a coalescing timer is preferentially used.  See go.microsoft.com/fwlink/p/?linkid=246618 for details.
 '
-'Because AddressOf does not work in a module, this class leans on a few helper functions in the VB_Hacks module.
+'Because AddressOf does not work in a module, this class leans on a few helper functions in the VBHacks module.
 'Also, just like a regular VB Timer, this is a bad solution for high-resolution timing or anything that needs to be
 ' extremely consistent.
 '
@@ -53,7 +53,7 @@ Private m_OwnerHWnd As Long
 Private m_Interval As Long
 
 Private Sub Class_Initialize()
-    m_OwnerHWnd = VB_Hacks.GetThunderMainHWnd()
+    m_OwnerHWnd = VBHacks.GetThunderMainHWnd()
 End Sub
 
 Private Sub Class_Terminate()
@@ -82,9 +82,9 @@ Public Sub StartTimer()
     If (m_Interval > 0) Then
         
         If g_IsWin8OrLater Then
-            m_TimerID = SetCoalescableTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VB_Hacks.StandInTimerProc, 0&)
+            m_TimerID = SetCoalescableTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc, 0&)
         Else
-            m_TimerID = SetTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VB_Hacks.StandInTimerProc)
+            m_TimerID = SetTimer(m_OwnerHWnd, ObjPtr(Me), m_Interval, AddressOf VBHacks.StandInTimerProc)
         End If
         
         If (m_TimerID <> 0) Then UserControl_Support.NotifyTimerCreated
@@ -115,7 +115,7 @@ Public Sub StopTimer()
     
 End Sub
 
-'This sub will be called by the VB_Hacks module whenever a new timer event arrives.  Note that stopping a timer does not
+'This sub will be called by the VBHacks module whenever a new timer event arrives.  Note that stopping a timer does not
 ' remove already-posted WM_TIMER messages from the message queue; to prevent those from firing, we check the timer ID here.
 Public Sub TimerEventArrived()
     If (m_TimerID <> 0) Then RaiseEvent Timer

@@ -417,8 +417,8 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
         
         Dim transTable() As Byte
         ReDim transTable(0 To 255) As Byte
-        DIB_Support.ApplyAlphaCutoff_Ex workingDIB, transTable, alphaCutoff
-        DIB_Support.ApplyBinaryTransparencyTable workingDIB, transTable, finalBackColor
+        DIBs.ApplyAlphaCutoff_Ex workingDIB, transTable, alphaCutoff
+        DIBs.ApplyBinaryTransparencyTable workingDIB, transTable, finalBackColor
         
         currentAlphaState = PDAS_BinaryAlpha
         
@@ -433,7 +433,7 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     
         'Resize the target DIB to a smaller size
         Dim smallDIB As pdDIB
-        DIB_Support.ResizeDIBByPixelCount workingDIB, smallDIB, 50000
+        DIBs.ResizeDIBByPixelCount workingDIB, smallDIB, 50000
         
         'Generate an optimal palette
         Palettes.GetOptimizedPalette smallDIB, finalPalette, paletteSize
@@ -506,7 +506,7 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
         
     End If
     
-    FastDrawing.FinalizeImageData toPreview, pdFxPreview
+    EffectPrep.FinalizeImageData toPreview, pdFxPreview
     
 End Sub
 

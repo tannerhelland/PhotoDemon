@@ -145,13 +145,13 @@ End Sub
 Public Sub Shutdown()
     
     If (m_targetHwnd <> 0) Then
-        If m_SubclassActive Then VB_Hacks.StopSubclassing m_targetHwnd, Me
+        If m_SubclassActive Then VBHacks.StopSubclassing m_targetHwnd, Me
         m_SubclassActive = False
         m_targetHwnd = 0
     End If
     
     If (m_HookID <> 0) Then
-        VB_Hacks.NotifyPDIKHookNotNeeded ObjPtr(Me)
+        VBHacks.NotifyPDIKHookNotNeeded ObjPtr(Me)
         UnhookWindowsHookEx m_HookID
         m_HookID = 0
     End If
@@ -171,7 +171,7 @@ Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal target
         m_targetHwnd = targetHwnd
         
         'Attach the subclasser to this hWnd
-        m_SubclassActive = VB_Hacks.StartSubclassing(m_targetHwnd, Me)
+        m_SubclassActive = VBHacks.StartSubclassing(m_targetHwnd, Me)
         If m_SubclassActive Then
             
             CreateKeyboardTracker = m_SubclassActive
@@ -318,7 +318,7 @@ Private Sub InstallKeyboardHook()
         
         'Install a new hook for this window
         If (Not tryingToUnhook) Then
-            m_HookID = VB_Hacks.NotifyPDIKHookNeeded(Me)
+            m_HookID = VBHacks.NotifyPDIKHookNeeded(Me)
             UserControl_Support.PDControlReceivedFocus m_targetHwnd
         End If
         
@@ -331,7 +331,7 @@ Private Sub RemoveKeyboardHook()
     
     If (m_HookID <> 0) Then
         
-        VB_Hacks.NotifyPDIKHookNotNeeded ObjPtr(Me)
+        VBHacks.NotifyPDIKHookNotNeeded ObjPtr(Me)
         UnhookWindowsHookEx m_HookID
         m_HookID = 0
         
@@ -509,11 +509,11 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         HandleWMKillFocus
         
     ElseIf (uiMsg = WM_NCDESTROY) Then
-        VB_Hacks.StopSubclassing hWnd, Me
+        VBHacks.StopSubclassing hWnd, Me
         m_targetHwnd = 0
         m_SubclassActive = False
     End If
     
-    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
 End Function

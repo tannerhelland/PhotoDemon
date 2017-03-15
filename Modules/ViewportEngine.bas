@@ -1,4 +1,4 @@
-Attribute VB_Name = "Viewport_Engine"
+Attribute VB_Name = "ViewportEngine"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright 2001-2017 by Tanner Helland
@@ -7,14 +7,14 @@ Attribute VB_Name = "Viewport_Engine"
 'Last update: reinstate all color management code under LittleCMS (instead of the Windows ICM engine, which is a hot mess)
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
-' - Viewport_Engine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed,
+' - ViewportEngine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed,
 '                                             or the user switches to a different image or loads a new picture)
-' - Viewport_Engine.Stage2_CompositeAllLayers: (re)assemble the layered image, with all non-destructive changes taken into account
-' - Viewport_Engine.Stage3_ExtractRelevantRegion: copy the relevant portion of the image out of the composite and into its own buffer.  This stage
+' - ViewportEngine.Stage2_CompositeAllLayers: (re)assemble the layered image, with all non-destructive changes taken into account
+' - ViewportEngine.Stage3_ExtractRelevantRegion: copy the relevant portion of the image out of the composite and into its own buffer.  This stage
 '                                                 is skipped for the accelerated version of the pipeline.
-' - Viewport_Engine.Stage4_CompositeCanvas: blend the image and any canvas UI elements together.  At present, this includes shadow underlay and
+' - ViewportEngine.Stage4_CompositeCanvas: blend the image and any canvas UI elements together.  At present, this includes shadow underlay and
 '                                           selection highlight/lightboxing, if active.
-' - Viewport_Engine.Stage5_FlipBufferAndDrawUI: render the finalized image+canvas, and overlay any interactive UI elements (transform nodes, etc)
+' - ViewportEngine.Stage5_FlipBufferAndDrawUI: render the finalized image+canvas, and overlay any interactive UI elements (transform nodes, etc)
 '
 'PhotoDemon tries to be intelligent about calling the lowest routine in the pipeline, so it can render the viewport quickly
 ' regardless of zoom or scroll values.
@@ -70,7 +70,7 @@ Private m_TimeStage2 As Double, m_TimeStage3 As Double, m_TimeStage4 As Double, 
 Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
 
     Dim startTime As Currency
-    VB_Hacks.GetHighResTime startTime
+    VBHacks.GetHighResTime startTime
     
     'If no images have been loaded, clear the canvas and exit
     If (g_OpenImageCount <= 0) Then
@@ -144,7 +144,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     dstCanvas.RequestViewportRedraw True
     
     'Before exiting, calculate the time spent in this stage
-    m_TimeStage5 = VB_Hacks.GetTimerDifferenceNow(startTime)
+    m_TimeStage5 = VBHacks.GetTimerDifferenceNow(startTime)
     
 End Sub
 
@@ -162,7 +162,7 @@ End Sub
 Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined)
     
     Dim startTime As Currency
-    VB_Hacks.GetHighResTime startTime
+    VBHacks.GetHighResTime startTime
     
     'If no images have been loaded, clear the canvas and exit
     If (g_OpenImageCount = 0) Then
@@ -205,7 +205,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     End If
     
     'Before exiting, calculate the time spent in this stage
-    m_TimeStage4 = VB_Hacks.GetTimerDifferenceNow(startTime)
+    m_TimeStage4 = VBHacks.GetTimerDifferenceNow(startTime)
     
     'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
     ' remaining UI elements!
@@ -225,7 +225,7 @@ End Sub
 Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional ByVal curPOI As PD_PointOfInterest = poi_Undefined, Optional ByVal renderScratchLayerIndex As Long = -1)
     
     Dim startTime As Currency
-    VB_Hacks.GetHighResTime startTime
+    VBHacks.GetHighResTime startTime
     
     'Regardless of the pipeline branch we follow, we need local copies of the relevant region rects calculated by stage 1 of the pipeline.
     Dim ImageRect_CanvasCoords As RECTF, CanvasRect_ImageCoords As RECTF, CanvasRect_ActualPixels As RECTF
@@ -373,7 +373,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     End If
     
     'Before exiting, calculate the time spent in this stage
-    m_TimeStage3 = VB_Hacks.GetTimerDifferenceNow(startTime)
+    m_TimeStage3 = VBHacks.GetTimerDifferenceNow(startTime)
     
     'Note that calls to this function may need to be relayed to other UI elements.  (For example, viewport rulers need to
     ' be repositioned, and if the navigator panel is open, it needs to reflect the new scroll position, if any.)
@@ -404,7 +404,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
     ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
     Dim startTime As Currency
-    VB_Hacks.GetHighResTime startTime
+    VBHacks.GetHighResTime startTime
     
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
@@ -437,15 +437,15 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     '****************************************
     
     'Before exiting, calculate the time spent in this stage
-    m_TimeStage2 = VB_Hacks.GetTimerDifferenceNow(startTime)
+    m_TimeStage2 = VBHacks.GetTimerDifferenceNow(startTime)
     
     'Pass control to the next stage of the pipeline.
     Stage3_ExtractRelevantRegion srcImage, dstCanvas, pipelineOriginatedAtStageOne, curPOI, renderScratchLayerIndex
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
     If g_DisplayTimingReports Then
-        'Debug.Print "Viewport render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
-        Debug.Print "Viewport render timing by stage (net, 2, 3, 4, 5): " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage2 * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage3 * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage4 * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage5 * 1000), "###0.00") & " ms"
+        'Debug.Print "Viewport render timing: " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
+        Debug.Print "Viewport render timing by stage (net, 2, 3, 4, 5): " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage2 * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage3 * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage4 * 1000), "###0.00") & " ms, " & Format(CStr(m_TimeStage5 * 1000), "###0.00") & " ms"
     End If
     
 End Sub

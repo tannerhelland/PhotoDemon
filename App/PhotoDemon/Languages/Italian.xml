@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italian</langname>
-<langversion>6.7.254</langversion>
+<langversion>6.7.255</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -99,6 +99,30 @@
 
 <!-- END text for Main.bas-->
 
+<!-- BEGIN text for PublicConstants.bas -->
+
+<!-- PublicConstants.bas contains 0 phrases. -->
+
+<!-- END text for PublicConstants.bas-->
+
+<!-- BEGIN text for PublicEnumsAndTypes.bas -->
+
+<!-- PublicEnumsAndTypes.bas contains 0 phrases. -->
+
+<!-- END text for PublicEnumsAndTypes.bas-->
+
+<!-- BEGIN text for PublicVars.bas -->
+
+<!-- PublicVars.bas contains 0 phrases. -->
+
+<!-- END text for PublicVars.bas-->
+
+<!-- BEGIN text for PublicAPI.bas -->
+
+<!-- PublicAPI.bas contains 0 phrases. -->
+
+<!-- END text for PublicAPI.bas-->
+
 <!-- BEGIN text for AutosaveEngine.bas -->
 
 <phrase>
@@ -119,6 +143,22 @@
 <!-- AutosaveEngine.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for AutosaveEngine.bas-->
+
+<!-- BEGIN text for CanvasManager.bas -->
+
+<phrase>
+<original>Closing image</original>
+<translation>Chiudi l'immagine</translation>
+</phrase>
+
+<phrase>
+<original>Finished.</original>
+<translation>Finito.</translation>
+</phrase>
+
+<!-- CanvasManager.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+
+<!-- END text for CanvasManager.bas-->
 
 <!-- BEGIN text for ColorManagement_ICM.bas -->
 
@@ -178,29 +218,35 @@
 
 <!-- END text for Compression.bas-->
 
-<!-- BEGIN text for VBP_DIBHandler.bas -->
+<!-- BEGIN text for DibSupport.bas -->
 
-<!-- VBP_DIBHandler.bas contains 0 phrases. -->
+<!-- DibSupport.bas contains 0 phrases. -->
 
-<!-- END text for VBP_DIBHandler.bas-->
+<!-- END text for DibSupport.bas-->
 
-<!-- BEGIN text for VBP_CustomDialogHandler.bas -->
+<!-- BEGIN text for DialogManager.bas -->
 
-<!-- VBP_CustomDialogHandler.bas contains 0 phrases. -->
+<!-- DialogManager.bas contains 0 phrases. -->
 
-<!-- END text for VBP_CustomDialogHandler.bas-->
-
-<!-- BEGIN text for VBP_DrawModule.bas -->
-
-<!-- VBP_DrawModule.bas contains 0 phrases. -->
-
-<!-- END text for VBP_DrawModule.bas-->
+<!-- END text for DialogManager.bas-->
 
 <!-- BEGIN text for Drawing2D.bas -->
 
 <!-- Drawing2D.bas contains 0 phrases. -->
 
 <!-- END text for Drawing2D.bas-->
+
+<!-- BEGIN text for Drawing.bas -->
+
+<!-- Drawing.bas contains 0 phrases. -->
+
+<!-- END text for Drawing.bas-->
+
+<!-- BEGIN text for EffectPrep.bas -->
+
+<!-- EffectPrep.bas contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<!-- END text for EffectPrep.bas-->
 
 <!-- BEGIN text for Plugin_ExifTool.bas -->
 
@@ -268,29 +314,7 @@
 
 <!-- END text for Plugin_ExifTool.bas-->
 
-<!-- BEGIN text for VBP_FastDrawing.bas -->
-
-<phrase>
-<original>Finished.</original>
-<translation>Finito.</translation>
-</phrase>
-
-<!-- VBP_FastDrawing.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
-
-<!-- END text for VBP_FastDrawing.bas-->
-
-<!-- BEGIN text for VBP_MiscFileManagement.bas -->
-
-<phrase>
-<original>Please select a folder</original>
-<translation>Per favore seleziona una cartella</translation>
-</phrase>
-
-<!-- VBP_MiscFileManagement.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<!-- END text for VBP_MiscFileManagement.bas-->
-
-<!-- BEGIN text for VBP_MenuModule.bas -->
+<!-- BEGIN text for FileMenu.bas -->
 
 <phrase>
 <original>Open an image</original>
@@ -389,11 +413,22 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <translation></translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- FileMenu.bas contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
-<!-- END text for VBP_MenuModule.bas-->
+<!-- END text for FileMenu.bas-->
 
-<!-- BEGIN text for VBP_Filters_Area.bas -->
+<!-- BEGIN text for FileSystem.bas -->
+
+<phrase>
+<original>Please select a folder</original>
+<translation>Per favore seleziona una cartella</translation>
+</phrase>
+
+<!-- FileSystem.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+
+<!-- END text for FileSystem.bas-->
+
+<!-- BEGIN text for Filters_Area.bas -->
 
 <phrase>
 <original>Applying %1 filter</original>
@@ -410,17 +445,17 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <translation>Applicazione della sfocatura alla griglia</translation>
 </phrase>
 
-<!-- VBP_Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+<!-- Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
-<!-- END text for VBP_Filters_Area.bas-->
+<!-- END text for Filters_Area.bas-->
 
-<!-- BEGIN text for VBP_FiltersByteArray.bas -->
+<!-- BEGIN text for Filters_ByteArray.bas -->
 
-<!-- VBP_FiltersByteArray.bas contains 0 phrases. -->
+<!-- Filters_ByteArray.bas contains 0 phrases. -->
 
-<!-- END text for VBP_FiltersByteArray.bas-->
+<!-- END text for Filters_ByteArray.bas-->
 
-<!-- BEGIN text for VBP_Filters_Color_Effects.bas -->
+<!-- BEGIN text for Filters_Color.bas -->
 
 <phrase>
 <original>Inverting the image</original>
@@ -487,17 +522,17 @@ Se il problema persiste, si prega di segnalarlo agli sviluppatori di PhotoDemon 
 <translation></translation>
 </phrase>
 
-<!-- VBP_Filters_Color_Effects.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
+<!-- Filters_Color.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
 
-<!-- END text for VBP_Filters_Color_Effects.bas-->
+<!-- END text for Filters_Color.bas-->
 
-<!-- BEGIN text for VBP_Filters_Layers.bas -->
+<!-- BEGIN text for Filters_Layers.bas -->
 
-<!-- VBP_Filters_Layers.bas contains 0 phrases. -->
+<!-- Filters_Layers.bas contains 0 phrases. -->
 
-<!-- END text for VBP_Filters_Layers.bas-->
+<!-- END text for Filters_Layers.bas-->
 
-<!-- BEGIN text for VBP_Filters_Misc.bas -->
+<!-- BEGIN text for Filters_Misc.bas -->
 
 <phrase>
 <original>Converting image mode</original>
@@ -588,11 +623,11 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <translation>Suggerimenti di PhotoDemon Pro</translation>
 </phrase>
 
-<!-- VBP_Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
-<!-- END text for VBP_Filters_Misc.bas-->
+<!-- END text for Filters_Misc.bas-->
 
-<!-- BEGIN text for VBP_Filters_Natural.bas -->
+<!-- BEGIN text for Filters_Natural.bas -->
 
 <phrase>
 <original>Submerging image in artificial water</original>
@@ -614,17 +649,17 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <translation>Esplosione di un vulcano immaginario</translation>
 </phrase>
 
-<!-- VBP_Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
-<!-- END text for VBP_Filters_Natural.bas-->
+<!-- END text for Filters_Natural.bas-->
 
-<!-- BEGIN text for VBP_FiltersStylize.bas -->
+<!-- BEGIN text for Filters_Stylize.bas -->
 
-<!-- VBP_FiltersStylize.bas contains 0 phrases. -->
+<!-- Filters_Stylize.bas contains 0 phrases. -->
 
-<!-- END text for VBP_FiltersStylize.bas-->
+<!-- END text for Filters_Stylize.bas-->
 
-<!-- BEGIN text for VBP_Filters_Rotate.bas -->
+<!-- BEGIN text for Filters_Transform.bas -->
 
 <phrase>
 <original>Analyzing top edge of image</original>
@@ -721,15 +756,15 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <translation>Ritaglio dell'immagine alle nuove dimensioni</translation>
 </phrase>
 
-<!-- VBP_Filters_Rotate.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
-<!-- END text for VBP_Filters_Rotate.bas-->
+<!-- END text for Filters_Transform.bas-->
 
-<!-- BEGIN text for VBP_FontManagement.bas -->
+<!-- BEGIN text for Fonts.bas -->
 
-<!-- VBP_FontManagement.bas contains 0 phrases. -->
+<!-- Fonts.bas contains 0 phrases. -->
 
-<!-- END text for VBP_FontManagement.bas-->
+<!-- END text for Fonts.bas-->
 
 <!-- BEGIN text for GDI.bas -->
 
@@ -784,22 +819,11 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 
 <!-- END text for Histograms.bas-->
 
-<!-- BEGIN text for VBP_MenuIcons.bas -->
+<!-- BEGIN text for IconsAndCursors.bas -->
 
-<!-- VBP_MenuIcons.bas contains 0 phrases. -->
+<!-- IconsAndCursors.bas contains 0 phrases. -->
 
-<!-- END text for VBP_MenuIcons.bas-->
-
-<!-- BEGIN text for VBP_MDIWindow.bas -->
-
-<phrase>
-<original>Closing image</original>
-<translation>Chiudi l'immagine</translation>
-</phrase>
-
-<!-- VBP_MDIWindow.bas contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
-
-<!-- END text for VBP_MDIWindow.bas-->
+<!-- END text for IconsAndCursors.bas-->
 
 <!-- BEGIN text for ImageExporter.bas -->
 
@@ -881,7 +905,7 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 
 <!-- END text for ImageLoader.bas-->
 
-<!-- BEGIN text for VBP_MiscInterface.bas -->
+<!-- BEGIN text for Interface.bas -->
 
 <phrase>
 <original>Repeat</original>
@@ -1148,11 +1172,11 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 73 phrases. 20 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
+<!-- Interface.bas contains 73 phrases. 20 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
 
-<!-- END text for VBP_MiscInterface.bas-->
+<!-- END text for Interface.bas-->
 
-<!-- BEGIN text for VBP_LayerHandler.bas -->
+<!-- BEGIN text for Layers.bas -->
 
 <phrase>
 <original>Blank layer</original>
@@ -1254,9 +1278,9 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
-<!-- END text for VBP_LayerHandler.bas-->
+<!-- END text for Layers.bas-->
 
 <!-- BEGIN text for Plugin_LittleCMS.bas -->
 
@@ -1269,7 +1293,7 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 
 <!-- END text for Plugin_LittleCMS.bas-->
 
-<!-- BEGIN text for VBP_LoadModule.bas -->
+<!-- BEGIN text for Loading.bas -->
 
 <phrase>
 <original>Loading image</original>
@@ -1379,9 +1403,9 @@ Please verify that these image(s) exist, and that they use a supported image for
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Loading.bas contains 29 phrases. 11 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
-<!-- END text for VBP_LoadModule.bas-->
+<!-- END text for Loading.bas-->
 
 <!-- BEGIN text for BatchProcessor.bas -->
 
@@ -1498,29 +1522,23 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 
 <!-- END text for BatchProcessor.bas-->
 
-<!-- BEGIN text for VBP_MiscMath.bas -->
-
-<!-- VBP_MiscMath.bas contains 0 phrases. -->
-
-<!-- END text for VBP_MiscMath.bas-->
-
 <!-- BEGIN text for Menus.bas -->
 
 <!-- Menus.bas contains 0 phrases. -->
 
 <!-- END text for Menus.bas-->
 
-<!-- BEGIN text for VBP_Win7_Specific_Features.bas -->
-
-<!-- VBP_Win7_Specific_Features.bas contains 0 phrases. -->
-
-<!-- END text for VBP_Win7_Specific_Features.bas-->
-
 <!-- BEGIN text for FreeImageWrapper.bas -->
 
 <!-- FreeImageWrapper.bas contains 0 phrases. -->
 
 <!-- END text for FreeImageWrapper.bas-->
+
+<!-- BEGIN text for PDMath.bas -->
+
+<!-- PDMath.bas contains 0 phrases. -->
+
+<!-- END text for PDMath.bas-->
 
 <!-- BEGIN text for Paintbrush.bas -->
 
@@ -1705,12 +1723,6 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <!-- END text for Plugin_FreeImage.bas-->
 
-<!-- BEGIN text for Plugin_lz4.bas -->
-
-<!-- Plugin_lz4.bas contains 0 phrases. -->
-
-<!-- END text for Plugin_lz4.bas-->
-
 <!-- BEGIN text for Plugin_OptiPNG.bas -->
 
 <phrase>
@@ -1748,6 +1760,12 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <!-- END text for Plugin_PNGQuant.bas-->
 
+<!-- BEGIN text for Plugin_lz4.bas -->
+
+<!-- Plugin_lz4.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_lz4.bas-->
+
 <!-- BEGIN text for Plugin_ZLib.bas -->
 
 <!-- Plugin_ZLib.bas contains 0 phrases. -->
@@ -1760,7 +1778,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <!-- END text for Plugin_zstd.bas-->
 
-<!-- BEGIN text for VBP_PrinterSupport.bas -->
+<!-- BEGIN text for Printing.bas -->
 
 <phrase>
 <original>Preparing image for printing</original>
@@ -1772,9 +1790,9 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 <translation>Immagine inviata con successo a Windows Photo Printer.</translation>
 </phrase>
 
-<!-- VBP_PrinterSupport.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- Printing.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
-<!-- END text for VBP_PrinterSupport.bas-->
+<!-- END text for Printing.bas-->
 
 <!-- BEGIN text for Processor.bas -->
 
@@ -2101,31 +2119,13 @@ Quando hai finito, fai clic sul pulsante Submit.  Grazie!</translation>
 
 <!-- END text for Processor.bas-->
 
-<!-- BEGIN text for VBP_MiscProgBar.bas -->
+<!-- BEGIN text for ProgressBars.bas -->
 
-<!-- VBP_MiscProgBar.bas contains 0 phrases. -->
+<!-- ProgressBars.bas contains 0 phrases. -->
 
-<!-- END text for VBP_MiscProgBar.bas-->
+<!-- END text for ProgressBars.bas-->
 
-<!-- BEGIN text for VBP_PublicAPI.bas -->
-
-<!-- VBP_PublicAPI.bas contains 0 phrases. -->
-
-<!-- END text for VBP_PublicAPI.bas-->
-
-<!-- BEGIN text for VBP_PublicConstants.bas -->
-
-<!-- VBP_PublicConstants.bas contains 0 phrases. -->
-
-<!-- END text for VBP_PublicConstants.bas-->
-
-<!-- BEGIN text for VBP_PublicEnumsTypes.bas -->
-
-<!-- VBP_PublicEnumsTypes.bas contains 0 phrases. -->
-
-<!-- END text for VBP_PublicEnumsTypes.bas-->
-
-<!-- BEGIN text for VBP_SaveModule.bas -->
+<!-- BEGIN text for Saving.bas -->
 
 <phrase>
 <original>Saving %1 file</original>
@@ -2180,11 +2180,11 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Salvataggio della miniatura fallito (errore non specificato di GDI+).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Saving.bas contains 15 phrases. 6 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
-<!-- END text for VBP_SaveModule.bas-->
+<!-- END text for Saving.bas-->
 
-<!-- BEGIN text for VBP_ScreenCaptureModule.bas -->
+<!-- BEGIN text for ScreenCapture.bas -->
 
 <phrase>
 <original>Capturing screen</original>
@@ -2206,11 +2206,11 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Cattura dello schermo terminata.</translation>
 </phrase>
 
-<!-- VBP_ScreenCaptureModule.bas contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
+<!-- ScreenCapture.bas contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
 
-<!-- END text for VBP_ScreenCaptureModule.bas-->
+<!-- END text for ScreenCapture.bas-->
 
-<!-- BEGIN text for VBP_SelectionHandler.bas -->
+<!-- BEGIN text for Selections.bas -->
 
 <phrase>
 <original>PhotoDemon Selection</original>
@@ -2377,9 +2377,73 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <translation>Clicca sul primo punto per completare la selezione del poligono</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
-<!-- END text for VBP_SelectionHandler.bas-->
+<!-- END text for Selections.bas-->
+
+<!-- BEGIN text for TextSupport.bas -->
+
+<phrase>
+<original>%1 is not a valid entry.
+Please enter a value between %2 and %3.</original>
+<translation>%1 non è una voce valida.
+Per favore inserisci un valore compreso tra %2 e %3.</translation>
+</phrase>
+
+<phrase>
+<original>Invalid entry</original>
+<translation>Voce non valida</translation>
+</phrase>
+
+<phrase>
+<original>%1 is not a valid entry.
+Please enter a numeric value.</original>
+<translation>%1 non è una voce valida.
+Per favore inserisci un valore numerico.</translation>
+</phrase>
+
+<!-- TextSupport.bas contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for TextSupport.bas-->
+
+<!-- BEGIN text for Toolboxes.bas -->
+
+<!-- Toolboxes.bas contains 0 phrases. -->
+
+<!-- END text for Toolboxes.bas-->
+
+<!-- BEGIN text for Tools.bas -->
+
+<phrase>
+<original>Resize layer (on-canvas)</original>
+<translation>Ridimensiona il livello (su tela)</translation>
+</phrase>
+
+<phrase>
+<original>Rotate layer (on-canvas)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Move layer</original>
+<translation>Muovi il livello</translation>
+</phrase>
+
+<!-- Tools.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
+
+<!-- END text for Tools.bas-->
+
+<!-- BEGIN text for Uniscribe.bas -->
+
+<!-- Uniscribe.bas contains 0 phrases. -->
+
+<!-- END text for Uniscribe.bas-->
+
+<!-- BEGIN text for Units.bas -->
+
+<!-- Units.bas contains 0 phrases. -->
+
+<!-- END text for Units.bas-->
 
 <!-- BEGIN text for UpdateEngine.bas -->
 
@@ -2416,70 +2480,6 @@ Nel frattempo, si prega di provare a salvare l'immagine in un formato alternativ
 <!-- UpdateEngine.bas contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for UpdateEngine.bas-->
-
-<!-- BEGIN text for VBP_MiscValidation.bas -->
-
-<phrase>
-<original>%1 is not a valid entry.
-Please enter a value between %2 and %3.</original>
-<translation>%1 non è una voce valida.
-Per favore inserisci un valore compreso tra %2 e %3.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid entry</original>
-<translation>Voce non valida</translation>
-</phrase>
-
-<phrase>
-<original>%1 is not a valid entry.
-Please enter a numeric value.</original>
-<translation>%1 non è una voce valida.
-Per favore inserisci un valore numerico.</translation>
-</phrase>
-
-<!-- VBP_MiscValidation.bas contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
-
-<!-- END text for VBP_MiscValidation.bas-->
-
-<!-- BEGIN text for Toolboxes.bas -->
-
-<!-- Toolboxes.bas contains 0 phrases. -->
-
-<!-- END text for Toolboxes.bas-->
-
-<!-- BEGIN text for VBP_ToolSupport.bas -->
-
-<phrase>
-<original>Resize layer (on-canvas)</original>
-<translation>Ridimensiona il livello (su tela)</translation>
-</phrase>
-
-<phrase>
-<original>Rotate layer (on-canvas)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Move layer</original>
-<translation>Muovi il livello</translation>
-</phrase>
-
-<!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<!-- END text for VBP_ToolSupport.bas-->
-
-<!-- BEGIN text for Uniscribe.bas -->
-
-<!-- Uniscribe.bas contains 0 phrases. -->
-
-<!-- END text for Uniscribe.bas-->
-
-<!-- BEGIN text for VBP_UnitConversions.bas -->
-
-<!-- VBP_UnitConversions.bas contains 0 phrases. -->
-
-<!-- END text for VBP_UnitConversions.bas-->
 
 <!-- BEGIN text for UserControl_Support.bas -->
 
@@ -2523,6 +2523,12 @@ Per favore inserisci un valore numerico.</translation>
 <!-- ViewportEngine.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for ViewportEngine.bas-->
+
+<!-- BEGIN text for WindowsModern.bas -->
+
+<!-- WindowsModern.bas contains 0 phrases. -->
+
+<!-- END text for WindowsModern.bas-->
 
 <!-- BEGIN text for cFileDialogVista.cls -->
 

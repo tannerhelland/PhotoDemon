@@ -206,7 +206,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         UserControl_Support.IncrementPDControlCount
         
         'Subclass the user control immediately
-        If g_IsProgramRunning Then VB_Hacks.StartSubclassing m_hWnd, Me
+        If g_IsProgramRunning Then VBHacks.StartSubclassing m_hWnd, Me
         
         'Synchronize initial window visiblity
         m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
@@ -1297,7 +1297,7 @@ Private Sub Class_Terminate()
     
     'Release our subclasser.
     If (m_hWnd <> 0) Then
-        VB_Hacks.StopSubclassing m_hWnd, Me
+        VBHacks.StopSubclassing m_hWnd, Me
         m_hWnd = 0
     End If
     
@@ -1401,7 +1401,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         
         'Stop internal subclassing and free our hWnd (which prevents subclassing from re-starting)
         If (m_hWnd <> 0) Then
-            VB_Hacks.StopSubclassing m_hWnd, Me
+            VBHacks.StopSubclassing m_hWnd, Me
             m_hWnd = 0
         End If
     
@@ -1415,6 +1415,6 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     End If
     
     'At present, none of our subclassed messages get "eaten".  Always call the default handler after we're done.
-    If (Not eatMessage) Then ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    If (Not eatMessage) Then ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
 End Function

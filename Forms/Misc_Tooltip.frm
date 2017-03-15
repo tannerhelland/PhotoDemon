@@ -179,7 +179,7 @@ Private Sub RedrawBackBuffer()
         Dim ttFont As pdFont
         
         If (Len(m_Title) > 0) Then
-            Set ttFont = Font_Management.GetMatchingUIFont(10, True)
+            Set ttFont = Fonts.GetMatchingUIFont(10, True)
             ttFont.AttachToDC bufferDC
             ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
             ttFont.SetTextAlignment vbLeftJustify
@@ -190,7 +190,7 @@ Private Sub RedrawBackBuffer()
         
         'Finally, paint the tooltip itself
         If (Len(m_Caption) > 0) Then
-            Set ttFont = Font_Management.GetMatchingUIFont(10, False)
+            Set ttFont = Fonts.GetMatchingUIFont(10, False)
             ttFont.AttachToDC bufferDC
             ttFont.SetFontColor m_Colors.RetrieveColor(PDTT_Caption)
             ttFont.SetTextAlignment vbLeftJustify

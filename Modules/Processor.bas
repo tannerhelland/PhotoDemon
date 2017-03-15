@@ -234,7 +234,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         If rasterizeImagePromptNeeded Then
             
-            okayToRasterize = Layer_Handler.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType, , True)
+            okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType, , True)
             
             'If rasterization is okay, immediately apply it to all relevant layers
             If okayToRasterize = vbYes Then
@@ -243,23 +243,23 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                     
                     'When merging layers, only the merged layers need to be rasterized
                     Case "Merge layer down"
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1)
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1) - 1
+                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
+                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) - 1
                         
                     Case "Merge layer up"
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1)
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1) + 1
+                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
+                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) + 1
                     
                     Case "Merge visible layers"
                         For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
                             If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility And pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
-                                Layer_Handler.RasterizeLayer i
+                                Layers.RasterizeLayer i
                             End If
                         Next i
                         
                     'For any other case, rasterize all vector layers
                     Case Else
-                        Layer_Handler.RasterizeLayer -1
+                        Layers.RasterizeLayer -1
                     
                 End Select
                 
@@ -292,12 +292,12 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             'Display a prompt as necessary
             If rasterizeImagePromptNeeded Then
                 
-                okayToRasterize = Layer_Handler.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType)
+                okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType)
                 
                 'If rasterization is okay, apply it immediately
                 If okayToRasterize = vbYes Then
                 
-                    Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
+                    Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
                 
                 'If the user doesn't want rasterization, bail immediately.
                 Else
@@ -425,7 +425,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         End With
         
         'If the user wants us to time how long this action takes, mark the current time now
-        If g_DisplayTimingReports Then VB_Hacks.GetHighResTime m_ProcessingTime
+        If g_DisplayTimingReports Then VBHacks.GetHighResTime m_ProcessingTime
         
         'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
         
@@ -489,26 +489,26 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormNewImage
             Else
-                File_Menu.CreateNewImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
+                FileMenu.CreateNewImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
                     
         Case "Open"
-            File_Menu.MenuOpen
+            FileMenu.MenuOpen
             
         Case "Close"
-            File_Menu.MenuClose
+            FileMenu.MenuClose
             
         Case "Close all"
-            File_Menu.MenuCloseAll
+            FileMenu.MenuCloseAll
         
         Case "Save"
-            File_Menu.MenuSave pdImages(g_CurrentImage)
+            FileMenu.MenuSave pdImages(g_CurrentImage)
             
         Case "Save as"
-            File_Menu.MenuSaveAs pdImages(g_CurrentImage)
+            FileMenu.MenuSaveAs pdImages(g_CurrentImage)
             
         Case "Save copy"
-            File_Menu.MenuSaveLosslessCopy pdImages(g_CurrentImage)
+            FileMenu.MenuSaveLosslessCopy pdImages(g_CurrentImage)
             
         Case "Revert"
             If FormMain.MnuFile(9).Enabled Then
@@ -565,7 +565,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormScreenCapture
             Else
-                Screen_Capture.CaptureScreen cXMLParams.GetParamString
+                ScreenCapture.CaptureScreen cXMLParams.GetParamString
             End If
             
         Case "Internet import"
@@ -640,7 +640,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Quick-fix tools
         Case "Make quick-fixes permanent"
-            Tool_Support.MakeQuickFixesPermanent
+            Tools.MakeQuickFixesPermanent
         
         
         'IMAGE MENU FUNCTIONS
@@ -759,13 +759,13 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Add layers to an image
         Case "Add blank layer"
-            Layer_Handler.AddBlankLayer cParams.GetLong(1)
+            Layers.AddBlankLayer cParams.GetLong(1)
         
         Case "Add new layer"
             If ShowDialog Then
                 ShowPDDialog vbModal, FormNewLayer
             Else
-                Layer_Handler.AddNewLayer cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetBool(6), cParams.GetString(7)
+                Layers.AddNewLayer cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetBool(6), cParams.GetString(7)
             End If
         
         'TODO: sort out new text layer vs new typography layer behavior
@@ -778,9 +778,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 
                 'Start by creating a new layer
                 If StrComp(processID, "New text layer", vbTextCompare) Then
-                    Layer_Handler.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", 0, 0, True
+                    Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", 0, 0, True
                 Else
-                    Layer_Handler.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", 0, 0, True
+                    Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", 0, 0, True
                 End If
                 
                 'Five parameters are passed during text layer creation:
@@ -801,55 +801,55 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
         
         Case "New layer from file"
-            Layer_Handler.LoadImageAsNewLayer ShowDialog, processParameters
+            Layers.LoadImageAsNewLayer ShowDialog, processParameters
         
         Case "Duplicate layer"
-            Layer_Handler.DuplicateLayerByIndex cParams.GetLong(1)
+            Layers.DuplicateLayerByIndex cParams.GetLong(1)
             
         'Remove layers from an image
         Case "Delete layer"
-            Layer_Handler.DeleteLayer cParams.GetLong(1)
+            Layers.DeleteLayer cParams.GetLong(1)
         
         Case "Delete hidden layers"
-            Layer_Handler.DeleteHiddenLayers
+            Layers.DeleteHiddenLayers
             
         'Merge a layer up or down
         Case "Merge layer down"
-            Layer_Handler.MergeLayerAdjacent cParams.GetLong(1), True
+            Layers.MergeLayerAdjacent cParams.GetLong(1), True
             
         Case "Merge layer up"
-            Layer_Handler.MergeLayerAdjacent cParams.GetLong(1), False
+            Layers.MergeLayerAdjacent cParams.GetLong(1), False
             
         'Raise a layer up or down
         Case "Raise layer"
-            Layer_Handler.MoveLayerAdjacent cParams.GetLong(1), True
+            Layers.MoveLayerAdjacent cParams.GetLong(1), True
         
         Case "Lower layer"
-            Layer_Handler.MoveLayerAdjacent cParams.GetLong(1), False
+            Layers.MoveLayerAdjacent cParams.GetLong(1), False
             
         'Raise or lower to layer to end of stack
         Case "Raise layer to top"
-            Layer_Handler.MoveLayerToEndOfStack cParams.GetLong(1), True
+            Layers.MoveLayerToEndOfStack cParams.GetLong(1), True
         
         Case "Lower layer to bottom"
-            Layer_Handler.MoveLayerToEndOfStack cParams.GetLong(1), False
+            Layers.MoveLayerToEndOfStack cParams.GetLong(1), False
         
         'Non-destructive layer size and orientation changes
         Case "Reset layer angle"
-            Layer_Handler.ResetLayerAngle cParams.GetLong(1)
+            Layers.ResetLayerAngle cParams.GetLong(1)
         
         Case "Reset layer size"
-            Layer_Handler.ResetLayerSize cParams.GetLong(1)
+            Layers.ResetLayerSize cParams.GetLong(1)
             
         Case "Reset horizontal layer shear"
-            Layer_Handler.ResetLayerShear cParams.GetLong(1), True
+            Layers.ResetLayerShear cParams.GetLong(1), True
         
         Case "Reset vertical layer shear"
-            Layer_Handler.ResetLayerShear cParams.GetLong(1), False
+            Layers.ResetLayerShear cParams.GetLong(1), False
         
         ' (Just kidding, this action is destructive, but it sits on the non-destructive panel so I've included it here)
         Case "Make layer changes permanent"
-            Layer_Handler.MakeLayerAffineTransformsPermanent cParams.GetLong(1)
+            Layers.MakeLayerAffineTransformsPermanent cParams.GetLong(1)
             
         'Destructive layer orientation changes
         Case "Straighten layer"
@@ -897,7 +897,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
             
         Case "Crop layer to selection"
-            Layer_Handler.CropLayerToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
+            Layers.CropLayerToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
         
         'Change layer alpha
         Case "Color to alpha"
@@ -916,32 +916,32 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Rasterizing
         Case "Rasterize layer"
-            Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
+            Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
         
         Case "Rasterize all layers"
-            Layer_Handler.RasterizeLayer -1
+            Layers.RasterizeLayer -1
         
         'Flatten image
         Case "Flatten image"
             If ShowDialog Then
                 ShowPDDialog vbModal, FormLayerFlatten
             Else
-                Layer_Handler.FlattenImage cXMLParams.GetParamString
+                Layers.FlattenImage cXMLParams.GetParamString
             End If
             
         'Merge visible layers
         Case "Merge visible layers"
-            Layer_Handler.MergeVisibleLayers
+            Layers.MergeVisibleLayers
             
         'On-canvas layer modifications (moving, non-destructive resizing, etc)
         Case "Resize layer (on-canvas)"
-            Layer_Handler.ResizeLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
+            Layers.ResizeLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
         
         Case "Rotate layer (on-canvas)"
-            Layer_Handler.RotateLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
+            Layers.RotateLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
         
         Case "Move layer"
-            Layer_Handler.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
+            Layers.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
             
         '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry
         ' after the user has performed a drag/drop rearrangement of the layer stack.
@@ -1928,7 +1928,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         Dim timingString As String
         timingString = g_Language.TranslateMessage("Time taken")
-        timingString = timingString & ": " & Format$(CStr(VB_Hacks.GetTimerDifferenceNow(m_ProcessingTime)), "#0.0000") & " "
+        timingString = timingString & ": " & Format$(CStr(VBHacks.GetTimerDifferenceNow(m_ProcessingTime)), "#0.0000") & " "
         timingString = timingString & g_Language.TranslateMessage("seconds")
         
         Message timingString
@@ -2026,7 +2026,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     If (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI m_FocusHWnd
     
     'If an update is available, and we haven't displayed a notification yet, do so now
-    If g_ShowUpdateNotification Then Update_Support.DisplayUpdateNotification
+    If g_ShowUpdateNotification Then Updates.DisplayUpdateNotification
     
     'Restore the mouse pointer to its default value.
     ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)

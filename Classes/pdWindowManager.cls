@@ -712,7 +712,7 @@ Friend Sub RequestMinMaxTracking(ByVal srcHwnd As Long, Optional ByVal internalI
         
         'Unfortunately, there's no simple way to set min/max values in advance.  Instead, we must subclass the window, and respond
         ' to any received WM_GETMINMAXINFO messages.
-        VB_Hacks.StartSubclassing srcHwnd, Me
+        VBHacks.StartSubclassing srcHwnd, Me
         
     End If
 
@@ -725,7 +725,7 @@ Private Sub StopMaxMinSubclassing(ByVal hWnd As Long)
         Dim i As Long
         For i = 0 To m_numOfMinMaxEntries - 1
             If (m_MinMaxEntries(i).hWnd = hWnd) Then
-                VB_Hacks.StopSubclassing hWnd, Me
+                VBHacks.StopSubclassing hWnd, Me
                 m_MinMaxEntries(i).hWnd = 0
                 Exit For
             End If
@@ -783,13 +783,13 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         If HandleMinMaxMessage(hWnd, wParam, lParam, dwRefData) Then
             ISubclass_WindowMsg = 0
         Else
-            ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+            ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         End If
     
     'Always tear down subclassing manually when a subclassed window is being destroyed
     ElseIf (uiMsg = WM_NCDESTROY) Then
         StopMaxMinSubclassing hWnd
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     Else
         
@@ -809,7 +809,7 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
             
         End If
         
-        ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+        ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
         
     End If
 

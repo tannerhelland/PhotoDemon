@@ -245,13 +245,13 @@ Private Sub cmdQuickFix_Click(Index As Integer)
     SetNDFXControlState True
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
 Private Sub Form_Load()
 
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
 
     cmdQuickFix(0).AssignTooltip "Reset all quick-fix adjustment values"
     cmdQuickFix(1).AssignTooltip "Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance."
@@ -269,7 +269,7 @@ Private Sub Form_Load()
     'Allow non-destructive effects
     m_NonDestructiveFXAllowed = True
     
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
 End Sub
 
@@ -296,7 +296,7 @@ Private Sub sltQuickFix_Change(Index As Integer)
         pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState Index, sltQuickFix(Index).Value
         
         'Redraw the viewport
-        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         'If the layer now has non-destructive effects active, enable the quick fix buttons (if they aren't already)
         Dim i As Long
@@ -351,6 +351,6 @@ Private Sub sltQuickFix_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub sltQuickFix_LostFocusAPI(Index As Integer)
-    If Tool_Support.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
+    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
 End Sub
 

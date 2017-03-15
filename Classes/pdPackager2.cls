@@ -20,7 +20,7 @@ Attribute VB_Exposed = False
 'Dependencies: - pdStream class from photodemon.org (used to easily read/write memory and file buffers)
 '              - pdFSO class from photodemon.org (Unicode-friendly file operations)
 '              - pdStringStack class from photodemon.org (optimized handling of large string collections)
-'              - VB_Hacks module from photodemon.org (optimized workarounds for lacking VB functionality)
+'              - VBHacks module from photodemon.org (optimized workarounds for lacking VB functionality)
 '              - Compression module and any attached plugin modules (e.g. Plugin_zlib, Plugin_lz4) from photodemon.org
 '                 (if you want compression support)
 '
@@ -1706,7 +1706,7 @@ Private Function CheckArrayEquality(ByRef srcArray1() As Byte, ByRef srcArray2()
     
     'Array bounds are equal, so an actual per-element test is required
     Else
-        CheckArrayEquality = VB_Hacks.MemCmp(VarPtr(srcArray1(0)), VarPtr(srcArray2(0)), UBound(srcArray1) + 1)
+        CheckArrayEquality = VBHacks.MemCmp(VarPtr(srcArray1(0)), VarPtr(srcArray2(0)), UBound(srcArray1) + 1)
     End If
 
 End Function
@@ -1873,7 +1873,7 @@ Friend Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         ' perfect size; while the odds of this are low, the potential performance gains are large, so it's
         ' worth the trouble.
         If trimDstArray Then
-            If VB_Hacks.IsArrayInitialized(dstArray) Then
+            If VBHacks.IsArrayInitialized(dstArray) Then
                 If ((UBound(dstArray) - LBound(dstArray) + 1) <> dataOriginalSize) Then needToSizeArray = True
             Else
                 needToSizeArray = True
@@ -1882,7 +1882,7 @@ Friend Function GetNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         'If the user doesn't want the destination array trimmed, we only need to resize it if it's too small for
         ' this read (or if it's uninitialized, obviously).
         Else
-            If VB_Hacks.IsArrayInitialized(dstArray) Then
+            If VBHacks.IsArrayInitialized(dstArray) Then
                 If ((UBound(dstArray) - LBound(dstArray) + 1) < dataOriginalSize) Then needToSizeArray = True
             Else
                 needToSizeArray = True
@@ -2011,7 +2011,7 @@ Friend Function GetNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
                 ' a temporary buffer, however, as we don't have pointer-level access to the source file.
                 
                 'Prep the temporary compression buffer
-                If VB_Hacks.IsArrayInitialized(m_CompressionBuffer) Then
+                If VBHacks.IsArrayInitialized(m_CompressionBuffer) Then
                     If (UBound(m_CompressionBuffer) < (dataPackedSize - 1)) Then ReDim m_CompressionBuffer(0 To dataPackedSize - 1) As Byte
                 Else
                     ReDim m_CompressionBuffer(0 To dataPackedSize - 1) As Byte

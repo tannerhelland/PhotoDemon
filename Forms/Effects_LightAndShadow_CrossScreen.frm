@@ -197,7 +197,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
     Dim alphaIsRelevant As Boolean
-    alphaIsRelevant = Not DIB_Support.IsDIBAlphaBinary(workingDIB, False)
+    alphaIsRelevant = Not DIBs.IsDIBAlphaBinary(workingDIB, False)
     
     'If alpha is relevant, we need to make a copy of the current image's alpha channel, so we can restore it when we're done
     Dim alphaBackupDIB As pdDIB
@@ -334,7 +334,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'We now need to brighten up m_mbDIB.
     Dim lMax As Long, lMin As Long
-    getDIBMaxMinLuminance m_mbDIB, lMin, lMax
+    GetDIBMaxMinLuminance m_mbDIB, lMin, lMax
     cLut.FillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
     
     'On top of the remapped range (which is most important), we also gamma-correct the DIB according to the input strength parameter

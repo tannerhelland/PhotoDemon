@@ -47,12 +47,12 @@ Public Function GetOptiPNGVersion() As String
             Dim versionLines() As String
             versionLines = Split(outputString, vbCrLf, , vbBinaryCompare)
             
-            If VB_Hacks.IsArrayInitialized(versionLines) Then
+            If VBHacks.IsArrayInitialized(versionLines) Then
                 
                 Dim versionParts() As String
                 versionParts = Split(versionLines(0), " ")
                 
-                If VB_Hacks.IsArrayInitialized(versionParts) Then
+                If VBHacks.IsArrayInitialized(versionParts) Then
                     If UBound(versionParts) >= 2 Then GetOptiPNGVersion = versionParts(2) & ".0"
                 End If
             

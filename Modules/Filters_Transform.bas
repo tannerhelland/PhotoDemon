@@ -232,7 +232,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
         ReleaseProgressBar
         
         'Redraw the image
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 
@@ -473,8 +473,8 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
     'Update the viewport
     pdImages(g_CurrentImage).UpdateSize False, selectionWidth, selectionHeight
     DisplaySize pdImages(g_CurrentImage)
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    Image_Canvas_Handler.CenterOnScreen
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    CanvasManager.CenterOnScreen
     
     'Reset the progress bar to zero
     SetProgBarVal 0
@@ -537,7 +537,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
     Message "Finished. "
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -596,7 +596,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     Message "Finished."
     
     'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -690,7 +690,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     Message "Finished. "
     
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Reset the progress bar to zero
     SetProgBarVal 0
@@ -753,7 +753,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
             
     Message "Finished. "
     
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -847,7 +847,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
     Message "Finished. "
     
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Reset the progress bar to zero
     SetProgBarVal 0
@@ -973,7 +973,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     Message "Finished."
     
@@ -1042,7 +1042,7 @@ Public Sub MenuFitCanvasToAllLayers()
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     Message "Finished."
     
@@ -1231,7 +1231,7 @@ Public Sub TrimImage()
         ReleaseProgressBar
         
         'Redraw the image
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 

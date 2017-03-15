@@ -1,4 +1,4 @@
-Attribute VB_Name = "VB_Hacks"
+Attribute VB_Name = "VBHacks"
 '***************************************************************************
 'Misc VB6 Hacks
 'Copyright 2016-2017 by Tanner Helland

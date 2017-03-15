@@ -258,7 +258,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
                 If pdImages(g_CurrentImage).IsSelectionActive Then
                     pdImages(g_CurrentImage).EraseProcessedSelection i
                 Else
-                    Layer_Handler.EraseLayerByIndex i
+                    Layers.EraseLayerByIndex i
                 End If
                 
             End If
@@ -270,7 +270,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
             If pdImages(g_CurrentImage).IsSelectionActive Then
                 pdImages(g_CurrentImage).EraseProcessedSelection i
             Else
-                Layer_Handler.DeleteLayer i
+                Layers.DeleteLayer i
             End If
             
         End If
@@ -281,7 +281,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
     Processor.MarkProgramBusyState False
     
     'Redraw the active viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -452,7 +452,7 @@ Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean,
                 
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If srcIsMeantAsLayer Then
-                Layer_Handler.LoadImageAsNewLayer False, m_StashFile, sTitle, True
+                Layers.LoadImageAsNewLayer False, m_StashFile, sTitle, True
             Else
                 LoadFileAsNewImage m_StashFile, sTitle, False
             End If
@@ -527,7 +527,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                 If srcIsMeantAsLayer Then
-                    Layer_Handler.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                    Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
                 Else
                     LoadFileAsNewImage tmpClipboardFile, sTitle, False
                 End If
@@ -659,7 +659,7 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean)
             'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
             If srcIsMeantAsLayer Then
                 Do While listOfFiles.PopString(tmpFilename)
-                    If Len(tmpFilename) <> 0 Then Layer_Handler.LoadImageAsNewLayer False, tmpFilename, , True
+                    If Len(tmpFilename) <> 0 Then Layers.LoadImageAsNewLayer False, tmpFilename, , True
                 Loop
             Else
                 Loading.LoadMultipleImageFiles listOfFiles
@@ -732,7 +732,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
                 If Len(targetFile) <> 0 Then
                 
                     If srcIsMeantAsLayer Then
-                        Layer_Handler.LoadImageAsNewLayer False, targetFile, , True
+                        Layers.LoadImageAsNewLayer False, targetFile, , True
                     Else
                         LoadFileAsNewImage targetFile
                     End If
@@ -781,7 +781,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
         If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
-            Layer_Handler.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, True
+            Layers.LoadImageAsNewLayer False, tmpDownloadFile, tmpFilename, True
         Else
             LoadFileAsNewImage tmpDownloadFile, tmpFilename, False, True
         End If
@@ -996,7 +996,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                         
                     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                     If (g_OpenImageCount > 0) And srcIsMeantAsLayer Then
-                        Layer_Handler.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                        Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
                     Else
                         LoadFileAsNewImage tmpClipboardFile, sTitle, False
                     End If
@@ -1211,7 +1211,7 @@ Private Function DragDrop_FileList(ByRef OLEDragDrop_DataObject As DataObject, O
                     
                     If (g_OpenImageCount > 0) And loadAsLayers Then
                         For i = 0 To cFiles.GetNumOfStrings - 1
-                            Layer_Handler.LoadImageAsNewLayer False, cFiles.GetString(i), , True
+                            Layers.LoadImageAsNewLayer False, cFiles.GetString(i), , True
                         Next i
                     Else
                         Loading.LoadMultipleImageFiles cFiles
@@ -1351,7 +1351,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                         ElseIf fMedium.TYMED = TYMED_ISTREAM Then
                             
                             'Save the file's contents to a temporary file, and note the filename (if successful)
-                            VB_Hacks.ReadIStreamIntoVBArray fMedium.Data, tmpBytes, fileDesc.nFileSizeLow
+                            VBHacks.ReadIStreamIntoVBArray fMedium.Data, tmpBytes, fileDesc.nFileSizeLow
                             If cFile.SaveByteArrayToFile(tmpBytes, g_UserPreferences.GetTempPath & tmpFilename, True, True) Then
                                 listOfFiles.AddString g_UserPreferences.GetTempPath & tmpFilename
                             End If
@@ -1386,7 +1386,7 @@ Private Function DragDrop_ZippedFileList(ByRef OLEDragDrop_DataObject As DataObj
                 If (g_OpenImageCount > 0) And loadAsLayers Then
                     For i = 0 To listOfFiles.GetNumOfStrings - 1
                         If cFile.FileExist(listOfFiles.GetString(i)) Then
-                            Layer_Handler.LoadImageAsNewLayer False, listOfFiles.GetString(i), cFile.GetFilename(listOfFiles.GetString(i), True), True
+                            Layers.LoadImageAsNewLayer False, listOfFiles.GetString(i), cFile.GetFilename(listOfFiles.GetString(i), True), True
                             cFile.KillFile listOfFiles.GetString(i)
                         End If
                     Next i
@@ -1457,7 +1457,7 @@ Private Function DragDrop_BitmapData(ByRef OLEDragDrop_DataObject As DataObject,
     
     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
     If (g_OpenImageCount > 0) And loadAsLayers Then
-        Layer_Handler.LoadImageAsNewLayer False, tmpDragDropFile, sTitle, True
+        Layers.LoadImageAsNewLayer False, tmpDragDropFile, sTitle, True
     Else
         LoadFileAsNewImage tmpDragDropFile, sTitle, False
     End If
@@ -1537,7 +1537,7 @@ Private Function DragDrop_TextData(ByRef OLEDragDrop_DataObject As DataObject, O
             If Len(targetFile) <> 0 Then
             
                 If (g_OpenImageCount > 0) And loadAsLayers Then
-                    Layer_Handler.LoadImageAsNewLayer False, targetFile, , True
+                    Layers.LoadImageAsNewLayer False, targetFile, , True
                 Else
                     LoadFileAsNewImage targetFile
                 End If

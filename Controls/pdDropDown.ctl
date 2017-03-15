@@ -218,7 +218,7 @@ End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
     m_FontSize = newSize
-    listSupport.DefaultItemHeight = Font_Management.GetDefaultStringHeight(m_FontSize) + COMBO_PADDING_VERTICAL * 2
+    listSupport.DefaultItemHeight = Fonts.GetDefaultStringHeight(m_FontSize) + COMBO_PADDING_VERTICAL * 2
     lbPrimary.FontSize = newSize
     PropertyChanged "FontSize"
 End Property
@@ -277,7 +277,7 @@ Public Sub SetWidthAutomatically()
     
         Dim i As Long
         For i = 0 To listSupport.ListCount - 1
-            testWidth = Font_Management.GetDefaultStringWidth(listSupport.List(i, True), m_FontSize)
+            testWidth = Fonts.GetDefaultStringWidth(listSupport.List(i, True), m_FontSize)
             If testWidth > newWidth Then newWidth = testWidth
         Next i
     
@@ -732,7 +732,7 @@ Private Sub RaiseListBox()
         End If
         
         If (Not subclassActive) And (Not m_SubclassActive) Then
-            VB_Hacks.StartSubclassing m_ParentHWnd, Me
+            VBHacks.StartSubclassing m_ParentHWnd, Me
             m_SubclassActive = True
         End If
         
@@ -786,7 +786,7 @@ End Sub
 Private Sub RemoveSubclass()
     On Error GoTo UnsubclassUnnecessary
     If ((m_ParentHWnd <> 0) And m_SubclassActive) Then
-        VB_Hacks.StopSubclassing m_ParentHWnd, Me
+        VBHacks.StopSubclassing m_ParentHWnd, Me
         m_ParentHWnd = 0
         m_SubclassActive = False
     End If
@@ -928,7 +928,7 @@ Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         If (Me.ListIndex <> -1) Then
         
             Dim tmpFont As pdFont
-            Set tmpFont = Font_Management.GetMatchingUIFont(Me.FontSize)
+            Set tmpFont = Fonts.GetMatchingUIFont(Me.FontSize)
             tmpFont.SetFontColor ddColorText
             tmpFont.SetTextAlignment vbLeftJustify
             tmpFont.AttachToDC bufferDC
@@ -992,13 +992,13 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
         ElseIf (uiMsg = WM_NCDESTROY) Then
             HideListBox
             Set m_SubclassReleaseTimer = Nothing
-            VB_Hacks.StopSubclassing hWnd, Me
+            VBHacks.StopSubclassing hWnd, Me
             m_ParentHWnd = 0
         End If
     End If
     
     'Never eat parent window messages; just peek at them
-    ISubclass_WindowMsg = VB_Hacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
+    ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
     
     m_InSubclassNow = False
     

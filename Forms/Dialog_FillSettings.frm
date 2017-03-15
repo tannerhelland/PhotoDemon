@@ -456,7 +456,7 @@ Private Sub Form_Load()
     Drawing2D.QuickCreatePainter m_Painter
     
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(10#)
+    Set tmpFont = Fonts.GetMatchingUIFont(10#)
     
     Dim tmpWidth As Long
     m_LargestWidth = 0
@@ -605,7 +605,7 @@ Private Sub lstFillPattern_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex
         
         'Next, draw the caption
         Dim tmpFont As pdFont
-        Set tmpFont = Font_Management.GetMatchingUIFont(10#)
+        Set tmpFont = Fonts.GetMatchingUIFont(10#)
         
         Dim tmpString As String
         tmpString = CStr(itemIndex + 1) & " - "

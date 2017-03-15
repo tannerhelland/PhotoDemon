@@ -109,7 +109,7 @@ Public Sub ContinueLoadingProgram()
     If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then g_DisplayTimingReports = True
     
     'Enable high-performance timer objects
-    VB_Hacks.EnableHighResolutionTimers
+    VBHacks.EnableHighResolutionTimers
     
     'Regardless of debug mode or not, we instantiate a pdDebug instance.  It will only be interacted with if the program is compiled
     ' with DEBUGMODE = 1, however.
@@ -439,11 +439,11 @@ Public Sub ContinueLoadingProgram()
     'PD currently builds two font caches:
     ' 1) A name-only list of all fonts currently installed.  This is used to populate font dropdown boxes.
     ' 2) An pdFont-based cache of the current UI font, at various requested sizes.  This cache spares individual controls from needing
-    '     to do their own font management; instead, they can simply request a matching object from the Font_Management module.
-    Font_Management.BuildFontCaches
+    '     to do their own font management; instead, they can simply request a matching object from the Fonts module.
+    Fonts.BuildFontCaches
     
     'Next, build a list of font properties, like supported scripts
-    Font_Management.BuildFontCacheProperties
+    Fonts.BuildFontCacheProperties
     
     
     
@@ -574,16 +574,16 @@ Public Sub ContinueLoadingProgram()
     LoadMessage "Initializing user interface..."
     
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
-    Icons_and_Cursors.SetThunderMainIcon
+    IconsAndCursors.SetThunderMainIcon
     
     'Initialize all system cursors we rely on (hand, busy, resizing, etc)
-    Icons_and_Cursors.InitializeCursors
+    IconsAndCursors.InitializeCursors
     
     'Set up the program's title bar.  Odd-numbered releases are development releases.  Even-numbered releases are formal builds.
     If (Not g_WindowManager Is Nothing) Then
-        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Update_Support.GetPhotoDemonNameAndVersion()
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, Updates.GetPhotoDemonNameAndVersion()
     Else
-        FormMain.Caption = Update_Support.GetPhotoDemonNameAndVersion()
+        FormMain.Caption = Updates.GetPhotoDemonNameAndVersion()
     End If
     
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
@@ -663,7 +663,7 @@ Public Sub ContinueLoadingProgram()
     #End If
     
     'Load and draw all menu icons
-    Icons_and_Cursors.LoadMenuIcons
+    IconsAndCursors.LoadMenuIcons
     
     #If DEBUGMODE = 1 Then
         perfCheck.MarkEvent "Final interface sync"
@@ -742,7 +742,7 @@ Public Sub FinalShutdown()
         pdDebug.LogAction "Releasing VB-specific hackarounds..."
     #End If
     
-    VB_Hacks.ShutdownCleanup
+    VBHacks.ShutdownCleanup
     
     'Delete any remaining temp files in the cache
     #If DEBUGMODE = 1 Then

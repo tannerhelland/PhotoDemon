@@ -277,7 +277,7 @@ Friend Function GetEntry_String(ByVal entryKey As String, Optional ByVal default
             Dim testString As String
             testString = m_DictEntries(keyIndex).dItem
             
-            If Text_Support.IsNumberLocaleUnaware(testString) Then
+            If TextSupport.IsNumberLocaleUnaware(testString) Then
                 GetEntry_String = Trim$(Str$(Val(testString)))
             Else
                 GetEntry_String = testString

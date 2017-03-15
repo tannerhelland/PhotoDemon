@@ -835,7 +835,7 @@ End Sub
 Private Sub cmdAddFiles_Click()
     
     Dim listOfFiles As pdStringStack
-    If File_Menu.PhotoDemon_OpenImageDialog(listOfFiles, Me.hWnd) Then
+    If FileMenu.PhotoDemon_OpenImageDialog(listOfFiles, Me.hWnd) Then
         
         lstFiles.SetAutomaticRedraws False
         

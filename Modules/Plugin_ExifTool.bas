@@ -1599,7 +1599,7 @@ Private Function ParseTagDatabaseEntry(ByRef dstMetadata As PDMetadataItem, ByRe
     Dim xmlLines() As String
     xmlLines = Split(srcXML, vbCrLf, , vbBinaryCompare)
     
-    If VB_Hacks.IsArrayInitialized(xmlLines) Then
+    If VBHacks.IsArrayInitialized(xmlLines) Then
         
         'To understand the next phase of the parsing process, let's look at the layout of two typical metadata tags:
         

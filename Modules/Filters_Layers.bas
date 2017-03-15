@@ -28,7 +28,7 @@ Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
 'Pad a DIB with blank space.  This will (obviously) resize the DIB as necessary.
-Public Function padDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Boolean
+Public Function PadDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Boolean
 
     'Make a copy of the current DIB
     Dim tmpDIB As pdDIB
@@ -45,7 +45,7 @@ Public Function padDIB(ByRef srcDIB As pdDIB, ByVal paddingSize As Long) As Bool
     'Erase the temporary DIB
     Set tmpDIB = Nothing
     
-    padDIB = True
+    PadDIB = True
 
 End Function
 
@@ -53,7 +53,7 @@ End Function
 ' on each side the image should be expanded.  It does not specify the rect of the new image (because that wouldn't tell us where to
 ' place the image on the new rect).
 ' Note that this function will (obviously) resize the DIB as part of padding it.
-Public Function padDIBRect(ByRef srcDIB As pdDIB, ByRef paddingRect As RECT) As Boolean
+Public Function PadDIBRect(ByRef srcDIB As pdDIB, ByRef paddingRect As RECT) As Boolean
 
     'Make a copy of the current DIB
     Dim tmpDIB As pdDIB
@@ -69,7 +69,7 @@ Public Function padDIBRect(ByRef srcDIB As pdDIB, ByRef paddingRect As RECT) As 
     'Erase the temporary DIB
     Set tmpDIB = Nothing
     
-    padDIBRect = True
+    PadDIBRect = True
 
 End Function
 
@@ -2355,7 +2355,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim xStride As Long, quickY As Long
+    Dim xStride As Long, QuickY As Long
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -2411,14 +2411,14 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         lbY = y - uRadius
         If (lbY > 0) Then
         
-            quickY = lbY - 1
+            QuickY = lbY - 1
         
             For x = initX To finalX
                 xStride = x * 4
-                bTotals(x) = bTotals(x) - srcImageData(xStride, quickY)
-                gTotals(x) = gTotals(x) - srcImageData(xStride + 1, quickY)
-                rTotals(x) = rTotals(x) - srcImageData(xStride + 2, quickY)
-                aTotals(x) = aTotals(x) - srcImageData(xStride + 3, quickY)
+                bTotals(x) = bTotals(x) - srcImageData(xStride, QuickY)
+                gTotals(x) = gTotals(x) - srcImageData(xStride + 1, QuickY)
+                rTotals(x) = rTotals(x) - srcImageData(xStride + 2, QuickY)
+                aTotals(x) = aTotals(x) - srcImageData(xStride + 3, QuickY)
             Next x
             
             numOfPixels = numOfPixels - 1
@@ -2429,14 +2429,14 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         ubY = y + dRadius
         If (ubY <= finalY) Then
         
-            quickY = ubY
+            QuickY = ubY
             
             For x = initX To finalX
                 xStride = x * 4
-                bTotals(x) = bTotals(x) + srcImageData(xStride, quickY)
-                gTotals(x) = gTotals(x) + srcImageData(xStride + 1, quickY)
-                rTotals(x) = rTotals(x) + srcImageData(xStride + 2, quickY)
-                aTotals(x) = aTotals(x) + srcImageData(xStride + 3, quickY)
+                bTotals(x) = bTotals(x) + srcImageData(xStride, QuickY)
+                gTotals(x) = gTotals(x) + srcImageData(xStride + 1, QuickY)
+                rTotals(x) = rTotals(x) + srcImageData(xStride + 2, QuickY)
+                aTotals(x) = aTotals(x) + srcImageData(xStride + 3, QuickY)
             Next x
             
             numOfPixels = numOfPixels + 1
@@ -2598,7 +2598,7 @@ End Function
 ' vertical measurements, so that matching image sides receive identical extensions.
 '
 'Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function padDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Long
+Public Function PadDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Long
 
     'Start by resizing the destination DIB
     dstDIB.CreateBlank srcDIB.GetDIBWidth + hExtend * 2, srcDIB.GetDIBHeight + vExtend * 2, srcDIB.GetDIBColorDepth
@@ -2631,7 +2631,7 @@ Public Function padDIBClampedPixels(ByVal hExtend As Long, ByVal vExtend As Long
     StretchBlt dstDIB.GetDIBDC, srcDIB.GetDIBWidth + hExtend, srcDIB.GetDIBHeight + vExtend, hExtend, vExtend, srcDIB.GetDIBDC, srcDIB.GetDIBWidth - 1, srcDIB.GetDIBHeight - 1, 1, 1, vbSrcCopy
     
     'The destination DIB now contains a fully clamped, extended copy of the original image
-    padDIBClampedPixels = 1
+    PadDIBClampedPixels = 1
     
 End Function
 
@@ -2795,7 +2795,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
 End Function
 
 'Given a DIB, scan it and find the max/min luminance values.  This function makes no changes to the DIB itself.
-Public Sub getDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long, ByRef dibLumMax As Long)
+Public Sub GetDIBMaxMinLuminance(ByRef srcDIB As pdDIB, ByRef dibLumMin As Long, ByRef dibLumMax As Long)
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -2970,7 +2970,7 @@ End Function
 ' 3) spatialPower: [0.01, 10] - defaults to 2, generally shouldn't be set to any other value unless you understand the technical implications
 ' 4) colorFactor: [0, 100]
 ' 5) colorPower: [0.01, 10]
-Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     Const maxKernelSize As Long = 256
     Const colorsCount As Long = 256
@@ -3025,7 +3025,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     ' clamped pixel edges.  This removes the need for any edge handling whatsoever.
     Dim srcDIBPadded As pdDIB
     Set srcDIBPadded = New pdDIB
-    padDIBClampedPixels kernelRadius, kernelRadius, srcDIB, srcDIBPadded
+    PadDIBClampedPixels kernelRadius, kernelRadius, srcDIB, srcDIBPadded
     
     PrepSafeArray srcSA, srcDIBPadded
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
@@ -3171,7 +3171,7 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
         BitBlt srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, midDIB.GetDIBDC, kernelRadius, kernelRadius, vbSrcCopy
         
         'Re-pad working DIB
-        padDIBClampedPixels kernelRadius, kernelRadius, srcDIB, midDIB
+        PadDIBClampedPixels kernelRadius, kernelRadius, srcDIB, midDIB
         
         'Reclaim a pointer to the DIB data
         PrepSafeArray midSA, midDIB
@@ -3278,6 +3278,6 @@ Public Function createBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
-    If g_cancelCurrentAction Then createBilateralDIB = 0 Else createBilateralDIB = 1
+    If g_cancelCurrentAction Then CreateBilateralDIB = 0 Else CreateBilateralDIB = 1
 
 End Function

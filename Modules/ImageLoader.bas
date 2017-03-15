@@ -45,7 +45,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
         Dim startTime As Currency
-        VB_Hacks.GetHighResTime startTime
+        VBHacks.GetHighResTime startTime
     #End If
     
     On Error GoTo LoadPDIFail
@@ -233,7 +233,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
-            Debug.Print "Time required to load PDI file: " & Format$(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000, "####0.00") & " ms"
+            Debug.Print "Time required to load PDI file: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "####0.00") & " ms"
         #End If
         
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
@@ -923,7 +923,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If pdImages(g_CurrentImage).IsSelectionActive Then pdImages(g_CurrentImage).mainSelection.RequestNewMask
         
     'Render the image to the screen, if requested
-    If Not suspendRedraw Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If Not suspendRedraw Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -1152,7 +1152,7 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 'During debug mode, color-management performance is an item of interest
                 #If DEBUGMODE = 1 Then
                     Dim startTime As Currency
-                    VB_Hacks.GetHighResTime startTime
+                    VBHacks.GetHighResTime startTime
                 #End If
                 
                 'LittleCMS is our preferred color management engine.  Use it whenever possible.
@@ -1165,7 +1165,7 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
                 #If DEBUGMODE = 1 Then
                     Dim engineUsed As String
                     If g_LCMSEnabled Then engineUsed = "LittleCMS" Else engineUsed = "Windows ICM"
-                    pdDebug.LogAction "Note: color management of the imported image took " & CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000) & " ms using " & engineUsed
+                    pdDebug.LogAction "Note: color management of the imported image took " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms using " & engineUsed
                 #End If
                 
                 If (targetDIB.GetDIBColorDepth = 32) Then targetDIB.SetAlphaPremultiplication True
@@ -1202,7 +1202,7 @@ Public Function SyncRecoveredAutosaveImage(ByRef srcFile As String, ByRef srcIma
     srcImage.imgStorage.AddEntry "CurrentLocationOnDisk", srcFile
             
     'Ask the AutoSave engine to synchronize this image's data against whatever it can recover from the Autosave database
-    Autosave_Handler.AlignLoadedImageWithAutosave srcImage
+    Autosaves.AlignLoadedImageWithAutosave srcImage
             
     'This is a bit wacky, but - the Autosave engine will automatically update the "locationOnDisk" attribute based on
     ' information inside the Autosave recovery database.  We thus want to overwrite the original srcFile value (which points
@@ -1286,7 +1286,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     Else
         FormMain.mainCanvas(0).SetZoomDropDownIndex srcImage.GetZoom
         g_AllowViewportRendering = True
-        Viewport_Engine.Stage1_InitializeBuffer srcImage, FormMain.mainCanvas(0), VSR_ResetToZero
+        ViewportEngine.Stage1_InitializeBuffer srcImage, FormMain.mainCanvas(0), VSR_ResetToZero
     End If
     
     'Notify the UI manager that it now has one more image to deal with

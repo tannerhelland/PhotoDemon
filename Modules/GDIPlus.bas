@@ -3067,7 +3067,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
     ' have timing reports sent to the debug window.
     'Dim profileTime As Currency
-    'VB_Hacks.GetHighResTime profileTime
+    'VBHacks.GetHighResTime profileTime
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim hGraphics As Long, hBitmap As Long
@@ -3110,13 +3110,13 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         
         'Because the resize step is the most cumbersome one, it can be helpful to track it
         'Dim resizeTime As Currency
-        'VB_Hacks.GetHighResTime resizeTime
+        'VBHacks.GetHighResTime resizeTime
         
         'Perform the resize
         GdipDrawImageRectRect hGraphics, hBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, GP_U_Pixel, imgAttributesHandle
         
         'Report resize time here
-        'Debug.Print "GDI+ resize time: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
+        'Debug.Print "GDI+ resize time: " & Format(CStr(VBHacks.GetTimerDifferenceNow(resizeTime) * 1000), "0000.00") & " ms"
         
         'Release our image attributes object
         GdipDisposeImageAttributes imgAttributesHandle
@@ -3134,7 +3134,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     GdipDeleteGraphics hGraphics
     
     'Uncomment the line below to receive timing reports
-    'Debug.Print "GDI+ wrapper time: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(profileTime) * 1000), "0000.00") & " ms"
+    'Debug.Print "GDI+ wrapper time: " & Format(CStr(VBHacks.GetTimerDifferenceNow(profileTime) * 1000), "0000.00") & " ms"
     
 End Sub
 

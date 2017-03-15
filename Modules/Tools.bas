@@ -1,4 +1,4 @@
-Attribute VB_Name = "Tool_Support"
+Attribute VB_Name = "Tools"
 '***************************************************************************
 'Helper functions for various PhotoDemon tools
 'Copyright 2014-2017 by Tanner Helland
@@ -167,7 +167,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     srcCanvas.SetRedrawSuspension False
     
     'Request the scroll-specific viewport pipeline stage
-    Viewport_Engine.Stage3_ExtractRelevantRegion srcImage, FormMain.mainCanvas(0)
+    ViewportEngine.Stage3_ExtractRelevantRegion srcImage, FormMain.mainCanvas(0)
     
 End Sub
 
@@ -182,7 +182,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     srcCanvas.SetRedrawSuspension True
     
     'Also, mark the tool engine as busy to prevent re-entrance issues
-    Tool_Support.SetToolBusyState True
+    Tools.SetToolBusyState True
     
     'Convert the current x/y pair to the layer coordinate space.  This takes into account any active affine transforms
     ' on the image (e.g. rotation), which may place the point in a totally different position relative to the underlying layer.
@@ -221,7 +221,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             
             '-1: the mouse is not over the layer.  Do nothing.
             Case poi_Undefined
-                Tool_Support.SetToolBusyState False
+                Tools.SetToolBusyState False
                 srcCanvas.SetRedrawSuspension False
                 Exit Sub
                 
@@ -418,10 +418,10 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     End With
     
     'Manually synchronize the new values against their on-screen UI elements
-    Tool_Support.SyncToolOptionsUIToCurrentLayer
+    Tools.SyncToolOptionsUIToCurrentLayer
     
     'Free the tool engine
-    Tool_Support.SetToolBusyState False
+    Tools.SetToolBusyState False
     
     'Reinstate canvas redraws
     srcCanvas.SetRedrawSuspension False
@@ -461,7 +461,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     Else
     
         'Manually request a canvas redraw
-        Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas, False, m_CurPOI
+        ViewportEngine.Stage2_CompositeAllLayers srcImage, srcCanvas, False, m_CurPOI
     
     End If
     
@@ -500,7 +500,7 @@ Public Function CanvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
             'Finally, make sure another process hasn't locked the active canvas.  Note that the caller can disable this behavior
             ' if they don't need it.
             If alsoCheckBusyState Then
-                If (Not Processor.IsProgramBusy) And (Not Tool_Support.GetToolBusyState) Then
+                If (Not Processor.IsProgramBusy) And (Not Tools.GetToolBusyState) Then
                     CanvasToolsAllowed = True
                 Else
                     CanvasToolsAllowed = False
@@ -614,7 +614,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         
         'Mark the tool engine as busy; this prevents things like changing control values from triggering automatic
         ' viewport redraws.
-        Tool_Support.SetToolBusyState True
+        Tools.SetToolBusyState True
         
         'Start iterating various layer properties, and reflecting them across their corresponding UI elements.
         ' (Obviously, this step is separated by tool type.)
@@ -626,14 +626,14 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
                 Interface.SetUIGroupState PDUI_LayerTools, True
                 
                 'Reset tool busy state (because it will be reset by the Interface module call, above)
-                Tool_Support.SetToolBusyState True
+                Tools.SetToolBusyState True
                 
             Case QUICK_FIX_LIGHTING
             
                 Interface.SetUIGroupState PDUI_NonDestructiveFX, True
                 
                 'Reset tool busy state (because it will be reset by the Interface module call, above)
-                Tool_Support.SetToolBusyState True
+                Tools.SetToolBusyState True
             
             Case VECTOR_TEXT
                 
@@ -698,7 +698,7 @@ Public Sub SyncToolOptionsUIToCurrentLayer()
         End Select
         
         'Free the tool engine
-        Tool_Support.SetToolBusyState False
+        Tools.SetToolBusyState False
     
     End If
     
@@ -733,7 +733,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
     If layerToolActive Then
         
         'Mark the tool engine as busy; this prevents each change from triggering viewport redraws
-        Tool_Support.SetToolBusyState True
+        Tools.SetToolBusyState True
         
         'Start iterating various layer properties, and reflecting them across their corresponding UI elements.
         ' (Obviously, this step is separated by tool type.)
@@ -822,7 +822,7 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
         End Select
         
         'Free the tool engine
-        Tool_Support.SetToolBusyState False
+        Tools.SetToolBusyState False
     
     End If
     

@@ -446,7 +446,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     
     'Want to time this function?  Here's your chance:
     Dim startTime As Currency
-    VB_Hacks.GetHighResTime startTime
+    VBHacks.GetHighResTime startTime
     
     Dim sFileType As String
     sFileType = "PDI"
@@ -540,7 +540,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     
     'Report timing on debug builds
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Saved PDI file in " & CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
+        pdDebug.LogAction "Saved PDI file in " & CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000) & " ms."
     #End If
     
     If (Not suppressMessages) Then Message "%1 save complete.", sFileType
@@ -772,7 +772,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     
     #If DEBUGMODE = 1 Then
         Dim timeAtUndoStart As Currency
-        VB_Hacks.GetHighResTime timeAtUndoStart
+        VBHacks.GetHighResTime timeAtUndoStart
     #End If
     
     'As of v7.0, PD has multiple compression engines available.  These engines are not exposed to the user.  We use LZ4 by default,
@@ -841,7 +841,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
     #If DEBUGMODE = 1 Then
         If (Not SaveUndoData) Then pdDebug.LogAction "SaveUndoData returned failure; cause unknown."
         'Want to test undo timing?  Uncomment the line below
-        Debug.Print "Undo file creation took: " & Format$(VB_Hacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
+        Debug.Print "Undo file creation took: " & Format$(VBHacks.GetTimerDifferenceNow(timeAtUndoStart) * 1000, "####0.00") & " ms"
     #End If
     
 End Function

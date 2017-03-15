@@ -343,7 +343,7 @@ Private Sub UpdateControlLayout()
     'Because the checkbox size and font size are inextricably connected, we now need to retrieve a font object matching the
     ' current control font size.  That font's metrics will determine how everything gets positioned.
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(ucSupport.GetCaptionFontSize)
+    Set tmpFont = Fonts.GetMatchingUIFont(ucSupport.GetCaptionFontSize)
     tmpFont.SetTextAlignment vbLeftJustify
     
     'Retrieve the height of the current caption, or if no caption exists, a placeholder

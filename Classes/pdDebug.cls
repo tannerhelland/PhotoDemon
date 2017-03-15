@@ -370,7 +370,7 @@ Friend Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 
                 Dim icoUsageString As String
                 Dim icosNet As Long, icosCreated As Long, icosDestroyed As Long
-                icosNet = Icons_and_Cursors.GetCreatedIconCount(icosCreated, icosDestroyed)
+                icosNet = IconsAndCursors.GetCreatedIconCount(icosCreated, icosDestroyed)
                 icoUsageString = Format$(icosNet, "###,##0") & " (" & Format$(icosCreated, "###,##0") & ":" & Format$(icosDestroyed, "###,##0") & ")"
                 actionString = actionString & " | ICON: " & icoUsageString
                 

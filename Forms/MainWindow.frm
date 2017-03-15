@@ -1663,7 +1663,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             
             'Offload the rest of the check to a separate update function.  It will initiate subsequent downloads as necessary.
             Dim updateAvailable As Boolean
-            updateAvailable = Update_Support.ProcessProgramUpdateFile(updateXML)
+            updateAvailable = Updates.ProcessProgramUpdateFile(updateXML)
             
             'If the user initiated the download, display a modal notification now
             If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK_USER") = 0) Then
@@ -1684,7 +1684,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 End If
                 
                 'If the update managed to download while the reader was staring at the message box, display the restart notification immediately
-                If g_ShowUpdateNotification Then Update_Support.DisplayUpdateNotification
+                If g_ShowUpdateNotification Then Updates.DisplayUpdateNotification
                 
             End If
             
@@ -1700,7 +1700,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         langUpdateXML = StrConv(downloadedData, vbUnicode)
         
         'Offload the rest of the check to a separate function.  It will initiate subsequent downloads as necessary.
-        Update_Support.ProcessLanguageUpdateFile langUpdateXML
+        Updates.ProcessLanguageUpdateFile langUpdateXML
     
     'If LANGUAGE_UPDATE_CHECK (above) finds out-of-date language files, it will trigger their download.  When such a download arrives, we can patch
     ' it through immediately.
@@ -1708,7 +1708,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         
         'Make sure the downloader thought the download was successful...
         If downloadSuccessful Then
-            If Update_Support.PatchLanguageFile(entryKey, downloadedData, savedToThisFile) Then
+            If Updates.PatchLanguageFile(entryKey, downloadedData, savedToThisFile) Then
                 
                 'Note that one or more language files has been patched.  If this value is true and all updates have completed, we'll hot-patch
                 ' the language engine on the next PD Processor call.
@@ -1730,10 +1730,10 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             
             'Notify the software updater that an update package was downloaded successfully.  It will make a note of this, so it can
             ' complete the actual patching when PD closes.
-            Update_Support.NotifyUpdatePackageAvailable savedToThisFile
+            Updates.NotifyUpdatePackageAvailable savedToThisFile
             
             'Display a notification to the user
-            Update_Support.DisplayUpdateNotification
+            Updates.DisplayUpdateNotification
                         
         Else
             Debug.Print "WARNING!  A program update was found, but the download was interrupted.  PD is postponing further patches until a later session."
@@ -2238,7 +2238,7 @@ Private Sub mnuRecentMacros_Click(Index As Integer)
     If tmpString <> "" Then
         
         ' Play the macro
-        Macro_Interface.PlayMacroFromFile tmpString
+        Macros.PlayMacroFromFile tmpString
         
     End If
 End Sub
@@ -2630,7 +2630,7 @@ Private Sub Form_Load()
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Checking for old autosave data..."
     #End If
-    Autosave_Handler.InitializeAutosave
+    Autosaves.InitializeAutosave
     
     
     '*************************************************************************************************************************************
@@ -2661,7 +2661,7 @@ Private Sub Form_Load()
     ' Next, see if we need to launch an asynchronous check for updates
     '*************************************************************************************************************************************
     
-    Update_Support.StandardUpdateChecks
+    Updates.StandardUpdateChecks
     
     
     '*************************************************************************************************************************************
@@ -2769,7 +2769,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
                     'This image is active and so is its parent form.  Ask the master image handler to unload it.
                     ' (NOTE: this function returns a boolean saying whether the image was successfully unloaded,
                     '        but for this fringe case, we ignore it in favor of checking g_ProgramShuttingDown.)
-                    Image_Canvas_Handler.FullPDImageUnload i, True
+                    CanvasManager.FullPDImageUnload i, True
                     
                     'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
                     If (Not g_ProgramShuttingDown) Then
@@ -2865,8 +2865,8 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Destroying custom icons and cursors..."
     #End If
     
-    Icons_and_Cursors.DestroyAllIcons
-    Icons_and_Cursors.UnloadAllCursors
+    IconsAndCursors.DestroyAllIcons
+    IconsAndCursors.UnloadAllCursors
     
     'Destroy all paint-related resources
     #If DEBUGMODE = 1 Then
@@ -3040,16 +3040,16 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     'If an update package was downloaded, this is a good time to apply it
-    If Update_Support.IsUpdatePackageAvailable Then
+    If Updates.IsUpdatePackageAvailable Then
         
-        If Update_Support.PatchProgramFiles() Then
+        If Updates.PatchProgramFiles() Then
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Update_Support.patchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
+                pdDebug.LogAction "Updates.patchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
             #End If
             
             'If the user wants a restart, create a restart batch file now
-            'If g_UserWantsRestart Then Update_Support.createRestartBatchFile
+            'If g_UserWantsRestart Then Updates.createRestartBatchFile
             
         Else
             #If DEBUGMODE = 1 Then
@@ -3072,8 +3072,8 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Final step: writing out new autosave checksum..."
     #End If
     
-    Autosave_Handler.PurgeOldAutosaveData
-    Autosave_Handler.NotifyCleanShutdown
+    Autosaves.PurgeOldAutosaveData
+    Autosaves.NotifyCleanShutdown
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to MainModule.FinalShutdown()..."
@@ -3082,7 +3082,7 @@ Private Sub Form_Unload(Cancel As Integer)
     MainModule.FinalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
-    'If g_UserWantsRestart Then Update_Support.initiateRestart
+    'If g_UserWantsRestart Then Updates.initiateRestart
     
 End Sub
 
@@ -3585,7 +3585,7 @@ Private Sub MnuFile_Click(Index As Integer)
 End Sub
 
 Private Sub MnuFitOnScreen_Click()
-    Image_Canvas_Handler.FitOnScreen
+    CanvasManager.FitOnScreen
 End Sub
 
 Private Sub MnuHeatmap_Click()

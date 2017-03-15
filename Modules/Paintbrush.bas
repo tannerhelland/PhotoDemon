@@ -761,7 +761,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         m_FramesDropped = 0
         
         'Make sure the current scratch layer is properly initialized
-        Tool_Support.InitializeToolsDependentOnImage
+        Tools.InitializeToolsDependentOnImage
         pdImages(g_CurrentImage).ScratchLayer.SetLayerOpacity m_BrushOpacity
         pdImages(g_CurrentImage).ScratchLayer.SetLayerBlendMode m_BrushBlendmode
         pdImages(g_CurrentImage).ScratchLayer.SetLayerAlphaMode m_BrushAlphamode
@@ -792,7 +792,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
     If mouseButtonDown Then
     
         'Want to profile this function?  Use this line of code (and the matching report line at the bottom of the function).
-        VB_Hacks.GetHighResTime startTime
+        VBHacks.GetHighResTime startTime
         
         'A separate function handles the actual rendering.
         ApplyPaintLine srcX, srcY, isFirstStroke
@@ -826,7 +826,7 @@ Public Sub NotifyBrushXY(ByVal mouseButtonDown As Boolean, ByVal srcX As Single,
         pdImages(g_CurrentImage).ScratchLayer.NotifyOfDestructiveChanges
         
         'Report paint tool render times, as relevant
-        'Debug.Print "Paint tool render timing: " & Format(CStr(VB_Hacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
+        'Debug.Print "Paint tool render timing: " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "0000.00") & " ms"
     
     'The previous x/y coordinate trackers are updated automatically when the mouse is DOWN.  When the mouse is UP, we must manually
     ' modify those values.
@@ -902,7 +902,7 @@ Private Sub UpdateViewportWhilePainting(ByVal isFirstStroke As Boolean, ByVal st
                 
                 'Never skip so many frames that viewport updates drop below 2 fps.  (This is absolutely a
                 ' "worst-case" scenario, and it should never be relevant except on the lowliest of PCs.)
-                updateViewportNow = CBool(VB_Hacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 500#)
+                updateViewportNow = CBool(VBHacks.GetTimerDifferenceNow(m_TimeSinceLastRender) * 1000 > 500#)
                 
                 'If we're somewhere between 2 and 15 fps, keep an eye on how many frames we're dropping.  If we drop
                 ' *too* many, the performance gain is outweighed by the obnoxiousness of stuttering screen renders.
@@ -947,16 +947,16 @@ Private Sub UpdateViewportWhilePainting(ByVal isFirstStroke As Boolean, ByVal st
         
         'Reset the frame drop counter and the "time since last viewport render" tracker
         m_FramesDropped = 0
-        VB_Hacks.GetHighResTime m_TimeSinceLastRender
-        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , , pdImages(g_CurrentImage).GetActiveLayerIndex
+        VBHacks.GetHighResTime m_TimeSinceLastRender
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , , pdImages(g_CurrentImage).GetActiveLayerIndex
     
     'If not enough time has passed since the last redraw, simply update the cursor
     Else
-        Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
+        ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
     End If
     
     'Update our running "time to render" tracker
-    m_NetTimeToRender = m_NetTimeToRender + VB_Hacks.GetTimerDifferenceNow(strokeStartTime)
+    m_NetTimeToRender = m_NetTimeToRender + VBHacks.GetTimerDifferenceNow(strokeStartTime)
     m_NumRenders = m_NumRenders + 1
     
 End Sub
@@ -1303,7 +1303,7 @@ Public Sub CommitBrushResults()
         Processor.Process "Paint stroke", , , UNDO_IMAGE_VECTORSAFE, g_CurrentTool
         
         'Create a new scratch layer
-        Tool_Support.InitializeToolsDependentOnImage
+        Tools.InitializeToolsDependentOnImage
         
     End If
     

@@ -507,7 +507,7 @@ Private Sub cmdAction_Click(Index As Integer)
 End Sub
 
 'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdCancel_Click()
 
     'The user may have Cancel actions they want to apply - let them do that
     RaiseEvent CancelClick
@@ -850,7 +850,7 @@ Private Sub StorePreset(Optional ByVal presetName As String = "last-used setting
         
         'Retrieve the control name and index, if any
         controlName = eControl.Name
-        If VB_Hacks.InControlArray(eControl) Then controlName = controlName & ":" & CStr(eControl.Index)
+        If VBHacks.InControlArray(eControl) Then controlName = controlName & ":" & CStr(eControl.Index)
         
         'Reset our control value checker
         controlValue = ""
@@ -1028,7 +1028,7 @@ Private Function LoadPreset(Optional ByVal presetName As String = "last-used set
             'Control values are saved by control name, and if it exists, control index.  We start by generating a matching preset
             ' name for this control.
             controlName = eControl.Name
-            If VB_Hacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
+            If VBHacks.InControlArray(eControl) Then controlIndex = eControl.Index Else controlIndex = -1
             If controlIndex >= 0 Then controlName = controlName & ":" & controlIndex
             
             'See if a preset exists for this control and this particular preset

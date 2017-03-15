@@ -847,7 +847,7 @@ Private Sub UpdateShadowDIB(ByVal thumbIndex As Long)
     CreateShadowDIB m_Thumbs(thumbIndex).thumbDIB, m_Thumbs(thumbIndex).thumbShadow
     
     'Pad and blur the DIB
-    padDIB m_Thumbs(thumbIndex).thumbShadow, FixDPI(THUMB_BORDER_PADDING)
+    PadDIB m_Thumbs(thumbIndex).thumbShadow, FixDPI(THUMB_BORDER_PADDING)
     QuickBlurDIB m_Thumbs(thumbIndex).thumbShadow, m_ShadowRadius, False
     
     'Apply premultiplied alpha (so we can more quickly AlphaBlend the resulting image to the tabstrip)
@@ -963,7 +963,7 @@ Private Sub GetChangedImageResources()
     'Create an outline pen and stroke the image outline
     Dim cPen As pd2DPen
     Drawing2D.QuickCreateSolidPen cPen, 2.8, 0&, 80#, P2_LJ_Round, P2_LC_Round
-    DIB_Support.OutlineDIB tmpDIB, cPen
+    DIBs.OutlineDIB tmpDIB, cPen
     
     'Shrink the outlined DIB down to the size we actually need.  This results in a higher-quality outline
     ' since we're basically supersampling it.
@@ -1000,7 +1000,7 @@ Private Sub GetCloseImageResources()
     Dim cFilter As pdFilterLUT
     Set cFilter = New pdFilterLUT
     cFilter.FillLUT_Invert tmpLUT
-    padDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
+    PadDIB m_CloseIconShadow, FixDPI(THUMB_BORDER_PADDING)
     QuickBlurDIB m_CloseIconShadow, FixDPI(2), False
     m_CloseIconShadow.SetAlphaPremultiplication False
     cFilter.ApplyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True

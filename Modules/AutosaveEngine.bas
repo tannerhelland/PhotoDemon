@@ -1,4 +1,4 @@
-Attribute VB_Name = "Autosave_Handler"
+Attribute VB_Name = "Autosaves"
 '***************************************************************************
 'Image Autosave Handler
 'Copyright 2014-2017 by Tanner Helland
@@ -122,7 +122,7 @@ Public Sub InitializeAutosave()
     If (Not App.PrevInstance) Then
         
         'If our last shutdown was clean, skip further processing
-        If (Not Autosave_Handler.WasLastShutdownClean) Then
+        If (Not Autosaves.WasLastShutdownClean) Then
             
             'Oh no!  Something went horribly wrong with the last PD session.
             #If DEBUGMODE = 1 Then
@@ -130,7 +130,7 @@ Public Sub InitializeAutosave()
             #End If
                                     
             'See if there's any image autosave data worth recovering.
-            If (Autosave_Handler.SaveableImagesPresent > 0) Then
+            If (Autosaves.SaveableImagesPresent > 0) Then
             
                 'Autosave data was found!  Present it to the user.
                 Dim userWantsAutosaves As VbMsgBoxResult
@@ -143,14 +143,14 @@ Public Sub InitializeAutosave()
                 
                     'listOfFilesToSave contains the list of Autosave files the user wants restored.
                     ' Hand them off to the autosave handler, which will load and restore each file in turn.
-                    Autosave_Handler.LoadTheseAutosaveFiles listOfFilesToSave
+                    Autosaves.LoadTheseAutosaveFiles listOfFilesToSave
                     SyncInterfaceToCurrentImage
                                 
                 Else
                     
                     'The user has no interest in recovering AutoSave data.  Purge all the entries we found, so they don't show
                     ' up in future AutoSave searches.
-                    Autosave_Handler.PurgeOldAutosaveData
+                    Autosaves.PurgeOldAutosaveData
                 
                 End If
                 
@@ -399,7 +399,7 @@ Public Sub LoadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
         ' PD assigns image IDs sequentially in each session, starting with image ID #1.  Because the image ID is immutable
         ' (it corresponds to the image's location in the master pdImages() array), we cannot simply change it to match
         ' the ID of the Undo files - instead, we must rename the Undo files to match the new image ID.
-        newImageID = Image_Canvas_Handler.GetProvisionalImageID()
+        newImageID = CanvasManager.GetProvisionalImageID()
         oldImageID = fullXMLList(i).parentImageID
         
         RenameAllUndoFiles fullXMLList(i), newImageID, oldImageID

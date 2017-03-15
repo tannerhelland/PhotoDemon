@@ -1,4 +1,4 @@
-Attribute VB_Name = "OS_Win7_8_Features"
+Attribute VB_Name = "WindowsModern"
 '***************************************************************************
 'Handler for features specific to Windows 7+
 'Copyright 2013-2017 by Tanner Helland
@@ -114,7 +114,7 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     hGlobal = VirtualAlloc(0&, 5 * ParamsCount + 5 + 5 + 3 + 1, MEM_COMMIT Or MEM_RESERVE, PAGE_EXECUTE_READWRITE)
     If hGlobal = 0 Then
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  OS_Win7_8_Features.CallInterface() failed to allocate virtual memory.  Exiting prematurely."
+            pdDebug.LogAction "WARNING!  WindowsModern.CallInterface() failed to allocate virtual memory.  Exiting prematurely."
         #End If
         Exit Function
     End If
@@ -152,7 +152,7 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     'GlobalFree hGlobal
     If VirtualFree(hGlobal, 0&, MEM_RELEASE) = 0 Then
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  OS_Win7_8_Features.CallInterface() failed to release virtual memory @" & hGlobal & ".  Please investigate."
+            pdDebug.LogAction "WARNING!  WindowsModern.CallInterface() failed to release virtual memory @" & hGlobal & ".  Please investigate."
         #End If
     End If
   

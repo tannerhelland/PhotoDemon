@@ -742,7 +742,7 @@ Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColo
     
                 'Does the string only consist of the chars 0-9 and A-F?
                 validChars = "0123456789abcdef"
-                If Text_Support.ValidateCharacters(testString, validChars, True) Then
+                If TextSupport.ValidateCharacters(testString, validChars, True) Then
                     'We can convert this into a hex color value
                     dstColorType = ColorHex
                 Else

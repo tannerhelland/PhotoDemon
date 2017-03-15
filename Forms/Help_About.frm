@@ -380,9 +380,9 @@ Private Sub lstContributors_DrawListEntry(ByVal bufferDC As Long, ByVal itemInde
         txtFontSize = 10#
         
         If itemIsClickable Then
-            Set tmpFont = Font_Management.GetMatchingUIFont(txtFontSize, False, False, itemIsHovered)
+            Set tmpFont = Fonts.GetMatchingUIFont(txtFontSize, False, False, itemIsHovered)
         Else
-            Set tmpFont = Font_Management.GetMatchingUIFont(txtFontSize, False, False, False)
+            Set tmpFont = Fonts.GetMatchingUIFont(txtFontSize, False, False, False)
         End If
         
         'Offset text slightly to make it look better

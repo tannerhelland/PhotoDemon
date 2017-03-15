@@ -131,12 +131,12 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     'Retrieve an empty, default pdImage object.  Note that this object does not yet exist inside the main pdImages collection,
     ' so we cannot refer to it by ordinal.
     Dim targetImage As pdImage
-    Image_Canvas_Handler.GetDefaultPDImageObject targetImage
+    CanvasManager.GetDefaultPDImageObject targetImage
     
     'Normally, we don't assign an ID value to an image until we actually add it to the master pdImages collection.  However, some tasks
     ' (like retrieving metadata asynchronously) require an ID so we can synchronize incoming data post-load.  Give the target image
     ' a provisional image ID; this ID will become its formal ID only if it's loaded successfully.
-    targetImage.imageID = Image_Canvas_Handler.GetProvisionalImageID()
+    targetImage.imageID = CanvasManager.GetProvisionalImageID()
     
     'Next, create a blank target layer and target DIB.  If all of these are loaded correctly, we'll eventually assemble them
     ' into the targetImage object.
@@ -250,7 +250,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                 
             'Besides a source DIB, the "add new layer" function also wants a name for the new layer.  Create one now.
             Dim newLayerName As String
-            newLayerName = Layer_Handler.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB)
+            newLayerName = Layers.GenerateInitialLayerName(srcFile, suggestedFilename, imageHasMultiplePages, targetImage, targetDIB)
             
             'Create the new layer in the target image, and pass our created name to it
             targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, targetDIB, targetImage, CBool(imageHasMultiplePages)
@@ -325,7 +325,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         
         'The finalized pdImage object is finally worthy of being added to the master PD collection.  Note that this function will
         ' automatically update g_CurrentImage to point to the new image.
-        Image_Canvas_Handler.AddImageToMasterCollection targetImage
+        CanvasManager.AddImageToMasterCollection targetImage
         
         ImageImporter.ApplyPostLoadUIChanges srcFile, targetImage, addToRecentFiles
         
@@ -372,7 +372,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             End If
             
             'With all pages/frames/icons successfully loaded, redraw the main viewport
-            Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), VSR_ResetToZero
+            ViewportEngine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), VSR_ResetToZero
             
         'Add a flag to this pdImage object noting that the multipage loading path was *not* utilized.
         Else

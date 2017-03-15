@@ -434,7 +434,7 @@ Public Function GetLCMSVersion() As String
     Dim versionAsString() As String
     versionAsString = Split(CStr(versionAsLong), "0", , vbBinaryCompare)
     
-    If VB_Hacks.IsArrayInitialized(versionAsString) Then
+    If VBHacks.IsArrayInitialized(versionAsString) Then
         If (UBound(versionAsString) >= 1) Then
             GetLCMSVersion = versionAsString(0) & "." & versionAsString(1) & ".0.0"
         Else

@@ -291,7 +291,7 @@ Friend Function GetCaptionWidth() As Single
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+    Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
     
     GetCaptionWidth = tmpFont.GetWidthOfString(m_CaptionTranslated)
     
@@ -302,7 +302,7 @@ Friend Function GetCaptionWidth_NoFit() As Single
     
     'Get a copy of the default font size from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
+    Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
     
     GetCaptionWidth_NoFit = tmpFont.GetWidthOfString(m_CaptionTranslated)
     
@@ -318,7 +318,7 @@ Friend Function GetCaptionHeight() As Single
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+    Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
     
     If m_WordWrapAllowed Then
         GetCaptionHeight = tmpFont.GetHeightOfWordwrapString(m_CaptionTranslated, m_ContainerWidth)
@@ -334,7 +334,7 @@ Friend Function GetCaptionHeight_NoFit() As Single
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
+    Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
     
     If m_WordWrapAllowed Then
         GetCaptionHeight_NoFit = tmpFont.GetHeightOfWordwrapString(m_CaptionTranslated, m_ContainerWidth)
@@ -359,7 +359,7 @@ Friend Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Opt
         
         'Get a copy of the current font from the central font cache
         Dim tmpFont As pdFont
-        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+        Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
         
         'Make sure colors have correctly retrieved from the active theme
         If (customColor <> -1) Then
@@ -400,9 +400,9 @@ Friend Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal ds
         Dim tmpFont As pdFont
         
         If useOriginalFontSize Then
-            Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
+            Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
         Else
-            Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+            Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
         End If
         
         If (customColor <> -1) Then
@@ -445,7 +445,7 @@ Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optio
     
         'Get a copy of the current font from the central font cache
         Dim tmpFont As pdFont
-        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+        Set tmpFont = Fonts.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
         
         If (customColor <> -1) Then
             tmpFont.SetFontColor customColor
@@ -505,9 +505,9 @@ Private Sub VerifyFontSize()
         
         'There are two ways to verify font size, and they differ depending on whether the caller wants us to enable wordwrapping.
         If m_WordWrapAllowed Then
-            newFontSize = Font_Management.FindFontSizeWordWrap(m_CaptionTranslated, m_ContainerWidth, m_ContainerHeight, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
+            newFontSize = Fonts.FindFontSizeWordWrap(m_CaptionTranslated, m_ContainerWidth, m_ContainerHeight, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
         Else
-            newFontSize = Font_Management.FindFontSizeSingleLine(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
+            newFontSize = Fonts.FindFontSizeSingleLine(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
         End If
         
         'Note the size required to fit the text inside the target area.  On subsequent draw calls, we will silently switch

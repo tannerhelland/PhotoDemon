@@ -423,9 +423,9 @@ Private Sub CmbZoom_Click()
             ' of updating zoom.  If they have *not* selected this, we want to preserve the current center point
             ' of the viewport.
             If cmbZoom.ListIndex < g_Zoom.GetZoomFitWidthIndex Then
-                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
+                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
             Else
-                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
             End If
         
             'Notify any other relevant UI elements
@@ -442,7 +442,7 @@ Private Sub cmdImgSize_Click()
 End Sub
 
 Private Sub cmdZoomFit_Click()
-    Image_Canvas_Handler.FitOnScreen
+    CanvasManager.FitOnScreen
 End Sub
 
 Private Sub cmdZoomIn_Click()

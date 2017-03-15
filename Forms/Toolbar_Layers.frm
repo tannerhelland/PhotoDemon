@@ -174,7 +174,7 @@ Private Sub Form_Load()
     ' of any outliers that may hurt PD's startup time.
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
-        VB_Hacks.GetHighResTime startTime
+        VBHacks.GetHighResTime startTime
     #End If
     
     Load layerpanel_Navigator
@@ -182,8 +182,8 @@ Private Sub Form_Load()
     layerpanel_Navigator.Show
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / navigator panel", VB_Hacks.GetTimerDifferenceNow(startTime)
-        VB_Hacks.GetHighResTime startTime
+        pdDebug.LogTiming "right toolbox / navigator panel", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
     #End If
     
     Load layerpanel_Colors
@@ -191,8 +191,8 @@ Private Sub Form_Load()
     layerpanel_Colors.Show
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / color panel", VB_Hacks.GetTimerDifferenceNow(startTime)
-        VB_Hacks.GetHighResTime startTime
+        pdDebug.LogTiming "right toolbox / color panel", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
     #End If
     
     Load layerpanel_Layers
@@ -200,8 +200,8 @@ Private Sub Form_Load()
     layerpanel_Layers.Show
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / layers panel", VB_Hacks.GetTimerDifferenceNow(startTime)
-        VB_Hacks.GetHighResTime startTime
+        pdDebug.LogTiming "right toolbox / layers panel", VBHacks.GetTimerDifferenceNow(startTime)
+        VBHacks.GetHighResTime startTime
     #End If
     
     'Load any last-used settings for this form
@@ -213,7 +213,7 @@ Private Sub Form_Load()
     UpdateAgainstCurrentTheme True
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogTiming "right toolbox / everything else", VB_Hacks.GetTimerDifferenceNow(startTime)
+        pdDebug.LogTiming "right toolbox / everything else", VBHacks.GetTimerDifferenceNow(startTime)
     #End If
     
     'Technically, we would now want to call ReflowInterface() to make sure everything is correctly aligned.

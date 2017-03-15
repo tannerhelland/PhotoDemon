@@ -774,10 +774,10 @@ Private Sub NewToolSelected()
     
     'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
     ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
-    If (g_OpenImageCount > 0) Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If (g_OpenImageCount > 0) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
     'Perform additional per-image initializations, as needed
-    Tool_Support.InitializeToolsDependentOnImage
+    Tools.InitializeToolsDependentOnImage
         
 End Sub
 
@@ -887,7 +887,7 @@ Public Sub ResetToolButtonStates()
         
     'If a selection tool is active, we will also need activate a specific subpanel
     Dim activeSelectionSubpanel As Long
-    If Tool_Support.IsSelectionToolActive Then
+    If Tools.IsSelectionToolActive Then
     
         activeSelectionSubpanel = Selections.GetSelectionSubPanelFromCurrentTool
         
@@ -899,7 +899,7 @@ Public Sub ResetToolButtonStates()
     
     'Next, some tools display information about the current layer.  Synchronize that information before proceeding, so that the
     ' option panel's information is correct as soon as the window appears.
-    Tool_Support.SyncToolOptionsUIToCurrentLayer
+    Tools.SyncToolOptionsUIToCurrentLayer
     
     'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
     ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
@@ -909,7 +909,7 @@ Public Sub ResetToolButtonStates()
     If SelectionsAllowed(False) Then
         
         'Does the existing selection differ from the current one?
-        If ((Selections.GetRelevantToolFromSelectShape() <> g_CurrentTool) And Tool_Support.IsSelectionToolActive) Then
+        If ((Selections.GetRelevantToolFromSelectShape() <> g_CurrentTool) And Tools.IsSelectionToolActive) Then
             
             'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
             If ((g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Rectangle)) Or _
@@ -918,7 +918,7 @@ Public Sub ResetToolButtonStates()
                 'Simply update the shape and redraw the viewport
                 pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selections.GetSelectionShapeFromCurrentTool
                 SyncTextToCurrentSelection g_CurrentImage
-                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
             Else
                 Process "Remove selection", , , UNDO_SELECTION
@@ -929,7 +929,7 @@ Public Sub ResetToolButtonStates()
     End If
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
-    If Tool_Support.IsSelectionToolActive Then toolpanel_Selections.UpdateSelectionPanelLayout
+    If Tools.IsSelectionToolActive Then toolpanel_Selections.UpdateSelectionPanelLayout
     
     'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
     ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.

@@ -1,4 +1,4 @@
-Attribute VB_Name = "Macro_Interface"
+Attribute VB_Name = "Macros"
 '***************************************************************************
 'PhotoDemon Macro Interface
 'Copyright 2001-2017 by Tanner Helland
@@ -51,7 +51,7 @@ Public Sub StartMacro()
     ReDim Processes(0 To ProcessCount) As ProcessCall
     
     'Update any related macro UI elements
-    Macro_Interface.UpdateMacroUI True
+    Macros.UpdateMacroUI True
     
 End Sub
 
@@ -78,7 +78,7 @@ Public Sub StopMacro()
         If msgReturn = vbYes Then
             
             'Update any related macro UI elements
-            Macro_Interface.UpdateMacroUI False
+            Macros.UpdateMacroUI False
             
             'Reset the macro engine and exit
             MacroStatus = MacroSTOP
@@ -96,7 +96,7 @@ Public Sub StopMacro()
     MacroStatus = MacroSTOP
     
     'Update any related macro UI elements
-    Macro_Interface.UpdateMacroUI False
+    Macros.UpdateMacroUI False
     
     'Automatically launch the save macro data routine
     Dim saveDialog As pdOpenSaveDialog
@@ -163,7 +163,7 @@ SaveMacroAgain:
                 ' them, as we know their values must be FALSE and TRUE, respectively, per the check above.
             
                 'Close this process entry
-                xmlEngine.closeTag "processEntry"
+                xmlEngine.CloseTag "processEntry"
                 xmlEngine.WriteBlankLine
             End If
             
@@ -352,7 +352,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     MacroStatus = MacroSTOP
     
     'Some processor requests may not manually update the screen; as such, perform a manual update now
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Our work here is complete!
     Message "Macro complete!"
