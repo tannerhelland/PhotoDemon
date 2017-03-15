@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.256</langversion>
+<langversion>6.7.257</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -5371,17 +5371,17 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Aplicar distorsión de la lente</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Corregir la distorsión de lentes existentes</translation>
+<original>Correct existing distortion</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
 <translation></translation>
 </phrase>
 
@@ -6184,6 +6184,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Aplicar distorsión de la lente</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Varios distorsionar</translation>
 </phrase>
@@ -6442,7 +6447,7 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9255,6 +9260,41 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>si píxeles se encuentran fuera del área corregida</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>la fuerza de corrección</translation>
 </phrase>
@@ -9265,16 +9305,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>si píxeles se encuentran fuera del área corregida</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Corrección de la distorsión de la imagen</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -14951,10 +14986,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

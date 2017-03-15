@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.253</langversion>
+<langversion>6.7.254</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -5370,17 +5370,17 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Appliquer déformation de la lentille</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Corrigez la distorsion de lentille existante</translation>
+<original>Correct existing distortion</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
 <translation></translation>
 </phrase>
 
@@ -6183,6 +6183,11 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Appliquer déformation de la lentille</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Divers déformer</translation>
 </phrase>
@@ -6441,7 +6446,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -9254,6 +9259,41 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>si les pixels se situent en dehors de la zone corrigée</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>force de correctionforce</translation>
 </phrase>
@@ -9264,16 +9304,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>si les pixels se situent en dehors de la zone corrigée</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Correction de la distorsion d'image</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -14951,10 +14986,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2444</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>Fertig</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1703,7 +1703,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Mehrseitiges Bild gefunden. Geladen wird Seite #%1 von %2</translation>
 </phrase>
 
 <phrase>
@@ -5380,18 +5380,18 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Linsenverzeichnung anwenden</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Vorhandene Linsenverzeichnung korrigieren</translation>
+<original>Correct existing distortion</original>
+<translation>Vorhandene Verzeichnung korrigieren</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Donut</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Linse</translation>
 </phrase>
 
 <phrase>
@@ -5806,12 +5806,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Theme editor</original>
-<translation>Themen-Editor</translation>
+<translation>Theme-Editor</translation>
 </phrase>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Theme-Package bilden</translation>
 </phrase>
 
 <phrase>
@@ -6193,6 +6193,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Linsenverzeichnung anwenden</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Verschiedene Verzerrungen</translation>
 </phrase>
@@ -6451,7 +6456,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8409,7 +8414,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>interface accent color</original>
-<translation>Interface-Akzentfarbe</translation>
+<translation>Farbe von Interface-Akzent</translation>
 </phrase>
 
 <phrase>
@@ -8838,7 +8843,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Hinweis: Sie können auch eine Mittelposition festlegen, indem sie auf das Vorschaufenster klicken.</translation>
+<translation>Hinweis: Sie können auch eine Mittelposition festlegen, indem Sie in das Vorschaufenster klicken.</translation>
 </phrase>
 
 <phrase>
@@ -9244,7 +9249,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>lens strength (refractive index)</original>
-<translation>Linsenstärke (Refraktionsindex)</translation>
+<translation>Linsenstärke (refraktiver Index)</translation>
 </phrase>
 
 <phrase>
@@ -9264,6 +9269,41 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>Korrekturtyp</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(a) Kanten</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(b) Mittelpunkte</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(c) Gesamtes Bild</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(d) Zoom</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>Wenn Pixel außerhalb des korrigierten Bereichs liegen</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>Sie können auch eine Mittelposition festlegen, indem Sie in das Vorschaufenster klicken</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>Korrekturstärke</translation>
 </phrase>
@@ -9274,16 +9314,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>Wenn Pixel außerhalb des korrigierten Bereichs liegen</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Bildverzerrung wird korrigiert</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -10308,7 +10343,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying petroleum jelly to camera lens</original>
-<translation>Vaseline wird auf Kameraobjektiv angewendet</translation>
+<translation>Vaseline wird auf Kameralinse angewendet</translation>
 </phrase>
 
 <phrase>
@@ -13603,7 +13638,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -14960,10 +14995,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

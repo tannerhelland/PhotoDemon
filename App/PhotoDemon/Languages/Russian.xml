@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1681,7 +1681,7 @@ To включить поддержку сканера, пожалуйста, с�
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Сканирование отменено</translation>
 </phrase>
 
 <phrase>
@@ -1702,7 +1702,7 @@ To включить поддержку сканера, пожалуйста, с�
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Найдено многостраничное изображение. Страница загрузки # %1 из %2</translation>
 </phrase>
 
 <phrase>
@@ -5140,22 +5140,22 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Максимум</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Минимум</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Сдвиг влево</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Сдвиг вправо</translation>
 </phrase>
 
 <phrase>
@@ -5195,7 +5195,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Дисплей</translation>
 </phrase>
 
 <phrase>
@@ -5210,7 +5210,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (негатив пленки)</translation>
 </phrase>
 
 <phrase>
@@ -5379,18 +5379,18 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Применить искажения объектива</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Исправить существующие искажения объектива</translation>
+<original>Correct existing distortion</original>
+<translation>Исправить существующее искажение</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Пончик</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Объектив</translation>
 </phrase>
 
 <phrase>
@@ -5755,7 +5755,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Тема</translation>
 </phrase>
 
 <phrase>
@@ -5810,7 +5810,7 @@ or the File > Open and File > Import menus.</original>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Сборка пакета тем</translation>
 </phrase>
 
 <phrase>
@@ -6192,6 +6192,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Применить искажения объектива</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Разное искажать</translation>
 </phrase>
@@ -6450,7 +6455,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Удалить альфа-канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8398,72 +8403,72 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Тема и язык</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>Значки</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>Цвет акцента интерфейса</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>Тема интерфейса</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>Язык</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>темно</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>легкий</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>Коричневый</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>Розовый</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>пурпурный</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>Чирок</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>по умолчанию</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>Монохроматический</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Перевод на %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9263,6 +9268,41 @@ If вы хотите сохранить его с другим именем фа
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>Тип коррекции</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) ребра</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(Б) средние точки</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) целое изображение</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) масштабирование</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>если пиксели находятся за пределами скорректированного области</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>Вы также можете установить центральное положение, щелкнув окно предварительного просмотра</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>сила коррекции</translation>
 </phrase>
@@ -9273,16 +9313,11 @@ If вы хотите сохранить его с другим именем фа
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>если пиксели находятся за пределами скорректированного области</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Коррекция искажений изображения</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12295,7 +12330,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13604,7 +13639,7 @@ I искренние извинения за неудобства, но, к со
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>Настройки</translation>
 </phrase>
 
 <phrase>
@@ -14961,10 +14996,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

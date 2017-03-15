@@ -410,8 +410,8 @@ Attribute VB_Exposed = False
 'PNG export dialog
 'Copyright 2012-2017 by Tanner Helland
 'Created: 11/December/12
-'Last updated: 21/April/16
-'Last update: repurpose old color-depth dialog into a PNG-specific one
+'Last updated: 15/March/17
+'Last update: finally solve (I hope?) persistent layout reflow issues
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -442,7 +442,7 @@ Private m_FormatParamString As String
 Private m_MetadataParamString As String
 
 'Used to avoid recursive setting changes
-Private m_PanelChangesActive As Boolean
+Private m_ActiveTitleBar As Long, m_PanelChangesActive As Boolean
 
 'The user's answer is returned via this property
 Public Function GetDialogResult() As VbMsgBoxResult
@@ -613,7 +613,8 @@ Public Sub ShowDialog(Optional ByRef srcImage As pdImage = Nothing)
     
     clrDepth.SyncToIdealSize
     ttlStandard(0).Value = True
-    UpdateStandardTitlebars 0
+    m_ActiveTitleBar = 0
+    UpdateStandardTitlebars
     
     'Populate lossless optimization options
     btsStandardOptimize.AddItem "none", 0
@@ -899,24 +900,30 @@ End Sub
 
 Private Sub ttlStandard_Click(Index As Integer, ByVal newState As Boolean)
     
+    If newState Then m_ActiveTitleBar = Index
     picContainer(Index).Visible = newState
     
     If (Not m_PanelChangesActive) Then
-        If newState Then UpdateStandardTitlebars Index Else UpdateStandardPanelVisibility
+        If newState Then UpdateStandardTitlebars Else UpdateStandardPanelVisibility
     End If
     
 End Sub
 
-Private Sub UpdateStandardTitlebars(ByVal selectedIndex As Long)
+Private Sub UpdateStandardTitlebars()
     
     m_PanelChangesActive = True
     
     '"Turn off" all titlebars except the selected one, and hide all panels except the selected one
     Dim i As Long
     For i = ttlStandard.lBound To ttlStandard.UBound
-        ttlStandard(i).Value = CBool(i = selectedIndex)
+        ttlStandard(i).Value = CBool(i = m_ActiveTitleBar)
+        picContainer(i).Visible = ttlStandard(i).Value
     Next i
     
+    'Because window visibility changes involve a number of window messages, let the message pump catch up.
+    ' (We need window visibility finalized, because we need to query things like window size in order to
+    '  reflow the current dialog layout.)
+    DoEvents
     UpdateStandardPanelVisibility
     
     m_PanelChangesActive = False
@@ -935,8 +942,6 @@ Private Sub UpdateStandardPanelVisibility()
     
         ttlStandard(i).SetTop yPos
         yPos = yPos + ttlStandard(i).GetHeight + yPadding
-        
-        picContainer(i).Visible = ttlStandard(i).Value
         
         'The "advanced settings" panel uses a specialized custom control whose height may vary at run-time
         If (i = 1) Then

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1682,7 +1682,7 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Imbasan dibatalkan</translation>
 </phrase>
 
 <phrase>
@@ -1703,7 +1703,7 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Imej berbilang dijumpai. loading halaman # %1 daripada %2</translation>
 </phrase>
 
 <phrase>
@@ -5141,22 +5141,22 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maksimum</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimum</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Shift kiri</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Shift kanan</translation>
 </phrase>
 
 <phrase>
@@ -5196,7 +5196,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Paparan</translation>
 </phrase>
 
 <phrase>
@@ -5211,7 +5211,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (filem negatif)</translation>
 </phrase>
 
 <phrase>
@@ -5380,18 +5380,18 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Memohon herotan kanta</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Herotan kanta sedia ada betul</translation>
+<original>Correct existing distortion</original>
+<translation>Penyelewengan betul sedia ada</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Donut</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Lens</translation>
 </phrase>
 
 <phrase>
@@ -5756,7 +5756,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Tema</translation>
 </phrase>
 
 <phrase>
@@ -5811,7 +5811,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Membina pakej tema</translation>
 </phrase>
 
 <phrase>
@@ -6193,6 +6193,11 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Memohon herotan kanta</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Pelbagai memutarbelitkan</translation>
 </phrase>
@@ -6451,7 +6456,7 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8399,72 +8404,72 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Tema dan bahasa</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>ikon</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>warna muka loghat</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>tema antara muka</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>bahasa</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>gelap</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>cahaya</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>coklat</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>merah jambu</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>ungu</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>Teal</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>lalai</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>monokromatik</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Terjemahan oleh %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9264,6 +9269,41 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>jenis pembetulan</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) tepi</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(B) titik tengah</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) imej keseluruhan</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) zoom</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>jika piksel terletak di luar kawasan diperbetulkan</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>anda juga boleh menetapkan kedudukan tengah dengan mengklik tetingkap pratonton</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>kekuatan pembetulan</translation>
 </phrase>
@@ -9274,16 +9314,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>jika piksel terletak di luar kawasan diperbetulkan</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Membetulkan herotan imej</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12296,7 +12331,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13605,7 +13640,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>tetapan</translation>
 </phrase>
 
 <phrase>
@@ -14962,10 +14997,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

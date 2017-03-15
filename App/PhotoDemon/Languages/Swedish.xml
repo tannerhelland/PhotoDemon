@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1677,7 +1677,7 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Skanna annulleras</translation>
 </phrase>
 
 <phrase>
@@ -1698,7 +1698,7 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Miniatyr bild hittas. Laddar sida # %1 %2</translation>
 </phrase>
 
 <phrase>
@@ -5136,22 +5136,22 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maximal</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimum</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Shift vänster</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Skifta höger</translation>
 </phrase>
 
 <phrase>
@@ -5191,7 +5191,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Visa</translation>
 </phrase>
 
 <phrase>
@@ -5206,7 +5206,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (film negativ)</translation>
 </phrase>
 
 <phrase>
@@ -5375,18 +5375,18 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Applicera linsförvrängningen</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Korrekt befintlig linsförvrängningen</translation>
+<original>Correct existing distortion</original>
+<translation>Korrekt befintliga distorsion</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Munk</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Lins</translation>
 </phrase>
 
 <phrase>
@@ -5751,7 +5751,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Tema</translation>
 </phrase>
 
 <phrase>
@@ -5806,7 +5806,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Bygga tema paketet</translation>
 </phrase>
 
 <phrase>
@@ -6188,6 +6188,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Applicera linsförvrängningen</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Diverse snedvrida</translation>
 </phrase>
@@ -6446,7 +6451,7 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8394,72 +8399,72 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Tema och språk</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>ikoner</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>gränssnitt accentfärg </translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>gränssnittstema</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>språk</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>mörk</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>ljus</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>brun</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>rosa</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>lila</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>kricka</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>standard</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>enfärgad</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Översättning av %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9259,6 +9264,41 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>korrigering typ</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) kanter</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(b) mittpunkter </translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) hela bilden</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) zoom</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>om bildpunkter ligger utanför det korrigerade området</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>Du kan också ställa in ett mittläge  genom att klicka på förhandsgranskningsfönstret </translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>korrektionsstyrka</translation>
 </phrase>
@@ -9269,16 +9309,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>om bildpunkter ligger utanför det korrigerade området</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Korrigera bildförvrängning</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12290,7 +12325,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13599,7 +13634,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>inställningar</translation>
 </phrase>
 
 <phrase>
@@ -14956,10 +14991,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>
