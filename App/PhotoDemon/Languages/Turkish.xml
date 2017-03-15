@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1677,7 +1677,7 @@ To programı üzerine kayıp olarak kutlandı) plug-in dizine ve programı yükl
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Tarama iptal edildi</translation>
 </phrase>
 
 <phrase>
@@ -1698,7 +1698,7 @@ To programı üzerine kayıp olarak kutlandı) plug-in dizine ve programı yükl
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Çok sayfalı görüntü bulundu.  %2, sayfa %1 yükleniyor</translation>
 </phrase>
 
 <phrase>
@@ -5134,22 +5134,22 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maksimum</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimum</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Kalan sola kaydır</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Sağa kaydır</translation>
 </phrase>
 
 <phrase>
@@ -5189,7 +5189,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Görüntüle</translation>
 </phrase>
 
 <phrase>
@@ -5204,7 +5204,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (film negatif)</translation>
 </phrase>
 
 <phrase>
@@ -5373,18 +5373,18 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>mercek deformasyonuna uygula</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Doğru Mevcut mercek distorsiyon</translation>
+<original>Correct existing distortion</original>
+<translation>Mevcut bozulmayı düzeltin</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Tatlı çörek</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Lens</translation>
 </phrase>
 
 <phrase>
@@ -5749,7 +5749,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Tema</translation>
 </phrase>
 
 <phrase>
@@ -5804,7 +5804,7 @@ Başlamak için bu alan üzerine bir görüntü sürükleyin.</translation>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Tema paketi oluştur</translation>
 </phrase>
 
 <phrase>
@@ -6185,6 +6185,11 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>mercek deformasyonuna uygula</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Çeşitli deforme</translation>
 </phrase>
@@ -6443,7 +6448,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>Alfa kanalını kaldırın</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8391,72 +8396,72 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Tema ve dil</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>Simgeler</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>Arayüz aksanı rengi</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>Arayüz teması</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>dil</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>Karanlık</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>Işık</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>kahverengi</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>pembe</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>mor</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>Salyangoz</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>varsayılan</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>Tek renkli</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation> %1 çevirme</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9256,6 +9261,41 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>Düzeltme türü</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) kenarlar</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(B) orta noktalar</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) bütün resim</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) yakınlaştır</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>piksel düzeltilmiş alanı dışında yalan söylersen</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>Önizleme penceresini tıklatarak bir merkez konumu da ayarlayabilirsiniz</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>düzeltme gücü</translation>
 </phrase>
@@ -9266,16 +9306,11 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>piksel düzeltilmiş alanı dışında yalan söylersen</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>görüntü bozukluğunu düzeltme</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12287,7 +12322,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13596,7 +13631,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>Ayarlar</translation>
 </phrase>
 
 <phrase>
@@ -14947,10 +14982,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

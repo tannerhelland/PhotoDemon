@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1674,7 +1674,7 @@ To włączyć obsługę skanera, należy skopiować plik EZTW32.dll (dostępne d
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Skanowanie anulowane</translation>
 </phrase>
 
 <phrase>
@@ -1695,7 +1695,7 @@ To włączyć obsługę skanera, należy skopiować plik EZTW32.dll (dostępne d
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Wielostronicowy obraz znaleziony. Ładowanie strona # %1 z %2</translation>
 </phrase>
 
 <phrase>
@@ -5128,22 +5128,22 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maksymalny</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimum</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Przesunięcie w lewo</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Przesunięcie w prawo</translation>
 </phrase>
 
 <phrase>
@@ -5183,7 +5183,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Pokaz</translation>
 </phrase>
 
 <phrase>
@@ -5198,7 +5198,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (negatyw)</translation>
 </phrase>
 
 <phrase>
@@ -5367,18 +5367,18 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Zastosuj zniekształceń obiektywu</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Prawidłowe istniejących zniekształceń obiektywu</translation>
+<original>Correct existing distortion</original>
+<translation>Prawidłowe istniejących zniekształceń</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Pączek</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Obiektyw</translation>
 </phrase>
 
 <phrase>
@@ -5743,7 +5743,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Motyw</translation>
 </phrase>
 
 <phrase>
@@ -5798,7 +5798,7 @@ lub Plik> Otwórz menu Plik> Importuj.</translation>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Budowanie pakiet tematyczny</translation>
 </phrase>
 
 <phrase>
@@ -6177,6 +6177,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Zastosuj zniekształceń obiektywu</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Różne zniekształcają</translation>
 </phrase>
@@ -6435,7 +6440,7 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 <translation>Usuń kanał alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8383,72 +8388,72 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Temat i język</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>ikony</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>kolorowy interfejs akcent</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>interfejs tematu</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>język</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>ciemny</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>lekki</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>brązowy</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>różowy</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>fioletowy</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>cyraneczka</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>zaniedbanie</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>monochromatyczny</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Tłumaczenie przez %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9248,6 +9253,41 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>Typ korekcji</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) krawędzie</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(b) środkowe</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) Cały obraz</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) zoom</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>jeśli pikseli leżeć poza skorygowanego obszaru</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>można również ustawić pozycję środkową klikając okno podglądu</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>siła korekcji</translation>
 </phrase>
@@ -9258,16 +9298,11 @@ If chcesz zapisać go pod inną nazwą pliku, wybierz "Anuluj", a następnie uż
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>jeśli pikseli leżeć poza skorygowanego obszaru</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Korekcja zniekształcenia obrazu</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12279,7 +12314,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13588,7 +13623,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>ustawienia</translation>
 </phrase>
 
 <phrase>
@@ -14939,10 +14974,10 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

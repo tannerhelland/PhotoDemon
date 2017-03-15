@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1674,7 +1674,7 @@ To lehetővé lapolvasótámaszt másolja a EZTW32.dll fájlt (letölthető http
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Scan törölt</translation>
 </phrase>
 
 <phrase>
@@ -1695,7 +1695,7 @@ To lehetővé lapolvasótámaszt másolja a EZTW32.dll fájlt (letölthető http
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Többoldalas kép talált. Loading oldal # %1 %2</translation>
 </phrase>
 
 <phrase>
@@ -5126,22 +5126,22 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maximális</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimális</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Eltolás balra</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Shift jobbra</translation>
 </phrase>
 
 <phrase>
@@ -5181,7 +5181,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Kijelző</translation>
 </phrase>
 
 <phrase>
@@ -5196,7 +5196,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (film negatív)</translation>
 </phrase>
 
 <phrase>
@@ -5365,18 +5365,18 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Alkalmazza lencsetorzítás</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Helyes meglévő objektív torzítása</translation>
+<original>Correct existing distortion</original>
+<translation>Helyes meglévő torzítás</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Fánk</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Lencse</translation>
 </phrase>
 
 <phrase>
@@ -5741,7 +5741,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Téma</translation>
 </phrase>
 
 <phrase>
@@ -5796,7 +5796,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Építsd témacsomag</translation>
 </phrase>
 
 <phrase>
@@ -6175,6 +6175,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Alkalmazza lencsetorzítás</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Egyéb Distort</translation>
 </phrase>
@@ -6433,7 +6438,7 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <translation>Távolítsuk el az alfa-csatorna</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8381,72 +8386,72 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Téma és nyelv</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>ikonok</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>interfész kiemelő szín</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>interfész téma</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>nyelv</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>sötét</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>fény</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>barna</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>rózsaszín</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>lila</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>a zöldeskék</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>alapértelmezett</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>egyszínű</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Translation %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9246,6 +9251,41 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>korrekció típusát</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) élek</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(B) felezőpontja</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) a teljes képet</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) zoom</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>ha képpont kívül esik a korrigált terület</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>akkor is meg a középső pozícióban kattintva az előnézeti ablakban</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>korrekció erő</translation>
 </phrase>
@@ -9256,16 +9296,11 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>ha képpont kívül esik a korrigált terület</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Korrekciós kép torzulását</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12277,7 +12312,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13586,7 +13621,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>beállítások</translation>
 </phrase>
 
 <phrase>
@@ -14937,10 +14972,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

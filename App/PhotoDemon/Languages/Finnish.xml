@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1677,7 +1677,7 @@ To mahdollistaa skannerin tuki, kopioi EZTW32.dll tiedosto (ladattavissa osoitte
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Scan peruutettu</translation>
 </phrase>
 
 <phrase>
@@ -1698,7 +1698,7 @@ To mahdollistaa skannerin tuki, kopioi EZTW32.dll tiedosto (ladattavissa osoitte
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Useista sivuista löydetty. Loading sivu # %1 %2</translation>
 </phrase>
 
 <phrase>
@@ -5134,22 +5134,22 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Enimmäismäärä</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Vähimmäismäärä</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Vaihto vasen</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Shift oikealle</translation>
 </phrase>
 
 <phrase>
@@ -5189,7 +5189,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Näyttö</translation>
 </phrase>
 
 <phrase>
@@ -5204,7 +5204,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (elokuva negatiivinen)</translation>
 </phrase>
 
 <phrase>
@@ -5373,18 +5373,18 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Käytä linssivääristymän</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Korjaa nykyisten linssivääristymän</translation>
+<original>Correct existing distortion</original>
+<translation>Korjaa olemassa olevia vääristymiä</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Donitsi</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Linssi</translation>
 </phrase>
 
 <phrase>
@@ -5749,7 +5749,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Teema</translation>
 </phrase>
 
 <phrase>
@@ -5804,7 +5804,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Build teema paketti</translation>
 </phrase>
 
 <phrase>
@@ -6186,6 +6186,11 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Käytä linssivääristymän</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Sekalaiset vääristää</translation>
 </phrase>
@@ -6444,7 +6449,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Poista alfa-kanava</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8392,72 +8397,72 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Teema ja kieli</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>kuvakkeet</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>liitäntä aksentti väri</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>käyttöliittymä teema</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>Kieli</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>tumma</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>valo</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>ruskea</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>vaaleanpunainen</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>violetti</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>tavi</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>oletusarvo</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>yksivärisen</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Käännös %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9257,6 +9262,41 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>korjaus tyyppi</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) reunat</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(B) midpoints</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) koko kuvan</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) zoom</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>Jos pikselit eivät kuulu korjattu alue</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>Voit myös asettaa keskiasennossa napsauttamalla esikatseluikkunassa</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>korjaus vahvuus</translation>
 </phrase>
@@ -9267,16 +9307,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>Jos pikselit eivät kuulu korjattu alue</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Korjaaminen kuvan vääristyminen</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12289,7 +12324,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13598,7 +13633,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>asetukset</translation>
 </phrase>
 
 <phrase>
@@ -14955,10 +14990,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

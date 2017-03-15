@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2368</langversion>
+<langversion>6.8.2542</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1676,7 +1676,7 @@ To umožňují podpěru skeneru, zkopírujte prosím soubor EZTW32.dll (k dispoz
 
 <phrase>
 <original>Scan canceled</original>
-<translation></translation>
+<translation>Skenování zrušen</translation>
 </phrase>
 
 <phrase>
@@ -1697,7 +1697,7 @@ To umožňují podpěru skeneru, zkopírujte prosím soubor EZTW32.dll (k dispoz
 
 <phrase>
 <original>Multipage image found.  Loading page #%1 of %2</original>
-<translation></translation>
+<translation>Vícestránkové obraz nalezen. Loading page # %1 z %2</translation>
 </phrase>
 
 <phrase>
@@ -5128,22 +5128,22 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>Maximum</original>
-<translation></translation>
+<translation>Maximum</translation>
 </phrase>
 
 <phrase>
 <original>Minimum</original>
-<translation></translation>
+<translation>Minimální</translation>
 </phrase>
 
 <phrase>
 <original>Shift left</original>
-<translation></translation>
+<translation>Posun doleva</translation>
 </phrase>
 
 <phrase>
 <original>Shift right</original>
-<translation></translation>
+<translation>Posunout vpravo</translation>
 </phrase>
 
 <phrase>
@@ -5183,7 +5183,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>Display</original>
-<translation></translation>
+<translation>Zobrazit</translation>
 </phrase>
 
 <phrase>
@@ -5198,7 +5198,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>CMYK (film negative)</original>
-<translation></translation>
+<translation>CMYK (filmový negativ)</translation>
 </phrase>
 
 <phrase>
@@ -5367,18 +5367,18 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
-<original>Apply lens distortion</original>
-<translation>Použít zkreslení objektivu</translation>
-</phrase>
-
-<phrase>
-<original>Correct existing lens distortion</original>
-<translation>Správná stávající zkreslení objektivu</translation>
+<original>Correct existing distortion</original>
+<translation>Správná stávající zkreslení</translation>
 </phrase>
 
 <phrase>
 <original>Donut</original>
 <translation>Kobliha</translation>
+</phrase>
+
+<phrase>
+<original>Lens</original>
+<translation>Objektiv</translation>
 </phrase>
 
 <phrase>
@@ -5743,7 +5743,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>Theme</original>
-<translation></translation>
+<translation>Téma</translation>
 </phrase>
 
 <phrase>
@@ -5798,7 +5798,7 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 
 <phrase>
 <original>Build theme package</original>
-<translation></translation>
+<translation>Vybudovat zábavní balíček</translation>
 </phrase>
 
 <phrase>
@@ -6177,6 +6177,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Apply lens distortion</original>
+<translation>Použít zkreslení objektivu</translation>
+</phrase>
+
+<phrase>
 <original>Miscellaneous distort</original>
 <translation>Různé Deformace</translation>
 </phrase>
@@ -6435,7 +6440,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Odstraňte alfa kanálu</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 185 were duplicates of existing phrases, so only 371 new phrases were written to file. -->
+<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8383,72 +8388,72 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 
 <phrase>
 <original>Theme and language</original>
-<translation></translation>
+<translation>Téma a jazyk</translation>
 </phrase>
 
 <phrase>
 <original>icons</original>
-<translation></translation>
+<translation>ikony</translation>
 </phrase>
 
 <phrase>
 <original>interface accent color</original>
-<translation></translation>
+<translation>Rozhraní přízvuk barva</translation>
 </phrase>
 
 <phrase>
 <original>interface theme</original>
-<translation></translation>
+<translation>téma interface</translation>
 </phrase>
 
 <phrase>
 <original>language</original>
-<translation></translation>
+<translation>Jazyk</translation>
 </phrase>
 
 <phrase>
 <original>dark</original>
-<translation></translation>
+<translation>temný</translation>
 </phrase>
 
 <phrase>
 <original>light</original>
-<translation></translation>
+<translation>světlo</translation>
 </phrase>
 
 <phrase>
 <original>brown</original>
-<translation></translation>
+<translation>hnědý</translation>
 </phrase>
 
 <phrase>
 <original>pink</original>
-<translation></translation>
+<translation>růžový</translation>
 </phrase>
 
 <phrase>
 <original>purple</original>
-<translation></translation>
+<translation>nachový</translation>
 </phrase>
 
 <phrase>
 <original>teal</original>
-<translation></translation>
+<translation>modrozelený</translation>
 </phrase>
 
 <phrase>
 <original>default</original>
-<translation></translation>
+<translation>standardní</translation>
 </phrase>
 
 <phrase>
 <original>monochromatic</original>
-<translation></translation>
+<translation>jednobarevný</translation>
 </phrase>
 
 <phrase>
 <original>Translation by %1</original>
-<translation></translation>
+<translation>Překlad %1</translation>
 </phrase>
 
 <!-- Dialog_UITheme.frm contains 19 phrases. 5 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
@@ -9248,6 +9253,41 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
+<original>correction type</original>
+<translation>typ korekce</translation>
+</phrase>
+
+<phrase>
+<original>(a) edges</original>
+<translation>(A) hrany</translation>
+</phrase>
+
+<phrase>
+<original>(b) midpoints</original>
+<translation>(b) středy</translation>
+</phrase>
+
+<phrase>
+<original>(c) whole image</original>
+<translation>(C) Celý obrázek</translation>
+</phrase>
+
+<phrase>
+<original>(d) zoom</original>
+<translation>(D) zoom</translation>
+</phrase>
+
+<phrase>
+<original>if pixels lie outside the corrected area</original>
+<translation>pokud pixely ležet mimo opraveného prostoru</translation>
+</phrase>
+
+<phrase>
+<original>you can also set a center position by clicking the preview window</original>
+<translation>můžete také nastavit středovou pozici kliknutím na okno náhledu</translation>
+</phrase>
+
+<phrase>
 <original>correction strength</original>
 <translation>síla korekce</translation>
 </phrase>
@@ -9258,16 +9298,11 @@ If ji chcete uložit s jiným názvem souboru, vyberte "Storno", potom pomocí S
 </phrase>
 
 <phrase>
-<original>if pixels lie outside the corrected area</original>
-<translation>pokud pixely ležet mimo opraveného prostoru</translation>
-</phrase>
-
-<phrase>
 <original>Correcting image distortion</original>
 <translation>Korekce zkreslení obrazu</translation>
 </phrase>
 
-<!-- Effects_Distort_CorrectLens.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_Distort_CorrectLens.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Effects_Distort_CorrectLens.frm-->
 
@@ -12279,7 +12314,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13588,7 +13623,7 @@ I Upřímně se omlouváme za tuto nepříjemnost, ale bohužel není nic %2 nen
 
 <phrase>
 <original>settings</original>
-<translation></translation>
+<translation>nastavení</translation>
 </phrase>
 
 <phrase>
@@ -14939,10 +14974,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4474 phrases. -->
-<!-- 1955 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 12378 total words. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>
