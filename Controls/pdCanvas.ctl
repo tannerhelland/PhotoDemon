@@ -837,13 +837,13 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     Tools.SyncCurrentLayerToToolOptionsUI
                     
                     'Put the newly created layer into transform mode, with the bottom-right corner selected
-                    Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, 3
-                                        
+                    Tools.SetInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, imgX, imgY, poi_CornerSE
+                    
                     'Also, note that we have just created a new text layer.  The MouseUp event needs to know this, so it can initiate a full-image Undo/Redo event.
                     Tools.SetCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
                     
                     'Redraw the viewport immediately
-                    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), False, 3
+                    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), False, poi_CornerSE
                 
                 End If
             
@@ -1100,11 +1100,13 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     SyncInterfaceToCurrentImage
                     
                     'Finally, set focus to the text layer text entry box
-                    If g_CurrentTool = VECTOR_TEXT Then
-                        toolpanel_Text.txtTextTool.SetFocus
+                    ' TODO: relay this request to the form itself, and have the form set focus *only* if the
+                    ' text panel is actually visible.  (Otherwise, the focus request will error.)
+                    If (g_CurrentTool = VECTOR_TEXT) Then
+                        'toolpanel_Text.txtTextTool.SetFocus
                         toolpanel_Text.txtTextTool.SelectAll
                     Else
-                        toolpanel_FancyText.txtTextTool.SetFocus
+                        'toolpanel_FancyText.txtTextTool.SetFocus
                         toolpanel_FancyText.txtTextTool.SelectAll
                     End If
                     
