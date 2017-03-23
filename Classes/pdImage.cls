@@ -268,7 +268,7 @@ End Sub
 '
 'If the change involves a layer, an index *must* be specified, so the object can notify the layer of the change (allowing the
 ' layer to rebuild any internal caches or buffers, like layer styles).
-Friend Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
+Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
 
     'Separate handling by type.
     
@@ -302,7 +302,7 @@ Friend Function NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional 
     
     End Select
 
-End Function
+End Sub
 
 'Merge two layers together.  Note this can be used to merge any two arbitrary layers, with the bottom layer holding the result
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.

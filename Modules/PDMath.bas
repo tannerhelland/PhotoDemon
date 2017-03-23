@@ -111,6 +111,10 @@ Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcR
 
 End Sub
 
+Public Function AreRectFsEqual(ByRef srcRectF1 As RECTF, ByRef srcRectf2 As RECTF) As Boolean
+    AreRectFsEqual = VBHacks.MemCmp(VarPtr(srcRectF1), VarPtr(srcRectf2), LenB(srcRectF1))
+End Function
+
 Public Function Frac(ByVal srcValue As Double) As Double
     Frac = srcValue - Int(srcValue)
 End Function

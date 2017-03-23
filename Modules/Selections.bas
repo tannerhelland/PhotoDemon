@@ -735,6 +735,7 @@ Public Sub InvertCurrentSelection()
     
     'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
     ' being non-transformable)
+    pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
     pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
     
     SetProgBarVal 0
@@ -774,6 +775,7 @@ Public Sub FeatherCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal f
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
+        pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
         pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
         
         'Lock in this selection
@@ -917,6 +919,7 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
+        pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
         pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
         
         'Lock in this selection
@@ -964,6 +967,7 @@ Public Sub GrowCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal grow
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
+        pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
         pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
         
         'Lock in this selection
@@ -1012,6 +1016,7 @@ Public Sub ShrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sh
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
+        pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
         pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
         
         'Lock in this selection
@@ -1075,6 +1080,7 @@ Public Sub BorderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal bo
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
+        pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
         pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
                 
         'Lock in this selection
@@ -1788,3 +1794,4 @@ Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As Sh
     End Select
     
 End Sub
+
