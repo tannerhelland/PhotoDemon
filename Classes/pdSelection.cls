@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2017 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 21/February/17
-'Last update: total refactor to prep for paint tool integration
+'Last updated: 23/March/17
+'Last update: redesign the entire selection UI pipeline to prep for paint tool integration
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
 ' currently implemented, with magic wand set to be tackled in the coming weeks.
@@ -185,19 +185,32 @@ Private m_IsTransformable As Boolean
 Private m_IsSquare As Boolean
 
 'Lasso and polygon selections have a variable number of points.  As such, we have to track their contents dynamically.
-Private m_NumOfLassoPoints As Long
-Private m_LassoPoints() As POINTFLOAT
-
-Private m_NumOfPolygonPoints As Long
-Private m_PolygonPoints() As POINTFLOAT
+Private m_NumOfLassoPoints As Long, m_LassoPoints() As POINTFLOAT
+Private m_NumOfPolygonPoints As Long, m_PolygonPoints() As POINTFLOAT
 
 'When move transforms are applied to lasso or polygon selections, we must maintain a backup copy of the original point array.
 ' Any transformation values are then applied to this backup data, and the backup is erased when the mouse is released.
-Private m_LassoPointsBackup() As POINTFLOAT
-Private m_PolygonPointsBackup() As POINTFLOAT
+Private m_LassoPointsBackup() As POINTFLOAT, m_PolygonPointsBackup() As POINTFLOAT
 
 'When a polygon or lasso selection is closed, these values will be set to TRUE
 Private m_PolygonClosed As Boolean, m_LassoClosed As Boolean
+
+'To improve viewport rendering performance, selection objects store a viewport-sized buffer of the current
+' selection overlay.  (This is only used in selection visualization modes other than "outline", e.g. "highlight"
+' or "lightbox".)  Because this DIB is inextricably tied to the current viewport, it needs to be updated when
+' the current viewport changes.  (To facilitate this, we store *two* reference rects - one defining the current
+' viewport coordinates (needed to detect zoom changes on tiny images), and a second one, defining the portion of
+' the image currently visible in the viewport (needed to detect scroll changes on large images).
+'
+'(Also, note that technically *two* DIBs are stored - one that is simply a resized copy of the current mask,
+' at the current viewport size/position; the other is the overlay itself, including any user-specified highlight
+' or lightbox colors.)
+Private m_OverlayReference As pdDIB, m_ViewportOverlay As pdDIB, m_LastViewportRectF As RECTF, m_LastImageRectF As RECTF, m_OverlayIsReady As Boolean
+
+'When selection UI settings change, we generate a local "hash" of the current settings.  Because we cache UI overlays
+' locally (to improve rendering time), we need to regenerate the cache whenever rendering settings change, independent of
+' any changes to the actual underlying selection object.
+Private m_LastOverlayCache As String
 
 'Each different selection shape has a number of properties specific to that shape.  Instead of storing these in open variables,
 ' they are stored in a dictionary, and only created/accessed as necessary.
@@ -1355,7 +1368,10 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
             
             'Wand selections require manual bounds-checking
             Case ss_Wand
-                If Me.IsLockedIn Then Me.FindNewBoundsManually True
+                If Me.IsLockedIn Then
+                    m_OverlayIsReady = False
+                    Me.FindNewBoundsManually True
+                End If
                 
             Case Else
             
@@ -1602,7 +1618,7 @@ End Sub
 '     separate function to find the bounding rect.
 Private Sub CreateSelectionMask()
 
-    Debug.Print "(" & Timer & ") Creating mask now..."
+    'Debug.Print "(" & Timer & ") Creating mask now..."
     
     'Note that a mask has been created for this image.  This is important for saving/loading selections, as a new mask must be generated
     ' if one isn't already present.
@@ -1618,6 +1634,9 @@ Private Sub CreateSelectionMask()
         m_IsMaskReady = True
         Exit Sub
     End If
+    
+    'Whenever a new mask is created, any viewport-specific overlays must be re-created to match
+    m_OverlayIsReady = False
     
     Dim maskBackColor As Long, maskForeColor As Long, maskBackByte As Byte
     
@@ -2157,6 +2176,24 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
     
 End Sub
 
+'The selection engine caches a lot of local objects in an effort to improve performance.  To detect setting changes,
+' it's convenient to generate arbitrary string hashes between "current settings" and "settings used at last cache generation."
+' (Note that this function requires that all passed variants can be coerced into strings.)
+Private Function GenerateArbitraryHash(ParamArray srcStuff() As Variant) As String
+    
+    If (UBound(srcStuff) >= LBound(srcStuff)) Then
+    
+        Dim i As Long
+        For i = LBound(srcStuff) To UBound(srcStuff)
+            GenerateArbitraryHash = GenerateArbitraryHash & CStr(srcStuff(i))
+        Next i
+    
+    Else
+        GenerateArbitraryHash = vbNullString
+    End If
+    
+End Function
+
 'Render the current selection mask using one of several methods.  Required inputs include:
 ' 1) Destination DIB, assumed to be the front buffer (e.g. the full composite image has already been rendered to this surface, in its
 '     proper location, and any color management has already been applied to it)
@@ -2170,212 +2207,235 @@ End Sub
 'Note that this code renders *all* selection types.
 ' (Also note that the renderColor default constant evaluates to RGB(112, 183, 255), but VB doesn't let us use RGB inside a function dec.)
 ' TODO: allow light box translucency to be set by the user
-Friend Sub RenderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef viewportIntersectRect As RECTF, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
+Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
     
-    'If an update has been requested, but we are already in the middle of one, deny subsequent requests
+    'If an update has been requested, but we are already in the middle of an update, deny subsequent requests
     If m_RejectRefreshRequests Then Exit Sub
-
-    'Is the selection mask ready to be used?  If not, prepare it now.
+    
+    'Is the underlying selection mask ready?  If not, prepare it first.  (This allows us to suspend selection mask creation
+    ' until the last possible moment, reducing the potential of generating the mask more times than we actually require.)
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
-    'A few different criteria can cause us to abandon this function in favor of RenderOutlineOnly (which, per its name,
-    ' renders the active selection as just an outline):
-    ' 1) The user has specified outline-only mode, and this is not a raster or magic wand selection.
-    '    (Those don't support outline mode at present.)
-    ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn)
-    ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
+    'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
+    ' renders the active selection's outline by treating the underlying data as a path, not a mask).
+    
+    'We use THIS FUNCTION if...
+    ' 1) The user has requested "highlight" or "lightbox" rendering mode
+    ' 2) If the current selection is a wand or raster selection, we use this function regardless of the requested
+    '    rendering mode.  (Wand and raster selections do not currently support outlines.)
     '
-    'If any of the above are true, we will reroute control to RenderOutlineOnly
-    If ((renderType = PDSR_Outline) And (m_SelectionShape <> ss_Wand) And (m_SelectionShape <> ss_Raster)) Or _
-        ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)) Or _
-        ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed)) Then
-        
-        RenderOutlineOnly dstDIB, srcImage, dstCanvas
-        Exit Sub
-        
+    'Note that PD's UI prevents this combination of inputs, so this exists purely as an emergency fallback
+    If (renderType = PDSR_Outline) Then
+        If (m_SelectionShape = ss_Wand) Then renderType = PDSR_Highlight
+        If (m_SelectionShape = ss_Raster) Then renderType = PDSR_Highlight
     End If
     
-    'Similarly, wand and raster selections cannot be rendered in outline mode, even if the caller requests it.
-    ' (PD's UI prevents this from happening, but as a fallback, add a forcible switch to HIGHLIGHT mode.)
-    If (renderType = PDSR_Outline) And ((m_SelectionShape = ss_Wand) Or (m_SelectionShape = ss_Raster)) Then renderType = PDSR_Highlight
+    'We silently switch to "outline" rendering if...
+    ' 1) The user has requested outline-only rendering, *and* this is not a raster or magic wand selection.
+    '    (Raster and magic-wand selection do not currently support outline mode.)
+    ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn)
+    ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
+    Dim useOutlineRenderingInstead As Boolean: useOutlineRenderingInstead = False
+    useOutlineRenderingInstead = ((renderType = PDSR_Outline) And (m_SelectionShape <> ss_Wand) And (m_SelectionShape <> ss_Raster))
+    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed))
+    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
     
-    'TEMPORARY FIX: restore the old image dimension parameters, copying the results from the viewport rect.
-    Dim imgLeft As Long, imgTop As Long, imgWidth As Long, imgHeight As Long
-    With viewportIntersectRect
-        imgLeft = Int(.Left)
-        imgTop = Int(.Top)
-        imgWidth = Int(PDMath.Frac(.Left) + .Width + 0.9999)
-        imgHeight = Int(PDMath.Frac(.Top) + .Height + 0.9999)
-    End With
+    If useOutlineRenderingInstead Then
+        RenderOutlineOnly dstDIB, srcImage, dstCanvas
+    Else
     
-    'STILL OKAY: converting bounds to canvas coords
-    'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
-    ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
-    '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
-    '   in effect.)
-    Dim dstLeft As Double, dstRight As Double
-    Dim dstTop As Double, dstBottom As Double
-    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left, m_Bounds.Top, dstLeft, dstTop
-    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left + m_Bounds.Width, m_Bounds.Top + m_Bounds.Height, dstRight, dstBottom
-    
-'    '******************************************
-'    'New project: resampling the current selection mask to match the on-screen image size, then using *that* for mask blending.
-'    'Start by using GDI+ to generate a temp mask at the same size as the viewport intersection rect
-'    Dim tmpDIB As pdDIB
-'    Set tmpDIB = New pdDIB
-'    tmpDIB.CreateBlank imgWidth, imgHeight, 32, 0, 0
-'
-'    Dim isZoomedIn As Boolean
-'    isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
-'
-'    If isZoomedIn Then
-'        GDI_Plus.GDIPlus_StretchBlt tmpDIB, dstLeft - viewportIntersectRect.Left, dstTop - viewportIntersectRect.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_NearestNeighbor, , , True, True
-'    Else
-'        GDI_Plus.GDIPlus_StretchBlt tmpDIB, dstLeft - viewportIntersectRect.Left, dstTop - viewportIntersectRect.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_HighQualityBilinear, , , , True
-'    End If
-'
-'    'TEMPORARY TEST ONLY!  Copy our result over the top of the destination DIB.
-'    BitBlt srcImage.canvasBuffer.GetDIBDC, imgLeft, imgTop, imgWidth, imgHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
-'
-'    Exit Sub
-'    '******************************************
-    
-    'Several different selection rendering methods use the same variables.  I've declared the common ones here.
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    Dim x As Long, y As Long
-    Dim xStride As Long
-    
-    Dim selMaskData() As Byte
-    Dim selMaskSA As SAFEARRAY2D
-    
-    Dim srcWidth As Long, srcHeight As Long
-    srcWidth = srcImage.Width - 1
-    srcHeight = srcImage.Height - 1
-    
-    'Just to be safe, declare some bounding variables in advance as well.  PhotoDemon now allows selections to lie off the image, so
-    ' we must make sure we don't attempt to render selection pixels in any out-of-bound regions.
-    Dim rightBound As Long, bottomBound As Long
-    rightBound = imgLeft + imgWidth - 1
-    bottomBound = imgTop + imgHeight - 1
-            
-    If (rightBound > srcImage.canvasBuffer.GetDIBWidth - 1) Then rightBound = srcImage.canvasBuffer.GetDIBWidth - 1
-    If (bottomBound > srcImage.canvasBuffer.GetDIBHeight - 1) Then bottomBound = srcImage.canvasBuffer.GetDIBHeight - 1
-    
-    'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
-    ' every pixel inside the loop.  Note also that this code is identical among various selection render methods.
-    Dim newX As Double, newY As Double, newXInt As Long
-    Dim xLookup() As Long, yLookup() As Long
-    
-    Dim xPxSizeInBytes As Long
-    If (dstDIB.GetDIBColorDepth = 32) Then xPxSizeInBytes = 4 Else xPxSizeInBytes = 3
-    
-    ReDim xLookup(imgLeft To rightBound) As Long
-    For x = imgLeft To rightBound
-        Drawing.ConvertCanvasCoordsToImageCoords dstCanvas, srcImage, x, imgTop, newX, newY, True
-        newXInt = Int(newX)
-        xLookup(x) = newXInt * xPxSizeInBytes
-    Next x
-    
-    ReDim yLookup(imgTop To bottomBound) As Long
-    For y = imgTop To bottomBound
-        Drawing.ConvertCanvasCoordsToImageCoords dstCanvas, srcImage, imgLeft, y, newX, newY, True
-        yLookup(y) = Int(newY)
-    Next y
-    
-    Dim tmpSelHolder As Byte
-    Dim tmpSelDivider As Double
-    
-    'Start by acquiring a pointer to the target DIB's pixel bits
-    PrepDIBSafeArray dstDIB, tmpSA
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-    'Next, acquire a pointer to the selection mask's pixel bits
-    PrepDIBSafeArray m_SelMask, selMaskSA
-    CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
-    
-    'Based on the selection type, draw a corresponding selection visualization.
-    Select Case renderType
-    
-        'Lightbox style
-        Case PDSR_Lightbox
-            
-            'Use a look-up table to dim the non-active parts of the image
-            Dim hData(0 To 255) As Byte
-            
-            For x = 0 To 255
-                hData(x) = x \ 3
-            Next x
-            
-            'Dim the non-active parts of the image
-            For x = imgLeft To rightBound
-                xStride = x * xPxSizeInBytes
-            For y = imgTop To bottomBound
-            
-                tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
-                
-                'Remember that lightbox works a little weirdly - UNSELECTED pixels are marked, while selected ones are left untouched
-                If tmpSelHolder = 0 Then
-                    iData(xStride + 2, y) = hData(iData(xStride + 2, y))
-                    iData(xStride + 1, y) = hData(iData(xStride + 1, y))
-                    iData(xStride, y) = hData(iData(xStride, y))
-                ElseIf tmpSelHolder < 255 Then
-                    tmpSelDivider = tmpSelHolder / 255
-                    iData(xStride + 2, y) = BlendColors(hData(iData(xStride + 2, y)), iData(xStride + 2, y), tmpSelDivider)
-                    iData(xStride + 1, y) = BlendColors(hData(iData(xStride + 1, y)), iData(xStride + 1, y), tmpSelDivider)
-                    iData(xStride, y) = BlendColors(hData(iData(xStride, y)), iData(xStride, y), tmpSelDivider)
-                End If
-                
-            Next y
-            Next x
-            
-        'Highlight style (Paint.NET)
-        Case PDSR_Highlight
+        'Pull an updated canvas intersection rect from the source image
+        Dim viewportIntersectRectCanvas As RECTF
+        srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
         
-            'Extract RGB values from the passed color
-            Dim newR As Long, newG As Long, newB As Long
-            newR = Colors.ExtractRed(renderColor)
-            newG = Colors.ExtractGreen(renderColor)
-            newB = Colors.ExtractBlue(renderColor)
+        'TEMPORARY FIX: restore the old image dimension parameters, copying the results from the viewport rect.
+        Dim imgLeft As Long, imgTop As Long, imgWidth As Long, imgHeight As Long
+        With viewportIntersectRectCanvas
+            imgLeft = Int(.Left)
+            imgTop = Int(.Top)
+            imgWidth = Int(PDMath.Frac(.Left) + .Width + 0.9999)
+            imgHeight = Int(PDMath.Frac(.Top) + .Height + 0.9999)
+        End With
+        
+        'STILL OKAY: converting bounds to canvas coords
+        'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
+        ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
+        '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
+        '   in effect.)
+        Dim dstLeft As Double, dstRight As Double
+        Dim dstTop As Double, dstBottom As Double
+        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left, m_Bounds.Top, dstLeft, dstTop
+        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left + m_Bounds.Width, m_Bounds.Top + m_Bounds.Height, dstRight, dstBottom
+        
+        'If the overlay is supposedly ready, perform two additional checks: one against the source image region, and another against
+        ' the viewport region.  If either have changed since the last time we generated the overlay, we need to create a new overlay.
+        If m_OverlayIsReady Then
             
-            'Use look-up tables to highlight the active parts of the image
-            Dim rData(0 To 255) As Byte, gData(0 To 255) As Byte, bData(0 To 255) As Byte
+            'First, compare the viewport rect that we've already retrieved
+            If (Not PDMath.AreRectFsEqual(m_LastViewportRectF, viewportIntersectRectCanvas)) Then
+                m_LastViewportRectF = viewportIntersectRectCanvas
+                m_OverlayIsReady = False
+            End If
             
-            For x = 0 To 255
-                rData(x) = (newR + x) \ 2
-                gData(x) = (newG + x) \ 2
-                bData(x) = (newB + x) \ 2
-            Next x
-                        
-            'Highlight the selected parts of the image
-            For x = imgLeft To rightBound
-                xStride = x * xPxSizeInBytes
-            For y = imgTop To bottomBound
+            'Finally, compare the base image rect
+            Dim curImgRectF As RECTF
+            srcImage.imgViewport.GetIntersectRectImage curImgRectF
             
-                tmpSelHolder = selMaskData(xLookup(x), yLookup(y))
-                
-                'If this pixels is over an active pixel in the selection mask, mark it with the selected color
-                If tmpSelHolder = 255 Then
-                    iData(xStride + 2, y) = rData(iData(xStride + 2, y))
-                    iData(xStride + 1, y) = gData(iData(xStride + 1, y))
-                    iData(xStride, y) = bData(iData(xStride, y))
+            If (Not PDMath.AreRectFsEqual(m_LastImageRectF, m_LastImageRectF)) Then
+                m_LastImageRectF = curImgRectF
+                m_OverlayIsReady = False
+            End If
+            
+        End If
+        
+        Dim overlayWasRegenerated As Boolean: overlayWasRegenerated = False
+        
+        'If any of our "overlay is ready" checks failed, generate a new overlay now
+        If (Not m_OverlayIsReady) Then
+            
+            'Start by using GDI+ to generate a temp mask at the same size as the viewport intersection rect
+            If (m_OverlayReference Is Nothing) Then Set m_OverlayReference = New pdDIB
+            If (m_OverlayReference.GetDIBWidth <> imgWidth) Or (m_OverlayReference.GetDIBHeight <> imgHeight) Then
+                m_OverlayReference.CreateBlank imgWidth, imgHeight, 32, 0, 0
+                m_OverlayReference.SetInitialAlphaPremultiplicationState True
+            Else
+                m_OverlayReference.ResetDIB 0
+            End If
+            
+            'Resize the selection mask into the overlay DIB
+            Dim isZoomedIn As Boolean
+            isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
+            
+            If isZoomedIn Then
+                GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstLeft - viewportIntersectRectCanvas.Left, dstTop - viewportIntersectRectCanvas.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_NearestNeighbor, , , True, True
+            Else
+                GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstLeft - viewportIntersectRectCanvas.Left, dstTop - viewportIntersectRectCanvas.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_HighQualityBilinear, , , , True
+            End If
+        
+            'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
+            ' viewport position/zoom) changes
+            m_OverlayIsReady = True
+            
+            'Also note that the overlay reference was regenerated; this means we have to generate a new UI DIB to match
+            overlayWasRegenerated = True
+            
+        End If
+        
+        'We have now covered all situations where the underlying mask reference may have changed.  (If it has,
+        ' the local "overlayWasRegenerated" value will be set to TRUE.)
+        
+        'Before dealing with the actual overlay UI DIB, there's one last thing we need to check.  If the selection UI settings
+        ' have changed since we last generated the overlay UI, we need to regenerate it now - *even if the reference mask
+        ' hasn't changed*!
+        Dim renderingSettingsChanged As Boolean: renderingSettingsChanged = False
+        If (Not overlayWasRegenerated) Then
+            renderingSettingsChanged = (StrComp(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor), vbBinaryCompare) <> 0)
+        End If
+        
+        'If any of the preceding checks caused a new overlay to be generated - or if the selection UI settings have changed -
+        ' we need to generate a new UI DIB to match.
+        If (overlayWasRegenerated Or renderingSettingsChanged) Then
+        
+            'Because we have a new overlay reference, we now need to generate a matching overlay DIB.
+            ' This will be the actual 32-bpp image "overlaid" on the viewport.  (So it reflects things like the user's
+            ' currently selected highlight or lightbox UI settings.)
                     
-                'Partially selected pixels are rendered with antialiasing
-                ElseIf tmpSelHolder > 0 Then
-                    tmpSelDivider = tmpSelHolder / 255
-                    iData(xStride + 2, y) = BlendColors(iData(xStride + 2, y), rData(iData(xStride + 2, y)), tmpSelDivider)
-                    iData(xStride + 1, y) = BlendColors(iData(xStride + 1, y), gData(iData(xStride + 1, y)), tmpSelDivider)
-                    iData(xStride, y) = BlendColors(iData(xStride, y), bData(iData(xStride, y)), tmpSelDivider)
-                End If
+            'Start by making sure both overlay dimensions match
+            If (m_ViewportOverlay Is Nothing) Then Set m_ViewportOverlay = New pdDIB
+            If (m_ViewportOverlay.GetDIBWidth <> imgWidth) Or (m_ViewportOverlay.GetDIBHeight <> imgHeight) Then
+                m_ViewportOverlay.CreateBlank imgWidth, imgHeight, 32, 0, 0
+                m_ViewportOverlay.SetInitialAlphaPremultiplicationState True
+            Else
+                m_ViewportOverlay.ResetDIB 0
+            End If
                 
-            Next y
-            Next x
+            'In the future, I may allow selection masks to mask specific color channels (which would be rad), but for now,
+            ' we treat it as if it contains grayscale entities only.
             
-    End Select
+            'Start by generating a lookup table of all 256 possible overlay colors.
+            Dim overlayLookup() As Long
+            ReDim overlayLookup(0 To 255) As Long
+            
+            Dim tmpRGBA As RGBQUAD, i As Long
+            Dim newR As Long, newG As Long, newB As Long, newA As Single
+                
+            'The constructed lookup table varies by overlay type
+            If (renderType = PDSR_Highlight) Then
+                
+                'Extract RGB values from the passed color
+                newR = Colors.ExtractRed(renderColor)
+                newG = Colors.ExtractGreen(renderColor)
+                newB = Colors.ExtractBlue(renderColor)
+                
+                Const HIGHLIGHT_SELECTION_OPACITY As Single = 0.5
+                
+                'At present, overlay opacity is locked at 50%; as with most things, it would be nice to eventually expose this
+                ' to the user
+                For i = 0 To 255
+                    newA = (i / 255) * HIGHLIGHT_SELECTION_OPACITY
+                    With tmpRGBA
+                        .Red = newR * newA
+                        .Green = newG * newA
+                        .Blue = newB * newA
+                        .alpha = newA * 255
+                    End With
+                    CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
+                Next i
+            
+            ElseIf (renderType = PDSR_Lightbox) Then
+            
+                'At present, lightbox mode is limited to black at 50% opacity; as noted above, I'd like to eventually expose this
+                ' to the user.
+                newR = 0
+                newG = 0
+                newB = 0
+                
+                Const LIGHTBOX_SELECTION_OPACITY As Single = 0.7
+                
+                For i = 0 To 255
+                    newA = ((255 - i) / 255) * LIGHTBOX_SELECTION_OPACITY
+                    With tmpRGBA
+                        .Red = newR * newA
+                        .Green = newG * newA
+                        .Blue = newB * newA
+                        .alpha = newA * 255
+                    End With
+                    CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
+                Next i
+            
+            End If
+            
+            'With the lookup table successfully generated, we can generate the overlay using identical code (regardless of the
+            ' actual overlay UI style)
+            Dim x As Long, y As Long
+            Dim overlayPixels() As Long, maskPixels() As Long
+            Dim overlaySA As SAFEARRAY2D, maskSA As SAFEARRAY2D
+            m_OverlayReference.WrapLongArrayAroundDIB maskPixels, maskSA
+            m_ViewportOverlay.WrapLongArrayAroundDIB overlayPixels, overlaySA
+            
+            Dim srcColor As Long
+            For y = 0 To imgHeight - 1
+            For x = 0 To imgWidth - 1
+                overlayPixels(x, y) = overlayLookup(maskPixels(x, y) And 255)
+            Next x
+            Next y
+            
+            m_OverlayReference.UnwrapLongArrayFromDIB maskPixels
+            m_ViewportOverlay.UnwrapLongArrayFromDIB overlayPixels
+            
+            'Whenever we generate a new UI overlay, we need to generate a hash of the rendering settings used.  (If rendering
+            ' UI settings change, we need to generate a new overlay, even if the selection itself hasn't changed.)
+            
+            'IMPORTANT NOTE: if new UI settings are added in the future, make sure they are reflected here, and also in the
+            ' previously overlay cache check, above.
+            m_LastOverlayCache = GenerateArbitraryHash(renderType, renderColor)
+            
+        End If
     
-    'With our work complete, point all arrays away from their respective DIBs, then deallocate them
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
+        'Final task: rendering the actual overlay onto the destination viewport
+        m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgLeft, imgTop, imgWidth, imgHeight, 0, 0, imgWidth, imgHeight, 127
+        
+    End If
     
 End Sub
 
@@ -2629,7 +2689,10 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                     End If
                     
                     'If this selection isn't a vector, we need to manually find its boundaries now
-                    If ((m_SelectionShape = ss_Raster) And (Not m_SelMask Is Nothing)) Then Me.FindNewBoundsManually
+                    If ((m_SelectionShape = ss_Raster) And (Not m_SelMask Is Nothing)) Then
+                        Me.NotifyRasterDataChanged
+                        Me.FindNewBoundsManually
+                    End If
                     
                     'Polygon selections loaded from file are assumed to be closed
                     m_PolygonClosed = True
@@ -2740,8 +2803,6 @@ End Function
 '
 'If boundaries are successfully found, this function will return TRUE.  Otherwise, it will return FALSE, which effectively means the
 ' selection mask is blank.
-'
-'TODO: only check the blue channel, as the other channels are irrelevant
 Friend Function FindNewBoundsManually(Optional ByVal overrideRasterState As Boolean = False) As Boolean
 
     'Message "Finding new selection boundaries..."
@@ -2903,7 +2964,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     ConvertAspectRatio m_SelMask.GetDIBWidth, m_SelMask.GetDIBHeight, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
-    If tIcoWidth > tIcoHeight Then
+    If (tIcoWidth > tIcoHeight) Then
         tX = 0
         tY = (thumbnailSize - tIcoHeight) / 2
     
@@ -2914,7 +2975,12 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
     'Prepare the destination DIB
-    dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
+    If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
+    If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
+        dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
+    Else
+        dstThumbnailDIB.EraseDIB 0
+    End If
     
     'Note that the user's thumbnail performance setting affects the quality used here.
     RequestThumbnail = GDIPlusResizeDIB(dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, m_SelMask, 0, 0, m_SelMask.GetDIBWidth, m_SelMask.GetDIBHeight, g_UserPreferences.GetThumbnailInterpolationPref())
@@ -2924,3 +2990,10 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     dstThumbnailDIB.SetAlphaPremultiplication True
     
 End Function
+
+'Normally, this class can auto-detect any changes that affect the selection mask.  Raster selections are an exception to this,
+' because external functions can "hook" into the raster and modify it at will.  If a function does this, it needs to notify us,
+' so we can generate a new viewport-specific overlay matching the updated raster data.
+Friend Sub NotifyRasterDataChanged()
+    m_OverlayIsReady = False
+End Sub

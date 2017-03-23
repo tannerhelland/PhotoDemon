@@ -2057,19 +2057,19 @@ MainErrHandler:
     Dim msgReturn As VbMsgBoxResult
     
     'Ignore errors that aren't actually errors
-    If Err.Number = 0 Then Exit Sub
+    If (Err.Number = 0) Then Exit Sub
     
     'Object was unloaded before it could be shown - this is intentional, so ignore the error
-    If Err.Number = 364 Then Exit Sub
+    If (Err.Number = 364) Then Exit Sub
     
     'Out of memory error
-    If Err.Number = 480 Or Err.Number = 7 Then
+    If ((Err.Number = 480) Or (Err.Number = 7)) Then
         AddInfo = g_Language.TranslateMessage("There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.")
         Message "Out of memory.  Function canceled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
     'Invalid picture error
-    ElseIf Err.Number = 481 Then
+    ElseIf (Err.Number = 481) Then
         AddInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.")
         Message "Invalid image.  Image load canceled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
@@ -2083,7 +2083,7 @@ MainErrHandler:
         Exit Sub
     
     'File not found error
-    ElseIf Err.Number = 53 Then
+    ElseIf (Err.Number = 53) Then
         AddInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & vbCrLf & "2) the file location provided to PhotoDemon is correct.")
         Message "File not found."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
@@ -2099,7 +2099,7 @@ MainErrHandler:
     msgReturn = PDMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler", Err.Number, Err.Description, AddInfo)
     
     'If the message box return value is "Yes", the user has opted to file a bug report.
-    If msgReturn = vbYes Then
+    If (msgReturn = vbYes) Then
     
         'GitHub requires a login for submitting Issues; check for that first
         Dim secondaryReturn As VbMsgBoxResult
@@ -2107,7 +2107,7 @@ MainErrHandler:
         secondaryReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making PhotoDemon better")
     
         'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
-        If secondaryReturn = vbYes Then
+        If (secondaryReturn = vbYes) Then
             'Shell a browser window with the GitHub issue report form
             OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
             

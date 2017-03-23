@@ -55,7 +55,7 @@ Private m_FrontBuffer As pdDIB
 
 'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.  Note that stage 5 is ignored because
 ' it only affects changes in zoom values (or switching between images).
-Private m_TimeStage2 As Double, m_TimeStage3 As Double, m_TimeStage4 As Double, m_TimeStage5 As Double
+Private m_TimeStage2 As Currency, m_TimeStage3 As Currency, m_TimeStage4 As Currency, m_TimeStage5 As Currency
 
 'Stage5_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
@@ -200,7 +200,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     If srcImage.IsSelectionActive Then
         
         'The selection engine handles the actual rendering process
-        srcImage.mainSelection.RenderCustom m_FrontBuffer, srcImage, dstCanvas, viewportIntersectRect, Selections.GetSelectionRenderMode, Selections.GetSelectionRenderColor
+        srcImage.mainSelection.RenderSelectionToViewport m_FrontBuffer, srcImage, dstCanvas, Selections.GetSelectionRenderMode, Selections.GetSelectionRenderColor
     
     End If
     
