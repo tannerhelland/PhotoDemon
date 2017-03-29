@@ -625,11 +625,11 @@ End Sub
 
 'Get/set a transformation type.  Note that this class only caches POIs *while a transformation is active*.  For generic things like
 ' MouseOver events, the current POI (if any) must be obtained manually via Selections.IsCoordSelectionPOI().
-Friend Function GetActiveSelectionPOI() As PD_PointOfInterest
-    If m_TransformModeActive Then
-        GetActiveSelectionPOI = m_CurrentPOI
+Friend Function GetActiveSelectionPOI(Optional ByVal onlyReportActiveTransform As Boolean = True) As PD_PointOfInterest
+    If onlyReportActiveTransform Then
+        If m_TransformModeActive Then GetActiveSelectionPOI = m_CurrentPOI Else GetActiveSelectionPOI = poi_Undefined
     Else
-        GetActiveSelectionPOI = poi_Undefined
+        GetActiveSelectionPOI = m_CurrentPOI
     End If
 End Function
 
@@ -637,21 +637,64 @@ Friend Sub SetActiveSelectionPOI(ByVal newPOI As PD_PointOfInterest)
     m_CurrentPOI = newPOI
 End Sub
 
+'If the current selection shape supports "resize via corner node", this function will return TRUE.  Generally speaking, corner-based
+' resize is handled "for free" by the selection engine (meaning it handles all UI rendering and input related to said corners).
+'
+'Certain selection types, like "line" or "magic wand", may not support this behavior.
+Friend Function DoesShapeSupportCornerResize() As Boolean
+    If (m_SelectionShape = ss_Rectangle) Then
+        DoesShapeSupportCornerResize = True
+    ElseIf (m_SelectionShape = ss_Circle) Then
+        DoesShapeSupportCornerResize = True
+    Else
+        DoesShapeSupportCornerResize = False
+    End If
+End Function
+
+'If the current selection shape supports custom points of interest (e.g. points other than just the corners), this function will
+' return TRUE.  You can retrieve the actual POIs with the GetCurrentPOIList() function, below.
+Friend Function DoesShapeSupportCustomPOIs() As Boolean
+    If (m_SelectionShape = ss_Rectangle) Then
+        DoesShapeSupportCustomPOIs = False
+    ElseIf (m_SelectionShape = ss_Circle) Then
+        DoesShapeSupportCustomPOIs = False
+    ElseIf (m_SelectionShape = ss_Line) Then
+        DoesShapeSupportCustomPOIs = True
+    ElseIf (m_SelectionShape = ss_Lasso) Then
+        DoesShapeSupportCustomPOIs = False
+    ElseIf (m_SelectionShape = ss_Polygon) Then
+        DoesShapeSupportCustomPOIs = True
+    ElseIf (m_SelectionShape = ss_Wand) Then
+        DoesShapeSupportCustomPOIs = True
+    Else
+        DoesShapeSupportCustomPOIs = False
+    End If
+End Function
+
+'Return a list of the current selection "points of interest".  Not all selection types support custom POIs.
+' This function returns TRUE if POIs are both supported and available; you can also check this via DoesShapeSupportCustomPOIs(), above.
+Friend Function GetCurrentPOIList(ByRef dstPoints() As POINTFLOAT) As Boolean
+    
+    GetCurrentPOIList = Me.DoesShapeSupportCustomPOIs()
+    
+    If GetCurrentPOIList Then
+        If (m_SelectionShape = ss_Line) Then
+            ReDim dstPoints(0 To 1) As POINTFLOAT
+            dstPoints(0).x = m_CornersUnlocked.Left
+            dstPoints(0).y = m_CornersUnlocked.Top
+            dstPoints(1).x = m_CornersUnlocked.Right
+            dstPoints(1).y = m_CornersUnlocked.Bottom
+        ElseIf (m_SelectionShape = ss_Wand) Then
+            ReDim dstPoints(0) As POINTFLOAT
+            dstPoints(0).x = m_CornersUnlocked.Left
+            dstPoints(0).y = m_CornersUnlocked.Top
+        End If
+    End If
+    
+End Function
+
 Friend Sub OverrideTransformMode(ByVal newOverride As Boolean)
     m_TransformModeActive = newOverride
-End Sub
-
-'Get/set the selection's current coordinates.  At present, this is only used by line selections, as part of "compare mouse
-' coordinates against selection coordinates" functionality.
-'TODO: remove this
-Friend Sub GetSelectionCoordinates(ByVal numPoint As Long, ByRef xDst As Double, ByRef yDst As Double)
-    If (numPoint = 1) Then
-        xDst = m_CornersUnlocked.Left
-        yDst = m_CornersUnlocked.Top
-    Else
-        xDst = m_CornersUnlocked.Right
-        yDst = m_CornersUnlocked.Bottom
-    End If
 End Sub
 
 'Get/set a selection shape
@@ -879,7 +922,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
         Select Case m_CurrentPOI
     
             'Interior of the selection, which triggers a move transformation
-            Case m_NumOfPolygonPoints
+            Case poi_Interior
                 m_MoveXDist = x
                 m_MoveYDist = y
                 
@@ -901,7 +944,7 @@ Friend Sub SetInitialTransformCoordinates(ByVal x As Double, ByVal y As Double)
         Select Case m_CurrentPOI
     
             'Interior of the selection, which triggers a move transformation
-            Case 0
+            Case poi_Interior
                 m_MoveXDist = x
                 m_MoveYDist = y
                 
@@ -1069,7 +1112,7 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 Select Case m_CurrentPOI
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
-                    Case -1
+                    Case poi_Undefined
                     
                     'First point is being moved
                     Case 0
@@ -1093,10 +1136,10 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 Select Case m_CurrentPOI
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
-                    Case -1
+                    Case poi_Undefined
                     
                     'Move transform
-                    Case m_NumOfPolygonPoints
+                    Case poi_Interior
                         
                         'Rebuild the main polygon array by copying all points from the backup array, and applying the current
                         ' x/y transformation distance to them.
@@ -1125,10 +1168,10 @@ Friend Sub SetAdditionalCoordinates(ByVal x As Double, ByVal y As Double)
                 Select Case m_CurrentPOI
             
                     'Case -1 should never occur.  (-1 represents an invalid transformation request)
-                    Case -1
+                    Case poi_Undefined
                     
                     'Move transform
-                    Case 0
+                    Case poi_Interior
                         
                         'Rebuild the main lasso array by copying all points from the backup array, and applying the current
                         ' x/y transformation distance to them.
@@ -2093,87 +2136,152 @@ Private Sub ApplyFeatheringToMask()
     QuickBlurDIB m_SelMask, GetSelectionProperty_Long(sp_FeatheringRadius), False
 End Sub
 
+'Helper function for retrieving the current selection corners (*not* boundary corners; this means things like feathering are
+' *not* taken into account, by design).
+'
+'The destination array must be one-dimensional, zero-dimensioned, and at least four items long (e.g. [0, 3] or larger).
+Private Sub GetSelectionCorners(ByRef dstPoints() As POINTFLOAT)
+    
+    With m_CornersLocked
+        dstPoints(0).x = .Left
+        dstPoints(0).y = .Top
+        dstPoints(1).x = .Left + .Width
+        dstPoints(1).y = .Top
+        dstPoints(2).x = .Left
+        dstPoints(2).y = .Top + .Height
+        dstPoints(3).x = .Left + .Width
+        dstPoints(3).y = .Top + .Height
+    End With
+    
+End Sub
+
 'While a selection tool is active, we draw transform nodes around it.  The viewport renderer invokes this function as necessary.
-Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal imgLeft As Long, ByVal imgTop As Long)
+Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If m_RejectRefreshRequests Then Exit Sub
     
-    'Before drawing the nodes, we need to convert the selection's coordinates from "image coordinates" to "viewport coordinates".
+    'Before drawing the nodes, we need to convert any relevant selection coordinates from "image coordinates" to "viewport coordinates".
     ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
-    '   on the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when scroll
-    '   and zoom parameters are in effect.)
-    Dim dstLeft As Double, dstRight As Double
-    Dim dstTop As Double, dstBottom As Double
+    '   on the screen, we need to figure out where they lie in the current viewport, accounting for things like zoom and scroll.)
+    '
+    'We always generate this list of points, regardless of selection type.
+    Dim selCorners() As POINTFLOAT
+    ReDim selCorners(0 To 3) As POINTFLOAT
+    GetSelectionCorners selCorners
     
-    'Rectangular and circle selections store their corner coordinates in the "locked" rect
-    If (m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle) Then
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersLocked.Left, m_CornersLocked.Top, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersLocked.Left + m_CornersLocked.Width, m_CornersLocked.Top + m_CornersLocked.Height, dstRight, dstBottom
+    'Transform those corners into the destination viewport coordinate space
+    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, selCorners, False
     
-    '...other selection types use the "unlocked" rect.  (I don't know why this is; I'm working on fixing it.)
-    Else
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersUnlocked.Left, m_CornersUnlocked.Top, dstLeft, dstTop
-        Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
+    'Convert the current point of interest value, if any, to an index into our list of selection corners
+    Dim curPOI As PD_PointOfInterest
+    curPOI = m_CurrentPOI
+    
+    Dim i As Long
+    
+    'pd2D is used for all rendering.  Note that a "highlight" pen is only created if a POI is currently in use
+    Dim cSurface As pd2DSurface, cPainter As pd2DPainter
+    Drawing2D.QuickCreatePainter cPainter
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True, dstCanvas.hWnd
+    
+    Dim cPenBaseNormal As pd2DPen, cPenTopNormal As pd2DPen, cPenBaseHighlight As pd2DPen, cPenTopHighlight As pd2DPen
+    Drawing2D.QuickCreatePairOfUIPens cPenBaseNormal, cPenTopNormal, False
+    If (curPOI <> poi_Undefined) Then Drawing2D.QuickCreatePairOfUIPens cPenBaseHighlight, cPenTopHighlight, True
+    
+    'If the current selection supports "resize by corner node", we want to handle that case now.
+    If Me.DoesShapeSupportCornerResize() Then
+    
+        'Convert the current POI, if any, to its matching position in the "corner node point array"
+        Dim cornerPOI As PD_PointOfInterest
+        
+        If (curPOI <> poi_Undefined) Then
+            If (curPOI = poi_CornerNW) Then
+                cornerPOI = 0
+            ElseIf (curPOI = poi_CornerNE) Then
+                cornerPOI = 1
+            ElseIf (curPOI = poi_CornerSW) Then
+                cornerPOI = 2
+            ElseIf (curPOI = poi_CornerSE) Then
+                cornerPOI = 3
+            Else
+                cornerPOI = poi_Undefined
+            End If
+        Else
+            cornerPOI = poi_Undefined
+        End If
+        
+        'Render the corner transform nodes, with the currently interactive node (if any) highlighted to match
+        Dim cornerSize As Single, halfCornerSize As Single
+        cornerSize = 12#
+        halfCornerSize = cornerSize * 0.5
+        
+        'In keeping with convention, corner nodes are rendered as squares centered over each node
+        For i = 0 To 3
+            If (i = cornerPOI) Then
+                cPainter.DrawRectangleF cSurface, cPenBaseHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                cPainter.DrawRectangleF cSurface, cPenTopHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            Else
+                cPainter.DrawRectangleF cSurface, cPenBaseNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                cPainter.DrawRectangleF cSurface, cPenTopNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+            End If
+        Next i
+        
     End If
     
-    'If this selection is in vector format, we have the option of drawing transform circles at appropriate locations
-    ' for the selection's shape.
-    If (m_SelectionShape <> ss_Raster) Then
+    'If the current selection also supports custom points of interest, let's draw those next
+    If Me.DoesShapeSupportCustomPOIs() Then
         
-        Dim circRadius As Long
-        circRadius = 7
-                
-        Dim circAlpha As Long
-        circAlpha = 190
+        Dim circRadius As Single
+        circRadius = 7#
         
-        Dim i As Long
-        
-        Select Case m_SelectionShape
-        
-            Case ss_Rectangle, ss_Circle
-        
-                'Draw corner circles first
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstBottom, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstBottom, circRadius, circAlpha
-                
-                'Draw mid-line circles next
-                Dim midHorizontal As Long, midVertical As Long
-                midHorizontal = (dstLeft + dstRight) \ 2
-                midVertical = (dstTop + dstBottom) \ 2
-                
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, midVertical, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, midHorizontal, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, midVertical, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, midHorizontal, dstBottom, circRadius, circAlpha
-                
-            Case ss_Line
+        'Some shapes have been migrated to a nice, uniform set of POI handlers.  These can be handled using universal code.
+        If (m_SelectionShape = ss_Line) Or (m_SelectionShape = ss_Wand) Then
             
-                'Lines only need transform nodes at the end points of the line
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstRight, dstBottom, circRadius, circAlpha
+            Dim poiList() As POINTFLOAT
+            Me.GetCurrentPOIList poiList
             
-            Case ss_Polygon
+            Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, poiList, False
             
+            For i = 0 To UBound(poiList)
+                If (i = curPOI) Then
+                    cPainter.DrawCircleF cSurface, cPenBaseHighlight, poiList(i).x, poiList(i).y, circRadius
+                    cPainter.DrawCircleF cSurface, cPenTopHighlight, poiList(i).x, poiList(i).y, circRadius
+                Else
+                    cPainter.DrawCircleF cSurface, cPenBaseNormal, poiList(i).x, poiList(i).y, circRadius
+                    cPainter.DrawCircleF cSurface, cPenTopNormal, poiList(i).x, poiList(i).y, circRadius
+                End If
+            Next i
+        
+        'Legacy rendering path for outlier selection types follows
+        Else
+            
+            Dim polyX As Double, polyY As Double
+            
+            If (m_SelectionShape = ss_Polygon) Then
                 For i = 0 To m_NumOfPolygonPoints - 1
-                    Drawing.ConvertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), m_PolygonPoints(i).x, m_PolygonPoints(i).y, dstLeft, dstTop
-                    GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
+                    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, polyX, polyY
+                    
+                    If (i = curPOI) Then
+                        cPainter.DrawCircleF cSurface, cPenBaseHighlight, polyX, polyY, circRadius
+                        cPainter.DrawCircleF cSurface, cPenTopHighlight, polyX, polyY, circRadius
+                    Else
+                        cPainter.DrawCircleF cSurface, cPenBaseNormal, polyX, polyY, circRadius
+                        cPainter.DrawCircleF cSurface, cPenTopNormal, polyX, polyY, circRadius
+                    End If
+                    
                 Next i
-                
-            Case ss_Wand
-                GDIPlusDrawCanvasCircle dstCanvas.hDC, dstLeft, dstTop, circRadius, circAlpha
-                
-            'Other selection types will require more involved transform code
-            Case Else
-                
-        End Select
+            End If
         
-        dstCanvas.RequestViewportRedraw
-                
+        End If
+        
     End If
     
+    'We don't need to manually free these pd2D objects, obviously, but I've added the code here just in case
+    ' this function gets expanded in the future.
+    Set cSurface = Nothing: Set cPainter = Nothing
+    Set cPenBaseNormal = Nothing: Set cPenTopNormal = Nothing
+    Set cPenBaseHighlight = Nothing: Set cPenTopHighlight = Nothing
+        
 End Sub
 
 'The selection engine caches a lot of local objects in an effort to improve performance.  To detect setting changes,

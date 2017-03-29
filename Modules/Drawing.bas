@@ -549,7 +549,7 @@ Public Sub DrawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
         End If
     End If
     
-    'Use GDI+ to render four corner circles
+    'Use GDI+ to render four corner nodes
     Dim i As Long
     For i = 0 To 3
         If (i = curPOI) Then

@@ -106,18 +106,10 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.DrawLayerRotateNode dstCanvas, srcImage, srcImage.GetActiveLayer, curPOI
             
         'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
-        ' draw transform nodes around the selection area.
+        ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
+        ' they only support the "move" interaction, which is applied by click-dragging anywhere in the lasso region.)
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_WAND ', SELECT_LASSO
-            
-            'Next, check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
-            If srcImage.IsSelectionActive Then
-                
-                'Retrieve a copy of the current image's intersection rect, which controls boundaries for any selection overlays
-                Dim intRect As RECTF
-                srcImage.imgViewport.GetIntersectRectCanvas intRect
-                srcImage.mainSelection.RenderTransformNodes srcImage, dstCanvas, intRect.Left, intRect.Top
-                
-            End If
+            If srcImage.IsSelectionActive Then srcImage.mainSelection.RenderTransformNodes srcImage, dstCanvas
             
         'Text tools currently draw layer boundaries at all times; I'm working on this (TODO!)
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
