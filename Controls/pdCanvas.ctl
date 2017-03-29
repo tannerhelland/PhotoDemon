@@ -923,7 +923,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
         
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-                Selections.NotifySelectionMouseMove Me, Shift, imgX, imgY, m_NumOfMouseMovements
+                Selections.NotifySelectionMouseMove Me, True, Shift, imgX, imgY, m_NumOfMouseMovements
                 
             'Text layers are identical to the move tool
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
@@ -987,7 +987,8 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
                 
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
-            
+                Selections.NotifySelectionMouseMove Me, False, Shift, imgX, imgY, m_NumOfMouseMovements
+                
             'Text tools
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
@@ -1771,7 +1772,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     CanvasView.RequestCursor_System IDC_ARROW
                 
                 'numOfPolygonPoints: mouse is inside the polygon, but not over a polygon node
-                Case pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints
+                Case poi_Interior
                     If pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
@@ -1791,9 +1792,9 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 Case poi_Undefined
                     CanvasView.RequestCursor_System IDC_ARROW
                 
-                '0: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
+                'poi_Interior: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
                 '   if they're still in "drawing" mode - we only update it if the selection is complete.
-                Case 0
+                Case poi_Interior
                     If pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     Else

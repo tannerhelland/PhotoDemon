@@ -588,7 +588,6 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
                 'Was a close point found? If yes, then return that value.
                 If (closestPoint <> poi_Undefined) Then
                     IsCoordSelectionPOI = closestPoint
-                    
                 Else
             
                     'If we're at this line of code, a closest edge was not found. Perform one final check to ensure that the mouse is within the
@@ -606,24 +605,11 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
         Case ss_Line
     
             'Line selections are simple - we only care if the mouse is by (x1,y1) or (x2,y2)
-            Dim xCoord As Double, yCoord As Double
-            Dim firstDist As Double, secondDist As Double
+            srcImage.mainSelection.GetCurrentPOIList poiListFloat
             
-            closestPoint = poi_Undefined
+            'Used the generalized point comparison function to see if one of the points matches
+            IsCoordSelectionPOI = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
             
-            srcImage.mainSelection.GetSelectionCoordinates 1, xCoord, yCoord
-            firstDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
-            
-            srcImage.mainSelection.GetSelectionCoordinates 2, xCoord, yCoord
-            secondDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
-                        
-            If (firstDist <= minDistance) Then closestPoint = 0
-            If (secondDist <= minDistance) Then closestPoint = 1
-            
-            'Was a close point found? If yes, then return that value.
-            IsCoordSelectionPOI = closestPoint
-            Exit Function
-        
         Case ss_Polygon
         
             'First, we want to check all polygon points for a hit.
@@ -649,11 +635,12 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
                 'Release the GDI+ region
                 GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
                 
-                If gdipHitCheck Then IsCoordSelectionPOI = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints Else IsCoordSelectionPOI = poi_Undefined
+                If gdipHitCheck Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
                 
             End If
         
         Case ss_Lasso
+        
             'Create a GDI+ region from the current selection points
             gdipRegionHandle = pdImages(g_CurrentImage).mainSelection.GetGdipRegionForSelection()
             
@@ -663,20 +650,16 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
             'Release the GDI+ region
             GDI_Plus.ReleaseGDIPlusRegion gdipRegionHandle
             
-            If gdipHitCheck Then IsCoordSelectionPOI = 0 Else IsCoordSelectionPOI = poi_Undefined
+            If gdipHitCheck Then IsCoordSelectionPOI = poi_Interior Else IsCoordSelectionPOI = poi_Undefined
         
         Case ss_Wand
-            closestPoint = poi_Undefined
             
-            srcImage.mainSelection.GetSelectionCoordinates 1, xCoord, yCoord
-            firstDist = DistanceTwoPoints(imgX, imgY, xCoord, yCoord)
-                        
-            If (firstDist <= minDistance) Then closestPoint = 0
+            'Wand selections do actually support a single point of interest - the wand's "clicked" location
+            srcImage.mainSelection.GetCurrentPOIList poiListFloat
             
-            'Was a close point found? If yes, then return that value.
-            IsCoordSelectionPOI = closestPoint
-            Exit Function
-        
+            'Used the generalized point comparison function to see if one of the points matches
+            IsCoordSelectionPOI = FindClosestPointInFloatArray(imgX, imgY, minDistance, poiListFloat)
+            
         Case Else
             IsCoordSelectionPOI = poi_Undefined
             Exit Function
@@ -1427,7 +1410,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
                 
 End Sub
 
-Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
+Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
     
     'Because the wand tool is extremely simple, handle it specially
     If (g_CurrentTool = SELECT_WAND) Then
@@ -1485,7 +1468,7 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
                                 Selections.InitSelectionByPoint imgX, imgY
                             Else
                                 
-                                If (sCheck = poi_Undefined) Or (sCheck = pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints) Then
+                                If (sCheck = poi_Undefined) Or (sCheck = poi_Interior) Then
                                     pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
                                     pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI pdImages(g_CurrentImage).mainSelection.GetNumOfPolygonPoints - 1
                                 Else
@@ -1529,62 +1512,79 @@ Public Sub NotifySelectionMouseDown(ByVal srcCanvas As pdCanvas, ByVal imgX As S
     
 End Sub
 
-Public Sub NotifySelectionMouseMove(ByVal srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfCanvasMoveEvents As Long)
+Public Sub NotifySelectionMouseMove(ByRef srcCanvas As pdCanvas, ByVal lmbState As Boolean, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal numOfCanvasMoveEvents As Long)
     
-    'Basic selection tools
-    Select Case g_CurrentTool
+    'Handling varies based on the current mouse state, obviously.
+    If lmbState Then
         
-        Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
-
-            'First, check to see if a selection is both active and transformable.
-            If pdImages(g_CurrentImage).IsSelectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
-                
-                'If the SHIFT key is down, notify the selection engine that a square shape is requested
-                pdImages(g_CurrentImage).mainSelection.RequestSquare (Shift And vbShiftMask)
-                
-                'Pass new points to the active selection
-                pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                Selections.SyncTextToCurrentSelection g_CurrentImage
-                                    
-            End If
+        'Basic selection tools
+        Select Case g_CurrentTool
             
-            'Force a redraw of the viewport
-            If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
-        
-        'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
-        Case SELECT_LASSO
-        
-            'First, check to see if a selection is active
-            If pdImages(g_CurrentImage).IsSelectionActive Then
+            Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
                 
-                'Pass new points to the active selection
-                pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                                    
-            End If
+                'First, check to see if a selection is both active and transformable.
+                If pdImages(g_CurrentImage).IsSelectionActive And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> ss_Raster) Then
+                    
+                    'If the SHIFT key is down, notify the selection engine that a square shape is requested
+                    pdImages(g_CurrentImage).mainSelection.RequestSquare (Shift And vbShiftMask)
+                    
+                    'Pass new points to the active selection
+                    pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
+                    Selections.SyncTextToCurrentSelection g_CurrentImage
+                                        
+                End If
+                
+                'Force a redraw of the viewport
+                If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
             
-            'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
-            ' while in debug mode.
-            #If DEBUGMODE = 1 Then
-                Message "Release the mouse button to complete the lasso selection", "DONOTLOG"
-            #Else
-                Message "Release the mouse button to complete the lasso selection"
-            #End If
+            'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
+            Case SELECT_LASSO
             
-            'Force a redraw of the viewport
-            If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                'First, check to see if a selection is active
+                If pdImages(g_CurrentImage).IsSelectionActive Then
+                    
+                    'Pass new points to the active selection
+                    pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
+                                        
+                End If
+                
+                'To spare the debug logger from receiving too many events, forcibly prevent logging of this message
+                ' while in debug mode.
+                #If DEBUGMODE = 1 Then
+                    Message "Release the mouse button to complete the lasso selection", "DONOTLOG"
+                #Else
+                    Message "Release the mouse button to complete the lasso selection"
+                #End If
+                
+                'Force a redraw of the viewport
+                If (numOfCanvasMoveEvents > 1) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+            
+            'Wand selections are easier than other selection types, because they don't support any special transforms
+            Case SELECT_WAND
+                If pdImages(g_CurrentImage).IsSelectionActive Then
+                    pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
+                    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
+                End If
         
-        'Wand selections are easier than other selection types, because they don't support any special transforms
-        Case SELECT_WAND
-            If pdImages(g_CurrentImage).IsSelectionActive Then
-                pdImages(g_CurrentImage).mainSelection.SetAdditionalCoordinates imgX, imgY
-                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), srcCanvas
-            End If
+        End Select
     
-    End Select
-    
+    'The left mouse button is *not* down
+    Else
+        
+        'Notify the selection of the currently hovered point of interest, if any
+        Dim selPOI As PD_PointOfInterest
+        selPOI = Selections.IsCoordSelectionPOI(imgX, imgY, pdImages(g_CurrentImage))
+        
+        If (selPOI <> pdImages(g_CurrentImage).mainSelection.GetActiveSelectionPOI(False)) Then
+            pdImages(g_CurrentImage).mainSelection.SetActiveSelectionPOI selPOI
+            ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
+        End If
+        
+    End If
+        
 End Sub
 
-Public Sub NotifySelectionMouseUp(ByVal srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal clickEventAlsoFiring As Boolean, ByVal wasSelectionActiveBeforeMouseEvents As Boolean)
+Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As ShiftConstants, ByVal imgX As Single, ByVal imgY As Single, ByVal clickEventAlsoFiring As Boolean, ByVal wasSelectionActiveBeforeMouseEvents As Boolean)
     
     Dim eraseThisSelection As Boolean
     
