@@ -2043,12 +2043,16 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
 MainErrHandler:
     
     'Reset the mouse pointer and access to the main form
+    m_Processing = False
     Screen.MousePointer = vbDefault
     m_NestedProcessingCount = m_NestedProcessingCount - 1
     FormMain.Enabled = True
+    
+    'Ensure any pending UI syncs are flushed
+    SyncInterfaceToCurrentImage
 
     'We'll use this string to hold additional error data
-    Dim AddInfo As String
+    Dim addInfo As String
     
     'This variable stores the message box type
     Dim mType As VbMsgBoxStyle
@@ -2057,25 +2061,31 @@ MainErrHandler:
     Dim msgReturn As VbMsgBoxResult
     
     'Ignore errors that aren't actually errors
-    If (Err.Number = 0) Then Exit Sub
+    If (Err.Number = 0) Then
+        On Error GoTo 0
+        Exit Sub
     
     'Object was unloaded before it could be shown - this is intentional, so ignore the error
-    If (Err.Number = 364) Then Exit Sub
+    ElseIf (Err.Number = 364) Then
+        On Error GoTo 0
+        Exit Sub
     
     'Out of memory error
-    If ((Err.Number = 480) Or (Err.Number = 7)) Then
-        AddInfo = g_Language.TranslateMessage("There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.")
+    ElseIf ((Err.Number = 480) Or (Err.Number = 7)) Then
+        On Error GoTo 0
+        addInfo = g_Language.TranslateMessage("There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.")
         Message "Out of memory.  Function canceled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
     'Invalid picture error
     ElseIf (Err.Number = 481) Then
-        AddInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.")
+        On Error GoTo 0
+        addInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.")
         Message "Invalid image.  Image load canceled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
         'Since we know about this error, there's no need to display the extended box.  Display a smaller one, then exit.
-        PDMsgBox AddInfo, mType, "Invalid image file"
+        PDMsgBox addInfo, mType, "Invalid image file"
         
         'On an invalid picture load, there will be a blank form that needs to be dealt with.
         pdImages(g_CurrentImage).DeactivateImage
@@ -2084,19 +2094,21 @@ MainErrHandler:
     
     'File not found error
     ElseIf (Err.Number = 53) Then
-        AddInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & vbCrLf & "2) the file location provided to PhotoDemon is correct.")
+        On Error GoTo 0
+        addInfo = g_Language.TranslateMessage("The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:" & vbCrLf & "1) the file hasn't been deleted, and..." & vbCrLf & "2) the file location provided to PhotoDemon is correct.")
         Message "File not found."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
         
     'Unknown error
     Else
-        AddInfo = g_Language.TranslateMessage("PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!" & vbCrLf & vbCrLf & "Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)")
+        On Error GoTo 0
+        addInfo = g_Language.TranslateMessage("PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!" & vbCrLf & vbCrLf & "Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)")
         mType = vbCritical + vbYesNo + vbApplicationModal
         Message "Unknown error."
     End If
     
     'Create the message box to return the error information
-    msgReturn = PDMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler", Err.Number, Err.Description, AddInfo)
+    msgReturn = PDMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler", Err.Number, Err.Description, addInfo)
     
     'If the message box return value is "Yes", the user has opted to file a bug report.
     If (msgReturn = vbYes) Then
