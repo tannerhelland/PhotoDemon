@@ -191,7 +191,7 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
             tmpExtension = srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
-            dstFilename = tmpFolder & IncrementFilename(tmpFolder, tmpFilename, tmpExtension) & "." & tmpExtension
+            dstFilename = tmpFolder & FileSystem.IncrementFilename(tmpFolder, tmpFilename, tmpExtension) & "." & tmpExtension
         
         Else
             dstFilename = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
@@ -230,13 +230,16 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     '   If that preference is selected, it takes precedence, unless the user has not yet saved any images, in which case we default to
     '   the standard method (of using heuristics on the current image, and suggesting the most appropriate format accordingly).
     Dim cdFormatIndex As Long
+    Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
+    
     If (g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0) = 1) And (g_LastSaveFilter <> -1) Then
         cdFormatIndex = g_LastSaveFilter
+        suggestedSaveFormat = g_ImageFormats.GetOutputPDIF(cdFormatIndex - 1)
+        suggestedFileExtension = g_ImageFormats.GetExtensionFromPDIF(suggestedSaveFormat)
         
     'The user's preference is the default value (0) or no previous saves have occurred, meaning we need to suggest a Save As format based
     ' on the current image contents.  This is a fairly complex process, so we offload it to a separate function.
     Else
-        Dim suggestedSaveFormat As PD_IMAGE_FORMAT, suggestedFileExtension As String
         suggestedSaveFormat = GetSuggestedSaveFormatAndExtension(srcImage, suggestedFileExtension)
         
         'Now that we have a suggested save format, we need to convert that into its matching Common Dialog filter index.
@@ -249,7 +252,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     '   string to the common dialog function for it to work, so some kind of name needs to be suggested.
     Dim suggestedFilename As String
     suggestedFilename = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
-    If Len(suggestedFilename) = 0 Then suggestedFilename = g_Language.TranslateMessage("New image")
+    If (Len(suggestedFilename) = 0) Then suggestedFilename = g_Language.TranslateMessage("New image")
     
     '4) What filename + extension to suggest, based on the results of 2 and 3.  Most programs would just toss together the
     ' calculated filename + extension, but I like PD to be a bit smarter.  What we're going to do next is scan the default output

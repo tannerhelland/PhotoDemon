@@ -93,13 +93,13 @@ Public Function IncrementFilename(ByRef dstDirectory As String, ByRef fName As S
         Dim numToAppend As Long
         
         'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
-        If StrComp(Right$(tmpFilename, 1), ")", vbBinaryCompare) = 0 Then
+        If (StrComp(Right$(tmpFilename, 1), ")", vbBinaryCompare) = 0) Then
         
             Dim i As Long
-            For i = Len(tmpFilename) - 2 To 1 Step -1
+            For i = Len(tmpFilename) - 1 To 1 Step -1
                 
                 'If this character is a number, continue scanning leftward until we find a character that is *not* a number
-                If Not (IsNumeric(Mid$(tmpFilename, i, 1))) Then
+                If (Not IsNumeric(Mid$(tmpFilename, i, 1))) Then
                     
                     'This character is non-numeric.  See if it's an opening parentheses.
                     If StrComp(Mid$(tmpFilename, i, 1), "(", vbBinaryCompare) = 0 Then
