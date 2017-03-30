@@ -685,7 +685,7 @@ Public Function ExportBMP(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
             
         Else
-            ExportBMP = GDIPlusSavePicture(srcPDImage, dstFile, ImageBMP, outputColorDepth)
+            ExportBMP = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_BMP, outputColorDepth)
         End If
     
     End If
@@ -763,7 +763,7 @@ Public Function ExportGIF(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
         End If
         
     ElseIf g_ImageFormats.GDIPlusEnabled Then
-        ExportGIF = GDIPlusSavePicture(srcPDImage, dstFile, ImageGIF, 8)
+        ExportGIF = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_GIF, 8)
     Else
         ExportGIF = False
         Message "No %1 encoder found. Save aborted.", "JPEG"
@@ -972,7 +972,7 @@ Public Function ExportJPEG(ByRef srcPDImage As pdImage, ByVal dstFile As String,
         End If
         
     ElseIf g_ImageFormats.GDIPlusEnabled Then
-        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, ImageJPEG, outputColorDepth, jpegQuality)
+        ExportJPEG = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_JPEG, outputColorDepth, jpegQuality)
     Else
         ExportJPEG = False
         Message "No %1 encoder found. Save aborted.", "JPEG"
@@ -1445,7 +1445,7 @@ Public Function ExportPNG(ByRef srcPDImage As pdImage, ByVal dstFile As String, 
             End If
             
         Else
-            ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, ImagePNG, outputColorDepth)
+            ExportPNG = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_PNG, outputColorDepth)
         End If
         
     End If
@@ -2091,7 +2091,7 @@ Public Function ExportTIFF(ByRef srcPDImage As pdImage, ByVal dstFile As String,
             End If
             
         Else
-            ExportTIFF = GDIPlusSavePicture(srcPDImage, dstFile, ImageTIFF, outputColorDepth)
+            ExportTIFF = GDIPlusSavePicture(srcPDImage, dstFile, GP_IF_TIFF, outputColorDepth)
         End If
         
     End If

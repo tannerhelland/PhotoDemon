@@ -668,7 +668,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, 90, InterpolationModeNearestNeighbor
         
         'Simple rotate/flip call:
-        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate90FlipNone
+        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_90FlipNone
         
         'Mark the correct alpha state and remove any null-padding
         tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
@@ -825,7 +825,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, -90, InterpolationModeNearestNeighbor
         
         'Simpler rotate/flip only reference:
-        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, Rotate270FlipNone
+        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_270FlipNone
         
         'Mark the correct alpha state and remove any null-padding
         tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Clipboard Interface
 'Copyright 2013-2017 by Tanner Helland
 'Created: 06/November/15 (formally split off from a heavily modified cCustomClipboard by Steve McMahon)
-'Last updated: 08/February/17
-'Last update: convert to safer subclassing technique
+'Last updated: 30/March/17
+'Last update: new support for metafile clipboard data
 '
 'For many years, PD used vbAccelerator's "cCustomClipboard" class to simplify Windows clipboard interactions:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Clipboard/Customising_Clipboard_Use/article.asp
@@ -194,12 +194,12 @@ End Function
 ' be used for actual clipboard enumerations (hence the weird return format).
 Public Function GetListOfAvailableFormatNames() As String
 
-    If m_NumOfClipboardFormats > 0 Then
+    If (m_NumOfClipboardFormats > 0) Then
         
         Dim finalList As String
         finalList = m_ClipboardNames(0) & " (" & m_ClipboardIDs(0) & ")"
         
-        If m_NumOfClipboardFormats > 1 Then
+        If (m_NumOfClipboardFormats > 1) Then
             Dim i As Long
             For i = 1 To m_NumOfClipboardFormats - 1
                 finalList = finalList & ", " & m_ClipboardNames(i) & " (" & m_ClipboardIDs(i) & ")"
@@ -216,7 +216,7 @@ End Function
 
 'Given an index into our module-level clipboard ID array, return the corresponding ID value
 Public Function GetFormatIDByIndex(ByVal lIndex As Long) As Long
-    If lIndex >= 0 And lIndex < m_NumOfClipboardFormats Then
+    If ((lIndex >= 0) And (lIndex < m_NumOfClipboardFormats)) Then
         GetFormatIDByIndex = m_ClipboardIDs(lIndex)
     Else
         GetFormatIDByIndex = 0
@@ -225,7 +225,7 @@ End Function
 
 'Given an index into our module-level clipboard name array, return the corresponding format name
 Public Function GetFormatNameByIndex(ByVal lIndex As Long) As String
-    If lIndex >= 0 And lIndex < m_NumOfClipboardFormats Then
+    If ((lIndex >= 0) And (lIndex < m_NumOfClipboardFormats)) Then
         GetFormatNameByIndex = m_ClipboardNames(lIndex)
     Else
         GetFormatNameByIndex = ""
@@ -238,7 +238,7 @@ Public Function DoesClipboardHaveFormatID(ByVal srcFormatId As PredefinedClipboa
     
     DoesClipboardHaveFormatID = False
     
-    If m_NumOfClipboardFormats > 0 Then
+    If (m_NumOfClipboardFormats > 0) Then
     
         'Search for the given ID
         Dim i As Long
@@ -278,6 +278,12 @@ Public Function DoesClipboardHaveBitmapImage() As Boolean
     DoesClipboardHaveBitmapImage = Me.DoesClipboardHaveFormatID(CF_BITMAP) Or Me.DoesClipboardHaveFormatID(CF_DIB) Or Me.DoesClipboardHaveFormatID(CF_DIBV5)
 End Function
 
+'Shortcut function to test for metafiles.
+' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
+Public Function DoesClipboardHaveMetafile() As Boolean
+    DoesClipboardHaveMetafile = Me.DoesClipboardHaveFormatID(CF_ENHMETAFILE) Or Me.DoesClipboardHaveFormatID(CF_METAFILEPICT)
+End Function
+
 'See if a given clipboard format name exists on the current clipboard.  The comparison is not case-sensitive.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
 Public Function DoesClipboardHaveFormatName(ByVal srcFormatName As String) As Boolean
@@ -304,7 +310,7 @@ End Function
 Public Function GetFormatNameFromID(ByVal clipFormatID As PredefinedClipboardFormatConstants) As String
     
     'Predefined clipboard format names can be supplied without relying on the OS
-    If (clipFormatID > CF_MIN And clipFormatID < CF_MAX) Then
+    If ((clipFormatID > CF_MIN) And (clipFormatID < CF_MAX)) Then
         
         Select Case clipFormatID
         
