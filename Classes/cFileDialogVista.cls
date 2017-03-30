@@ -79,12 +79,12 @@ Option Explicit
 
 Private Declare Function DispCallFunc Lib "oleaut32.dll" (ByVal pvInstance As Long, ByVal offsetinVft As Long, ByVal CallConv As Long, ByVal retTYP As Integer, ByVal paCNT As Long, ByRef paTypes As Integer, ByRef paValues As Long, ByRef retVAR As Variant) As Long
 Private Declare Sub SetLastError Lib "kernel32.dll" (ByVal dwErrCode As Long)
-Private Declare Function CoCreateInstance Lib "ole32.dll" (ByVal rclsid As Long, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, ByVal rIID As Long, ByRef ppv As Long) As Long
+Private Declare Function CoCreateInstance Lib "ole32.dll" (ByVal rClsID As Long, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, ByVal rIID As Long, ByRef ppv As Long) As Long
 Private Const CLSCTX_INPROC_SERVER As Long = 1
 
-Private Const CLSID_FileOpenDialog As String = "{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}"
+Private Const clsID_FileOpenDialog As String = "{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}"
 Private Const IID_IFileOpenDialog As String = "{d57c7288-d4ad-4768-be02-9d969532d960}"
-Private Const CLSID_FileSaveDialog As String = "{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}"
+Private Const clsID_FileSaveDialog As String = "{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}"
 Private Const IID_IFileSaveDialog As String = "{84bccd23-5fde-4cdb-aea4-af64b83d78ab}"
 Private Const IID_IFileDialog As String = "{42F85136-DB7E-439C-85F1-E4075D135FC8}"
 Private Const IID_IFileDialog2 As String = "{61744fc7-85b5-4791-a9b0-272276309b13}"
@@ -93,9 +93,9 @@ Private Const IID_IFileDialogCustomize As String = "{8016b7b3-3d49-4504-a0aa-2a3
 Private Const IID_IShellItem As String = "{43826d1e-e718-42ee-bc55-a1e261c37bfe}"
 Private Const IID_IShellItemArray As String = "{B63EA76D-1F85-456F-A19C-48159EFA858B}"
 
-Private Declare Function IIDFromString Lib "ole32.dll" (ByVal lpsz As Long, ByVal lpiid As Long) As Long
-Private Declare Function CLSIDFromString Lib "ole32.dll" (ByVal lpsz As Long, ByVal pclsid As Long) As Long
-Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
+Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As Long, ByVal lpiid As Long) As Long
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As Long, ByVal pClsID As Long) As Long
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 
 Private Enum InterfaceMethodOffsets                 ' helper for me during design
     ifUnknown_QueryInterface = 0                    ' pass 2 params
@@ -396,7 +396,7 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
     If Mode = FDLG_BROWSEFOLDERS Then
         If m_Flags = 0& Then m_Flags = FOS__BrowseFoldersDefaults
         m_Flags = m_Flags Or FOS_PICKFOLDERS
-        CLSIDFromString StrPtr(CLSID_FileOpenDialog), VarPtr(aGuid(0))
+        CLSIDFromString StrPtr(clsID_FileOpenDialog), VarPtr(aGuid(0))
         If (m_Flags And FOS_ALLOWMULTISELECT) Then
             IIDFromString StrPtr(IID_IFileOpenDialog), VarPtr(aGuid(4))
         Else ' IID_IFileDialog does not support retrieving multi-selections
@@ -406,12 +406,12 @@ Public Function DialogShow(ByVal ownerHwnd As Long, _
         m_Flags = m_Flags And Not FOS_PICKFOLDERS
         If Mode = FDLG_FILEOPEN Then
             If m_Flags = 0& Then m_Flags = FOS__OpenFileDefaults
-            CLSIDFromString StrPtr(CLSID_FileOpenDialog), VarPtr(aGuid(0))
+            CLSIDFromString StrPtr(clsID_FileOpenDialog), VarPtr(aGuid(0))
             IIDFromString StrPtr(IID_IFileOpenDialog), VarPtr(aGuid(4))
         ElseIf Mode = FDLG_FILESAVE Then
             m_Flags = m_Flags And Not FOS_ALLOWMULTISELECT
             If m_Flags = 0& Then m_Flags = FOS__SaveFileDefaults
-            CLSIDFromString StrPtr(CLSID_FileSaveDialog), VarPtr(aGuid(0))
+            CLSIDFromString StrPtr(clsID_FileSaveDialog), VarPtr(aGuid(0))
             IIDFromString StrPtr(IID_IFileSaveDialog), VarPtr(aGuid(4))
         Else
             Call Me.Clear
@@ -980,7 +980,7 @@ ExitRoutine:
 End Function
 
 Public Function Customize_CreateNonGroupItem(ByVal ItemType As CustomControlTypeEnum, ByVal itemKey As String, _
-                    Optional ByVal ItemTextOrCaption As String, Optional ByVal IsChecked As Boolean) As Boolean
+                    Optional ByVal ItemTextOrCaption As String, Optional ByVal isChecked As Boolean) As Boolean
     ' ItemKey is required and must not have been used for any other controls
     ' ItemType will be cmdbutton,textbox,label,checkbox,separator
     ' ItemTextOrCaption can be blank. Ignored for separators. It is the Caption or Text property value
@@ -991,7 +991,7 @@ Public Function Customize_CreateNonGroupItem(ByVal ItemType As CustomControlType
     On Error GoTo ExitRoutine
     With m_CtrlSetup(m_IDtoKey.Count)
         .Text = ItemTextOrCaption
-        If ItemType = ctlTypeOf_CheckBox Then .State = Abs(IsChecked)
+        If ItemType = ctlTypeOf_CheckBox Then .State = Abs(isChecked)
     End With
     Customize_CreateNonGroupItem = True
 ExitRoutine:

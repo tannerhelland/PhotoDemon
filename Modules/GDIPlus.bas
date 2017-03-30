@@ -260,6 +260,39 @@ End Enum
     Private Const GP_FM_Alternate = 0&, GP_FM_Winding = 1&
 #End If
 
+Public Enum GP_ImageFlags
+    GP_IF_None = 0
+    GP_IF_Scalable = &H1&
+    GP_IF_HasAlpha = &H2&
+    GP_IF_HasTranslucent = &H4&
+    GP_IF_PartiallyScalable = &H8&
+    GP_IF_ColorSpaceRGB = &H10&
+    GP_IF_ColorSpaceCMYK = &H20&
+    GP_IF_ColorSpaceGRAY = &H40&
+    GP_IF_ColorSpaceYCBCR = &H80&
+    GP_IF_ColorSpaceYCCK = &H100&
+    GP_IF_HasRealDPI = &H1000&
+    GP_IF_HasRealPixelSize = &H2000&
+    GP_IF_ReadOnly = &H10000
+    GP_IF_Caching = &H20000
+End Enum
+
+#If False Then
+    Private Const GP_IF_None = 0, GP_IF_Scalable = &H1, GP_IF_HasAlpha = &H2, GP_IF_HasTranslucent = &H4, GP_IF_PartiallyScalable = &H8, GP_IF_ColorSpaceRGB = &H10, GP_IF_ColorSpaceCMYK = &H20, GP_IF_ColorSpaceGRAY = &H40, GP_IF_ColorSpaceYCBCR = &H80, GP_IF_ColorSpaceYCCK = &H100, GP_IF_HasRealDPI = &H1000, GP_IF_HasRealPixelSize = &H2000, GP_IF_ReadOnly = &H10000, GP_IF_Caching = &H20000
+#End If
+
+Public Enum GP_ImageFormat
+    GP_IF_BMP = 0
+    GP_IF_GIF = 1
+    GP_IF_JPEG = 2
+    GP_IF_PNG = 3
+    GP_IF_TIFF = 4
+End Enum
+
+#If False Then
+    Private Const GP_IF_BMP = 0, GP_IF_GIF = 1, GP_IF_JPEG = 2, GP_IF_PNG = 3, GP_IF_TIFF = 4
+#End If
+
 Public Enum GP_ImageType
     GP_IT_Unknown = 0
     GP_IT_Bitmap = 1
@@ -324,13 +357,17 @@ End Enum
 
 'EMFs can be converted between various formats.  GDI+ prefers "EMF+", which supports GDI+ primitives as well
 Public Enum GP_MetafileType
-   GP_MT_Invalid = 0
-   GP_MT_Wmf = 1
-   GP_MT_WmfPlaceable = 2
-   GP_MT_Emf = 3              'Old-style EMF consisting only of GDI commands
-   GP_MT_EmfPlus = 4          'New-style EMF+ consisting only of GDI+ commands
-   GP_MT_EmfDual = 5          'New-style EMF+ with GDI fallbacks for legacy rendering
+    GP_MT_Invalid = 0
+    GP_MT_Wmf = 1
+    GP_MT_WmfPlaceable = 2
+    GP_MT_Emf = 3              'Old-style EMF consisting only of GDI commands
+    GP_MT_EmfPlus = 4          'New-style EMF+ consisting only of GDI+ commands
+    GP_MT_EmfDual = 5          'New-style EMF+ with GDI fallbacks for legacy rendering
 End Enum
+
+#If False Then
+    Private Const GP_MT_Invalid = 0, GP_MT_Wmf = 1, GP_MT_WmfPlaceable = 2, GP_MT_Emf = 3, GP_MT_EmfPlus = 4, GP_MT_EmfDual = 5
+#End If
 
 Public Enum GP_PatternStyle
     GP_PS_Horizontal = 0
@@ -407,7 +444,7 @@ End Enum
 ' [0, 7] = format index
 ' [8, 15] = pixel size (in bits)
 ' [16, 23] = flags
-' [24, 31] = reserved (current unused)
+' [24, 31] = reserved (currently unused)
 
 'Note also that pixel format is *not* 100% reliable.  Behavior differs between OSes, even for the "same"
 ' major GDI+ version.  (See http://stackoverflow.com/questions/5065371/how-to-identify-cmyk-images-in-asp-net-using-c-sharp)
@@ -702,6 +739,17 @@ End Enum
     Private Const GP_PT_YCbCrPositioning = &H213, GP_PT_YCbCrSubsampling = &H212, GP_PT_YPosition = &H11F, GP_PT_YResolution = &H11B
 #End If
 
+Private Enum GP_PropertyTagType
+    GP_PTT_Byte = 1
+    GP_PTT_ASCII = 2
+    GP_PTT_Short = 3
+    GP_PTT_Long = 4
+    GP_PTT_Rational = 5
+    GP_PTT_Undefined = 7
+    GP_PTT_SLONG = 9
+    GP_PTT_SRational = 10
+End Enum
+
 Public Enum GP_RotateFlip
     GP_RF_NoneFlipNone = 0
     GP_RF_90FlipNone = 1
@@ -828,6 +876,75 @@ Private Type GP_ImageCodecInfo
     IC_SigSize As Long
     IC_SigPattern As Long
     IC_SigMask As Long
+End Type
+
+'Helper structs for metafile headers.  IMPORTANT NOTE!  There are probably struct alignment issues with these structs,
+' as they are legacy structs that intermix 16- and 32-bit datatypes.  I do not need these at present (I only need them
+' as part of an unused union in a GDI+ metafile type), so I have not tested them thoroughly.  Use at your own risk.
+Private Type GDI_SizeL
+    cx As Long
+    cy As Long
+End Type
+
+Private Type GDI_MetaHeader
+    mtType As Integer
+    mtHeaderSize As Integer
+    mtVersion As Integer
+    mtSize As Long
+    mtNoObjects As Integer
+    mtMaxRecord As Long
+    mtNoParameters As Integer
+End Type
+
+Private Type GDIP_EnhMetaHeader3
+    itype As Long
+    nSize As Long
+    rclBounds As RECTL
+    rclFrame As RECTL
+    dSignature As Long
+    nVersion As Long
+    nBytes As Long
+    nRecords As Long
+    nHandles As Integer
+    sReserved As Integer
+    nDescription As Long
+    offDescription As Long
+    nPalEntries As Long
+    szlDevice As GDI_SizeL
+    szlMillimeters As GDI_SizeL
+End Type
+
+Private Type GP_MetafileHeader_UNION
+    muWmfHeader As GDI_MetaHeader
+    muEmfHeader As GDIP_EnhMetaHeader3
+End Type
+
+'Want additional information on a metafile-type Image object?  This struct contains basic header data.
+' IMPORTANT NOTE: please see the previous comment on struct alignment.  I can't guarantee that anything past
+' the mfOrigHeader union is aligned correctly; use those at your own risk.
+Private Type GP_MetafileHeader
+    mfType As GP_MetafileType
+    mfSize As Long
+    mfVersion As Long
+    mfEmfPlusFlags As Long
+    mfDpiX As Single
+    mfDpiY As Single
+    mfBoundsX As Long
+    mfBoundsY As Long
+    mfBoundsWidth As Long
+    mfBoundsHeight As Long
+    mfOrigHeader As GP_MetafileHeader_UNION
+    mfEmfPlusHeaderSize As Long
+    mfLogicalDpiX As Long
+    mfLogicalDpiY As Long
+End Type
+
+'GDI+ image properties
+Private Type GP_PropertyItem
+    propID As GP_PropertyTag    'Tag identifier
+    propLength As Long          'Length of the property value, in bytes
+    propType As Integer         'Type of tag value (one of GP_PropertyTagType)
+    propValue As Long           'Property value or pointer to property value, contingent on propType, above
 End Type
 
 'GDI+ uses GUIDs to define image formats.  VB6 doesn't let us predeclare byte arrays (at least not easily),
@@ -964,6 +1081,7 @@ Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Lo
 
 Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
+Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal hImage As Long, ByRef dstRectF As RECTF, ByRef dstUnit As GP_Unit) As GP_Result
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef dstHeight As Long) As GP_Result
@@ -973,6 +1091,7 @@ Private Declare Function GdipGetImageType Lib "gdiplus" (ByVal srcImage As Long,
 Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef dstVResolution As Single) As GP_Result
 Private Declare Function GdipGetImageWidth Lib "gdiplus" (ByVal hImage As Long, ByRef dstWidth As Long) As GP_Result
 Private Declare Function GdipGetInterpolationMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstInterpolationMode As GP_InterpolationMode) As GP_Result
+Private Declare Function GdipGetMetafileHeaderFromMetafile Lib "gdiplus" (ByVal hMetafile As Long, ByRef dstHeader As GP_MetafileHeader) As GP_Result
 Private Declare Function GdipGetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByRef dstFillRule As GP_FillMode) As GP_Result
 Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTF, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipGetPathWorldBoundsI Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTL, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
@@ -987,7 +1106,7 @@ Private Declare Function GdipGetPenMode Lib "gdiplus" (ByVal hPen As Long, ByRef
 Private Declare Function GdipGetPenWidth Lib "gdiplus" (ByVal hPen As Long, ByRef dstWidth As Single) As GP_Result
 Private Declare Function GdipGetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstMode As GP_PixelOffsetMode) As GP_Result
 Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal gpPropertyID As Long, ByVal srcPropertySize As Long, ByVal ptrToDstBuffer As Long) As GP_Result
-Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal gpPropertyID As Long, ByRef dstPropertySize As Long) As GP_Result
+Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal gpPropertyID As GP_PropertyTag, ByRef dstPropertySize As Long) As GP_Result
 Private Declare Function GdipGetRegionBounds Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectF As RECTF) As GP_Result
 Private Declare Function GdipGetRegionBoundsI Lib "gdiplus" (ByVal hRegion As Long, ByVal hGraphics As Long, ByRef dstRectL As RECTL) As GP_Result
 Private Declare Function GdipGetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstX As Long, ByRef dstY As Long) As GP_Result
@@ -1098,71 +1217,8 @@ Private m_AttributesMatrix() As Single
 'Old declarations and descriptions follow.  These need to be reworked into something coherent, but it's a
 ' slog of a process...
 
-Public Enum GDIPlusImageFormat
-    [ImageBMP] = 0
-    [ImageGIF] = 1
-    [ImageJPEG] = 2
-    [ImagePNG] = 3
-    [ImageTIFF] = 4
-End Enum
-
-Private Enum EncoderParameterValueType
-    [EncoderParameterValueTypeByte] = 1
-    [EncoderParameterValueTypeASCII] = 2
-    [EncoderParameterValueTypeShort] = 3
-    [EncoderParameterValueTypeLong] = 4
-    [EncoderParameterValueTypeRational] = 5
-    [EncoderParameterValueTypeLongRange] = 6
-    [EncoderParameterValueTypeUndefined] = 7
-    [EncoderParameterValueTypeRationalRange] = 8
-End Enum
-
-Private Enum EncoderValue
-    [EncoderValueColorTypeCMYK] = 0
-    [EncoderValueColorTypeYCCK] = 1
-    [EncoderValueCompressionLZW] = 2
-    [EncoderValueCompressionCCITT3] = 3
-    [EncoderValueCompressionCCITT4] = 4
-    [EncoderValueCompressionRle] = 5
-    [EncoderValueCompressionNone] = 6
-    [EncoderValueScanMethodInterlaced] = 7
-    [EncoderValueScanMethodNonInterlaced] = 8
-    [EncoderValueVersionGif87] = 9
-    [EncoderValueVersionGif89] = 10
-    [EncoderValueRenderProgressive] = 11
-    [EncoderValueRenderNonProgressive] = 12
-    [EncoderValueTransformRotate90] = 13
-    [EncoderValueTransformRotate180] = 14
-    [EncoderValueTransformRotate270] = 15
-    [EncoderValueTransformFlipHorizontal] = 16
-    [EncoderValueTransformFlipVertical] = 17
-    [EncoderValueMultiFrame] = 18
-    [EncoderValueLastFrame] = 19
-    [EncoderValueFlush] = 20
-    [EncoderValueFrameDimensionTime] = 21
-    [EncoderValueFrameDimensionResolution] = 22
-    [EncoderValueFrameDimensionPage] = 23
-    [EncoderValueColorTypeGray] = 24
-    [EncoderValueColorTypeRGB] = 25
-End Enum
-
 'EMFs can be converted between various formats.  GDI+ prefers "EMF+", which supports GDI+ primitives as well
-Private Enum MetafileType
-   MetafileTypeInvalid            'Invalid metafile
-   MetafileTypeWmf                'Standard WMF
-   MetafileTypeWmfPlaceable       'Placeable WMF
-   MetafileTypeEmf                'EMF (not EMF+)
-   MetafileTypeEmfPlusOnly        'EMF+ without dual down-level records
-   MetafileTypeEmfPlusDual        'EMF+ with dual down-level records
-End Enum
-
-Private Enum EMFType
-    EmfTypeEmfOnly = MetafileTypeEmf               'no EMF+  only EMF
-    EmfTypeEmfPlusOnly = MetafileTypeEmfPlusOnly   'no EMF  only EMF+
-    EmfTypeEmfPlusDual = MetafileTypeEmfPlusDual   'both EMF+ and EMF
-End Enum
-
-Private Type clsid
+Private Type clsID
     Data1         As Long
     Data2         As Integer
     Data3         As Integer
@@ -1170,8 +1226,8 @@ Private Type clsid
 End Type
 
 Private Type ImageCodecInfo
-    ClassID           As clsid
-    FormatID          As clsid
+    classID           As clsID
+    FormatID          As clsID
     CodecName         As Long
     DllName           As Long
     formatDescription As Long
@@ -1185,139 +1241,9 @@ Private Type ImageCodecInfo
     SigMask           As Long
 End Type
 
-Private Type EncoderParameter
-    Guid           As clsid
-    NumberOfValues As Long
-    encType           As EncoderParameterValueType
-    Value          As Long
-End Type
-
-Private Type EncoderParameters
-    Count     As Long
-    Parameter As EncoderParameter
-End Type
-
-Public Enum rotateFlipType
-   RotateNoneFlipNone = 0
-   Rotate90FlipNone = 1
-   Rotate180FlipNone = 2
-   Rotate270FlipNone = 3
-
-   RotateNoneFlipX = 4
-   Rotate90FlipX = 5
-   Rotate180FlipX = 6
-   Rotate270FlipX = 7
-
-   RotateNoneFlipY = Rotate180FlipX
-   Rotate90FlipY = Rotate270FlipX
-   Rotate180FlipY = RotateNoneFlipX
-   Rotate270FlipY = Rotate90FlipX
-
-   RotateNoneFlipXY = Rotate180FlipNone
-   Rotate90FlipXY = Rotate270FlipNone
-   Rotate180FlipXY = RotateNoneFlipNone
-   Rotate270FlipXY = Rotate90FlipNone
-End Enum
-
-Private Const EncoderCompression      As String = "{E09D739D-CCD4-44EE-8EBA-3FBF8BE4FC58}"
-Private Const EncoderColorDepth       As String = "{66087055-AD66-4C7C-9A18-38A2310B8337}"
-'Private Const EncoderColorSpace       As String = "{AE7A62A0-EE2C-49D8-9D07-1BA8A927596E}"
-'Private Const EncoderScanMethod       As String = "{3A4E2661-3109-4E56-8536-42C156E7DCFA}"
-Private Const EncoderVersion          As String = "{24D18C76-814A-41A4-BF53-1C219CCCF797}"
-'Private Const EncoderRenderMethod     As String = "{6D42C53A-229A-4825-8BB7-5C99E2B9A8B8}"
-Private Const EncoderQuality          As String = "{1D5BE4B5-FA4A-452D-9CDD-5DB35105E7EB}"
-'Private Const EncoderTransformation   As String = "{8D0EB2D1-A58E-4EA8-AA14-108074B7B6F9}"
-'Private Const EncoderLuminanceTable   As String = "{EDB33BCE-0266-4A77-B904-27216099E717}"
-'Private Const EncoderChrominanceTable As String = "{F2E455DC-09B3-4316-8260-676ADA32481C}"
-'Private Const EncoderSaveAsCMYK       As String = "{A219BBC9-0A9D-4005-A3EE-3A421B8BB06C}"
-'Private Const EncoderSaveFlag         As String = "{292266FC-AC40-47BF-8CFC-A85B89A655DE}"
-'Private Const CodecIImageBytes        As String = "{025D1823-6C7D-447B-BBDB-A3CBC3DFA2FC}"
-
-'GDI+ recognizes a variety of pixel formats, but we are only concerned with the ones relevant to PhotoDemon:
-Private Const PixelFormatAlpha = &H40000
-Private Const PixelFormatPremultipliedAlpha = &H80000
-Private Const PixelFormat32bppCMYK = &H200F
-
-Private Const PixelFormat1bppIndexed = &H30101
-Private Const PixelFormat4bppIndexed = &H30402
-Private Const PixelFormat8bppIndexed = &H30803
-Private Const PixelFormat16bppGreyscale = &H101004
-Private Const PixelFormat16bppRGB555 = &H21005
-Private Const PixelFormat16bppRGB565 = &H21006
-Private Const PixelFormat16bppARGB1555 = &H61007
-Private Const PixelFormat24bppRGB = &H21808
-Private Const PixelFormat32bppRGB = &H22009
-Private Const PixelFormat32bppARGB = &H26200A
-Public Const PixelFormat32bppPARGB = &HE200B
-Private Const PixelFormat48bppRGB = &H10300C
-Private Const PixelFormat64bppARGB = &H34400D
-Private Const PixelFormat64bppPARGB = &H1C400E
-
-'Now that PD supports the loading of ICC profiles, we use this constant to retrieve it
-Private Const PropertyTagICCProfile As Long = &H8773&
-
-'Orientation tag is used to auto-rotate incoming JPEGs
-Private Const PropertyTagOrientation As Long = &H112&
-
-'LockBits constants
-Private Const ImageLockModeRead = &H1
-Private Const ImageLockModeWrite = &H2
-Private Const ImageLockModeUserInputBuf = &H4
-
-Private Enum ColorAdjustType
-    ColorAdjustTypeDefault = 0
-    ColorAdjustTypeBitmap = 1
-    ColorAdjustTypeBrush = 2
-    ColorAdjustTypePen = 3
-    ColorAdjustTypeText = 4
-    ColorAdjustTypeCount = 5
-    ColorAdjustTypeAny = 6
-End Enum
-
-#If False Then
-    Const ColorAdjustTypeDefault = 0, ColorAdjustTypeBitmap = 1, ColorAdjustTypeBrush = 2, ColorAdjustTypePen = 3, ColorAdjustTypeText = 4
-    Const ColorAdjustTypeCount = 5, ColorAdjustTypeAny = 6
-#End If
-
-Private Enum ColorMatrixFlags
-    ColorMatrixFlagsDefault = 0
-    ColorMatrixFlagsSkipGrays = 1
-    ColorMatrixFlagsAltGray = 2
-End Enum
-
-#If False Then
-    Const ColorMatrixFlagsDefault = 0, ColorMatrixFlagsSkipGrays = 1, ColorMatrixFlagsAltGray = 2
-#End If
-
-'GDI+ image properties
-Private Type PropertyItem
-    propID As Long              ' ID of this property
-    propLength As Long              ' Length of the property value, in bytes
-    propType As Integer             ' Type of the value, as one of TAG_TYPE_XXX
-    propValue As Long               ' property value
-End Type
-
-' Image property types
-Private Const PropertyTagTypeByte = 1
-Private Const PropertyTagTypeASCII = 2
-Private Const PropertyTagTypeShort = 3
-Private Const PropertyTagTypeLong = 4
-Private Const PropertyTagTypeRational = 5
-Private Const PropertyTagTypeUndefined = 7
-Private Const PropertyTagTypeSLONG = 9
-Private Const PropertyTagTypeSRational = 10
-
-'OleCreatePictureIndirect types
-Private Type PictDesc
-    Size       As Long
-    picType       As Long
-    hBmpOrIcon As Long
-    hPal       As Long
-End Type
-
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
-Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpBitmap As Long, ByRef gpFlags As Long) As Long
+Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpImage As Long, ByRef gpFlags As Long) As Long
 Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gpBitmap As Long, hBmpReturn As Long, ByVal RGBABackground As Long) As GP_Result
 Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Single, ByRef imgHeight As Single) As Long
 Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef hDC As Long) As Long
@@ -1328,10 +1254,7 @@ Private Declare Function GdipGraphicsClear Lib "gdiplus" (ByVal hGraphics As Lon
 Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus" (ByVal hMetafile As Long, ByVal metafileRasterizationLimitDpi As Long) As GP_Result
 
 'Note: only supported in GDI+ v1.1!
-Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal refGraphics As Long, ByVal metafilePtr As Long, ByRef conversionSuccess As Long, ByVal filenamePointer As Long, ByVal typeOfEMF As EMFType, ByVal descriptionPointer As Long, ByRef out_metafile_ptr As Long) As Long
-
-'OleCreatePictureIndirect is used to convert GDI+ images to VB's preferred StdPicture
-Private Declare Function OleCreatePictureIndirect Lib "olepro32" (lpPictDesc As PictDesc, rIID As Any, ByVal fPictureOwnsHandle As Long, iPic As IPicture) As Long
+Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal refGraphics As Long, ByVal metafilePtr As Long, ByRef conversionSuccess As Long, ByVal filenamePointer As Long, ByVal typeOfEMF As GP_MetafileType, ByVal descriptionPointer As Long, ByRef out_metafile_ptr As Long) As Long
 
 'CopyMemory
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
@@ -1355,7 +1278,7 @@ Private Declare Function GdipFillPolygon2 Lib "gdiplus" (ByVal mGraphics As Long
 Private Declare Function GdipFillPolygon2I Lib "gdiplus" (ByVal mGraphics As Long, ByVal hBrush As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipIsVisibleRegionPoint Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphics As Long, ByRef boolResult As Long) As Long
 Private Declare Function GdipIsVisibleRegionRect Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Single, ByVal y As Single, ByVal Width As Single, ByVal Height As Single, ByVal hGraphics As Long, ByRef dstResult As Long) As Long
-Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
+Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As GP_ColorAdjustType) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
@@ -1441,7 +1364,7 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
 End Function
 
 'Simpler rotate/flip function, and limited to the constants specified by the enum.
-Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotationType As rotateFlipType) As Boolean
+Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotationType As GP_RotateFlip) As Boolean
 
     GDIPlusRotateFlipDIB = True
     
@@ -2201,7 +2124,7 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     
     'Clone the bitmap area from source to destination, while converting format as necessary
     Dim gdipReturn As Long
-    gdipReturn = GdipCloneBitmapAreaI(0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, PixelFormat32bppARGB, srcBitmap, dstBitmap)
+    gdipReturn = GdipCloneBitmapAreaI(0, 0, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, GP_PF_32bppPARGB, srcBitmap, dstBitmap)
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long
@@ -2253,13 +2176,13 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     
     'Retrieve the image's format as a GUID
-    Dim imgCLSID As clsid
-    GdipGetImageRawFormat hImage, VarPtr(imgCLSID)
+    Dim imgClsID As clsID
+    GdipGetImageRawFormat hImage, VarPtr(imgClsID)
     
     'Convert the GUID into a string
     Dim imgStringPointer As Long, imgFormatGuidString As String
-    StringFromCLSID VarPtr(imgCLSID), imgStringPointer
-    imgFormatGuidString = pvPtrToStrW(imgStringPointer)
+    StringFromCLSID VarPtr(imgClsID), imgStringPointer
+    imgFormatGuidString = GetBstrFromPtr(imgStringPointer)
     
     'And finally, convert the string into an FIF long
     Dim imgFormatFIF As Long
@@ -2274,21 +2197,21 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     End If
     
     'Look for an ICC profile by asking GDI+ to return the ICC profile property's size
-    Dim profileSize As Long, HasProfile As Boolean
+    Dim profileSize As Long, imgHasIccProfile As Boolean
     
     'NOTE! the passed profileSize value must always be zeroed before using GdipGetPropertyItemSize, because the function will not update
     ' the variable's value if no tag is found.  Seems like an asinine oversight, but oh well.
     profileSize = 0
-    GdipGetPropertyItemSize hImage, PropertyTagICCProfile, profileSize
+    GdipGetPropertyItemSize hImage, GP_PT_ICCProfile, profileSize
     
     'If the returned size is > 0, this image contains an ICC profile!  Retrieve it now.
     If (profileSize > 0) Then
     
-        HasProfile = True
+        imgHasIccProfile = True
     
         Dim iccProfileBuffer() As Byte
         ReDim iccProfileBuffer(0 To profileSize - 1) As Byte
-        GdipGetPropertyItem hImage, PropertyTagICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
+        GdipGetPropertyItem hImage, GP_PT_ICCProfile, profileSize, ByVal VarPtr(iccProfileBuffer(0))
         
         dstDIB.ICCProfile.LoadICCFromPtr profileSize - 16, VarPtr(iccProfileBuffer(0)) + 16
         
@@ -2298,14 +2221,14 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Look for orientation flags.  This is most relevant for JPEGs coming from a digital camera.
     profileSize = 0
-    GdipGetPropertyItemSize hImage, PropertyTagOrientation, profileSize
+    GdipGetPropertyItemSize hImage, GP_PT_Orientation, profileSize
     
     If (profileSize > 0) And g_UserPreferences.GetPref_Boolean("Loading", "ExifAutoRotate", True) Then
         
         'Orientation tag will only ever be 2 bytes
         Dim tmpPropertyBuffer() As Byte
         ReDim tmpPropertyBuffer(0 To profileSize - 1) As Byte
-        GdipGetPropertyItem hImage, PropertyTagOrientation, profileSize, ByVal VarPtr(tmpPropertyBuffer(0))
+        GdipGetPropertyItem hImage, GP_PT_Orientation, profileSize, ByVal VarPtr(tmpPropertyBuffer(0))
         
         'The first 16 bytes of a GDI+ property are a standard header.  We need the MSB of the 2-byte trailer of the returned array.
         Select Case tmpPropertyBuffer(profileSize - 2)
@@ -2315,31 +2238,31 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
             'The 0th row is at the visual top of the image, and the 0th column is the visual right-hand side
             Case 2
-                GdipImageRotateFlip hImage, RotateNoneFlipX
+                GdipImageRotateFlip hImage, GP_RF_NoneFlipX
             
             'The 0th row is at the visual bottom of the image, and the 0th column is the visual right-hand side
             Case 3
-                GdipImageRotateFlip hImage, Rotate180FlipNone
+                GdipImageRotateFlip hImage, GP_RF_180FlipNone
             
             'The 0th row is at the visual bottom of the image, and the 0th column is the visual left-hand side
             Case 4
-                GdipImageRotateFlip hImage, RotateNoneFlipY
+                GdipImageRotateFlip hImage, GP_RF_NoneFlipY
             
             'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual top
             Case 5
-                GdipImageRotateFlip hImage, Rotate270FlipY
+                GdipImageRotateFlip hImage, GP_RF_270FlipY
             
             'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual top
             Case 6
-                GdipImageRotateFlip hImage, Rotate90FlipNone
+                GdipImageRotateFlip hImage, GP_RF_90FlipNone
                 
             'The 0th row is the visual right -hand side of of the image, and the 0th column is the visual bottom
             Case 7
-                GdipImageRotateFlip hImage, Rotate90FlipY
+                GdipImageRotateFlip hImage, GP_RF_90FlipY
                 
             'The 0th row is the visual left-hand side of of the image, and the 0th column is the visual bottom
             Case 8
-                GdipImageRotateFlip hImage, Rotate270FlipNone
+                GdipImageRotateFlip hImage, GP_RF_270FlipNone
         
         End Select
         
@@ -2350,12 +2273,17 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Retrieve the image's size
     ' RANDOM FACT! GdipGetImageDimension works fine on bitmaps.  On metafiles, it returns bizarre values that may be astronomically large.
-    '  My assumption is that image dimensions are not necessarily returned in pixels (though pixels are the default for bitmaps).  Anyway,
-    '  it's trivial to switch to GdipGetImageWidth/Height.  Original code was: GdipGetImageDimension hImage, imgWidth, imgHeight -- and
-    '  note that the original code required Single-type values instead of Longs.
+    '  My assumption is that these image dimensions are not necessarily returned in pixels (though pixels are the default for bitmaps),
+    '  or perhaps they are meant to be adjusted by DPI.
+    ' Anyway, the old floating-point width/height as now stored in the -F suffixed variables, while the original values now store
+    '  Long-type copies of the image dimensions.  (Also, these copies are good for both bitmaps and metafiles.)
     Dim imgWidth As Long, imgHeight As Long
     GdipGetImageWidth hImage, imgWidth
     GdipGetImageHeight hImage, imgHeight
+    
+    'Metafiles may want to use floating-point values, instead
+    Dim imgWidthF As Single, imgHeightF As Single
+    GdipGetImageDimension hImage, imgWidthF, imgHeightF
     
     'Retrieve the image's horizontal and vertical resolution (if any)
     Dim imgHResolution As Single, imgVResolution As Single
@@ -2364,12 +2292,14 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     dstDIB.SetDPI imgHResolution, imgVResolution
     
     #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "GDI+ image dimensions reported as: " & imgWidth & "x" & imgHeight & ", (" & imgWidthF & ", " & imgHeightF & ")"
         pdDebug.LogAction "GDI+ image resolution reported as: " & imgHResolution & "x" & imgVResolution
     #End If
     
     'Metafile containers (EMF, WMF) require special handling.
-    Dim emfPlusConversionSuccessful As Boolean
-    emfPlusConversionSuccessful = False
+    Dim emfPlusAvailable As Boolean, metafileWasUpsampled As Boolean
+    emfPlusAvailable = False
+    metafileWasUpsampled = False
     
     If isMetafile Then
         
@@ -2390,9 +2320,27 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             
         End If
         
-        'If GDI+ v1.1 is available, we can translate EMFs and WMFs into the new GDI+ EMF+ format, which supports antialiasing
+        'See if the incoming metafile already contains EMF+ records.  If it does, we don't want to up-convert it.
+        ' (The GDI+ conversion function straight-up fails if the original contains mixed EMF/EMF+ data, unfortunately.)
+        Dim tmpHeader As GP_MetafileHeader
+        If (GdipGetMetafileHeaderFromMetafile(hImage, tmpHeader) = GP_OK) Then
+            
+            emfPlusAvailable = (tmpHeader.mfType = GP_MT_EmfPlus) Or (tmpHeader.mfType = GP_MT_EmfDual)
+            
+            #If DEBUGMODE = 1 Then
+                If (tmpHeader.mfType = GP_MT_EmfPlus) Then pdDebug.LogAction "Note: incoming metafile is in EMF+ format.  Up-sampling will be skipped."
+                If (tmpHeader.mfType = GP_MT_EmfDual) Then pdDebug.LogAction "Note: incoming metafile is in dual-EMF format.  EMF+ data will be preferentially used."
+            #End If
+            
+        End If
+        
+        'If GDI+ v1.1 is available, we can translate old-style EMFs and WMFs into the new GDI+ EMF+ format, which supports antialiasing
         ' and alpha channels (among other things).
-        If GDI_Plus.IsGDIPlusV11Available Then
+        If ((Not emfPlusAvailable) And GDI_Plus.IsGDIPlusV11Available) Then
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Incoming metafile detected.  Attempting to upsample to EMF+ format..."
+            #End If
             
             'Create a temporary GDI+ graphics object, whose properties will be used to control the render state of the EMF
             Dim tmpSettingsDIB As pdDIB
@@ -2400,7 +2348,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             tmpSettingsDIB.CreateBlank 8, 8, 32, 0, 0
             
             Dim tmpGraphics As Long
-            If GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = GP_OK Then
+            If (GdipCreateFromHDC(tmpSettingsDIB.GetDIBDC, tmpGraphics) = GP_OK) Then
                 
                 'Set high-quality antialiasing and interpolation
                 GdipSetSmoothingMode tmpGraphics, GP_SM_Antialias
@@ -2415,14 +2363,24 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
                 'StripOffExtension newEmfPlusFilename
                 'newEmfPlusFilename = newEmfPlusFilename & " (EMFPlus).emf"
                 'If GdipConvertToEmfPlusToFile(tmpGraphics, hImage, convSuccess, StrPtr(newEmfPlusFilename), EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
-                
-                If GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, EmfTypeEmfPlusOnly, 0, mfHandleDst) = 0 Then
-
+                Dim emfConvertResult As GP_Result
+                emfConvertResult = GdipConvertToEmfPlus(tmpGraphics, hImage, convSuccess, GP_MT_EmfPlus, 0&, mfHandleDst)
+                If (emfConvertResult = GP_OK) Then
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "EMF+ conversion successful!  Continuing with load..."
+                    #End If
+                    
                     'Conversion successful!  Replace our current image handle with the EMF+ copy
-                    emfPlusConversionSuccessful = True
+                    metafileWasUpsampled = True
+                    emfPlusAvailable = True
                     GdipDisposeImage hImage
                     hImage = mfHandleDst
 
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "EMF+ conversion failed (#" & CStr(emfConvertResult) & ", " & CStr(convSuccess) & ").  Original EMF data will be used."
+                    #End If
                 End If
                 
                 'Release our temporary graphics container
@@ -2441,10 +2399,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     Dim hasAlpha As Boolean
     hasAlpha = False
     
-    Dim iPixelFormat As Long
+    Dim iPixelFormat As GP_PixelFormat
     GdipGetImagePixelFormat hImage, iPixelFormat
-    If (iPixelFormat And PixelFormatAlpha) <> 0 Then hasAlpha = True
-    If (iPixelFormat And PixelFormatPremultipliedAlpha) <> 0 Then hasAlpha = True
+    If (iPixelFormat And GP_PF_Alpha) <> 0 Then hasAlpha = True
+    If (iPixelFormat And GP_PF_PreMultAlpha) <> 0 Then hasAlpha = True
     
     'Make a note of the image's specific color depth, as relevant to PD
     Dim imgColorDepth As Long
@@ -2452,81 +2410,62 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     'Check for CMYK images
     Dim isCMYK As Boolean
-    If (iPixelFormat = PixelFormat32bppCMYK) Then isCMYK = True
-    
-    'Create a blank PD-compatible DIB
-    If isCMYK Then
-        dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
-    Else
-        
-        'Metafiles require special handling on Vista and earlier
-        If isMetafile Then
-            
-            If emfPlusConversionSuccessful Or hasAlpha Then
-                dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32
-            Else
-                dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
-            End If
-        
-        'Non-metafiles can always be placed into a 32bpp container.
-        Else
-            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32
-        End If
-        
-    End If
+    isCMYK = ((iPixelFormat And GP_PF_32bppCMYK) <> 0)
     
     Dim copyBitmapData As GP_BitmapData
     Dim tmpRect As RECTL
-    Dim iGraphics As Long
+    Dim hGraphics As Long
     
-    'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
-    ' 32bpp (including CMYK) images require a bit of extra work.
-    If hasAlpha Then
+    'We now want to split handling for metafiles vs bitmaps.  Metafiles can be directly "painted" onto the target surface, which allows us
+    ' to bypass unnecessary allocations.
+    If isMetafile Then
         
-        'Make sure the image is in 32bpp premultiplied ARGB format
-        If (iPixelFormat <> PixelFormat32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
+        'Metafiles can be rendered to transparent surfaces, but they're not always predictable.  GDI commands in particular can sometimes
+        ' result in portions of the metafile being transparent for no obvious reason.  (I've got a number of problematic examples in
+        ' the "images from testers/metafiles" folder.)
+        '
+        'In the future, a dialog could be presented, but right now, we use very simple heuristics to determine how to proceed.
+        ' 1) If we converted the metafile to EMF+ ourselves, the image is 99+% guaranteed to be okay with transparency.
+        '    Paint it to a 32-bpp surface.
+        ' 2) If the EMF+ data came from somewhere else, there's a good chance the data contain unpredictable transparency behavior.
+        '    Paint to a 24-bpp base just to be safe.
+        If metafileWasUpsampled Then
+            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
+        Else
+            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24, vbWhite
+        End If
         
-        'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
+        'Render the GDI+ image directly onto the newly created DIB
+        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+        GdipDrawImageRect hGraphics, hImage, 0#, 0#, imgWidth, imgHeight
+        GdipDeleteGraphics hGraphics
         
-        'Start by preparing a BitmapData variable with instructions on where GDI+ should paste the bitmap data
-        With copyBitmapData
-            .BD_Width = imgWidth
-            .BD_Height = imgHeight
-            .BD_PixelFormat = PixelFormat32bppPARGB
-            .BD_Stride = dstDIB.GetDIBStride
-            .BD_Scan0 = dstDIB.GetDIBPointer
-        End With
-        
-        'Next, prepare a clipping rect
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = imgWidth
-            .Bottom = imgHeight
-        End With
-        
-        'Use LockBits to perform the copy for us.
-        GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppPARGB, copyBitmapData
-        GdipBitmapUnlockBits hImage, copyBitmapData
-    
+    'This is a raster-type image
     Else
     
-        'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.
-        ' Note that if a CMYK profile is not present, we allow GDI+ to convert the image to RGB for us.
-        If (isCMYK And HasProfile) Then
-        
-            'Create a blank 32bpp DIB, which will hold the CMYK data
-            Dim tmpCMYKDIB As pdDIB
-            Set tmpCMYKDIB = New pdDIB
-            tmpCMYKDIB.CreateBlank imgWidth, imgHeight, 32
-        
-            'Next, prepare a BitmapData variable with instructions on where GDI+ should paste the bitmap data
+        'Create the destination DIB for this image.  Color-depth must be handled manually.
+        If isCMYK Then
+            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 24
+        Else
+            dstDIB.CreateBlank CLng(imgWidth), CLng(imgHeight), 32, 0, 0
+        End If
+    
+        'We now copy over image data in one of two ways.  If the image is 24bpp, our job is simple - use BitBlt and an hBitmap.
+        ' 32bpp (including CMYK) images require a bit of extra work.
+        If hasAlpha Then
+            
+            'Make sure the image is in 32bpp premultiplied ARGB format
+            If (iPixelFormat <> GP_PF_32bppPARGB) Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, GP_PF_32bppPARGB, hImage, hImage
+            
+            'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
+            
+            'Start by preparing a BitmapData variable with instructions on where GDI+ should paste the bitmap data
             With copyBitmapData
                 .BD_Width = imgWidth
                 .BD_Height = imgHeight
-                .BD_PixelFormat = PixelFormat32bppCMYK
-                .BD_Stride = tmpCMYKDIB.GetDIBStride
-                .BD_Scan0 = tmpCMYKDIB.GetDIBPointer
+                .BD_PixelFormat = GP_PF_32bppPARGB
+                .BD_Stride = dstDIB.GetDIBStride
+                .BD_Scan0 = dstDIB.GetDIBPointer
             End With
             
             'Next, prepare a clipping rect
@@ -2538,43 +2477,83 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             End With
             
             'Use LockBits to perform the copy for us.
-            GdipBitmapLockBits hImage, tmpRect, ImageLockModeUserInputBuf Or ImageLockModeWrite Or ImageLockModeRead, PixelFormat32bppCMYK, copyBitmapData
+            GdipBitmapLockBits hImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppPARGB, copyBitmapData
             GdipBitmapUnlockBits hImage, copyBitmapData
-            
-            'Apply the transformation using the dedicated CMYK transform handler
-            If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Copying newly transformed sRGB data..."
-                #End If
-            
-                'The transform was successful, and the destination DIB is ready to go!
-                dstDIB.ICCProfile.MarkSuccessfulProfileApplication
-                                
-            'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
-            Else
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
-                #End If
-            
-                GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-                GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
-                GdipDeleteGraphics iGraphics
-            
-            End If
-            
-            Set tmpCMYKDIB = Nothing
         
         Else
+        
+            'CMYK is handled separately from regular RGB data, as we want to perform an ICC profile conversion as well.
+            ' Note that if a CMYK profile is not present, we allow GDI+ to convert the image to RGB for us.
+            If (isCMYK And imgHasIccProfile) Then
             
-            'Render the GDI+ image directly onto the newly created DIB
-            GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-            GdipDrawImageRect iGraphics, hImage, 0, 0, imgWidth, imgHeight
-            GdipDeleteGraphics iGraphics
+                'Create a blank 32bpp DIB, which will hold the CMYK data
+                Dim tmpCMYKDIB As pdDIB
+                Set tmpCMYKDIB = New pdDIB
+                tmpCMYKDIB.CreateBlank imgWidth, imgHeight, 32
             
+                'Next, prepare a BitmapData variable with instructions on where GDI+ should paste the bitmap data
+                With copyBitmapData
+                    .BD_Width = imgWidth
+                    .BD_Height = imgHeight
+                    .BD_PixelFormat = GP_PF_32bppCMYK
+                    .BD_Stride = tmpCMYKDIB.GetDIBStride
+                    .BD_Scan0 = tmpCMYKDIB.GetDIBPointer
+                End With
+                
+                'Next, prepare a clipping rect
+                With tmpRect
+                    .Left = 0
+                    .Top = 0
+                    .Right = imgWidth
+                    .Bottom = imgHeight
+                End With
+                
+                'Use LockBits to perform the copy for us.
+                GdipBitmapLockBits hImage, tmpRect, GP_BLM_UserInputBuf Or GP_BLM_Write Or GP_BLM_Read, GP_PF_32bppCMYK, copyBitmapData
+                GdipBitmapUnlockBits hImage, copyBitmapData
+                
+                'Apply the transformation using the dedicated CMYK transform handler
+                If ColorManagement.ApplyCMYKTransform_WindowsCMS(dstDIB.ICCProfile.GetICCDataPointer, dstDIB.ICCProfile.GetICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.GetSourceRenderIntent) Then
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Copying newly transformed sRGB data..."
+                    #End If
+                
+                    'The transform was successful, and the destination DIB is ready to go!
+                    dstDIB.ICCProfile.MarkSuccessfulProfileApplication
+                                    
+                'Something went horribly wrong.  Use GDI+ to apply a generic CMYK -> RGB transform.
+                Else
+                
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion..."
+                    #End If
+                    
+                    GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+                    If (hGraphics <> 0) Then
+                        GdipDrawImageRect hGraphics, hImage, 0, 0, imgWidth, imgHeight
+                        GdipDeleteGraphics hGraphics
+                    End If
+                    
+                End If
+                
+                Set tmpCMYKDIB = Nothing
+            
+            Else
+                
+                'Render the GDI+ image directly onto the newly created DIB
+                GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+                If (hGraphics <> 0) Then
+                    GdipDrawImageRect hGraphics, hImage, 0, 0, imgWidth, imgHeight
+                    GdipDeleteGraphics hGraphics
+                End If
+                
+            End If
+        
+        'End raster w/ alpha vs raster w/out alpha check
         End If
     
+    'End metafile vs raster check
     End If
     
     'Note some original file settings inside the DIB
@@ -2589,23 +2568,23 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
 End Function
 
 'Given a GDI+ pixel format value, return a numeric color depth (e.g. 24, 32, etc)
-Private Function GetColorDepthFromPixelFormat(ByVal gdipPixelFormat As Long) As Long
+Private Function GetColorDepthFromPixelFormat(ByVal gdipPixelFormat As GP_PixelFormat) As Long
 
-    If (gdipPixelFormat = PixelFormat1bppIndexed) Then
+    If (gdipPixelFormat = GP_PF_1bppIndexed) Then
         GetColorDepthFromPixelFormat = 1
-    ElseIf (gdipPixelFormat = PixelFormat4bppIndexed) Then
+    ElseIf (gdipPixelFormat = GP_PF_4bppIndexed) Then
         GetColorDepthFromPixelFormat = 4
-    ElseIf (gdipPixelFormat = PixelFormat8bppIndexed) Then
+    ElseIf (gdipPixelFormat = GP_PF_8bppIndexed) Then
         GetColorDepthFromPixelFormat = 8
-    ElseIf (gdipPixelFormat = PixelFormat16bppGreyscale) Or (gdipPixelFormat = PixelFormat16bppRGB555) Or (gdipPixelFormat = PixelFormat16bppRGB565) Or (gdipPixelFormat = PixelFormat16bppARGB1555) Then
+    ElseIf (gdipPixelFormat = GP_PF_16bppGreyscale) Or (gdipPixelFormat = GP_PF_16bppRGB555) Or (gdipPixelFormat = GP_PF_16bppRGB565) Or (gdipPixelFormat = GP_PF_16bppARGB1555) Then
         GetColorDepthFromPixelFormat = 16
-    ElseIf (gdipPixelFormat = PixelFormat24bppRGB) Or (gdipPixelFormat = PixelFormat32bppRGB) Then
+    ElseIf (gdipPixelFormat = GP_PF_24bppRGB) Or (gdipPixelFormat = GP_PF_32bppRGB) Then
         GetColorDepthFromPixelFormat = 24
-    ElseIf (gdipPixelFormat = PixelFormat32bppARGB) Or (gdipPixelFormat = PixelFormat32bppPARGB) Then
+    ElseIf (gdipPixelFormat = GP_PF_32bppARGB) Or (gdipPixelFormat = GP_PF_32bppPARGB) Then
         GetColorDepthFromPixelFormat = 32
-    ElseIf (gdipPixelFormat = PixelFormat48bppRGB) Then
+    ElseIf (gdipPixelFormat = GP_PF_48bppRGB) Then
         GetColorDepthFromPixelFormat = 48
-    ElseIf (gdipPixelFormat = PixelFormat64bppARGB) Or (gdipPixelFormat = PixelFormat64bppPARGB) Then
+    ElseIf (gdipPixelFormat = GP_PF_64bppARGB) Or (gdipPixelFormat = GP_PF_64bppPARGB) Then
         GetColorDepthFromPixelFormat = 64
     Else
         GetColorDepthFromPixelFormat = 24
@@ -2615,7 +2594,7 @@ End Function
 
 'Save an image using GDI+.  Per the current save spec, ImageID must be specified.
 ' Additional save options are currently available for JPEGs (save quality, range [1,100]) and TIFFs (compression type).
-Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As GDIPlusImageFormat, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
+Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilename As String, ByVal imgFormat As GP_ImageFormat, ByVal outputColorDepth As Long, Optional ByVal jpegQuality As Long = 92) As Boolean
 
     On Error GoTo GDIPlusSaveError
 
@@ -2627,7 +2606,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     srcPDImage.GetCompositedImage tmpDIB, False
-    If (tmpDIB.GetDIBColorDepth <> 24) And imgFormat = [ImageJPEG] Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+    If (tmpDIB.GetDIBColorDepth <> 24) And imgFormat = GP_IF_JPEG Then tmpDIB.CompositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current DIB
     Dim imgHeader As BITMAPINFO
@@ -2648,10 +2627,10 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         
     'Different GDI+ calls are required for different color depths. GdipCreateBitmapFromGdiDib leads to a blank
     ' alpha channel for 32bpp images, so use GdipCreateBitmapFromScan0 in that case.
-    If tmpDIB.GetDIBColorDepth = 32 Then
+    If (tmpDIB.GetDIBColorDepth = 32) Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
-        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth * 4, PixelFormat32bppARGB, ByVal tmpDIB.GetDIBPointer, hImage)
+        GDIPlusReturn = GdipCreateBitmapFromScan0(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth * 4, GP_PF_32bppARGB, ByVal tmpDIB.GetDIBPointer, hImage)
     
     Else
         GDIPlusReturn = GdipCreateBitmapFromGdiDib(imgHeader, ByVal tmpDIB.GetDIBPointer, hImage)
@@ -2664,66 +2643,66 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     End If
     
     'Certain image formats require extra parameters, and because the values are passed ByRef, they can't be constants
-    Dim GIF_EncoderVersion As Long
-    GIF_EncoderVersion = [EncoderValueVersionGif89]
+    Dim gif_EncoderVersion As GP_EncoderValue
+    gif_EncoderVersion = GP_EV_VersionGif89
     
     Dim gdipColorDepth As Long
     gdipColorDepth = outputColorDepth
     
-    Dim TIFF_Compression As Long
-    TIFF_Compression = [EncoderValueCompressionLZW]
+    Dim TIFF_Compression As GP_EncoderValue
+    TIFF_Compression = GP_EV_CompressionLZW
     
     'TIFF has some unique constraints on account of its many compression schemes.  Because it only supports a subset
     ' of compression types, we must adjust our code accordingly.
-    If imgFormat = ImageTIFF Then
+    If (imgFormat = GP_IF_TIFF) Then
     
         Select Case g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)
         
             'Default settings (LZW for > 1bpp, CCITT Group 4 fax encoding for 1bpp)
             Case 0
-                If gdipColorDepth = 1 Then TIFF_Compression = [EncoderValueCompressionCCITT4] Else TIFF_Compression = [EncoderValueCompressionLZW]
+                If gdipColorDepth = 1 Then TIFF_Compression = GP_EV_CompressionCCITT4 Else TIFF_Compression = GP_EV_CompressionLZW
                 
             'No compression
             Case 1
-                TIFF_Compression = [EncoderValueCompressionNone]
+                TIFF_Compression = GP_EV_CompressionNone
                 
             'Macintosh Packbits (RLE)
             Case 2
-                TIFF_Compression = [EncoderValueCompressionRle]
+                TIFF_Compression = GP_EV_CompressionRle
             
             'Proper deflate (Adobe-style) - not supported by GDI+
             Case 3
-                TIFF_Compression = [EncoderValueCompressionLZW]
+                TIFF_Compression = GP_EV_CompressionLZW
             
             'Obsolete deflate (PKZIP or zLib-style) - not supported by GDI+
             Case 4
-                TIFF_Compression = [EncoderValueCompressionLZW]
+                TIFF_Compression = GP_EV_CompressionLZW
             
             'LZW
             Case 5
-                TIFF_Compression = [EncoderValueCompressionLZW]
+                TIFF_Compression = GP_EV_CompressionLZW
                 
             'JPEG - not supported by GDI+
             Case 6
-                TIFF_Compression = [EncoderValueCompressionLZW]
+                TIFF_Compression = GP_EV_CompressionLZW
             
             'Fax Group 3
             Case 7
                 gdipColorDepth = 1
-                TIFF_Compression = [EncoderValueCompressionCCITT3]
+                TIFF_Compression = GP_EV_CompressionCCITT3
             
             'Fax Group 4
             Case 8
                 gdipColorDepth = 1
-                TIFF_Compression = [EncoderValueCompressionCCITT4]
+                TIFF_Compression = GP_EV_CompressionCCITT4
                 
         End Select
     
     End If
     
     'Request an encoder from GDI+ based on the type passed to this routine
-    Dim uEncCLSID As clsid
-    Dim uEncParams As EncoderParameters
+    Dim uEncClsID As clsID, tmpClsID As clsID
+    Dim uEncParams As GP_EncoderParameters
     Dim aEncParams() As Byte
 
     Message "Preparing GDI+ encoder for this filetype..."
@@ -2731,88 +2710,88 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Select Case imgFormat
         
         'BMP export
-        Case [ImageBMP]
-            pvGetEncoderClsID "image/bmp", uEncCLSID
-            uEncParams.Count = 1
+        Case GP_IF_BMP
+            GetEncoderFromMimeType "image/bmp", uEncClsID
+            uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
-            With uEncParams.Parameter
-                .NumberOfValues = 1
-                .encType = EncoderParameterValueTypeLong
-                .Guid = pvDEFINE_GUID(EncoderColorDepth)
-                .Value = VarPtr(gdipColorDepth)
+            With uEncParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(gdipColorDepth)
             End With
             
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
     
         'GIF export
-        Case [ImageGIF]
-            pvGetEncoderClsID "image/gif", uEncCLSID
-            uEncParams.Count = 1
+        Case GP_IF_GIF
+            GetEncoderFromMimeType "image/gif", uEncClsID
+            uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
-            With uEncParams.Parameter
-                .NumberOfValues = 1
-                .encType = EncoderParameterValueTypeLong
-                .Guid = pvDEFINE_GUID(EncoderVersion)
-                .Value = VarPtr(GIF_EncoderVersion)
+            With uEncParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                CopyGUIDIntoByteArray GP_EP_Version, VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(gif_EncoderVersion)
             End With
             
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
             
         'JPEG export (requires extra work to specify a quality for the encode)
-        Case [ImageJPEG]
-            pvGetEncoderClsID "image/jpeg", uEncCLSID
-            uEncParams.Count = 1
+        Case GP_IF_JPEG
+            GetEncoderFromMimeType "image/jpeg", uEncClsID
+            uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
-            With uEncParams.Parameter
-                .NumberOfValues = 1
-                .encType = [EncoderParameterValueTypeLong]
-                .Guid = pvDEFINE_GUID(EncoderQuality)
-                .Value = VarPtr(jpegQuality)
+            With uEncParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                CopyGUIDIntoByteArray GP_EP_Quality, VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(jpegQuality)
             End With
             
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
         
         'PNG export
-        Case [ImagePNG]
-            pvGetEncoderClsID "image/png", uEncCLSID
-            uEncParams.Count = 1
+        Case GP_IF_PNG
+            GetEncoderFromMimeType "image/png", uEncClsID
+            uEncParams.EP_Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
-            With uEncParams.Parameter
-                .NumberOfValues = 1
-                .encType = EncoderParameterValueTypeLong
-                .Guid = pvDEFINE_GUID(EncoderColorDepth)
-                .Value = VarPtr(gdipColorDepth)
+            With uEncParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(gdipColorDepth)
             End With
             
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
         
         'TIFF export (requires extra work to specify compression and color depth for the encode)
-        Case [ImageTIFF]
-            pvGetEncoderClsID "image/tiff", uEncCLSID
-            uEncParams.Count = 2
-            ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter) * 2)
+        Case GP_IF_TIFF
+            GetEncoderFromMimeType "image/tiff", uEncClsID
+            uEncParams.EP_Count = 2
+            ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.EP_Parameter) * 2)
             
-            With uEncParams.Parameter
-                .NumberOfValues = 1
-                .encType = [EncoderParameterValueTypeLong]
-                .Guid = pvDEFINE_GUID(EncoderCompression)
-                .Value = VarPtr(TIFF_Compression)
+            With uEncParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                CopyGUIDIntoByteArray GP_EP_Compression, VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(TIFF_Compression)
             End With
             
             CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
             
-            With uEncParams.Parameter
-                .NumberOfValues = 1
-                .encType = [EncoderParameterValueTypeLong]
-                .Guid = pvDEFINE_GUID(EncoderColorDepth)
-                .Value = VarPtr(gdipColorDepth)
+            With uEncParams.EP_Parameter
+                .EP_NumOfValues = 1
+                .EP_ValueType = GP_EVT_Long
+                CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+                .EP_ValuePtr = VarPtr(gdipColorDepth)
             End With
             
-            CopyMemory aEncParams(Len(uEncParams) + 1), uEncParams.Parameter, Len(uEncParams.Parameter)
+            CopyMemory aEncParams(Len(uEncParams) + 1), uEncParams.EP_Parameter, Len(uEncParams.EP_Parameter)
     
     End Select
 
@@ -2827,7 +2806,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Message "Saving the file..."
     
     'Perform the encode and save
-    GDIPlusReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(uEncCLSID), aEncParams(1))
+    GDIPlusReturn = GdipSaveImageToFile(hImage, StrPtr(dstFilename), VarPtr(uEncClsID), aEncParams(1))
     
     If (GDIPlusReturn <> 0) Then
         GdipDisposeImage hImage
@@ -2860,22 +2839,22 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     If GetGdipBitmapHandleFromDIB(hGdipBitmap, srcDIB) Then
     
         'Request a PNG encoder from GDI+
-        Dim uEncCLSID As clsid
-        Dim uEncParams As EncoderParameters
+        Dim uEncClsID As clsID
+        Dim uEncParams As GP_EncoderParameters
         Dim aEncParams() As Byte
             
-        pvGetEncoderClsID "image/png", uEncCLSID
-        uEncParams.Count = 1
+        GetEncoderFromMimeType "image/png", uEncClsID
+        uEncParams.EP_Count = 1
         ReDim aEncParams(1 To Len(uEncParams))
         
         Dim gdipColorDepth As Long
         gdipColorDepth = srcDIB.GetDIBColorDepth
         
-        With uEncParams.Parameter
-            .NumberOfValues = 1
-            .encType = EncoderParameterValueTypeLong
-            .Guid = pvDEFINE_GUID(EncoderColorDepth)
-            .Value = VarPtr(gdipColorDepth)
+        With uEncParams.EP_Parameter
+            .EP_NumOfValues = 1
+            .EP_ValueType = GP_EVT_Long
+            CopyGUIDIntoByteArray GP_EP_ColorDepth, VarPtr(.EP_GUID(0))
+            .EP_ValuePtr = VarPtr(gdipColorDepth)
         End With
         
         CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
@@ -2886,7 +2865,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
         If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
         
         'Perform the encode and save
-        GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncCLSID), aEncParams(1))
+        GDIPlusReturn = GdipSaveImageToFile(hGdipBitmap, StrPtr(dstFilename), VarPtr(uEncClsID), aEncParams(1))
         GDIPlusQuickSavePNG = CBool(GDIPlusReturn = GP_OK)
         
         'Release the GDI+ copy of the image
@@ -3101,7 +3080,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         'If modified alpha is requested, pass the new value to this image container
         If (newAlpha <> 1#) Then
             m_AttributesMatrix(3, 3) = newAlpha
-            GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
+            GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, GP_CMF_Default
         End If
         
         'If the caller doesn't care about source blending (e.g. they're painting to a known transparent destination),
@@ -3178,7 +3157,7 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         'If modified alpha is requested, pass the new value to this image container
         If (newAlpha <> 1) Then
             m_AttributesMatrix(3, 3) = newAlpha
-            GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
+            GdipSetImageAttributesColorMatrix imgAttributesHandle, GP_CAT_Bitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, GP_CMF_Default
         End If
         
         'Perform the draw
@@ -3431,7 +3410,7 @@ End Sub
 
 'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.
 ' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
-Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As Long
+Private Function GetEncoderFromMimeType(ByRef strMimeType As String, ByRef classID As clsID) As Long
 
   Dim Num      As Long
   Dim Size     As Long
@@ -3439,7 +3418,7 @@ Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As L
   Dim ICI()    As ImageCodecInfo
   Dim Buffer() As Byte
     
-    pvGetEncoderClsID = -1 ' Failure flag
+    GetEncoderFromMimeType = -1 ' Failure flag
     
     '-- Get the encoder array size
     Call GdipGetImageEncodersSize(Num, Size)
@@ -3457,9 +3436,9 @@ Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As L
     '-- Loop through all the codecs
     For lIdx = 1 To Num
         '-- Must convert the pointer into a usable string
-        If (StrComp(pvPtrToStrW(ICI(lIdx).MimeType), strMimeType, vbTextCompare) = 0) Then
-            ClassID = ICI(lIdx).ClassID ' Save the Class ID
-            pvGetEncoderClsID = lIdx      ' Return the index number for success
+        If (StrComp(GetBstrFromPtr(ICI(lIdx).MimeType), strMimeType, vbTextCompare) = 0) Then
+            classID = ICI(lIdx).classID ' Save the Class ID
+            GetEncoderFromMimeType = lIdx      ' Return the index number for success
             Exit For
         End If
     Next lIdx
@@ -3468,15 +3447,17 @@ Private Function pvGetEncoderClsID(strMimeType As String, ClassID As clsid) As L
     Erase Buffer
 End Function
 
-Private Function pvDEFINE_GUID(ByVal sGuid As String) As clsid
-'-- Courtesy of: Dana Seaman
-'   Helper routine to convert a CLSID(aka GUID) string to a structure
-'   Example ImageFormatBMP = {B96B3CAB-0728-11D3-9D7B-0000F81EF32E}
-    Call CLSIDFromString(StrPtr(sGuid), VarPtr(pvDEFINE_GUID))
+'Convenience wrapper for the CLSIDFromString API
+Private Function GetClsIDFromGUID(ByVal sGuid As String) As clsID
+    CLSIDFromString StrPtr(sGuid), VarPtr(GetClsIDFromGUID)
 End Function
 
+Private Sub CopyGUIDIntoByteArray(ByVal sGuid As String, ByVal ptrToArray As Long)
+    CLSIDFromString StrPtr(sGuid), ptrToArray
+End Sub
+
 '"Convert" (technically, dereference) an ANSI or Unicode string to the BSTR used by VB
-Private Function pvPtrToStrW(ByVal lpsz As Long) As String
+Private Function GetBstrFromPtr(ByVal lpsz As Long) As String
     
   Dim sOut As String
   Dim lLen As Long
@@ -3486,7 +3467,7 @@ Private Function pvPtrToStrW(ByVal lpsz As Long) As String
     If (lLen > 0) Then
         sOut = StrConv(String$(lLen, vbNullChar), vbUnicode)
         Call CopyMemory(ByVal sOut, ByVal lpsz, lLen * 2)
-        pvPtrToStrW = StrConv(sOut, vbFromUnicode)
+        GetBstrFromPtr = StrConv(sOut, vbFromUnicode)
     End If
 End Function
 
@@ -4707,7 +4688,7 @@ Public Function GDIPlus_ImageGetFileFormatGUID(ByVal hImage As Long) As String
                 CopyMemory_Strict StrPtr(GDIPlus_ImageGetFileFormatGUID), imgStringPointer, strLength * 2
             End If
         Else
-            InternalGDIPlusError "Failed to convert CLSID to string", "GDIPlus_ImageGetFileFormatGUID failed"
+            InternalGDIPlusError "Failed to convert clsID to string", "GDIPlus_ImageGetFileFormatGUID failed"
         End If
         
     Else

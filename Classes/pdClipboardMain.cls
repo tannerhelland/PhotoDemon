@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Clipboard Interface
 'Copyright 2001-2017 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 28/February/16
-'Last update: add Unicode support for drag/drop routines, lots o' refactoring to accommodate this
+'Last updated: 30/March/17
+'Last update: new clipboard support for metafile formats
 '
 'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here, but in the separate pdClipboard
 ' object, which includes a ton of specialized helper functions.  Look there for details.
@@ -36,13 +36,14 @@ Option Explicit
 '**************************************************************************
 'CONSTANTS FOR DEBUGGING USE ONLY.
 ' In production code, these should all be set to TRUE.
-Private Const PD_CB_ALLOW_INTERNAL_FORMAT_PASTE As Boolean = True
-Private Const PD_CB_ALLOW_PNG_PASTE As Boolean = True
-Private Const PD_CB_ALLOW_JPEG_PASTE As Boolean = True
-Private Const PD_CB_ALLOW_ONLINE_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_BMP_DIB_PASTE As Boolean = True
 Private Const PD_CB_ALLOW_FILE_PASTE As Boolean = True
 Private Const PD_CB_ALLOW_GENERIC_TEXT_PASTE As Boolean = True
-Private Const PD_CB_ALLOW_BMP_DIB_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_INTERNAL_FORMAT_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_JPEG_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_METAFILE_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_ONLINE_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_PNG_PASTE As Boolean = True
 '**************************************************************************
 
 'Some format constants are not inherently defined by VB; we cache these at load-time
@@ -124,8 +125,10 @@ Private Const RGBA_GREEN_MASK As Long = &HFF00&
 Private Const RGBA_BLUE_MASK As Long = &HFF&
 Private Const RGBA_ALPHA_MASK As Long = &HFF000000
 
+Private Declare Function CopyEnhMetaFileW Lib "gdi32" (ByVal hEmfSrc As Long, ByVal ptrToDstFilename As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteEnhMetaFile Lib "gdi32" (ByVal hEmf As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -204,7 +207,7 @@ End Type
 
 Private Type FILEDESCRIPTOR
     dwFlags As Long
-    clsid(0 To 3) As Long
+    clsID(0 To 3) As Long
     cSize As SIZEL
     cPoint As POINTL
     dwFileAttributes As Long
@@ -397,10 +400,16 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             pasteWasSuccessful = ClipboardPaste_TextSource(srcIsMeantAsLayer)
         End If
         
-        'Last up are DIBs and bitmaps.  Once again, the OS auto-converts between bitmap and DIB formats, and if it all possible,
+        'Next, use any DIBs or bitmaps.  Once again, the OS auto-converts between bitmap and DIB formats, and if it all possible,
         ' we prefer DIBv5 as it actually supports alpha data.
         If m_Clipboard.DoesClipboardHaveBitmapImage() And (Not pasteWasSuccessful) And PD_CB_ALLOW_BMP_DIB_PASTE Then
             pasteWasSuccessful = ClipboardPaste_BitmapImage(srcIsMeantAsLayer)
+        End If
+        
+        'As a last resort, try to grab metafiles.  These are not ideal as some software (*cough* OFFICE *cough*) generates
+        ' pretty terrible metafiles, but it's better than nothing.
+        If m_Clipboard.DoesClipboardHaveMetafile() And (Not pasteWasSuccessful) And PD_CB_ALLOW_METAFILE_PASTE Then
+            pasteWasSuccessful = ClipboardPaste_Metafile(srcIsMeantAsLayer)
         End If
         
         'Regardless of success or failure, make sure to close the clipboard now that we're done with it.
@@ -679,6 +688,97 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean)
         #End If
     End If
         
+End Function
+
+'If the clipboard contains any valid metafile format, you can call this function to initiate a "paste" command.
+' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image,
+' or as a new layer in an existing image.
+'
+'RETURNS: TRUE if successful; FALSE otherwise.
+Private Function ClipboardPaste_Metafile(ByVal srcIsMeantAsLayer As Boolean) As Boolean
+    
+    'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
+    ClipboardPaste_Metafile = False
+    
+    'Raw retrieval storage variables
+    Dim rawClipboardData() As Byte
+    
+    'Temporary file for storing the clipboard data.  (This lets us use PD's central image load function.)
+    Dim tmpClipboardFile As String
+    
+    'pdFSO is used to ensure Unicode subfolder compatibility
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
+    'Metafiles show up in a few different formats.  We want to use EMFs, if possible.
+    If m_Clipboard.DoesClipboardHaveFormatID(CF_ENHMETAFILE) Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ClipboardPaste_Metafile() will now attempt to load an EMF from the clipboard..."
+        #End If
+        
+        'Clipboard metafiles only store a *handle* to the source metafile.  They do not store the actual metafile data,
+        ' which means we have to manually grab the handle and write the data out to file.
+        Dim emfHandle As Long
+        emfHandle = m_Clipboard.GetClipboardMemoryHandle(CF_ENHMETAFILE)
+        
+        If (emfHandle <> 0) Then
+        
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Clipboard metafile handle retrieved successfully.  Writing to temp file..."
+            #End If
+            
+            tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.emf"
+            
+            Dim tmpEmfCopy As Long
+            tmpEmfCopy = CopyEnhMetaFileW(emfHandle, StrPtr(tmpClipboardFile))
+            
+            'When copying to file, Windows (for whatever reason) creates a dupliate EMF handle.  We are responsible
+            ' for freeing this handle.
+            If (tmpEmfCopy <> 0) Then
+                
+                DeleteEnhMetaFile tmpEmfCopy
+                
+                'We can now use the standard image load routine to import the temporary file.  Because we don't want the
+                ' load function to use the temporary file name as the image name, we manually supply a filename to suggest
+                ' if the user eventually tries to save the file.
+                Dim sTitle As String
+                sTitle = g_Language.TranslateMessage("Clipboard Image")
+                sTitle = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                
+                'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+                If srcIsMeantAsLayer Then
+                    Layers.LoadImageAsNewLayer False, tmpClipboardFile, sTitle, True
+                Else
+                    LoadFileAsNewImage tmpClipboardFile, sTitle, False
+                End If
+                
+                'Be polite and remove the temporary file
+                cFile.KillFile tmpClipboardFile
+                
+                'If we made it all the way here, the load was (probably?) successful
+                Message "Clipboard data imported successfully "
+                ClipboardPaste_Metafile = True
+                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  Clipboard metafile data could not be written to a temp file."
+                #End If
+            End If
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Clipboard.GetBinaryData failed on metafile data.  Special paste action abandoned."
+            #End If
+        End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ClipboardPaste_Metafile was called, but the requested data doesn't exist on the clipboard."
+        #End If
+    End If
+    
 End Function
 
 'If the clipboard contains text, try to find an image path or URL that we can use.

@@ -24,9 +24,9 @@ Option Explicit
 'Functions required to initialize an OLE interface from within VB
 Private Declare Sub OleInitialize Lib "ole32" (pvReserved As Any)
 Private Declare Sub OleUninitialize Lib "ole32" ()
-Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, pclsid As Guid) As Long
+Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As String, pClsID As Guid) As Long
 Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As String, lpiid As Guid) As Long
-Private Declare Function CoCreateInstance Lib "ole32" (rclsid As Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, rIID As Guid, ppv As Any) As Long
+Private Declare Function CoCreateInstance Lib "ole32" (rClsID As Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, rIID As Guid, ppv As Any) As Long
 
 Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal newValue As Long) As Long
@@ -52,7 +52,7 @@ Private Const unk_QueryInterface As Long = 0
 Private Const unk_AddRef As Long = 1
 Private Const unk_Release As Long = 2
 
-Private Const CLSID_TaskbarList As String = "{56FDF344-FD6D-11d0-958A-006097C9A090}"
+Private Const clsID_TaskbarList As String = "{56FDF344-FD6D-11d0-958A-006097C9A090}"
 Private Const IID_ITaskbarList3 As String = "{EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF}"
 Private Enum ITaskbarList3Members
                                 '/* ITaskbarList methods */
@@ -185,10 +185,10 @@ Public Sub PrepWin7Features()
     win7FeaturesAllowed = True
     
     If win7FeaturesAllowed Then
-        Dim clsid As Guid, InterfaceGuid As Guid
-        Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), clsid)
+        Dim clsID As Guid, InterfaceGuid As Guid
+        Call CLSIDFromString(StrConv(clsID_TaskbarList, vbUnicode), clsID)
         Call IIDFromString(StrConv(IID_ITaskbarList3, vbUnicode), InterfaceGuid)
-        Call CoCreateInstance(clsid, 0, 1, InterfaceGuid, objHandle)
+        Call CoCreateInstance(clsID, 0, 1, InterfaceGuid, objHandle)
     End If
     
 End Sub
