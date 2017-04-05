@@ -312,12 +312,22 @@ Friend Sub WrapArrayAroundDIB(ByRef srcArray() As Byte, ByRef srcSafeArray As SA
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 
+Friend Sub WrapArrayAroundScanline(ByRef srcArray() As Byte, ByRef srcSafeArray As SAFEARRAY1D, Optional ByVal dstScanLine As Long = 0)
+    PrepInternalSafeArray_Scanline srcSafeArray, dstScanLine
+    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+End Sub
+
 Public Sub UnwrapArrayFromDIB(ByRef srcArray() As Byte)
     CopyMemory ByVal VarPtrArray(srcArray), 0&, 4&
 End Sub
 
 Friend Sub WrapLongArrayAroundDIB(ByRef srcArray() As Long, ByRef srcSafeArray As SAFEARRAY2D)
     PrepInternalLongSafeArray srcSafeArray
+    CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
+End Sub
+
+Friend Sub WrapLongArrayAroundScanline(ByRef srcArray() As Long, ByRef srcSafeArray As SAFEARRAY1D, Optional ByVal dstScanLine As Long = 0)
+    PrepInternalLongSafeArray_Scanline srcSafeArray, dstScanLine
     CopyMemory ByVal VarPtrArray(srcArray()), VarPtr(srcSafeArray), 4&
 End Sub
 
@@ -1497,6 +1507,17 @@ Private Sub PrepInternalSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
     End With
 End Sub
 
+Private Sub PrepInternalSafeArray_Scanline(ByRef dstSafeArray As SAFEARRAY1D, ByVal dstLine As Long)
+    With dstSafeArray
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = m_dibStride
+        .pvData = m_dibBits + (dstLine * m_dibStride)
+    End With
+End Sub
+
 Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
     With dstSafeArray
         .cbElements = 4
@@ -1507,6 +1528,17 @@ Private Sub PrepInternalLongSafeArray(ByRef dstSafeArray As SAFEARRAY2D)
         .Bounds(1).lBound = 0
         .Bounds(1).cElements = m_dibWidth
         .pvData = m_dibBits
+    End With
+End Sub
+
+Private Sub PrepInternalLongSafeArray_Scanline(ByRef dstSafeArray As SAFEARRAY1D, ByVal dstLine As Long)
+    With dstSafeArray
+        .cbElements = 4
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = m_dibWidth
+        .pvData = m_dibBits + (dstLine * m_dibStride)
     End With
 End Sub
 
