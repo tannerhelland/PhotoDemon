@@ -216,6 +216,10 @@ Private m_LastOverlayCache As String
 ' they are stored in a dictionary, and only created/accessed as necessary.
 Private m_PropertyDict As pdDictionary
 
+'Rendering is handled via pd2D.  A default painter class is created with the class, so you never have to worry about
+' instantiating your own.
+Private m_Painter As pd2DPainter
+
 'Retrieve various boundary rects.  Full descriptions of these rects are given above.
 Friend Function GetCornersUnlockedRect() As RECTF_RB
     GetCornersUnlockedRect = m_CornersUnlocked
@@ -2351,27 +2355,27 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If useOutlineRenderingInstead Then
         RenderOutlineOnly dstDIB, srcImage, dstCanvas
     Else
-    
+        
         'Pull an updated canvas intersection rect from the source image
         Dim viewportIntersectRectCanvas As RECTF
         srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
         
-        'TEMPORARY FIX: restore the old image dimension parameters, copying the results from the viewport rect.
+        'We now need to calculate an integer-only version of the "viewport space" coordinates.  (The width and height of
+        ' the overlay DIB are integer-only, obviously, and we can improve performance in our final render if we stick
+        ' to integer coordinates there as well.)
         Dim imgLeft As Long, imgTop As Long, imgWidth As Long, imgHeight As Long
         With viewportIntersectRectCanvas
             imgLeft = Int(.Left)
             imgTop = Int(.Top)
-            imgWidth = Int(PDMath.Frac(.Left) + .Width + 0.9999)
-            imgHeight = Int(PDMath.Frac(.Top) + .Height + 0.9999)
+            imgWidth = Int(PDMath.Frac(.Left) + .Width + 0.999999)
+            imgHeight = Int(PDMath.Frac(.Top) + .Height + 0.999999)
         End With
         
-        'STILL OKAY: converting bounds to canvas coords
-        'Before rendering the selection, we need to convert the its coordinates from "image coordinates" to "viewport coordinates".
-        ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on the screen,
-        '   we need to translate the coordinates to the current viewport - this makes them display accurately when scroll and zoom are
-        '   in effect.)
-        Dim dstLeft As Double, dstRight As Double
-        Dim dstTop As Double, dstBottom As Double
+        'Next, we need to convert the current selection boundary coordinates from "image coordinates" to "viewport coordinates".
+        ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on
+        '  the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when
+        '  scroll and zoom are in effect.)
+        Dim dstLeft As Double, dstRight As Double, dstTop As Double, dstBottom As Double
         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left, m_Bounds.Top, dstLeft, dstTop
         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left + m_Bounds.Width, m_Bounds.Top + m_Bounds.Height, dstRight, dstBottom
         
@@ -2414,12 +2418,15 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Dim isZoomedIn As Boolean
             isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
             
+            Dim interpolationType As GP_InterpolationMode
             If isZoomedIn Then
-                GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstLeft - viewportIntersectRectCanvas.Left, dstTop - viewportIntersectRectCanvas.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_NearestNeighbor, , , True, True
+                interpolationType = GP_IM_NearestNeighbor
             Else
-                GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstLeft - viewportIntersectRectCanvas.Left, dstTop - viewportIntersectRectCanvas.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , GP_IM_HighQualityBilinear, , , , True
+                If (g_ViewportPerformance = PD_PERF_BALANCED) Then interpolationType = GP_IM_Bilinear Else interpolationType = GP_IM_HighQualityBicubic
             End If
-        
+            
+            GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstLeft - viewportIntersectRectCanvas.Left, dstTop - viewportIntersectRectCanvas.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, True
+            
             'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
             ' viewport position/zoom) changes
             m_OverlayIsReady = True
@@ -2448,7 +2455,10 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             ' This will be the actual 32-bpp image "overlaid" on the viewport.  (So it reflects things like the user's
             ' currently selected highlight or lightbox UI settings.)
                     
-            'Start by making sure both overlay dimensions match
+            'Start by making sure both overlay dimensions match.  Note that we calculate the base overlay color differently,
+            ' depending on the current selection type.  We do this because it allows us to shortcut the region of the
+            ' overlay that we actually render.  (For small selections, for example, we can just fill the overlay DIB with
+            ' transparency, then modify only the region touched by the current selection.)
             If (m_ViewportOverlay Is Nothing) Then Set m_ViewportOverlay = New pdDIB
             If (m_ViewportOverlay.GetDIBWidth <> imgWidth) Or (m_ViewportOverlay.GetDIBHeight <> imgHeight) Then
                 m_ViewportOverlay.CreateBlank imgWidth, imgHeight, 32, 0, 0
@@ -2466,6 +2476,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
             Dim tmpRGBA As RGBQUAD, i As Long
             Dim newR As Long, newG As Long, newB As Long, newA As Single
+            Dim defaultFillColor As Long, defaultFillOpacity As Single
                 
             'The constructed lookup table varies by overlay type
             If (renderType = PDSR_Highlight) Then
@@ -2489,6 +2500,17 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     End With
                     CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
                 Next i
+                
+                'Calculate a default fill color and opacity.  (This is the default color we fill the overlay with
+                ' before doing our actual per-pixel rendering.)  Note that we deliberately use premultiplied alpha,
+                ' despite GDI+ operating on non-premultiplied alpha by default.
+                If (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                    newA = HIGHLIGHT_SELECTION_OPACITY
+                    defaultFillColor = RGB(newR * newA, newG * newA, newB * newA)
+                Else
+                    newA = 0#
+                    defaultFillColor = 0
+                End If
             
             ElseIf (renderType = PDSR_Lightbox) Then
             
@@ -2498,7 +2520,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 newG = 0
                 newB = 0
                 
-                Const LIGHTBOX_SELECTION_OPACITY As Single = 0.7
+                Const LIGHTBOX_SELECTION_OPACITY As Single = 0.5
                 
                 For i = 0 To 255
                     newA = ((255 - i) / 255) * LIGHTBOX_SELECTION_OPACITY
@@ -2510,29 +2532,65 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                     End With
                     CopyMemory ByVal VarPtr(overlayLookup(i)), ByVal VarPtr(tmpRGBA), 4&
                 Next i
-            
+                
+                'Calculate a default fill color and opacity.
+                If (Me.GetSelectionProperty_Long(sp_Area) = sa_Exterior) Then
+                    newA = 0#
+                    defaultFillColor = 0
+                Else
+                    newA = LIGHTBOX_SELECTION_OPACITY
+                    defaultFillColor = RGB(newR * newA, newG * newA, newB * newA)
+                End If
+                
             End If
+            
+            'To shortcut the per-pixel fill operation, fill the entire DIB with the default "background" color before we start.
+            Dim cSurface As pd2DSurface, cBrush As pd2DBrush
+            Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, False
+            GDI_Plus.GDIPlus_GraphicsSetCompositingMode cSurface.GetHandle, GP_CM_SourceCopy
+            Drawing2D.QuickCreateSolidBrush cBrush, defaultFillColor, newA * 100
+            m_Painter.FillRectangleI cSurface, cBrush, 0, 0, m_ViewportOverlay.GetDIBWidth, m_ViewportOverlay.GetDIBHeight
+            Set cBrush = Nothing: Set cSurface = Nothing
             
             'With the lookup table successfully generated, we can generate the overlay using identical code (regardless of the
             ' actual overlay UI style)
             Dim x As Long, y As Long
             Dim overlayPixels() As Long, maskPixels() As Long
             Dim overlaySA As SAFEARRAY2D, maskSA As SAFEARRAY2D
-            m_OverlayReference.WrapLongArrayAroundDIB maskPixels, maskSA
-            m_ViewportOverlay.WrapLongArrayAroundDIB overlayPixels, overlaySA
+            Dim overlaySALine As SAFEARRAY1D, maskSALine As SAFEARRAY1D
             
-            Dim srcColor As Long
-            For y = 0 To imgHeight - 1
-            For x = 0 To imgWidth - 1
-                overlayPixels(x, y) = overlayLookup(maskPixels(x, y) And 255)
+            'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
+            Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
+            loopStartX = Int(dstLeft - viewportIntersectRectCanvas.Left)
+            loopStartY = Int(dstTop - viewportIntersectRectCanvas.Top)
+            loopEndX = loopStartX + Int(dstRight - dstLeft + 1.999999)
+            loopEndY = loopStartY + Int(dstBottom - dstTop + 1.999999)
+            
+            If (loopEndX > imgWidth - 1) Then loopEndX = imgWidth - 1
+            If (loopEndY > imgHeight - 1) Then loopEndY = imgHeight - 1
+            If (loopStartX < 0) Then loopStartX = 0
+            If (loopStartY < 0) Then loopStartY = 0
+            If (loopStartX > loopEndX) Then loopStartX = loopEndX
+            If (loopStartY > loopEndY) Then loopStartY = loopEndY
+            
+            'With everything prepared, we can now (finally) apply the results to the overlay DIB.  Note that we use a
+            ' per-scanline approach for accessing pixels.  This lets us use 1-dimensional arrays instead of 2-dimensional
+            ' arrays for a slight performance boost.
+            For y = loopStartY To loopEndY
+                m_OverlayReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
+                m_ViewportOverlay.WrapLongArrayAroundScanline overlayPixels, overlaySALine, y
+            For x = loopStartX To loopEndX
+                overlayPixels(x) = overlayLookup(maskPixels(x) And 255)
             Next x
             Next y
             
+            'Because the arrays wrapped around the target DIBs are scoped locally, we have to manually free them before
+            ' the function exits.
             m_OverlayReference.UnwrapLongArrayFromDIB maskPixels
             m_ViewportOverlay.UnwrapLongArrayFromDIB overlayPixels
             
             'Whenever we generate a new UI overlay, we need to generate a hash of the rendering settings used.  (If rendering
-            ' UI settings change, we need to generate a new overlay, even if the selection itself hasn't changed.)
+            ' UI settings change, we'll need to generate a new overlay, even if the selection itself hasn't changed.)
             
             'IMPORTANT NOTE: if new UI settings are added in the future, make sure they are reflected here, and also in the
             ' previously overlay cache check, above.
@@ -2541,7 +2599,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         End If
     
         'Final task: rendering the actual overlay onto the destination viewport
-        m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgLeft, imgTop, imgWidth, imgHeight, 0, 0, imgWidth, imgHeight, 127
+        m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgLeft, imgTop, imgWidth, imgHeight, 0, 0, imgWidth, imgHeight
         
     End If
     
@@ -2680,6 +2738,9 @@ Private Sub Class_Initialize()
     
     'Polygon selections are (obviously) not yet closed
     m_PolygonClosed = False
+    
+    'Prepare a pd2D rendering class
+    Drawing2D.QuickCreatePainter m_Painter
         
 End Sub
 
