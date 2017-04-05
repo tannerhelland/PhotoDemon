@@ -512,7 +512,7 @@ Private Sub ucSupport_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstant
 End Sub
 
 Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    If m_ListScrollable Then ScrollStripByWheel scrollAmount, x, y
+    If m_ListScrollable Then ScrollStripByWheel -1 * scrollAmount, x, y
 End Sub
 
 Private Sub ScrollStripByWheel(ByVal scrollAmount As Single, ByVal x As Long, ByVal y As Long)
@@ -520,12 +520,12 @@ Private Sub ScrollStripByWheel(ByVal scrollAmount As Single, ByVal x As Long, By
     Dim scrollPixels As Long
     scrollPixels = FixDPI(16)
     
-    If scrollAmount > 0 Then
+    If (scrollAmount > 0) Then
         m_ScrollValue = m_ScrollValue + scrollPixels
-        If m_ScrollValue > m_ScrollMax Then m_ScrollValue = m_ScrollMax
+        If (m_ScrollValue > m_ScrollMax) Then m_ScrollValue = m_ScrollMax
     ElseIf (scrollAmount < 0) Then
         m_ScrollValue = m_ScrollValue - scrollPixels
-        If m_ScrollValue < 0 Then m_ScrollValue = 0
+        If (m_ScrollValue < 0) Then m_ScrollValue = 0
     End If
     
     m_CurrentThumbHover = GetThumbAtPosition(x, y)
