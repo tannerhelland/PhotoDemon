@@ -459,7 +459,7 @@ Friend Function AddNodeDataFromPointer(ByVal nodeIndex As Long, ByVal useHeaderB
         'copyPtrToArray will return TRUE if the data was compressed; FALSE if it was not.  There is no error state for the function.
         If CopyPtrToArray(dataPointer, dataLength, m_CompressionBuffer, compressedSize, compressData, compressionLevel, False) Then
             'For fun, supply some debug info on the compression.
-            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes)."
+            Debug.Print "Node data compressed successfully; compressed data is " & Format(CStr(100 - (100 * (CDbl(compressedSize) / CDbl(dataLength)))), "#0.00") & "% smaller (" & dataLength & " to " & compressedSize & " bytes, via " & Compression.GetCompressorName(compressData) & ")."
         Else
             'Something went horribly wrong.  Write the uncompressed original data to the buffer, and provide a debug warning.
             InternalErrorMsg "Node compression failed; writing original uncompressed data to buffer instead..."
