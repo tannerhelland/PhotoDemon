@@ -469,6 +469,31 @@ Public Function GetMaxCompressionLevel(ByVal whichEngine As PD_COMPRESSION_ENGIN
 
 End Function
 
+'This function exists purely for debug purposes.  Feel free to remove it if you find it unnecessary.
+Public Function GetCompressorName(ByVal whichEngine As PD_COMPRESSION_ENGINES) As String
+    
+    If (whichEngine = PD_CE_ZLib) Then
+        GetCompressorName = "ZLib"
+    ElseIf (whichEngine = PD_CE_Zstd) Then
+        GetCompressorName = "Zstd"
+    ElseIf (whichEngine = PD_CE_Lz4) Then
+        GetCompressorName = "Lz4"
+    ElseIf (whichEngine = PD_CE_Lz4HC) Then
+        GetCompressorName = "Lz4_HC"
+    ElseIf (whichEngine = PD_CE_MSZIP) Then
+        GetCompressorName = "MSZip"
+    ElseIf (whichEngine = PD_CE_XPRESS) Then
+        GetCompressorName = "Xpress"
+    ElseIf (whichEngine = PD_CE_XPRESS_HUFF) Then
+        GetCompressorName = "Xpress (Huffman)"
+    ElseIf (whichEngine = PD_CE_LZMS) Then
+        GetCompressorName = "Lzms"
+    Else
+        GetCompressorName = vbNullString
+    End If
+
+End Function
+
 'Functions below this line require Windows 8 or later.  They use the built-in Windows Compression API.
 Private Function IsWin8OrLater() As Boolean
     
