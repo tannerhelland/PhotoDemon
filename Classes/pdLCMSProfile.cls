@@ -31,13 +31,13 @@ Option Explicit
 'Once an LCMS profile has been successfully created, this value will be non-zero
 Private m_ProfileHandle As Long
 
-Public Function CreateFromPointer(ByVal ptrToICCProfile As Long, ByVal iccProfileSizeInBytes As Long) As Boolean
+Friend Function CreateFromPointer(ByVal ptrToICCProfile As Long, ByVal iccProfileSizeInBytes As Long) As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadProfileFromMemory(ptrToICCProfile, iccProfileSizeInBytes)
     CreateFromPointer = CBool(m_ProfileHandle <> 0)
 End Function
 
-Public Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
+Friend Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
     
     CreateFromPDDib = False
     
@@ -51,43 +51,51 @@ Public Function CreateFromPDDib(ByRef srcDIB As pdDIB) As Boolean
     
 End Function
 
-Public Function CreateGenericGrayscaleProfile() As Boolean
+Friend Function CreateGenericGrayscaleProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockGrayProfile()
     CreateGenericGrayscaleProfile = CBool(m_ProfileHandle <> 0)
 End Function
 
-Public Function CreateLinearRGBProfile() As Boolean
+Friend Function CreateLinearRGBProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadLinearRGBProfile()
     CreateLinearRGBProfile = CBool(m_ProfileHandle <> 0)
 End Function
 
-Public Function CreateSRGBProfile() As Boolean
+Friend Function CreateSRGBProfile() As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockSRGBProfile()
     CreateSRGBProfile = CBool(m_ProfileHandle <> 0)
 End Function
 
-Public Function CreateLabProfile(Optional ByVal useVersion4 As Boolean = True) As Boolean
+Friend Function CreateLabProfile(Optional ByVal useVersion4 As Boolean = True) As Boolean
     If (m_ProfileHandle <> 0) Then ReleaseProfile
     m_ProfileHandle = LittleCMS.LCMS_LoadStockLabProfile(useVersion4)
     CreateLabProfile = CBool(m_ProfileHandle <> 0)
 End Function
 
-Public Function GetHandle() As Long
+Friend Function GetColorSpace() As LCMS_PROFILE_COLOR_SPACE
+    If (m_ProfileHandle <> 0) Then GetColorSpace = LittleCMS.LCMS_GetProfileColorSpace(m_ProfileHandle)
+End Function
+
+Friend Function GetConnectionSpace() As LCMS_PROFILE_COLOR_SPACE
+    If (m_ProfileHandle <> 0) Then GetConnectionSpace = LittleCMS.LCMS_GetProfileConnectionSpace(m_ProfileHandle)
+End Function
+
+Friend Function GetHandle() As Long
     GetHandle = m_ProfileHandle
 End Function
 
-Public Function GetRenderingIntent() As LCMS_RENDERING_INTENT
+Friend Function GetRenderingIntent() As LCMS_RENDERING_INTENT
     If (m_ProfileHandle <> 0) Then GetRenderingIntent = LittleCMS.LCMS_GetProfileRenderingIntent(m_ProfileHandle)
 End Function
 
-Public Function HasProfile() As Boolean
+Friend Function HasProfile() As Boolean
     HasProfile = CBool(m_ProfileHandle <> 0)
 End Function
 
-Public Function ReleaseProfile() As Boolean
+Friend Function ReleaseProfile() As Boolean
     ReleaseProfile = LittleCMS.LCMS_CloseProfileHandle(m_ProfileHandle)
     If ReleaseProfile Then m_ProfileHandle = 0
 End Function

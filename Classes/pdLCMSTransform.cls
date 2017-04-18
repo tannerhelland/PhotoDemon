@@ -31,14 +31,14 @@ Option Explicit
 'Once an LCMS transformation has been successfully created, this value will be non-zero
 Private m_TransformHandle As Long
 
-Public Function ApplyTransformToScanline(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal scanlineWidthPixels As Long) As Boolean
+Friend Function ApplyTransformToScanline(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal scanlineWidthPixels As Long) As Boolean
     If (m_TransformHandle <> 0) Then
         LittleCMS.LCMS_TransformArbitraryMemory srcPointer, dstPointer, scanlineWidthPixels, m_TransformHandle
         ApplyTransformToScanline = True
     End If
 End Function
 
-Public Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal srcScanlineWidth As Long, ByVal dstScanlineWidth As Long, ByVal numScanlines As Long, ByVal scanlineWidthPixels As Long, Optional ByVal reverseScanlineOrder As Boolean = False) As Boolean
+Friend Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal dstPointer As Long, ByVal srcScanlineWidth As Long, ByVal dstScanlineWidth As Long, ByVal numScanlines As Long, ByVal scanlineWidthPixels As Long, Optional ByVal reverseScanlineOrder As Boolean = False) As Boolean
     If (m_TransformHandle <> 0) Then
         
         Dim i As Long
@@ -54,6 +54,8 @@ Public Function ApplyTransformToArbitraryMemory(ByVal srcPointer As Long, ByVal 
         
         ApplyTransformToArbitraryMemory = True
         
+    Else
+        Debug.Print "WARNING!  ApplyTransformToArbitraryMemory failed; transform handle doesn't exist!"
     End If
 End Function
 
@@ -158,15 +160,15 @@ Friend Function CreateLabToRGBATransform(Optional ByRef dstProfile As pdLCMSProf
 
 End Function
 
-Public Function GetHandle() As Long
+Friend Function GetHandle() As Long
     GetHandle = m_TransformHandle
 End Function
 
-Public Function HasTransform() As Boolean
+Friend Function HasTransform() As Boolean
     HasTransform = CBool(m_TransformHandle <> 0)
 End Function
 
-Public Function ReleaseTransform() As Boolean
+Friend Function ReleaseTransform() As Boolean
     ReleaseTransform = LittleCMS.LCMS_DeleteTransform(m_TransformHandle)
     If ReleaseTransform Then m_TransformHandle = 0
 End Function
