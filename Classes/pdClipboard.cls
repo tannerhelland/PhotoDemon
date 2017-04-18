@@ -68,6 +68,7 @@ Private Declare Function GetClipboardOwner Lib "user32" () As Long
 
 'Global memory functions (all clipboard data is placed on/taken from the global heap):
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
@@ -488,7 +489,7 @@ End Function
 'Stick new data on the clipboard.  An associated clipboard format is required.
 ' (IMPORTANT NOTE: the data placed on the clipboard is owned by the clipboard - NOT you - so we don't need to worry about freeing it later.)
 ' (IMPORTANT NOTE: the passed array must be initialized, or the function will fail.)
-Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef srcData() As Byte) As Boolean
+Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef srcData() As Byte, Optional ByVal freeOnFailure As Boolean = True) As Boolean
     
     SetClipboardBinaryData = False
     
@@ -511,7 +512,7 @@ Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
             'Get a raw pointer to our new global memory object
             Dim ptrGlobal As Long
             ptrGlobal = GlobalLock(hGlobalHandle)
-            If ptrGlobal <> 0 Then
+            If (ptrGlobal <> 0) Then
             
                 'Copy our data over, then unlock the memory block.  (Remember that the clipboard is going to assume ownership over our
                 ' hGlobal object.)
@@ -520,6 +521,10 @@ Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
                         
                 'Hand the data over to the clipboard.  If we succeed, the data is no longer ours.
                 SetClipboardBinaryData = CBool(SetClipboardData(clipFormatID, hGlobalHandle) <> 0)
+                
+                'If SetClipboardData fails, we must free the hGlobal handle to prevent a leak.
+                'Thank you to @wqweto for this tip; see https://github.com/tannerhelland/PhotoDemon/issues/234
+                If ((Not SetClipboardBinaryData) And freeOnFailure) Then GlobalFree hGlobalHandle
                 
             Else
                 #If DEBUGMODE = 1 Then
@@ -549,8 +554,20 @@ End Function
 'If the caller's already allocated a global object, they can use this shortcut function to set that object into the clipboard.
 ' (NOTE: CF_BITMAP is an exception here, as you can pass this function a local DDB handle, and the clipboard will automatically
 '        create its own copy, without any intervention from you.)
-Public Function SetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByVal hMem As Long) As Boolean
+'
+'Note that by default, a failed write will be manually freed.  If you are *not* passing an hGlobal handle, you *must*
+' set this optional parameter to FALSE and free the handle yourself.
+Public Function SetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByVal hMem As Long, Optional ByVal freeOnFailure As Boolean = True) As Boolean
+    
     SetClipboardMemoryHandle = CBool(SetClipboardData(clipFormatID, hMem) <> 0)
+    
+    'If SetClipboardData fails, we must free the hGlobal handle to prevent a leak.  Note that this only applies if
+    ' we are not using delayed rendering (e.g. hMem <> 0), and if we are not using CF_BITMAP (which is an exception,
+    ' as you don't pass an hGlobal, but a direct DDB handle).
+    '
+    'Thank you to @wqweto for this tip; see https://github.com/tannerhelland/PhotoDemon/issues/234
+    If ((Not SetClipboardMemoryHandle) And freeOnFailure And (hMem <> 0)) Then GlobalFree hMem
+    
 End Function
 
 'Helper function, for when the caller wants to upload custom stuff to the clipboard.  We already have all the global memory APIs
