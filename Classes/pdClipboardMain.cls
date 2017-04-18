@@ -1792,7 +1792,7 @@ Public Sub RenderAllClipboardFormatsManually()
             
             'Render all supported formats
             RenderClipboard_PNG
-            RenderClipboard_BITMAP True
+            RenderClipboard_BITMAP
             
             'DIBs have some special considerations.  For details, check out the comments in the ClipboardCopy function, but in a nutshell,
             ' PD doesn't render CF_DIB images because various programs handle alpha in varying ways, making it impossible to please everyone.
@@ -1800,7 +1800,7 @@ Public Sub RenderAllClipboardFormatsManually()
             ' editors can pick up the DIBv5 without trouble, while "basic" editors (like MS Paint) will take the CF_BITMAP copy.
             ' (This approach also spares the user's system a good chunk of resources, as we're not copying a crapload of mega-sized images
             '  in varying DIB formats.)
-            RenderClipboard_DIB True, True
+            RenderClipboard_DIB True
             
             'Close the clipboard
             m_Clipboard.ClipboardClose
@@ -1966,7 +1966,7 @@ End Sub
 'Place an old-fashioned hBitmap on the clipboard.  This function assumes that the caller has already unstashed previously saved
 ' clipboard data and thoroughly validated it.  If you haven't done that, this function will fail.
 ' NOTE: this function does not open, clear, or close the clipboard, by design; it is up to the caller to handle that.
-Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean = False)
+Private Sub RenderClipboard_BITMAP()
     
     On Error GoTo RenderClipboardBITMAP_Failure
     
@@ -2000,23 +2000,10 @@ Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean
                 clipboardOldBMP = SelectObject(clipboardDC, clipboardBMP)
                 
                 '24-bit images can be copied as-is
-                If m_ClipboardDIB.GetDIBColorDepth = 24 Then
+                If (m_ClipboardDIB.GetDIBColorDepth = 24) Then
                 
-                    'So, a weird discovery: PD's delayed rendering system means that clipboard formats are not uploaded to the clipboard
-                    ' until they are actually requested by a program.  The exception to this is when PD shuts down and is still the owner
-                    ' of clipboard data; when this happens, PD renders all formats prior to shutting down (as obviously it won't be around
-                    ' to render things on-demand).
-                    '
-                    'For reasons known only to Microsoft, traditional bottom-up DIBs are no longer handled correctly if PD is not running
-                    ' when other programs access the clipboard.  There is no obvious reason for this, seeing as PD's presence shouldn't
-                    ' even be part of the equation... but here we are.  As a result, if PD is shutting down, I manually reverse the
-                    ' scanline order to ensure compatibility with programs that don't support PNG clipboard data.
-                    If programShuttingDown Then
-                        StretchBlt clipboardDC, 0, m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBWidth, -m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBDC, 0, 0, m_ClipboardDIB.GetDIBWidth, m_ClipboardDIB.GetDIBHeight, vbSrcCopy
-                    Else
-                        BitBlt clipboardDC, 0, 0, m_ClipboardDIB.GetDIBWidth, m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBDC, 0, 0, vbSrcCopy
-                    End If
-                
+                    BitBlt clipboardDC, 0, 0, m_ClipboardDIB.GetDIBWidth, m_ClipboardDIB.GetDIBHeight, m_ClipboardDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    
                 '32-bit images must be composited against a white background first
                 Else
                     
@@ -2027,11 +2014,8 @@ Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean
                     tmpDIB.CreateFromExistingDIB m_ClipboardDIB
                     tmpDIB.ConvertTo24bpp
                     
-                    If programShuttingDown Then
-                        StretchBlt clipboardDC, 0, tmpDIB.GetDIBHeight, tmpDIB.GetDIBWidth, -tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, vbSrcCopy
-                    Else
-                        BitBlt clipboardDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
-                    End If
+                    BitBlt clipboardDC, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                    
                     Set tmpDIB = Nothing
                     
                 End If
@@ -2044,7 +2028,7 @@ Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean
                 SelectObject clipboardDC, clipboardOldBMP
                 
                 'Copy the DDB into the clipboard; the clipboard now assumes ownership over the DDB
-                m_Clipboard.SetClipboardMemoryHandle CF_BITMAP, clipboardBMP
+                m_Clipboard.SetClipboardMemoryHandle CF_BITMAP, clipboardBMP, False
                 
                 'There is some debate over whether or not we should delete our copy of the DDB handle
                 ' (see: http://stackoverflow.com/questions/32086618/who-releases-handle-in-setclipboarddatacf-bitmap-hbitmap)
@@ -2080,7 +2064,7 @@ End Sub
 'Place a DIB (or optionally, DIBv5) on the clipboard.  This function assumes that the caller has already unstashed previously
 ' saved clipboard data and thoroughly validated it.  If you haven't done that, this function will fail.
 ' NOTE: this function does not open, clear, or close the clipboard, by design; it is up to the caller to handle that.
-Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, Optional ByVal programShuttingDown As Boolean = False)
+Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
     
     On Error GoTo RenderClipboardDIB_Failure
     
@@ -2162,22 +2146,14 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
             End If
             
             'Next, we want to copy the actual pixel bits into place.  PD stores DIBs as bottom-up, but this can cause problems when
-            ' programs expect a top-down DIB.  To prevent trouble, we'll reverse the order of lines.  (Note that we do *not* reverse
-            ' order if PD is shutting down.  I do not have an explanation for this, except that the resulting DIB appears upside-down
-            ' if I don't do this.  Explanations welcome!)
+            ' programs expect a top-down DIB.  To prevent trouble, we'll reverse the order of lines.
             Dim y As Long, yFinal As Long, dibStride As Long
             yFinal = m_ClipboardDIB.GetDIBHeight - 1
             dibStride = m_ClipboardDIB.GetDIBStride
             
-            If (Not programShuttingDown) Then
-                For y = 0 To yFinal
-                    CopyMemoryStrict hGlobalPtr + headerSize + (y * dibStride), dibPointer + (yFinal - y) * dibStride, dibStride
-                Next y
-            Else
-                For y = 0 To yFinal
-                    CopyMemoryStrict hGlobalPtr + headerSize + (y * dibStride), dibPointer + y * dibStride, dibStride
-                Next y
-            End If
+            For y = 0 To yFinal
+                CopyMemoryStrict hGlobalPtr + headerSize + (y * dibStride), dibPointer + (yFinal - y) * dibStride, dibStride
+            Next y
             
             'Unlock the memory, then assign ownership to the clipboard
             m_Clipboard.FinishedWithGlobalMemoryPtr hGlobal
