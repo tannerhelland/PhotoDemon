@@ -317,6 +317,62 @@ End Enum
     Private Const cmsInfoDescription = 0, cmsInfoManufacturer = 1, cmsInfoModel = 2, cmsInfoCopyright = 3
 #End If
 
+'ICC Profiles describe transformations in specific color spaces.  A grayscale transform cannot be used on color data
+' (and vice-versa).  We occasionally need to detect this information to prevent color space mismatches.
+' (This is most commonly required at import time, if a color image file mistakenly has a grayscale ICC profile attached.)
+'
+'These values are defined on page 49 of the v2.8 LittleCMS API manual.
+Public Enum LCMS_PROFILE_COLOR_SPACE
+    cmsSigXYZ = 1482250784  'XYZ '
+    cmsSigLab = 1281450528  'Lab '
+    cmsSigLuv = 1282766368  'Luv '
+    cmsSigYCbCr = 1497588338  'YCbr'
+    cmsSigYxy = 1501067552  'Yxy '
+    cmsSigRgb = 1380401696  'RGB '
+    cmsSigGray = 1196573017  'GRAY'
+    cmsSigHsv = 1213421088  'HSV '
+    cmsSigHls = 1212961568  'HLS '
+    cmsSigCmyk = 1129142603  'CMYK'
+    cmsSigCmy = 1129142560  'CMY '
+    cmsSigMCH1 = 1296255025  'MCH1'
+    cmsSigMCH2 = 1296255026  'MCH2'
+    cmsSigMCH3 = 1296255027  'MCH3'
+    cmsSigMCH4 = 1296255028  'MCH4'
+    cmsSigMCH5 = 1296255029  'MCH5'
+    cmsSigMCH6 = 1296255030  'MCH6'
+    cmsSigMCH7 = 1296255031  'MCH7'
+    cmsSigMCH8 = 1296255032  'MCH8'
+    cmsSigMCH9 = 1296255033  'MCH9'
+    cmsSigMCHA = 1296255034  'MCHA'
+    cmsSigMCHB = 1296255035  'MCHB'
+    cmsSigMCHC = 1296255036  'MCHC'
+    cmsSigMCHD = 1296255037  'MCHD'
+    cmsSigMCHE = 1296255038  'MCHE'
+    cmsSigMCHF = 1296255039  'MCHF'
+    cmsSigNamed = 1852662636  'nmcl'
+    cmsSig1color = 826494034  '1CLR'
+    cmsSig2color = 843271250  '2CLR'
+    cmsSig3color = 860048466  '3CLR'
+    cmsSig4color = 876825682  '4CLR'
+    cmsSig5color = 893602898  '5CLR'
+    cmsSig6color = 910380114  '6CLR'
+    cmsSig7color = 927157330  '7CLR'
+    cmsSig8color = 943934546  '8CLR'
+    cmsSig9color = 960711762  '9CLR'
+    cmsSig10color = 1094929490  'ACLR'
+    cmsSig11color = 1111706706  'BCLR'
+    cmsSig12color = 1128483922  'CCLR'
+    cmsSig13color = 1145261138  'DCLR'
+    cmsSig14color = 1162038354  'ECLR'
+    cmsSig15color = 1178815570  'FCLR'
+    cmsSigLuvK = 1282766411  'LuvK'
+End Enum
+
+#If False Then
+    Private Const cmsSigXYZ = 1482250784, cmsSigLab = 1281450528, cmsSigLuv = 1282766368, cmsSigYCbCr = 1497588338, cmsSigYxy = 1501067552, cmsSigRgb = 1380401696, cmsSigGray = 1196573017, cmsSigHsv = 1213421088, cmsSigHls = 1212961568, cmsSigCmyk = 1129142603, cmsSigCmy = 1129142560, cmsSigMCH1 = 1296255025, cmsSigMCH2 = 1296255026, cmsSigMCH3 = 1296255027, cmsSigMCH4 = 1296255028, cmsSigMCH5 = 1296255029, cmsSigMCH6 = 1296255030, cmsSigMCH7 = 1296255031, cmsSigMCH8 = 1296255032, cmsSigMCH9 = 1296255033, cmsSigMCHA = 1296255034, cmsSigMCHB = 1296255035, cmsSigMCHC = 1296255036, cmsSigMCHD = 1296255037, cmsSigMCHE = 1296255038, cmsSigMCHF = 1296255039, cmsSigNamed = 1852662636, cmsSig1color = 826494034, cmsSig2color = 843271250, cmsSig3color = 860048466, cmsSig4color = 876825682, cmsSig5color = 893602898, cmsSig6color = 910380114, cmsSig7color = 927157330, cmsSig8color = 943934546, cmsSig9color = 960711762, cmsSig10color = 1094929490, cmsSig11color = 1111706706
+    Private Const cmsSig12color = 1128483922, cmsSig13color = 1145261138, cmsSig14color = 1162038354, cmsSig15color = 1178815570, cmsSigLuvK = 1282766411
+#End If
+
 'Unicode-aware LCMS functions require three-char ISO language and region names.  We use a dummy struct to simply
 ' the process of enforcing a trailing null char, regardless of lang/region name length.
 Private Type ThreeAsciiChars
@@ -344,7 +400,9 @@ Private Declare Function cmsSaveProfileToMem Lib "lcms2.dll" (ByVal srcProfile A
 'Profile information functions
 Private Declare Function cmsGetHeaderRenderingIntent Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_RENDERING_INTENT
 Private Declare Function cmsGetProfileInfo Lib "lcms2.dll" (ByVal hProfile As Long, ByVal srcInfo As LCMS_INFOTYPE, ByVal ptrToLanguageCode As Long, ByVal ptrToCountryCode As Long, ByVal ptrToWCharBuffer As Long, ByVal necessaryBufferSize As Long) As Long
-
+Private Declare Function cmsGetPCS Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
+Private Declare Function cmsGetColorSpace Lib "lcms2.dll" (ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
+ 
 'Tone curve creation/destruction
 Private Declare Function cmsBuildParametricToneCurve Lib "lcms2.dll" (ByVal ContextID As Long, ByVal tcType As Long, ByVal ptrToFirstParam As Long) As Long
 Private Declare Function cmsBuildGamma Lib "lcms2.dll" (ByVal ContextID As Long, ByVal gammaValue As Double) As Long
@@ -562,6 +620,14 @@ Public Function LCMS_DeleteTransform(ByRef hTransform As Long) As Boolean
     cmsDeleteTransform hTransform
     hTransform = 0
     LCMS_DeleteTransform = True
+End Function
+
+Public Function LCMS_GetProfileColorSpace(ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
+    LCMS_GetProfileColorSpace = cmsGetColorSpace(hProfile)
+End Function
+
+Public Function LCMS_GetProfileConnectionSpace(ByVal hProfile As Long) As LCMS_PROFILE_COLOR_SPACE
+    LCMS_GetProfileConnectionSpace = cmsGetPCS(hProfile)
 End Function
 
 Public Function LCMS_GetProfileRenderingIntent(ByVal hProfile As Long) As LCMS_RENDERING_INTENT

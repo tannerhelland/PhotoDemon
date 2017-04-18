@@ -315,7 +315,9 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     Dim dstDIBFinished As Boolean: dstDIBFinished = False
     
     'When working with a multipage image, we may need to "detach" the current page DIB from its parent multipage handle.
-    ' If this happens, we'll note it, so we know to use the standalone unload function in the future.
+    ' (This happens if an intermediate copy of the FI object is required.)
+    ' If we detach an individual page DIB from it parent, this variable will note it, so we know to use the standalone
+    ' unload function before exiting (instead of the multipage-specific one).
     multiDibIsDetached = False
     
     'Intermediate FreeImage objects may also be required during the transform process
@@ -326,6 +328,9 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
     ' CMYK images are handled first, as they require special treatment
     '****************************************************************************
     
+    'Note that all "continue loading" checks start with "If (Not dstDIBFinished)".  When various conditions are met,
+    ' this function may attempt to shortcut the load process.  If this occurs, "dstDIBFinished" will be set to TRUE,
+    ' allowing subsequent checks to be skipped.
     If (Not dstDIBFinished) And (FreeImage_GetColorType(fi_hDIB) = FIC_CMYK) Then
         
         FI_DebugMsg "CMYK image detected.  Preparing transform into RGB space...", suppressDebugData
@@ -333,14 +338,15 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         'Proper CMYK conversions require an ICC profile.  If this image doesn't have one, it's a pointless image
         ' (it's impossible to construct a "correct" copy since CMYK is device-specific), but we'll of course try
         ' to load it anyway.
-        Dim cmykConversionSuccessful As Boolean
+        Dim cmykConversionSuccessful As Boolean: cmykConversionSuccessful = False
+        
         If dstDIB.ICCProfile.HasICCData Then
             cmykConversionSuccessful = ConvertCMYKFiDIBToRGB(fi_hDIB, dstDIB)
             If cmykConversionSuccessful Then FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached
             dstDIBFinished = True
         End If
         
-        'If CMYK conversion failed, re-load the image and use FreeImage to apply the CMYK -> RGB transform.
+        'If CMYK conversion failed, re-load the image and use FreeImage to apply a generic CMYK -> RGB transform.
         If (Not cmykConversionSuccessful) Then
             FI_DebugMsg "ICC-based CMYK transformation failed.  Falling back to default CMYK conversion...", suppressDebugData
             FI_Unload fi_hDIB, fi_multi_hDIB
@@ -349,23 +355,28 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
         
     End If
     
-    'Between attempted conversions, we reset the BPP tracker (as it may have changed)
+    'Between attempted conversions, we typically reset the BPP tracker (as it may have changed due to internal
+    ' FreeImage handling)
     Dim fi_BPP As Long
     If (fi_hDIB <> 0) Then fi_BPP = FreeImage_GetBPP(fi_hDIB)
     
     
     '****************************************************************************
-    ' Next, deal with high bit-depth images
+    ' With CMYK images out of the way, deal with high bit-depth images in normal color spaces
     '****************************************************************************
     
+    'FIT_BITMAP refers to any image with channel data > 16 bits per channel.  This can range from 16-bpp grayscale images
+    ' to 128-bpp RGBA images.
     If (Not dstDIBFinished) And (fi_DataType <> FIT_BITMAP) Then
         
         'We have two mechanisms for downsampling a high bit-depth image:
         ' 1) Using an embedded ICC profile (the preferred mechanism)
         ' 2) Using a generic tone-mapping algorithm to estimate conversion parameters
+        '
+        'If at all possible, we will try to use (1) before (2).  Success is noted by the following variable.
         Dim hdrICCSuccess As Boolean: hdrICCSuccess = False
         
-        'If the image does not contain an embedded ICC profile, we have no choice but to use option (2)
+        'If an ICC profile exists, attempt to use it
         If (FreeImage_HasICCProfile(fi_hDIB) And dstDIB.ICCProfile.HasICCData) Then
             
             FI_DebugMsg "HDR image identified.  ICC profile found; attempting to convert automatically...", suppressDebugData
@@ -971,52 +982,65 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
     
     Dim fi_DataType As FREE_IMAGE_TYPE
     fi_DataType = FreeImage_GetImageType(srcFIHandle)
-        
+    
+    'FreeImage provides a bunch of custom identifiers for various grayscale types.  When one of these is found, we can
+    ' skip further heuristics.
     Dim isGrayscale As Boolean
     Select Case fi_DataType
     
         Case FIT_DOUBLE, FIT_FLOAT, FIT_INT16, FIT_UINT16, FIT_INT32, FIT_UINT32
             isGrayscale = True
-            
+        
+        'Note that a lack of identifiers *doesn't necessarily mean* the image is not grayscale.  It simply means the image is
+        ' not in a FreeImage-specific grayscale format.  (Some formats, like 16-bit grayscale + 16-bit alpha are not supported
+        ' by FreeImage, and will be returned as 64-bpp RGBA instead.)
         Case Else
             isGrayscale = False
     
     End Select
     
-    'Check for 8-bpp grayscale images now
+    'Check for 8-bpp grayscale images now; they use a separate detection technique
     If (Not isGrayscale) Then
         If (fi_BPP = 8) Then
             If ((FreeImage_GetColorType(srcFIHandle) = FIC_MINISBLACK) Or (FreeImage_GetColorType(srcFIHandle) = FIC_MINISWHITE)) Then isGrayscale = True
         End If
     End If
         
-    'Also, check for transparency in the source image.
+    'Also, check for transparency in the source image.  Color-management will generally ignore alpha values, but we need to
+    ' supply a flag telling the ICC engine to mirror alpha bytes to the new DIB copy.
     Dim hasTransparency As Boolean, transparentEntries As Long
     hasTransparency = FreeImage_IsTransparent(srcFIHandle)
     If (Not hasTransparency) Then
+    
         transparentEntries = FreeImage_GetTransparencyCount(srcFIHandle)
-        If (transparentEntries > 0) Then hasTransparency = True
+        hasTransparency = (transparentEntries > 0)
         
         '32-bpp images with a fully opaque alpha channel may return FALSE; this is a stupid FreeImage issue.
-        ' Check for such a mismatch, and forcibly set the correct transparency behavior.
+        ' Check for such a mismatch, and forcibly mark the data as 32-bpp RGBA.  (Otherwise we will get stride issues when
+        ' applying the color management transform.)
         If (fi_BPP = 32) Then
             If ((FreeImage_GetColorType(srcFIHandle) = FIC_RGB) Or (FreeImage_GetColorType(srcFIHandle) = FIC_RGBALPHA)) Then hasTransparency = True
         End If
         
     End If
     
-    'Allocate a destination FI DIB object in default BGRA order
+    'Allocate a destination FI DIB object in default BGRA order.  Note that grayscale images specifically use an 8-bpp target;
+    ' this is by design, as the ICC engine cannot perform grayscale > RGB expansion.  (Instead, we must perform the ICC transform
+    ' in pure grayscale space, *then* translate the result to RGB.)
+    '
+    'Note also that we still have not addressed the problem where "isGrayscale = True" but FreeImage has mis-detected color.
+    ' We will deal with this in a subsequent step.
     Dim targetBitDepth As Long
-    If hasTransparency Then
-        targetBitDepth = 32
+    If isGrayscale Then
+        targetBitDepth = 8
     Else
-        If isGrayscale Then targetBitDepth = 8 Else targetBitDepth = 24
+        If hasTransparency Then targetBitDepth = 32 Else targetBitDepth = 24
     End If
     
     '8-bpp grayscale images will use a FreeImage container instead of a pdDIB.  (pdDIB objects only support 24- and 32-bpp targets.)
-    Dim newFIDib As Long
+    Dim newFIDIB As Long
     If (targetBitDepth = 8) Then
-        newFIDib = FreeImage_Allocate(FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), targetBitDepth)
+        newFIDIB = FreeImage_Allocate(FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), targetBitDepth)
     Else
         dstDIB.CreateBlank FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), 32, 0, 255
     End If
@@ -1031,6 +1055,32 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
     Set dstProfile = New pdLCMSProfile
     
     If srcProfile.CreateFromPDDib(dstDIB) Then
+        
+        Dim specialGrayscaleRequired As Boolean: specialGrayscaleRequired = False
+        
+        'We now need to perform a special check for grayscale image data in formats that FreeImage does not support.
+        ' Start by querying the colorspace of the source ICC profile.
+        If (srcProfile.GetColorSpace = cmsSigGray) Then
+        
+            'This is a grayscale profile.  If the source image is *not* grayscale, we need to create a grayscale copy now.
+            If (Not isGrayscale) Then
+            
+                'The source image is in a grayscale format that FreeImage does not support, yet it has a grayscale ICC
+                ' profile attached.  This is a big problem because we cannot pass a grayscale ICC profile and RGBA data
+                ' to the ICC engine and expect it to work.  The ICC profile color space and image color space must match.
+                
+                'Because we have no control over the color profile, we must modify the image bits instead.  Set a matching
+                ' flag, which will divert the subsequent profile handler.
+                isGrayscale = True
+                specialGrayscaleRequired = True
+                
+            End If
+            
+        End If
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Preparing to color-manage incoming image; grayscale=" & UCase$(CStr(isGrayscale)) & ", specialHandling=" & UCase$(CStr(specialGrayscaleRequired)) & ", transparency=" & UCase$(CStr(hasTransparency))
+        #End If
         
         Dim dstProfileSuccess As Long
         If isGrayscale Then
@@ -1059,53 +1109,69 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
             ' need to check grayscale formats if hasTransparency = FALSE.
             Dim transformImpossible As Boolean: transformImpossible = False
             
-            If hasTransparency Then
-                dstPixelFormat = TYPE_BGRA_8
+            If isGrayscale Then
                 
-                If (fi_DataType = FIT_BITMAP) Then
-                    If (FreeImage_GetRedMask(srcFIHandle) > FreeImage_GetBlueMask(srcFIHandle)) Then
-                        srcPixelFormat = TYPE_BGRA_8
-                    Else
-                        srcPixelFormat = TYPE_RGBA_8
-                    End If
-                    
-                ElseIf (fi_DataType = FIT_RGBA16) Then
-                    If (FreeImage_GetRedMask(srcFIHandle) > FreeImage_GetBlueMask(srcFIHandle)) Then
-                        srcPixelFormat = TYPE_BGRA_16
-                    Else
-                        srcPixelFormat = TYPE_RGBA_16
-                    End If
-                    
-                'The only other possibility is RGBAF; LittleCMS supports this format, but we'd have to construct our own macro
-                ' to define it.  Just skip it at present.
-                Else
+                'Regardless of alpha, we want to map the grayscale data to an 8-bpp target.  (If alpha is present, we will
+                ' manually back up the current alpha-bytes, then re-apply them after the ICC transform completes.)
+                dstPixelFormat = TYPE_GRAY_8
+                
+                If (fi_DataType = FIT_DOUBLE) Then
+                    srcPixelFormat = TYPE_GRAY_DBL
+                ElseIf (fi_DataType = FIT_FLOAT) Then
+                    srcPixelFormat = TYPE_GRAY_FLT
+                ElseIf (fi_DataType = FIT_INT16) Then
+                    srcPixelFormat = TYPE_GRAY_16
+                ElseIf (fi_DataType = FIT_UINT16) Then
+                    srcPixelFormat = TYPE_GRAY_16
+                ElseIf (fi_DataType = FIT_INT32) Then
                     transformImpossible = True
-                End If
-                
-            Else
-                
-                If isGrayscale Then
-                    dstPixelFormat = TYPE_GRAY_8
+                ElseIf (fi_DataType = FIT_UINT32) Then
+                    transformImpossible = True
+                Else
                     
-                    If (fi_DataType = FIT_DOUBLE) Then
-                        srcPixelFormat = TYPE_GRAY_DBL
-                    ElseIf (fi_DataType = FIT_FLOAT) Then
-                        srcPixelFormat = TYPE_GRAY_FLT
-                    ElseIf (fi_DataType = FIT_INT16) Then
-                        srcPixelFormat = TYPE_GRAY_16
-                    ElseIf (fi_DataType = FIT_UINT16) Then
-                        srcPixelFormat = TYPE_GRAY_16
-                    ElseIf (fi_DataType = FIT_INT32) Then
-                        transformImpossible = True
-                    ElseIf (fi_DataType = FIT_UINT32) Then
-                        transformImpossible = True
+                    'Special pixel formats will be pre-converted to a valid source format
+                    If specialGrayscaleRequired Then
+                        If (fi_DataType = FIT_RGB16) Then
+                            srcPixelFormat = TYPE_GRAY_16
+                        ElseIf (fi_DataType = FIT_RGBA16) Then
+                            srcPixelFormat = TYPE_GRAY_16
+                        Else
+                            srcPixelFormat = TYPE_GRAY_8
+                        End If
                     Else
                         srcPixelFormat = TYPE_GRAY_8
                     End If
                     
-                Else
+                End If
                 
-                    dstPixelFormat = TYPE_BGRA_8
+            Else
+                
+                'Regardless of source transparency, we *always* map the image to a 32-bpp target
+                dstPixelFormat = TYPE_BGRA_8
+                    
+                If hasTransparency Then
+                
+                    If (fi_DataType = FIT_BITMAP) Then
+                        If (FreeImage_GetRedMask(srcFIHandle) > FreeImage_GetBlueMask(srcFIHandle)) Then
+                            srcPixelFormat = TYPE_BGRA_8
+                        Else
+                            srcPixelFormat = TYPE_RGBA_8
+                        End If
+                        
+                    ElseIf (fi_DataType = FIT_RGBA16) Then
+                        If (FreeImage_GetRedMask(srcFIHandle) > FreeImage_GetBlueMask(srcFIHandle)) Then
+                            srcPixelFormat = TYPE_BGRA_16
+                        Else
+                            srcPixelFormat = TYPE_RGBA_16
+                        End If
+                        
+                    'The only other possibility is RGBAF; LittleCMS supports this format, but we'd have to construct our own macro
+                    ' to define it.  Just skip it at present.
+                    Else
+                        transformImpossible = True
+                    End If
+                    
+                Else
                     
                     If (fi_DataType = FIT_BITMAP) Then
                         If (FreeImage_GetRedMask(srcFIHandle) > FreeImage_GetBlueMask(srcFIHandle)) Then
@@ -1127,6 +1193,7 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
                     End If
                     
                 End If
+            
             End If
             
             'Some color spaces may not be supported; that's okay - we'll use tone-mapping to handle them.
@@ -1147,23 +1214,52 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
                     Dim transformSuccess As Boolean
                     
                     If isGrayscale Then
-                        transformSuccess = cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), FreeImage_GetScanline(newFIDib, 0), FreeImage_GetPitch(srcFIHandle), FreeImage_GetPitch(newFIDib), FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle))
+                        
+                        'If the source image uses a grayscale+alpha format, we need to handle it specially
+                        If specialGrayscaleRequired Then
+                            
+                            'Release the temporary FreeImage DIB we initialized; we're going to circumvent the need for it
+                            FI_Unload newFIDIB
+                            newFIDIB = 0
+                            
+                            'Pass control to a dedicated ICC handler
+                            transformSuccess = HandleSpecialGrayscaleICC(srcFIHandle, dstDIB, pdDIBIsDestination, newFIDIB, cTransform)
+                        
+                        Else
+                            transformSuccess = cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), FreeImage_GetScanline(newFIDIB, 0), FreeImage_GetPitch(srcFIHandle), FreeImage_GetPitch(newFIDIB), FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle))
+                        End If
+                        
                     Else
                         transformSuccess = cTransform.ApplyTransformToArbitraryMemory(FreeImage_GetScanline(srcFIHandle, 0), dstDIB.GetDIBScanline(0), FreeImage_GetPitch(srcFIHandle), dstDIB.GetDIBStride, FreeImage_GetHeight(srcFIHandle), FreeImage_GetWidth(srcFIHandle), True)
                     End If
                     
                     If transformSuccess Then
+                    
                         FI_DebugMsg "Color-space transformation successful."
                         dstDIB.ICCProfile.MarkSuccessfulProfileApplication
                         GenerateICCCorrectedFIDIB = True
+                        
+                        'We now need to clarify for the caller where the ICC-transformed data sits.  8-bpp grayscale *without* alpha
+                        ' will be stored in a new 8-bpp FreeImage object.  Other formats have likely been placed directly into
+                        ' the target pdDIB object (which means the FreeImage loader can skip subsequent steps).
                         If isGrayscale Then
-                            pdDIBIsDestination = False
-                            fallbackFIHandle = newFIDib
+                            
+                            If specialGrayscaleRequired Then
+                                pdDIBIsDestination = True
+                                fallbackFIHandle = 0
+                                If (targetBitDepth = 24) Then dstDIB.SetInitialAlphaPremultiplicationState True Else dstDIB.SetAlphaPremultiplication True
+                            Else
+                                pdDIBIsDestination = False
+                                fallbackFIHandle = newFIDIB
+                            End If
+                            
+                        'Non-grayscale images *always* get converted directly into a pdDIB object.
                         Else
                             pdDIBIsDestination = True
                             fallbackFIHandle = 0
                             If (targetBitDepth = 24) Then dstDIB.SetInitialAlphaPremultiplicationState True Else dstDIB.SetAlphaPremultiplication True
                         End If
+                        
                     End If
                     
                     'Note that we could free the transform here, but it's unnecessary.  (The pdLCMSTransform class
@@ -1175,7 +1271,7 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
             
             'Impossible transformations return a null handle
             Else
-                FI_DebugMsg "WARNING!  Plugin_FreeImage.GenerateICCCorrectedFIDIB is functional, but the required bit-depths and/or formats are incompatible."
+                FI_DebugMsg "WARNING!  Plugin_FreeImage.GenerateICCCorrectedFIDIB is functional, but the source pixel format is incompatible with the current ICC engine."
             End If
         
         Else
@@ -1187,7 +1283,217 @@ Private Function GenerateICCCorrectedFIDIB(ByVal srcFIHandle As Long, ByRef dstD
     End If
     
     'If the transformation failed, free our temporarily allocated FreeImage DIB
-    If (Not GenerateICCCorrectedFIDIB) And (newFIDib <> 0) Then FI_Unload newFIDib
+    If (Not GenerateICCCorrectedFIDIB) And (newFIDIB <> 0) Then FI_Unload newFIDIB
+
+End Function
+
+'Because FreeImage doesn't support grayscale+alpha image formats, we have to jump through ugly hoops to handle these manually.
+' The exact workaround varies by file type, as some files will be expanded to RGBA (e.g. PNG), while others will simply be dumped
+' into arbitrary containers (e.g. 16-bpp grayscale + 16-bpp alpha TIFFs are unceremoniously dumped into 32-bpp RGBA).
+'
+'If successful, this function will *always* return a finished result inside the target pdDIB object.
+Private Function HandleSpecialGrayscaleICC(ByVal srcFIHandle As Long, ByRef dstDIB As pdDIB, ByRef pdDIBIsDestination As Boolean, ByRef newFIDIB As Long, ByRef cTransform As pdLCMSTransform) As Boolean
+    
+    'Grayscale+alpha PNG files are expanded to RGBA; this actually makes them relatively easy to compensate for
+    If (dstDIB.GetOriginalFormat = FIF_PNG) Then
+    
+        'Make sure the pdDIB object exists at the correct dimensions
+        If (dstDIB.GetDIBWidth <> FreeImage_GetWidth(srcFIHandle)) Or (dstDIB.GetDIBHeight <> FreeImage_GetHeight(srcFIHandle)) Then
+            dstDIB.CreateBlank FreeImage_GetWidth(srcFIHandle), FreeImage_GetHeight(srcFIHandle), 32, 0, 255
+        End If
+        
+        'We are now going to do several things simultaneously:
+        ' 1) manually copy all alpha bytes from the FreeImage object to the destination DIB
+        ' 2) manually copy all grayscale values into a dedicated integer array
+        Dim fi_DataType As FREE_IMAGE_TYPE
+        fi_DataType = FreeImage_GetImageType(srcFIHandle)
+        
+        'This array will consistently be updated to point to the current line of pixels in the FreeImage object
+        Dim srcImageDataInt() As Integer, srcImageDataByte() As Byte
+        Dim srcSA As SAFEARRAY1D
+        
+        'Same, but for the destination pdDIB object.
+        Dim dstImageData() As Byte
+        Dim dstSA As SAFEARRAY2D
+        dstDIB.WrapArrayAroundDIB dstImageData, dstSA
+        
+        'Scanline access variables
+        Dim iWidth As Long, iHeight As Long, iHeightInv As Long, iScanWidth As Long
+        iWidth = FreeImage_GetWidth(srcFIHandle) - 1
+        iHeight = FreeImage_GetHeight(srcFIHandle) - 1
+        iScanWidth = FreeImage_GetPitch(srcFIHandle)
+        
+        Dim x As Long, y As Long, quickX As Long
+        Dim tmpInt As Integer, tmpByte As Byte
+        Dim cmBytes() As Byte
+        
+        Dim srcGraysInt() As Integer, srcGraysByte() As Byte
+        
+        'Currently, only 16-bit PNGs are handled manually
+        If (fi_DataType = FIT_RGBA16) Then
+            
+            'Temporary 16-bpp int array for storing grayscale values
+            ReDim srcGraysInt(0 To iWidth, 0 To iHeight) As Integer
+            
+            For y = 0 To iHeight
+            
+                'FreeImage DIBs are stored bottom-up; we invert them during processing
+                iHeightInv = iHeight - y
+                
+                'Point a 1D VB array at this scanline
+                With srcSA
+                    
+                    'Size of individual elements (integers, in our case)
+                    .cbElements = 2
+                    .cDims = 1
+                    .lBound = 0
+                    
+                    'Number of entries in each x-line of the array (4, for RGBA)
+                    .cElements = iScanWidth * 4
+                    .pvData = FreeImage_GetScanline(srcFIHandle, iHeightInv)
+                    
+                End With
+                CopyMemory ByVal VarPtrArray(srcImageDataInt), VarPtr(srcSA), 4
+                    
+                'Iterate through this line, converting values as we go
+                For x = 0 To iWidth
+                    
+                    'First, extract the target gray value and shove it into the destination integer array
+                    tmpInt = srcImageDataInt(x * 4)
+                    srcGraysInt(x, y) = tmpInt
+                    
+                    'Next, retrieve the source alpha value and copy the most-significant bit directly into the destination DIB
+                    tmpInt = srcImageDataInt(x * 4 + 3)
+                    dstImageData(x * 4 + 3, y) = (tmpInt And 255)
+                    
+                Next x
+                
+            Next y
+            
+            'Free our array references
+            CopyMemory ByVal VarPtrArray(srcImageDataInt), 0&, 4
+            dstDIB.UnwrapArrayFromDIB dstImageData
+            
+            'Next, perform ICC correction on the integer array, and place the result inside a custom byte array
+            ReDim cmBytes(0 To iWidth, 0 To iHeight) As Byte
+            HandleSpecialGrayscaleICC = cTransform.ApplyTransformToArbitraryMemory(VarPtr(srcGraysInt(0, 0)), VarPtr(cmBytes(0, 0)), dstDIB.GetDIBWidth * 2, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth)
+            Erase srcGraysInt
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Special grayscale+alpha ICC handler reported " & UCase$(CStr(HandleSpecialGrayscaleICC)) & " for custom transform process"
+            #End If
+            
+            If HandleSpecialGrayscaleICC Then
+                
+                'We now have an ICC-transformed grayscale DIB sitting inside newFIDIB.  Repeat the previous steps of parsing out
+                ' the grayscale bytes, and storing them directly inside the destination DIB.
+                dstDIB.WrapArrayAroundDIB dstImageData, dstSA
+                
+                For y = 0 To iHeight
+                        
+                    'Iterate through this line, converting values as we go
+                    For x = 0 To iWidth
+                        tmpByte = cmBytes(x, y)
+                        dstImageData(x * 4, y) = tmpByte
+                        dstImageData(x * 4 + 1, y) = tmpByte
+                        dstImageData(x * 4 + 2, y) = tmpByte
+                    Next x
+                    
+                Next y
+                
+                dstDIB.UnwrapArrayFromDIB dstImageData
+                
+                'Note that the destination DIB is already prepped and ready to go!
+                pdDIBIsDestination = True
+                
+            End If
+                
+        '/End RGBA16 handling
+        
+        'The only other possibility is RGBA8 handling
+        Else
+            
+            'Temporary 8-bpp byte array for storing grayscale values
+            ReDim srcGraysByte(0 To iWidth, 0 To iHeight) As Byte
+            
+            For y = 0 To iHeight
+            
+                'FreeImage DIBs are stored bottom-up; we invert them during processing
+                iHeightInv = iHeight - y
+                
+                'Point a 1D VB array at this scanline
+                With srcSA
+                    
+                    'Size of individual elements (bytes, in our case)
+                    .cbElements = 1
+                    .cDims = 1
+                    .lBound = 0
+                    
+                    'Number of entries in each x-line of the array (4, for RGBA)
+                    .cElements = iScanWidth * 4
+                    .pvData = FreeImage_GetScanline(srcFIHandle, iHeightInv)
+                    
+                End With
+                CopyMemory ByVal VarPtrArray(srcImageDataByte), VarPtr(srcSA), 4
+                    
+                'Iterate through this line, converting values as we go
+                For x = 0 To iWidth
+                    
+                    'First, extract the target gray value and shove it into the destination integer array
+                    tmpByte = srcImageDataByte(x * 4)
+                    srcGraysByte(x, y) = tmpByte
+                    
+                    'Next, retrieve the source alpha value and copy the most-significant bit directly into the destination DIB
+                    tmpByte = srcImageDataByte(x * 4 + 3)
+                    dstImageData(x * 4 + 3, y) = tmpByte
+                    
+                Next x
+                
+            Next y
+            
+            'Free our array references
+            CopyMemory ByVal VarPtrArray(srcImageDataByte), 0&, 4
+            dstDIB.UnwrapArrayFromDIB dstImageData
+            
+            'Next, perform ICC correction on the integer array, and place the result inside a custom byte array
+            ReDim cmBytes(0 To iWidth, 0 To iHeight) As Byte
+            HandleSpecialGrayscaleICC = cTransform.ApplyTransformToArbitraryMemory(VarPtr(srcGraysByte(0, 0)), VarPtr(cmBytes(0, 0)), dstDIB.GetDIBWidth, dstDIB.GetDIBWidth, dstDIB.GetDIBHeight, dstDIB.GetDIBWidth)
+            Erase srcGraysByte
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Special grayscale+alpha ICC handler reported " & UCase$(CStr(HandleSpecialGrayscaleICC)) & " for custom transform process"
+            #End If
+            
+            If HandleSpecialGrayscaleICC Then
+                
+                'We now have an ICC-transformed grayscale DIB sitting inside newFIDIB.  Repeat the previous steps of parsing out
+                ' the grayscale bytes, and storing them directly inside the destination DIB.
+                dstDIB.WrapArrayAroundDIB dstImageData, dstSA
+                
+                For y = 0 To iHeight
+                        
+                    'Iterate through this line, converting values as we go
+                    For x = 0 To iWidth
+                        tmpByte = cmBytes(x, y)
+                        dstImageData(x * 4, y) = tmpByte
+                        dstImageData(x * 4 + 1, y) = tmpByte
+                        dstImageData(x * 4 + 2, y) = tmpByte
+                    Next x
+                    
+                Next y
+                
+                dstDIB.UnwrapArrayFromDIB dstImageData
+                
+                'Note that the destination DIB is already prepped and ready to go!
+                pdDIBIsDestination = True
+                
+            End If
+                
+        '/End RGBA8 handling
+        End If
+        
+    '/End PNG handling
+    End If
 
 End Function
 

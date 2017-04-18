@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2017 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 12/June/16
-'Last update: clean-up some esoteric functions by moving them to the DIBs module.
+'Last updated: 18/April/17
+'Last update: store the original file format in a proper PDIF enum
 '
 'This class is the core of PhotoDemon.  Any image interactions are handled through this lightweight Windows DIB wrapper, and as you
 ' might expect, a number of other capabilities are built into the class.
@@ -157,7 +157,7 @@ Private Const DIB_FILE_VERSION_2016 As Long = &H1002&
 Private m_OriginalTransparentColor As Long
 
 'If this DIB was loaded from file, its original file format will be set here.  (By default, this value will be -1).
-Private m_OriginalFIF As Long
+Private m_OriginalFIF As PD_IMAGE_FORMAT
 
 'DIBs may require ICC profile handling.  All ICC Profile interactions are handled through a publicly available ICCProfile class,
 ' on a per-DIB basis.
@@ -255,11 +255,11 @@ Public Function GetDPI() As Double
 End Function
 
 'Get/Set original DIB format
-Public Function GetOriginalFormat() As Long
+Public Function GetOriginalFormat() As PD_IMAGE_FORMAT
     GetOriginalFormat = m_OriginalFIF
 End Function
 
-Public Sub SetOriginalFormat(ByVal origFIF As Long)
+Public Sub SetOriginalFormat(ByVal origFIF As PD_IMAGE_FORMAT)
     m_OriginalFIF = origFIF
 End Sub
 
