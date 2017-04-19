@@ -497,8 +497,8 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
     If (srcDIB.GetDIBDC <> 0) Then
         
         'Prepare new width and height values as requested by the user
-        If newWidth = -1 Then newWidth = srcDIB.GetDIBWidth
-        If newHeight = -1 Then newHeight = srcDIB.GetDIBHeight
+        If (newWidth = -1) Then newWidth = srcDIB.GetDIBWidth
+        If (newHeight = -1) Then newHeight = srcDIB.GetDIBHeight
         
         'If the width and height values are not being changed, the transfer is simple
         If (newWidth = srcDIB.GetDIBWidth) And (newHeight = srcDIB.GetDIBHeight) Then
@@ -788,8 +788,8 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If (BackColor <> vbWhite) And (BackColor <> vbBlack) Then BackColor = TranslateColor(BackColor)
     
     'Force the DIB to have a size of at least 1x1
-    If (iWidth <= 0) Then iWidth = 1
-    If (iHeight <= 0) Then iHeight = 1
+    If (iWidth <= 1) Then iWidth = 1
+    If (iHeight <= 1) Then iHeight = 1
     
     'Remember the requested color depth, width, and height
     m_dibColorDepth = colorDepth
@@ -804,7 +804,7 @@ Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         .Width = iWidth
         .Height = -iHeight
         'As always, this value needs to be a multiple of four; with 32bpp that's automatic, with 24bpp it is not
-        If colorDepth = 32 Then
+        If (colorDepth = 32) Then
             m_dibStride = 4 * iWidth
         Else
             m_dibStride = (iWidth * 3 + 3) And &HFFFFFFFC

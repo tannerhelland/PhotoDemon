@@ -693,7 +693,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 Filters_Transform.SeeIfCropCanBeAppliedNonDestructively
             Else
-                MenuCropToSelection cParams.GetBool(1, False)
+                CropToSelection , cParams.GetBool(1, False)
             End If
             
         'Case "Autocrop"
@@ -897,8 +897,8 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
             
         Case "Crop layer to selection"
-            Layers.CropLayerToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
-        
+            Filters_Transform.CropToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
+            
         'Change layer alpha
         Case "Color to alpha"
             If ShowDialog Then

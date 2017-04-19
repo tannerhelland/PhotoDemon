@@ -280,8 +280,10 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
     
 End Sub
 
-'Crop the image to the current selection.
-Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean = False)
+'Crop the image to the current selection.  To crop only a single layer, specify a target layer index.
+' (Optionally, full-image crops can be applied non-destructively, by simply modifying layer offsets and
+'  image dimensions.  Single layers cannot be modified non-destructively, unfortunately.)
+Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optional ByVal applyNonDestructively As Boolean = False)
     
     'First, make sure there is an active selection
     If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
@@ -301,13 +303,15 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
     selectionHeight = selBounds.Height
     
     'Crop can be applied in two ways.
-    ' - If the current selection is a pure rectangle with no feathering or rounded corners, we can apply a non-destructive crop.
-    '   (This simply modifies layer offsets and canvas size, and it doesn't require rasterization of vector layers.)
-    ' - If the current selection is any other shape, we have to rasterize everything and forcibly crop it against the current mask.
+    ' - If the current selection is a pure rectangle with no feathering or rounded corners, and it's a full-image crop,
+    '   we can crop the image non-destructively.  (This simply modifies layer offsets and canvas size, and it doesn't
+    '   require rasterization of vector layers.)
+    ' - If the current selection is any other shape, or if only a single layer is being cropped, we have to rasterize
+    '   vector layers and apply per-pixel crops against the current mask.
     
     'This function doesn't actually determine whether a crop can be handled non-destructively; that is up to the
     ' SeeIfCropCanBeAppliedNonDestructively() function, above.
-    If applyNonDestructively Then
+    If applyNonDestructively And (targetLayerIndex = -1) Then
     
         SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers
         
@@ -327,27 +331,25 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
         
         'That's all there is to it!
     
-    'A complex shape is in use.  Forcibly crop everything using raster analysis.
+    'A complex shape is in use, or only a single layer is being cropped.  Crop using per-pixel raster mask analysis.
     Else
     
         'NOTE: historically, the entire rectangular bounding region of the selection was included in the crop.  (This is GIMP's behavior.)
         ' I now fully crop the image, which means that for non-square selections, all unselected pixels are set to transparent.  For non-square
         ' selections, this will always result in an image with some transparent regions.
         
+        'Images will be processed into a temporary DIB
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         
         'Arrays will be pointed at three sets of pixels: the current layer, the selection mask, and a destination layer.
-        Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
-        Dim dstImageData() As Byte
-        Dim dstSA As SAFEARRAY2D
+        Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+        Dim dstImageData() As Byte, dstSA As SAFEARRAY2D
         
         'Point our selection array at the selection mask in advance; this only needs to be done once, as the same mask is used for all layers.
         Dim selData() As Byte
         Dim selSA As SAFEARRAY2D
-        PrepSafeArray selSA, pdImages(g_CurrentImage).mainSelection.GetMaskDIB
-        CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
+        pdImages(g_CurrentImage).mainSelection.GetMaskDIB.WrapArrayAroundDIB selData, selSA
         
         'Lots of helper variables for a function like this
         Dim leftOffset As Long, topOffset As Long
@@ -363,13 +365,25 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
         imgWidth = pdImages(g_CurrentImage).Width
         imgHeight = pdImages(g_CurrentImage).Height
         
+        'Figure out loop boundaries.  If the entire image is being cropped, we'll need to process each layer in turn.
+        Dim numLayersToCrop As Long, startLayerIndex As Long, endLayerIndex As Long
+        If (targetLayerIndex = -1) Then
+            numLayersToCrop = pdImages(g_CurrentImage).GetNumOfLayers
+            startLayerIndex = 0
+            endLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+        Else
+            numLayersToCrop = 1
+            startLayerIndex = targetLayerIndex
+            endLayerIndex = targetLayerIndex
+        End If
+        
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
-        SetProgBarMax pdImages(g_CurrentImage).GetNumOfLayers * imgWidth
+        SetProgBarMax numLayersToCrop * imgWidth
         progBarCheck = FindBestProgBarValue()
         
         'Iterate through each layer, cropping them in turn
-        For i = 0 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+        For i = startLayerIndex To endLayerIndex
         
             'Update the progress bar counter for this layer
             progBarOffsetX = i * imgWidth
@@ -381,13 +395,14 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
             tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
             
             'Create a temporary layer at the relevant size of the selection, and retrieve a pointer to its pixel data
-            tmpDIB.CreateBlank selectionWidth, selectionHeight, 32, 0
-            PrepSafeArray dstSA, tmpDIB
-            CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+            If (tmpDIB.GetDIBWidth <> selectionWidth) Or (tmpDIB.GetDIBHeight <> selectionHeight) Then
+                tmpDIB.CreateBlank selectionWidth, selectionHeight, 32, 0, 0
+            Else
+                tmpDIB.ResetDIB 0
+            End If
             
-            'Point another array at the original image layer
-            PrepSafeArray srcSA, tmpLayerRef.layerDIB
-            CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+            tmpDIB.WrapArrayAroundDIB dstImageData, dstSA
+            tmpLayerRef.layerDIB.WrapArrayAroundDIB srcImageData, srcSA
             
             Dim selMaskDepth As Long
             selMaskDepth = (pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBColorDepth \ 8)
@@ -408,21 +423,21 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
                     'Check the image's alpha value.  If it's zero, we have no reason to process it further
                     origAlpha = srcImageData(srcQuickX + 3, srcQuickY)
                     
-                    If origAlpha > 0 Then
+                    If (origAlpha > 0) Then
                         
                         'Source pixel data will be premultiplied, which saves us a bunch of processing time.  (That is why
                         ' we premultiply alpha, after all!)
-                        r = srcImageData(srcQuickX + 2, srcQuickY)
-                        g = srcImageData(srcQuickX + 1, srcQuickY)
                         b = srcImageData(srcQuickX, srcQuickY)
+                        g = srcImageData(srcQuickX + 1, srcQuickY)
+                        r = srcImageData(srcQuickX + 2, srcQuickY)
                         
                         'Calculate a new multiplier, based on the strength of the selection at this location
                         blendAlpha = thisAlpha / 255
                         
                         'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
-                        dstImageData(dstQuickX + 2, y) = r * blendAlpha
-                        dstImageData(dstQuickX + 1, y) = g * blendAlpha
                         dstImageData(dstQuickX, y) = b * blendAlpha
+                        dstImageData(dstQuickX + 1, y) = g * blendAlpha
+                        dstImageData(dstQuickX + 2, y) = r * blendAlpha
                         
                         'Finish our work by calculating a new alpha channel value for this pixel, which is a blend of
                         ' the original alpha value, and the selection mask value at this location.
@@ -436,20 +451,28 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
                 If ((progBarOffsetX + x) And progBarCheck) = 0 Then SetProgBarVal (progBarOffsetX + x)
             Next x
             
-            'With our work complete, point both ImageData() arrays away from their respective DIBs and deallocate them
-            CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-            Erase srcImageData
-            CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-            Erase dstImageData
+            tmpDIB.UnwrapArrayFromDIB dstImageData
+            tmpLayerRef.layerDIB.UnwrapArrayFromDIB srcImageData
             
-            'Replace the current layer DIB with our destination one
+            'Replace the current layer DIB with our destination one.
+            tmpDIB.SetInitialAlphaPremultiplicationState True
             tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
-                    
-            'Release our temporary DIB
-            tmpDIB.EraseDIB
             
-            'Remove any null-padding from the layer
-            tmpLayerRef.CropNullPaddedLayer
+            'Update the layer offsets, if any.  Note that the exact approach to this varies by crop type; for single-layer crops,
+            ' we need to manually update the offsets (as they aren't guaranteed to be at (0, 0), like they are for a
+            ' full-image crop).
+            If (targetLayerIndex = -1) Then
+            
+                'Remove any null-padding from the layer
+                tmpLayerRef.CropNullPaddedLayer
+                
+            Else
+                
+                'Manually update layer offsets to point at the selection's top-left point
+                tmpLayerRef.SetLayerOffsetX selBounds.Left
+                tmpLayerRef.SetLayerOffsetY selBounds.Top
+                
+            End If
             
             'Notify the parent of the change
             pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
@@ -457,26 +480,33 @@ Public Sub MenuCropToSelection(Optional ByVal applyNonDestructively As Boolean =
         Next i
         
         'Clear the selection mask array reference
-        CopyMemory ByVal VarPtrArray(selData), 0&, 4
-        Erase selData
+        pdImages(g_CurrentImage).mainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
         
     End If
         
     'From here, we do some generic clean-up that's identical for both destructive and non-destructive modes.
+    ' (But generally speaking, only relevant when all layers are being cropped.)
+    If (targetLayerIndex = -1) Then
     
-    'The selection is now going to be out of sync with the image.  Forcibly clear it.
-    pdImages(g_CurrentImage).mainSelection.LockRelease
-    pdImages(g_CurrentImage).SetSelectionActive False
-    pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
-    SyncTextToCurrentSelection g_CurrentImage
+        'The selection is now going to be out of sync with the image.  Forcibly clear it.
+        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).SetSelectionActive False
+        pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
+        SyncTextToCurrentSelection g_CurrentImage
+        
+    End If
     
-    'Update the viewport
-    pdImages(g_CurrentImage).UpdateSize False, selectionWidth, selectionHeight
-    DisplaySize pdImages(g_CurrentImage)
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    CanvasManager.CenterOnScreen
+    'Update the viewport.  For full-image crops
+    If (targetLayerIndex = -1) Then
+        pdImages(g_CurrentImage).UpdateSize False, selectionWidth, selectionHeight
+        DisplaySize pdImages(g_CurrentImage)
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        CanvasManager.CenterOnScreen
+    Else
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    End If
     
-    'Reset the progress bar to zero
+    'Reset the progress bar to zero, then exit
     SetProgBarVal 0
     ReleaseProgressBar
     

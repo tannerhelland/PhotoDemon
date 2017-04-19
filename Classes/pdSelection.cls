@@ -2328,6 +2328,9 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' until the last possible moment, reducing the potential of generating the mask more times than we actually require.)
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
+    'If the current selection lies fully off-image, let's skip this step entirely.
+    If AreAllCoordinatesInvalid Then Exit Sub
+    
     'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
     ' renders the active selection's outline by treating the underlying data as a path, not a mask).
     
@@ -2393,7 +2396,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Dim curImgRectF As RECTF
             srcImage.imgViewport.GetIntersectRectImage curImgRectF
             
-            If (Not PDMath.AreRectFsEqual(m_LastImageRectF, m_LastImageRectF)) Then
+            If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
                 m_LastImageRectF = curImgRectF
                 m_OverlayIsReady = False
             End If
@@ -2466,7 +2469,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Else
                 m_ViewportOverlay.ResetDIB 0
             End If
-                
+            
             'In the future, I may allow selection masks to mask specific color channels (which would be rad), but for now,
             ' we treat it as if it contains grayscale entities only.
             
@@ -2563,8 +2566,8 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
             loopStartX = Int(dstLeft - viewportIntersectRectCanvas.Left)
             loopStartY = Int(dstTop - viewportIntersectRectCanvas.Top)
-            loopEndX = loopStartX + Int(dstRight - dstLeft + 1.999999)
-            loopEndY = loopStartY + Int(dstBottom - dstTop + 1.999999)
+            loopEndX = loopStartX + Int((dstRight - dstLeft) + 1.999999)
+            loopEndY = loopStartY + Int((dstBottom - dstTop) + 1.999999)
             
             If (loopEndX > imgWidth - 1) Then loopEndX = imgWidth - 1
             If (loopEndY > imgHeight - 1) Then loopEndY = imgHeight - 1
