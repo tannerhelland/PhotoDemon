@@ -1256,7 +1256,7 @@ Public Function CreateApproximateGaussianBlurDIB(ByVal equivalentGaussianRadius 
     ' This should result in a kernel that's ~97% identical to a Gaussian kernel.  For a more in-depth explanation of
     ' converting between standard deviation and a box blur estimation, please see this W3 spec:
     ' http://www.w3.org/TR/SVG11/filters.html#feGaussianBlurElement
-    If numIterations = 3 Then
+    If (numIterations = 3) Then
         Dim stdDev As Double
         stdDev = Sqr(-(equivalentGaussianRadius * equivalentGaussianRadius) / (2 * Log(1# / 255#)))
         comparableRadius = Int(stdDev * 2.37997232) / 2 - 1
