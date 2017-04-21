@@ -492,7 +492,9 @@ End Function
 
 'Make a copy of an existing DIB
 Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional useHalftoning As Boolean = True) As Boolean
-
+    
+    CreateFromExistingDIB = False
+    
     'Make sure the DIB we're passed isn't empty
     If (srcDIB.GetDIBDC <> 0) Then
         
@@ -509,15 +511,15 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                 'Copy the image data without modification
                 BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
                 
-                'Copy the source DIB's header as well
+                'Copy the source DIB's header as well.  (Note that this only copies a BITMAPINFOHEADER,
+                ' meaning descriptive info only - not things like the DIB bits pointer.)
                 srcDIB.CopyDIBHeader m_dibHeader
                 
                 'Reset our alpha premultiplication flag to match
                 m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
                 
                 CreateFromExistingDIB = True
-                Exit Function
-            
+                
             Else
             
                 'Create a new, blank DIB the same size as the source DIB
@@ -530,7 +532,6 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                     m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
                     
                     CreateFromExistingDIB = True
-                    Exit Function
                     
                 End If
                 
@@ -571,18 +572,13 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                 m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
                 
                 CreateFromExistingDIB = True
-                Exit Function
                         
             End If
         
         End If
-            
-        CreateFromExistingDIB = False
-    
+        
     End If
     
-    CreateFromExistingDIB = False
-
 End Function
 
 'Convert this DIB to 24bpp mode

@@ -105,6 +105,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'To improve performance, we cache a local temporary DIB when generating previews
+Private m_blurDIB As pdDIB
+
 'Apply a "colored pencil" effect to an image
 'Inputs:
 ' 1) radius of the pencil tip (min 1, no real max - but processing speed obviously drops as the radius increases)
@@ -116,7 +119,7 @@ Option Explicit
 '    3 - graphite
 Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Double, ByVal pencilStyle As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Sketching image with pencils..."
+    If (Not toPreview) Then Message "Sketching image with pencils..."
     
     'Reverse the intensity input; this way, positive values make the image more vibrant.  Negative values make it less vibrant.
     ' Note that the adjustment also varies by pencil style; typically it's used as a vibrance adjustment, but in some modes,
@@ -141,9 +144,8 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
     
     'Create a copy of the image.  "Colored pencil" requires a blurred image copy as part of the effect, and we maintain
     ' that copy separate from the original (as the two must be blended as the final step of the filter).
-    Dim blurDIB As pdDIB
-    Set blurDIB = New pdDIB
-    blurDIB.CreateFromExistingDIB workingDIB
+    If (m_blurDIB Is Nothing) Then Set m_blurDIB = New pdDIB
+    m_blurDIB.CreateFromExistingDIB workingDIB
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -166,10 +168,10 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         
     End If
     
-    If penRadius < 1 Then penRadius = 1
+    If (penRadius < 1) Then penRadius = 1
     
     'Start by creating the blurred DIB
-    If CreateApproximateGaussianBlurDIB(penRadius, workingDIB, blurDIB, 3, toPreview, finalY * 3 + finalX * 5) Then
+    If CreateApproximateGaussianBlurDIB(penRadius, workingDIB, m_blurDIB, 3, toPreview, finalY * 3 + finalX * 5) Then
         
         Dim progBarOffset As Long
         progBarOffset = finalY * 3 + finalX * 3
@@ -177,7 +179,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         'Now that we have a gaussian DIB created in blurDIB, we can point arrays toward it and the source DIB
         Dim srcImageData() As Byte
         Dim srcSA As SAFEARRAY2D
-        PrepSafeArray srcSA, blurDIB
+        PrepSafeArray srcSA, m_blurDIB
         CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
         'These values will help us access locations in the array more quickly.
@@ -198,26 +200,26 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
             quickVal = x * qvDepth
         For y = initY To finalY
             
-            r = srcImageData(quickVal + 2, y)
-            g = srcImageData(quickVal + 1, y)
             b = srcImageData(quickVal, y)
+            g = srcImageData(quickVal + 1, y)
+            r = srcImageData(quickVal + 2, y)
             
             'Normally, we invert the raw pixel data only...
-            If pencilStyle <> 1 Then
-                srcImageData(quickVal + 2, y) = 255 - r
-                srcImageData(quickVal + 1, y) = 255 - g
+            If (pencilStyle <> 1) Then
                 srcImageData(quickVal, y) = 255 - b
-            
+                srcImageData(quickVal + 1, y) = 255 - g
+                srcImageData(quickVal + 2, y) = 255 - r
+                
             '...but for the "luminous" color mode, we also convert the image to grayscale
             Else
-                g = grayLookUp(r + g + b)
-                srcImageData(quickVal + 2, y) = 255 - g
-                srcImageData(quickVal + 1, y) = 255 - g
-                srcImageData(quickVal, y) = 255 - g
+                g = 255 - grayLookUp(r + g + b)
+                srcImageData(quickVal, y) = g
+                srcImageData(quickVal + 1, y) = g
+                srcImageData(quickVal + 2, y) = g
             End If
             
         Next y
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
                     If UserPressedESC() Then Exit For
                     SetProgBarVal progBarOffset + x
@@ -229,7 +231,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         
         'Apply premultiplication to the layers prior to compositing
-        blurDIB.SetAlphaPremultiplication True
+        m_blurDIB.SetAlphaPremultiplication True
         workingDIB.SetAlphaPremultiplication True
         
         'A pdCompositor class will help us blend the invert+blur image back onto the original image
@@ -238,34 +240,15 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         
         'Composite our invert+blur image against the base layer (workingDIB) using the COLOR DODGE blend mode;
         ' this will emphasize areas where the layers differ, while ignoring areas where they're the same.
-        Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
-        Set tmpLayerTop = New pdLayer
-        Set tmpLayerBottom = New pdLayer
-        
-        tmpLayerTop.InitializeNewLayer PDL_IMAGE, , blurDIB
-        tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
-        
-        'Normally we use the "color dodge" blend mode, but for "pastel" mode, we switch to linear dodge for a
-        ' lighter, softer appearance
-        If pencilStyle <> 2 Then
-            tmpLayerTop.SetLayerBlendMode BL_COLORDODGE
-        Else
-            tmpLayerTop.SetLayerBlendMode BL_LINEARDODGE
-        End If
-        tmpLayerTop.SetLayerOpacity 100
-        
-        cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
-        
-        'Copy the finished DIB from the bottom layer back into workingDIB
-        workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
+        Dim topBlendMode As LAYER_BLENDMODE
+        If (pencilStyle <> 2) Then topBlendMode = BL_COLORDODGE Else topBlendMode = BL_LINEARDODGE
+        cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_blurDIB, topBlendMode
         
         'Remove premultiplied alpha
         workingDIB.SetAlphaPremultiplication False
         
-        'Release our temporary layers and DIBs
-        Set blurDIB = Nothing
-        Set tmpLayerTop = Nothing
-        Set tmpLayerBottom = Nothing
+        'Release any temporary DIBs as they are no longer required
+        If (Not toPreview) Then Set m_blurDIB = Nothing
         
         'Some modes requires post-production gamma correction.  Build a lookup table now.
         Dim gammaTable() As Byte
@@ -280,9 +263,12 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                 tmpVal = tmpVal ^ (1 / colorIntensity)
                 tmpVal = tmpVal * 255
                 
-                If tmpVal > 255 Then tmpVal = 255
-                If tmpVal < 0 Then tmpVal = 0
-        
+                If (tmpVal > 255) Then
+                    tmpVal = 255
+                ElseIf (tmpVal < 0) Then
+                    tmpVal = 0
+                End If
+                
                 gammaTable(x) = tmpVal
             Next x
         
@@ -299,14 +285,13 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
             quickVal = x * qvDepth
         For y = initY To finalY
             
-            r = srcImageData(quickVal + 2, y)
-            g = srcImageData(quickVal + 1, y)
             b = srcImageData(quickVal, y)
+            g = srcImageData(quickVal + 1, y)
+            r = srcImageData(quickVal + 2, y)
                 
             'Calculate the gray value using different methods for each pencil style
-            Select Case pencilStyle
+            If (pencilStyle = 0) Or (pencilStyle = 1) Then
             
-                Case 0, 1
             
                     avgVal = grayLookUp(r + g + b)
                     maxVal = Max3Int(r, g, b)
@@ -314,36 +299,52 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                     'Calculate a vibrance-adjusted average, using the gray as our base
                     amtVal = ((Abs(maxVal - avgVal) / 127) * colorIntensity)
                     
-                    If r <> maxVal Then r = r + (maxVal - r) * amtVal
-                    If g <> maxVal Then g = g + (maxVal - g) * amtVal
-                    If b <> maxVal Then b = b + (maxVal - b) * amtVal
+                    If (r <> maxVal) Then
+                        r = r + (maxVal - r) * amtVal
+                        If (r < 0) Then
+                            r = 0
+                        ElseIf (r > 255) Then
+                            r = 255
+                        End If
+                    End If
                     
-                    'Clamp values to [0,255] range
-                    If r < 0 Then r = 0
-                    If r > 255 Then r = 255
-                    If g < 0 Then g = 0
-                    If g > 255 Then g = 255
-                    If b < 0 Then b = 0
-                    If b > 255 Then b = 255
-                
-                Case 2
+                    If (g <> maxVal) Then
+                        g = g + (maxVal - g) * amtVal
+                        If (g < 0) Then
+                            g = 0
+                        ElseIf (g > 255) Then
+                            g = 255
+                        End If
+                    End If
+                    
+                    If (b <> maxVal) Then
+                        b = b + (maxVal - b) * amtVal
+                        If (b < 0) Then
+                            b = 0
+                        ElseIf (b > 255) Then
+                            b = 255
+                        End If
+                    End If
+                    
+            ElseIf (pencilStyle = 2) Then
+            
                     r = gammaTable(r)
                     g = gammaTable(g)
                     b = gammaTable(b)
-                    
-                Case 3
-                    r = gammaTable(grayLookUp(r + g + b))
-                    g = r
-                    b = r
-                
-            End Select
             
-            srcImageData(quickVal + 2, y) = r
-            srcImageData(quickVal + 1, y) = g
+            'At present, the only other possibility is pencilStyle = 3
+            Else
+                r = gammaTable(grayLookUp(r + g + b))
+                g = r
+                b = r
+            End If
+            
             srcImageData(quickVal, y) = b
+            srcImageData(quickVal + 1, y) = g
+            srcImageData(quickVal + 2, y) = r
             
         Next y
-            If Not toPreview Then
+            If (Not toPreview) Then
                 If (x And progBarCheck) = 0 Then
                     If UserPressedESC() Then Exit For
                     SetProgBarVal progBarOffset + x
@@ -353,7 +354,6 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         
         'Release our array once more
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
         
     End If
     
@@ -416,9 +416,3 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
-
