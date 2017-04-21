@@ -145,7 +145,10 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
-Dim m_zOffset As Double
+Private m_zOffset As Double
+
+'To improve performance, we cache a local temporary DIB when previewing the effect
+Private m_tmpFogDIB As pdDIB
 
 Private Sub cmbEdges_Click()
     UpdatePreview
@@ -154,7 +157,7 @@ End Sub
 'Apply a "fog" effect to an image, using Perlin Noise as the base
 Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDensity As Long, ByVal fxQuality As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
 
-    If Not toPreview Then Message "Generating artificial fog..."
+    If (Not toPreview) Then Message "Generating artificial fog..."
     
     'Contrast is presented to the user on a [0, 100] scale, but the algorithm needs it on [0, 1]; convert it now
     fxContrast = fxContrast / 100
@@ -183,7 +186,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     
     'Scale is used as a fraction of the image's smallest dimension.  There's no problem with using larger
     ' values, but at some point it distorts the image beyond recognition.
-    If curDIBValues.Width > curDIBValues.Height Then
+    If (curDIBValues.Width > curDIBValues.Height) Then
         fxScale = (fxScale / 100) * curDIBValues.Height
     Else
         fxScale = (fxScale / 100) * curDIBValues.Width
@@ -244,8 +247,12 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
         
         'Convert the calculated noise value to RGB range and cache it
         pDisplace = 127 + (pNoiseCache * 127)
-        If pDisplace > 255 Then pDisplace = 255
-        If pDisplace < 0 Then pDisplace = 0
+        If (pDisplace > 255) Then
+            pDisplace = 255
+        ElseIf (pDisplace < 0) Then
+            pDisplace = 0
+        End If
+        
         fogArray(x, y) = pDisplace
           
     Next y
@@ -258,22 +265,17 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Next x
     
     'Next, create a temporary DIB that will hold a grayscale representation of our fog data
-    Dim tmpFogDIB As pdDIB
-    Set tmpFogDIB = New pdDIB
-    tmpFogDIB.CreateFromExistingDIB workingDIB
-    
-    PrepSafeArray dstSA, tmpFogDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    If (m_tmpFogDIB Is Nothing) Then Set m_tmpFogDIB = New pdDIB
+    m_tmpFogDIB.CreateFromExistingDIB workingDIB
+    m_tmpFogDIB.WrapArrayAroundDIB dstImageData, dstSA
     
     'Loop through each pixel in the image, converting stored fog values to RGB triplets
     For x = initX To finalX
         quickVal = x * qvDepth
     For y = initY To finalY
-        
-        dstImageData(quickVal + 2, y) = fogArray(x, y)
-        dstImageData(quickVal + 1, y) = fogArray(x, y)
         dstImageData(quickVal, y) = fogArray(x, y)
-          
+        dstImageData(quickVal + 1, y) = fogArray(x, y)
+        dstImageData(quickVal + 2, y) = fogArray(x, y)
     Next y
         If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
@@ -283,13 +285,10 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Next x
     
     'tmpFogDIB now contains a grayscale representation of our fog data
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+    m_tmpFogDIB.UnwrapArrayFromDIB dstImageData
     
     'Apply premultiplication prior to compositing
-    tmpFogDIB.SetAlphaPremultiplication True
+    m_tmpFogDIB.SetAlphaPremultiplication True
     workingDIB.SetAlphaPremultiplication True
     
     'A pdCompositor class will help us selectively blend the fog results back onto the main image
@@ -298,24 +297,9 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     
     'Composite our custom fog image against the base layer (workingDIB) using the Normal blend mode,
     ' and adjusting opacity (taken from the Density option provided to the user).
-    Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
-    Set tmpLayerTop = New pdLayer
-    Set tmpLayerBottom = New pdLayer
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, m_tmpFogDIB, BL_NORMAL, fxDensity
     
-    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , tmpFogDIB
-    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
-    
-    tmpLayerTop.SetLayerBlendMode BL_NORMAL
-    tmpLayerTop.SetLayerOpacity fxDensity
-    
-    cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
-    
-    'Copy the finished DIB from the bottom layer back into workingDIB
-    workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
-    
-    Set tmpFogDIB = Nothing
-    Set tmpLayerTop = Nothing
-    Set tmpLayerBottom = Nothing
+    If (Not toPreview) Then Set m_tmpFogDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic, True
