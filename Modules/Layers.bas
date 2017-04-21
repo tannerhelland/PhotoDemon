@@ -228,9 +228,9 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
             If Len(customLayerName) = 0 Then
-                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(GetFilenameWithoutExtension(imagePath)), tmpDIB, pdImages(g_CurrentImage)
+                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(GetFilenameWithoutExtension(imagePath)), tmpDIB
             Else
-                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB, pdImages(g_CurrentImage)
+                pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB
             End If
             
             Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).GetLayerByID(newLayerID).GetLayerName & ")"

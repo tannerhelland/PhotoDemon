@@ -214,7 +214,7 @@ End Sub
 Public Function ExportSelectedAreaAsImage() As Boolean
     
     'If a selection is not active, it should be impossible to select this menu item.  Just in case, check for that state and exit if necessary.
-    If Not pdImages(g_CurrentImage).IsSelectionActive Then
+    If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
         Message "This action requires an active selection.  Please create a selection before continuing."
         ExportSelectedAreaAsImage = False
         Exit Function
@@ -227,10 +227,10 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'Copy the current selection DIB into a temporary DIB.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
-    pdImages(g_CurrentImage).RetrieveProcessedSelection tmpDIB, False, True
+    pdImages(g_CurrentImage).RetrieveProcessedSelection tmpDIB, True, True
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not DIBs.IsDIBAlphaBinary(tmpDIB, False) Then tmpDIB.ConvertTo24bpp
+    'If (Not DIBs.IsDIBAlphaBinary(tmpDIB, False)) Then tmpDIB.ConvertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
@@ -247,7 +247,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     
     'By default, recommend JPEG for 24bpp selections, and PNG for 32bpp selections
     Dim saveFormat As Long
-    If tmpDIB.GetDIBColorDepth = 24 Then
+    If DIBs.IsDIBAlphaBinary(tmpDIB, False) Then
         saveFormat = g_ImageFormats.GetIndexOfOutputPDIF(PDIF_JPEG) + 1
     Else
         saveFormat = g_ImageFormats.GetIndexOfOutputPDIF(PDIF_PNG) + 1
@@ -266,7 +266,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
                 
         'Store the selected file format to the image object
         tmpImage.SetCurrentFileFormat g_ImageFormats.GetOutputPDIF(saveFormat - 1)
-                                
+        
         'Transfer control to the core SaveImage routine, which will handle color depth analysis and actual saving
         ExportSelectedAreaAsImage = PhotoDemon_SaveImage(tmpImage, sFile, True)
         
@@ -299,11 +299,11 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     Set tmpDIB = New pdDIB
     tmpDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.GetMaskDIB
     
-    'Due to the way selections work, it's easier for us to forcibly up-sample the selection mask to 32bpp.  This prevents
-    ' some issues with saving to exotic file formats.
-    tmpDIB.ConvertTo32bpp
+    'Selections use a "white = selected, transparent = unselected" strategy.  Composite against a black background now
+    ' (but leave the DIB in 32-bpp format)
+    tmpDIB.CompositeBackgroundColor 0, 0, 0
     
-    'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
+    'In a temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.CreateBlankLayer
     tmpImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
