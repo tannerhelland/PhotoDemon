@@ -120,7 +120,7 @@ Option Explicit
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
 Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxOpacity As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Lighting image on fire..."
+    If (Not toPreview) Then Message "Lighting image on fire..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -130,7 +130,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     'Radius needs to be adjusted during previews, to accurately reflect how the final image will appear
     If toPreview Then
         fxRadius = fxRadius * curDIBValues.previewModifier
-        If fxRadius < 1 Then fxRadius = 1
+        If (fxRadius < 1) Then fxRadius = 1
     Else
         SetProgBarMax workingDIB.GetDIBWidth * 3
     End If
@@ -188,9 +188,9 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
         b = ImageData(quickVal, y)
+        g = ImageData(quickVal + 1, y)
+        r = ImageData(quickVal + 2, y)
         
         'Calculate a distance value using our precalculated look-up values.  Basically, this is the max distance
         ' a flame can travel, and it's directly tied to the pixel's luminance (brighter pixels travel further).
@@ -198,33 +198,33 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         
         'Calculate an upper bound
         fTargetMin = y - fDistance
-        If fTargetMin < 0 Then
+        If (fTargetMin < 0) Then
             fTargetMin = 0
             fDistance = y
         End If
         
         'Trace a path upward, blending this value with neighboring pixels as we go
-        If fDistance > 0 Then
+        If (fDistance > 0) Then
         
             For innerY = y To fTargetMin Step -1
                 
-                inR = ImageData(quickVal + 2, innerY)
-                inG = ImageData(quickVal + 1, innerY)
                 inB = ImageData(quickVal, innerY)
+                inG = ImageData(quickVal + 1, innerY)
+                inR = ImageData(quickVal + 2, innerY)
                 
                 'Blend this pixel's value with the value at this pixel, using the distance traveled as our blend metric
                 fadeVal = (innerY - fTargetMin) / fDistance
                 
-                ImageData(quickVal + 2, innerY) = BlendColors(inR, r, fadeVal)
-                ImageData(quickVal + 1, innerY) = BlendColors(inG, g, fadeVal)
                 ImageData(quickVal, innerY) = BlendColors(inB, b, fadeVal)
+                ImageData(quickVal + 1, innerY) = BlendColors(inG, g, fadeVal)
+                ImageData(quickVal + 2, innerY) = BlendColors(inR, r, fadeVal)
                 
             Next innerY
         
         End If
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
                 If UserPressedESC() Then Exit For
                 SetProgBarVal finalX + x
@@ -238,26 +238,26 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
         b = ImageData(quickVal, y)
+        g = ImageData(quickVal + 1, y)
+        r = ImageData(quickVal + 2, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
         
         'Perform the fire conversion
         r = grayVal * fxIntensity
-        If r > 255 Then r = 255
+        If (r > 255) Then r = 255
         g = grayVal
         b = grayVal \ fxIntensity
         
         'Assign the new "fire" value to each color channel
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
         ImageData(quickVal, y) = b
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal + 2, y) = r
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
                 If UserPressedESC() Then Exit For
                 SetProgBarVal finalX * 2 + x
@@ -276,27 +276,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     'A pdCompositor class will help us selectively blend the flame results back onto the main image
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
-    
-    'Composite our custom flame image against the base layer (workingDIB) using the Screen blend mode;
-    ' this will ignore blacks, while preserving other colors according to their luminance.
-    Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
-    Set tmpLayerTop = New pdLayer
-    Set tmpLayerBottom = New pdLayer
-    
-    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , edgeDIB
-    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
-    
-    tmpLayerTop.SetLayerBlendMode BL_SCREEN
-    tmpLayerTop.SetLayerOpacity fxOpacity
-    
-    cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
-    
-    'Copy the finished DIB from the bottom layer back into workingDIB
-    workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
-    
-    Set edgeDIB = Nothing
-    Set tmpLayerTop = Nothing
-    Set tmpLayerBottom = Nothing
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, edgeDIB, BL_SCREEN, fxOpacity
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic, True
