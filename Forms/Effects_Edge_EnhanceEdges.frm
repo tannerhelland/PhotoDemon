@@ -111,8 +111,8 @@ Attribute VB_Exposed = False
 'Edge Enhancement Interface
 'Copyright 2002-2017 by Tanner Helland
 'Created: sometimes 2002
-'Last updated: 12/June/14
-'Last update: give tool its own form, and open it up to all available edge detection techniques
+'Last updated: 21/April/17
+'Last update: performance improvements
 '
 'This edge enhancement function allows the user to selectively emphasize image edges using any available edge
 ' detection technique.  PD's compositor is then used to composite the results back onto the base image at some
@@ -152,7 +152,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Enhance edges", , BuildParams(lstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value), UNDO_LAYER
+    Process "Enhance edges", , BuildParams(lstEdgeOptions.ListIndex, GetDirectionality(), sltStrength.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -180,7 +180,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     tmpParamString = tmpParamString & "False" & "|"
     
     '2a) Retrieve the relevant convolution matrix for this filter
-    convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, edgeDirectionality)
+    convolutionMatrixString = GetParamStringForEdgeDetector(edgeDetectionType, edgeDirectionality)
     
     '2b) Merge the retrieved convolution matrix string with our name and invert params
     tmpParamString = tmpParamString & convolutionMatrixString
@@ -191,7 +191,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     Dim numPassesRequired As Long
     If (edgeDetectionType = PD_EDGE_ARTISTIC_CONTOUR) Then
         numPassesRequired = 2
-    ElseIf isEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
+    ElseIf IsEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
         numPassesRequired = 2
     Else
         numPassesRequired = 3
@@ -224,7 +224,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     
     '3b) If the requested edge function is not single-pass compatible, run a second pass in the opposite direction,
     '     the blend the results back onto edgeDIB.
-    If Not isEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
+    If Not IsEdgeDetectionSinglePass(edgeDetectionType, edgeDirectionality) Then
     
         'Create a second DIB copy.  This will receive the edge-detection copy of the image.
         Dim tmpEdgeDIB As pdDIB
@@ -237,7 +237,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         
         tmpParamString = GetNameOfEdgeDetector(edgeDetectionType) & "|"
         tmpParamString = tmpParamString & "False" & "|"
-        convolutionMatrixString = getParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
+        convolutionMatrixString = GetParamStringForEdgeDetector(edgeDetectionType, PD_EDGE_DIR_HORIZONTAL)
         tmpParamString = tmpParamString & convolutionMatrixString
                 
         'Use the central ConvolveDIB function to apply the new convolution to workingDIB
@@ -257,34 +257,16 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         
     End If
     
-    
     'edgeDIB now contains a complete edge-detection copy of the image, using the supplied edge detector algorithm.
     ' We now need to selectively blend the results back onto the main image, at the strength requested.
-    If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", numPassesRequired, numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
+    If (Not toPreview) Then Message "Applying pass %1 of %2 for %3 filter...", numPassesRequired, numPassesRequired, GetNameOfEdgeDetector(edgeDetectionType)
     
     'Apply premultiplication prior to compositing
     edgeDIB.SetAlphaPremultiplication True
     workingDIB.SetAlphaPremultiplication True
     
-    'To make the merge operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing
-    ' layer code to handle the merge.
-    Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
-    Set tmpLayerTop = New pdLayer
-    Set tmpLayerBottom = New pdLayer
-    
-    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , edgeDIB
-    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
-    
-    tmpLayerTop.SetLayerBlendMode BL_SCREEN
-    tmpLayerTop.SetLayerOpacity enhanceStrength
-    
-    cComposite.MergeLayers tmpLayerTop, tmpLayerBottom, True
-    
-    'Copy the finished DIB from the bottom layer back into workingDIB
-    workingDIB.CreateFromExistingDIB tmpLayerBottom.layerDIB
-    
-    Set tmpLayerTop = Nothing
-    Set tmpLayerBottom = Nothing
+    'Merge the two DIBs together
+    cComposite.QuickMergeTwoDibsOfEqualSize workingDIB, edgeDIB, BL_SCREEN, enhanceStrength
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     FinalizeImageData toPreview, dstPic, True
@@ -323,7 +305,7 @@ End Function
 
 'Given an edge detection type and a direction, return TRUE if the requested edge detector can be applied in a single pass.
 ' Return FALSE if the function requires multiple image passes.
-Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As Boolean
+Private Function IsEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As Boolean
 
     'Convolution matrix strings are assembled in two or three steps:
     ' 1) Add divisor and offset values
@@ -332,43 +314,43 @@ Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
     Select Case edgeDetectionType
         
         Case PD_EDGE_ARTISTIC_CONTOUR
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
     
         'Hilite detection (doesn't support directionality)
         Case PD_EDGE_HILITE
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
         
         'Laplacian is unique because it supports a different operator for all directionalities, so even horizontal/vertical can
         ' be done in a single pass.
         Case PD_EDGE_LAPLACIAN
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
                 
         'PhotoDemon edge detection (doesn't support directionality)
         Case PD_EDGE_PHOTODEMON
-            isEdgeDetectionSinglePass = True
+            IsEdgeDetectionSinglePass = True
         
         'Prewitt edge detection is unidirectional
         Case PD_EDGE_PREWITT
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
-                isEdgeDetectionSinglePass = True
+                IsEdgeDetectionSinglePass = True
             Else
-                isEdgeDetectionSinglePass = False
+                IsEdgeDetectionSinglePass = False
             End If
             
         'Roberts cross edge detection is unidirectional
         Case PD_EDGE_ROBERTS
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
-                isEdgeDetectionSinglePass = True
+                IsEdgeDetectionSinglePass = True
             Else
-                isEdgeDetectionSinglePass = False
+                IsEdgeDetectionSinglePass = False
             End If
         
         'Sobel edge detection is unidirectional
         Case PD_EDGE_SOBEL
             If (edgeDirectionality = PD_EDGE_DIR_HORIZONTAL) Or (edgeDirectionality = PD_EDGE_DIR_VERTICAL) Then
-                isEdgeDetectionSinglePass = True
+                IsEdgeDetectionSinglePass = True
             Else
-                isEdgeDetectionSinglePass = False
+                IsEdgeDetectionSinglePass = False
             End If
         
     End Select
@@ -376,7 +358,7 @@ Private Function isEdgeDetectionSinglePass(ByVal edgeDetectionType As PD_EDGE_DE
 End Function
 
 'Given an internal edge detection type (and optionally, a direction), calculate a matching convolution matrix and return it
-Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As String
+Private Function GetParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION, Optional ByVal edgeDirectionality As PD_EDGE_DETECTION_DIRECTION = PD_EDGE_DIR_ALL) As String
 
     Dim convoString As String
     convoString = ""
@@ -516,7 +498,7 @@ Private Function getParamStringForEdgeDetector(ByVal edgeDetectionType As PD_EDG
     
     End Select
     
-    getParamStringForEdgeDetector = convoString
+    GetParamStringForEdgeDetector = convoString
 
 End Function
 
@@ -583,25 +565,25 @@ Private Sub LstEdgeOptions_Click()
     Select Case lstEdgeOptions.ListIndex
     
         Case PD_EDGE_ARTISTIC_CONTOUR
-            changeCheckboxActivation False
+            ChangeCheckboxActivation False
         
         Case PD_EDGE_HILITE
-            changeCheckboxActivation False
+            ChangeCheckboxActivation False
         
         Case PD_EDGE_LAPLACIAN
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
         
         Case PD_EDGE_PHOTODEMON
-            changeCheckboxActivation False
+            ChangeCheckboxActivation False
         
         Case PD_EDGE_PREWITT
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
         
         Case PD_EDGE_ROBERTS
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
             
         Case PD_EDGE_SOBEL
-            changeCheckboxActivation True
+            ChangeCheckboxActivation True
     
     End Select
     
@@ -612,7 +594,7 @@ End Sub
 
 'Dis/enable the directionality checkboxes to match the request; when checkboxes are disabled, their value is automatically
 ' forced to TRUE.
-Private Sub changeCheckboxActivation(ByVal toEnable As Boolean)
+Private Sub ChangeCheckboxActivation(ByVal toEnable As Boolean)
 
     If toEnable Then
     
@@ -633,14 +615,14 @@ Private Sub changeCheckboxActivation(ByVal toEnable As Boolean)
 End Sub
 
 'Convert the directionality checkboxes to PD's internal edge detection definitions
-Private Function getDirectionality() As PD_EDGE_DETECTION_DIRECTION
+Private Function GetDirectionality() As PD_EDGE_DETECTION_DIRECTION
 
     If CBool(chkDirection(0).Value) And Not CBool(chkDirection(1).Value) Then
-        getDirectionality = PD_EDGE_DIR_HORIZONTAL
+        GetDirectionality = PD_EDGE_DIR_HORIZONTAL
     ElseIf CBool(chkDirection(1).Value) And Not CBool(chkDirection(0).Value) Then
-        getDirectionality = PD_EDGE_DIR_VERTICAL
+        GetDirectionality = PD_EDGE_DIR_VERTICAL
     Else
-        getDirectionality = PD_EDGE_DIR_ALL
+        GetDirectionality = PD_EDGE_DIR_ALL
     End If
 
 End Function
@@ -649,7 +631,7 @@ End Function
 Private Sub UpdatePreview()
     
     If cmdBar.PreviewsAllowed Then
-        ApplyEdgeEnhancement lstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value, True, pdFxPreview
+        ApplyEdgeEnhancement lstEdgeOptions.ListIndex, GetDirectionality(), sltStrength.Value, True, pdFxPreview
     End If
     
 End Sub
