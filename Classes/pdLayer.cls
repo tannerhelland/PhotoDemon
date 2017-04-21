@@ -1737,9 +1737,10 @@ End Function
 
 'Initialize a new layer.  Optional inputs include:
 ' - Layer name
-' - For image-type layers, a DIB can be passed; the layer's raster contents will be initialized to match the DIB
-' - A parent pdImage object.  This is currently unused, but in the future, I may use it to center the new layer on the current viewport
-Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal newLayerName As String = "", Optional ByRef srcDIB As pdDIB = Nothing, Optional ByRef parentImage As pdImage = Nothing, Optional ByVal cloneSourceLayerLocally As Boolean = False)
+' - For image-type layers, a DIB can be passed; the layer's raster contents will be initialized to match the DIB.
+'   (By default, this function will simply set a reference to the passed DIB; if you want a full clone, specify it
+'    via the final optional parameter.)
+Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal newLayerName As String = vbNullString, Optional ByRef srcDIB As pdDIB = Nothing, Optional ByVal cloneSourceLayerLocally As Boolean = False)
 
     'Mark the layer type.
     myLayerType = newLayerType

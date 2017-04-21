@@ -698,7 +698,7 @@ Public Function FinishLoadingMultipageImage(ByVal srcFilename As String, ByRef d
                 'Create a blank layer in the receiving image, and retrieve a pointer to it
                 newLayerID = targetImage.CreateBlankLayer
                 newLayerName = Layers.GenerateInitialLayerName(srcFilename, suggestedFilename, True, targetImage, dstDIB, pageToLoad)
-                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, dstDIB, targetImage, True
+                targetImage.GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, newLayerName, dstDIB, True
                 
             End If
             
