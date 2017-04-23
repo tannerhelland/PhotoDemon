@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.51</langversion>
+<langversion>1.0.52</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -2690,7 +2690,7 @@ Please enter a numeric value.</original>
 <translation>увезените слика</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -12659,8 +12659,8 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>best for photographs</original>
-<translation>најдобро за фотографии</translation>
+<original>fastest</original>
+<translation>најбрзиот</translation>
 </phrase>
 
 <phrase>
@@ -12669,18 +12669,13 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>fastest</original>
-<translation>најбрзиот</translation>
+<original>best for photographs</original>
+<translation>најдобро за фотографии</translation>
 </phrase>
 
 <phrase>
 <original>Nearest Neighbor</original>
 <translation>најблизок сосед</translation>
-</phrase>
-
-<phrase>
-<original>Halftone</original>
-<translation>Нијанси</translation>
 </phrase>
 
 <phrase>
@@ -12753,7 +12748,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>менување на големината на слој</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 53 phrases. 29 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15002,10 +14997,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12400 total words. -->
 
 </pdData>

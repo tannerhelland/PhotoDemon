@@ -122,8 +122,8 @@ Attribute VB_Exposed = False
 'Image Size Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 09/May/14
-'Last update: allow resizing of the entire image, or a single layer
+'Last updated: 23/April/17
+'Last update: finally work on a much-needed code cleanup
 '
 'Handles all image-size related functions.  Currently supports nearest-neighbor and halftone resampling
 ' (via the API; not 100% accurate but faster than doing it manually), bilinear resampling via pure VB, and
@@ -136,15 +136,18 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+
 'The list of available resampling algorithms changes based on the presence of FreeImage, and the use of
 ' "friendly" vs "technical" names.  As a result, we have to track them dynamically using a custom type.
-Private Type resampleAlgorithm
+Private Type ResampleAlgorithmEntry
     Name As String
-    ProgramID As Long
+    ResampleID As PD_RESAMPLE_ADVANCED
 End Type
 
-Dim resampleTypes() As resampleAlgorithm
-Dim numResamples() As Long
+'We currently track two resample arrays: one with "simple" names (e.g. "best for photos"), and one with
+' "technical" names (e.g. "sinc-lanczos).
+Private m_resampleTypes() As ResampleAlgorithmEntry
+Private m_numResamples() As Long
 
 Private Enum ResampleNameType
     rsFriendly = 0
@@ -152,7 +155,7 @@ Private Enum ResampleNameType
 End Enum
 
 #If False Then
-    Const rsFriendly = 0, rsTechnical = 1
+    Private Const rsFriendly = 0, rsTechnical = 1
 #End If
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
@@ -179,23 +182,18 @@ Private Sub SwitchResampleOption()
         
     'Friendly names are selected
     Else
-    
-        'Show a descriptive label
         lblResample.Caption = g_Language.TranslateMessage("resampling quality:")
-        
-        'Show the proper combo box
         cboResampleFriendly.Visible = True
         cboResampleTechnical.Visible = False
-        
     End If
     
 End Sub
 
 'Used by refillResampleBoxes, below, to keep track of what resample algorithms we have available
-Private Sub AddResample(ByVal rName As String, ByVal rID As Long, ByVal rCategory As ResampleNameType)
-    resampleTypes(rCategory, numResamples(rCategory)).Name = rName
-    resampleTypes(rCategory, numResamples(rCategory)).ProgramID = rID
-    numResamples(rCategory) = numResamples(rCategory) + 1
+Private Sub AddResample(ByVal rName As String, ByVal rID As PD_RESAMPLE_ADVANCED, ByVal rCategory As ResampleNameType)
+    m_resampleTypes(rCategory, m_numResamples(rCategory)).Name = rName
+    m_resampleTypes(rCategory, m_numResamples(rCategory)).ResampleID = rID
+    m_numResamples(rCategory) = m_numResamples(rCategory) + 1
 End Sub
 
 'Display all available resample algorithms in the combo box (contingent on the "show technical names" check box as well)
@@ -204,49 +202,48 @@ Private Sub RefillResampleBoxes()
     'Resample Types stores resample data for two combo boxes: one that displays "friendly" names (0),
     ' and one that displays "technical" ones (1).  The numResamples() array stores the number of
     ' resample algorithms available as "friendly" entries (0) and "technical" entries (1).
-    ReDim resampleTypes(0 To 1, 0 To 20) As resampleAlgorithm
-    ReDim numResamples(0 To 1) As Long
+    ReDim m_resampleTypes(0 To 1, 0 To 20) As ResampleAlgorithmEntry
+    ReDim m_numResamples(0 To 1) As Long
     
     'Start with the "friendly" names options.  If FreeImage is available, we will map the friendly
     ' names to more advanced resample algorithms.  Without it, we are stuck with standard algorithms.
     If g_ImageFormats.FreeImageEnabled Then
-        AddResample g_Language.TranslateMessage("best for photographs"), RESIZE_LANCZOS, rsFriendly
-        AddResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BICUBIC_MITCHELL, rsFriendly
-        AddResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
+        AddResample g_Language.TranslateMessage("fastest"), ResizeNormal, rsFriendly
+        AddResample g_Language.TranslateMessage("best for text and illustrations"), ResizeBicubicMitchell, rsFriendly
+        AddResample g_Language.TranslateMessage("best for photographs"), ResizeSincLanczos, rsFriendly
     Else
-        AddResample g_Language.TranslateMessage("best for photographs"), RESIZE_BSPLINE, rsFriendly
-        AddResample g_Language.TranslateMessage("best for text and illustrations"), RESIZE_BILINEAR, rsFriendly
-        AddResample g_Language.TranslateMessage("fastest"), RESIZE_NORMAL, rsFriendly
+        AddResample g_Language.TranslateMessage("fastest"), ResizeNormal, rsFriendly
+        AddResample g_Language.TranslateMessage("best for text and illustrations"), ResizeBilinear, rsFriendly
+        AddResample g_Language.TranslateMessage("best for photographs"), ResizeBspline, rsFriendly
     End If
     
     'Next, populate the "technical" names options.  This list should expose every algorithm we have
     ' access to.  Again, if FreeImage is available, far more options exist.
-    AddResample g_Language.TranslateMessage("Nearest Neighbor"), RESIZE_NORMAL, rsTechnical
-    AddResample g_Language.TranslateMessage("Halftone"), RESIZE_HALFTONE, rsTechnical
-    AddResample g_Language.TranslateMessage("Bilinear"), RESIZE_BILINEAR, rsTechnical
+    AddResample g_Language.TranslateMessage("Nearest Neighbor"), ResizeNormal, rsTechnical
+    AddResample g_Language.TranslateMessage("Bilinear"), ResizeBilinear, rsTechnical
     
     'If FreeImage is not enabled, only a single bicubic option will be listed; but if FreeImage IS enabled,
     ' we can list multiple bicubic variants.
-    If Not g_ImageFormats.FreeImageEnabled Then
-        AddResample g_Language.TranslateMessage("Bicubic"), RESIZE_BSPLINE, rsTechnical
+    If (Not g_ImageFormats.FreeImageEnabled) Then
+        AddResample g_Language.TranslateMessage("Bicubic"), ResizeBspline, rsTechnical
     Else
-        AddResample g_Language.TranslateMessage("B-Spline"), RESIZE_BSPLINE, rsTechnical
-        AddResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), RESIZE_BICUBIC_MITCHELL, rsTechnical
-        AddResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), RESIZE_BICUBIC_CATMULL, rsTechnical
-        AddResample g_Language.TranslateMessage("Sinc (Lanczos 3-lobe)"), RESIZE_LANCZOS, rsTechnical
+        AddResample g_Language.TranslateMessage("B-Spline"), ResizeBspline, rsTechnical
+        AddResample g_Language.TranslateMessage("Bicubic (Mitchell and Netravali)"), ResizeBicubicMitchell, rsTechnical
+        AddResample g_Language.TranslateMessage("Bicubic (Catmull-Rom)"), ResizeBicubicCatmull, rsTechnical
+        AddResample g_Language.TranslateMessage("Sinc (Lanczos 3-lobe)"), ResizeSincLanczos, rsTechnical
     End If
     
     'Populate the Friendly combo box with friendly names, and the Technical box with technical ones.
     Dim i As Long
     
     cboResampleFriendly.Clear
-    For i = 0 To numResamples(rsFriendly) - 1
-        cboResampleFriendly.AddItem " " & resampleTypes(rsFriendly, i).Name, i
+    For i = 0 To m_numResamples(rsFriendly) - 1
+        cboResampleFriendly.AddItem " " & m_resampleTypes(rsFriendly, i).Name, i
     Next i
     
     cboResampleTechnical.Clear
-    For i = 0 To numResamples(rsTechnical) - 1
-        cboResampleTechnical.AddItem " " & resampleTypes(rsTechnical, i).Name, i
+    For i = 0 To m_numResamples(rsTechnical) - 1
+        cboResampleTechnical.AddItem " " & m_resampleTypes(rsTechnical, i).Name, i
     Next i
     
     'Intelligently select default values for the user.
@@ -255,17 +252,17 @@ Private Sub RefillResampleBoxes()
     
         'FreeImage enabled; select Bicubic (Catmull-Rom)
         If g_ImageFormats.FreeImageEnabled Then
-            cboResampleTechnical.ListIndex = 5
+            cboResampleTechnical.ListIndex = 4
         
         'FreeImage not enabled; select plain Bicubic
         Else
-            cboResampleTechnical.ListIndex = 3
+            cboResampleTechnical.ListIndex = 2
         End If
         
     'Friendly drop-down:
     
         'Always select "best for photos"
-        cboResampleFriendly.ListIndex = 0
+        cboResampleFriendly.ListIndex = 2
     
 End Sub
 
@@ -277,22 +274,15 @@ End Sub
 'OK button
 Private Sub cmdBar_OKClick()
     
-    'Retrieve the resample type selected by the user, which will vary depending on whether they used
-    ' "technical" names or "friendly" ones.
-    Dim resampleAlgorithm As Long
-    If CBool(chkNames) Then
-        resampleAlgorithm = resampleTypes(rsTechnical, cboResampleTechnical.ListIndex).ProgramID
-    Else
-        resampleAlgorithm = resampleTypes(rsFriendly, cboResampleFriendly.ListIndex).ProgramID
-    End If
-    
+    'The Undo method used varies if we are resizing the entire image (which requires undo data for all
+    ' layers in the image) vs resizing a single layer.
     Select Case m_ResizeTarget
     
         Case PD_AT_WHOLEIMAGE
-            Process "Resize image", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
+            Process "Resize image", , GetLocalParamString(), UNDO_IMAGE
         
         Case PD_AT_SINGLELAYER
-            Process "Resize layer", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, resampleAlgorithm, cmbFit.ListIndex, colorPicker.Color, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+            Process "Resize layer", , GetLocalParamString(), UNDO_LAYER
     
     End Select
     
@@ -301,11 +291,9 @@ End Sub
 'I'm not sure that randomize serves any purpose on this dialog, but as I don't have a way to hide that button at
 ' present, simply randomize the width/height to +/- the current image's width/height divided by two.
 Private Sub cmdBar_RandomizeClick()
-
     ucResize.LockAspectRatio = False
     ucResize.ResizeWidthInPixels = (pdImages(g_CurrentImage).Width / 2) + (Rnd * pdImages(g_CurrentImage).Width)
     ucResize.ResizeHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
-
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -420,14 +408,14 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
     If g_ImageFormats.FreeImageEnabled Then
         
         'If the original image is 32bpp, remove premultiplication now
-        If srcDIB.GetDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
+        If (srcDIB.GetDIBColorDepth = 32) Then srcDIB.SetAlphaPremultiplication False
         
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
         fi_DIB = Plugin_FreeImage.GetFIHandleFromPDDib_NoCopy(srcDIB, False)
         
         'Use that handle to request an image resize
-        If fi_DIB <> 0 Then
+        If (fi_DIB <> 0) Then
             
             Dim returnDIB As Long
             returnDIB = FreeImage_RescaleByPixel(fi_DIB, iWidth, iHeight, True, interpolationMethod)
@@ -445,7 +433,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
             Plugin_FreeImage.PaintFIDibToPDDib dstDIB, returnDIB, 0, 0, iWidth, iHeight
             
             'With the transfer complete, release the FreeImage DIB and unload the library
-            If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
+            If (returnDIB <> 0) Then FreeImage_UnloadEx returnDIB
             
         End If
         
@@ -457,7 +445,28 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
 End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
-Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal resampleMethod As Long, ByVal fitMethod As Long, Optional ByVal newBackColor As Long = vbWhite, Optional ByVal curUnit As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
+Public Sub ResizeImage(ByVal resizeParams As String)
+    
+    'Parse incoming parameters into type-appropriate vars
+    Dim imgWidth As Double, imgHeight As Double, imgDPI As Long
+    Dim resampleMethod As PD_RESAMPLE_ADVANCED, fitMethod As PD_RESIZE_FIT, newBackColor As Long
+    Dim imgResizeUnit As MeasurementUnit
+    Dim thingToResize As PD_ACTION_TARGET
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString resizeParams
+    
+    With cParams
+        imgWidth = .GetDouble("ResizeWidth")
+        imgHeight = .GetDouble("ResizeHeight")
+        imgResizeUnit = .GetLong("ResizeUnit", MU_PIXELS)
+        imgDPI = .GetLong("ResizePPI")
+        resampleMethod = .GetLong("ResizeAlgorithm", ResizeNormal)
+        fitMethod = .GetLong("ResizeFit", ResizeFitStretch)
+        newBackColor = .GetLong("ResizeFillColor", vbWhite)
+        thingToResize = .GetLong("ResizeTarget", PD_AT_WHOLEIMAGE)
+    End With
     
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
     ' than the one requested.  Before doing anything else, calculate that new size.
@@ -479,26 +488,23 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = ConvertOtherUnitToPixels(curUnit, iWidth, iDPI, srcWidth)
-    iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, srcHeight)
+    imgWidth = ConvertOtherUnitToPixels(imgResizeUnit, imgWidth, imgDPI, srcWidth)
+    imgHeight = ConvertOtherUnitToPixels(imgResizeUnit, imgHeight, imgDPI, srcHeight)
     
     Select Case fitMethod
     
         'Stretch-to-fit.  Default behavior, and no size changes are required.
-        Case 0
-            fitWidth = iWidth
-            fitHeight = iHeight
+        Case ResizeFitStretch
+            fitWidth = imgWidth
+            fitHeight = imgHeight
         
         'Fit inclusively.  Fit the image's largest dimension.  No cropping will occur, but blank space may be present.
-        Case 1
-            
-            'We have an existing function for this purpose.  (It's used when rendering preview images, for example.)
-            ConvertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight
+        Case ResizeFitInclusive
+            PDMath.ConvertAspectRatio srcWidth, srcHeight, imgWidth, imgHeight, fitWidth, fitHeight
             
         'Fit exclusively.  Fit the image's smallest dimension.  Cropping will occur, but no blank space will be present.
-        Case 2
-        
-            ConvertAspectRatio srcWidth, srcHeight, iWidth, iHeight, fitWidth, fitHeight, False
+        Case ResizeFitExclusive
+            PDMath.ConvertAspectRatio srcWidth, srcHeight, imgWidth, imgHeight, fitWidth, fitHeight, False
         
     End Select
     
@@ -533,105 +539,99 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     
     'If we are resizing the entire image, we must handle all layers in turn.  Otherwise, we can handle just
     ' the active layer.
-    Dim lInit As Long, lFinal As Long
+    Dim firstLayerIndex As Long, lastLayerIndex As Long
     
     Select Case thingToResize
     
         Case PD_AT_WHOLEIMAGE
-            lInit = 0
-            lFinal = pdImages(g_CurrentImage).GetNumOfLayers - 1
+            firstLayerIndex = 0
+            lastLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
         
         Case PD_AT_SINGLELAYER
-            lInit = pdImages(g_CurrentImage).GetActiveLayerIndex
-            lFinal = pdImages(g_CurrentImage).GetActiveLayerIndex
+            firstLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
+            lastLayerIndex = pdImages(g_CurrentImage).GetActiveLayerIndex
     
     End Select
     
     Dim i As Long
-    For i = lInit To lFinal
+    For i = firstLayerIndex To lastLayerIndex
     
-        If thingToResize = PD_AT_WHOLEIMAGE Then SetProgBarVal i
+        If (thingToResize = PD_AT_WHOLEIMAGE) Then SetProgBarVal i
         
         'Retrieve a pointer to the layer of interest
         Set tmpLayerRef = pdImages(g_CurrentImage).GetLayerByIndex(i)
         
         'Null-pad the layer
-        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
+        If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.ConvertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, False
         
         'Call the appropriate external function, based on the user's resize selection.  Each function will
         ' place a resized version of tmpLayerRef.layerDIB into tmpDIB.
-        Select Case resampleMethod
-    
-            'Nearest neighbor...
-            Case RESIZE_NORMAL
-                
-                'Copy the current DIB into this temporary DIB at the new size
-                tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, False
-                
-            'Halftone resampling... I'm not sure what to actually call it, but since it's based off the
-            ' StretchBlt mode Microsoft calls "halftone," I'm sticking with that.  Basically we get cheap
-            ' supersampling when shrinking an image, and nearest-neighbor when enlarging.  This method
-            ' is extraordinarily fast for batch shrinking of images, while providing reasonably good
-            ' results.
-            Case RESIZE_HALFTONE
-                
-                'Copy the current DIB into this temporary DIB at the new size
-                tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, True
+        
+        'Nearest neighbor...
+        If (resampleMethod = ResizeNormal) Then
             
-            'Bilinear sampling
-            Case RESIZE_BILINEAR
+            'Copy the current DIB into this temporary DIB at the new size.  (StretchBlt is used
+            ' for a fast resize.)
+            tmpDIB.CreateFromExistingDIB tmpLayerRef.layerDIB, fitWidth, fitHeight, False
             
-                'If FreeImage is enabled, use their bilinear filter.
-                If g_ImageFormats.FreeImageEnabled Then
+        'Bilinear sampling
+        ElseIf (resampleMethod = ResizeBilinear) Then
+        
+            'If FreeImage is enabled, use their bilinear filter.
+            If g_ImageFormats.FreeImageEnabled Then
+                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BILINEAR
+            
+            'If FreeImage is not enabled, use GDI+ instead.
+            Else
+                If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear
+            End If
+            
+        ElseIf (resampleMethod = ResizeBspline) Then
+        
+            'If FreeImage is enabled, use their bilinear filter.
+            If g_ImageFormats.FreeImageEnabled Then
+                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BSPLINE
+            
+            'If FreeImage is not enabled, use GDI+ instead.
+            Else
+                If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
+            End If
+        
+        'All subsequent methods require (and assume presence of) the FreeImage plugin
+        Else
+        
+            If g_ImageFormats.FreeImageEnabled Then
                 
-                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BILINEAR
-                
-                'If FreeImage is not enabled, use GDI+ instead.
-                Else
-                
-                    If tmpDIB.GetDIBWidth <> fitWidth Or tmpDIB.GetDIBHeight <> fitHeight Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBilinear
-                    
+                If (resampleMethod = ResizeBicubicMitchell) Then
+                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
+                ElseIf (resampleMethod = ResizeBicubicCatmull) Then
+                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
+                ElseIf (resampleMethod = ResizeSincLanczos) Then
+                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
                 End If
             
-            Case RESIZE_BSPLINE
+            'This fallback should never actually be triggered; it is provided as an emergency "just in case" failsafe
+            Else
+                If (tmpDIB.GetDIBWidth <> fitWidth) Or (tmpDIB.GetDIBHeight <> fitHeight) Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
+                GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
+            End If
             
-                'If FreeImage is enabled, use their bilinear filter.
-                If g_ImageFormats.FreeImageEnabled Then
-                
-                    FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BSPLINE
-                
-                'If FreeImage is not enabled, use GDI+ instead.
-                Else
-                
-                    If tmpDIB.GetDIBWidth <> fitWidth Or tmpDIB.GetDIBHeight <> fitHeight Then tmpDIB.CreateBlank fitWidth, fitHeight, 32, 0 Else tmpDIB.ResetDIB 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.GetLayerWidth(False), tmpLayerRef.GetLayerHeight(False), GP_IM_HighQualityBicubic
-                    
-                End If
-                
-            Case RESIZE_BICUBIC_MITCHELL
-                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_BICUBIC
-                
-            Case RESIZE_BICUBIC_CATMULL
-                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_CATMULLROM
-            
-            Case RESIZE_LANCZOS
-                FreeImageResize tmpDIB, tmpLayerRef.layerDIB, fitWidth, fitHeight, FILTER_LANCZOS3
-                
-        End Select
+        End If
         
         'tmpDIB now holds a copy of the resized image.
         
         'Calculate the aspect ratio of the temporary DIB and the target size.  If the user has selected
         ' a resize mode other than "fit exactly", we still need to do a bit of extra trimming.
         srcAspect = srcWidth / srcHeight
-        dstAspect = iWidth / iHeight
+        dstAspect = imgWidth / imgHeight
         
         'We now want to copy the resized image into the current image using the technique requested by the user.
         Select Case fitMethod
         
             'Stretch-to-fit.  This is default resize behavior in all image editing software
-            Case 0
+            Case ResizeFitStretch
         
                 'Very simple - just copy the resized image back into the main DIB
                 tmpLayerRef.layerDIB.CreateFromExistingDIB tmpDIB
@@ -639,17 +639,17 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             'Fit inclusively.  This fits the image's largest dimension into the destination image, which can leave
             ' blank space - that space is filled by the background color parameter passed in (or transparency,
             ' in the case of 32bpp images).
-            Case 1
+            Case ResizeFitInclusive
             
                 'Resize the main DIB (destructively!) to fit the new dimensions
-                tmpLayerRef.layerDIB.CreateBlank iWidth, iHeight, 32, 0
+                tmpLayerRef.layerDIB.CreateBlank imgWidth, imgHeight, 32, 0
             
                 'BitBlt the old image, centered, onto the new DIB
-                If srcAspect > dstAspect Then
-                    dstY = CLng((iHeight - fitHeight) / 2)
+                If (srcAspect > dstAspect) Then
+                    dstY = CLng((imgHeight - fitHeight) / 2)
                     dstX = 0
                 Else
-                    dstX = CLng((iWidth - fitWidth) / 2)
+                    dstX = CLng((imgWidth - fitWidth) / 2)
                     dstY = 0
                 End If
                 
@@ -658,17 +658,17 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             
             'Fit exclusively.  This fits the image's smallest dimension into the destination image, which means no
             ' blank space - but parts of the image may get cropped out.
-            Case 2
+            Case ResizeFitExclusive
             
                 'Resize the main DIB (destructively!) to fit the new dimensions
-                tmpLayerRef.layerDIB.CreateBlank iWidth, iHeight, 32, 0
+                tmpLayerRef.layerDIB.CreateBlank imgWidth, imgHeight, 32, 0
             
                 'BitBlt the old image, centered, onto the new DIB
-                If srcAspect < dstAspect Then
-                    dstY = CLng((iHeight - fitHeight) / 2)
+                If (srcAspect < dstAspect) Then
+                    dstY = CLng((imgHeight - fitHeight) / 2)
                     dstX = 0
                 Else
-                    dstX = CLng((iWidth - fitWidth) / 2)
+                    dstX = CLng((imgWidth - fitWidth) / 2)
                     dstY = 0
                 End If
                 
@@ -677,8 +677,9 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 
         End Select
         
-        'With the layer now successfully resized, we can remove any null-padding that may still exist
-        If thingToResize = PD_AT_WHOLEIMAGE Then tmpLayerRef.CropNullPaddedLayer
+        'With the layer now successfully resized, we can remove any null-padding that may still exist.
+        ' (Note that we skip this step when resizing a single layer only.)
+        If (thingToResize = PD_AT_WHOLEIMAGE) Then tmpLayerRef.CropNullPaddedLayer
         
         'Notify the parent image of the change
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
@@ -690,9 +691,9 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     Set tmpDIB = Nothing
     
     'Update the main image's size and DPI values
-    If thingToResize = PD_AT_WHOLEIMAGE Then
-        pdImages(g_CurrentImage).UpdateSize False, iWidth, iHeight
-        pdImages(g_CurrentImage).SetDPI iDPI, iDPI
+    If (thingToResize = PD_AT_WHOLEIMAGE) Then
+        pdImages(g_CurrentImage).UpdateSize False, imgWidth, imgHeight
+        pdImages(g_CurrentImage).SetDPI imgDPI, imgDPI
         DisplaySize pdImages(g_CurrentImage)
     End If
         
@@ -707,3 +708,30 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     
 End Sub
 
+Private Function GetLocalParamString() As String
+    
+    'Retrieve the resample type selected by the user, which will vary depending on whether they used
+    ' "technical" names or "friendly" ones.
+    Dim resampleAlgorithm As PD_RESAMPLE_ADVANCED
+    If CBool(chkNames) Then
+        resampleAlgorithm = m_resampleTypes(rsTechnical, cboResampleTechnical.ListIndex).ResampleID
+    Else
+        resampleAlgorithm = m_resampleTypes(rsFriendly, cboResampleFriendly.ListIndex).ResampleID
+    End If
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    With cParams
+        .AddParam "ResizeWidth", ucResize.ResizeWidth
+        .AddParam "ResizeHeight", ucResize.ResizeHeight
+        .AddParam "ResizeUnit", ucResize.UnitOfMeasurement
+        .AddParam "ResizePPI", ucResize.ResizeDPIAsPPI
+        .AddParam "ResizeAlgorithm", resampleAlgorithm
+        .AddParam "ResizeFit", cmbFit.ListIndex
+        .AddParam "ResizeFillColor", colorPicker.Color
+        .AddParam "ResizeTarget", m_ResizeTarget
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

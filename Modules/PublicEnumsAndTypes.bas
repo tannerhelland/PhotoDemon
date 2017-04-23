@@ -39,7 +39,7 @@ End Enum
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.
 ' In theory, adding new tools should be as easy as changing these numbers.  All file-tool-related code is tied into
 ' these constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure
-' to double-check everything!!)
+' to double-check everything!)
 Public Enum PDFileTools
     FILE_NEW = 0
     FILE_OPEN = 1
@@ -52,9 +52,7 @@ Public Enum PDFileTools
 End Enum
 
 #If False Then
-    Const FILE_NEW = 0, FILE_OPEN = 1, FILE_CLOSE = 2
-    Const FILE_SAVE = 3, FILE_SAVEAS_LAYERS = 4, FILE_SAVEAS_FLAT = 5
-    Const FILE_UNDO = 6, FILE_REDO = 7
+    Private Const FILE_NEW = 0, FILE_OPEN = 1, FILE_CLOSE = 2, FILE_SAVE = 3, FILE_SAVEAS_LAYERS = 4, FILE_SAVEAS_FLAT = 5, FILE_UNDO = 6, FILE_REDO = 7
 #End If
 
 'How should a selection be rendered?
@@ -68,23 +66,10 @@ End Enum
     Private Const PDSR_Highlight = 0, PDSR_Lightbox = 1, PDSR_Outline = 2
 #End If
 
-'JPEG automatic quality detection modes
-Public Enum jpegAutoQualityMode
-    doNotUseAutoQuality = 0
-    noDifference = 1
-    tinyDifference = 2
-    minorDifference = 3
-    majorDifference = 4
-End Enum
-
-#If False Then
-    Private Const doNotUseAutoQuality = 0, noDifference = 1, tinyDifference = 2, minorDifference = 3, majorDifference = 4
-#End If
-
 'PhotoDemon's language files provide a small amount of metadata to help the program know how to use them.  This type
 ' was previously declared inside the pdTranslate class, but with the addition of a Language Editor, I have moved it
 ' here, so the entire project can access the type.
-Public Type pdLanguageFile
+Public Type PDLanguageFile
     Author As String
     FileName As String
     langID As String
@@ -635,4 +620,29 @@ End Enum
 
 #If False Then
     Private Const poi_Undefined = -1, poi_Interior = -2, poi_CornerNW = -3, poi_CornerNE = -4, poi_CornerSE = -5, poi_CornerSW = -6, poi_EdgeN = -7, poi_EdgeE = -8, poi_EdgeS = -9, poi_EdgeW = -10
+#End If
+
+'Constants used for library-agnostic image resizing.  (At present, options 3, 4, 5 require the FreeImage library;
+' if FreeImage is missing, Bspline will automatically target GDI+'s bicubic resampling.)
+Public Enum PD_RESAMPLE_ADVANCED
+    ResizeNormal = 0
+    ResizeBilinear = 1
+    ResizeBspline = 2
+    ResizeBicubicMitchell = 3
+    ResizeBicubicCatmull = 4
+    ResizeSincLanczos = 5
+End Enum
+
+#If False Then
+    Private Const ResizeNormal = 0, ResizeBilinear = 1, ResizeBspline = 2, ResizeBicubicMitchell = 3, ResizeBicubicCatmull = 4, ResizeSincLanczos = 5
+#End If
+
+Public Enum PD_RESIZE_FIT
+    ResizeFitStretch = 0
+    ResizeFitInclusive = 1
+    ResizeFitExclusive = 2
+End Enum
+
+#If False Then
+    Private Const ResizeFitStretch = 0, ResizeFitInclusive = 1, ResizeFitExclusive = 2
 #End If

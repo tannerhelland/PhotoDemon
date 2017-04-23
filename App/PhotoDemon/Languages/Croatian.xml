@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2543</langversion>
+<langversion>6.8.2544</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2690,7 +2690,7 @@ Please upisati numeričku vrijednost.</translation>
 <translation>Uvezena slika</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -12659,8 +12659,8 @@ I Iskreno se ispričavamo zbog neugodnosti, ali nažalost ne postoji ništa %2 m
 </phrase>
 
 <phrase>
-<original>best for photographs</original>
-<translation>najbolje za fotografije</translation>
+<original>fastest</original>
+<translation>najbrži</translation>
 </phrase>
 
 <phrase>
@@ -12669,18 +12669,13 @@ I Iskreno se ispričavamo zbog neugodnosti, ali nažalost ne postoji ništa %2 m
 </phrase>
 
 <phrase>
-<original>fastest</original>
-<translation>najbrži</translation>
+<original>best for photographs</original>
+<translation>najbolje za fotografije</translation>
 </phrase>
 
 <phrase>
 <original>Nearest Neighbor</original>
 <translation>Najbliži susjed</translation>
-</phrase>
-
-<phrase>
-<original>Halftone</original>
-<translation>Poluton</translation>
 </phrase>
 
 <phrase>
@@ -12753,7 +12748,7 @@ I Iskreno se ispričavamo zbog neugodnosti, ali nažalost ne postoji ništa %2 m
 <translation>Promjena veličine sloj</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 53 phrases. 29 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -15002,10 +14997,10 @@ If još uvijek onemogućiti ažuriranja, ne zaboravite posjetiti photodemon.org 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12400 total words. -->
 
 </pdData>

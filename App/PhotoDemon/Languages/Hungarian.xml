@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2543</langversion>
+<langversion>6.8.2544</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -2678,7 +2678,7 @@ Please enter a numeric value.</original>
 <translation>importált kép</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -12641,8 +12641,8 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>best for photographs</original>
-<translation>legjobb a fényképekhez</translation>
+<original>fastest</original>
+<translation>leggyorsabb</translation>
 </phrase>
 
 <phrase>
@@ -12651,18 +12651,13 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
-<original>fastest</original>
-<translation>leggyorsabb</translation>
+<original>best for photographs</original>
+<translation>legjobb a fényképekhez</translation>
 </phrase>
 
 <phrase>
 <original>Nearest Neighbor</original>
 <translation>legközelebbi szomszéd</translation>
-</phrase>
-
-<phrase>
-<original>Halftone</original>
-<translation>Féltónus</translation>
 </phrase>
 
 <phrase>
@@ -12735,7 +12730,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>átméretezése réteg</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 53 phrases. 29 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -14978,10 +14973,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12400 total words. -->
 
 </pdData>

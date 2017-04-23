@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2511</langversion>
+<langversion>6.8.2512</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -2682,7 +2682,7 @@ Please enter a numeric value.</original>
 <translation>导入的图像</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -12645,8 +12645,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>best for photographs</original>
-<translation>最好的照片</translation>
+<original>fastest</original>
+<translation>速度最快</translation>
 </phrase>
 
 <phrase>
@@ -12655,20 +12655,13 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>fastest</original>
-<translation>速度最快</translation>
+<original>best for photographs</original>
+<translation>最好的照片</translation>
 </phrase>
 
 <phrase>
 <original>Nearest Neighbor</original>
 <translation>Nearest Neighbor</translation>
-</phrase>
-
-<phrase>
-<original>Halftone</original>
-<translation>半色调
-
-</translation>
 </phrase>
 
 <phrase>
@@ -12742,7 +12735,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>调整层大小</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 53 phrases. 29 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -14988,10 +14981,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12400 total words. -->
 
 </pdData>
