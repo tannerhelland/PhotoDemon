@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.255</langversion>
+<langversion>6.7.256</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -2680,7 +2680,7 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <translation>Importiertes Bild</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 22 phrases. 14 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -12647,8 +12647,8 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>best for photographs</original>
-<translation>optimal für Fotos</translation>
+<original>fastest</original>
+<translation>besonders schnell</translation>
 </phrase>
 
 <phrase>
@@ -12657,18 +12657,13 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>fastest</original>
-<translation>besonders schnell</translation>
+<original>best for photographs</original>
+<translation>optimal für Fotos</translation>
 </phrase>
 
 <phrase>
 <original>Nearest Neighbor</original>
 <translation>Nächster Nachbar</translation>
-</phrase>
-
-<phrase>
-<original>Halftone</original>
-<translation>Halbton</translation>
 </phrase>
 
 <phrase>
@@ -12741,7 +12736,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Größe der Ebene wird geändert</translation>
 </phrase>
 
-<!-- Image_Resize.frm contains 53 phrases. 29 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- Image_Resize.frm contains 51 phrases. 28 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for Image_Resize.frm-->
 
@@ -14990,10 +14985,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2525</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
+<!-- These 2525 phrases contain approximately 12400 total words. -->
 
 </pdData>

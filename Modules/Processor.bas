@@ -660,7 +660,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowResizeDialog PD_AT_WHOLEIMAGE
             Else
-                FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_WHOLEIMAGE
+                FormResize.ResizeImage cXMLParams.GetParamString()
             End If
             
         Case "Content-aware image resize"
@@ -886,7 +886,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowResizeDialog PD_AT_SINGLELAYER
             Else
-                FormResize.ResizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetLong(6, MU_PIXELS), cParams.GetLong(7, 96), PD_AT_SINGLELAYER
+                FormResize.ResizeImage cXMLParams.GetParamString()
             End If
         
         Case "Content-aware layer resize"

@@ -1766,21 +1766,36 @@ Private Sub PrepareForBatchConversion()
                 
                     'If the user has requested an image resize, apply it now
                     If CBool(chkActions(1)) Then
-                        Process "Resize image", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, RESIZE_LANCZOS, cmbResizeFit.ListIndex, RGB(255, 255, 255), ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, PD_AT_WHOLEIMAGE)
+                        
+                        Dim resizeParams As pdParamXML
+                        Set resizeParams = New pdParamXML
+                        With resizeParams
+                            .AddParam "ResizeWidth", ucResize.ResizeWidth
+                            .AddParam "ResizeHeight", ucResize.ResizeHeight
+                            .AddParam "ResizeUnit", ucResize.UnitOfMeasurement
+                            .AddParam "ResizePPI", ucResize.ResizeDPIAsPPI
+                            .AddParam "ResizeAlgorithm", ResizeSincLanczos
+                            .AddParam "ResizeFit", cmbResizeFit.ListIndex
+                            .AddParam "ResizeFillColor", vbWhite
+                            .AddParam "ResizeTarget", PD_AT_WHOLEIMAGE
+                        End With
+                        
+                        Process "Resize image", , resizeParams.GetParamString
+                        
                     End If
                     
                     'If the user has requested a macro, play it now
                     If CBool(chkActions(2)) Then PlayMacroFromFile txtMacro
                     
                 End If
-            
+                
                 'With the macro complete, prepare the file for saving
                 tmpFilename = lstFiles.List(curBatchFile)
                 StripOffExtension tmpFilename
                 StripFilename tmpFilename
             
                 'Build a full file path using the options the user specified
-                If cmbOutputOptions.ListIndex = 0 Then
+                If (cmbOutputOptions.ListIndex = 0) Then
                     If CBool(chkRenamePrefix) Then tmpFilename = txtAppendFront & tmpFilename
                     If CBool(chkRenameSuffix) Then tmpFilename = tmpFilename & txtAppendBack
                 Else

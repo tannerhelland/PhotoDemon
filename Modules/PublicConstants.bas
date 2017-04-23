@@ -40,21 +40,6 @@ Public Const FILTER_EXT As String * 3 = "pde"
 Public Const MACRO_EXT As String * 3 = "pdm"
 Public Const SELECTION_EXT As String * 3 = "pds"
 
-'Constants used for passing image resize options.
-' Note that options 3-6 require use of the FreeImage library
-Public Const RESIZE_NORMAL As Long = 0
-Public Const RESIZE_HALFTONE As Long = 1
-Public Const RESIZE_BILINEAR As Long = 2
-Public Const RESIZE_BSPLINE As Long = 3
-Public Const RESIZE_BICUBIC_MITCHELL As Long = 4
-Public Const RESIZE_BICUBIC_CATMULL As Long = 5
-Public Const RESIZE_LANCZOS As Long = 6
-
-'Constants used for reducing image colors
-Public Const REDUCECOLORS_AUTO As Long = 0
-Public Const REDUCECOLORS_MANUAL As Long = 1
-Public Const REDUCECOLORS_MANUAL_ERRORDIFFUSION As Long = 2
-
 'Constant for testing JP2/J2K support.  These may or may not become permanent pending the outcome of some rigorous testing.
 Public Const JP2_ENABLED As Boolean = True
 
