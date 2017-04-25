@@ -287,16 +287,16 @@
 			</PDHyperlink>
 			
 			<PDImageStrip>
-				<Background>CanvasColor</Background>
-				<SelectedFill>GrayUltralight</SelectedFill>
+				<Background>GrayUltralight</Background>
+				<SelectedFill>BackgroundDefault</SelectedFill>
 				<SelectedFill-hover></SelectedFill-hover>
-				<SelectedBorder>GrayUltralight</SelectedBorder>
-				<SelectedBorder-hover>AccentDefault</SelectedBorder-hover>
-				<UnselectedFill>CanvasColor</UnselectedFill>
+				<SelectedBorder>AccentDefault</SelectedBorder>
+				<SelectedBorder-hover>AccentDark</SelectedBorder-hover>
+				<UnselectedFill>GrayUltralight</UnselectedFill>
 				<UnselectedFill-hover></UnselectedFill-hover>
-				<UnselectedBorder>CanvasColor</UnselectedBorder>
+				<UnselectedBorder>GrayUltralight</UnselectedBorder>
 				<UnselectedBorder-hover>AccentDefault</UnselectedBorder-hover>
-				<Separator>GrayUltralight</Separator>
+				<Separator>BackgroundDefault</Separator>
 			</PDImageStrip>
 			
 			<PDLayerBoxInner>
