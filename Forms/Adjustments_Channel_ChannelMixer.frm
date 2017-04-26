@@ -208,6 +208,9 @@ End Enum
 ' Second dim: input channel (red/green/blue/constant value)
 Private m_curSliderValues(0 To 3, 0 To 3) As Long
 
+'Sometimes, we need to update all slider values at once (like loading presets from file).  To prevent
+' a bazillion redraws as we set individual slider values, we instead use this variable to forcibly
+' suspend auto-updates until all UI elements are synched.
 Private m_forbidUpdate As Boolean
 
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
@@ -268,34 +271,47 @@ End Sub
 '  - all modifiers as one long string; see "createChannelParamString" for how this string is assembled
 Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Mixing color channels..."
+    If (Not toPreview) Then Message "Mixing color channels..."
     
-    'Because this tool has so many parameters, they are condensed into a single string and passed here.  We need to
-    ' parse out individual values before continuing.
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
+    'Parse all relevant parameters from the input XML string
+    Dim isMonochrome As Boolean, preserveLuminance As Boolean
+    Dim channelModifiers(0 To 3, 0 To 3) As Double
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
     cParams.SetParamString channelMixerParams
     
-    Dim channelModifiers(0 To 3, 0 To 3) As Double
-    Dim x As Long, y As Long
-    For x = 0 To 3
-        For y = 0 To 3
-            'The "constant" modifier is added to the final channel value as a whole number, but the other values are
-            ' used as multiplication factors - so divide them by 100.
-            If y = 3 Then
-                channelModifiers(x, y) = cParams.GetLong((x * 4) + y + 1)
-            Else
-                channelModifiers(x, y) = CDblCustom(cParams.GetLong((x * 4) + y + 1)) / 100
-            End If
-        Next y
-    Next x
+    With cParams
     
-    Dim isMonochrome As Boolean
-    isMonochrome = cParams.GetBool(17)
-    
-    Dim preserveLuminance As Boolean
-    preserveLuminance = cParams.GetBool(18)
+        'Start by grabbing the two simple parameters from the list
+        isMonochrome = .GetBool("ChannelMixer_Monochrome", CBool(chkMonochrome))
+        preserveLuminance = .GetBool("ChannelMixer_Luminance", CBool(chkLuminance))
         
+        'Next, we need to retrieve the 4x4 "grid" of values: four inputs (RGB/Constant) for each of
+        ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the
+        ' named enums at the top of this module.
+        channelModifiers(0, 0) = .GetDouble("ChannelMixer_RedOutRedIn", 100) / 100
+        channelModifiers(0, 1) = .GetDouble("ChannelMixer_RedOutGreenIn", 0) / 100
+        channelModifiers(0, 2) = .GetDouble("ChannelMixer_RedOutBlueIn", 0) / 100
+        channelModifiers(0, 3) = .GetDouble("ChannelMixer_RedOutConstantIn", 0)
+        
+        channelModifiers(1, 0) = .GetDouble("ChannelMixer_GreenOutRedIn", 0) / 100
+        channelModifiers(1, 1) = .GetDouble("ChannelMixer_GreenOutGreenIn", 100) / 100
+        channelModifiers(1, 2) = .GetDouble("ChannelMixer_GreenOutBlueIn", 0) / 100
+        channelModifiers(1, 3) = .GetDouble("ChannelMixer_GreenOutConstantIn", 0)
+        
+        channelModifiers(2, 0) = .GetDouble("ChannelMixer_BlueOutRedIn", 0) / 100
+        channelModifiers(2, 1) = .GetDouble("ChannelMixer_BlueOutGreenIn", 0) / 100
+        channelModifiers(2, 2) = .GetDouble("ChannelMixer_BlueOutBlueIn", 100) / 100
+        channelModifiers(2, 3) = .GetDouble("ChannelMixer_BlueOutConstantIn", 0)
+        
+        channelModifiers(3, 0) = .GetDouble("ChannelMixer_GrayOutRedIn", 0) / 100
+        channelModifiers(3, 1) = .GetDouble("ChannelMixer_GrayOutGreenIn", 0) / 100
+        channelModifiers(3, 2) = .GetDouble("ChannelMixer_GrayOutBlueIn", 0) / 100
+        channelModifiers(3, 3) = .GetDouble("ChannelMixer_GrayOutConstantIn", 100)
+        
+    End With
+    
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
@@ -322,59 +338,84 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     
     'Finally, a bunch of variables used in color calculation
     Dim r As Long, g As Long, b As Long
+    Dim rFloat As Double, gFloat As Double, bFloat As Double
     Dim newR As Long, newG As Long, newB As Long, newGray As Long
     Dim h As Double, s As Double, l As Double
     Dim originalLuminance As Double
-        
+    Const ONE_DIV_255 As Double = 1# / 255#
+    
     'Apply the filter
+    Dim x As Long, y As Long
+    
     For x = initX To finalX
         quickVal = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
         b = ImageData(quickVal, y)
+        g = ImageData(quickVal + 1, y)
+        r = ImageData(quickVal + 2, y)
         
         'Create a new value for each color based on the input parameters
         If isMonochrome Then
+        
             newGray = r * channelModifiers(3, 0) + g * channelModifiers(3, 1) + b * channelModifiers(3, 2) + channelModifiers(3, 3)
             
-            If newGray > 255 Then newGray = 255
-            If newGray < 0 Then newGray = 0
+            If (newGray > 255) Then
+                newGray = 255
+            ElseIf (newGray < 0) Then
+                newGray = 0
+            End If
             
             'Note: luminance preservation serves no purpose when monochrome is selected, so I do not process it here
-            
-            ImageData(quickVal + 2, y) = newGray
-            ImageData(quickVal + 1, y) = newGray
             ImageData(quickVal, y) = newGray
+            ImageData(quickVal + 1, y) = newGray
+            ImageData(quickVal + 2, y) = newGray
             
         Else
         
             'If luminance is being preserved, we need to determine the initial luminance value
-            If preserveLuminance Then originalLuminance = (GetLuminance(r, g, b) / 255)
+            If preserveLuminance Then originalLuminance = (Colors.GetLuminance(r, g, b) * ONE_DIV_255)
         
             newR = r * channelModifiers(0, 0) + g * channelModifiers(0, 1) + b * channelModifiers(0, 2) + channelModifiers(0, 3)
             newG = r * channelModifiers(1, 0) + g * channelModifiers(1, 1) + b * channelModifiers(1, 2) + channelModifiers(1, 3)
             newB = r * channelModifiers(2, 0) + g * channelModifiers(2, 1) + b * channelModifiers(2, 2) + channelModifiers(2, 3)
             
             'Fit everything in the [0, 255] range
-            If newR > 255 Then newR = 255
-            If newR < 0 Then newR = 0
-            If newG > 255 Then newG = 255
-            If newG < 0 Then newG = 0
-            If newB > 255 Then newB = 255
-            If newB < 0 Then newB = 0
+            If (newR > 255) Then
+                newR = 255
+            ElseIf (newR < 0) Then
+                newR = 0
+            End If
+            
+            If (newG > 255) Then
+                newG = 255
+            ElseIf (newG < 0) Then
+                newG = 0
+            End If
+            
+            If (newB > 255) Then
+                newB = 255
+            ElseIf (newB < 0) Then
+                newB = 0
+            End If
             
             'If the user wants us to preserve luminance, determine the hue and saturation of the new color, then replace the luminance
             ' value with the original
             If preserveLuminance Then
-                tRGBToHSL newR, newG, newB, h, s, l
-                tHSLToRGB h, s, originalLuminance, newR, newG, newB
+                
+                Colors.fRGBtoHSL CDbl(newR) * ONE_DIV_255, CDbl(newG) * ONE_DIV_255, CDbl(newB) * ONE_DIV_255, h, s, l
+                Colors.fHSLtoRGB h, s, originalLuminance, rFloat, gFloat, bFloat
+                
+                ImageData(quickVal, y) = bFloat * 255
+                ImageData(quickVal + 1, y) = gFloat * 255
+                ImageData(quickVal + 2, y) = rFloat * 255
+                
+            Else
+                ImageData(quickVal, y) = newB
+                ImageData(quickVal + 1, y) = newG
+                ImageData(quickVal + 2, y) = newR
             End If
             
-            ImageData(quickVal + 2, y) = newR
-            ImageData(quickVal + 1, y) = newG
-            ImageData(quickVal, y) = newB
             
         End If
                 
@@ -400,14 +441,14 @@ Private Sub cmdBar_AddCustomPresetData()
 
     'Because this control encompasses a bunch of "invisible" settings, e.g. channel values for channels other
     ' than the selected one, we must write out the ENTIRE CHANNEL ARRAY to the preset file
-    cmdBar.AddPresetData "channelArray", CreateChannelParamString
+    cmdBar.AddPresetData "channelArray", GetLocalParamString()
 
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
     UpdateStoredValues
-    Process "Channel mixer", , CreateChannelParamString(), UNDO_LAYER
+    Process "Channel mixer", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
@@ -416,7 +457,7 @@ Private Sub cmdBar_RandomizeClick()
     Dim x As Long, y As Long
     For x = 0 To 3
         For y = 0 To 3
-            If x < 3 Then
+            If (x < 3) Then
                 m_curSliderValues(x, y) = -200 + Int(Rnd * 401)
             Else
                 m_curSliderValues(x, y) = -255 + Int(Rnd * 511)
@@ -430,40 +471,58 @@ End Sub
 
 Private Sub cmdBar_ReadCustomPresetData()
 
-    'Because this control encompasses a bunch of "invisible" settings, e.g. channel values for channels other
-    ' than the selected one, we must read out a custom preset string that contains the ENTIRE CHANNEL ARRAY
-    Dim tmpParamString As String
-    tmpParamString = cmdBar.RetrievePresetData("channelArray")
+    'Because this control encompasses a bunch of "invisible" settings (e.g. the same sliders are reused
+    ' against multiple channels, and we cache those settings independent of UI objects), we must read out
+    ' a custom preset string that contains the ENTIRE CHANNEL ARRAY - not just the active one.
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString cmdBar.RetrievePresetData("channelArray")
     
     'We can now parse that string to retrieve the values for each individual channel
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    cParams.SetParamString tmpParamString
+    With cParams
     
-    Dim x As Long, y As Long
-    For x = 0 To 3
-        For y = 0 To 3
-            m_curSliderValues(x, y) = cParams.GetLong((x * 4) + y + 1)
-        Next y
-    Next x
+        'Next, we need to retrieve the 4x4 "grid" of values: four inputs (RGB/Constant) for each of
+        ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the
+        ' named enums at the top of this module.
+        m_curSliderValues(0, 0) = .GetLong("ChannelMixer_RedOutRedIn", 100)
+        m_curSliderValues(0, 1) = .GetLong("ChannelMixer_RedOutGreenIn", 0)
+        m_curSliderValues(0, 2) = .GetLong("ChannelMixer_RedOutBlueIn", 0)
+        m_curSliderValues(0, 3) = .GetLong("ChannelMixer_RedOutConstantIn", 0)
+        
+        m_curSliderValues(1, 0) = .GetLong("ChannelMixer_GreenOutRedIn", 0)
+        m_curSliderValues(1, 1) = .GetLong("ChannelMixer_GreenOutGreenIn", 100)
+        m_curSliderValues(1, 2) = .GetLong("ChannelMixer_GreenOutBlueIn", 0)
+        m_curSliderValues(1, 3) = .GetLong("ChannelMixer_GreenOutConstantIn", 0)
+        
+        m_curSliderValues(2, 0) = .GetLong("ChannelMixer_BlueOutRedIn", 0)
+        m_curSliderValues(2, 1) = .GetLong("ChannelMixer_BlueOutGreenIn", 0)
+        m_curSliderValues(2, 2) = .GetLong("ChannelMixer_BlueOutBlueIn", 100)
+        m_curSliderValues(2, 3) = .GetLong("ChannelMixer_BlueOutConstantIn", 0)
+        
+        m_curSliderValues(3, 0) = .GetLong("ChannelMixer_GrayOutRedIn", 0)
+        m_curSliderValues(3, 1) = .GetLong("ChannelMixer_GrayOutGreenIn", 0)
+        m_curSliderValues(3, 2) = .GetLong("ChannelMixer_GrayOutBlueIn", 0)
+        m_curSliderValues(3, 3) = .GetLong("ChannelMixer_GrayOutConstantIn", 100)
+        
+    End With
     
     'Sync the on-screen controls with whatever slider values are relevant
     m_forbidUpdate = True
-    If Not CBool(chkMonochrome) Then
-        btsChannel.Enabled = True
-        sltRed.Value = m_curSliderValues(btsChannel.ListIndex, RedInput)
-        sltGreen.Value = m_curSliderValues(btsChannel.ListIndex, GreenInput)
-        sltBlue.Value = m_curSliderValues(btsChannel.ListIndex, BlueInput)
-        sltConstant.Value = m_curSliderValues(btsChannel.ListIndex, ConstantInput)
-    Else
+    If CBool(chkMonochrome) Then
         btsChannel.Enabled = False
         sltRed.Value = m_curSliderValues(GrayOutput, RedInput)
         sltGreen.Value = m_curSliderValues(GrayOutput, GreenInput)
         sltBlue.Value = m_curSliderValues(GrayOutput, BlueInput)
         sltConstant.Value = m_curSliderValues(GrayOutput, ConstantInput)
+    Else
+        btsChannel.Enabled = True
+        sltRed.Value = m_curSliderValues(btsChannel.ListIndex, RedInput)
+        sltGreen.Value = m_curSliderValues(btsChannel.ListIndex, GreenInput)
+        sltBlue.Value = m_curSliderValues(btsChannel.ListIndex, BlueInput)
+        sltConstant.Value = m_curSliderValues(btsChannel.ListIndex, ConstantInput)
     End If
     m_forbidUpdate = False
-
+    
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -562,7 +621,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltBlue_Change()
-    If Not m_forbidUpdate Then
+    If (Not m_forbidUpdate) Then
         UpdateStoredValues
         UpdatePreview
     End If
@@ -577,14 +636,14 @@ Private Sub sltBlue_ResetClick()
 End Sub
 
 Private Sub sltConstant_Change()
-    If Not m_forbidUpdate Then
+    If (Not m_forbidUpdate) Then
         UpdateStoredValues
         UpdatePreview
     End If
 End Sub
 
 Private Sub sltGreen_Change()
-    If Not m_forbidUpdate Then
+    If (Not m_forbidUpdate) Then
         UpdateStoredValues
         UpdatePreview
     End If
@@ -599,7 +658,7 @@ Private Sub sltGreen_ResetClick()
 End Sub
 
 Private Sub sltRed_Change()
-    If Not m_forbidUpdate Then
+    If (Not m_forbidUpdate) Then
         UpdateStoredValues
         UpdatePreview
     End If
@@ -611,10 +670,6 @@ Private Sub sltRed_ResetClick()
     Else
         If (btsChannel.ListIndex = RedOutput) Then sltRed.Value = 100 Else sltRed.Value = 0
     End If
-End Sub
-
-Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyChannelMixer CreateChannelParamString(), True, pdFxPreview
 End Sub
 
 'Because the user can change multiple channels at once, we need to store all current channel values in memory.
@@ -637,26 +692,47 @@ End Sub
 
 'Because this tool has a complex set of input values, we need to condense them all into a single string.
 ' This function handles the creation of that string for both previews and full-image applications.
-Private Function CreateChannelParamString() As String
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+        'Start by adding the two simple parameters to the list
+        cParams.AddParam "ChannelMixer_Monochrome", CBool(chkMonochrome)
+        cParams.AddParam "ChannelMixer_Luminance", CBool(chkLuminance)
+        
+        'Next, we have a 4x4 "grid" of values that needs to be added: four inputs (RGB/Constant) for each of
+        ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the named enums
+        ' at the top of this module.
+        
+        'The order here isn't important; what matters is matching up the correct named parameter to
+        ' our internal tracking array of slider values.  (A mirror version of this occurs in the
+        ' actual channel mixer, where these values are mapped back into an adjustment array.)
+        cParams.AddParam "ChannelMixer_RedOutRedIn", m_curSliderValues(0, 0)
+        cParams.AddParam "ChannelMixer_RedOutGreenIn", m_curSliderValues(0, 1)
+        cParams.AddParam "ChannelMixer_RedOutBlueIn", m_curSliderValues(0, 2)
+        cParams.AddParam "ChannelMixer_RedOutConstantIn", m_curSliderValues(0, 3)
+        
+        cParams.AddParam "ChannelMixer_GreenOutRedIn", m_curSliderValues(1, 0)
+        cParams.AddParam "ChannelMixer_GreenOutGreenIn", m_curSliderValues(1, 1)
+        cParams.AddParam "ChannelMixer_GreenOutBlueIn", m_curSliderValues(1, 2)
+        cParams.AddParam "ChannelMixer_GreenOutConstantIn", m_curSliderValues(1, 3)
+        
+        cParams.AddParam "ChannelMixer_BlueOutRedIn", m_curSliderValues(2, 0)
+        cParams.AddParam "ChannelMixer_BlueOutGreenIn", m_curSliderValues(2, 1)
+        cParams.AddParam "ChannelMixer_BlueOutBlueIn", m_curSliderValues(2, 2)
+        cParams.AddParam "ChannelMixer_BlueOutConstantIn", m_curSliderValues(2, 3)
+        
+        cParams.AddParam "ChannelMixer_GrayOutRedIn", m_curSliderValues(3, 0)
+        cParams.AddParam "ChannelMixer_GrayOutGreenIn", m_curSliderValues(3, 1)
+        cParams.AddParam "ChannelMixer_GrayOutBlueIn", m_curSliderValues(3, 2)
+        cParams.AddParam "ChannelMixer_GrayOutConstantIn", m_curSliderValues(3, 3)
+        
+    End With
 
-    Dim paramString As String
-    paramString = ""
-    
-    'Start by adding all channel input values to the string
-    Dim i As Long, j As Long
-    For i = 0 To 3
-        For j = 0 To 3
-            paramString = paramString & Trim$(Str(m_curSliderValues(i, j))) & "|"
-        Next j
-    Next i
-    
-    'Next, add the monochrome checkbox value
-    paramString = paramString & Trim$(Str(CBool(chkMonochrome))) & "|"
-    
-    'Finally, add the preserve luminance checkbox value
-    paramString = paramString & Trim$(Str(CBool(chkLuminance)))
-    
-    CreateChannelParamString = paramString
+    GetLocalParamString = cParams.GetParamString()
 
 End Function
 
@@ -665,3 +741,6 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+Private Sub UpdatePreview()
+    If cmdBar.PreviewsAllowed Then ApplyChannelMixer GetLocalParamString(), True, pdFxPreview
+End Sub

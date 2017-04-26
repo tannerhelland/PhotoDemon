@@ -185,19 +185,19 @@ Private Sub FillArrowLocations(ByRef aLocations() As String)
     'Next, fill in upward arrows as necessary
     If (m_CurrentAnchor > 2) Then
         aLocations(m_CurrentAnchor - 3) = "arrow_up"
-        If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 4) = "arrow_upl"
-        If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 2) = "arrow_upr"
+        If ((m_CurrentAnchor Mod 3) <> 0) Then aLocations(m_CurrentAnchor - 4) = "arrow_upl"
+        If (((m_CurrentAnchor + 1) Mod 3) <> 0) Then aLocations(m_CurrentAnchor - 2) = "arrow_upr"
     End If
     
     'Next, fill in left/right arrows as necessary
-    If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 1) = "arrow_right"
-    If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor - 1) = "arrow_left"
+    If (((m_CurrentAnchor + 1) Mod 3) <> 0) Then aLocations(m_CurrentAnchor + 1) = "arrow_right"
+    If ((m_CurrentAnchor Mod 3) <> 0) Then aLocations(m_CurrentAnchor - 1) = "arrow_left"
     
     'Finally, fill in downward arrows as necessary
     If (m_CurrentAnchor < 6) Then
         aLocations(m_CurrentAnchor + 3) = "arrow_down"
-        If (m_CurrentAnchor Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 2) = "arrow_downl"
-        If ((m_CurrentAnchor + 1) Mod 3) <> 0 Then aLocations(m_CurrentAnchor + 4) = "arrow_downr"
+        If ((m_CurrentAnchor Mod 3) <> 0) Then aLocations(m_CurrentAnchor + 2) = "arrow_downl"
+        If (((m_CurrentAnchor + 1) Mod 3) <> 0) Then aLocations(m_CurrentAnchor + 4) = "arrow_downr"
     End If
     
 End Sub

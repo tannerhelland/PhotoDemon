@@ -1202,7 +1202,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormChannelMixer
             Else
-                FormChannelMixer.ApplyChannelMixer cParams.GetParamString
+                FormChannelMixer.ApplyChannelMixer cXMLParams.GetParamString()
             End If
             
         Case "Rechannel"
