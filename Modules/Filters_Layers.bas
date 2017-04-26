@@ -2984,7 +2984,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'Spatial factor is left on a [0, 100] scale as a convenience to the user, but any value larger than about 10
     ' tends to produce meaningless results.  As such, shrink the input by a factor of 10.
     spatialFactor = spatialFactor / 10
-    If spatialFactor < 1# Then spatialFactor = 1#
+    If (spatialFactor < 1#) Then spatialFactor = 1#
     
     'Spatial power is currently hidden from the user.  As such, default it to value 2.
     spatialPower = 2#
@@ -3009,12 +3009,12 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     
     'If messages are not being suppressed, and the user did not specify a custom progress bar maximum, calculate a
     ' maximum value relevant to this function.
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then SetProgBarMax finalX * 2
+    If (Not suppressMessages) Then
+        If (modifyProgBarMax = -1) Then SetProgBarMax finalX * 2
     End If
     
     'The kernel must be at least 1 in either direction; otherwise, we'll get range errors
-    If kernelRadius < 1 Then kernelRadius = 1
+    If (kernelRadius < 1) Then kernelRadius = 1
     
     'Create a second local array. This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already-processed pixels from affecting the results of later pixels.)
@@ -3043,7 +3043,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    If Not suppressMessages Then progBarCheck = FindBestProgBarValue()
+    If (Not suppressMessages) Then progBarCheck = FindBestProgBarValue()
         
     'Color variables
     Dim srcR As Long, srcG As Long, srcB As Long
@@ -3090,9 +3090,9 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
         
         QuickYSrc = y + kernelRadius
         
-        srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
-        srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
         srcB0 = srcImageData(quickValSrc, QuickYSrc)
+        srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
+        srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
         
         'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
         ' don't matter, but since we're doing it, for y, mirror it to x.)
@@ -3104,9 +3104,9 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
             'Cache the source pixel's x and y locations
             srcPixelX = (xOffset + kernelRadius) * qvDepth
             
-            srcR = srcImageData(srcPixelX + 2, QuickYSrc)
-            srcG = srcImageData(srcPixelX + 1, QuickYSrc)
             srcB = srcImageData(srcPixelX, QuickYSrc)
+            srcG = srcImageData(srcPixelX + 1, QuickYSrc)
+            srcR = srcImageData(srcPixelX + 2, QuickYSrc)
             
             spacialFuncCache = spatialFunc(xOffset - x)
             
@@ -3117,7 +3117,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
             ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
             ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
             ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
-            If spacialFuncCache > 0.0039 Then
+            If (spacialFuncCache > 0.0039) Then
                 
                 coefR = spacialFuncCache * colorFunc(srcR, srcR0)
                 coefG = spacialFuncCache * colorFunc(srcG, srcG0)
@@ -3140,14 +3140,14 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
             
         Next xOffset
         
-        If sCoefR <> 0 Then newR = sMembR / sCoefR
-        If sCoefG <> 0 Then newG = sMembG / sCoefG
-        If sCoefB <> 0 Then newB = sMembB / sCoefB
+        If (sCoefR <> 0) Then newR = sMembR / sCoefR
+        If (sCoefG <> 0) Then newG = sMembG / sCoefG
+        If (sCoefB <> 0) Then newB = sMembB / sCoefB
                         
         'Assign the new values to each color channel
-        midImageData(quickValSrc + 2, QuickYSrc) = newR
-        midImageData(quickValSrc + 1, QuickYSrc) = newG
         midImageData(quickValSrc, QuickYSrc) = newB
+        midImageData(quickValSrc + 1, QuickYSrc) = newG
+        midImageData(quickValSrc + 2, QuickYSrc) = newR
         
     Next y
         If Not suppressMessages Then
@@ -3161,7 +3161,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
     'Our first pass is now complete, and the results have been cached inside midImageData.  To prevent edge distortion,
     ' we are now going to trim the mid DIB, then re-pad it with its processed edge values.
     
-    If Not g_cancelCurrentAction Then
+    If (Not g_cancelCurrentAction) Then
     
         'Release our array
         CopyMemory ByVal VarPtrArray(midImageData), 0&, 4
@@ -3198,9 +3198,9 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
             ' (well, null-padded but otherwise unmodified) copy of the image as the base of our kernel.  We then
             ' convolve those original RGB values against the already-convolved RGB values from the first pass, which
             ' gives us a better approximation of the naive convolution's "true" result.
-            srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
-            srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
             srcB0 = srcImageData(quickValSrc, QuickYSrc)
+            srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
+            srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
             
             'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
             ' don't matter, but since we're doing it, for y, mirror it to x.)
@@ -3210,9 +3210,9 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
                 For yOffset = yMin To yMax
                     
                     'Cache the kernel pixel's x and y locations
-                    srcR = midImageData(quickValSrc + 2, yOffset)
-                    srcG = midImageData(quickValSrc + 1, yOffset)
                     srcB = midImageData(quickValSrc, yOffset)
+                    srcG = midImageData(quickValSrc + 1, yOffset)
+                    srcR = midImageData(quickValSrc + 2, yOffset)
                     
                     spacialFuncCache = spatialFunc(yOffset - QuickYSrc)
                     
@@ -3223,7 +3223,7 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
                     ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
                     ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
                     ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
-                    If spacialFuncCache > 0.0039 Then
+                    If (spacialFuncCache > 0.0039) Then
                         
                         coefR = spacialFuncCache * colorFunc(srcR, srcR0)
                         coefG = spacialFuncCache * colorFunc(srcG, srcG0)
@@ -3246,17 +3246,17 @@ Public Function CreateBilateralDIB(ByRef srcDIB As pdDIB, ByVal kernelRadius As 
                             
                 Next yOffset
             
-            If sCoefR <> 0 Then newR = sMembR / sCoefR
-            If sCoefG <> 0 Then newG = sMembG / sCoefG
-            If sCoefB <> 0 Then newB = sMembB / sCoefB
+            If (sCoefR <> 0) Then newR = sMembR / sCoefR
+            If (sCoefG <> 0) Then newG = sMembG / sCoefG
+            If (sCoefB <> 0) Then newB = sMembB / sCoefB
             
             'Assign the new values to each color channel
-            dstImageData(quickValDst + 2, y) = newR
-            dstImageData(quickValDst + 1, y) = newG
             dstImageData(quickValDst, y) = newB
+            dstImageData(quickValDst + 1, y) = newG
+            dstImageData(quickValDst + 2, y) = newR
             
         Next y
-            If Not suppressMessages Then
+            If (Not suppressMessages) Then
                 If (x And progBarCheck) = 0 Then
                     If UserPressedESC() Then Exit For
                     SetProgBarVal modifyProgBarOffset + finalX + x

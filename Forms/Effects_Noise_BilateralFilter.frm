@@ -137,7 +137,7 @@ Attribute VB_Exposed = False
 'Created: 19/June/14
 'Last updated: 23/July/14
 'Last update: add a quasi-separable implementation that's about 20x faster than the naive one, at a minimal cost
-'              to quality (in the Y-dimension; x should be roughly identical to the naive result).
+'              to quality (in the Y-dimension; X-dimension quality should be roughly identical to the naive result).
 '
 'This filter performs selective gaussian smoothing of continuous areas of same color (domains), which removes noise
 ' and contrast artifacts while perserving sharp edges.
@@ -164,37 +164,54 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Const maxKernelSize As Long = 256
-Private Const colorsCount As Long = 256
+Private Const COLOR_COUNT As Long = 256
+Private m_spatialFunc() As Double
+Private m_colorFunc() As Double
 
-Private spatialFunc() As Double
-Private colorFunc() As Double
+'To improve performance, we only re-calculate kernel lookup tables when their relevant values change
+Private m_LastKernelSize As Long, m_LastSpatialFactor As Double, m_LastSpatialPower As Double
+Private m_LastColorFactor As Double, m_LastColorPower As Double
 
-Private Sub initSpatialFunc(ByVal kernelSize As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double)
+Private Sub InitSpatialFunc(ByVal kernelSize As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double)
     
-    Dim i As Long, k As Long
+    If (kernelSize <> m_LastKernelSize) Or (spatialFactor <> m_LastSpatialFactor) Or (spatialPower <> m_LastSpatialPower) Then
     
-    ReDim spatialFunc(-kernelSize To kernelSize, -kernelSize To kernelSize)
+        Dim i As Long, k As Long
+        
+        ReDim spatialFunc(-kernelSize To kernelSize, -kernelSize To kernelSize) As Double
+        
+        For i = -kernelSize To kernelSize
+            For k = -kernelSize To kernelSize
+                m_spatialFunc(i, k) = Exp(-0.5 * (Sqr(i * i + k * k) / spatialFactor) ^ spatialPower)
+            Next k
+        Next i
     
-    For i = -kernelSize To kernelSize
-        For k = -kernelSize To kernelSize
-            spatialFunc(i, k) = Exp(-0.5 * (Sqr(i * i + k * k) / spatialFactor) ^ spatialPower)
-        Next k
-    Next i
+        m_LastKernelSize = kernelSize
+        m_LastSpatialFactor = spatialFactor
+        m_LastSpatialPower = spatialPower
+    
+    End If
     
 End Sub
 
-Private Sub initColorFunc(ByVal colorFactor As Double, ByVal colorPower As Double)
+Private Sub InitColorFunc(ByVal colorFactor As Double, ByVal colorPower As Double)
     
-    Dim i As Long, k As Long
+    If (colorFactor <> m_LastColorFactor) Or (colorPower <> m_LastColorPower) Then
+        
+        Dim i As Long, k As Long
+        
+        ReDim m_colorFunc(0 To COLOR_COUNT - 1, 0 To COLOR_COUNT - 1) As Double
+        
+        For i = 0 To COLOR_COUNT - 1
+            For k = 0 To COLOR_COUNT - 1
+                m_colorFunc(i, k) = Exp(-0.5 * ((Abs(i - k) / colorFactor) ^ colorPower))
+            Next k
+        Next i
     
-    ReDim colorFunc(0 To colorsCount - 1, 0 To colorsCount - 1)
-    
-    For i = 0 To colorsCount - 1
-        For k = 0 To colorsCount - 1
-            colorFunc(i, k) = Exp(-0.5 * ((Abs(i - k) / colorFactor) ^ colorPower))
-        Next k
-    Next i
+        m_LastColorFactor = colorFactor
+        m_LastColorPower = colorPower
+        
+    End If
     
 End Sub
 
@@ -204,7 +221,23 @@ End Sub
 ' * spatialPower [exponent power, used in spatial function calculation]
 ' * colorFactor [determines the variance of color for a color domain]
 ' * colorPower [exponent power, used in color function calculation]
-Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub BilateralSmoothing(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    'Extract function parameters
+    Dim kernelRadius As Long
+    Dim spatialFactor As Double, spatialPower As Double, colorFactor As Double, colorPower As Double
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    With cParams
+        kernelRadius = .GetLong("Bilateral_KernelRadius", 1)
+        spatialFactor = .GetDouble("Bilateral_SpatialFactor", 10#)
+        spatialPower = .GetDouble("Bilateral_SpatialPower", 2#)
+        colorFactor = .GetDouble("Bilateral_ColorFactor", 10#)
+        colorPower = .GetDouble("Bilateral_ColorPower", 2#)
+    End With
     
     'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can
     ' actually be bumped a bit, to [0, 255], so apply that now.
@@ -213,12 +246,12 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     'Spatial factor is left on a [0, 100] scale as a convenience to the user, but any value larger than about 10
     ' tends to produce meaningless results.  As such, shrink the input by a factor of 10.
     spatialFactor = spatialFactor / 10
-    If spatialFactor < 1# Then spatialFactor = 1#
+    If (spatialFactor < 1#) Then spatialFactor = 1#
     
     'Spatial power is currently hidden from the user.  As such, default it to value 2.
     spatialPower = 2#
     
-    If Not toPreview Then Message "Applying bilateral smoothing..."
+    If (Not toPreview) Then Message "Applying bilateral smoothing..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -233,13 +266,13 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     
     'If this is a preview, we need to adjust the kernal
     If toPreview Then kernelRadius = kernelRadius * curDIBValues.previewModifier
-    If kernelRadius < 1 Then kernelRadius = 1
+    If (kernelRadius < 1) Then kernelRadius = 1
     
     'To simplify the edge-handling required by this function, we're actually going to resize the source DIB with
     ' clamped pixel edges.  This removes the need for any edge handling whatsoever.
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    padDIBClampedPixels kernelRadius, kernelRadius, workingDIB, srcDIB
+    PadDIBClampedPixels kernelRadius, kernelRadius, workingDIB, srcDIB
     
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
@@ -274,8 +307,8 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     Dim srcPixelX As Long, srcPixelY As Long
     
     'For performance improvements, color and spatial functions are precalculated prior to starting filter.
-    initSpatialFunc kernelRadius, spatialFactor, spatialPower
-    initColorFunc colorFactor, colorPower
+    InitSpatialFunc kernelRadius, spatialFactor, spatialPower
+    InitColorFunc colorFactor, colorPower
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -292,9 +325,9 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
         
         QuickYSrc = y + kernelRadius
         
-        srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
-        srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
         srcB0 = srcImageData(quickValSrc, QuickYSrc)
+        srcG0 = srcImageData(quickValSrc + 1, QuickYSrc)
+        srcR0 = srcImageData(quickValSrc + 2, QuickYSrc)
         
         'Cache y-loop boundaries so that they do not have to be re-calculated on the interior loop.  (X boundaries
         ' don't matter, but since we're doing it, for y, mirror it to x.)
@@ -310,11 +343,11 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
                 srcPixelX = (xOffset + kernelRadius) * qvDepth
                 srcPixelY = (yOffset + kernelRadius)
                 
-                srcR = srcImageData(srcPixelX + 2, srcPixelY)
-                srcG = srcImageData(srcPixelX + 1, srcPixelY)
                 srcB = srcImageData(srcPixelX, srcPixelY)
+                srcG = srcImageData(srcPixelX + 1, srcPixelY)
+                srcR = srcImageData(srcPixelX + 2, srcPixelY)
                 
-                spacialFuncCache = spatialFunc(xOffset - x, yOffset - y)
+                spacialFuncCache = m_spatialFunc(xOffset - x, yOffset - y)
                 
                 'As a general rule, when convolving data against a kernel, any kernel value below 3-sigma can effectively
                 ' be ignored (as its contribution to the convolution total is not statistically meaningful). Rather than
@@ -323,17 +356,16 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
                 ' let's assume that any spatial value below 1 / 255 (roughly 0.0039) is unlikely to have a meaningful
                 ' impact on the final image; by simply ignoring values below that limit, we can save ourselves additional
                 ' processing time when the incoming spatial parameters are low (as is common for the cartoon-like effect).
-                If spacialFuncCache > 0.0039 Then
+                If (spacialFuncCache > 0.0039) Then
                     
-                    coefR = spacialFuncCache * colorFunc(srcR, srcR0)
-                    coefG = spacialFuncCache * colorFunc(srcG, srcG0)
-                    coefB = spacialFuncCache * colorFunc(srcB, srcB0)
+                    coefR = spacialFuncCache * m_colorFunc(srcR, srcR0)
+                    coefG = spacialFuncCache * m_colorFunc(srcG, srcG0)
+                    coefB = spacialFuncCache * m_colorFunc(srcB, srcB0)
                     
                     'We could perform an additional 3-sigma check here to account for meaningless colorFunc values, but
                     ' because we'd have to perform the check for each of R, G, and B, we risk inadvertently increasing
                     ' processing time when the color modifiers are consistently high.  As such, I think it's best to
                     ' limit our check to just the spatial modifier at present.
-                    
                     sCoefR = sCoefR + coefR
                     sCoefG = sCoefG + coefG
                     sCoefB = sCoefB + coefB
@@ -347,17 +379,17 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
             Next yOffset
         Next xOffset
         
-        newR = sMembR / sCoefR
-        newG = sMembG / sCoefG
-        newB = sMembB / sCoefB
+        If (sCoefR <> 0) Then newR = sMembR / sCoefR
+        If (sCoefG <> 0) Then newG = sMembG / sCoefG
+        If (sCoefB <> 0) Then newB = sMembB / sCoefB
                 
         'Assign the new values to each color channel
-        dstImageData(quickValDst + 2, y) = newR
-        dstImageData(quickValDst + 1, y) = newG
         dstImageData(quickValDst, y) = newB
+        dstImageData(quickValDst + 1, y) = newG
+        dstImageData(quickValDst + 2, y) = newR
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
                 If UserPressedESC() Then Exit For
                 SetProgBarVal x
@@ -382,24 +414,55 @@ End Sub
 ' mitigate this.  All told, the separable function roughly adheres to the expected PxQ / (P+Q) performance boost, and my own
 ' testing shows a 10 megapixel photo at radius 25 to take just 5% of the time that a naive convolution does
 ' (naive: 302 seconds, separable: 14 seconds).
-Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double, ByVal colorFactor As Double, ByVal colorPower As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub BilateralSmoothingSeparable(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying bilateral smoothing..."
+    If (Not toPreview) Then Message "Applying bilateral smoothing..."
     
-    'Create a local array and point it at the pixel data of the current image
+    'Extract function parameters
+    Dim kernelRadius As Long
+    Dim spatialFactor As Double, spatialPower As Double, colorFactor As Double, colorPower As Double
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    With cParams
+        kernelRadius = .GetLong("Bilateral_KernelRadius", 1)
+        spatialFactor = .GetDouble("Bilateral_SpatialFactor", 10#)
+        spatialPower = .GetDouble("Bilateral_SpatialPower", 2#)
+        colorFactor = .GetDouble("Bilateral_ColorFactor", 10#)
+        colorPower = .GetDouble("Bilateral_ColorPower", 2#)
+    End With
+    
+    'PrepImageData generates a working copy of the current filter target
     Dim dstSA As SAFEARRAY2D
     PrepImageData dstSA, toPreview, dstPic
     
-    'If this is a preview, we need to adjust the kernal
+    'If this is a preview, we need to adjust kernel size to match
     If toPreview Then kernelRadius = kernelRadius * curDIBValues.previewModifier
     
-    'The kernel must be at least 1 in either direction; otherwise, we'll get range errors
-    If kernelRadius < 1 Then kernelRadius = 1
+    'The kernel must be at least 1.0 pixels in either direction; otherwise, we'll get range errors
+    If (kernelRadius < 1) Then kernelRadius = 1
     
-    createBilateralDIB workingDIB, kernelRadius, spatialFactor, spatialPower, colorFactor, colorPower, toPreview
+    'PD now provides a dedicated function for separable bilateral processing
+    CreateBilateralDIB workingDIB, kernelRadius, spatialFactor, spatialPower, colorFactor, colorPower, toPreview
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     FinalizeImageData toPreview, dstPic
+    
+End Sub
+
+Public Sub BilateralWrapper(ByVal effectParams As String)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    If cParams.GetBool("Bilateral_UseSeparable", True) Then
+        Me.BilateralSmoothingSeparable effectParams
+    Else
+        Me.BilateralSmoothing effectParams
+    End If
     
 End Sub
 
@@ -408,7 +471,7 @@ Private Sub chkSeparable_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Bilateral smoothing", , BuildParams(sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, CBool(chkSeparable)), UNDO_LAYER
+    Process "Bilateral smoothing", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -453,11 +516,12 @@ End Sub
 Private Sub UpdatePreview()
 
     If cmdBar.PreviewsAllowed Then
-    
+        
+        'Separable kernels require a totally different function
         If CBool(chkSeparable) Then
-            BilateralSmoothingSeparable sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, pdFxPreview
+            BilateralSmoothingSeparable GetLocalParamString(), True, pdFxPreview
         Else
-            BilateralSmoothing sltRadius.Value, sltSpatialFactor.Value, sltSpatialPower.Value, sltColorFactor.Value, sltColorPower.Value, True, pdFxPreview
+            BilateralSmoothing GetLocalParamString(), True, pdFxPreview
         End If
         
     End If
@@ -469,6 +533,20 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+        .AddParam "Bilateral_KernelRadius", sltRadius.Value
+        .AddParam "Bilateral_SpatialFactor", sltSpatialFactor.Value
+        .AddParam "Bilateral_SpatialPower", sltSpatialPower.Value
+        .AddParam "Bilateral_ColorFactor", sltColorFactor.Value
+        .AddParam "Bilateral_ColorPower", sltColorPower.Value
+        .AddParam "Bilateral_UseSeparable", CBool(chkSeparable)
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function
