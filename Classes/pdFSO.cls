@@ -741,15 +741,14 @@ Friend Function DirW(Optional ByVal sParam As String = vbNullString) As String
         ' which can indicate other error states as well - we'll check this momentarily.)
         If allFilesFound Then
             
-            'Check for unexpected errors
-            Dim lastDllErr As Long
-            lastDllErr = Err.LastDllError
-            
             'Close the search handle and report any irregularities
             FindClose m_SearchHandle
             m_SearchHandle = 0
             
-            If (lastDllErr <> ERROR_FILE_NOT_FOUND) And (lastDllErr <> 0) Then FSOError "DirW", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
+            'Check for unexpected errors
+            Dim lastDllErr As Long
+            lastDllErr = Err.LastDllError
+            If (lastDllErr <> ERROR_NO_MORE_FILES) And (lastDllErr <> 0) Then FSOError "DirW", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
             
         Else
             DirW = retString
@@ -1811,15 +1810,15 @@ Private Sub FSOError(ByVal functionName As String, ByVal errText As String, Opti
         If (Not pdDebug Is Nothing) Then
             If (Len(functionName) <> 0) Then
                 If (errNumber <> 0) Then
-                    pdDebug.LogAction "WARNING!  pdFSO." & functionName & " problem: " & errText
-                Else
                     pdDebug.LogAction "WARNING!  pdFSO." & functionName & " error #" & CStr(errNumber) & ": " & errText
+                Else
+                    pdDebug.LogAction "WARNING!  pdFSO." & functionName & " problem: " & errText
                 End If
             Else
                 If (errNumber <> 0) Then
-                    pdDebug.LogAction "WARNING!  pdFSO problem: " & errText
-                Else
                     pdDebug.LogAction "WARNING!  pdFSO error #" & CStr(errNumber) & ": " & errText
+                Else
+                    pdDebug.LogAction "WARNING!  pdFSO problem: " & errText
                 End If
             End If
         Else
