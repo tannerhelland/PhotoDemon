@@ -106,7 +106,7 @@ Public Sub DrawSystemIcon(ByVal icon As SystemIconConstants, ByVal hDC As Long, 
 End Sub
 
 'Draw a horizontal gradient to a specified DIB from x-position xLeft to xRight.
-Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Long, ByVal xRight As Long, ByVal colorLeft As Long, ByVal colorRight As Long)
+Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Single, ByVal xRight As Single, ByVal colorLeft As Long, ByVal colorRight As Long)
     
     Dim boundsRectF As RECTF
     With boundsRectF
@@ -119,6 +119,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
     Dim cSurface As pd2DSurface, cBrush As pd2DBrush
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, False
     Drawing2D.QuickCreateTwoColorGradientBrush cBrush, boundsRectF, colorLeft, colorRight
+    cBrush.SetBrushGradientWrapMode P2_WM_Clamp
     
     m_Painter.FillRectangleF_FromRectF cSurface, cBrush, boundsRectF
     
