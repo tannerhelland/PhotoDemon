@@ -741,12 +741,15 @@ Friend Function DirW(Optional ByVal sParam As String = vbNullString) As String
         ' which can indicate other error states as well - we'll check this momentarily.)
         If allFilesFound Then
             
-            'Start by closing the search handle
+            'Check for unexpected errors
+            Dim lastDllErr As Long
+            lastDllErr = Err.LastDllError
+            
+            'Close the search handle and report any irregularities
             FindClose m_SearchHandle
             m_SearchHandle = 0
             
-            'Check for unexpected errors
-            If (Err.LastDllError <> ERROR_NO_MORE_FILES) Then FSOError "DirW", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate."
+            If (lastDllErr <> ERROR_FILE_NOT_FOUND) And (lastDllErr <> 0) Then FSOError "DirW", "terminated for a reason other than ERROR_NO_MORE_FILES. Please investigate.  (FYI: error # is last DLL error.)", lastDllErr
             
         Else
             DirW = retString
