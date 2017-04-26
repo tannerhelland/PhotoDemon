@@ -37,6 +37,9 @@ End Enum
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal hPalette As Long, ByRef cColorRef As Long) As Long
 
+'Constants to improve color space conversion performance
+Private Const ONE_DIV_SIX As Double = 0.166666666666667
+
 'Present the user with PD's custom color selection dialog.
 ' INPUTS:  1) a Long-type variable (ByRef, of course) which will receive the new color
 '          2) an optional initial color
@@ -102,7 +105,7 @@ End Function
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
     
     Dim Max As Double, Min As Double
-    Dim Delta As Double
+    Dim delta As Double
     Dim rR As Double, rG As Double, rB As Double
     
     rR = r / 255
@@ -125,23 +128,23 @@ Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, 
         h = 0
     Else
         
-        Delta = Max - Min
+        delta = Max - Min
         
         'Calculate saturation
         If l <= 0.5 Then
-            s = Delta / (Max + Min)
+            s = delta / (Max + Min)
         Else
-            s = Delta / (2 - Max - Min)
+            s = delta / (2 - Max - Min)
         End If
         
         'Calculate hue
         
         If rR = Max Then
-            h = (rG - rB) / Delta    '{Resulting color is between yellow and magenta}
+            h = (rG - rB) / delta    '{Resulting color is between yellow and magenta}
         ElseIf rG = Max Then
-            h = 2 + (rB - rR) / Delta '{Resulting color is between cyan and yellow}
+            h = 2 + (rB - rR) / delta '{Resulting color is between cyan and yellow}
         ElseIf rB = Max Then
-            h = 4 + (rR - rG) / Delta '{Resulting color is between magenta and cyan}
+            h = 4 + (rR - rG) / delta '{Resulting color is between magenta and cyan}
         End If
         
         'If you prefer hue in the [0,360] range instead of [-1, 5] you can use this code
@@ -234,48 +237,47 @@ End Sub
 'Floating-point conversion between RGB [0, 1] and HSL [0, 1]
 Public Sub fRGBtoHSL(ByVal r As Double, ByVal g As Double, ByVal b As Double, ByRef h As Double, ByRef s As Double, ByRef l As Double)
 
-    Dim minVal As Double, maxVal As Double, Delta As Double
-    
+    Dim minVal As Double, maxVal As Double, delta As Double
     minVal = Min3Float(r, g, b)
     maxVal = Max3Float(r, g, b)
-    Delta = maxVal - minVal
+    delta = maxVal - minVal
 
-    l = (maxVal + minVal) / 2
+    l = (maxVal + minVal) * 0.5
 
     'Check the achromatic case
-    If Delta = 0 Then
+    If (delta = 0#) Then
 
         'Hue is technically undefined, but we have to return SOME value...
-        h = 0
-        s = 0
+        h = 0#
+        s = 0#
         
     'Chromatic case...
     Else
         
         If (l < 0.5) Then
-            s = Delta / (maxVal + minVal)
+            s = delta / (maxVal + minVal)
         Else
-            s = Delta / (2 - maxVal - minVal)
+            s = delta / (2# - maxVal - minVal)
         End If
         
         Dim deltaR As Double, deltaG As Double, deltaB As Double, halfDelta As Double
-        halfDelta = Delta / 2
+        halfDelta = delta * 0.5
 
-        deltaR = (((maxVal - r) / 6) + halfDelta) / Delta
-        deltaG = (((maxVal - g) / 6) + halfDelta) / Delta
-        deltaB = (((maxVal - b) / 6) + halfDelta) / Delta
-
-        If (r = maxVal) Then
+        deltaR = (((maxVal - r) * ONE_DIV_SIX) + halfDelta) / delta
+        deltaG = (((maxVal - g) * ONE_DIV_SIX) + halfDelta) / delta
+        deltaB = (((maxVal - b) * ONE_DIV_SIX) + halfDelta) / delta
+        
+        If (r >= maxVal) Then
             h = deltaB - deltaG
-        ElseIf (g = maxVal) Then
+        ElseIf (g >= maxVal) Then
             h = 0.333333333333333 + deltaR - deltaB
         Else
             h = 0.666666666666667 + deltaG - deltaR
         End If
         
         'Lock hue to the [0, 1] range
-        If h < 0 Then h = h + 1
-        If h > 1 Then h = h - 1
+        If (h < 0#) Then h = h + 1#
+        If (h > 1#) Then h = h - 1#
     
     End If
     
@@ -285,7 +287,7 @@ End Sub
 Public Sub fHSLtoRGB(ByVal h As Double, ByVal s As Double, ByVal l As Double, ByRef r As Double, ByRef g As Double, ByRef b As Double)
 
     'Check the achromatic case
-    If (s = 0) Then
+    If (s = 0#) Then
     
         r = l
         g = l
@@ -295,27 +297,27 @@ Public Sub fHSLtoRGB(ByVal h As Double, ByVal s As Double, ByVal l As Double, By
     Else
         
         'As a failsafe, lock hue to [0, 1]
-        If (h < 0) Then h = h + 1
-        If (h > 1) Then h = h - 1
+        If (h < 0#) Then h = h + 1#
+        If (h > 1#) Then h = h - 1#
         
         Dim var_1 As Double, var_2 As Double
         
-        If l < 0.5 Then
-            var_2 = l * (1 + s)
+        If (l < 0.5) Then
+            var_2 = l * (1# + s)
         Else
             var_2 = (l + s) - (s * l)
         End If
 
-        var_1 = 2 * l - var_2
+        var_1 = 2# * l - var_2
 
         r = fHueToRGB(var_1, var_2, h + 0.333333333333333)
         g = fHueToRGB(var_1, var_2, h)
         b = fHueToRGB(var_1, var_2, h - 0.333333333333333)
-    
+        
         'Failsafe check for underflow
-        If (r < 0) Then r = 0
-        If (g < 0) Then g = 0
-        If (b < 0) Then b = 0
+        If (r < 0#) Then r = 0#
+        If (g < 0#) Then g = 0#
+        If (b < 0#) Then b = 0#
         
     End If
 
@@ -323,12 +325,18 @@ End Sub
 
 Private Function fHueToRGB(ByRef v1 As Double, ByRef v2 As Double, ByRef vH As Double) As Double
     
-    If (6 * vH) < 1 Then
-        fHueToRGB = v1 + (v2 - v1) * 6 * vH
-    ElseIf (2 * vH) < 1 Then
+    If (vH < 0#) Then
+        vH = vH + 1#
+    ElseIf (vH > 1#) Then
+        vH = vH - 1#
+    End If
+    
+    If ((6# * vH) < 1#) Then
+        fHueToRGB = v1 + (v2 - v1) * 6# * vH
+    ElseIf ((2# * vH) < 1#) Then
         fHueToRGB = v2
-    ElseIf (3 * vH) < 2 Then
-        fHueToRGB = v1 + (v2 - v1) * (0.666666666666667 - vH) * 6
+    ElseIf ((3# * vH) < 2#) Then
+        fHueToRGB = v1 + (v2 - v1) * (0.666666666666667 - vH) * 6#
     Else
         fHueToRGB = v1
     End If
@@ -397,7 +405,7 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
         var_H = h * 6
         
         'To keep our math simple, limit hue to [0, 5.9999999]
-        If var_H >= 6 Then var_H = 0
+        If (var_H >= 6) Then var_H = 0
         
         Dim var_I As Long
         var_I = Int(var_H)
@@ -409,39 +417,37 @@ Public Sub HSVtoRGB(ByRef h As Double, ByRef s As Double, ByRef v As Double, ByR
 
         Dim var_R As Double, var_G As Double, var_B As Double
 
-        Select Case var_I
+        If (var_I = 0) Then
+            var_R = v
+            var_G = var_3
+            var_B = var_1
+                
+        ElseIf (var_I = 1) Then
+            var_R = var_2
+            var_G = v
+            var_B = var_1
         
-            Case 0
-                var_R = v
-                var_G = var_3
-                var_B = var_1
+        ElseIf (var_I = 2) Then
+            var_R = var_1
+            var_G = v
+            var_B = var_3
                 
-            Case 1
-                var_R = var_2
-                var_G = v
-                var_B = var_1
-                
-            Case 2
-                var_R = var_1
-                var_G = v
-                var_B = var_3
-                
-            Case 3
-                var_R = var_1
-                var_G = var_2
-                var_B = v
+        ElseIf (var_I = 3) Then
+            var_R = var_1
+            var_G = var_2
+            var_B = v
             
-            Case 4
-                var_R = var_3
-                var_G = var_1
-                var_B = v
+        ElseIf (var_I = 4) Then
+            var_R = var_3
+            var_G = var_1
+            var_B = v
                 
-            Case Else
-                var_R = v
-                var_G = var_1
-                var_B = var_2
+        Else
+            var_R = v
+            var_G = var_1
+            var_B = var_2
                 
-        End Select
+        End If
 
         r = var_R * 255
         g = var_G * 255
