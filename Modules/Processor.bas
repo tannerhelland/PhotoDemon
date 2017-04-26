@@ -1366,7 +1366,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormBoxBlur
             Else
-                FormBoxBlur.BoxBlurFilter cParams.GetLong(1), cParams.GetLong(2)
+                FormBoxBlur.BoxBlurFilter cXMLParams.GetParamString()
             End If
             
         Case "Gaussian blur"
