@@ -81,9 +81,16 @@ Option Explicit
 
 'Perform a blacklight filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
-Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Illuminating image with imaginary blacklight..."
+    If (Not toPreview) Then Message "Illuminating image with imaginary blacklight..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim weight As Double
+    weight = cParams.GetDouble("BlackLightIntensity", 2#)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -125,23 +132,23 @@ Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toP
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
         b = ImageData(quickVal, y)
+        g = ImageData(quickVal + 1, y)
+        r = ImageData(quickVal + 2, y)
         
         'Calculate the gray value using the look-up table
         grayVal = grayLookUp(r + g + b)
         
         'Perform the blacklight conversion
-        r = Abs(r - grayVal) * Weight
-        g = Abs(g - grayVal) * Weight
-        b = Abs(b - grayVal) * Weight
+        r = Abs(r - grayVal) * weight
+        g = Abs(g - grayVal) * weight
+        b = Abs(b - grayVal) * weight
         
-        If r > 255 Then r = 255
-        If g > 255 Then g = 255
-        If b > 255 Then b = 255
+        If (r > 255) Then r = 255
+        If (g > 255) Then g = 255
+        If (b > 255) Then b = 255
         
-        'Assign that gray value to each color channel
+        'Assign that gray value to each color channel.  (Yes, channel order is reversed - that's deliberate!)
         ImageData(quickVal, y) = r
         ImageData(quickVal + 1, y) = g
         ImageData(quickVal + 2, y) = b
@@ -165,7 +172,7 @@ Public Sub fxBlackLight(Optional ByVal Weight As Double = 2#, Optional ByVal toP
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Black light", , BuildParams(sltIntensity), UNDO_LAYER
+    Process "Black light", , GetLocalParamString, UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -198,8 +205,13 @@ Private Sub sltIntensity_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then fxBlackLight sltIntensity, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then fxBlackLight GetLocalParamString, True, pdFxPreview
 End Sub
 
-
+Private Function GetLocalParamString() As String
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "BlackLightIntensity", sltIntensity.Value
+    GetLocalParamString = cParams.GetParamString()
+End Function
 

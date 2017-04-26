@@ -1595,7 +1595,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormBlackLight
             Else
-                FormBlackLight.fxBlackLight cParams.GetDouble(1)
+                FormBlackLight.fxBlackLight cXMLParams.GetParamString()
             End If
         
         Case "Cross-screen"
