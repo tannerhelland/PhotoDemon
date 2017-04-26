@@ -29,13 +29,13 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   3
       Top             =   2040
       Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
-      Caption         =   "box width"
-      Min             =   1
-      Max             =   500
-      Value           =   2
-      DefaultValue    =   2
+      _extentx        =   10372
+      _extenty        =   1270
+      caption         =   "box width"
+      max             =   500
+      min             =   1
+      value           =   2
+      defaultvalue    =   2
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -43,8 +43,8 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.pdCheckBox chkUnison 
       Height          =   330
@@ -52,9 +52,9 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   2
       Top             =   3840
       Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
-      Caption         =   "keep both dimensions in sync"
+      _extentx        =   10054
+      _extenty        =   582
+      caption         =   "keep both dimensions in sync"
    End
    Begin PhotoDemon.pdSlider sltHeight 
       Height          =   705
@@ -62,13 +62,13 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   4
       Top             =   3000
       Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   1270
-      Caption         =   "box height"
-      Min             =   1
-      Max             =   500
-      Value           =   2
-      DefaultValue    =   2
+      _extentx        =   10372
+      _extenty        =   1270
+      caption         =   "box height"
+      max             =   500
+      min             =   1
+      value           =   2
+      defaultvalue    =   2
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -77,8 +77,8 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   0
       Top             =   5790
       Width           =   12030
-      _ExtentX        =   21220
-      _ExtentY        =   1323
+      _extentx        =   21220
+      _extenty        =   1323
    End
 End
 Attribute VB_Name = "FormBoxBlur"
@@ -114,11 +114,21 @@ End Sub
 
 'Convolve an image using a box blur.  An accumulation approach is used to maximize speed.
 'Input: horizontal and vertical size of the box (I call it radius, because the final box size is 2r + 1)
-Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub BoxBlurFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Applying box blur to image..."
-        
-    'Create a local array and point it at the pixel data of the current image
+    If (Not toPreview) Then Message "Applying box blur to image..."
+    
+    'Parse out specific parameters
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim hRadius As Long, vRadius As Long
+    hRadius = cParams.GetLong("BoxBlur_Width", sltWidth.Value)
+    vRadius = cParams.GetLong("BoxBlur_Height", sltHeight.Value)
+    
+    'Create a local array and point it at the pixel data of the current image.  (Note that we deliberately
+    ' leave alpha byte premultiplied!)
     Dim dstSA As SAFEARRAY2D
     PrepImageData dstSA, toPreview, dstPic, , , True
     
@@ -132,8 +142,8 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
     If toPreview Then
         hRadius = hRadius * curDIBValues.previewModifier
         vRadius = vRadius * curDIBValues.previewModifier
-        If hRadius = 0 Then hRadius = 1
-        If vRadius = 0 Then vRadius = 1
+        If (hRadius = 0) Then hRadius = 1
+        If (vRadius = 0) Then vRadius = 1
     End If
     
     'Apply the box blur in two steps: a fast horizontal blur, then a fast vertical blur
@@ -149,7 +159,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Box blur", , BuildParams(sltWidth, sltHeight), UNDO_LAYER
+    Process "Box blur", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -170,22 +180,22 @@ End Sub
 'Keep the two scroll bars in sync.  Some extra work has to be done to makes sure scrollbar max values aren't exceeded.
 Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     
-    If sltWidth.Value = sltHeight.Value Then Exit Sub
+    If (sltWidth.Value = sltHeight.Value) Then Exit Sub
     
     Dim tmpVal As Long
     
     If srcHorizontal Then
         tmpVal = sltWidth.Value
-        If tmpVal < sltHeight.Max Then sltHeight.Value = sltWidth.Value Else sltHeight.Value = sltHeight.Max
+        If (tmpVal < sltHeight.Max) Then sltHeight.Value = sltWidth.Value Else sltHeight.Value = sltHeight.Max
     Else
         tmpVal = sltHeight.Value
-        If tmpVal < sltWidth.Max Then sltWidth.Value = sltHeight.Value Else sltWidth.Value = sltWidth.Max
+        If (tmpVal < sltWidth.Max) Then sltWidth.Value = sltHeight.Value Else sltWidth.Value = sltWidth.Max
     End If
     
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then BoxBlurFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 Private Sub sltHeight_Change()
@@ -203,3 +213,10 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+Private Function GetLocalParamString() As String
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "BoxBlur_Width", sltWidth.Value
+    cParams.AddParam "BoxBlur_Height", sltHeight.Value
+    GetLocalParamString = cParams.GetParamString()
+End Function
