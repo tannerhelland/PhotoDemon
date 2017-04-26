@@ -1703,15 +1703,9 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormBilateral
             Else
-            
-                If cParams.GetBool(6, True) Then
-                    FormBilateral.BilateralSmoothingSeparable cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
-                Else
-                    FormBilateral.BilateralSmoothing cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
-                End If
-                    
+                FormBilateral.BilateralWrapper cXMLParams.GetParamString()
             End If
-        
+            
         Case "Mean shift"
             If ShowDialog Then
                 ShowPDDialog vbModal, FormMeanShift
