@@ -1114,7 +1114,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormColorBalance
             Else
-                FormColorBalance.ApplyColorBalance cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetBool(5)
+                FormColorBalance.ApplyColorBalance cXMLParams.GetParamString()
             End If
             
         Case "Hue and saturation"
@@ -1425,7 +1425,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             If ShowDialog Then
                 ShowPDDialog vbModal, FormChromaBlur
             Else
-                FormChromaBlur.ChromaBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
+                FormChromaBlur.ChromaBlurFilter cXMLParams.GetParamString()
             End If
         
         Case "Grid blur"

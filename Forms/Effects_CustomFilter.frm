@@ -580,10 +580,3 @@ End Function
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-
-
-
-
-
-
-

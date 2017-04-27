@@ -188,11 +188,11 @@ Private Function GetFunctionParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     With cParams
-        .AddParam "MonochromeThreshold", sltThreshold.Value
-        .AddParam "MonochromeDither", lstDither.ListIndex
-        .AddParam "MonochromeColor1", colorPicker(0).Color
-        .AddParam "MonochromeColor2", colorPicker(1).Color
-        .AddParam "MonochromeRemoveTransparency", CBool(btsTransparency.ListIndex = 1)
+        .AddParam "threshold", sltThreshold.Value
+        .AddParam "dither", lstDither.ListIndex
+        .AddParam "color1", colorPicker(0).Color
+        .AddParam "color2", colorPicker(1).Color
+        .AddParam "removetransparency", CBool(btsTransparency.ListIndex = 1)
     End With
     GetFunctionParamString = cParams.GetParamString
 End Function
@@ -326,11 +326,11 @@ Public Sub MasterBlackWhiteConversion(ByVal monochromeParams As String, Optional
     
     Dim cThreshold As Long, DitherMethod As Long, lowColor As Long, highColor As Long, removeTransparency As Boolean
     With cParams
-        cThreshold = .GetLong("MonochromeThreshold", 127)
-        DitherMethod = .GetLong("MonochromeDither", 6)
-        lowColor = .GetLong("MonochromeColor1", vbBlack)
-        highColor = .GetLong("MonochromeColor2", vbWhite)
-        removeTransparency = .GetBool("MonochromeRemoveTransparency", False)
+        cThreshold = .GetLong("threshold", 127)
+        DitherMethod = .GetLong("dither", 6)
+        lowColor = .GetLong("color1", vbBlack)
+        highColor = .GetLong("color2", vbWhite)
+        removeTransparency = .GetBool("removetransparency", False)
     End With
     
     'Create a local array and point it at the pixel data we want to operate on
@@ -771,4 +771,3 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
-

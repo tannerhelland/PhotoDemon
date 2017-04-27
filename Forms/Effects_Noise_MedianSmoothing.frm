@@ -132,7 +132,7 @@ Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPre
     Dim mRadius As Long, mPercent As Double, kernelShape As PD_PIXEL_REGION_SHAPE
     mRadius = cParams.GetLong("radius", 1&)
     mPercent = cParams.GetLong("percent", 50&)
-    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
+    kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
     If Not toPreview Then
         If mPercent = 1 Then
@@ -282,6 +282,5 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = BuildParamList("radius", sltRadius.Value, "percent", sltPercent.Value, "kernelShape", btsKernelShape.ListIndex)
+    GetLocalParamString = BuildParamList("radius", sltRadius.Value, "percent", sltPercent.Value, "kernelshape", btsKernelShape.ListIndex)
 End Function
-

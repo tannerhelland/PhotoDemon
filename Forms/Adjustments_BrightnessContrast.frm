@@ -138,12 +138,12 @@ Public Sub BrightnessContrast(ByVal functionParams As String, Optional ByVal toP
     cParams.SetParamString functionParams
     
     Dim newBrightness As Long, newContrast As Double
-    newBrightness = cParams.GetLong("BrightnessContrastNewBrightness", 0)
-    newContrast = cParams.GetLong("BrightnessContrastNewContrast", 0#)
+    newBrightness = cParams.GetLong("brightness", 0)
+    newContrast = cParams.GetLong("contrast", 0#)
     
     Dim useLegacyModel As Boolean, sampleContrast As Boolean
-    useLegacyModel = cParams.GetBool("BrightnessContrastUseLegacy", False)
-    sampleContrast = cParams.GetBool("BrightnessContrastSampleContrast", False)
+    useLegacyModel = cParams.GetBool("uselegacy", False)
+    sampleContrast = cParams.GetBool("samplecontrast", False)
     
     If (Not toPreview) Then Message "Adjusting brightness and contrast..."
     
@@ -336,10 +336,10 @@ Private Function GetFunctionParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     With cParams
-        .AddParam "BrightnessContrastNewBrightness", sltBright.Value
-        .AddParam "BrightnessContrastNewContrast", sltContrast.Value
-        .AddParam "BrightnessContrastUseLegacy", CBool(btsModel.ListIndex = 1)
-        .AddParam "BrightnessContrastSampleContrast", CBool(chkSample.Value)
+        .AddParam "brightness", sltBright.Value
+        .AddParam "contrast", sltContrast.Value
+        .AddParam "uselegacy", CBool(btsModel.ListIndex = 1)
+        .AddParam "samplecontrast", CBool(chkSample.Value)
     End With
     GetFunctionParamString = cParams.GetParamString
 End Function

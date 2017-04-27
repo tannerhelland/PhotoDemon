@@ -98,9 +98,17 @@ Option Explicit
 ' particularly in digital photos.
 'Inputs: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
 '        quality of the blur (gaussian approximations - fast, lower quality - vs an actual gaussian - slow, excellent quality)
-Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ChromaBlurFilter(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Blurring chroma (color) data..."
+    If (Not toPreview) Then Message "Blurring chroma (color) data..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim gRadius As Double, gaussQuality As Long
+    gRadius = cParams.GetDouble("radius", 1#)
+    gaussQuality = cParams.GetLong("quality", 2)
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
@@ -126,7 +134,7 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         gRadius = gRadius * curDIBValues.previewModifier
-        If gRadius = 0 Then gRadius = 0.1
+        If (gRadius <= 0.1) Then gRadius = 0.1
     End If
     
     Dim blurSuccess As Long
@@ -197,17 +205,17 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
         For y = initY To finalY
             
             'Retrieve the original image's pixels
-            r = srcImageData(quickVal + 2, y)
-            g = srcImageData(quickVal + 1, y)
             b = srcImageData(quickVal, y)
+            g = srcImageData(quickVal + 1, y)
+            r = srcImageData(quickVal + 2, y)
             
             'Determine original HSL values
             tRGBToHSL r, g, b, h, s, origLuminance
             
             'Now, retrieve the gaussian pixels
-            r = GaussImageData(quickVal + 2, y)
-            g = GaussImageData(quickVal + 1, y)
             b = GaussImageData(quickVal, y)
+            g = GaussImageData(quickVal + 1, y)
+            r = GaussImageData(quickVal + 2, y)
             
             'Determine HSL for the blurred data
             tRGBToHSL r, g, b, h, s, l
@@ -216,10 +224,10 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
             tHSLToRGB h, s, origLuminance, r, g, b
             
             'Apply the new RGB colors to the image
-            dstImageData(quickVal + 2, y) = r
-            dstImageData(quickVal + 1, y) = g
             dstImageData(quickVal, y) = b
-            If qvDepth = 4 Then dstImageData(quickVal + 3, y) = srcImageData(quickVal + 3, y)
+            dstImageData(quickVal + 1, y) = g
+            dstImageData(quickVal + 2, y) = r
+            If (qvDepth = 4) Then dstImageData(quickVal + 3, y) = srcImageData(quickVal + 3, y)
             
         Next y
             If Not toPreview Then
@@ -255,7 +263,7 @@ Private Sub btsQuality_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Chroma blur", , BuildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
+    Process "Chroma blur", , GetLocalParamString, UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -295,7 +303,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ChromaBlurFilter sltRadius, btsQuality.ListIndex, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ChromaBlurFilter GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -303,8 +311,10 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-
-
-
-
-
+Private Function GetLocalParamString() As String
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "radius", sltRadius.Value
+    cParams.AddParam "quality", btsQuality.ListIndex
+    GetLocalParamString = cParams.GetParamString()
+End Function

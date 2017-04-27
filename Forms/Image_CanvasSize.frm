@@ -276,11 +276,11 @@ Private Function GetCurrentParams() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     With cParams
-        .AddParam "NewCanvasWidth", ucResize.ResizeWidth
-        .AddParam "NewCanvasHeight", ucResize.ResizeHeight
-        .AddParam "CanvasResizeMeasurement", ucResize.UnitOfMeasurement
-        .AddParam "CanvasResizeAnchor", m_CurrentAnchor
-        .AddParam "NewCanvasDPI", ucResize.ResizeDPIAsPPI
+        .AddParam "width", ucResize.ResizeWidth
+        .AddParam "height", ucResize.ResizeHeight
+        .AddParam "unit", ucResize.UnitOfMeasurement
+        .AddParam "anchor", m_CurrentAnchor
+        .AddParam "dpi", ucResize.ResizeDPIAsPPI
     End With
     
     GetCurrentParams = cParams.GetParamString
@@ -344,11 +344,11 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     cParams.SetParamString functionParams
     
     With cParams
-        iWidth = .GetDouble("NewCanvasWidth", pdImages(g_CurrentImage).Width)
-        iHeight = .GetDouble("NewCanvasHeight", pdImages(g_CurrentImage).Height)
-        anchorPosition = .GetLong("CanvasResizeAnchor", 0&)
-        curUnit = .GetLong("CanvasResizeMeasurement", MU_PIXELS)
-        iDPI = .GetDouble("NewCanvasDPI", pdImages(g_CurrentImage).GetDPI)
+        iWidth = .GetDouble("width", pdImages(g_CurrentImage).Width)
+        iHeight = .GetDouble("height", pdImages(g_CurrentImage).Height)
+        anchorPosition = .GetLong("anchor", 0&)
+        curUnit = .GetLong("unit", MU_PIXELS)
+        iDPI = .GetDouble("dpi", pdImages(g_CurrentImage).GetDPI)
     End With
     
     Dim srcWidth As Long, srcHeight As Long

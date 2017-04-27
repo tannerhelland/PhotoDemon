@@ -25,13 +25,14 @@ Begin VB.Form FormGrayscale
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdDropDown cboDithering 
-      Height          =   375
-      Left            =   6240
+      Height          =   735
+      Left            =   6000
       TabIndex        =   1
-      Top             =   4080
-      Width           =   5535
-      _ExtentX        =   9763
-      _ExtentY        =   661
+      Top             =   3720
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
+      Caption         =   "dithering options"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -143,35 +144,14 @@ Begin VB.Form FormGrayscale
       End
    End
    Begin PhotoDemon.pdDropDown cboMethod 
-      Height          =   375
-      Left            =   6240
+      Height          =   735
+      Left            =   6000
       TabIndex        =   11
-      Top             =   1560
-      Width           =   5535
-      _ExtentX        =   9763
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblDithering 
-      Height          =   285
-      Left            =   6000
-      Top             =   3720
-      Width           =   5760
-      _ExtentX        =   10160
-      _ExtentY        =   503
-      Caption         =   "dithering options"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblAlgorithm 
-      Height          =   285
-      Left            =   6000
       Top             =   1200
-      Width           =   5760
-      _ExtentX        =   10160
-      _ExtentY        =   503
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
       Caption         =   "style"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormGrayscale"
@@ -1267,3 +1247,16 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

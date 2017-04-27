@@ -25,13 +25,14 @@ Begin VB.Form FormCrystallize
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdDropDown cboColorSampling 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   4
-      Top             =   3240
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   661
+      Top             =   2760
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "color sampling"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -80,38 +81,15 @@ Begin VB.Form FormCrystallize
       Value           =   0.5
       DefaultValue    =   0.5
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   5
-      Left            =   6000
-      Top             =   3765
-      Width           =   5820
-      _ExtentX        =   10266
-      _ExtentY        =   503
-      Caption         =   "distance method"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      Top             =   2820
-      Width           =   5880
-      _ExtentX        =   10372
-      _ExtentY        =   503
-      Caption         =   "color sampling"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
    Begin PhotoDemon.pdDropDown cboDistance 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   5
-      Top             =   4200
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   661
+      Top             =   3720
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
+      Caption         =   "distance method"
    End
 End
 Attribute VB_Name = "FormCrystallize"
@@ -440,7 +418,15 @@ Private Sub sltTurbulence_Change()
     UpdatePreview
 End Sub
 
-
-
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

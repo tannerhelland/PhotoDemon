@@ -200,7 +200,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    redrawSaturationSlider
+    RedrawSaturationSlider
     UpdatePreview
 End Sub
 
@@ -216,7 +216,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltHue_Change()
-    redrawSaturationSlider
+    RedrawSaturationSlider
     UpdatePreview
 End Sub
 
@@ -237,7 +237,7 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-Private Sub redrawSaturationSlider()
+Private Sub RedrawSaturationSlider()
 
     'Update the Saturation background dynamically, to match the hue background!
     Dim r As Long, g As Long, b As Long
@@ -250,5 +250,15 @@ Private Sub redrawSaturationSlider()
 
 End Sub
 
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

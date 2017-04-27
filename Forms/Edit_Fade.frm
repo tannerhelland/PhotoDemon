@@ -24,13 +24,14 @@ Begin VB.Form FormFadeLast
    ScaleWidth      =   821
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.pdDropDown cboBlendMode 
-      Height          =   375
-      Left            =   6240
+      Height          =   735
+      Left            =   6000
       TabIndex        =   1
-      Top             =   3240
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   635
+      Top             =   2880
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   1296
+      Caption         =   "blend mode"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -65,18 +66,6 @@ Begin VB.Form FormFadeLast
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   50
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   2880
-      Width           =   6060
-      _ExtentX        =   10689
-      _ExtentY        =   503
-      Caption         =   "blend mode"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormFadeLast"
@@ -256,3 +245,15 @@ Private Sub sltOpacity_Change()
     UpdatePreview
 End Sub
 
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

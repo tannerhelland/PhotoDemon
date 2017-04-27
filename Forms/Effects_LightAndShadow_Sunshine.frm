@@ -467,7 +467,15 @@ Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
 
-
-
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

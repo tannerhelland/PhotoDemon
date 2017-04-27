@@ -124,7 +124,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     ehTarget = cParams.GetLong("target", 0&)
     ehMode = cParams.GetLong("mode", 0&)
     ehRadius = cParams.GetLong("radius", 1&)
-    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
+    kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -562,9 +562,6 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = BuildParamList("target", btsTarget.ListIndex, "mode", btsMode.ListIndex, "kernelShape", btsKernelShape.ListIndex, "radius", sltRadius.Value)
+    GetLocalParamString = BuildParamList("target", btsTarget.ListIndex, "mode", btsMode.ListIndex, "kernelshape", btsKernelShape.ListIndex, "radius", sltRadius.Value)
 End Function
-
-
-
 

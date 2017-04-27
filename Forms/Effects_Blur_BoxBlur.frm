@@ -29,13 +29,13 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   3
       Top             =   2040
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "box width"
-      max             =   500
-      min             =   1
-      value           =   2
-      defaultvalue    =   2
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "box width"
+      Min             =   1
+      Max             =   500
+      Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -43,8 +43,8 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCheckBox chkUnison 
       Height          =   330
@@ -52,9 +52,9 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   2
       Top             =   3840
       Width           =   5700
-      _extentx        =   10054
-      _extenty        =   582
-      caption         =   "keep both dimensions in sync"
+      _ExtentX        =   10054
+      _ExtentY        =   582
+      Caption         =   "keep both dimensions in sync"
    End
    Begin PhotoDemon.pdSlider sltHeight 
       Height          =   705
@@ -62,13 +62,13 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   4
       Top             =   3000
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "box height"
-      max             =   500
-      min             =   1
-      value           =   2
-      defaultvalue    =   2
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "box height"
+      Min             =   1
+      Max             =   500
+      Value           =   2
+      DefaultValue    =   2
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -77,8 +77,8 @@ Begin VB.Form FormBoxBlur
       TabIndex        =   0
       Top             =   5790
       Width           =   12030
-      _extentx        =   21220
-      _extenty        =   1323
+      _ExtentX        =   21220
+      _ExtentY        =   1323
    End
 End
 Attribute VB_Name = "FormBoxBlur"
@@ -124,8 +124,8 @@ Public Sub BoxBlurFilter(ByVal effectParams As String, Optional ByVal toPreview 
     cParams.SetParamString effectParams
     
     Dim hRadius As Long, vRadius As Long
-    hRadius = cParams.GetLong("BoxBlur_Width", sltWidth.Value)
-    vRadius = cParams.GetLong("BoxBlur_Height", sltHeight.Value)
+    hRadius = cParams.GetLong("radius-x", sltWidth.Value)
+    vRadius = cParams.GetLong("radius-y", sltHeight.Value)
     
     'Create a local array and point it at the pixel data of the current image.  (Note that we deliberately
     ' leave alpha byte premultiplied!)
@@ -216,7 +216,7 @@ End Sub
 Private Function GetLocalParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.AddParam "BoxBlur_Width", sltWidth.Value
-    cParams.AddParam "BoxBlur_Height", sltHeight.Value
+    cParams.AddParam "radius-x", sltWidth.Value
+    cParams.AddParam "radius-y", sltHeight.Value
     GetLocalParamString = cParams.GetParamString()
 End Function

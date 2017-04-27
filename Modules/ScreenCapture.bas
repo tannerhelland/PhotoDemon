@@ -77,11 +77,11 @@ Public Sub CaptureScreen(ByVal screenCaptureParams As String)
     Dim captureFullDesktop As Boolean, minimizePD As Boolean, alternateWindowHwnd As Long, includeChrome As Boolean, alternateWindowName As String
     
     With cParams
-        captureFullDesktop = .GetBool("CaptureWholeScreen", True)
-        minimizePD = .GetBool("CaptureMinimizePDFirst", False)
-        alternateWindowHwnd = .GetLong("CaptureTargetHWnd", 0&)
-        includeChrome = .GetBool("CaptureTargetChrome", True)
-        alternateWindowName = .GetString("CaptureTargetWindowName", vbNullString)
+        captureFullDesktop = .GetBool("wholescreen", True)
+        minimizePD = .GetBool("minimizefirst", False)
+        alternateWindowHwnd = .GetLong("targethwnd", 0&)
+        includeChrome = .GetBool("chrome", True)
+        alternateWindowName = .GetString("targetwindowname", vbNullString)
     End With
     
     Message "Capturing screen..."

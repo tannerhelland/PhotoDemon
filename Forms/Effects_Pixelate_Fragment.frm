@@ -108,13 +108,14 @@ Begin VB.Form FormFragment
       Caption         =   "speed"
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6120
+      Height          =   735
+      Left            =   6000
       TabIndex        =   7
-      Top             =   3960
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
+      Top             =   3480
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1296
+      Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -125,18 +126,6 @@ Begin VB.Form FormFragment
       _ExtentX        =   10081
       _ExtentY        =   503
       Caption         =   "render emphasis"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   5
-      Left            =   6000
-      Top             =   3540
-      Width           =   5715
-      _ExtentX        =   10081
-      _ExtentY        =   503
-      Caption         =   "if pixels lie outside the image..."
       FontSize        =   12
       ForeColor       =   4210752
    End
@@ -389,8 +378,15 @@ Private Sub sltFragments_Change()
     UpdatePreview
 End Sub
 
-
-
-
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

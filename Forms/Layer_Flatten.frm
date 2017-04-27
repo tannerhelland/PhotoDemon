@@ -97,8 +97,8 @@ Private Sub cmdBar_OKClick()
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "FlattenRemoveTransparency", CBool(btsFlatten.ListIndex = 2)
-        .AddParam "FlattenBackgroundColor", clsBackground.Color
+        .AddParam "removetransparency", CBool(btsFlatten.ListIndex = 2)
+        .AddParam "backgroundcolor", clsBackground.Color
     End With
     
     Process "Flatten image", , cParams.GetParamString, UNDO_IMAGE
