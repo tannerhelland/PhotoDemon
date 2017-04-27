@@ -320,4 +320,3 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value)
 End Function
-

@@ -142,9 +142,9 @@ Public Sub ApplyZoomBlur(ByVal functionParams As String, Optional ByVal toPrevie
     cParams.SetParamString functionParams
     
     Dim zDistance As Double, zCenterX As Double, zCenterY As Double
-    zDistance = cParams.GetDouble("ZoomBlurDistance", 0#)
-    zCenterX = cParams.GetDouble("ZoomBlurCenterX", 0.5)
-    zCenterY = cParams.GetDouble("ZoomBlurCenterY", 0.5)
+    zDistance = cParams.GetDouble("distance", 0#)
+    zCenterX = cParams.GetDouble("center-x", 0.5)
+    zCenterY = cParams.GetDouble("center-y", 0.5)
     
     If (Not toPreview) Then Message "Applying zoom blur..."
     
@@ -359,9 +359,9 @@ Private Function GetFilterParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     With cParams
-        .AddParam "ZoomBlurDistance", sltDistance.Value
-        .AddParam "ZoomBlurCenterX", sltXCenter.Value
-        .AddParam "ZoomBlurCenterY", sltYCenter.Value
+        .AddParam "distance", sltDistance.Value
+        .AddParam "center-x", sltXCenter.Value
+        .AddParam "center-y", sltYCenter.Value
     End With
     
     GetFilterParamString = cParams.GetParamString

@@ -30,9 +30,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   5
       Top             =   120
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   4895
-      caption         =   "edge detection technique"
+      _ExtentX        =   10610
+      _ExtentY        =   4895
+      Caption         =   "edge detection technique"
    End
    Begin PhotoDemon.pdCommandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -41,8 +41,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   0
       Top             =   5775
       Width           =   12195
-      _extentx        =   21511
-      _extenty        =   1323
+      _ExtentX        =   21511
+      _ExtentY        =   1323
    End
    Begin PhotoDemon.pdCheckBox chkInvert 
       Height          =   330
@@ -50,9 +50,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   3
       Top             =   5040
       Width           =   5610
-      _extentx        =   9895
-      _extenty        =   582
-      caption         =   "use black background"
+      _ExtentX        =   9895
+      _ExtentY        =   582
+      Caption         =   "use black background"
    End
    Begin PhotoDemon.pdFxPreviewCtl pdFxPreview 
       Height          =   5625
@@ -60,8 +60,8 @@ Begin VB.Form FormFindEdges
       TabIndex        =   2
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
@@ -70,9 +70,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   1
       Top             =   3360
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   582
-      caption         =   "horizontal"
+      _ExtentX        =   9922
+      _ExtentY        =   582
+      Caption         =   "horizontal"
    End
    Begin PhotoDemon.pdCheckBox chkDirection 
       Height          =   360
@@ -81,9 +81,9 @@ Begin VB.Form FormFindEdges
       TabIndex        =   4
       Top             =   3840
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   582
-      caption         =   "vertical"
+      _ExtentX        =   9922
+      _ExtentY        =   582
+      Caption         =   "vertical"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -91,11 +91,11 @@ Begin VB.Form FormFindEdges
       Left            =   6000
       Top             =   4560
       Width           =   5970
-      _extentx        =   10530
-      _extenty        =   503
-      caption         =   "other options"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   10530
+      _ExtentY        =   503
+      Caption         =   "other options"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
@@ -103,11 +103,11 @@ Begin VB.Form FormFindEdges
       Left            =   6000
       Top             =   3000
       Width           =   5955
-      _extentx        =   10504
-      _extenty        =   503
-      caption         =   "detection direction(s)"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   10504
+      _ExtentY        =   503
+      Caption         =   "detection direction(s)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormFindEdges"
@@ -638,3 +638,16 @@ End Sub
 Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
+
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

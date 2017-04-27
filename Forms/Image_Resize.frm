@@ -458,14 +458,14 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     cParams.SetParamString resizeParams
     
     With cParams
-        imgWidth = .GetDouble("ResizeWidth")
-        imgHeight = .GetDouble("ResizeHeight")
-        imgResizeUnit = .GetLong("ResizeUnit", MU_PIXELS)
-        imgDPI = .GetLong("ResizePPI")
-        resampleMethod = .GetLong("ResizeAlgorithm", ResizeNormal)
-        fitMethod = .GetLong("ResizeFit", ResizeFitStretch)
-        newBackColor = .GetLong("ResizeFillColor", vbWhite)
-        thingToResize = .GetLong("ResizeTarget", PD_AT_WHOLEIMAGE)
+        imgWidth = .GetDouble("width")
+        imgHeight = .GetDouble("height")
+        imgResizeUnit = .GetLong("unit", MU_PIXELS)
+        imgDPI = .GetLong("ppi")
+        resampleMethod = .GetLong("algorithm", ResizeNormal)
+        fitMethod = .GetLong("fit", ResizeFitStretch)
+        newBackColor = .GetLong("fillcolor", vbWhite)
+        thingToResize = .GetLong("target", PD_AT_WHOLEIMAGE)
     End With
     
     'Depending on the requested fitting technique, we may have to resize the image to a slightly different size
@@ -722,14 +722,14 @@ Private Function GetLocalParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     With cParams
-        .AddParam "ResizeWidth", ucResize.ResizeWidth
-        .AddParam "ResizeHeight", ucResize.ResizeHeight
-        .AddParam "ResizeUnit", ucResize.UnitOfMeasurement
-        .AddParam "ResizePPI", ucResize.ResizeDPIAsPPI
-        .AddParam "ResizeAlgorithm", resampleAlgorithm
-        .AddParam "ResizeFit", cmbFit.ListIndex
-        .AddParam "ResizeFillColor", colorPicker.Color
-        .AddParam "ResizeTarget", m_ResizeTarget
+        .AddParam "width", ucResize.ResizeWidth
+        .AddParam "height", ucResize.ResizeHeight
+        .AddParam "unit", ucResize.UnitOfMeasurement
+        .AddParam "ppi", ucResize.ResizeDPIAsPPI
+        .AddParam "algorithm", resampleAlgorithm
+        .AddParam "fit", cmbFit.ListIndex
+        .AddParam "fillcolor", colorPicker.Color
+        .AddParam "target", m_ResizeTarget
     End With
     
     GetLocalParamString = cParams.GetParamString()

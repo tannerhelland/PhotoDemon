@@ -57,64 +57,6 @@ Begin VB.Form FormRipple
    End
    Begin PhotoDemon.pdContainer picContainer 
       Height          =   4335
-      Index           =   1
-      Left            =   5880
-      TabIndex        =   5
-      Top             =   120
-      Visible         =   0   'False
-      Width           =   6135
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Begin PhotoDemon.pdSlider sltRadius 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   3
-         Top             =   1440
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "radius (percentage)"
-         Min             =   1
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.pdSlider sltPhase 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   11
-         Top             =   2400
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "time (phase)"
-         Max             =   360
-      End
-      Begin PhotoDemon.pdDropDown cboEdges 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   12
-         Top             =   3720
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   1
-         Left            =   120
-         Top             =   3360
-         Width           =   5955
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "if pixels lie outside the image..."
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin PhotoDemon.pdContainer picContainer 
-      Height          =   4335
       Index           =   0
       Left            =   5880
       TabIndex        =   4
@@ -217,6 +159,53 @@ Begin VB.Form FormRipple
          FontSize        =   9
          ForeColor       =   4210752
          Layout          =   1
+      End
+   End
+   Begin PhotoDemon.pdContainer picContainer 
+      Height          =   4335
+      Index           =   1
+      Left            =   5880
+      TabIndex        =   5
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   6135
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Begin PhotoDemon.pdSlider sltRadius 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   3
+         Top             =   1440
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "radius (percentage)"
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.pdSlider sltPhase 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   11
+         Top             =   2400
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "time (phase)"
+         Max             =   360
+      End
+      Begin PhotoDemon.pdDropDown cboEdges 
+         Height          =   735
+         Left            =   120
+         TabIndex        =   12
+         Top             =   3360
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1296
+         Caption         =   "if pixels lie outside the image..."
       End
    End
 End
@@ -586,10 +575,15 @@ Private Sub sltYCenter_Change()
     UpdatePreview
 End Sub
 
-
-
-
-
-
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

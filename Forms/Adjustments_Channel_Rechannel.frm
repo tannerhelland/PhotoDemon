@@ -200,8 +200,8 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     cParams.SetParamString parameterList
     
     Dim dstColorSpace As Long, dstChannel As Long
-    dstColorSpace = cParams.GetLong("ColorSpace", 0&)
-    dstChannel = cParams.GetLong("Channel", 0&)
+    dstColorSpace = cParams.GetLong("colorspace", 0&)
+    dstChannel = cParams.GetLong("channel", 0&)
     
     'Based on the color space and channel the user has selected, display a user-friendly description of this filter
     Dim cName As String
@@ -387,9 +387,6 @@ Private Function GetNameFromColorSpaceAndChannel(ByVal srcColorSpace As Long, By
 End Function
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = BuildParamList("ColorSpace", btsColorSpace.ListIndex, "Channel", btsChannel(btsColorSpace.ListIndex).ListIndex)
+    GetLocalParamString = BuildParamList("colorspace", btsColorSpace.ListIndex, "channel", btsChannel(btsColorSpace.ListIndex).ListIndex)
 End Function
-
-
-
 

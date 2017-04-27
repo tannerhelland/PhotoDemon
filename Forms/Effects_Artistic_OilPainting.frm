@@ -110,7 +110,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Dim mRadius As Long, mLevels As Double, kernelShape As PD_PIXEL_REGION_SHAPE
     mRadius = cParams.GetLong("radius", 1&)
     mLevels = cParams.GetDouble("levels", 50#)
-    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
+    kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
     If Not toPreview Then Message "Repainting image with oils..."
         
@@ -520,7 +520,3 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("radius", sltRadius.Value, "levels", sltPercent.Value)
 End Function
-
-
-
-

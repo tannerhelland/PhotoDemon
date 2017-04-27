@@ -232,15 +232,15 @@ Public Sub ApplyVignette(ByVal vignetteParams As String, Optional ByVal toPrevie
     Dim vColor As Long, centerPosX As Double, centerPosY As Double, vAspectRatio As Double, vAngle As Double
     
     With cParams
-        maxRadius = .GetDouble("vignette_radius", 50#)
-        vFeathering = .GetDouble("vignette_softness", 0#)
-        vTransparency = .GetDouble("vignette_strength", 100#)
-        vMode = .GetLong("vignette_shape", 0)
-        centerPosX = .GetDouble("vignette_centerx", 0.5)
-        centerPosY = .GetDouble("vignette_centery", 0.5)
-        vColor = .GetLong("vignette_color", vbBlack)
-        vAspectRatio = .GetDouble("vignette_aspectratio", 1#)
-        vAngle = .GetDouble("vignette_angle", 0#)
+        maxRadius = .GetDouble("radius", 50#)
+        vFeathering = .GetDouble("softness", 0#)
+        vTransparency = .GetDouble("strength", 100#)
+        vMode = .GetLong("shape", 0)
+        centerPosX = .GetDouble("centerx", 0.5)
+        centerPosY = .GetDouble("centery", 0.5)
+        vColor = .GetLong("color", vbBlack)
+        vAspectRatio = .GetDouble("aspectratio", 1#)
+        vAngle = .GetDouble("angle", 0#)
     End With
     
     'Prep a working copy of the source image, and note that we leave the color data premultiplied.
@@ -548,15 +548,15 @@ Private Function GetFunctionParams() As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "vignette_radius", sltRadius.Value
-        .AddParam "vignette_softness", sltFeathering.Value
-        .AddParam "vignette_strength", sltTransparency.Value
-        .AddParam "vignette_shape", btsShape.ListIndex
-        .AddParam "vignette_centerx", sltXCenter.Value
-        .AddParam "vignette_centery", sltYCenter.Value
-        .AddParam "vignette_color", colorPicker.Color
-        .AddParam "vignette_aspectratio", sltAspectRatio.Value
-        .AddParam "vignette_angle", sltAngle.Value
+        .AddParam "radius", sltRadius.Value
+        .AddParam "softness", sltFeathering.Value
+        .AddParam "strength", sltTransparency.Value
+        .AddParam "shape", btsShape.ListIndex
+        .AddParam "centerx", sltXCenter.Value
+        .AddParam "centery", sltYCenter.Value
+        .AddParam "color", colorPicker.Color
+        .AddParam "aspectratio", sltAspectRatio.Value
+        .AddParam "angle", sltAngle.Value
     End With
     
     GetFunctionParams = cParams.GetParamString()

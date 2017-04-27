@@ -141,24 +141,24 @@ Public Sub RotateArbitrary(ByVal rotationParameters As String, Optional ByVal is
     cParams.SetParamString rotationParameters
     
     Dim thingToRotate As PD_ACTION_TARGET
-    thingToRotate = cParams.GetLong("RotationTarget", PD_AT_WHOLEIMAGE)
+    thingToRotate = cParams.GetLong("target", PD_AT_WHOLEIMAGE)
     
     Dim rotationAngle As Double
-    rotationAngle = -1# * cParams.GetDouble("RotationAngle", 0#)
+    rotationAngle = -1# * cParams.GetDouble("angle", 0#)
     
     Dim resizeToFit As Boolean
-    If (StrComp(LCase$(cParams.GetString("RotationStyle", "enlarge")), "enlarge", vbBinaryCompare) = 0) Then
+    If (StrComp(LCase$(cParams.GetString("style", "enlarge")), "enlarge", vbBinaryCompare) = 0) Then
         resizeToFit = True
     Else
         resizeToFit = False
     End If
     
     Dim rotationQuality As Long
-    rotationQuality = cParams.GetLong("RotationQuality", 2)
+    rotationQuality = cParams.GetLong("quality", 2)
     
     Dim rotationTransparent As Boolean, rotationBackColor As Long
-    rotationTransparent = cParams.GetBool("RotationTransparentBackground", True)
-    rotationBackColor = cParams.GetLong("RotationBackgroundColor", vbWhite)
+    rotationTransparent = cParams.GetBool("transparentbackground", True)
+    rotationBackColor = cParams.GetLong("backgroundcolor", vbWhite)
     
     Dim gdipRotationQuality As GP_InterpolationMode
     If (rotationQuality = 0) Then
@@ -347,12 +347,12 @@ Private Function GetFunctionParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "RotationTarget", m_RotateTarget
-        If (btsResize.ListIndex = 1) Then .AddParam "RotationStyle", "enlarge" Else .AddParam "RotationStyle", "fit"
-        .AddParam "RotationAngle", sltAngle.Value
-        .AddParam "RotationQuality", btsResample.ListIndex
-        .AddParam "RotationTransparentBackground", CBool(btsBackground.ListIndex = 0)
-        .AddParam "RotationBackgroundColor", csBackground.Color
+        .AddParam "target", m_RotateTarget
+        If (btsResize.ListIndex = 1) Then .AddParam "style", "enlarge" Else .AddParam "style", "fit"
+        .AddParam "angle", sltAngle.Value
+        .AddParam "quality", btsResample.ListIndex
+        .AddParam "transparentbackground", CBool(btsBackground.ListIndex = 0)
+        .AddParam "backgroundcolor", csBackground.Color
     End With
     
     GetFunctionParamString = cParams.GetParamString

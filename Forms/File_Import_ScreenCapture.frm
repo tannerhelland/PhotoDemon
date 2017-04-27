@@ -212,12 +212,12 @@ Private Sub cmdBarMini_OKClick()
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "CaptureWholeScreen", CBool(btsSource.ListIndex = 0)
-        .AddParam "CaptureMinimizePDFirst", CBool(chkMinimize)
+        .AddParam "wholescreen", CBool(btsSource.ListIndex = 0)
+        .AddParam "minimizefirst", CBool(chkMinimize)
         If (btsSource.ListIndex <> 0) Then
-            .AddParam "CaptureTargetHWnd", IIf(lstWindows.ListIndex >= 0, m_WindowHWnds.GetString(lstWindows.ListIndex), 0&)
-            .AddParam "CaptureTargetChrome", CBool(chkChrome)
-            .AddParam "CaptureTargetWindowName", IIf(lstWindows.ListIndex >= 0, lstWindows.List(lstWindows.ListIndex), g_Language.TranslateMessage("Screen capture"))
+            .AddParam "targethwnd", IIf(lstWindows.ListIndex >= 0, m_WindowHWnds.GetString(lstWindows.ListIndex), 0&)
+            .AddParam "chrome", CBool(chkChrome)
+            .AddParam "targetwindowname", IIf(lstWindows.ListIndex >= 0, lstWindows.List(lstWindows.ListIndex), g_Language.TranslateMessage("Screen capture"))
         End If
     End With
     

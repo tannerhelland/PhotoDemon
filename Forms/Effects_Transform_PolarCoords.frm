@@ -90,25 +90,14 @@ Begin VB.Form FormPolar
       Caption         =   "if pixels lie outside the image..."
    End
    Begin PhotoDemon.pdDropDown cboConvert 
-      Height          =   375
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   1170
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   0
+      Height          =   735
       Left            =   6000
-      Top             =   840
-      Width           =   5820
-      _ExtentX        =   10266
-      _ExtentY        =   556
+      TabIndex        =   4
+      Top             =   810
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
       Caption         =   "conversion"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPolar"
@@ -247,3 +236,15 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

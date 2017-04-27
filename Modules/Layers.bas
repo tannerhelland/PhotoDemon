@@ -685,8 +685,8 @@ Public Sub FlattenImage(Optional ByVal functionParams As String = vbNullString)
     cParams.SetParamString functionParams
     
     Dim removeTransparency As Boolean, newBackgroundColor As Long
-    removeTransparency = cParams.GetBool("FlattenRemoveTransparency", False)
-    newBackgroundColor = cParams.GetLong("FlattenBackgroundColor", vbWhite)
+    removeTransparency = cParams.GetBool("removetransparency", False)
+    newBackgroundColor = cParams.GetLong("backgroundcolor", vbWhite)
     
     'Start by retrieving a copy of the composite image
     Dim compositeDIB As pdDIB

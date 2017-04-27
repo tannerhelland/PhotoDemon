@@ -118,7 +118,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Dim mRadius As Long, mThreshold As Long, kernelShape As PD_PIXEL_REGION_SHAPE
     mRadius = cParams.GetLong("radius", 1&)
     mThreshold = cParams.GetLong("threshold", 0&)
-    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
+    kernelShape = cParams.GetLong("kernelshape", PDPRS_Rectangle)
     
     If Not toPreview Then Message "Applying mean shift filter..."
     
@@ -369,9 +369,6 @@ Private Sub pdFxPreview_ViewportChanged()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = BuildParamList("radius", sltRadius.Value, "threshold", sltThreshold.Value, "kernelShape", btsKernelShape.ListIndex)
+    GetLocalParamString = BuildParamList("radius", sltRadius.Value, "threshold", sltThreshold.Value, "kernelshape", btsKernelShape.ListIndex)
 End Function
-
-
-
 

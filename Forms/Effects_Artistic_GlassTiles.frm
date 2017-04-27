@@ -103,25 +103,14 @@ Begin VB.Form FormGlassTiles
       NotchValueCustom=   2
    End
    Begin PhotoDemon.pdDropDown cboEdges 
-      Height          =   375
-      Left            =   6240
-      TabIndex        =   5
-      Top             =   4920
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   5
+      Height          =   735
       Left            =   6000
-      Top             =   4560
-      Width           =   5835
-      _ExtentX        =   10292
-      _ExtentY        =   503
+      TabIndex        =   5
+      Top             =   4680
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1296
       Caption         =   "if pixels lie outside the image..."
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormGlassTiles"
@@ -410,7 +399,15 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-
-
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

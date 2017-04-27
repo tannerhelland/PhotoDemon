@@ -284,31 +284,31 @@ Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal 
     With cParams
     
         'Start by grabbing the two simple parameters from the list
-        isMonochrome = .GetBool("ChannelMixer_Monochrome", CBool(chkMonochrome))
-        preserveLuminance = .GetBool("ChannelMixer_Luminance", CBool(chkLuminance))
+        isMonochrome = .GetBool("monochrome", CBool(chkMonochrome))
+        preserveLuminance = .GetBool("preserveluminance", CBool(chkLuminance))
         
         'Next, we need to retrieve the 4x4 "grid" of values: four inputs (RGB/Constant) for each of
         ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the
         ' named enums at the top of this module.
-        channelModifiers(0, 0) = .GetDouble("ChannelMixer_RedOutRedIn", 100) / 100
-        channelModifiers(0, 1) = .GetDouble("ChannelMixer_RedOutGreenIn", 0) / 100
-        channelModifiers(0, 2) = .GetDouble("ChannelMixer_RedOutBlueIn", 0) / 100
-        channelModifiers(0, 3) = .GetDouble("ChannelMixer_RedOutConstantIn", 0)
+        channelModifiers(0, 0) = .GetDouble("RedOutRedIn", 100) / 100
+        channelModifiers(0, 1) = .GetDouble("RedOutGreenIn", 0) / 100
+        channelModifiers(0, 2) = .GetDouble("RedOutBlueIn", 0) / 100
+        channelModifiers(0, 3) = .GetDouble("RedOutConstantIn", 0)
         
-        channelModifiers(1, 0) = .GetDouble("ChannelMixer_GreenOutRedIn", 0) / 100
-        channelModifiers(1, 1) = .GetDouble("ChannelMixer_GreenOutGreenIn", 100) / 100
-        channelModifiers(1, 2) = .GetDouble("ChannelMixer_GreenOutBlueIn", 0) / 100
-        channelModifiers(1, 3) = .GetDouble("ChannelMixer_GreenOutConstantIn", 0)
+        channelModifiers(1, 0) = .GetDouble("GreenOutRedIn", 0) / 100
+        channelModifiers(1, 1) = .GetDouble("GreenOutGreenIn", 100) / 100
+        channelModifiers(1, 2) = .GetDouble("GreenOutBlueIn", 0) / 100
+        channelModifiers(1, 3) = .GetDouble("GreenOutConstantIn", 0)
         
-        channelModifiers(2, 0) = .GetDouble("ChannelMixer_BlueOutRedIn", 0) / 100
-        channelModifiers(2, 1) = .GetDouble("ChannelMixer_BlueOutGreenIn", 0) / 100
-        channelModifiers(2, 2) = .GetDouble("ChannelMixer_BlueOutBlueIn", 100) / 100
-        channelModifiers(2, 3) = .GetDouble("ChannelMixer_BlueOutConstantIn", 0)
+        channelModifiers(2, 0) = .GetDouble("BlueOutRedIn", 0) / 100
+        channelModifiers(2, 1) = .GetDouble("BlueOutGreenIn", 0) / 100
+        channelModifiers(2, 2) = .GetDouble("BlueOutBlueIn", 100) / 100
+        channelModifiers(2, 3) = .GetDouble("BlueOutConstantIn", 0)
         
-        channelModifiers(3, 0) = .GetDouble("ChannelMixer_GrayOutRedIn", 0) / 100
-        channelModifiers(3, 1) = .GetDouble("ChannelMixer_GrayOutGreenIn", 0) / 100
-        channelModifiers(3, 2) = .GetDouble("ChannelMixer_GrayOutBlueIn", 0) / 100
-        channelModifiers(3, 3) = .GetDouble("ChannelMixer_GrayOutConstantIn", 100)
+        channelModifiers(3, 0) = .GetDouble("GrayOutRedIn", 0) / 100
+        channelModifiers(3, 1) = .GetDouble("GrayOutGreenIn", 0) / 100
+        channelModifiers(3, 2) = .GetDouble("GrayOutBlueIn", 0) / 100
+        channelModifiers(3, 3) = .GetDouble("GrayOutConstantIn", 100)
         
     End With
     
@@ -484,25 +484,25 @@ Private Sub cmdBar_ReadCustomPresetData()
         'Next, we need to retrieve the 4x4 "grid" of values: four inputs (RGB/Constant) for each of
         ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the
         ' named enums at the top of this module.
-        m_curSliderValues(0, 0) = .GetLong("ChannelMixer_RedOutRedIn", 100)
-        m_curSliderValues(0, 1) = .GetLong("ChannelMixer_RedOutGreenIn", 0)
-        m_curSliderValues(0, 2) = .GetLong("ChannelMixer_RedOutBlueIn", 0)
-        m_curSliderValues(0, 3) = .GetLong("ChannelMixer_RedOutConstantIn", 0)
+        m_curSliderValues(0, 0) = .GetLong("RedOutRedIn", 100)
+        m_curSliderValues(0, 1) = .GetLong("RedOutGreenIn", 0)
+        m_curSliderValues(0, 2) = .GetLong("RedOutBlueIn", 0)
+        m_curSliderValues(0, 3) = .GetLong("RedOutConstantIn", 0)
         
-        m_curSliderValues(1, 0) = .GetLong("ChannelMixer_GreenOutRedIn", 0)
-        m_curSliderValues(1, 1) = .GetLong("ChannelMixer_GreenOutGreenIn", 100)
-        m_curSliderValues(1, 2) = .GetLong("ChannelMixer_GreenOutBlueIn", 0)
-        m_curSliderValues(1, 3) = .GetLong("ChannelMixer_GreenOutConstantIn", 0)
+        m_curSliderValues(1, 0) = .GetLong("GreenOutRedIn", 0)
+        m_curSliderValues(1, 1) = .GetLong("GreenOutGreenIn", 100)
+        m_curSliderValues(1, 2) = .GetLong("GreenOutBlueIn", 0)
+        m_curSliderValues(1, 3) = .GetLong("GreenOutConstantIn", 0)
         
-        m_curSliderValues(2, 0) = .GetLong("ChannelMixer_BlueOutRedIn", 0)
-        m_curSliderValues(2, 1) = .GetLong("ChannelMixer_BlueOutGreenIn", 0)
-        m_curSliderValues(2, 2) = .GetLong("ChannelMixer_BlueOutBlueIn", 100)
-        m_curSliderValues(2, 3) = .GetLong("ChannelMixer_BlueOutConstantIn", 0)
+        m_curSliderValues(2, 0) = .GetLong("BlueOutRedIn", 0)
+        m_curSliderValues(2, 1) = .GetLong("BlueOutGreenIn", 0)
+        m_curSliderValues(2, 2) = .GetLong("BlueOutBlueIn", 100)
+        m_curSliderValues(2, 3) = .GetLong("BlueOutConstantIn", 0)
         
-        m_curSliderValues(3, 0) = .GetLong("ChannelMixer_GrayOutRedIn", 0)
-        m_curSliderValues(3, 1) = .GetLong("ChannelMixer_GrayOutGreenIn", 0)
-        m_curSliderValues(3, 2) = .GetLong("ChannelMixer_GrayOutBlueIn", 0)
-        m_curSliderValues(3, 3) = .GetLong("ChannelMixer_GrayOutConstantIn", 100)
+        m_curSliderValues(3, 0) = .GetLong("GrayOutRedIn", 0)
+        m_curSliderValues(3, 1) = .GetLong("GrayOutGreenIn", 0)
+        m_curSliderValues(3, 2) = .GetLong("GrayOutBlueIn", 0)
+        m_curSliderValues(3, 3) = .GetLong("GrayOutConstantIn", 100)
         
     End With
     
@@ -700,8 +700,8 @@ Private Function GetLocalParamString() As String
     With cParams
     
         'Start by adding the two simple parameters to the list
-        cParams.AddParam "ChannelMixer_Monochrome", CBool(chkMonochrome)
-        cParams.AddParam "ChannelMixer_Luminance", CBool(chkLuminance)
+        cParams.AddParam "monochrome", CBool(chkMonochrome)
+        cParams.AddParam "preserveluminance", CBool(chkLuminance)
         
         'Next, we have a 4x4 "grid" of values that needs to be added: four inputs (RGB/Constant) for each of
         ' four possible output channels (RGB/Gray).  For reference, you may want to refer to the named enums
@@ -710,25 +710,25 @@ Private Function GetLocalParamString() As String
         'The order here isn't important; what matters is matching up the correct named parameter to
         ' our internal tracking array of slider values.  (A mirror version of this occurs in the
         ' actual channel mixer, where these values are mapped back into an adjustment array.)
-        cParams.AddParam "ChannelMixer_RedOutRedIn", m_curSliderValues(0, 0)
-        cParams.AddParam "ChannelMixer_RedOutGreenIn", m_curSliderValues(0, 1)
-        cParams.AddParam "ChannelMixer_RedOutBlueIn", m_curSliderValues(0, 2)
-        cParams.AddParam "ChannelMixer_RedOutConstantIn", m_curSliderValues(0, 3)
+        cParams.AddParam "RedOutRedIn", m_curSliderValues(0, 0)
+        cParams.AddParam "RedOutGreenIn", m_curSliderValues(0, 1)
+        cParams.AddParam "RedOutBlueIn", m_curSliderValues(0, 2)
+        cParams.AddParam "RedOutConstantIn", m_curSliderValues(0, 3)
         
-        cParams.AddParam "ChannelMixer_GreenOutRedIn", m_curSliderValues(1, 0)
-        cParams.AddParam "ChannelMixer_GreenOutGreenIn", m_curSliderValues(1, 1)
-        cParams.AddParam "ChannelMixer_GreenOutBlueIn", m_curSliderValues(1, 2)
-        cParams.AddParam "ChannelMixer_GreenOutConstantIn", m_curSliderValues(1, 3)
+        cParams.AddParam "GreenOutRedIn", m_curSliderValues(1, 0)
+        cParams.AddParam "GreenOutGreenIn", m_curSliderValues(1, 1)
+        cParams.AddParam "GreenOutBlueIn", m_curSliderValues(1, 2)
+        cParams.AddParam "GreenOutConstantIn", m_curSliderValues(1, 3)
         
-        cParams.AddParam "ChannelMixer_BlueOutRedIn", m_curSliderValues(2, 0)
-        cParams.AddParam "ChannelMixer_BlueOutGreenIn", m_curSliderValues(2, 1)
-        cParams.AddParam "ChannelMixer_BlueOutBlueIn", m_curSliderValues(2, 2)
-        cParams.AddParam "ChannelMixer_BlueOutConstantIn", m_curSliderValues(2, 3)
+        cParams.AddParam "BlueOutRedIn", m_curSliderValues(2, 0)
+        cParams.AddParam "BlueOutGreenIn", m_curSliderValues(2, 1)
+        cParams.AddParam "BlueOutBlueIn", m_curSliderValues(2, 2)
+        cParams.AddParam "BlueOutConstantIn", m_curSliderValues(2, 3)
         
-        cParams.AddParam "ChannelMixer_GrayOutRedIn", m_curSliderValues(3, 0)
-        cParams.AddParam "ChannelMixer_GrayOutGreenIn", m_curSliderValues(3, 1)
-        cParams.AddParam "ChannelMixer_GrayOutBlueIn", m_curSliderValues(3, 2)
-        cParams.AddParam "ChannelMixer_GrayOutConstantIn", m_curSliderValues(3, 3)
+        cParams.AddParam "GrayOutRedIn", m_curSliderValues(3, 0)
+        cParams.AddParam "GrayOutGreenIn", m_curSliderValues(3, 1)
+        cParams.AddParam "GrayOutBlueIn", m_curSliderValues(3, 2)
+        cParams.AddParam "GrayOutConstantIn", m_curSliderValues(3, 3)
         
     End With
 

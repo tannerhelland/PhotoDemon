@@ -90,7 +90,7 @@ Public Sub fxBlackLight(ByVal effectParams As String, Optional ByVal toPreview A
     cParams.SetParamString effectParams
     
     Dim weight As Double
-    weight = cParams.GetDouble("BlackLightIntensity", 2#)
+    weight = cParams.GetDouble("intensity", 2#)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -211,7 +211,7 @@ End Sub
 Private Function GetLocalParamString() As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
-    cParams.AddParam "BlackLightIntensity", sltIntensity.Value
+    cParams.AddParam "intensity", sltIntensity.Value
     GetLocalParamString = cParams.GetParamString()
 End Function
 

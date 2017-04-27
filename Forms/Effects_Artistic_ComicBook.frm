@@ -173,7 +173,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
                 End If
             End If
             
-            createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, newProgBarMax, workingDIB.GetDIBWidth * (i * 2 + 1)
+            CreateBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, newProgBarMax, workingDIB.GetDIBWidth * (i * 2 + 1)
             
         Next i
         
@@ -250,3 +250,15 @@ Private Sub sltInk_Change()
     UpdatePreview
 End Sub
 
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

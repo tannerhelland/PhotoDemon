@@ -206,3 +206,15 @@ Private Sub UpdatePreview()
     If cmdBar.PreviewsAllowed Then adjustTint sltTint, True, pdFxPreview
 End Sub
 
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+    
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

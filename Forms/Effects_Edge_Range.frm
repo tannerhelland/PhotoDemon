@@ -132,9 +132,9 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     cParams.SetParamString parameterList
     
     Dim hRadius As Double, vRadius As Double, kernelShape As PD_PIXEL_REGION_SHAPE
-    hRadius = cParams.GetDouble("hRadius", 1#)
-    vRadius = cParams.GetDouble("vRadius", hRadius)
-    kernelShape = cParams.GetLong("kernelShape", PDPRS_Circle)
+    hRadius = cParams.GetDouble("radius-x", 1#)
+    vRadius = cParams.GetDouble("radius-y", hRadius)
+    kernelShape = cParams.GetLong("kernelshape", PDPRS_Circle)
     
     If Not toPreview Then Message "Searching each pixel range for edges..."
         
@@ -395,10 +395,5 @@ Private Sub sltRadius_Change(Index As Integer)
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = BuildParamList("hRadius", sltRadius(0).Value, "vRadius", sltRadius(1).Value, "kernelShape", btsKernelShape.ListIndex)
+    GetLocalParamString = BuildParamList("radius-x", sltRadius(0).Value, "radius-y", sltRadius(1).Value, "kernelshape", btsKernelShape.ListIndex)
 End Function
-
-
-
-
-

@@ -854,8 +854,3 @@ End Sub
 Private Sub sltQuality_Change()
     UpdatePreview
 End Sub
-
-
-
-
-

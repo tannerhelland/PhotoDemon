@@ -232,11 +232,11 @@ Public Sub BilateralSmoothing(ByVal effectParams As String, Optional ByVal toPre
     cParams.SetParamString effectParams
     
     With cParams
-        kernelRadius = .GetLong("Bilateral_KernelRadius", 1)
-        spatialFactor = .GetDouble("Bilateral_SpatialFactor", 10#)
-        spatialPower = .GetDouble("Bilateral_SpatialPower", 2#)
-        colorFactor = .GetDouble("Bilateral_ColorFactor", 10#)
-        colorPower = .GetDouble("Bilateral_ColorPower", 2#)
+        kernelRadius = .GetLong("radius", 1)
+        spatialFactor = .GetDouble("spatialfactor", 10#)
+        spatialPower = .GetDouble("spatialpower", 2#)
+        colorFactor = .GetDouble("colorfactor", 10#)
+        colorPower = .GetDouble("colorpower", 2#)
     End With
     
     'As a convenience to the user, we display spatial and color factors with a [0, 100].  The color factor can
@@ -427,11 +427,11 @@ Public Sub BilateralSmoothingSeparable(ByVal effectParams As String, Optional By
     cParams.SetParamString effectParams
     
     With cParams
-        kernelRadius = .GetLong("Bilateral_KernelRadius", 1)
-        spatialFactor = .GetDouble("Bilateral_SpatialFactor", 10#)
-        spatialPower = .GetDouble("Bilateral_SpatialPower", 2#)
-        colorFactor = .GetDouble("Bilateral_ColorFactor", 10#)
-        colorPower = .GetDouble("Bilateral_ColorPower", 2#)
+        kernelRadius = .GetLong("radius", 1)
+        spatialFactor = .GetDouble("spatialfactor", 10#)
+        spatialPower = .GetDouble("spatialpower", 2#)
+        colorFactor = .GetDouble("colorfactor", 10#)
+        colorPower = .GetDouble("colorpower", 2#)
     End With
     
     'PrepImageData generates a working copy of the current filter target
@@ -458,7 +458,7 @@ Public Sub BilateralWrapper(ByVal effectParams As String)
     Set cParams = New pdParamXML
     cParams.SetParamString effectParams
     
-    If cParams.GetBool("Bilateral_UseSeparable", True) Then
+    If cParams.GetBool("separable", True) Then
         Me.BilateralSmoothingSeparable effectParams
     Else
         Me.BilateralSmoothing effectParams
@@ -539,12 +539,12 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-        .AddParam "Bilateral_KernelRadius", sltRadius.Value
-        .AddParam "Bilateral_SpatialFactor", sltSpatialFactor.Value
-        .AddParam "Bilateral_SpatialPower", sltSpatialPower.Value
-        .AddParam "Bilateral_ColorFactor", sltColorFactor.Value
-        .AddParam "Bilateral_ColorPower", sltColorPower.Value
-        .AddParam "Bilateral_UseSeparable", CBool(chkSeparable)
+        .AddParam "radius", sltRadius.Value
+        .AddParam "spatialfactor", sltSpatialFactor.Value
+        .AddParam "spatialpower", sltSpatialPower.Value
+        .AddParam "colorfactor", sltColorFactor.Value
+        .AddParam "colorpower", sltColorPower.Value
+        .AddParam "separable", CBool(chkSeparable)
     End With
     
     GetLocalParamString = cParams.GetParamString()

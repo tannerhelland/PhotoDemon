@@ -403,6 +403,3 @@ Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("radius", sltRadius.Value, "strength", sltStrength.Value)
 End Function
 
-
-
-

@@ -1770,14 +1770,14 @@ Private Sub PrepareForBatchConversion()
                         Dim resizeParams As pdParamXML
                         Set resizeParams = New pdParamXML
                         With resizeParams
-                            .AddParam "ResizeWidth", ucResize.ResizeWidth
-                            .AddParam "ResizeHeight", ucResize.ResizeHeight
-                            .AddParam "ResizeUnit", ucResize.UnitOfMeasurement
-                            .AddParam "ResizePPI", ucResize.ResizeDPIAsPPI
-                            .AddParam "ResizeAlgorithm", ResizeSincLanczos
-                            .AddParam "ResizeFit", cmbResizeFit.ListIndex
-                            .AddParam "ResizeFillColor", vbWhite
-                            .AddParam "ResizeTarget", PD_AT_WHOLEIMAGE
+                            .AddParam "width", ucResize.ResizeWidth
+                            .AddParam "height", ucResize.ResizeHeight
+                            .AddParam "unit", ucResize.UnitOfMeasurement
+                            .AddParam "ppi", ucResize.ResizeDPIAsPPI
+                            .AddParam "algorithm", ResizeSincLanczos
+                            .AddParam "fit", cmbResizeFit.ListIndex
+                            .AddParam "fillcolor", vbWhite
+                            .AddParam "target", PD_AT_WHOLEIMAGE
                         End With
                         
                         Process "Resize image", , resizeParams.GetParamString

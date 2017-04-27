@@ -216,9 +216,24 @@ End Enum
 
 'Apply a new color balance to the image
 ' Input: offset for each of red, green, and blue
-Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal As Long, ByVal nTone As Long, ByVal preserveLuminance As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+Public Sub ApplyColorBalance(ByVal effectParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
     
-    If Not toPreview Then Message "Adjusting color balance..."
+    If (Not toPreview) Then Message "Adjusting color balance..."
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString effectParams
+    
+    Dim rVal As Long, gVal As Long, bVal As Long
+    Dim nTone As Long, preserveLuminance As Boolean
+    
+    With cParams
+        rVal = .GetLong("red", 0)
+        gVal = .GetLong("green", 0)
+        bVal = .GetLong("blue", 0)
+        nTone = .GetLong("tonalrange", btsTone.ListIndex)
+        preserveLuminance = .GetBool("preserveluminance", CBool(chkLuminance.Value))
+    End With
     
     Dim rModifier As Long, gModifier As Long, bModifier As Long
     rModifier = 0
@@ -303,17 +318,17 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     'Add lighening/darkening modifiers to the transfer arrays
     For x = 0 To 255
         
-        If rRgn(TONE_SHADOWS) > 0 Then rTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else rTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If rRgn(TONE_MIDTONES) > 0 Then rTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else rTransfer(TONE_MIDTONES, x) = midtonesSub(x)
-        If rRgn(TONE_HIGHLIGHTS) > 0 Then rTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else rTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
+        If (rRgn(TONE_SHADOWS) > 0) Then rTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else rTransfer(TONE_SHADOWS, x) = shadowsSub(x)
+        If (rRgn(TONE_MIDTONES) > 0) Then rTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else rTransfer(TONE_MIDTONES, x) = midtonesSub(x)
+        If (rRgn(TONE_HIGHLIGHTS) > 0) Then rTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else rTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
     
-        If gRgn(TONE_SHADOWS) > 0 Then gTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else gTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If gRgn(TONE_MIDTONES) > 0 Then gTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else gTransfer(TONE_MIDTONES, x) = midtonesSub(x)
-        If gRgn(TONE_HIGHLIGHTS) > 0 Then gTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else gTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
+        If (gRgn(TONE_SHADOWS) > 0) Then gTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else gTransfer(TONE_SHADOWS, x) = shadowsSub(x)
+        If (gRgn(TONE_MIDTONES) > 0) Then gTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else gTransfer(TONE_MIDTONES, x) = midtonesSub(x)
+        If (gRgn(TONE_HIGHLIGHTS) > 0) Then gTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else gTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
     
-        If bRgn(TONE_SHADOWS) > 0 Then bTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else bTransfer(TONE_SHADOWS, x) = shadowsSub(x)
-        If bRgn(TONE_MIDTONES) > 0 Then bTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else bTransfer(TONE_MIDTONES, x) = midtonesSub(x)
-        If bRgn(TONE_HIGHLIGHTS) > 0 Then bTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else bTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
+        If (bRgn(TONE_SHADOWS) > 0) Then bTransfer(TONE_SHADOWS, x) = shadowsAdd(x) Else bTransfer(TONE_SHADOWS, x) = shadowsSub(x)
+        If (bRgn(TONE_MIDTONES) > 0) Then bTransfer(TONE_MIDTONES, x) = midtonesAdd(x) Else bTransfer(TONE_MIDTONES, x) = midtonesSub(x)
+        If (bRgn(TONE_HIGHLIGHTS) > 0) Then bTransfer(TONE_HIGHLIGHTS, x) = highlightsAdd(x) Else bTransfer(TONE_HIGHLIGHTS, x) = highlightsSub(x)
     
     Next x
     
@@ -351,12 +366,12 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
     For y = initY To finalY
     
         'Get the source pixel color values
-        r = ImageData(quickVal + 2, y)
-        g = ImageData(quickVal + 1, y)
         b = ImageData(quickVal, y)
+        g = ImageData(quickVal + 1, y)
+        r = ImageData(quickVal + 2, y)
         
         'Get the original luminance
-        origLuminance = GetLuminance(r, g, b) / 255
+        origLuminance = Colors.GetLuminance(r, g, b) / 255
         
         r = rLookup(r)
         g = gLookUp(g)
@@ -376,12 +391,12 @@ Public Sub ApplyColorBalance(ByVal rVal As Long, ByVal gVal As Long, ByVal bVal 
         End If
         
         'Assign the new values to each color channel
-        ImageData(quickVal + 2, y) = r
-        ImageData(quickVal + 1, y) = g
         ImageData(quickVal, y) = b
+        ImageData(quickVal + 1, y) = g
+        ImageData(quickVal + 2, y) = r
         
     Next y
-        If Not toPreview Then
+        If (Not toPreview) Then
             If (x And progBarCheck) = 0 Then
                 If UserPressedESC() Then Exit For
                 SetProgBarVal x
@@ -400,11 +415,15 @@ End Sub
 
 'Limit color to a 0-255 range
 Private Function Clamp0255(ByVal d As Double) As Double
-    If d < 255 Then
-        If d > 0 Then Clamp0255 = d Else Clamp0255 = 0
-        Exit Function
+    If (d < 255#) Then
+        If (d > 0#) Then
+            Clamp0255 = d
+        Else
+            Clamp0255 = 0#
+        End If
+    Else
+        Clamp0255 = 255#
     End If
-    Clamp0255 = 255
 End Function
 
 Private Sub btsTone_Click(ByVal buttonIndex As Long)
@@ -416,7 +435,7 @@ Private Sub chkLuminance_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Color balance", , BuildParams(sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance.Value)), UNDO_LAYER
+    Process "Color balance", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -465,7 +484,7 @@ Private Sub sltRed_Change()
 End Sub
 
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance), True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ApplyColorBalance GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -473,8 +492,19 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-
-
-
-
-
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+        .AddParam "red", sltRed.Value
+        .AddParam "green", sltGreen.Value
+        .AddParam "blue", sltBlue.Value
+        .AddParam "tonalrange", btsTone.ListIndex
+        .AddParam "preserveluminance", CBool(chkLuminance.Value)
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function

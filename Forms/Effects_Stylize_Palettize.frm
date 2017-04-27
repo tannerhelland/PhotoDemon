@@ -316,29 +316,29 @@ Private Function GetToolParamString() As String
     With cParams
         Select Case btsMethod.ListIndex
             Case 0
-                .AddParam "IndexedColors_Method", "MedianCut"
+                .AddParam "method", "MedianCut"
             Case 1
-                .AddParam "IndexedColors_Method", "Wu"
+                .AddParam "method", "Wu"
             Case 2
-                .AddParam "IndexedColors_Method", "NeuQuant"
+                .AddParam "method", "NeuQuant"
         End Select
         
-        .AddParam "IndexedColors_PaletteSize", sldPalette.Value
-        .AddParam "IndexedColors_PreserveWhiteBlack", CBool(chkPreserveWB.Value)
-        .AddParam "IndexedColors_Dithering", cboDither.ListIndex
-        .AddParam "IndexedColors_ReduceBleed", CBool(chkReduceBleed.Value)
-        .AddParam "IndexedColors_BackgroundColor", clsBackground.Color
+        .AddParam "palettesize", sldPalette.Value
+        .AddParam "preservewhiteblack", CBool(chkPreserveWB.Value)
+        .AddParam "dithering", cboDither.ListIndex
+        .AddParam "reducebleed", CBool(chkReduceBleed.Value)
+        .AddParam "backgroundcolor", clsBackground.Color
         
         Select Case btsAlpha.ListIndex
             Case 0
-                .AddParam "IndexedColors_Alpha", "full"
+                .AddParam "alphamode", "full"
             Case 1
-                .AddParam "IndexedColors_Alpha", "binary"
+                .AddParam "alphamode", "binary"
             Case 2
-                .AddParam "IndexedColors_Alpha", "none"
+                .AddParam "alphamode", "none"
         End Select
         
-        .AddParam "IndexedColors_AlphaCutoff", sldAlphaCutoff.Value
+        .AddParam "alphacutoff", sldAlphaCutoff.Value
         
     End With
     
@@ -355,40 +355,40 @@ Public Sub ApplyPalettizeEffect(ByVal toolParams As String, Optional ByVal toPre
     cParams.SetParamString toolParams
     
     Dim quantMethod As PD_COLOR_QUANTIZE
-    If (StrComp(LCase$(cParams.GetString("IndexedColors_Method", "mediancut")), "neuquant", vbBinaryCompare) = 0) Then
+    If (StrComp(LCase$(cParams.GetString("method", "mediancut")), "neuquant", vbBinaryCompare) = 0) Then
         quantMethod = PDCQ_Neuquant
-    ElseIf (StrComp(LCase$(cParams.GetString("IndexedColors_Method", "mediancut")), "wu", vbBinaryCompare) = 0) Then
+    ElseIf (StrComp(LCase$(cParams.GetString("method", "mediancut")), "wu", vbBinaryCompare) = 0) Then
         quantMethod = PDCQ_Wu
     Else
         quantMethod = PDCQ_MedianCut
     End If
     
     Dim paletteSize As Long
-    paletteSize = cParams.GetLong("IndexedColors_PaletteSize", 256)
+    paletteSize = cParams.GetLong("palettesize", 256)
     
     Dim preserveWhiteBlack As Boolean
-    preserveWhiteBlack = cParams.GetBool("IndexedColors_PreserveWhiteBlack", False)
+    preserveWhiteBlack = cParams.GetBool("preservewhiteblack", False)
     
     Dim DitherMethod As PD_DITHER_METHOD
-    DitherMethod = cParams.GetLong("IndexedColors_Dithering", 0)
+    DitherMethod = cParams.GetLong("dithering", 0)
     
     Dim reduceBleed As Boolean
-    reduceBleed = cParams.GetBool("IndexedColors_ReduceBleed", False)
+    reduceBleed = cParams.GetBool("reducebleed", False)
     
     Dim finalBackColor As Long
-    finalBackColor = cParams.GetLong("IndexedColors_BackgroundColor", vbWhite)
+    finalBackColor = cParams.GetLong("backgroundcolor", vbWhite)
     
     Dim outputAlphaMode As PD_ALPHA_STATUS
-    If (StrComp(LCase$(cParams.GetString("IndexedColors_Alpha", "full")), "full", vbBinaryCompare) = 0) Then
+    If (StrComp(LCase$(cParams.GetString("alphamode", "full")), "full", vbBinaryCompare) = 0) Then
         outputAlphaMode = PDAS_ComplicatedAlpha
-    ElseIf (StrComp(LCase$(cParams.GetString("IndexedColors_Alpha", "full")), "binary", vbBinaryCompare) = 0) Then
+    ElseIf (StrComp(LCase$(cParams.GetString("alphamode", "full")), "binary", vbBinaryCompare) = 0) Then
         outputAlphaMode = PDAS_BinaryAlpha
     Else
         outputAlphaMode = PDAS_NoAlpha
     End If
     
     Dim alphaCutoff As Long
-    alphaCutoff = cParams.GetLong("IndexedColors_AlphaCutoff", 64)
+    alphaCutoff = cParams.GetLong("alphacutoff", 64)
     
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA, toPreview, pdFxPreview
