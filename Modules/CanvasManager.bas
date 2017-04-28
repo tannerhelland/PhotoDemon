@@ -198,7 +198,7 @@ End Function
 ' this is no longer possible, so we must query unload images using this custom function.
 Public Function QueryUnloadPDImage(ByRef userCanceledUnload As Boolean, ByVal imageID As Long) As Boolean
     
-    'Failsafe to make sure the image was properly initialized; if it wasn't, ignore this request entirely.
+    'Failsafe to make sure the current image was properly initialized; if it wasn't, ignore this request entirely.
     If (imageID >= 0) And (imageID <= UBound(pdImages)) Then
         If (pdImages(imageID) Is Nothing) Then Exit Function
     Else
@@ -210,6 +210,8 @@ Public Function QueryUnloadPDImage(ByRef userCanceledUnload As Boolean, ByVal im
     
         'Check the .HasBeenSaved property of the image associated with this form
         If (Not pdImages(imageID).GetSaveState(pdSE_AnySave)) Then
+            
+            'If we reach this line, the image in question has unsaved changes.
             
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
             If (Not g_DealWithAllUnsavedImages) Then
@@ -308,8 +310,13 @@ Public Function UnloadPDImage(ByVal imageIndex As Long, Optional ByVal resyncInt
     ' for this image)
     pdImages(imageIndex).DeactivateImage
     
-    'Remove this image from the thumbnail toolbar
-    Interface.NotifyImageRemoved imageIndex, resyncInterface
+    'Remove this image from the thumbnail toolbar.  Note that we deliberately ignore the "resyncInterface" setting here,
+    ' because the tabstrip needs to always reflect the currently active image.  (Also, it redraws quite quickly, so there's
+    ' a minimal performance impact either way.)
+    '
+    'If we don't do this, it gets pretty confusing when a "Save" dialog is raised, but the filename doesn't match the
+    ' currently active image in the tabstrip.
+    Interface.NotifyImageRemoved imageIndex, True
     
     'Before exiting, restore focus to the next child window in line.  (But only if this image was the active window!)
     If (g_CurrentImage = CLng(imageIndex)) Then
