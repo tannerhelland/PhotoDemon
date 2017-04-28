@@ -151,24 +151,21 @@ End Sub
 'This function returns TRUE if the image was unloaded, FALSE if it was canceled.
 Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawScreen As Boolean = True) As Boolean
 
-    Dim toCancel As Integer
-    Dim tmpUnloadMode As Integer
+    Dim userCanceledUnload As Boolean: userCanceledUnload = False
     
     'Perform a query unload on the image.  This will raise required warnings (e.g. unsaved changes) per the user's preferences.
-    QueryUnloadPDImage toCancel, tmpUnloadMode, imageID
+    QueryUnloadPDImage userCanceledUnload, imageID
     
-    If CBool(toCancel) Then
+    'If the "save unsaved changes" dialog was canceled by the user, abandon any further unloading
+    If userCanceledUnload Then
         FullPDImageUnload = False
-        Exit Function
-    End If
     
-    UnloadPDImage toCancel, imageID, redrawScreen
-    
-    If CBool(toCancel) Then
-        FullPDImageUnload = False
+    'The user is allowing the unload to proceed
     Else
-        
-        'Redraw the screen
+    
+        UnloadPDImage imageID, redrawScreen
+            
+        'Redraw the screen to reflect any newly initialized images
         If redrawScreen Then
         
             If (g_OpenImageCount > 0) Then
@@ -180,54 +177,53 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         End If
         
         FullPDImageUnload = True
-    End If
+        
+        'If no images are open, take additional steps to free memory
+        If (g_OpenImageCount = 0) Then
+            
+            'Unload the backbuffer of the primary canvas
+            ViewportEngine.EraseViewportBuffers
+            
+            'Allow any tool panels to redraw themselves.  (Some tool panels dynamically change their contents based on the current image, so if no
+            ' images are loaded, their contents may shift.)
+            Tools.SyncToolOptionsUIToCurrentLayer
+            
+        End If
     
-    'If no images are open, take additional steps to free memory
-    If (g_OpenImageCount = 0) Then
-        
-        'Unload the backbuffer of the primary canvas
-        ViewportEngine.EraseViewportBuffers
-        
-        'Allow any tool panels to redraw themselves.  (Some tool panels dynamically change their contents based on the current image, so if no
-        ' images are loaded, their contents may shift.)
-        Tools.SyncToolOptionsUIToCurrentLayer
-        
     End If
     
 End Function
 
 'Previously, we could unload images by just unloading their containing form.  Since PhotoDemon moved away from an MDI interface,
 ' this is no longer possible, so we must query unload images using this custom function.
-Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As Integer, ByVal imageID As Long) As Boolean
-
-    Debug.Print "(Image #" & imageID & " received a Query_Unload trigger)"
+Public Function QueryUnloadPDImage(ByRef userCanceledUnload As Boolean, ByVal imageID As Long) As Boolean
     
     'Failsafe to make sure the image was properly initialized; if it wasn't, ignore this request entirely.
     If (imageID >= 0) And (imageID <= UBound(pdImages)) Then
-        If pdImages(imageID) Is Nothing Then Exit Function
+        If (pdImages(imageID) Is Nothing) Then Exit Function
     Else
         Exit Function
     End If
     
     'If the user wants to be prompted about unsaved images, do it now
-    If g_ConfirmClosingUnsaved And pdImages(imageID).IsActive Then
+    If (g_ConfirmClosingUnsaved And pdImages(imageID).IsActive) Then
     
         'Check the .HasBeenSaved property of the image associated with this form
-        If Not pdImages(imageID).GetSaveState(pdSE_AnySave) Then
+        If (Not pdImages(imageID).GetSaveState(pdSE_AnySave)) Then
             
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
-            If Not g_DealWithAllUnsavedImages Then
+            If (Not g_DealWithAllUnsavedImages) Then
             
                 g_NumOfUnsavedImages = 0
                                 
-                'Loop through all images to count how many unsaved images there are in total.
+                'Loop through all open images to count how many unsaved images there are in total.
                 ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
                 ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
-                If g_ProgramShuttingDown Or g_ClosingAllImages Then
+                If (g_ProgramShuttingDown Or g_ClosingAllImages) Then
                     
                     Dim i As Long
                     For i = LBound(pdImages) To UBound(pdImages)
-                        If Not (pdImages(i) Is Nothing) Then
+                        If (Not pdImages(i) Is Nothing) Then
                             If pdImages(i).IsActive And (Not pdImages(i).GetSaveState(pdSE_AnySave)) Then
                                 g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
                             End If
@@ -235,9 +231,9 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                     Next i
                     
                 End If
-            
+                
                 'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
-                If imageID <> g_CurrentImage Then
+                If (imageID <> g_CurrentImage) Then
                     If FormMain.Enabled Then ActivatePDImage imageID, "unsaved changes dialog required", True
                 End If
                 
@@ -249,22 +245,22 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
             Else
                 confirmReturn = g_HowToDealWithAllUnsavedImages
             End If
-        
+            
             'There are now three possible courses of action:
-            ' 1) The user canceled. Quit and abandon all notion of closing.
-            ' 2) The user asked us to save this image. Pass control to MenuSave (which will in turn call SaveAs if necessary)
-            ' 3) The user doesn't give a shit. Exit without saving.
+            ' 1) The user canceled the "unsaved changes" dialog.  Abandon all notion of closing this image (or the program).
+            ' 2) The user asked us to save before exiting. Pass control to MenuSave (which will in turn call SaveAs if necessary).
+            ' 3) The user doesn't care about saving changes.  Exit as-is.
             
             'Cancel the close operation
-            If confirmReturn = vbCancel Then
+            If (confirmReturn = vbCancel) Then
                 
-                Cancel = True
+                userCanceledUnload = True
                 If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
                 If g_ClosingAllImages Then g_ClosingAllImages = False
                 g_DealWithAllUnsavedImages = False
                 
-            'Save the image
-            ElseIf confirmReturn = vbYes Then
+            'Save all unsaved images
+            ElseIf (confirmReturn = vbYes) Then
                 
                 'If the form being saved is enabled, bring that image to the foreground. (If a "Save As" is required, this
                 ' helps show the user which image the Save As form is referencing.)
@@ -275,17 +271,17 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 saveSuccessful = MenuSave(pdImages(imageID))
                 
                 'If something went wrong, or the user canceled the save dialog, stop the unload process
-                Cancel = Not saveSuccessful
+                userCanceledUnload = (Not saveSuccessful)
  
                 'If we make it here and the save was successful, force an immediate unload
-                If Cancel Then
+                If userCanceledUnload Then
                     If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
                     If g_ClosingAllImages Then g_ClosingAllImages = False
                     g_DealWithAllUnsavedImages = False
                 End If
             
             'Do not save the image
-            ElseIf confirmReturn = vbNo Then
+            ElseIf (confirmReturn = vbNo) Then
                 
                 'No action is required here, because subsequent functions will take care of the rest of the unload process!
                 
@@ -299,11 +295,11 @@ End Function
 
 'Previously, we could unload images by just unloading their containing form.  This is no longer possible, so we must
 ' unload images using this special function.
-Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optional ByVal resyncInterface As Boolean = True)
+Public Function UnloadPDImage(ByVal imageIndex As Long, Optional ByVal resyncInterface As Boolean = True)
 
     'Failsafe to make sure the image was properly initialized
     If (pdImages(imageIndex) Is Nothing) Then Exit Function
-    If pdImages(imageIndex).IsActive And resyncInterface Then Message "Closing image..."
+    If (pdImages(imageIndex).IsActive And resyncInterface) Then Message "Closing image..."
     
     'Decrease the open image count
     g_OpenImageCount = g_OpenImageCount - 1
@@ -318,12 +314,15 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optio
     'Before exiting, restore focus to the next child window in line.  (But only if this image was the active window!)
     If (g_CurrentImage = CLng(imageIndex)) Then
     
-        If g_OpenImageCount > 0 Then
-        
-            Dim i As Long
-            i = Val(imageIndex) + 1
-            If i > UBound(pdImages) Then i = i - 2
+        If (g_OpenImageCount > 0) Then
             
+            'Figure out the next image that should receive focus.  If the image we're closing is the last one in line, move to
+            ' the next-to-last one in line (instead of advancing forward, which is obviously not possible).
+            Dim i As Long
+            i = imageIndex + 1
+            If (i > UBound(pdImages)) Then i = i - 2
+            
+            'Search through the image list until we find a valid image candidate to receive focus
             Dim directionAscending As Boolean
             directionAscending = True
             
@@ -338,7 +337,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageIndex As Long, Optio
                 
                 If directionAscending Then
                     i = i + 1
-                    If i > UBound(pdImages) Then
+                    If (i > UBound(pdImages)) Then
                         directionAscending = False
                         i = imageIndex
                     End If
