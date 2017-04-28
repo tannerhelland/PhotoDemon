@@ -824,11 +824,7 @@ End Sub
 Public Sub UpdateSelectionPanelLayout()
 
     'Display the feathering slider as necessary
-    If cboSelSmoothing.ListIndex = ss_FullyFeathered Then
-        sltSelectionFeathering.Visible = True
-    Else
-        sltSelectionFeathering.Visible = False
-    End If
+    sltSelectionFeathering.Visible = (cboSelSmoothing.ListIndex = ss_FullyFeathered)
     
     'Display the border slider as necessary
     If (Selections.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selections.GetSelectionSubPanelFromCurrentTool > 0) Then
@@ -837,30 +833,6 @@ Public Sub UpdateSelectionPanelLayout()
         Else
             sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = False
         End If
-    End If
-    
-    'Finally, the magic wand selection type is unique because it cannot display an outline.  (This might someday be possible,
-    ' but we would need to construct the border region ourselves - and I'm not a huge fan of the work involved.)
-    ' As such, when activating that tool, we need to remove the Outline option, and when switching to a different tool, we need
-    ' to restore the option.
-    If g_CurrentTool = SELECT_WAND Then
-    
-        'See if the combo box is already modified
-        If cboSelRender.ListCount = 3 Then
-            
-            'Remove the "outline" option
-            If cboSelRender.ListIndex = 2 Then cboSelRender.ListIndex = 0
-            cboSelRender.RemoveItem 2
-            
-        End If
-    
-    Else
-    
-        'See if the combo box is missing an entry
-        If cboSelRender.ListCount = 2 Then
-            cboSelRender.AddItem " Outline", 2
-        End If
-    
     End If
     
 End Sub

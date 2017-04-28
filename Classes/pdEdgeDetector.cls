@@ -24,7 +24,7 @@ Attribute VB_Exposed = False
 ' with interior/exterior data.  This class doesn't care how you generate those arrays, and it treats
 ' zeroes as exterior markers, and non-zeroes as interior ones.  (For a 32-bpp image, for example,
 ' you could generate the required array by setting transparent pixel coordinates to 0 and all other
-' pixels to 1.)
+' pixels to non-zero values.)
 '
 'Also, note that this class does *not* perform edge-handling, by design.  It is up to the caller to
 ' decide how they want edges handled (typically by adding a row/column of padding around all sides).
@@ -189,6 +189,26 @@ Friend Sub RetrieveFinalPolygon(ByRef dstPoints() As POINTFLOAT, ByRef numOfPoin
         dstPoints(i).y = m_Stack(i).y
     Next i
 
+End Sub
+
+'Want to retrieve the finished point list into a path object instead?  Use this convenient function.
+Friend Sub RetrieveFinalPolygonIntoPath(ByRef dstPath As pd2DPath, Optional ByVal closeShape As Boolean = True)
+    
+    If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
+    
+    Dim numOfPoints As Long
+    numOfPoints = m_StackPosition
+    
+    ReDim dstPoints(0 To numOfPoints - 1) As POINTFLOAT
+    
+    Dim i As Long
+    For i = 0 To numOfPoints - 1
+        dstPoints(i).x = m_Stack(i).x
+        dstPoints(i).y = m_Stack(i).y
+    Next i
+    
+    dstPath.AddPolygon numOfPoints, VarPtr(dstPoints(0)), closeShape
+    
 End Sub
 
 Private Sub Class_Initialize()

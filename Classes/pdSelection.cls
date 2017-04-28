@@ -195,6 +195,14 @@ Private m_LassoPointsBackup() As POINTFLOAT, m_PolygonPointsBackup() As POINTFLO
 'When a polygon or lasso selection is closed, these values will be set to TRUE
 Private m_PolygonClosed As Boolean, m_LassoClosed As Boolean
 
+'Magic wand selections supply their own custom wand outline
+Private m_WandOutline As pd2DPath
+
+'Magic wand selections also require a special copy of the current relevant image data.  (This may be a fully composited
+' image copy, or a null-padded version of the current layer.)  We cache this locally to improve wand performance, and we
+' use the notification timestamp from the parent image to determine when it's time to update our local copy.
+Private m_WandImage As pdDIB, m_WandImageTimestamp As Currency
+
 'To improve viewport rendering performance, selection objects store a viewport-sized buffer of the current
 ' selection overlay.  (This is only used in selection visualization modes other than "outline", e.g. "highlight"
 ' or "lightbox".)  Because this DIB is inextricably tied to the current viewport, it needs to be updated when
@@ -318,6 +326,7 @@ Friend Sub SetSelectionProperty(ByVal propertyName As PD_SelectionProperty, ByVa
             If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
         Case sp_WandSampleMerged
+            m_WandImageTimestamp = 0#
             If (m_SelectionShape = ss_Wand) Then m_IsMaskReady = False
         
         Case sp_WandCompareMethod
@@ -721,6 +730,11 @@ Friend Sub SetSelectionShape(ByVal selShape As PD_SelectionShape)
             m_IsTransformable = False
         
     End Select
+    
+    'Invalidate any internal trackers that are reliant on specific shapes
+    If (m_SelectionShape <> ss_Wand) Then
+        Set m_WandImage = Nothing
+    End If
     
     If (m_SelectionShape <> ss_Raster) Then m_IsMaskReady = False
     m_SelectionShape = selShape
@@ -1908,27 +1922,45 @@ Private Sub CreateSelectionMask()
             cFloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
             cFloodFill.SetCompareMode GetSelectionProperty_Long(sp_WandCompareMethod)
             
-            'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class
-            Dim tmpLayer As pdLayer
-            Set tmpLayer = New pdLayer
+            'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class.
+            ' Note that we try to only regenerate this image as absolutely necessary.
+            Dim wandImageRefreshRequired: wandImageRefreshRequired = False
+            wandImageRefreshRequired = (m_WandImage Is Nothing)
+            If (Not wandImageRefreshRequired) Then wandImageRefreshRequired = (m_WandImageTimestamp <> m_parentPDImage.GetTimeOfLastChange())
             
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            
-            If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
-                m_parentPDImage.GetCompositedImage tmpDIB
-            Else
-                tmpLayer.CopyExistingLayer m_parentPDImage.GetActiveLayer
-                tmpLayer.ConvertToNullPaddedLayer m_parentPDImage.Width, m_parentPDImage.Height
-                Set tmpDIB = tmpLayer.layerDIB
+            If wandImageRefreshRequired Then
+                
+                'A new image copy is required.  As much as possible, still try to minimize the work we do here
+                If (m_WandImage Is Nothing) Then Set m_WandImage = New pdDIB
+                If (m_WandImage.GetDIBWidth <> m_parentPDImage.Width) Or (m_WandImage.GetDIBHeight <> m_parentPDImage.Height) Then
+                    m_WandImage.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, 32, 0, 0
+                Else
+                    m_WandImage.ResetDIB 0
+                End If
+                
+                'Note the timestamp; this may allow us to skip subsequent copy requests
+                m_WandImageTimestamp = m_parentPDImage.GetTimeOfLastChange()
+                
+                'Merged image data is far more cumbersome to generate
+                If (GetSelectionProperty_Long(sp_WandSampleMerged) = 0) Then
+                    m_parentPDImage.GetCompositedImage m_WandImage
+                    
+                Else
+                    
+                    Dim tmpLayer As pdLayer
+                    Set tmpLayer = New pdLayer
+                    tmpLayer.CopyExistingLayer m_parentPDImage.GetActiveLayer
+                    tmpLayer.ConvertToNullPaddedLayer m_parentPDImage.Width, m_parentPDImage.Height
+                    Set m_WandImage = tmpLayer.layerDIB
+                    Set tmpLayer = Nothing
+                    
+                End If
+                
             End If
             
-            'Apply the flood fill
-            cFloodFill.InitiateFloodFill tmpDIB, m_SelMask
-            
-            'Erase our temporary objects
-            Set tmpDIB = Nothing
-            Set tmpLayer = Nothing
+            'Apply the flood fill, and make sure we retrieve an outline while we're at it
+            If (m_WandOutline Is Nothing) Then Set m_WandOutline = New pd2DPath Else m_WandOutline.ResetPath
+            cFloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
                         
         'Other selection types will be added in the future
         Case Else
@@ -2341,17 +2373,16 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     '
     'Note that PD's UI prevents this combination of inputs, so this exists purely as an emergency fallback
     If (renderType = PDSR_Outline) Then
-        If (m_SelectionShape = ss_Wand) Then renderType = PDSR_Highlight
         If (m_SelectionShape = ss_Raster) Then renderType = PDSR_Highlight
     End If
     
     'We silently switch to "outline" rendering if...
-    ' 1) The user has requested outline-only rendering, *and* this is not a raster or magic wand selection.
-    '    (Raster and magic-wand selection do not currently support outline mode.)
+    ' 1) The user has requested outline-only rendering, *and* this is not a raster selection.
+    '    (Raster selections do not currently support outline mode.)
     ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn)
     ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
     Dim useOutlineRenderingInstead As Boolean: useOutlineRenderingInstead = False
-    useOutlineRenderingInstead = ((renderType = PDSR_Outline) And (m_SelectionShape <> ss_Wand) And (m_SelectionShape <> ss_Raster))
+    useOutlineRenderingInstead = ((renderType = PDSR_Outline) And (m_SelectionShape <> ss_Raster))
     If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed))
     If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
     
@@ -2701,18 +2732,35 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
                 End If
                 
             End If
-    
+        
+        Case ss_Wand
+        
+            'Wand selections already store their own path; all we need to do is copy the path, and transform it into the
+            ' target viewport coordinate space.
+            If (Not m_WandOutline Is Nothing) Then
+                Dim cTransform As pd2DTransform
+                Drawing.GetTransformFromImageToCanvas cTransform, dstCanvas, srcImage
+                pdPath.CloneExistingPath m_WandOutline
+                pdPath.ApplyTransformation cTransform
+            End If
+        
     End Select
     
-    'Draw the assembled path onto the canvas
-    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
-    Drawing2D.QuickCreatePainter cPainter
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
-    Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
+    If (Not pdPath Is Nothing) Then
     
-    cPainter.DrawPath cSurface, cPenUIBase, pdPath
-    cPainter.DrawPath cSurface, cPenUITop, pdPath
-    
+        'Draw the assembled path onto the canvas
+        Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
+        
+        'In the future, we may offer an animated marching-ants solution.  For now, however, PD uses a white-on-black
+        ' static outline.
+        Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
+        cPainter.DrawPath cSurface, cPenUIBase, pdPath
+        cPainter.DrawPath cSurface, cPenUITop, pdPath
+        
+    End If
+        
 End Sub
 
 Private Sub Class_Initialize()

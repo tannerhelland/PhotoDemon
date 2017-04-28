@@ -411,7 +411,8 @@ Public Sub ConvertCoordsBetweenHwnds(ByVal srcHwnd As Long, ByVal dstHwnd As Lon
     
 End Sub
 
-'Return an arbitrary conversion from image space to canvas space.  An optional image (x, y) can also passed.
+'Return an arbitrary conversion from image space to canvas space.  An optional image (x, y) can also passed; these will be added
+' to the transform as source-image-space offsets.
 Public Sub GetTransformFromImageToCanvas(ByRef dstTransform As pd2DTransform, ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, Optional ByVal srcX As Single = 0#, Optional ByVal srcY As Single = 0#)
 
     If (dstTransform Is Nothing) Then Set dstTransform = New pd2DTransform
