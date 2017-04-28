@@ -145,6 +145,12 @@ Private m_CompositeCacheClean As Boolean
 'If the working space index is -1, the image has no working space.  Assume sRGB.
 Private m_WorkingSpaceIndex As Long
 
+'As a convenience to outside functions, the image class grabs a high-resolution timer value every time it receives an
+' "image data has changed" notification.  Outside functions can track this value via the wrapper functions, and use it
+' to determine if the underlying image may have changed since they last operated on it.  (PD uses this to accelerate
+' certain internal rendering tasks, like regenerating "magic wand selection" image copies.)
+Private m_TimeAtLastModify As Currency
+
 Friend Function GetCurrentFileFormat() As PD_IMAGE_FORMAT
     GetCurrentFileFormat = m_currentFileFormat
 End Function
@@ -197,6 +203,11 @@ End Function
 Friend Sub SetZoom(ByVal newZoomIndex As Long)
     m_ZoomIndex = newZoomIndex
 End Sub
+
+'Time at last modification.  This cannot be directly set by external sources; instead, use the safe "NotifyImageChanged" function.
+Friend Function GetTimeOfLastChange() As Currency
+    GetTimeOfLastChange = m_TimeAtLastModify
+End Function
 
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
 ' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
@@ -269,7 +280,10 @@ End Sub
 'If the change involves a layer, an index *must* be specified, so the object can notify the layer of the change (allowing the
 ' layer to rebuild any internal caches or buffers, like layer styles).
 Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
-
+    
+    'Note a new "image changed" timestamp
+    VBHacks.GetHighResTime m_TimeAtLastModify
+    
     'Separate handling by type.
     
     'TODO: in the future, it would be awesome to store a partial composite up-to-but-NOT-including the current layer.
