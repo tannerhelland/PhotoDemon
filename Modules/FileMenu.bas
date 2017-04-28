@@ -430,11 +430,17 @@ Public Sub MenuCloseAll()
     numImagesActuallyUnloaded = 0
     numOfImagesToUnload = g_OpenImageCount
     
-    'Loop through each image object and close their associated forms
-    Dim i As Long
-    For i = LBound(pdImages) To UBound(pdImages)
-        
-        If Not (pdImages(i) Is Nothing) Then
+    'Loop through each image object and close their associated forms.  Note that we want to start from the current image and
+    ' work our way down.
+    Dim i As Long, startingIndex As Long
+    startingIndex = g_CurrentImage
+    i = startingIndex
+    
+    Dim keepUnloading As Boolean: keepUnloading = True
+    
+    Do
+    
+        If (Not pdImages(i) Is Nothing) Then
             If pdImages(i).IsActive Then
                 numImagesActuallyUnloaded = numImagesActuallyUnloaded + 1
                 Message "Unloading image %1 of %2", numImagesActuallyUnloaded, numOfImagesToUnload
@@ -445,18 +451,22 @@ Public Sub MenuCloseAll()
         'If the user presses "cancel" at some point in the unload chain, obey their request immediately
         ' (e.g. stop unloading images)
         If (Not g_ClosingAllImages) Then
-            'If not all images were unloaded, notify the user
             If (g_OpenImageCount <> 0) Then Message ""
-            Exit For
-        End If
+            Exit Do
+            
+        'If the unload process hasn't been canceled, move to the next image
+        Else
         
-    Next i
+            i = i + 1
+            If (i > UBound(pdImages)) Then i = LBound(pdImages)
+            If (i = startingIndex) Then keepUnloading = False
+        
+        End If
+    
+    Loop While keepUnloading
     
     'Redraw the screen to match the new program state
     SyncInterfaceToCurrentImage
-    
-    'TODO: now that PD 7.0 has moved the tabstrip into the canvas manager, see if we can drop this line entirely
-    Interface.RequestTabstripRedraw
     
     'Reset the "closing all images" flags
     g_ClosingAllImages = False
