@@ -398,7 +398,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
                     #End If
-                    If Not FormMain.tmrMetadata.Enabled Then FormMain.tmrMetadata.Enabled = True
+                    FormMain.StartMetadataTimer
                 End If
             
             End If

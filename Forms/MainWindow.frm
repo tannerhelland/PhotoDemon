@@ -29,18 +29,6 @@ Begin VB.Form FormMain
       _ExtentX        =   661
       _ExtentY        =   661
    End
-   Begin VB.Timer tmrMetadata 
-      Enabled         =   0   'False
-      Interval        =   250
-      Left            =   120
-      Top             =   600
-   End
-   Begin VB.Timer tmrCountdown 
-      Enabled         =   0   'False
-      Interval        =   200
-      Left            =   120
-      Top             =   120
-   End
    Begin PhotoDemon.pdCanvas mainCanvas 
       Height          =   5055
       Index           =   0
@@ -1617,6 +1605,12 @@ Option Explicit
 ' this value tells us to update the active language object if the currently in-use language was one of the ones we updated.
 Private m_LanguagesUpdatedSuccessfully As Boolean
 
+'This main dialog houses a few timer objects; these can be started and/or stopped by external functions.  See the timer
+' start/stop functions for additional details.
+Private WithEvents m_InterfaceTimer As pdTimer
+Private WithEvents m_MetadataTimer As pdTimer
+Attribute m_MetadataTimer.VB_VarHelpID = -1
+
 'Whenever the asynchronous downloader completes its work, we forcibly release all resources associated with downloads we've finished processing.
 Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boolean)
     
@@ -1790,6 +1784,155 @@ Public Sub UpdateMainLayout()
     'If all three toolboxes are hidden, Windows may try to hide the main window as well.  Reset focus manually.
     If Toolboxes.AreAllToolboxesHidden Then g_WindowManager.SetFocusAPI FormMain.hWnd
     
+End Sub
+
+'Some functions need to artificially delay handling user input to prevent "click-through".  Use this function to do so.
+Public Sub StartInterfaceTimer()
+
+    If (m_InterfaceTimer Is Nothing) Then
+        Set m_InterfaceTimer = New pdTimer
+        m_InterfaceTimer.Interval = 150
+    End If
+    
+    m_InterfaceTimer.StartTimer
+    
+End Sub
+
+'Countdown timer for re-enabling disabled user input.  A delay is enforced to prevent double-clicks on child dialogs from
+' "passing through" to the main form and causing goofy behavior.
+Private Sub m_InterfaceTimer_Timer()
+
+    Static intervalCount As Long
+    
+    If (intervalCount > 2) Then
+        intervalCount = 0
+        g_DisableUserInput = False
+        m_InterfaceTimer.StopTimer
+    End If
+    
+    intervalCount = intervalCount + 1
+
+End Sub
+
+Public Sub StartMetadataTimer()
+    
+    If (m_MetadataTimer Is Nothing) Then
+        Set m_MetadataTimer = New pdTimer
+        m_MetadataTimer.Interval = 250
+    End If
+    
+    If (Not m_MetadataTimer.IsActive) Then m_MetadataTimer.StartTimer
+    
+End Sub
+
+'This metadata timer is a final failsafe for images with huge metadata collections that take a long time to parse.  If an image has successfully
+' loaded but its metadata parsing is still in-progress, PD's load function will activate this timer.  The timer will wait (asynchronously) for
+' metadata parsing to finish, and when it does, it will copy the metadata into the active pdImage object, then disable itself.
+Private Sub m_MetadataTimer_Timer()
+
+    'I don't like resorting to hackneyed error-handling, but ExifTool can be unpredictable, especially if the user loads a bajillion
+    ' images simultaneously.  Rather than bring down the whole program, I'd prefer to simply ignore metadata for the problematic image.
+    On Error Resume Next
+
+    If ExifTool.IsMetadataFinished Then
+    
+        'Start by disabling this timer (as it's no longer needed)
+        m_MetadataTimer.StopTimer
+        
+        'Cache the current UI message (if any)
+        Dim prevMessage As String
+        prevMessage = Interface.GetLastFullMessage()
+                
+        Message "Asynchronous metadata check complete!  Updating metadata collection..."
+        
+        'Retrieve the completed metadata string
+        Dim mdString As String, tmpString As String
+        mdString = ExifTool.RetrieveMetadataString()
+        
+        Dim curImageID As Long
+        
+        'Now comes some messy string parsing.  If the user has loaded multiple images at once, the metadata string returned by ExifTool will contain
+        ' ALL METADATA for ALL IMAGES in one giant string.  We need to parse out each image's metadata, supply it to the correct image, then repeat
+        ' until all images have received their relevant metadata.
+        
+        'Start by finding the first occurrence of ExifTool's unique "{ready}" message, which signifies its success in completing a single coherent
+        ' -execute request.
+        Dim startPosition As Long, terminalPosition As Long
+        startPosition = 1
+        terminalPosition = InStr(1, mdString, "{ready", vbBinaryCompare)
+        
+        Do While (terminalPosition <> 0)
+        
+            'terminalPosition now contains the position of ExifTool's "{ready123}" tag, where 123 is the ID of the image whose metadata
+            ' is contained prior to that point.  Start by figuring out what that ID number actually is.
+            Dim lenFailsafe As Long
+            
+            If (terminalPosition + 6 < Len(mdString)) Then
+                lenFailsafe = InStr(terminalPosition + 6, mdString, "}", vbBinaryCompare) - (terminalPosition + 6)
+            Else
+                lenFailsafe = 0
+            End If
+            
+            If (lenFailsafe <> 0) Then
+                
+                'Attempt to retrieve the relevant image ID for this section of metadata
+                If (terminalPosition + 6 + lenFailsafe) < Len(mdString) Then
+                
+                    tmpString = Mid$(mdString, terminalPosition + 6, lenFailsafe)
+                    
+                    If IsNumeric(tmpString) Then
+                        curImageID = CLng(tmpString)
+                    'Else
+                        'Debug.Print "Metadata ID calculation invalid - was ExifTool updated? - " & tmpString
+                    End If
+                    
+                    'Now we know where the metadata for this image *ends*, but we still need to find where it *starts*.  All metadata XML entries start with
+                    ' a standard XML header.  Search backwards from the {ready123} message until such a header is found.
+                    startPosition = InStrRev(mdString, "<?xml", terminalPosition, vbBinaryCompare)
+                    
+                    'Using the start and final markers, extract the relevant metadata and forward it to the relevant pdImage object
+                    If (startPosition > 0) And ((terminalPosition - startPosition) > 0) Then
+                        
+                        'Make sure we calculated our curImageID value correctly
+                        If (curImageID >= 0) And (curImageID <= UBound(pdImages)) Then
+                            If (Not pdImages(curImageID) Is Nothing) Then
+                            
+                                'Create the imgMetadata object as necessary, and load the selected metadata into it!
+                                If (pdImages(curImageID).imgMetadata Is Nothing) Then Set pdImages(curImageID).imgMetadata = New pdMetadata
+                                pdImages(curImageID).imgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+                                
+                            End If
+                        End If
+                        
+                        'Find the next chunk of image metadata, if any
+                        terminalPosition = InStr(terminalPosition + 6, mdString, "{ready", vbBinaryCompare)
+                        
+                    Else
+                        Debug.Print "(startPosition > 0) And ((terminalPosition - startPosition) > 0) failed"
+                        terminalPosition = 0
+                    End If
+                                        
+                Else
+                    Debug.Print "(terminalPosition + 6 + lenFailsafe) was greater than Len(mdString)"
+                    terminalPosition = 0
+                End If
+                
+            Else
+                Debug.Print "lenFailsafe = 0"
+                terminalPosition = 0
+            End If
+        
+        Loop
+        
+        'Update the interface to match the active image.  (This must be done if things like GPS tags were found in the metadata,
+        ' because their presence affects the enabling of certain metadata-related menu entries.)
+        Interface.SyncInterfaceToCurrentImage
+        
+        'Restore the original on-screen message and exit
+        Interface.Message prevMessage
+        
+    End If
+
 End Sub
 
 'Menu: Adjustments -> Photography
@@ -2448,133 +2591,6 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     End If
     
 End Sub
-
-'Countdown timer for re-enabling disabled user input.  A delay is enforced to prevent double-clicks on child dialogs from
-' "passing through" to the main form and causing goofy behavior.
-Private Sub tmrCountdown_Timer()
-
-    Static intervalCount As Long
-    
-    If (intervalCount > 2) Then
-        intervalCount = 0
-        g_DisableUserInput = False
-        tmrCountdown.Enabled = False
-    End If
-    
-    intervalCount = intervalCount + 1
-
-End Sub
-
-'This metadata timer is a final failsafe for images with huge metadata collections that take a long time to parse.  If an image has successfully
-' loaded but its metadata parsing is still in-progress, PD's load function will activate this timer.  The timer will wait (asynchronously) for
-' metadata parsing to finish, and when it does, it will copy the metadata into the active pdImage object, then disable itself.
-Private Sub tmrMetadata_Timer()
-    
-    'I don't like resorting to this hackneyed solution, but ExifTool can sometimes be unpredictable, especially if the user loads a bajillion
-    ' images simultaneously.  Rather than bring down the whole program, I'd prefer to simply ignore metadata for the problematic image.
-    On Error Resume Next
-
-    If ExifTool.IsMetadataFinished Then
-    
-        'Start by disabling this timer, lest it fire again while we're in the middle of parsing stuff
-        tmrMetadata.Enabled = False
-    
-        'Cache the current message (if any)
-        Dim prevMessage As String
-        prevMessage = g_LastPostedMessage
-                
-        Message "Asynchronous metadata check complete!  Updating metadata collection..."
-        
-        'Retrieve the completed metadata string
-        Dim mdString As String, tmpString As String
-        mdString = RetrieveMetadataString()
-        
-        Dim curImageID As Long
-        
-        'Now comes some messy string parsing.  If the user has loaded multiple images at once, the metadata string returned by ExifTool will contain
-        ' ALL METADATA for ALL IMAGES in one giant string.  We need to parse out each image's metadata, supply it to the correct image, then repeat
-        ' until all images have received their relevant metadata.
-        
-        'Start by finding the first occurrence of ExifTool's unique "{ready}" message, which signifies its success in completing a single coherent
-        ' -execute request.
-        Dim startPosition As Long, terminalPosition As Long
-        startPosition = 1
-        terminalPosition = InStr(1, mdString, "{ready", vbBinaryCompare)
-        
-        Do While (terminalPosition <> 0)
-        
-            'terminalPosition now contains the position of ExifTool's "{ready123}" tag, where 123 is the ID of the image whose metadata
-            ' is contained prior to that point.  Start by figuring out what that ID number actually is.
-            Dim lenFailsafe As Long
-            
-            If terminalPosition + 6 < Len(mdString) Then
-                lenFailsafe = InStr(terminalPosition + 6, mdString, "}", vbBinaryCompare) - (terminalPosition + 6)
-            Else
-                lenFailsafe = 0
-            End If
-            
-            If lenFailsafe <> 0 Then
-                
-                'Attempt to retrieve the relevant image ID for this section of metadata
-                If (terminalPosition + 6 + lenFailsafe) < Len(mdString) Then
-                
-                    tmpString = Mid$(mdString, terminalPosition + 6, lenFailsafe)
-                    
-                    If IsNumeric(tmpString) Then
-                        curImageID = CLng(tmpString)
-                    'Else
-                        'Debug.Print "Metadata ID calculation invalid - was ExifTool updated? - " & tmpString
-                    End If
-                    
-                    'Now we know where the metadata for this image *ends*, but we still need to find where it *starts*.  All metadata XML entries start with
-                    ' a standard XML header.  Search backwards from the {ready123} message until such a header is found.
-                    startPosition = InStrRev(mdString, "<?xml", terminalPosition, vbBinaryCompare)
-                    
-                    'Using the start and final markers, extract the relevant metadata and forward it to the relevant pdImage object
-                    If (startPosition > 0) And ((terminalPosition - startPosition) > 0) Then
-                        
-                        'Make sure we calculated our curImageID value correctly
-                        If (curImageID >= 0) And (curImageID <= UBound(pdImages)) Then
-                            If Not pdImages(curImageID) Is Nothing Then
-                            
-                                'Create the imgMetadata object as necessary, and load the selected metadata into it!
-                                If pdImages(curImageID).imgMetadata Is Nothing Then Set pdImages(curImageID).imgMetadata = New pdMetadata
-                                pdImages(curImageID).imgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
-                                
-                            End If
-                        End If
-                        
-                        'Find the next chunk of image metadata, if any
-                        terminalPosition = InStr(terminalPosition + 6, mdString, "{ready", vbBinaryCompare)
-                        
-                    Else
-                        Debug.Print "(startPosition > 0) And ((terminalPosition - startPosition) > 0) failed"
-                        terminalPosition = 0
-                    End If
-                                        
-                Else
-                    Debug.Print "(terminalPosition + 6 + lenFailsafe) was greater than Len(mdString)"
-                    terminalPosition = 0
-                End If
-                
-            Else
-                Debug.Print "lenFailsafe = 0"
-                terminalPosition = 0
-            End If
-        
-        Loop
-        
-        'Update the interface to match the active image.  (This must be done if things like GPS tags were found in the metadata,
-        ' because their presence affects the enabling of certain metadata-related menu entries.)
-        SyncInterfaceToCurrentImage
-        
-        'Restore the original on-screen message and exit
-        Message prevMessage
-        
-    End If
-
-End Sub
-
 
 'THE BEGINNING OF EVERYTHING
 ' Actually, Sub "Main" in the module "MainModule" is loaded first, but all it does is set up native theming.  Once it has done that, FormMain is loaded.

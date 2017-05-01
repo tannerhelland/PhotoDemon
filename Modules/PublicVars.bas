@@ -169,14 +169,6 @@ Public g_MouseAccuracy As Double
 ' to restore this variable to FALSE when you're done, including catching any error states!
 Public g_DisableUserInput As Boolean
 
-'Last message sent to PD's central Message() function.  Note that this string *includes any custom attachments* and is calculated
-' *post-translation*, e.g. instead of being "Error %1", the "%1" will be populated with whatever value was supplied, and "Error"
-' will be translated into the currently active language.  The purpose of this variable is to assist asynchronous functions.  When
-' such functions terminate, they can cache the previous message, display any relevant messages according to their asynchronous
-' results, then restore the original message when done.  This makes the experience seamless for the user, but is hugely helpful
-' to me when debugging asynchronous program behavior.
-Public g_LastPostedMessage As String
-
 'ID for this PD instance.  When started, each PhotoDemon instance is assigned a pseudo-random (GUID-based) session ID, which it
 ' then appends to things like Undo/Redo files.  This allows for multiple side-by-side program instances without collisions.
 Public g_SessionID As String

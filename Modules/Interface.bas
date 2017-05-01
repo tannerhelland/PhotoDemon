@@ -112,7 +112,11 @@ Private m_LastShowDialogResult As VbMsgBoxResult
 
 'When a message is displayed to the user in the message portion of the status bar, we automatically cache the message's contents.
 ' If a subsequent request is raised with the exact same text, we can skip the whole message display process.
+' (Note that this is the *unparsed, English-language* version of the message!  That's much faster for pattern-matching.)
 Private m_PrevMessage As String
+
+'Same as m_PrevMessage, but with all translations and/or custom parsing applied
+Private m_LastFullMessage As String
 
 'System DPI is used frequently for UI positioning calculations.  Because it's costly to constantly retrieve it via APIs, this module
 ' prefers to cache it only when the value changes.  Call the CacheSystemDPI() sub to update the value when appropriate, and the
@@ -1758,17 +1762,23 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         End If
         
         'While macros are active, append a "Recording" message to help orient the user
-        If MacroStatus = MacroSTART Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
+        If (MacroStatus = MacroSTART) Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
         'Post the message to the screen
         If (MacroStatus <> MacroBATCH) Then FormMain.mainCanvas(0).DisplayCanvasMessage newString
         
         'Update the global "previous message" string, so external functions can access it.
-        g_LastPostedMessage = newString
+        m_LastFullMessage = newString
         
     End If
     
 End Sub
+
+'Retrieve the last full message posted to the Message() function, above.  Note that *translations and optional parameter parsing*
+' have already been applied to the text.
+Public Function GetLastFullMessage() As String
+    GetLastFullMessage = m_LastFullMessage
+End Function
 
 'When the mouse is moved outside the primary image, clear the image coordinates display
 Public Sub ClearImageCoordinatesDisplay()
@@ -1820,7 +1830,7 @@ Public Sub EnableUserInput()
     ' we need a certain amount of "dead time" to elapse between double-clicks on a top-level dialog (like a common dialog)
     ' which may be incorrectly passed through to the main form.  (I know, this seems like a ridiculous solution, but I tried
     ' a thousand others before settling on this.  It's the least of many evils.)
-    FormMain.tmrCountdown.Enabled = True
+    FormMain.StartInterfaceTimer
     
     'Drag/drop allowance doesn't suffer the issue described above, so we can enable it immediately
     g_AllowDragAndDrop = True
