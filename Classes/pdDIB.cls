@@ -491,7 +491,7 @@ Public Function CreateFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY
 End Function
 
 'Make a copy of an existing DIB
-Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional useHalftoning As Boolean = True) As Boolean
+Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional ByVal useHQStretching As Boolean = True) As Boolean
     
     CreateFromExistingDIB = False
     
@@ -523,7 +523,7 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
             Else
             
                 'Create a new, blank DIB the same size as the source DIB
-                If CreateBlank(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBColorDepth) Then
+                If Me.CreateBlank(srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, srcDIB.GetDIBColorDepth, 0, 0) Then
                     
                     'Copy the image data without modification
                     BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -539,42 +539,18 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
         
         'If new width and height values are being specified, the transfer is a bit more complex
         Else
-        
-            'Create a new, blank DIB at the requested size
-            If CreateBlank(newWidth, newHeight, srcDIB.GetDIBColorDepth) Then
-
-                'We now break up the resize request into two branches: 24bpp data, and 32bpp data.
-                If (srcDIB.GetDIBColorDepth = 24) Then
+            
+            'If our current size does not match, create a newly sized DIB in advance.
+            If (Me.GetDIBWidth <> newWidth) Or (Me.GetDIBHeight <> newHeight) Or (Me.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then Me.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth
+            
+            Dim resizeMode As GP_InterpolationMode
+            If useHQStretching Then resizeMode = GP_IM_HighQualityBicubic Else resizeMode = GP_IM_NearestNeighbor
+            GDI_Plus.GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, resizeMode
                 
-                    'If either dimension of the new image will be smaller than the source, request halftoning
-                    If useHalftoning Then
-                        SetStretchBltMode m_dibDC, STRETCHBLT_HALFTONE
-                    Else
-                        SetStretchBltMode m_dibDC, STRETCHBLT_COLORONCOLOR
-                    End If
-    
-                    'Resize and copy the image data
-                    StretchBlt m_dibDC, 0, 0, newWidth, newHeight, srcDIB.GetDIBDC, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, vbSrcCopy
-                    
-                '32bpp data requires special attention, because StretchBlt won't halftone alpha data.
-                Else
-                    
-                    'Instead of halftoning, switch between interpolation and nearest-neighbor
-                    If useHalftoning Then
-                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, GP_IM_HighQualityBicubic
-                    Else
-                        GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, GP_IM_NearestNeighbor
-                    End If
-                
-                End If
-                
-                'Reset alpha premultiplication to match
-                m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
-                
-                CreateFromExistingDIB = True
-                        
-            End If
-        
+            'Reset alpha premultiplication to match
+            m_IsAlphaPremultiplied = srcDIB.GetAlphaPremultiplication
+            CreateFromExistingDIB = True
+            
         End If
         
     End If
@@ -770,102 +746,153 @@ End Function
 
 'Create a blank DIB. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
 ' If the DIB is 32bpp, an optional alpha parameter can be set for the DIB.
-Public Function CreateBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal BackColor As Long = vbWhite, Optional ByVal dibAlpha As Long = 0) As Boolean
+Public Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Optional ByVal colorDepth As Long = 24, Optional ByVal initialColor As Long = vbWhite, Optional ByVal initialAlpha As Long = 0) As Boolean
     
     On Error GoTo CouldNotCreateDIB
     
-    'Erase any existing DIB data
-    EraseDIB
+    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
+                
+    'By default, we try to avoid creating new DIBs whenever we can.  In the unlikely chance that this DIB already exists,
+    ' let's compare its size and color depth to the requested dimensions - if they match, we can reuse this DIB as-is.
+    Dim existingDIBIsOkay As Boolean, colorSetIsSkippable As Boolean
+    existingDIBIsOkay = (imgWidth = m_dibWidth) And (imgHeight = m_dibHeight) And (colorDepth = m_dibColorDepth) And (m_dibHandle <> 0)
     
-    'PhotoDemon only supports 24 and 32 BPP at present
-    If (colorDepth <> 32) And (colorDepth <> 24) Then colorDepth = 24
+    If existingDIBIsOkay Then
         
-    'The back color may or may not be a system color, so translate it just in case
-    If (BackColor <> vbWhite) And (BackColor <> vbBlack) Then BackColor = TranslateColor(BackColor)
-    
-    'Force the DIB to have a size of at least 1x1
-    If (iWidth <= 1) Then iWidth = 1
-    If (iHeight <= 1) Then iHeight = 1
-    
-    'Remember the requested color depth, width, and height
-    m_dibColorDepth = colorDepth
-    m_dibWidth = iWidth
-    m_dibHeight = iHeight
-    
-    'Prepare the required header
-    With m_dibHeader
-        .Size = Len(m_dibHeader)
-        .Planes = 1
-        .BitCount = colorDepth
-        .Width = iWidth
-        .Height = -iHeight
-        'As always, this value needs to be a multiple of four; with 32bpp that's automatic, with 24bpp it is not
-        If (colorDepth = 32) Then
-            m_dibStride = 4 * iWidth
+        m_IsAlphaPremultiplied = False
+        
+        'This DIB is fine as-is!  Simply reset color and alpha-premultiplication to match the requested values.
+        If (colorDepth = 24) Then
+            If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
+            GDI.FillRectToDC m_dibDC, 0, 0, imgWidth, imgHeight, initialColor
         Else
-            m_dibStride = (iWidth * 3 + 3) And &HFFFFFFFC
-        End If
-        .ImageSize = m_dibStride * iHeight
-    End With
-    
-    'If we don't already have a compatible DC, create one now
-    If (Me.GetDIBDC = 0) Then
-        m_dibDC = GDI.GetMemoryDC()
-        
-    'If we already have a DC, empty it
-    Else
-        
-        If (m_dibHandle <> 0) Then
-            SelectObject m_dibDC, m_dibHandleOriginal
-            DeleteObject m_dibHandle
-        End If
-        
-    End If
-    
-    If (m_dibDC <> 0) Then
-        
-        'Create a DIB
-        m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
-        
-        'If successful, select the newly created dib into our DC
-        If (m_dibHandle <> 0) Then
             
-            'Inside debugging mode, increment a global DIB counter.
-            #If DEBUGMODE = 1 Then
-                If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
-            #End If
+            colorSetIsSkippable = (initialAlpha = 0) And (initialColor = 0)
             
-            'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB
-            m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
-        
-            'If the DIB is 24bpp, apply the background color now
-            If (colorDepth = 24) Then
-                GDI.FillRectToDC m_dibDC, 0, 0, iWidth, iHeight, BackColor
-                m_IsAlphaPremultiplied = False
-            
-            '32bpp requires GDI+
+            If colorSetIsSkippable Then
+                FillMemory m_dibBits, m_dibStride * m_dibHeight, 0&
             Else
+                If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
                 
-                'Newly created DIBs will be black and transparent by default, so we can skip the fill
-                If (dibAlpha <> 0) Then
-                    Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cBrush As pd2DBrush
-                    Drawing2D.QuickCreatePainter cPainter
-                    Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
-                    Drawing2D.QuickCreateSolidBrush cBrush, BackColor, dibAlpha / 2.55
-                    cPainter.FillRectangleF cSurface, cBrush, 0, 0, iWidth + 1, iHeight + 1
-                    Set cSurface = Nothing
-                Else
-                    FillMemory m_dibBits, m_dibStride * m_dibHeight, 0&
-                End If
-                
-                'Because alpha premultiplication is unknown, we'll assume it is FALSE
-                m_IsAlphaPremultiplied = False
+                Drawing2D.QuickCreatePainter cPainter
+                Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
+                Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
+                cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
+                Set cSurface = Nothing
                 
             End If
+                    
+        End If
+                
+    Else
+    
+        'Erase any existing DIB data
+        Me.EraseDIB
+        
+        'PhotoDemon only supports 24 and 32 BPP at present
+        If (colorDepth <> 32) And (colorDepth <> 24) Then colorDepth = 32
             
-        'If DIB creation failed, clear out the work we've done so far
+        'Force the DIB to have a size of at least 1x1
+        If (imgWidth < 1) Then imgWidth = 1
+        If (imgHeight < 1) Then imgHeight = 1
+        
+        'Cache the requested color depth, width, and height; we'll refer to these constantly during DIB interactions
+        m_dibColorDepth = colorDepth
+        m_dibWidth = imgWidth
+        m_dibHeight = imgHeight
+        
+        'Prepare the required header
+        With m_dibHeader
+            .Size = Len(m_dibHeader)
+            .Planes = 1
+            .BitCount = colorDepth
+            .Width = imgWidth
+            .Height = -imgHeight
+            'As always, this value needs to be a multiple of four; with 32bpp that's automatic, with 24bpp it is not
+            If (colorDepth = 32) Then
+                m_dibStride = 4 * imgWidth
+            Else
+                m_dibStride = (imgWidth * 3 + 3) And &HFFFFFFFC
+            End If
+            .ImageSize = m_dibStride * imgHeight
+        End With
+        
+        'If we don't already have a compatible DC, create one now
+        If (Me.GetDIBDC = 0) Then
+            m_dibDC = GDI.GetMemoryDC()
+            
+        'If we already have a DC, empty it
         Else
-            Me.EraseDIB
+            
+            If (m_dibHandle <> 0) Then
+                SelectObject m_dibDC, m_dibHandleOriginal
+                DeleteObject m_dibHandle
+            End If
+            
+        End If
+        
+        If (m_dibDC <> 0) Then
+            
+            'Create a DIB
+            m_dibHandle = CreateDIBSection(m_dibDC, m_dibHeader, 0, m_dibBits, 0, 0)
+            
+            'If successful, select the newly created dib into our DC
+            If (m_dibHandle <> 0) Then
+                
+                'Inside debugging mode, increment a global DIB counter.
+                #If DEBUGMODE = 1 Then
+                    If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
+                #End If
+                
+                'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB
+                m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
+            
+                'If the DIB is 24bpp, apply the background color now
+                If (colorDepth = 24) Then
+                    
+                    If (initialColor <> 0) Then
+                        
+                        'The back color may or may not be a system color, so translate it just in case
+                        If (initialColor <> vbWhite) Then initialColor = TranslateColor(initialColor)
+                        GDI.FillRectToDC m_dibDC, 0, 0, imgWidth, imgHeight, initialColor
+                        
+                    End If
+                        
+                    m_IsAlphaPremultiplied = False
+                
+                '32bpp requires GDI+
+                Else
+                    
+                    colorSetIsSkippable = (initialAlpha = 0) And (initialColor = 0)
+                    
+                    'Newly created DIBs will be black and transparent by default, so we can skip the fill
+                    If (Not colorSetIsSkippable) Then
+                        
+                        'The back color may or may not be a system color, so translate it just in case
+                        If (initialColor <> vbWhite) Then initialColor = TranslateColor(initialColor)
+                        
+                        Drawing2D.QuickCreatePainter cPainter
+                        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
+                        Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
+                        cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
+                        Set cSurface = Nothing
+                        
+                    Else
+                        'We could cheat and use FillMemory here, but by default, a newly initialized DIB is already
+                        ' set to all-zeroes.
+                        'FillMemory m_dibBits, m_dibStride * m_dibHeight, 0&
+                    End If
+                    
+                    'Because alpha premultiplication is unknown, we'll assume it is FALSE
+                    m_IsAlphaPremultiplied = False
+                    
+                End If
+                
+            'If DIB creation failed, clear out the work we've done so far
+            Else
+                Me.EraseDIB
+            End If
+            
         End If
         
     End If
