@@ -210,8 +210,8 @@ RetryTranslation:
         If (InStr(processedHTML, " /") <> 0) Then processedHTML = Replace$(processedHTML, " / ", "/", 1, , vbTextCompare)
         If (InStr(processedHTML, "% ") <> 0) Then processedHTML = Replace$(processedHTML, "% ", " %", 1, , vbTextCompare)
         
-        'Thanks to Zhu JY for pointing out that «/» are not handled properly under some localizations, so use their
-        ' character codes instead.
+        'Thanks to Zhu JY for pointing out that guillemet (<</>> used as single-char quotation marks)
+        ' are not handled properly under some localizations; we'll use specific character codes instead.
         If (InStr(processedHTML, ChrW$(174)) <> 0) Then processedHTML = Replace$(processedHTML, ChrW$(174), "'", 1, , vbTextCompare)
         If (InStr(processedHTML, ChrW$(175)) <> 0) Then processedHTML = Replace$(processedHTML, ChrW$(175), "'", 1, , vbTextCompare)
     

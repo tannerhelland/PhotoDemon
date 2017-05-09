@@ -257,7 +257,7 @@ Public Sub SetEDID(ByRef edidArray() As Byte, Optional ByVal warningEDIDMissing 
     
     'Next, we will try to retrieve a monitor name.  Monitor name is an optional descriptor (but provided 99.9% of the time)
     ' found in one of the four VESA Descriptor blocks of the EDID.  Those descriptor blocks are found in set locations:
-    ' 54–71, 72–89, 90–107, 108–125
+    ' 54-71, 72-89, 90-107, 108-125
     '
     'Location of the monitor name is not guaranteed in advance, so each block must be parsed individually until found.
     If (EDIDLength >= 128) Then

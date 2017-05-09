@@ -34,7 +34,7 @@ Attribute VB_Exposed = False
 ' features (like variable antialiasing contrast).
 '
 ' - With OpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed, and converted into a usable
-' format (e.g. OpenType's quadratic B-splines are converted into GDI+'s native cubic Bézier curve format).  The final,
+' format (e.g. OpenType's quadratic B-splines are converted into GDI+'s native cubic Bezier curve format).  The final,
 ' resultant shape(s) are then passed to GDI+ as a generic path object, which we can render with any of GDI+'s native
 ' features (antialiasing, fancy gradients, etc).
 '
