@@ -68,8 +68,8 @@ End Type
 
 'Supported shape types inside TrueType and OpenType fonts
 Private Const TT_PRIM_LINE As Long = 1       'Line or polyline primitive
-Private Const TT_PRIM_QSPLINE As Long = 2    'Quadratic Bézier spline
-Private Const TT_PRIM_CSPLINE As Long = 3    'Cubic Bézier spline
+Private Const TT_PRIM_QSPLINE As Long = 2    'Quadratic Bezier spline
+Private Const TT_PRIM_CSPLINE As Long = 3    'Cubic Bezier spline
 
 'Universal identifier of the TTPOLYGONHEADER struct
 Private Const TT_POLYGON_TYPE As Long = 24
@@ -465,8 +465,8 @@ Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
     
     'TTPOLYCURVES take three forms, as marked by wType:
     ' 1) Line and/or polyline primitives (TT_PRIM_LINE)
-    ' 2) Quadratic Bézier splines (TT_PRIM_QSPLINE).  This is the default curve format for TrueType fonts.
-    ' 3) Cubic Bézier splines (TT_PRIM_CSPLINE).  This is the default curve format for OpenType fonts, but to get this format,
+    ' 2) Quadratic Bezier splines (TT_PRIM_QSPLINE).  This is the default curve format for TrueType fonts.
+    ' 3) Cubic Bezier splines (TT_PRIM_CSPLINE).  This is the default curve format for OpenType fonts, but to get this format,
     '                                              we have to explicitly specify the GGO_BEZIER flag.  (PD does exactly this,
     '                                              to preserve better OpenType glyph shaping.)
     
@@ -568,11 +568,11 @@ Private Function ParseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
                         
                     Next i
                 
-                'Quadratic Bézier spline (PD doesn't currently handle this case, because we explicitly request cubic bezier splines
+                'Quadratic Bezier spline (PD doesn't currently handle this case, because we explicitly request cubic bezier splines
                 ' from the font mapper).
                 'Case TT_PRIM_QSPLINE
                 
-                'Cubic Bézier spline
+                'Cubic Bezier spline
                 Case TT_PRIM_CSPLINE
                     
                     'Cubic splines occur in sets of four points (but one is already known from the end of the previous curve)

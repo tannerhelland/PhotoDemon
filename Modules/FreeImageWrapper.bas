@@ -114,7 +114,7 @@ Option Explicit
 ' FreeImage_GetOlePicture functions.
 
 ' Both known VB functions LoadPicture() and SavePicture() are provided in extended
-' versions calles LoadPictureEx() and SavePictureEx() offering the FreeImage 3´s
+' versions calles LoadPictureEx() and SavePictureEx() offering the FreeImage 3's
 ' image file types.
 
 ' The FreeImage 3 error handling is provided in VB after calling the VB specific
@@ -2454,7 +2454,7 @@ Dim lpSA As Long
    ' This makes you use code like you would in C/C++:
    
    ' // this code assumes there is a bitmap loaded and
-   ' // present in a variable called ‘dib’
+   ' // present in a variable called "dib"
    ' if(FreeImage_GetBPP(Bitmap) == 8) {
    '   // Build a greyscale palette
    '   RGBQUAD *pal = FreeImage_GetPalette(Bitmap);
@@ -3717,7 +3717,7 @@ Dim lpSA As Long
    ' This makes you use code like you would in C/C++:
    
    ' // this code assumes there is a bitmap loaded and
-   ' // present in a variable called ‘dib’
+   ' // present in a variable called "dib"
    ' if(FreeImage_GetBPP(Bitmap) == 8) {
    '   // Build a greyscale palette
    '   RGBQUAD *pal = FreeImage_GetPalette(Bitmap);
@@ -4318,7 +4318,7 @@ Dim lpSA As Long
    ' This makes you use code like you would in C/C++:
    
    ' // this code assumes there is a bitmap loaded and
-   ' // present in a variable called ‘dib’
+   ' // present in a variable called "dib"
    ' if(FreeImage_GetBPP(Bitmap) == 8) {
    '   // Remove transparency information
    '   byte *transt = FreeImage_GetTransparencyTable(Bitmap);
