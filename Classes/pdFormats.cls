@@ -1104,4 +1104,3 @@ Public Function IsExportDialogSupported(ByVal outputPDIF As PD_IMAGE_FORMAT) As 
     End Select
     
 End Function
-

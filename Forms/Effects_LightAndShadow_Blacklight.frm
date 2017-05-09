@@ -214,4 +214,3 @@ Private Function GetLocalParamString() As String
     cParams.AddParam "intensity", sltIntensity.Value
     GetLocalParamString = cParams.GetParamString()
 End Function
-

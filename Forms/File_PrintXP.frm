@@ -886,4 +886,3 @@ Private Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useO
     End If
     
 End Sub
-

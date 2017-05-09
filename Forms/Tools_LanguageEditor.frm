@@ -1626,4 +1626,3 @@ TitlecaseFail:
     GetFixedTitlecase = translatedString
 
 End Function
-

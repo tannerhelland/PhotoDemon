@@ -1216,4 +1216,3 @@ Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
     End If
     
 End Function
-

@@ -1002,4 +1002,3 @@ End Sub
 Private Sub sltSizeStrictness_Change()
     UpdatePreview
 End Sub
-

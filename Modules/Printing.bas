@@ -204,4 +204,3 @@ Public Function GetPaperSizes(ByVal printerIndex As Long, ByRef paperSizeNames()
     GetPaperSizes = True
 
 End Function
-

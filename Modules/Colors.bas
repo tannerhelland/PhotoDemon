@@ -821,4 +821,3 @@ Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong A
     End Select
     
 End Function
-

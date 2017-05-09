@@ -353,4 +353,3 @@ End Sub
 Private Sub sltQuickFix_LostFocusAPI(Index As Integer)
     If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
 End Sub
-

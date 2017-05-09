@@ -1266,4 +1266,3 @@ Public Sub TrimImage()
     End If
 
 End Sub
-

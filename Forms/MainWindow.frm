@@ -1608,6 +1608,7 @@ Private m_LanguagesUpdatedSuccessfully As Boolean
 'This main dialog houses a few timer objects; these can be started and/or stopped by external functions.  See the timer
 ' start/stop functions for additional details.
 Private WithEvents m_InterfaceTimer As pdTimer
+Attribute m_InterfaceTimer.VB_VarHelpID = -1
 Private WithEvents m_MetadataTimer As pdTimer
 Attribute m_MetadataTimer.VB_VarHelpID = -1
 
@@ -4520,4 +4521,3 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False, Optional ByVal suspendIconRendering As Boolean = False)
     ApplyThemeAndTranslations Me, useDoEvents, suspendIconRendering
 End Sub
-

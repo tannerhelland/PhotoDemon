@@ -479,4 +479,3 @@ End Sub
 Private Sub sltOutlineWidth_Change()
     UpdatePreview
 End Sub
-

@@ -349,4 +349,3 @@ Private Sub UpdatePreview(Optional ByVal forceUpdate As Boolean = False)
     End If
 
 End Sub
-

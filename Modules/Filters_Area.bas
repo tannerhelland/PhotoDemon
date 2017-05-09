@@ -957,4 +957,3 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     If g_cancelCurrentAction Then HorizontalBlur_IIR = 0 Else HorizontalBlur_IIR = 1
 
 End Function
-

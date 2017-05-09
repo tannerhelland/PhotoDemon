@@ -410,4 +410,3 @@ Private Sub UpdatePanelVisibility()
         picContainer(i).Visible = CBool(i = btsCategory.ListIndex)
     Next i
 End Sub
-

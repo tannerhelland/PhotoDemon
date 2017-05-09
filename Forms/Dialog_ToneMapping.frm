@@ -636,4 +636,3 @@ End Sub
 Private Sub sltWhitepoint_Change()
     UpdatePreview
 End Sub
-

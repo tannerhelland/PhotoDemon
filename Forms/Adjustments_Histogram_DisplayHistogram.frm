@@ -1022,5 +1022,3 @@ Public Sub StretchHistogram()
     FinalizeImageData
         
 End Sub
-
-

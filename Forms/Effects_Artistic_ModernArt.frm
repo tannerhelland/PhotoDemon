@@ -400,4 +400,3 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("radius-x", sltRadius(0).Value, "radius-y", sltRadius(1).Value, "kernelshape", btsKernelShape.ListIndex)
 End Function
-

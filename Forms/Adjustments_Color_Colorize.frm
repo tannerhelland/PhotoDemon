@@ -224,4 +224,3 @@ Private Function GetLocalParamString() As String
     GetLocalParamString = cParams.GetParamString()
     
 End Function
-

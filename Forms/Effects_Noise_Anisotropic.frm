@@ -556,4 +556,3 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("direction", btsDirection.ListIndex, "option", btsEmphasis.ListIndex, "iterations", sltIterations.Value, "flow", sltFlow.Value, "strength", sltStrength.Value)
 End Function
-

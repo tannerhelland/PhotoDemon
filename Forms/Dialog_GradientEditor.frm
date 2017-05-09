@@ -959,4 +959,3 @@ Private Sub sltNodePosition_Change()
         RedrawEverything
     End If
 End Sub
-

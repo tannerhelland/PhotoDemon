@@ -827,4 +827,3 @@ Public Sub SyncCurrentLayerToToolOptionsUI()
     End If
     
 End Sub
-

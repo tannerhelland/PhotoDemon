@@ -417,7 +417,7 @@ Private Sub WriteUpdatedDatabase()
         End With
         
         'Close this entry
-        xmlEngine.closeTag "profileEvent"
+        xmlEngine.CloseTag "profileEvent"
         xmlEngine.WriteBlankLine
             
     Next i

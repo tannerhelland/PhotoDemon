@@ -169,4 +169,3 @@ End Function
 Public Function ZLib_GetMaxCompressionLevel() As Long
     ZLib_GetMaxCompressionLevel = ZLIB_MAX_CLEVEL
 End Function
-

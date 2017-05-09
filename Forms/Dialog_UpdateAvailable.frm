@@ -177,4 +177,3 @@ Private Sub Form_Load()
     Me.Move (FormMain.Left + FormMain.Width) - (Me.Width + 90), (FormMain.Top + FormMain.Height) - (Me.Height + 90)
     
 End Sub
-

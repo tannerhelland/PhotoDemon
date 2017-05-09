@@ -564,4 +564,3 @@ End Sub
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("target", btsTarget.ListIndex, "mode", btsMode.ListIndex, "kernelshape", btsKernelShape.ListIndex, "radius", sltRadius.Value)
 End Function
-

@@ -791,4 +791,3 @@ Public Sub UpdateAgainstCurrentTheme()
         If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     End If
 End Sub
-

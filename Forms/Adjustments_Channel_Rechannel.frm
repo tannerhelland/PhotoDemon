@@ -389,4 +389,3 @@ End Function
 Private Function GetLocalParamString() As String
     GetLocalParamString = BuildParamList("colorspace", btsColorSpace.ListIndex, "channel", btsChannel(btsColorSpace.ListIndex).ListIndex)
 End Function
-

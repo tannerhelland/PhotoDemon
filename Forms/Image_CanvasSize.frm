@@ -447,4 +447,3 @@ Public Sub ResizeCanvas(ByVal functionParams As String)
     Message "Finished."
     
 End Sub
-

@@ -627,4 +627,3 @@ End Sub
 Private Sub Class_Initialize()
     m_DebugMode = Drawing2D.GetLibraryDebugMode()
 End Sub
-

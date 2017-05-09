@@ -188,4 +188,3 @@ Private Sub Form_Unload(Cancel As Integer)
     Set m_Presets = Nothing
     
 End Sub
-

@@ -125,4 +125,3 @@ End Sub
 Friend Sub GetCanvasRectActualPixels(ByRef dstRectF As RECTF)
     dstRectF = CanvasRect_ActualPixels
 End Sub
-

@@ -808,4 +808,3 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     End If
     
 End Sub
-
