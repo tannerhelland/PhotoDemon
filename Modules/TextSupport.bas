@@ -346,4 +346,3 @@ Public Function ValidateCharacters(ByVal srcText As String, ByVal listOfValidCha
     Next i
     
 End Function
-

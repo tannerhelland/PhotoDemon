@@ -456,4 +456,3 @@ Public Sub DEBUG_dumpResultsToImmediateWindow()
         Debug.Print " -- String stack is empty -- "
     End If
 End Sub
-

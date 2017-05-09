@@ -347,4 +347,3 @@ Private Sub Class_Initialize()
     m_NumOfEntries = 0
         
 End Sub
-

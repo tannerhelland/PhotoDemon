@@ -157,4 +157,3 @@ Private Sub Class_Initialize()
     m_ICCProfileWasApplied = False
     ReDim m_ICCData(0) As Byte
 End Sub
-

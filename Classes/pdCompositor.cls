@@ -2182,4 +2182,3 @@ Private Sub Class_Terminate()
     Set m_NDFXDIB = Nothing
     Set m_Blender = Nothing
 End Sub
-

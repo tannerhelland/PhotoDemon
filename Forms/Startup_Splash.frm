@@ -209,4 +209,3 @@ Public Sub UpdateLoadProgress(ByVal newProgressMarker As Long)
     End If
 
 End Sub
-

@@ -1112,4 +1112,3 @@ End Sub
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     ucSupport.AssignTooltip Me.hWnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
-

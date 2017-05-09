@@ -1794,4 +1794,3 @@ Public Sub NotifySelectionMouseUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Sh
     End Select
     
 End Sub
-

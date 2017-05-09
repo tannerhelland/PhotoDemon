@@ -175,4 +175,3 @@ Private Sub InternalGDIError(Optional ByRef errName As String = vbNullString, Op
         If (ErrNum <> 0) Then pdDebug.LogAction "(Also, an error number was reported: " & ErrNum & ")"
     #End If
 End Sub
-

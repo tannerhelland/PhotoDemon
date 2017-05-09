@@ -348,8 +348,11 @@ Private Sub cmdStart_Click()
                     'Replace all occurrences of the "find" string
                     curFileContents = Replace$(curFileContents, strFind, strReplace, , , compareMode)
                     
+                    'VB likes to add trailing linebreaks; remove these, if any
+                    curFileContents = RemoveTrailingLinebreaks(curFileContents) & vbCrLf
+                    
                     'Overwrite the original file
-                    If Not cFSO.SaveStringToTextFile(curFileContents, curFileName, False, False) Then
+                    If Not cFSO.SaveStringToTextFile(curFileContents, curFileName, True, False) Then
                         Debug.Print "WARNING!  Failed to save new contents of "; curFileName & ".  Please investigate."
                     End If
                 
@@ -363,3 +366,19 @@ Private Sub cmdStart_Click()
     cmdStart.Caption = "I accept full responsibility for whatever happens next.  Apply search and replace."
     
 End Sub
+
+Private Function RemoveTrailingLinebreaks(ByRef srcString As String) As String
+    
+    Dim keepRemoving As Boolean: keepRemoving = True
+    
+    Do
+        If (InStrRev(srcString, vbCrLf, , vbBinaryCompare) = Len(srcString) - 1) Then
+            srcString = Left$(srcString, Len(srcString) - 2)
+        Else
+            keepRemoving = False
+        End If
+    Loop While keepRemoving
+    
+    RemoveTrailingLinebreaks = srcString
+    
+End Function

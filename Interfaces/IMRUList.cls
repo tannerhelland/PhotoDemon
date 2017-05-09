@@ -94,4 +94,3 @@ End Sub
 Public Sub EraseEntryAtPosition(ByRef mruManager As pdMRUManager, ByVal Index As Long)
 
 End Sub
-

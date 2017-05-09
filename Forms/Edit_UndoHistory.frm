@@ -225,4 +225,3 @@ Private Sub lstUndo_DrawListEntry(ByVal bufferDC As Long, ByVal itemIndex As Lon
     End If
         
 End Sub
-

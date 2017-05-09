@@ -397,4 +397,3 @@ Public Function GetNearestZoomOutIndex(ByVal curIndex As Long) As Long
     End If
 
 End Function
-

@@ -587,4 +587,3 @@ Friend Sub UpdateAgainstCurrentTheme()
     UpdateColorList
     
 End Sub
-

@@ -863,4 +863,3 @@ Public Sub UpdateAgainstCurrentTheme()
     ApplyThemeAndTranslations Me
 
 End Sub
-

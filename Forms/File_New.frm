@@ -215,4 +215,3 @@ Private Sub CalculateDefaultSize()
     End If
 
 End Sub
-

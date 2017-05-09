@@ -149,4 +149,3 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
     End If
     
 End Function
-

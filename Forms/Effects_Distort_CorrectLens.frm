@@ -962,4 +962,3 @@ Private Function GetEffectParams() As String
     GetEffectParams = cParams.GetParamString()
     
 End Function
-

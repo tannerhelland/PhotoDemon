@@ -345,4 +345,3 @@ End Sub
 Private Sub IMRUList_BeforeFileAdded(ByRef mruManager As pdMRUManager, ByVal newFile As String, Optional ByRef Cancel As Boolean = False)
 
 End Sub
-
