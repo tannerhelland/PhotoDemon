@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Edge Detector ("Marching squares") Engine
 'Copyright 2017-2017 by Tanner Helland
 'Created: 05/January/17
-'Last updated: 05/January/17
-'Last update: initial build
+'Last updated: 09/May/17
+'Last update: add comprehensive edge detection (e.g. edges of *multiple* objects in one image)
 '
 'This class supplies the "marching squares" algorithm used by a number of different tools in PD.
 '
@@ -56,6 +56,15 @@ Private m_InitPoint As POINTAPI
 'Marching squares uses predefined direction descriptors.  See https://en.wikipedia.org/wiki/Marching_squares
 ' These descriptors are populated in Class_Initialize().
 Private m_XDirs() As Long, m_YDirs() As Long
+
+'Fast memory ops
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+
+'Faster WAPI interop
+Private Declare Function GdipIsVisiblePathPointI Lib "gdiplus" (ByVal hPath As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function GdipIsVisibleRegionPointI Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
+Private Declare Function PtInRegion Lib "gdi32" (ByVal hRgn As Long, ByVal x As Long, ByVal y As Long) As Long
 
 'If you don't want to find a starting point yourself, use this helper function to do it for you.
 ' The starting point is searched for starting in the top-left corner and moving LTR.
@@ -191,7 +200,8 @@ Friend Sub RetrieveFinalPolygon(ByRef dstPoints() As POINTFLOAT, ByRef numOfPoin
 
 End Sub
 
-'Want to retrieve the finished point list into a path object instead?  Use this convenient function.
+'Want to retrieve the finished point list into a path object instead?  Use this convenient function.  (Note that this function
+' does *not* erase the destination path, if one exists; instead, it adds the edge as a new, self-contained polygon.)
 Friend Sub RetrieveFinalPolygonIntoPath(ByRef dstPath As pd2DPath, Optional ByVal closeShape As Boolean = True)
     
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
@@ -210,6 +220,369 @@ Friend Sub RetrieveFinalPolygonIntoPath(ByRef dstPath As pd2DPath, Optional ByVa
     dstPath.AddPolygon numOfPoints, VarPtr(dstPoints(0)), closeShape
     
 End Sub
+
+'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function instead.
+' Note that (by design) it does *not* forcibly close paths.  This allows it to return line segments or other non-standard edges that
+' would otherwise be extremely difficult to define as polygons.
+'
+'The approach required by this kind of algorithm makes it unsuitable for subsequent polygon operations, but for raster-style operations
+' (or just rendering overlays on affected edges), it is ideal and much much faster than a mathematically rigorous solution.
+Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
+    
+    If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
+    
+    'Current (x, y) positions.  (These start at startX and startY.)  After a shape is completed, these will advance to the next
+    ' non-zero position in the source array, and repeat a scan from there.
+    Dim x As Long, y As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = startX
+    initY = startY
+    finalX = maxX
+    finalY = maxY
+    
+    'Next (x, y) *direction*.  These are always one of [-1, 0, 1].
+    Dim nextX As Long, nextY As Long
+    nextX = 0
+    nextY = 0
+    
+    'Previous (x, y) *direction*.  These are always one of [-1, 0, 1].
+    ' We track these so that we can ignore points that lie on an existing line "as we go", instead of
+    ' wasting time and energy pushing them onto the stack.
+    Dim prevX As Long, prevY As Long
+    prevX = 1000000000
+    prevY = 1000000000
+    
+    Dim dstPoints() As POINTFLOAT
+    ReDim dstPoints(0) As POINTFLOAT
+    
+    'Index into our precalculated direction arrays.
+    Dim i As Long
+    
+    'Starting at (x, y), look for the next valid edge pixel.  Once one is found, start tracing it.
+    For y = initY To finalY
+    For x = initX To finalX
+    
+    
+        'Is this an edge pixel?
+        If (srcArray(x, y) <> 0) Then
+            
+            Debug.Print "Starting contour search at (" & x & ", " & y & ")"
+            
+            'It is!  Start tracing its contour.
+            startX = x
+            startY = y
+        
+            'Start searching for contour points!
+            Do
+                
+                'For the current pixel, determine an index into the marching squares lookup table.  Note that this
+                ' table is constructed very specifically, which is what makes the following lookup technique work.
+                ' (See: https://en.wikipedia.org/wiki/Marching_squares#Basic_algorithm)
+                ' Note also that other languages could compute this more efficiently using bit-shifting..
+                i = 0
+                If (srcArray(x - 1, y - 1) <> 0) Then i = i + 1
+                If (srcArray(x, y - 1) <> 0) Then i = i + 2
+                If (srcArray(x - 1, y) <> 0) Then i = i + 4
+                If (srcArray(x, y) <> 0) Then i = i + 8
+                
+                'Now that we have an index into the table, use that index to compute the actual physical
+                ' location of the next pixel in line.  Note that we also enforce clockwise path behavior.
+                If (i = 6) Then
+                    If (prevY = -1) Then nextX = -1 Else nextX = 1
+                    nextY = 0
+                ElseIf (i = 9) Then
+                    nextX = 0
+                    If (prevX = 1) Then nextY = -1 Else nextY = 1
+                Else
+                    nextX = m_XDirs(i)
+                    nextY = m_YDirs(i)
+                End If
+                
+                'Add this point to our running polygon list, but *only* if this point is moving in a different
+                ' direction from our previous point!
+                If ((nextX <> prevX) Or (nextY <> prevY)) Then
+                    PushOntoStack x + xOffset, y + yOffset
+                    prevX = nextX
+                    prevY = nextY
+                End If
+                
+                'Traverse to the next point in line
+                x = x + nextX
+                y = y + nextY
+                
+            'Loop checks are easy - continue until we return to our starting point
+            Loop While ((x <> startX) Or (y <> startY))
+            
+            'The stack now describes a completed polygon (or polygon segment, depending on the underlying shape).
+            ' Add the full stack to our running path object.
+            dstPath.AddLinesInt m_StackPosition, VarPtr(m_Stack(0))
+            dstPath.CloseCurrentFigure
+            
+            'Manually set all points in the current list to 0 (because we don't want to re-process them!)
+            For i = 0 To m_StackPosition - 1
+                With m_Stack(i)
+                    srcArray(.x - xOffset, .y - yOffset) = 0
+                End With
+            Next i
+            
+            'Reset the stack pointer
+            m_StackPosition = 0
+            
+        End If
+    
+    'Continue with the next segment
+    Next x
+    Next y
+    
+    FindAllEdges = True
+    
+End Function
+
+'NEW TEST: remove polygon interiors via GDI+.  Performance is TBD.
+'
+'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function instead.
+' Note that (by design) it does *not* forcibly close paths.  This allows it to return line segments or other non-standard edges that
+' would otherwise be extremely difficult to define as polygons.
+'
+'The approach required by this kind of algorithm makes it unsuitable for subsequent polygon operations, but for raster-style operations
+' (or just rendering overlays on affected edges), it is ideal and much much faster than a mathematically rigorous solution.
+Friend Function FindAllEdges2(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
+    
+    If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
+    
+    'Current (x, y) positions.  (These start at startX and startY.)  After a shape is completed, these will advance to the next
+    ' non-zero position in the source array, and repeat a scan from there.
+    Dim x As Long, y As Long
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = startX
+    initY = startY
+    finalX = maxX
+    finalY = maxY
+    
+    'Next (x, y) *direction*.  These are always one of [-1, 0, 1].
+    Dim nextX As Long, nextY As Long
+    nextX = 0
+    nextY = 0
+    
+    'Previous (x, y) *direction*.  These are always one of [-1, 0, 1].
+    ' We track these so that we can ignore points that lie on an existing line "as we go", instead of
+    ' wasting time and energy pushing them onto the stack.
+    Dim prevX As Long, prevY As Long
+    prevX = 1000000000
+    prevY = 1000000000
+    
+    Dim dstPoints() As POINTFLOAT
+    ReDim dstPoints(0) As POINTFLOAT
+    
+    Dim tmpPath As pd2DPath
+    Set tmpPath = New pd2DPath
+    
+    Dim tmpRegion As pd2DRegion
+    Set tmpRegion = New pd2DRegion
+    
+    'Index into our precalculated direction arrays.
+    Dim i As Long, j As Long
+    Dim intBounds As RECTL
+    Dim intInitX As Long, intInitY As Long, intFinalX As Long, intFinalY As Long
+    Dim tmpGdipHandle As Long, tmpResult As Long
+    
+    'Starting at (x, y), look for the next valid edge pixel.  Once one is found, start tracing it.
+    For y = initY To finalY
+    For x = initX To finalX
+        
+        'Is this an edge pixel?
+        If (srcArray(x, y) <> 0) Then
+            
+            Debug.Print "Starting contour search at (" & x & ", " & y & ")"
+            
+            'It is!  Start tracing its contour.
+            startX = x
+            startY = y
+        
+            'Start searching for contour points!
+            Do
+                
+                'For the current pixel, determine an index into the marching squares lookup table.  Note that this
+                ' table is constructed very specifically, which is what makes the following lookup technique work.
+                ' (See: https://en.wikipedia.org/wiki/Marching_squares#Basic_algorithm)
+                ' Note also that other languages could probably compute this more efficiently using bit-shifting...
+                i = 0
+                'If (srcArray(x - 1, y - 1) <> 0) Then i = i + 1
+                'If (srcArray(x, y - 1) <> 0) Then i = i + 2
+                'If (srcArray(x - 1, y) <> 0) Then i = i + 4
+                'If (srcArray(x, y) <> 0) Then i = i + 8
+                If (srcArray(x - 1, y - 1) <> 0) Then i = i Or 1
+                If (srcArray(x, y - 1) <> 0) Then i = i Or 2
+                If (srcArray(x - 1, y) <> 0) Then i = i Or 4
+                If (srcArray(x, y) <> 0) Then i = i Or 8
+                
+                'Now that we have an index into the table, use that index to compute the actual physical
+                ' location of the next pixel in line.  Note that we also enforce clockwise path behavior.
+                ' (The special checks for 6 and 9 deal with ambiguous saddle points; by tracking previous
+                '  direction, we can resolve the ambiguity.)
+                If (i = 6) Then
+                    If (prevY = -1) Then nextX = -1 Else nextX = 1
+                    nextY = 0
+                ElseIf (i = 9) Then
+                    nextX = 0
+                    If (prevX = 1) Then nextY = -1 Else nextY = 1
+                Else
+                    nextX = m_XDirs(i)
+                    nextY = m_YDirs(i)
+                End If
+                
+                'Add this point to our running polygon list, but *only* if this point is moving in a different
+                ' direction from our previous point!
+                If ((nextX <> prevX) Or (nextY <> prevY)) Then
+                    PushOntoStack x + xOffset, y + yOffset
+                    prevX = nextX
+                    prevY = nextY
+                End If
+                
+                'Traverse to the next point in line
+                x = x + nextX
+                y = y + nextY
+                
+            'Loop checks are easy - continue until we return to our starting point
+            Loop While ((x <> startX) Or (y <> startY))
+            
+            'The stack now describes a completed polygon.  Add it to a temporary path object.
+            tmpPath.ResetPath
+            tmpPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
+            
+            'Add the temporary polgyon to our running collection
+            dstPath.AddPath tmpPath
+            
+            Debug.Print "Searching path interior..."
+            tmpRegion.AddPath tmpPath, P2_CM_Replace
+            tmpGdipHandle = tmpRegion.GetHandle()
+            
+            'We now want to search the interior of the path region, and invert any/all points lying *inside* the polygon.
+            ' (This allows us to isolate holes in the region.)
+            intBounds = tmpRegion.GetRegionBoundsL()
+            intInitX = intBounds.Left
+            intInitY = intBounds.Top
+            intFinalX = intBounds.Left + intBounds.Right
+            intFinalY = intBounds.Top + intBounds.Bottom
+            
+            For j = intInitY To intFinalY
+            For i = intInitX To intFinalX
+                GdipIsVisibleRegionPointI tmpGdipHandle, i, j, 0&, tmpResult
+                If (tmpResult <> 0) Then
+                    srcArray(i - xOffset, j - yOffset) = (Not srcArray(i - xOffset, j - yOffset)) And &H1
+                End If
+            Next i
+            Next j
+            
+            'Reset the stack pointer
+            m_StackPosition = 0
+            
+        End If
+    
+    'Continue with the next segment
+    Next x
+    Next y
+    
+    FindAllEdges2 = True
+    
+End Function
+
+'It's generally trivial to create threshold maps of an image (where pixels below a threshold are marked "0", while pixels above a threshold
+' are marked "non-zero"), but it's a bit more obnoxious to convert this to an "edge" representation, where interior areas have been removed.
+' This helper function will complete such a task for you, but note that you must supply *both* a source and destination array.
+' (The destination array will be enlarged by 1 pixel on each side, to ensure no boundary issues.)
+'
+'IMPORTANT NOTE!  The source array *will be erased* by this function, by design.  If you want it to be retained, you *must* make a
+' manual copy prior to invoking this function.
+Friend Sub ConvertThresholdMapToEdgeMap(ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal srcXBound As Long, ByVal srcYBound As Long)
+
+    'First thing we want to do is initialize the destination array.  Note that this array has a guaranteed blank 1-px border around
+    ' all sides; this is crucial for simplifying our edge-detection techniques.
+    Dim xBound As Long, yBound As Long
+    xBound = srcXBound + 2
+    yBound = srcYBound + 2
+    
+    ReDim dstArray(0 To xBound, 0 To yBound) As Byte
+    
+    'Next, we need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
+    ' This guarantees a boundary of zeroes around the target image, which greatly accelerates edge detection.
+    Dim x As Long, y As Long
+    For y = 0 To srcYBound
+        CopyMemory_Strict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
+    Next y
+    
+    'The destination array now contains an exact copy of the source array, but with a 1-px border added.  Wipe the source array.
+    FillMemory VarPtr(srcArray(0, 0)), srcXBound * srcYBound, 0
+    
+    Dim pxIsEdge As Boolean
+    
+    'Next, we need to scan the destination array, and mark any outline pixels (*not* interior pixels) back onto the source map,
+    ' accounting for that 1-px border offset as we do so.
+    For y = 1 To srcYBound + 1
+    For x = 1 To srcXBound + 1
+        
+        pxIsEdge = False
+        
+        'We only care about pixels that are *not* thresholded.
+        If (dstArray(x, y) = 0) Then
+            
+            If (dstArray(x - 1, y - 1) <> 0) Then
+                pxIsEdge = True
+            ElseIf (dstArray(x, y - 1) <> 0) Then
+                pxIsEdge = True
+            ElseIf (dstArray(x + 1, y - 1) <> 0) Then
+                pxIsEdge = True
+            ElseIf (dstArray(x - 1, y) <> 0) Then
+                pxIsEdge = True
+            ElseIf (dstArray(x + 1, y) <> 0) Then
+                pxIsEdge = True
+            ElseIf (dstArray(x - 1, y + 1) <> 0) Then
+                pxIsEdge = True
+            ElseIf (dstArray(x, y + 1) <> 0) Then
+                pxIsEdge = True
+            ElseIf (dstArray(x + 1, y + 1) <> 0) Then
+                pxIsEdge = True
+            End If
+            
+            'If this is an edge pixel, mark it in the source array
+            If pxIsEdge Then srcArray(x - 1, y - 1) = 1
+        
+        End If
+        
+    Next x
+    Next y
+    
+    'The source array has now been re-processed to reflect *only* edge pixels.  Re-copy it into the destination, overwriting our
+    ' original copy as we go.
+    For y = 0 To srcYBound
+        CopyMemory_Strict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
+    Next y
+    
+End Sub
+
+'To improve edge-detection performance, a source array needs to have a guaranteed blank set of pixels around its outside edge.
+' Use this helper function to make that happen.
+Friend Sub MakeArrayEdgeSafe(ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal srcXBound As Long, ByVal srcYBound As Long)
+
+    'First thing we want to do is initialize the destination array.  Note that this array has a guaranteed blank 1-px border around
+    ' all sides; this is crucial for simplifying our edge-detection techniques.
+    Dim xBound As Long, yBound As Long
+    xBound = srcXBound + 2
+    yBound = srcYBound + 2
+    
+    ReDim dstArray(0 To xBound, 0 To yBound) As Byte
+    
+    'Next, we need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
+    ' This guarantees a boundary of zeroes around the target image, which greatly accelerates edge detection.
+    Dim x As Long, y As Long
+    For y = 0 To srcYBound
+        CopyMemory_Strict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
+    Next y
+    
+    'The destination array now contains an exact copy of the source array, but with a 1-px border added.  Wipe the source array.
+    
+End Sub
+
 
 Private Sub Class_Initialize()
 

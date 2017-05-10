@@ -164,18 +164,18 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     finalY = curDIBValues.Bottom
     
     Dim iWidth As Long, iHeight As Long
-    iWidth = finalX - initX + 1
-    iHeight = finalY - initY + 1
+    iWidth = finalX - initX
+    iHeight = finalY - initY
     
     'To spare our edge detector from worrying about edge pixels (which slow down processing due to obnoxious
     ' nested If/Then statements), we declare our input array with a guaranteed list of non-edge pixels on
     ' all sides.
     Dim edgeData() As Byte
-    ReDim edgeData(0 To iWidth + 2, 0 To iHeight + 2) As Byte
+    ReDim edgeData(0 To iWidth, 0 To iHeight) As Byte
     
     Dim xOffset As Long, yOffset As Long
-    xOffset = -initX + 1
-    yOffset = -initY + 1
+    xOffset = -initX
+    yOffset = -initY
     
     'Most of the time, edges are calculated using the image's alpha channel.
     If (edgeType = 0) Then
@@ -225,34 +225,15 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     Dim cEdges As pdEdgeDetector
     Set cEdges = New pdEdgeDetector
     
-    Dim finalPolygon() As POINTFLOAT, numOfPoints As Long
+    'We now need to convert our "threshold map" into an "edge only" map.  The edge detection class can
+    ' do this for us, using a minesweeper-style algorithm.
+    Dim finalEdgeData() As Byte
+    'cEdges.ConvertThresholdMapToEdgeMap edgeData, finalEdgeData, iWidth, iHeight
+    cEdges.MakeArrayEdgeSafe edgeData, finalEdgeData, iWidth, iHeight
     
-    'Use the edge detector to find an initial (x, y) location to start our path trace
-    Dim startX As Long, startY As Long
-    If cEdges.FindStartingPoint(edgeData, initX + 1, initY + 1, finalX + 1, finalY + 1, startX, startY) Then
-    
-        'Run the path analyzer
-        If cEdges.FindEdges(edgeData, startX, startY, -xOffset, -yOffset) Then
-        
-            'Retrieve the polygon that defines the outer boundary
-            cEdges.RetrieveFinalPolygon finalPolygon, numOfPoints
-        
-        End If
-    
-    'No exterior path found, which is basically total failure.  Treat the image boundaries as our
-    ' final path outline, instead.
-    Else
-        numOfPoints = 4
-        ReDim finalPolygon(0 To 3) As POINTFLOAT
-        finalPolygon(0).x = initX
-        finalPolygon(0).y = initY
-        finalPolygon(1).x = initX
-        finalPolygon(1).y = finalY
-        finalPolygon(2).x = finalX
-        finalPolygon(2).y = finalY
-        finalPolygon(3).x = initX
-        finalPolygon(3).y = finalY
-    End If
+    'Run the path analyzer
+    Dim finalPath As pd2DPath
+    cEdges.FindAllEdges2 finalPath, finalEdgeData, 1, 1, iWidth + 1, iHeight + 1, -xOffset - 1, -yOffset - 1
     
     If (Not toPreview) Then SetProgBarVal 2
     
@@ -267,8 +248,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     Set cPen = New pd2DPen
     cPen.SetPenPropertiesFromXML edgeStyle
     
-    cPainter.DrawPolygonF cSurface, cPen, numOfPoints, VarPtr(finalPolygon(0))
-    
+    cPainter.DrawPath cSurface, cPen, finalPath
     Set cPen = Nothing: Set cSurface = Nothing: Set cPainter = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering

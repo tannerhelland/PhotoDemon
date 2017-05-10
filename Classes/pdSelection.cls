@@ -2361,15 +2361,15 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
     'If the current selection lies fully off-image, let's skip this step entirely.
-    If AreAllCoordinatesInvalid Then Exit Sub
+    If Me.AreAllCoordinatesInvalid Then Exit Sub
     
     'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
     ' renders the active selection's outline by treating the underlying data as a path, not a mask).
     
     'We use THIS FUNCTION if...
     ' 1) The user has requested "highlight" or "lightbox" rendering mode
-    ' 2) If the current selection is a wand or raster selection, we use this function regardless of the requested
-    '    rendering mode.  (Wand and raster selections do not currently support outlines.)
+    ' 2) If the current selection is a raster selection, we use this function regardless of the requested
+    '    rendering mode.  (Raster selections do not currently support outlines.)
     '
     'Note that PD's UI prevents this combination of inputs, so this exists purely as an emergency fallback
     If (renderType = PDSR_Outline) Then
@@ -2387,7 +2387,7 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
     
     If useOutlineRenderingInstead Then
-        RenderOutlineOnly dstDIB, srcImage, dstCanvas
+        RenderOutlineOnly dstDIB, srcImage, dstCanvas, renderType
     Else
         
         'Pull an updated canvas intersection rect from the source image
@@ -2645,7 +2645,7 @@ End Sub
 ' TODO: figure out how to draw bordered selections.  This is easy for rects, ellipses, and lines, but polygon and lasso selections are
 '       much trickier.  GdipWidenPath doesn't work because it crosses itself on the inner loop, which makes for a messy, jumbled outline.
 '       We'd probably need a custom solution that removes inner loops - ugly project!
-Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal renderType As PD_SelectionRender)
     
     'To render an outline correctly, we must first translate all relevant points from the image coordinate space
     ' to the viewport coordinate space.  The number of points required obviously varies by selection shape.
