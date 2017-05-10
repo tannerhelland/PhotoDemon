@@ -136,16 +136,34 @@ Friend Function GetRegionBoundsL() As RECTL
     End If
 End Function
 
+Friend Function IsPointInRegion(ByVal srcX As Single, ByVal srcY As Single) As Boolean
+    If (m_RegionHandle <> 0) Then
+        Select Case m_RegionBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                IsPointInRegion = GDI_Plus.GDIPlus_RegionContainsPoint(m_RegionHandle, srcX, srcY)
+        End Select
+    End If
+End Function
+
+Friend Function IsPointInRegionInt(ByVal srcX As Long, ByVal srcY As Long) As Boolean
+    If (m_RegionHandle <> 0) Then
+        Select Case m_RegionBackend
+            Case P2_DefaultBackend, P2_GDIPlusBackend
+                IsPointInRegionInt = GDI_Plus.GDIPlus_RegionContainsPointI(m_RegionHandle, srcX, srcY)
+        End Select
+    End If
+End Function
+
 'Don't use this function unless you know what you're doing.  This will copy (*not* clone) an external handle from the
 ' current backend.  That handle *must not be in use elsewhere*, because if it is deleted, this class has no way of
 ' detecting that.  (This function is only used when a convoluted API does not allow us to directly grab a returned
 ' handle ourselves.)
-Public Sub AssignExternalHandleDirectly(ByVal srcHandle As Long)
+Friend Sub AssignExternalHandleDirectly(ByVal srcHandle As Long)
     If (m_RegionHandle <> 0) Then Me.ReleaseRegion
     m_RegionHandle = srcHandle
 End Sub
 
-Public Function MakeRegionInfinite() As Boolean
+Friend Function MakeRegionInfinite() As Boolean
 
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
@@ -156,7 +174,7 @@ Public Function MakeRegionInfinite() As Boolean
     
 End Function
 
-Public Function MakeRegionEmpty() As Boolean
+Friend Function MakeRegionEmpty() As Boolean
 
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
@@ -167,7 +185,7 @@ Public Function MakeRegionEmpty() As Boolean
     
 End Function
 
-Public Function IsRegionInfinite() As Boolean
+Friend Function IsRegionInfinite() As Boolean
 
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
@@ -178,7 +196,7 @@ Public Function IsRegionInfinite() As Boolean
     
 End Function
 
-Public Function IsRegionEmpty() As Boolean
+Friend Function IsRegionEmpty() As Boolean
 
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
@@ -189,7 +207,7 @@ Public Function IsRegionEmpty() As Boolean
     
 End Function
 
-Public Function IsEqual(ByRef srcRegion As pd2DRegion) As Boolean
+Friend Function IsEqual(ByRef srcRegion As pd2DRegion) As Boolean
     
     If (m_RegionHandle = 0) Then Me.CreateRegion
     
@@ -200,7 +218,7 @@ Public Function IsEqual(ByRef srcRegion As pd2DRegion) As Boolean
     
 End Function
 
-Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
+Friend Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As Long
     If (createAsNecessary And (m_RegionHandle = 0)) Then
         If CreateRegion() Then GetHandle = m_RegionHandle Else GetHandle = 0
     Else
@@ -208,11 +226,17 @@ Public Function GetHandle(Optional ByVal createAsNecessary As Boolean = True) As
     End If
 End Function
 
-Public Function GetRegionBackend() As PD_2D_RENDERING_BACKEND
+Friend Function GetRegionBackend() As PD_2D_RENDERING_BACKEND
     GetRegionBackend = m_RegionBackend
 End Function
 
-Public Function HasRegion() As Boolean
+'Retrieve a copy of this region in GDI format.  Note that the caller is responsible for freeing the hRgn
+' via DeleteObject when finished.
+Friend Function GetRegionAsHRgn() As Long
+    GetRegionAsHRgn = GDI_Plus.GDIPlus_RegionGetHRgn(m_RegionHandle)
+End Function
+
+Friend Function HasRegion() As Boolean
     HasRegion = CBool(m_RegionHandle <> 0)
 End Function
 
@@ -242,7 +266,7 @@ Friend Function CreateRegion() As Boolean
     
 End Function
 
-Public Function ReleaseRegion() As Boolean
+Friend Function ReleaseRegion() As Boolean
     
     If (m_RegionHandle <> 0) Then
         
@@ -265,12 +289,12 @@ Public Function ReleaseRegion() As Boolean
     
 End Function
 
-Public Sub ResetAllProperties()
+Friend Sub ResetAllProperties()
     Me.ReleaseRegion
 End Sub
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Public Sub SetDebugMode(ByVal newMode As Boolean)
+Friend Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
 
