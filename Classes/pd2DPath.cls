@@ -57,15 +57,15 @@ Private m_PathHandle As Long
 ' pd2DTransform object.  To apply said transformations, we use an internal instance of that class.
 Private m_Transform As pd2DTransform
 
-Public Function GetHandle() As Long
+Friend Function GetHandle() As Long
     GetHandle = m_PathHandle
 End Function
 
-Public Function GetPathBackend() As PD_2D_RENDERING_BACKEND
+Friend Function GetPathBackend() As PD_2D_RENDERING_BACKEND
     GetPathBackend = m_PathBackend
 End Function
 
-Public Function HasPath() As Boolean
+Friend Function HasPath() As Boolean
     HasPath = CBool(m_PathHandle <> 0)
 End Function
 
@@ -91,7 +91,7 @@ Private Function CreatePath() As Boolean
 End Function
 
 'Free the current path handle.
-Public Function ReleasePath() As Boolean
+Friend Function ReleasePath() As Boolean
     
     If (m_PathHandle <> 0) Then
         
@@ -117,7 +117,7 @@ End Function
 'Reset the path to a blank state.  Note that this may also reset the fill mode to a backend-specific value; for consistency,
 ' we override this with PD's currently specified default fill rule (which is WINDING, although the coder can change it using
 ' the constant at the top of this class).
-Public Sub ResetPath()
+Friend Sub ResetPath()
 
     If (m_PathHandle <> 0) Then
         
@@ -133,12 +133,12 @@ Public Sub ResetPath()
 End Sub
 
 'Circles are just a subset of ellipses, so we don't include any circle-specific backend code here
-Public Sub AddCircle(ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single)
+Friend Sub AddCircle(ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single)
     If (m_PathHandle = 0) Then CreatePath
     Me.AddEllipse_Absolute centerX - circleRadius, centerY - circleRadius, centerX + circleRadius, centerY + circleRadius
 End Sub
 
-Public Sub AddEllipse_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+Friend Sub AddEllipse_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -146,7 +146,7 @@ Public Sub AddEllipse_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 
     End Select
 End Sub
 
-Public Sub AddEllipse_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single)
+Friend Sub AddEllipse_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal ellipseWidth As Single, ByVal ellipseHeight As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -164,7 +164,7 @@ Friend Sub AddEllipse_RectF(ByRef srcRect As RECTF)
     End Select
 End Sub
 
-Public Sub AddLine(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+Friend Sub AddLine(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -172,11 +172,27 @@ Public Sub AddLine(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, B
     End Select
 End Sub
 
-Public Sub AddLines(ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long)
+Friend Sub AddLineInt(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long)
+    If (m_PathHandle = 0) Then CreatePath
+    Select Case m_PathBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            GDI_Plus.GDIPlus_PathAddLineI m_PathHandle, x1, y1, x2, y2
+    End Select
+End Sub
+
+Friend Sub AddLines(ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
             GDI_Plus.GDIPlus_PathAddLines m_PathHandle, ptrToPtFArray, numOfPoints
+    End Select
+End Sub
+
+Friend Sub AddLinesInt(ByVal numOfPoints As Long, ByVal ptrToPtLArray As Long)
+    If (m_PathHandle = 0) Then CreatePath
+    Select Case m_PathBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            GDI_Plus.GDIPlus_PathAddLinesI m_PathHandle, ptrToPtLArray, numOfPoints
     End Select
 End Sub
 
@@ -190,7 +206,7 @@ Friend Sub AddArc(ByRef ellipseBoundRect As RECTF, ByVal startAngle As Single, B
     End Select
 End Sub
 
-Public Sub AddArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single)
+Friend Sub AddArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -198,7 +214,7 @@ Public Sub AddArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVa
     End Select
 End Sub
 
-Public Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+Friend Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
     
     If (m_PathHandle = 0) Then CreatePath
     
@@ -224,10 +240,36 @@ Public Sub AddPolygon(ByVal numOfPoints As Long, ByVal ptrToPtFArray As Long, By
     
 End Sub
 
+Friend Sub AddPolygonInt(ByVal numOfPoints As Long, ByVal ptrToPtLArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+    
+    If (m_PathHandle = 0) Then CreatePath
+    
+    Select Case m_PathBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+    
+            'We have a few different options for adding this shape, based on the passed parameters.
+            If autoCloseShape Then
+                If useCurveAlgorithm Then
+                    GDI_Plus.GDIPlus_PathAddClosedCurveI m_PathHandle, ptrToPtLArray, numOfPoints, curvatureTension
+                Else
+                    GDI_Plus.GDIPlus_PathAddPolygonI m_PathHandle, ptrToPtLArray, numOfPoints
+                End If
+            Else
+                If useCurveAlgorithm Then
+                    GDI_Plus.GDIPlus_PathAddCurveI m_PathHandle, ptrToPtLArray, numOfPoints, curvatureTension
+                Else
+                    GDI_Plus.GDIPlus_PathAddLinesI m_PathHandle, ptrToPtLArray, numOfPoints
+                End If
+            End If
+            
+    End Select
+    
+End Sub
+
 'Technically this should be called "AddPolygon_RegularConvex", but for brevity, we use just "regular".  Regular polygons
 ' (https://en.wikipedia.org/wiki/Regular_polygon) are the ones you learned in grade school: square, pentagon, hexagon, etc.
 ' Regular polygons are defined by a center point, radius, and number of sides.  This function also supports curvature.
-Public Sub AddPolygon_Regular(ByVal numOfSides As Long, ByVal pRadius As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
+Friend Sub AddPolygon_Regular(ByVal numOfSides As Long, ByVal pRadius As Single, Optional ByVal centerX As Single = 0#, Optional ByVal centerY As Single = 0#, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
     
     If (numOfSides > 0) Then
         
@@ -260,7 +302,7 @@ Public Sub AddPolygon_Regular(ByVal numOfSides As Long, ByVal pRadius As Single,
     
 End Sub
 
-Public Sub AddRectangle_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
+Friend Sub AddRectangle_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -268,7 +310,15 @@ Public Sub AddRectangle_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x
     End Select
 End Sub
 
-Public Sub AddRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single)
+Friend Sub AddRectangle_AbsoluteI(ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long)
+    If (m_PathHandle = 0) Then CreatePath
+    Select Case m_PathBackend
+        Case P2_DefaultBackend, P2_GDIPlusBackend
+            GDI_Plus.GDIPlus_PathAddRectangleI m_PathHandle, x1, y1, x2 - x1, y2 - y1
+    End Select
+End Sub
+
+Friend Sub AddRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -286,7 +336,7 @@ Friend Sub AddRectangle_RectF(ByRef srcRect As RECTF)
     End Select
 End Sub
 
-Public Sub AddRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single)
+Friend Sub AddRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, ByVal rectWidth As Single, ByVal rectHeight As Single, ByVal cornerRadius As Single)
     
     If (m_PathHandle = 0) Then CreatePath
     
@@ -312,7 +362,7 @@ Public Sub AddRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, 
     
 End Sub
 
-Public Sub AddBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single)
+Friend Sub AddBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -321,7 +371,7 @@ Public Sub AddBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Si
 End Sub
 
 'Convenience wrapper for triangles
-Public Sub AddTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single)
+Friend Sub AddTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single)
     
     If (m_PathHandle = 0) Then CreatePath
     
@@ -340,7 +390,7 @@ Public Sub AddTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Singl
     
 End Sub
 
-Public Sub AddPath(ByRef srcGraphicsPath As pd2DPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
+Friend Sub AddPath(ByRef srcGraphicsPath As pd2DPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
     
     If (m_PathHandle = 0) Then CreatePath
     
@@ -380,7 +430,7 @@ Public Sub AddPath(ByRef srcGraphicsPath As pd2DPath, Optional ByVal offsetX As 
     
 End Sub
 
-Public Sub StartNewFigure()
+Friend Sub StartNewFigure()
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -388,7 +438,7 @@ Public Sub StartNewFigure()
     End Select
 End Sub
 
-Public Sub CloseCurrentFigure()
+Friend Sub CloseCurrentFigure()
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -446,7 +496,7 @@ Friend Sub CreateSamplePathForRect(ByRef srcRect As RECTF, Optional ByVal hPaddi
 End Sub
 
 'Get/Set the path's current fill rule.  (Setting a new fill rule is non-destructive, FYI.)
-Public Function GetFillRule() As PD_2D_FillRule
+Friend Function GetFillRule() As PD_2D_FillRule
     If (m_PathHandle = 0) Then
         GetFillRule = DEFAULT_FILL_RULE
     Else
@@ -457,7 +507,7 @@ Public Function GetFillRule() As PD_2D_FillRule
     End If
 End Function
 
-Public Sub SetFillRule(ByVal newRule As PD_2D_FillRule)
+Friend Sub SetFillRule(ByVal newRule As PD_2D_FillRule)
     If (m_PathHandle = 0) Then CreatePath
     Select Case m_PathBackend
         Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -466,7 +516,7 @@ Public Sub SetFillRule(ByVal newRule As PD_2D_FillRule)
 End Sub
 
 'Translate the entire path by some amount in the x and/or y positions
-Public Function TranslatePath(ByVal xAmount As Single, ByVal yAmount As Single) As Boolean
+Friend Function TranslatePath(ByVal xAmount As Single, ByVal yAmount As Single) As Boolean
     
     If (m_PathHandle = 0) Then CreatePath
     ResetInternalTransform
@@ -480,13 +530,13 @@ Public Function TranslatePath(ByVal xAmount As Single, ByVal yAmount As Single) 
 End Function
 
 'Translate the entire path by some amount in polar coordinates (angle + radius).  Radius is in degrees.
-Public Function TranslatePath_Polar(ByVal translateAngle As Single, ByVal translateRadius As Single, Optional ByVal angleIsInDegrees As Boolean = True) As Boolean
+Friend Function TranslatePath_Polar(ByVal translateAngle As Single, ByVal translateRadius As Single, Optional ByVal angleIsInDegrees As Boolean = True) As Boolean
     If angleIsInDegrees Then translateAngle = PDMath.DegreesToRadians(translateAngle)
     TranslatePath_Polar = Me.TranslatePath(translateRadius * Cos(translateAngle), translateRadius * Sin(translateAngle))
 End Function
 
 'Transform the path by some arbitrary pd2DTransform object
-Public Function ApplyTransformation(ByRef srcTransform As pd2DTransform) As Boolean
+Friend Function ApplyTransformation(ByRef srcTransform As pd2DTransform) As Boolean
     If (Not srcTransform Is Nothing) Then
         If (m_PathHandle = 0) Then CreatePath
         Select Case m_PathBackend
@@ -499,7 +549,7 @@ Public Function ApplyTransformation(ByRef srcTransform As pd2DTransform) As Bool
 End Function
 
 'Rotate the path around its center point.  The center point is calculated automatically.
-Public Function RotatePathAroundItsCenter(ByRef rotateAngle As Single) As Boolean
+Friend Function RotatePathAroundItsCenter(ByRef rotateAngle As Single) As Boolean
     
     If (m_PathHandle = 0) Then CreatePath
     ResetInternalTransform
@@ -520,7 +570,7 @@ Public Function RotatePathAroundItsCenter(ByRef rotateAngle As Single) As Boolea
 End Function
 
 'Mirror the path around its center point.  The center point is calculated automatically.
-Public Function MirrorPathAroundItsCenter(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean) As Boolean
+Friend Function MirrorPathAroundItsCenter(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean) As Boolean
     
     If (m_PathHandle = 0) Then CreatePath
     ResetInternalTransform
@@ -549,7 +599,7 @@ End Function
 '
 'Also, this function requires an allowable error parameter because any curves in the image will be flattened
 ' (e.g. converted to a series of straight lines that approximate the original curve).
-Public Function ConvertPath_OutlineOnly(Optional ByVal allowableError As Single = DEFAULT_APPROXIMATION_ERROR) As Boolean
+Friend Function ConvertPath_OutlineOnly(Optional ByVal allowableError As Single = DEFAULT_APPROXIMATION_ERROR) As Boolean
     If (m_PathHandle <> 0) Then
         Select Case m_PathBackend
             Case P2_DefaultBackend, P2_GDIPlusBackend
@@ -567,7 +617,7 @@ End Function
 'Prior to conversion, any curves in the path will be converted to a series of lines.  The "allowable error" value determines
 ' how closely those lines approximate the original curve; a higher error means fewer lines and a faster transform, while a
 ' lower error means a more perfect approximation (at some cost to performance).
-Public Function ConvertPath_PenTrace(ByRef srcPen As pd2DPen, Optional ByVal allowableError As Single = DEFAULT_APPROXIMATION_ERROR) As Boolean
+Friend Function ConvertPath_PenTrace(ByRef srcPen As pd2DPen, Optional ByVal allowableError As Single = DEFAULT_APPROXIMATION_ERROR) As Boolean
     
     If (m_PathHandle <> 0) Then
         If (Not srcPen Is Nothing) Then
@@ -589,7 +639,7 @@ End Function
 '
 'Unlike other subs, this actually returns a success/failure result.  GDI+ is prone to unpredictable failures, so the caller may need to take
 ' precautions if the request fails.  (On failure, this sub will automatically try to restore the original path if it can.)
-Public Function ConvertPath_InflateLikeBalloon(ByVal inflateWidth As Single, Optional ByVal useLineJoin As PD_2D_LineJoin = P2_LJ_Round, Optional ByVal useLineCap As PD_2D_LineCap = P2_LC_Round, Optional ByVal allowableError As Single = DEFAULT_APPROXIMATION_ERROR) As Boolean
+Friend Function ConvertPath_InflateLikeBalloon(ByVal inflateWidth As Single, Optional ByVal useLineJoin As PD_2D_LineJoin = P2_LJ_Round, Optional ByVal useLineCap As PD_2D_LineCap = P2_LC_Round, Optional ByVal allowableError As Single = DEFAULT_APPROXIMATION_ERROR) As Boolean
     
     If (m_PathHandle <> 0) Then
     
@@ -636,7 +686,7 @@ Public Function ConvertPath_InflateLikeBalloon(ByVal inflateWidth As Single, Opt
     
 End Function
 
-Public Function CloneExistingPath(ByRef srcPath As pd2DPath) As Boolean
+Friend Function CloneExistingPath(ByRef srcPath As pd2DPath) As Boolean
     
     If (Not srcPath Is Nothing) Then
         
@@ -656,7 +706,7 @@ Public Function CloneExistingPath(ByRef srcPath As pd2DPath) As Boolean
     
 End Function
 
-Public Function DoesPointTouchPathOutlineF(ByVal x As Single, ByVal y As Single, ByRef srcPen As pd2DPen) As Boolean
+Friend Function DoesPointTouchPathOutlineF(ByVal x As Single, ByVal y As Single, ByRef srcPen As pd2DPen) As Boolean
     
     If (m_PathHandle <> 0) Then
         If (Not srcPen Is Nothing) Then
@@ -673,7 +723,7 @@ Public Function DoesPointTouchPathOutlineF(ByVal x As Single, ByVal y As Single,
     
 End Function
 
-Public Function DoesPointTouchPathOutlineL(ByVal x As Long, ByVal y As Long, ByRef srcPen As pd2DPen) As Boolean
+Friend Function DoesPointTouchPathOutlineL(ByVal x As Long, ByVal y As Long, ByRef srcPen As pd2DPen) As Boolean
     
     If (m_PathHandle <> 0) Then
         If (Not srcPen Is Nothing) Then
@@ -726,7 +776,7 @@ Friend Function GetPathBoundariesL(Optional ByRef testPen As pd2DPen = Nothing, 
 
 End Function
 
-Public Function IsPointInsidePathF(ByVal x As Single, ByVal y As Single) As Boolean
+Friend Function IsPointInsidePathF(ByVal x As Single, ByVal y As Single) As Boolean
     
     If (m_PathHandle <> 0) Then
         Select Case m_PathBackend
@@ -739,7 +789,7 @@ Public Function IsPointInsidePathF(ByVal x As Single, ByVal y As Single) As Bool
     
 End Function
 
-Public Function IsPointInsidePathL(ByVal x As Long, ByVal y As Long) As Boolean
+Friend Function IsPointInsidePathL(ByVal x As Long, ByVal y As Long) As Boolean
     
     If (m_PathHandle <> 0) Then
         Select Case m_PathBackend
@@ -767,7 +817,7 @@ Friend Function InitializePathBackend(Optional ByVal targetBackend As PD_2D_REND
 End Function
 
 'When debug mode is active, this class will report object creation and destruction back to the master Drawing2D module.
-Public Sub SetDebugMode(ByVal newMode As Boolean)
+Friend Sub SetDebugMode(ByVal newMode As Boolean)
     m_DebugMode = newMode
 End Sub
 
@@ -788,4 +838,3 @@ End Sub
 Private Sub InternalError(Optional ByRef errName As String = vbNullString, Optional ByRef errDescription As String = vbNullString, Optional ByVal ErrNum As Long = 0)
     Drawing2D.DEBUG_NotifyExternalError errName, errDescription, ErrNum, "pd2DPath"
 End Sub
-
