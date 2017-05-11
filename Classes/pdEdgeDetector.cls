@@ -221,123 +221,6 @@ Friend Sub RetrieveFinalPolygonIntoPath(ByRef dstPath As pd2DPath, Optional ByVa
     
 End Sub
 
-'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function instead.
-' Note that (by design) it does *not* forcibly close paths.  This allows it to return line segments or other non-standard edges that
-' would otherwise be extremely difficult to define as polygons.
-'
-'The approach required by this kind of algorithm makes it unsuitable for subsequent polygon operations, but for raster-style operations
-' (or just rendering overlays on affected edges), it is ideal and much much faster than a mathematically rigorous solution.
-Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
-    
-    If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
-    
-    'Current (x, y) positions.  (These start at startX and startY.)  After a shape is completed, these will advance to the next
-    ' non-zero position in the source array, and repeat a scan from there.
-    Dim x As Long, y As Long
-    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = startX
-    initY = startY
-    finalX = maxX
-    finalY = maxY
-    
-    'Next (x, y) *direction*.  These are always one of [-1, 0, 1].
-    Dim nextX As Long, nextY As Long
-    nextX = 0
-    nextY = 0
-    
-    'Previous (x, y) *direction*.  These are always one of [-1, 0, 1].
-    ' We track these so that we can ignore points that lie on an existing line "as we go", instead of
-    ' wasting time and energy pushing them onto the stack.
-    Dim prevX As Long, prevY As Long
-    prevX = 1000000000
-    prevY = 1000000000
-    
-    Dim dstPoints() As POINTFLOAT
-    ReDim dstPoints(0) As POINTFLOAT
-    
-    'Index into our precalculated direction arrays.
-    Dim i As Long
-    
-    'Starting at (x, y), look for the next valid edge pixel.  Once one is found, start tracing it.
-    For y = initY To finalY
-    For x = initX To finalX
-    
-    
-        'Is this an edge pixel?
-        If (srcArray(x, y) <> 0) Then
-            
-            Debug.Print "Starting contour search at (" & x & ", " & y & ")"
-            
-            'It is!  Start tracing its contour.
-            startX = x
-            startY = y
-        
-            'Start searching for contour points!
-            Do
-                
-                'For the current pixel, determine an index into the marching squares lookup table.  Note that this
-                ' table is constructed very specifically, which is what makes the following lookup technique work.
-                ' (See: https://en.wikipedia.org/wiki/Marching_squares#Basic_algorithm)
-                ' Note also that other languages could compute this more efficiently using bit-shifting..
-                i = 0
-                If (srcArray(x - 1, y - 1) <> 0) Then i = i + 1
-                If (srcArray(x, y - 1) <> 0) Then i = i + 2
-                If (srcArray(x - 1, y) <> 0) Then i = i + 4
-                If (srcArray(x, y) <> 0) Then i = i + 8
-                
-                'Now that we have an index into the table, use that index to compute the actual physical
-                ' location of the next pixel in line.  Note that we also enforce clockwise path behavior.
-                If (i = 6) Then
-                    If (prevY = -1) Then nextX = -1 Else nextX = 1
-                    nextY = 0
-                ElseIf (i = 9) Then
-                    nextX = 0
-                    If (prevX = 1) Then nextY = -1 Else nextY = 1
-                Else
-                    nextX = m_XDirs(i)
-                    nextY = m_YDirs(i)
-                End If
-                
-                'Add this point to our running polygon list, but *only* if this point is moving in a different
-                ' direction from our previous point!
-                If ((nextX <> prevX) Or (nextY <> prevY)) Then
-                    PushOntoStack x + xOffset, y + yOffset
-                    prevX = nextX
-                    prevY = nextY
-                End If
-                
-                'Traverse to the next point in line
-                x = x + nextX
-                y = y + nextY
-                
-            'Loop checks are easy - continue until we return to our starting point
-            Loop While ((x <> startX) Or (y <> startY))
-            
-            'The stack now describes a completed polygon (or polygon segment, depending on the underlying shape).
-            ' Add the full stack to our running path object.
-            dstPath.AddLinesInt m_StackPosition, VarPtr(m_Stack(0))
-            dstPath.CloseCurrentFigure
-            
-            'Manually set all points in the current list to 0 (because we don't want to re-process them!)
-            For i = 0 To m_StackPosition - 1
-                With m_Stack(i)
-                    srcArray(.x - xOffset, .y - yOffset) = 0
-                End With
-            Next i
-            
-            'Reset the stack pointer
-            m_StackPosition = 0
-            
-        End If
-    
-    'Continue with the next segment
-    Next x
-    Next y
-    
-    FindAllEdges = True
-    
-End Function
-
 'NEW TEST: remove polygon interiors via GDI+.  Performance is TBD.
 '
 'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function instead.
@@ -346,7 +229,7 @@ End Function
 '
 'The approach required by this kind of algorithm makes it unsuitable for subsequent polygon operations, but for raster-style operations
 ' (or just rendering overlays on affected edges), it is ideal and much much faster than a mathematically rigorous solution.
-Friend Function FindAllEdges2(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
+Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
     
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
     
@@ -407,10 +290,6 @@ Friend Function FindAllEdges2(ByRef dstPath As pd2DPath, ByRef srcArray() As Byt
                 ' (See: https://en.wikipedia.org/wiki/Marching_squares#Basic_algorithm)
                 ' Note also that other languages could probably compute this more efficiently using bit-shifting...
                 i = 0
-                'If (srcArray(x - 1, y - 1) <> 0) Then i = i + 1
-                'If (srcArray(x, y - 1) <> 0) Then i = i + 2
-                'If (srcArray(x - 1, y) <> 0) Then i = i + 4
-                'If (srcArray(x, y) <> 0) Then i = i + 8
                 If (srcArray(x - 1, y - 1) <> 0) Then i = i Or 1
                 If (srcArray(x, y - 1) <> 0) Then i = i Or 2
                 If (srcArray(x - 1, y) <> 0) Then i = i Or 4
@@ -469,7 +348,7 @@ Friend Function FindAllEdges2(ByRef dstPath As pd2DPath, ByRef srcArray() As Byt
             For i = intInitX To intFinalX
                 GdipIsVisibleRegionPointI tmpGdipHandle, i, j, 0&, tmpResult
                 If (tmpResult <> 0) Then
-                    srcArray(i - xOffset, j - yOffset) = (Not srcArray(i - xOffset, j - yOffset)) And &H1
+                    srcArray(i - xOffset, j - yOffset) = Not srcArray(i - xOffset, j - yOffset)
                 End If
             Next i
             Next j
@@ -483,7 +362,7 @@ Friend Function FindAllEdges2(ByRef dstPath As pd2DPath, ByRef srcArray() As Byt
     Next x
     Next y
     
-    FindAllEdges2 = True
+    FindAllEdges = True
     
 End Function
 

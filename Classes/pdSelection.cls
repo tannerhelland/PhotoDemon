@@ -2751,7 +2751,12 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
         'Draw the assembled path onto the canvas
         Dim cPainter As pd2DPainter, cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
         Drawing2D.QuickCreatePainter cPainter
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, True
+        
+        'Antialiasing performance can be a sore spot with wand selections.  Improving this is TBD.
+        Dim useAA As Boolean
+        'useAA = (m_SelectionShape <> ss_Wand)
+        useAA = True
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, useAA
         
         'In the future, we may offer an animated marching-ants solution.  For now, however, PD uses a white-on-black
         ' static outline.

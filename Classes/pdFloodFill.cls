@@ -171,17 +171,9 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Based on the specified search mode, call the appropriate flood function
     If (m_SearchMode = PDFS_CONTIGUOUS) Then
-        
-        'Contiguous flood fills always generate an internal byte array "map" of the filled area, so we don't need any special
-        ' handling prior to calling GenerateOutlinePath.
         FloodFillContiguous srcDIB, dstDIB
-        
     ElseIf (m_SearchMode = PDFS_WHOLEIMAGE) Then
-        
-        'By design, global flood fills won't populate an internal byte array map unless we specifically request it
-        ' TODO!
         FloodFillGlobal srcDIB, dstDIB
-        
     End If
     
     'If antialiasing was requested, apply it now.
@@ -202,16 +194,19 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     ' special treatment to remove antialiasing data, if any.)
     If (Not dstOutlinePath Is Nothing) Then
         
+        'In contiguous mode, bytes are set to (1) if they are added to the floodfill stack, and (2) if they are actually filled.
+        ' This gives us a great guide of edge pixels (because all pixels that are still marked as (1) were checked, but not filled),
+        ' but that information confuses our edge detector.  Reset all bytes to appropriate values now.
         If (m_SearchMode = PDFS_CONTIGUOUS) Then
             Dim x As Long, y As Long
             For y = 0 To m_BoundsY
             For x = 0 To m_BoundsX
-                If (m_AlreadyChecked(x, y) > 0) Then m_AlreadyChecked(x, y) = m_AlreadyChecked(x, y) - 1
+                If (m_AlreadyChecked(x, y) > 1) Then m_AlreadyChecked(x, y) = 255 Else m_AlreadyChecked(x, y) = 0
             Next x
             Next y
         End If
         
-        GenerateOutlinePath_Contiguous dstOutlinePath
+        GenerateFloodFillOutline dstOutlinePath
         
     End If
     
@@ -222,7 +217,7 @@ End Function
 '*AFTER* a contiguous floodfill has been calculated, you can call this function to generate a vector representation of the
 ' filled area's outline.  Note that any existing path data is *not* erased; the path is simply appended to existing data,
 ' if any exists.
-Private Sub GenerateOutlinePath_Contiguous(ByRef dstPath As pd2DPath)
+Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
     
     'PD's current outline detector requires an empty border around the outside of the target area.  Generate such an array now.
     Dim xBound As Long, yBound As Long
@@ -250,14 +245,6 @@ Private Sub GenerateOutlinePath_Contiguous(ByRef dstPath As pd2DPath)
     Next y
 
     'The m_OutlineCopy array now contains a valid copy of the filled area, with guaranteed blank boundary lines
-
-'    'Because the flood fill algorithm marks both interior *and* edge pixels, we now need to blank out interior pixels.
-'    ' (Only edge pixels are interesting for purposes of generating an outline.)
-'    For y = 1 To m_BoundsY + 1
-'    For x = 1 To m_BoundsX + 1
-'        If (m_outlineCopy(x, y) > 1) Then m_outlineCopy(x, y) = 0
-'    Next x
-'    Next y
     
     'Prep the target path and the outline enumerator
     If (dstPath Is Nothing) Then
@@ -269,103 +256,11 @@ Private Sub GenerateOutlinePath_Contiguous(ByRef dstPath As pd2DPath)
     Dim cOutline As pdEdgeDetector
     Set cOutline = New pdEdgeDetector
     
-'    'NEW TEST!!
-'    Dim m_outlineCopy() As Byte
-'
-'    Dim x As Long, y As Long
-'    For y = 0 To m_BoundsY
-'    For x = 0 To m_BoundsX
-'        If (m_AlreadyChecked(x, y) <> 2) Then m_AlreadyChecked(x, y) = 0
-'    Next x
-'    Next y
-'
-'    cOutline.ConvertThresholdMapToEdgeMap m_AlreadyChecked, m_outlineCopy, m_BoundsX, m_BoundsY
-    
     'Initiate the outline search.  (Note that we can safely start from position (1, 1), because we have already inserted blank lines
     ' around the exterior of the fill map.)
-    cOutline.FindAllEdges2 dstPath, m_outlineCopy, 1, 1, m_BoundsX + 1, m_BoundsY + 1, -1, -1
+    cOutline.FindAllEdges dstPath, m_outlineCopy, 1, 1, m_BoundsX + 1, m_BoundsY + 1, -1, -1
     
     'The edge detector has already filled the destination path, so our work here is done!
-    
-End Sub
-
-'*AFTER* any type of floodfill has been calculated, you can call this function to generate a vector representation of the
-' filled area's outline.  Note that this function is computationally expensive, so avoid calling it unless absolutely necessary.
-'
-'Note that any existing path data in the target path *will be erased* by this function.
-Private Sub GenerateOutlinePath_Global(ByRef dstPath As pd2DPath)
-
-    'PD's current outline detector requires an empty border around the outside of the target area.  Generate such an array now.
-    Dim xBound As Long, yBound As Long
-    xBound = m_BoundsX + 2
-    yBound = m_BoundsY + 2
-    
-    If (m_OutlineBoundsX <> xBound) Or (m_OutlineBoundsY <> yBound) Then
-        ReDim m_outlineCopy(0 To xBound, 0 To yBound) As Byte
-        m_OutlineBoundsX = xBound
-        m_OutlineBoundsY = yBound
-    Else
-        FillMemory VarPtr(m_outlineCopy(0, 0)), (xBound + 1) * (yBound + 1), 0
-    End If
-    
-    'We need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
-    ' This guarantees a boundary of zeroes around the target image.
-    
-    'Because VB arrays are row-major, we're going to copy contiguous rows.
-    Dim copySize As Long
-    copySize = m_BoundsX
-    
-    Dim x As Long, y As Long
-    'For y = 0 To m_BoundsY
-    '    CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_AlreadyChecked(0, y)), m_BoundsX
-    'Next y
-    
-    'The m_OutlineCopy array now contains a valid copy of the filled area, with guaranteed blank boundary lines
-    
-    'Prep the target path
-    If (dstPath Is Nothing) Then
-        Set dstPath = New pd2DPath
-    Else
-        dstPath.ResetPath
-    End If
-    
-    'We are now going to manually iterate the target array, adding rectangles of valid pixels as we go
-    Dim startX As Long, startXF As Single, inRectNow As Boolean
-    
-    For y = 0 To m_BoundsY
-    For x = 0 To m_BoundsX
-        
-        'Lines of "selected" pixels are added to the running path as rectangles.  When we're finished, we'll manually find
-        ' each outline in the assembled rectangle set.
-        If inRectNow Then
-            If (m_AlreadyChecked(x, y) = 0) Then
-                dstPath.AddRectangle_Absolute startXF, y - 0.1, x - 0.9, y + 1.1
-                'dstPath.AddRectangle_AbsoluteI startX, y - 1, x, y + 1
-                inRectNow = False
-            End If
-        Else
-            If (m_AlreadyChecked(x, y) <> 0) Then
-                startXF = x - 0.1
-                'startX = x - 1
-                inRectNow = True
-            End If
-        End If
-        
-    Next x
-        If inRectNow Then
-            dstPath.AddRectangle_Absolute startXF, y - 0.1, m_BoundsX + 0.1, y + 1.1
-            'dstPath.AddRectangle_AbsoluteI startX, y - 1, m_BoundsX + 1, y + 1
-            inRectNow = False
-        End If
-    Next y
-    
-    'With all rectangles successfully added, convert the path to an outline-only representation
-    Dim outlineResult As Boolean
-    outlineResult = dstPath.ConvertPath_OutlineOnly(2#)
-    
-    #If DEBUGMODE = 1 Then
-        If (Not outlineResult) Then pdDebug.LogAction "WARNING!  pdFloodFill.GenerateOutlinePath_Global() was unable to create a path outline."
-    #End If
     
 End Sub
 
@@ -664,7 +559,7 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
             dstImageData(x, y) = FILLED_PIXEL
-            m_AlreadyChecked(x, y) = 1
+            m_AlreadyChecked(x, y) = 255
         End If
         
     Next y
