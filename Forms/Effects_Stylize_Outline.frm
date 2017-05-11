@@ -96,8 +96,8 @@ Attribute VB_Exposed = False
 'Image Outline Effect Dialog
 'Copyright 2017-2017 by Tanner Helland
 'Created: 05/January/17
-'Last updated: 05/January/17
-'Last update: initial build
+'Last updated: 11/May/17
+'Last update: migrate tool to new pdEdgeDetector functionality that detects *all* types of polygons
 '
 'I actually built this algorithm for internal purposes, because it's helpful to render outlines around various
 ' resource PNGs to ensure they stand out against variable background colors.  Since the effect works well, I
@@ -208,7 +208,7 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
             
             'Perform a very "quick and dirty" color comparison
             rgbDistance = Abs(r - targetR) + Abs(g - targetG) + Abs(b - targetB)
-            If ((rgbDistance / rgbMaxDistance) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 1
+            If ((rgbDistance / rgbMaxDistance) > edgeThreshold) Then edgeData(x + xOffset, y + yOffset) = 255
             
         Next x
         Next y
@@ -228,12 +228,11 @@ Public Sub ApplyOutlineEffect(ByVal parameterList As String, Optional ByVal toPr
     'We now need to convert our "threshold map" into an "edge only" map.  The edge detection class can
     ' do this for us, using a minesweeper-style algorithm.
     Dim finalEdgeData() As Byte
-    'cEdges.ConvertThresholdMapToEdgeMap edgeData, finalEdgeData, iWidth, iHeight
     cEdges.MakeArrayEdgeSafe edgeData, finalEdgeData, iWidth, iHeight
     
     'Run the path analyzer
     Dim finalPath As pd2DPath
-    cEdges.FindAllEdges2 finalPath, finalEdgeData, 1, 1, iWidth + 1, iHeight + 1, -xOffset - 1, -yOffset - 1
+    cEdges.FindAllEdges finalPath, finalEdgeData, 1, 1, iWidth + 1, iHeight + 1, -xOffset - 1, -yOffset - 1
     
     If (Not toPreview) Then SetProgBarVal 2
     
