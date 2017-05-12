@@ -64,9 +64,6 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     'Synchronize all user-facing controls to match
     Selections.SyncTextToCurrentSelection g_CurrentImage
     
-    'Draw the new selection to the screen
-    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-
 End Sub
 
 'Remove the current selection
@@ -81,10 +78,7 @@ Public Sub RemoveCurrentSelection()
     
     'Synchronize all user-facing controls to match
     SyncTextToCurrentSelection g_CurrentImage
-        
-    'Redraw the image (with selection removed)
-    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-
+    
 End Sub
 
 'Create a new selection using the settings stored in a pdParamString-compatible string
@@ -104,9 +98,6 @@ Public Sub SelectWholeImage()
     'Synchronize all user-facing controls to match
     SyncTextToCurrentSelection g_CurrentImage
     
-    'Draw the new selection to the screen
-    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-
 End Sub
 
 'Load a previously saved selection.  Note that this function also handles creation and display of the relevant common dialog.

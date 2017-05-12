@@ -195,8 +195,8 @@ Private m_LassoPointsBackup() As POINTFLOAT, m_PolygonPointsBackup() As POINTFLO
 'When a polygon or lasso selection is closed, these values will be set to TRUE
 Private m_PolygonClosed As Boolean, m_LassoClosed As Boolean
 
-'Magic wand selections supply their own custom wand outline
-Private m_WandOutline As pd2DPath
+'Magic wand selections supply their own custom wand outline, and they are handled specially through a pdFloodFill instance.
+Private m_FloodFill As pdFloodFill, m_WandOutline As pd2DPath
 
 'Magic wand selections also require a special copy of the current relevant image data.  (This may be a fully composited
 ' image copy, or a null-padded version of the current layer.)  We cache this locally to improve wand performance, and we
@@ -345,111 +345,118 @@ Friend Sub InitFromXML(ByVal srcXML As String)
     'Start by creating a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types upon request.
     If (Len(srcXML) <> 0) Then
-    
-        Dim cParams As pdParamXML
-        Set cParams = New pdParamXML
-        cParams.SetParamString srcXML
         
-        'All selections share a core set of universal properties
-        SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
-        SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
-        SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", ss_None)
-        SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
-        SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
-        SetSelectionProperty sp_RoundedCornerRadius, cParams.GetLong("SelectionRoundedCornerRadius", 0)
-        SetSelectionProperty sp_LineWidth, cParams.GetLong("SelectionLineWidth", 1)
-        
-        'All coordinates must be transformed from absolute values to relative ones (on the scale [0, 1])
-        With m_CornersLocked
-            .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionLeft", 0), True)
-            .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionTop", 0), False)
-            .Width = TranslateValueRelToAbs(cParams.GetDouble("SelectionWidth", 0), True)
-            .Height = TranslateValueRelToAbs(cParams.GetDouble("SelectionHeight", 0), False)
-        End With
-        
-        'Additional parameters vary by selection type
-        Select Case m_SelectionShape
-        
-            'Rectangles, ellipses, and lines only require bounding rect values (stored as two (x, y) pairs).  Retrieve these
-            ' values from positions [12, 15] inclusive.
-            Case ss_Rectangle, ss_Circle, ss_Line
+        'Do a quick failsafe check to make sure the passed string differs from our current settings.  If it doesn't,
+        ' we can fully skip this step.
+        If (StrComp(srcXML, Me.GetSelectionAsXML, vbBinaryCompare) <> 0) Then
             
-                With m_CornersUnlocked
-                    .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorLeft", 0#), True)
-                    .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorTop", 0#), False)
-                    .Right = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorRight", 0#), True)
-                    .Bottom = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorBottom", 0#), False)
-                End With
+            Dim cParams As pdParamXML
+            Set cParams = New pdParamXML
+            cParams.SetParamString srcXML
             
-            'Polygon selections have a variable number of parameters, based on the number of points in the polygon.
-            Case ss_Polygon
+            'All selections share a core set of universal properties
+            SetSelectionShape cParams.GetLong("SelectionShape", ss_Rectangle)
+            SetSelectionProperty sp_Area, cParams.GetLong("SelectionArea", sa_Interior)
+            SetSelectionProperty sp_Smoothing, cParams.GetLong("SelectionSmoothing", ss_None)
+            SetSelectionProperty sp_FeatheringRadius, cParams.GetLong("SelectionFeatheringRadius", 0)
+            SetSelectionProperty sp_BorderWidth, cParams.GetLong("SelectionBorderWidth", 1)
+            SetSelectionProperty sp_RoundedCornerRadius, cParams.GetLong("SelectionRoundedCornerRadius", 0)
+            SetSelectionProperty sp_LineWidth, cParams.GetLong("SelectionLineWidth", 1)
+            
+            'All coordinates must be transformed from absolute values to relative ones (on the scale [0, 1])
+            With m_CornersLocked
+                .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionLeft", 0), True)
+                .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionTop", 0), False)
+                .Width = TranslateValueRelToAbs(cParams.GetDouble("SelectionWidth", 0), True)
+                .Height = TranslateValueRelToAbs(cParams.GetDouble("SelectionHeight", 0), False)
+            End With
+            
+            'Additional parameters vary by selection type
+            Select Case m_SelectionShape
+            
+                'Rectangles, ellipses, and lines only require bounding rect values (stored as two (x, y) pairs).  Retrieve these
+                ' values from positions [12, 15] inclusive.
+                Case ss_Rectangle, ss_Circle, ss_Line
                 
-                SetSelectionProperty sp_PolygonCurvature, cParams.GetDouble("SelectionPolygonCurvature", 0#)
-                m_NumOfPolygonPoints = cParams.GetLong("SelectionNumOfPoints", 0)
+                    With m_CornersUnlocked
+                        .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorLeft", 0#), True)
+                        .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorTop", 0#), False)
+                        .Right = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorRight", 0#), True)
+                        .Bottom = TranslateValueRelToAbs(cParams.GetDouble("SelectionVectorBottom", 0#), False)
+                    End With
                 
-                If (m_NumOfPolygonPoints > 0) Then
-                
-                    ReDim m_PolygonPoints(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+                'Polygon selections have a variable number of parameters, based on the number of points in the polygon.
+                Case ss_Polygon
                     
-                    'Retrieve all polygon points from the param string
+                    SetSelectionProperty sp_PolygonCurvature, cParams.GetDouble("SelectionPolygonCurvature", 0#)
+                    m_NumOfPolygonPoints = cParams.GetLong("SelectionNumOfPoints", 0)
+                    
                     If (m_NumOfPolygonPoints > 0) Then
-                        For i = 0 To m_NumOfPolygonPoints - 1
-                            With m_PolygonPoints(i)
-                                .x = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointX" & CStr(i + 1), 0), True)
-                                .y = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointY" & CStr(i + 1), 0), False)
-                            End With
-                        Next i
+                    
+                        ReDim m_PolygonPoints(0 To m_NumOfPolygonPoints - 1) As POINTFLOAT
+                        
+                        'Retrieve all polygon points from the param string
+                        If (m_NumOfPolygonPoints > 0) Then
+                            For i = 0 To m_NumOfPolygonPoints - 1
+                                With m_PolygonPoints(i)
+                                    .x = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointX" & CStr(i + 1), 0), True)
+                                    .y = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointY" & CStr(i + 1), 0), False)
+                                End With
+                            Next i
+                        End If
+                        
+                    Else
+                        ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
                     End If
+                
+                'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
+                Case ss_Lasso
                     
-                Else
-                    ReDim m_PolygonPoints(0 To 127) As POINTFLOAT
-                End If
-            
-            'Lasso/freehand selections have a variable number of parameters, based on the number of points in the lasso.
-            Case ss_Lasso
-                
-                SetSelectionProperty sp_SmoothStroke, cParams.GetDouble("SelectionSmoothStroke", 0#)
-                m_NumOfLassoPoints = cParams.GetLong("SelectionNumOfPoints", 0)
-                
-                If (m_NumOfLassoPoints > 0) Then
-                
-                    ReDim m_LassoPoints(0 To m_NumOfLassoPoints - 1) As POINTFLOAT
+                    SetSelectionProperty sp_SmoothStroke, cParams.GetDouble("SelectionSmoothStroke", 0#)
+                    m_NumOfLassoPoints = cParams.GetLong("SelectionNumOfPoints", 0)
                     
-                    'Retrieve all remaining lasso points
                     If (m_NumOfLassoPoints > 0) Then
-                        For i = 0 To m_NumOfLassoPoints - 1
-                            With m_LassoPoints(i)
-                                .x = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointX" & CStr(i + 1), 0#), True)
-                                .y = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointY" & CStr(i + 1), 0#), False)
-                            End With
-                        Next i
-                    End If
                     
-                Else
-                    ReDim m_LassoPoints(0 To 127) As POINTFLOAT
-                End If
+                        ReDim m_LassoPoints(0 To m_NumOfLassoPoints - 1) As POINTFLOAT
+                        
+                        'Retrieve all remaining lasso points
+                        If (m_NumOfLassoPoints > 0) Then
+                            For i = 0 To m_NumOfLassoPoints - 1
+                                With m_LassoPoints(i)
+                                    .x = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointX" & CStr(i + 1), 0#), True)
+                                    .y = TranslateValueRelToAbs(cParams.GetDouble("SelectionPointY" & CStr(i + 1), 0#), False)
+                                End With
+                            Next i
+                        End If
+                        
+                    Else
+                        ReDim m_LassoPoints(0 To 127) As POINTFLOAT
+                    End If
+                
+                'Almost all of the "magic wand" selection properties are unique (relative to other selection shapes)
+                Case ss_Wand
+                    
+                    'For weird historical reasons, wand selections store the wand origin point inside the unlocked selection rect
+                    With m_CornersUnlocked
+                        .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionWandX", 0), True)
+                        .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionWandY", 0), False)
+                    End With
+                    
+                    SetSelectionProperty sp_WandTolerance, cParams.GetDouble("SelectionWandTolerance", 0#)
+                    SetSelectionProperty sp_WandSampleMerged, cParams.GetLong("SelectionWandSampleMerged", 0)
+                    SetSelectionProperty sp_WandSearchMode, cParams.GetLong("SelectionWandSearchMode", 0)
+                    SetSelectionProperty sp_WandCompareMethod, cParams.GetLong("SelectionWandCompareMode", 0)
+                    
+                'Other types (e.g. raster selections) cannot be initiated via XML parameters
+                Case Else
             
-            'Almost all of the "magic wand" selection properties are unique (relative to other selection shapes)
-            Case ss_Wand
-                
-                'For weird historical reasons, wand selections store the wand origin point inside the unlocked selection rect
-                With m_CornersUnlocked
-                    .Left = TranslateValueRelToAbs(cParams.GetDouble("SelectionWandX", 0), True)
-                    .Top = TranslateValueRelToAbs(cParams.GetDouble("SelectionWandY", 0), False)
-                End With
-                
-                SetSelectionProperty sp_WandTolerance, cParams.GetDouble("SelectionWandTolerance", 0#)
-                SetSelectionProperty sp_WandSampleMerged, cParams.GetLong("SelectionWandSampleMerged", 0)
-                SetSelectionProperty sp_WandSearchMode, cParams.GetLong("SelectionWandSearchMode", 0)
-                SetSelectionProperty sp_WandCompareMethod, cParams.GetLong("SelectionWandCompareMode", 0)
-                
-            'Other types (e.g. raster selections) cannot be initiated via XML parameters
-            Case Else
-        
-        End Select
-        
-        'Initializing a selection via XML always forces a redraw of the selection mask
-        m_IsMaskReady = False
+            End Select
+            
+            'Initializing a selection via XML always forces a redraw of the selection mask
+            m_IsMaskReady = False
+            
+        'End matching param string check
+        End If
         
     'End non-zero XML length check
     End If
@@ -1911,17 +1918,6 @@ Private Sub CreateSelectionMask()
         'Wand selections use a custom class to perform a flood fill
         Case ss_Wand
         
-            'Create a flood fill class to help us process the wand
-            Dim cFloodFill As pdFloodFill
-            Set cFloodFill = New pdFloodFill
-            
-            'Set all initial parameters
-            cFloodFill.SetAntialiasingMode CBool(GetSelectionProperty_Long(sp_Smoothing) > ss_None)
-            cFloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
-            cFloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
-            cFloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
-            cFloodFill.SetCompareMode GetSelectionProperty_Long(sp_WandCompareMethod)
-            
             'Based on the flood fill type (layer vs image), pass a different source layer to the flood fill class.
             ' Note that we try to only regenerate this image as absolutely necessary.
             Dim wandImageRefreshRequired: wandImageRefreshRequired = False
@@ -1958,9 +1954,19 @@ Private Sub CreateSelectionMask()
                 
             End If
             
+            'pdFloodFill handles most the heavy lifting here
+            If (m_FloodFill Is Nothing) Then Set m_FloodFill = New pdFloodFill
+            
+            'Set all initial parameters
+            m_FloodFill.SetAntialiasingMode CBool(GetSelectionProperty_Long(sp_Smoothing) > ss_None)
+            m_FloodFill.SetInitialPoint m_CornersUnlocked.Left, m_CornersUnlocked.Top
+            m_FloodFill.SetTolerance GetSelectionProperty_Float(sp_WandTolerance)
+            m_FloodFill.SetSearchMode GetSelectionProperty_Long(sp_WandSearchMode)
+            m_FloodFill.SetCompareMode GetSelectionProperty_Long(sp_WandCompareMethod)
+            
             'Apply the flood fill, and make sure we retrieve an outline while we're at it
             If (m_WandOutline Is Nothing) Then Set m_WandOutline = New pd2DPath Else m_WandOutline.ResetPath
-            cFloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
+            m_FloodFill.InitiateFloodFill m_WandImage, m_SelMask, m_WandOutline
                         
         'Other selection types will be added in the future
         Case Else
@@ -2664,6 +2670,12 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
         Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
     End If
     
+    'Outline rendering isn't free.  In debug builds we may want to time it.
+    #If DEBUGMODE = 1 Then
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+    #End If
+    
     'New in version 6.6 is an awesome new path class, which makes the rendering steps much easier than they have historically been.
     Dim pdPath As pd2DPath
     Set pdPath = New pd2DPath
@@ -2743,7 +2755,7 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
                 pdPath.CloneExistingPath m_WandOutline
                 pdPath.ApplyTransformation cTransform
             End If
-        
+            
     End Select
     
     If (Not pdPath Is Nothing) Then
@@ -2763,6 +2775,15 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
         Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
         cPainter.DrawPath cSurface, cPenUIBase, pdPath
         cPainter.DrawPath cSurface, cPenUITop, pdPath
+        
+        'Want marching ants?  Here you go:
+        'Dim cDottedPen As pd2DPen
+        'Set cDottedPen = New pd2DPen
+        'cDottedPen.SetPenProperty
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
+        #End If
         
     End If
         
