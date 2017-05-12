@@ -57,6 +57,9 @@ Private Const INITIAL_STACK_HEIGHT As Long = 4096
 Private m_BoundsX As Long, m_BoundsY As Long
 Private m_AlreadyChecked() As Byte
 
+'The completed results of the fill are stored in a dedicated array; this accelerates certain post-processing tasks.
+Private m_FillResults() As Byte
+
 'If outlines are requested, we'll use a pdEdgeDetector instance (plus some helper functions) to generate fill outlines.
 Private m_FillOutline As pdEdgeDetector
 Private m_OutlineBoundsX As Long, m_OutlineBoundsY As Long
@@ -103,7 +106,6 @@ Private m_InitPoint As POINTAPI
 'Fast memory ops
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
-
 
 'Get/set functions for all relevant flood fill parameters
 Public Function GetAntialiasingMode() As Boolean
@@ -182,10 +184,12 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     If (m_BoundsX <> xBound) Or (m_BoundsY <> yBound) Then
         ReDim m_AlreadyChecked(0 To xBound, 0 To yBound) As Byte
+        ReDim m_FillResults(0 To xBound, 0 To yBound) As Byte
         m_BoundsX = xBound
         m_BoundsY = yBound
     Else
         FillMemory VarPtr(m_AlreadyChecked(0, 0)), (xBound + 1) * (yBound + 1), 0
+        FillMemory VarPtr(m_FillResults(0, 0)), (xBound + 1) * (yBound + 1), 0
     End If
     
     'Based on the specified search mode, call the appropriate flood function
@@ -214,25 +218,8 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         VBHacks.GetHighResTime startTime
     #End If
     
-    'Finally, if the caller wants us to return an outline path, populate it last.  (Note that the contiguous mode requires
-    ' special treatment to remove antialiasing data, if any.)
-    If (Not dstOutlinePath Is Nothing) Then
-        
-        'In contiguous mode, bytes are set to (1) if they are added to the floodfill stack, and (2) if they are actually filled.
-        ' This gives us a great guide of edge pixels (because all pixels that are still marked as (1) were checked, but not filled),
-        ' but that information confuses our edge detector.  Reset all bytes to appropriate values now.
-        If (m_SearchMode = PDFS_CONTIGUOUS) Then
-            Dim x As Long, y As Long
-            For y = 0 To m_BoundsY
-            For x = 0 To m_BoundsX
-                If (m_AlreadyChecked(x, y) > 1) Then m_AlreadyChecked(x, y) = 255 Else m_AlreadyChecked(x, y) = 0
-            Next x
-            Next y
-        End If
-        
-        GenerateFloodFillOutline dstOutlinePath
-        
-    End If
+    'Finally, if the caller wants us to return an outline path, populate it last.
+    If (Not dstOutlinePath Is Nothing) Then GenerateFloodFillOutline dstOutlinePath
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Flood fill outline generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
@@ -256,8 +243,12 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
         ReDim m_OutlineCopy(0 To xBound, 0 To yBound) As Byte
         m_OutlineBoundsX = xBound
         m_OutlineBoundsY = yBound
-    Else
-        FillMemory VarPtr(m_OutlineCopy(0, 0)), (xBound + 1) * (yBound + 1), 0
+    
+    'Normally, we would wipe the outline array prior to working with it, but because we're just gonna be filling the bytes
+    ' anyway with a manual CopyMemory loop, we can safely ignore a prior fill command.  (The outer borders will always be
+    ' left blank, by design.)
+    'Else
+        'FillMemory VarPtr(m_OutlineCopy(0, 0)), (xBound + 1) * (yBound + 1), 0
     End If
 
     'We need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
@@ -269,9 +260,9 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
 
     Dim x As Long, y As Long
     For y = 0 To m_BoundsY
-        CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_AlreadyChecked(0, y)), m_BoundsX
+        CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_FillResults(0, y)), m_BoundsX
     Next y
-
+    
     'The m_OutlineCopy array now contains a valid copy of the filled area, with guaranteed blank boundary lines
     
     'Initiate the outline search.  (Note that we can safely start from position (1, 1), because we have already inserted blank lines
@@ -422,6 +413,7 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
             ' (required for generating a flood fill outline overlay)
             m_AlreadyChecked(x, y) = 2
+            m_FillResults(x, y) = 255
         
             'Push our four neighboring pixels onto the stack, as necessary
             If (x > 0) Then If (m_AlreadyChecked(x - 1, y) = 0) Then PushOntoStack x - 1, y
@@ -560,7 +552,7 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
             dstImageData(x, y) = FILLED_PIXEL
-            m_AlreadyChecked(x, y) = 255
+            m_FillResults(x, y) = 255
         End If
         
     Next y
@@ -703,8 +695,9 @@ Private Sub Class_Initialize()
     m_StackHeight = INITIAL_STACK_HEIGHT - 1
     ReDim m_Stack(0 To m_StackHeight) As POINTAPI
     
-    'Reset our check array
+    'Reset our check and fill arrays
     ReDim m_AlreadyChecked(0, 0) As Byte
+    ReDim m_FillResults(0, 0) As Byte
     
     'Composite is the default tolerance mode
     m_CompareMode = PDFC_COMPOSITE
