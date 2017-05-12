@@ -57,9 +57,10 @@ Private Const INITIAL_STACK_HEIGHT As Long = 4096
 Private m_BoundsX As Long, m_BoundsY As Long
 Private m_AlreadyChecked() As Byte
 
-'If outlines are requested, this array will be used to store outline data.
+'If outlines are requested, we'll use a pdEdgeDetector instance (plus some helper functions) to generate fill outlines.
+Private m_FillOutline As pdEdgeDetector
 Private m_OutlineBoundsX As Long, m_OutlineBoundsY As Long
-Private m_outlineCopy() As Byte
+Private m_OutlineCopy() As Byte
 
 'Tolerance allows the user to control the strength of the flood
 Private m_Tolerance As Double
@@ -161,12 +162,30 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         Exit Function
     End If
     
-    'Initialize the destination DIB
+    'Flood filling is super-expensive.  Time it in debug builds.
+    #If DEBUGMODE = 1 Then
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
+    #End If
+    
+    'Initialize the destination DIB and the fill tracking array
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     If (dstDIB.GetDIBWidth = srcDIB.GetDIBWidth) And (dstDIB.GetDIBHeight = srcDIB.GetDIBHeight) And (dstDIB.GetDIBColorDepth = 32) Then
         dstDIB.ResetDIB 0
     Else
         dstDIB.CreateBlank srcDIB.GetDIBWidth, srcDIB.GetDIBHeight, 32, 0
+    End If
+    
+    Dim xBound As Long, yBound As Long
+    xBound = srcDIB.GetDIBWidth - 1
+    yBound = srcDIB.GetDIBHeight - 1
+    
+    If (m_BoundsX <> xBound) Or (m_BoundsY <> yBound) Then
+        ReDim m_AlreadyChecked(0 To xBound, 0 To yBound) As Byte
+        m_BoundsX = xBound
+        m_BoundsY = yBound
+    Else
+        FillMemory VarPtr(m_AlreadyChecked(0, 0)), (xBound + 1) * (yBound + 1), 0
     End If
     
     'Based on the specified search mode, call the appropriate flood function
@@ -190,6 +209,11 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         
     End If
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Flood fill map generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
+        VBHacks.GetHighResTime startTime
+    #End If
+    
     'Finally, if the caller wants us to return an outline path, populate it last.  (Note that the contiguous mode requires
     ' special treatment to remove antialiasing data, if any.)
     If (Not dstOutlinePath Is Nothing) Then
@@ -210,6 +234,10 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         
     End If
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Flood fill outline generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
+    #End If
+    
     InitiateFloodFill = True
 
 End Function
@@ -225,11 +253,11 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
     yBound = m_BoundsY + 2
 
     If (m_OutlineBoundsX <> xBound) Or (m_OutlineBoundsY <> yBound) Then
-        ReDim m_outlineCopy(0 To xBound, 0 To yBound) As Byte
+        ReDim m_OutlineCopy(0 To xBound, 0 To yBound) As Byte
         m_OutlineBoundsX = xBound
         m_OutlineBoundsY = yBound
     Else
-        FillMemory VarPtr(m_outlineCopy(0, 0)), (xBound + 1) * (yBound + 1), 0
+        FillMemory VarPtr(m_OutlineCopy(0, 0)), (xBound + 1) * (yBound + 1), 0
     End If
 
     'We need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
@@ -241,24 +269,15 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
 
     Dim x As Long, y As Long
     For y = 0 To m_BoundsY
-        CopyMemory_Strict VarPtr(m_outlineCopy(0, y + 1)) + 1, VarPtr(m_AlreadyChecked(0, y)), m_BoundsX
+        CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_AlreadyChecked(0, y)), m_BoundsX
     Next y
 
     'The m_OutlineCopy array now contains a valid copy of the filled area, with guaranteed blank boundary lines
     
-    'Prep the target path and the outline enumerator
-    If (dstPath Is Nothing) Then
-        Set dstPath = New pd2DPath
-    Else
-        dstPath.ResetPath
-    End If
-    
-    Dim cOutline As pdEdgeDetector
-    Set cOutline = New pdEdgeDetector
-    
     'Initiate the outline search.  (Note that we can safely start from position (1, 1), because we have already inserted blank lines
     ' around the exterior of the fill map.)
-    cOutline.FindAllEdges dstPath, m_outlineCopy, 1, 1, m_BoundsX + 1, m_BoundsY + 1, -1, -1
+    If (m_FillOutline Is Nothing) Then Set m_FillOutline = New pdEdgeDetector
+    m_FillOutline.FindAllEdges dstPath, m_OutlineCopy, 1, 1, m_BoundsX + 1, m_BoundsY + 1, -1, -1
     
     'The edge detector has already filled the destination path, so our work here is done!
     
@@ -278,15 +297,6 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     Dim xBound As Long, yBound As Long
     xBound = srcDIB.GetDIBWidth - 1
     yBound = srcDIB.GetDIBHeight - 1
-    
-    'Reset the "has been filled" array
-    If (m_BoundsX <> xBound) Or (m_BoundsY <> yBound) Then
-        ReDim m_AlreadyChecked(0 To xBound, 0 To yBound) As Byte
-        m_BoundsX = xBound
-        m_BoundsY = yBound
-    Else
-        FillMemory VarPtr(m_AlreadyChecked(0, 0)), (xBound + 1) * (yBound + 1), 0
-    End If
     
     'Populate the initial stack point
     PushOntoStack m_InitPoint.x, m_InitPoint.y
@@ -506,15 +516,6 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     
     Const FILLED_PIXEL As Long = &HFFFFFFFF
     
-    'Reset the "has been filled" array
-    If (m_BoundsX <> xBound) Or (m_BoundsY <> yBound) Then
-        ReDim m_AlreadyChecked(0 To xBound, 0 To yBound) As Byte
-        m_BoundsX = xBound
-        m_BoundsY = yBound
-    Else
-        FillMemory VarPtr(m_AlreadyChecked(0, 0)), (xBound + 1) * (yBound + 1), 0
-    End If
-    
     'Start processing the image!
     For x = 0 To xBound
         quickX = x * 4
@@ -640,8 +641,8 @@ Private Function FloodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     constMultiplier = (255 / 18) * 0.8
     
     'Start processing the image!
-    For x = 0 To xBound
     For y = 0 To yBound
+    For x = 0 To xBound
     
         'The floodfill map is used to calculate antialiasing.  If it contains a 1 at this location, it means this pixel
         ' was checked for the floodfill operation, but not actually filled.  That makes it a target for antialiasing.
@@ -685,8 +686,8 @@ Private Function FloodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
             
         End If
         
-    Next y
     Next x
+    Next y
         
     'Release our array references
     floodFillDIB.UnwrapLongArrayFromDIB fImageData

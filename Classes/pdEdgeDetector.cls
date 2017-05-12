@@ -221,18 +221,14 @@ Friend Sub RetrieveFinalPolygonIntoPath(ByRef dstPath As pd2DPath, Optional ByVa
     
 End Sub
 
-'NEW TEST: remove polygon interiors via GDI+.  Performance is TBD.
-'
-'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function instead.
-' Note that (by design) it does *not* forcibly close paths.  This allows it to return line segments or other non-standard edges that
-' would otherwise be extremely difficult to define as polygons.
-'
-'The approach required by this kind of algorithm makes it unsuitable for subsequent polygon operations, but for raster-style operations
-' (or just rendering overlays on affected edges), it is ideal and much much faster than a mathematically rigorous solution.
+'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function.
+' Complex polygons (including concave shapes, shapes with holes, or entirely separate polygons) are all handled correctly and
+' returned as a unified pd2DPath object.
 Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
     
-    If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
-    
+    If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
+    m_StackPosition = 0
+            
     'Current (x, y) positions.  (These start at startX and startY.)  After a shape is completed, these will advance to the next
     ' non-zero position in the source array, and repeat a scan from there.
     Dim x As Long, y As Long
@@ -254,14 +250,16 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     prevX = 1000000000
     prevY = 1000000000
     
-    Dim dstPoints() As POINTFLOAT
-    ReDim dstPoints(0) As POINTFLOAT
-    
     Dim tmpPath As pd2DPath
     Set tmpPath = New pd2DPath
     
     Dim tmpRegion As pd2DRegion
     Set tmpRegion = New pd2DRegion
+    
+    'In debug mode, we want to track how much time we spend tracing outlines and removing filled shapes.  This gives us a
+    ' better idea of where we might improve performance.
+    Dim startTime As Currency, traceTime As Currency, fillTime As Currency
+    Dim gdipCreateTime As Currency, gdipCopyTime As Currency, gdipRegionTime As Currency, gdipBoundTime As Currency
     
     'Index into our precalculated direction arrays.
     Dim i As Long, j As Long
@@ -276,12 +274,16 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
         'Is this an edge pixel?
         If (srcArray(x, y) <> 0) Then
             
-            Debug.Print "Starting contour search at (" & x & ", " & y & ")"
+            'Debug.Print "Starting contour search at (" & x & ", " & y & ")"
             
             'It is!  Start tracing its contour.
             startX = x
             startY = y
-        
+            
+            #If DEBUGMODE = 1 Then
+                VBHacks.GetHighResTime startTime
+            #End If
+            
             'Start searching for contour points!
             Do
                 
@@ -325,16 +327,38 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             'Loop checks are easy - continue until we return to our starting point
             Loop While ((x <> startX) Or (y <> startY))
             
+            #If DEBUGMODE = 1 Then
+                traceTime = traceTime + VBHacks.GetTimerDifferenceNow(startTime)
+                VBHacks.GetHighResTime startTime
+            #End If
+            
             'The stack now describes a completed polygon.  Add it to a temporary path object.
             tmpPath.ResetPath
             tmpPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
             
-            'Add the temporary polgyon to our running collection
-            dstPath.AddPath tmpPath
+            #If DEBUGMODE = 1 Then
+                gdipCreateTime = gdipCreateTime + VBHacks.GetTimerDifferenceNow(startTime)
+                VBHacks.GetHighResTime startTime
+            #End If
             
-            Debug.Print "Searching path interior..."
+            'Add the temporary polgyon to our running collection.  (NOTE!  You might be tempted to use dstPath.AddPath here,
+            ' passing the path object that we've already assembled.  Do *not* do this.  For some reason, .AddPath is insanely
+            ' slow compared to just adding the raw data points.  (Like, 1000x slower for very complicated paths.)
+            dstPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
+            
+            #If DEBUGMODE = 1 Then
+                gdipCopyTime = gdipCopyTime + VBHacks.GetTimerDifferenceNow(startTime)
+                VBHacks.GetHighResTime startTime
+            #End If
+            
+            'Create a region object from our outline.  (Regions are way faster to hit-test.)
             tmpRegion.AddPath tmpPath, P2_CM_Replace
             tmpGdipHandle = tmpRegion.GetHandle()
+            
+            #If DEBUGMODE = 1 Then
+                gdipRegionTime = gdipRegionTime + VBHacks.GetTimerDifferenceNow(startTime)
+                VBHacks.GetHighResTime startTime
+            #End If
             
             'We now want to search the interior of the path region, and invert any/all points lying *inside* the polygon.
             ' (This allows us to isolate holes in the region.)
@@ -343,6 +367,13 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             intInitY = intBounds.Top
             intFinalX = intBounds.Left + intBounds.Right
             intFinalY = intBounds.Top + intBounds.Bottom
+            
+            #If DEBUGMODE = 1 Then
+                gdipBoundTime = gdipBoundTime + VBHacks.GetTimerDifferenceNow(startTime)
+                VBHacks.GetHighResTime startTime
+            #End If
+            
+            'Debug.Print "Searching path interior (" & intInitX & ", " & intInitY & ")-(" & intFinalX & ", " & intFinalY & ")..."
             
             For j = intInitY To intFinalY
             For i = intInitX To intFinalX
@@ -353,6 +384,10 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             Next i
             Next j
             
+            #If DEBUGMODE = 1 Then
+                fillTime = fillTime + VBHacks.GetTimerDifferenceNow(startTime)
+            #End If
+            
             'Reset the stack pointer
             m_StackPosition = 0
             
@@ -361,6 +396,10 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     'Continue with the next segment
     Next x
     Next y
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Detailed pdEdgeDetector report - Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", GdiP/Bounds: " & Format$(gdipBoundTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")
+    #End If
     
     FindAllEdges = True
     

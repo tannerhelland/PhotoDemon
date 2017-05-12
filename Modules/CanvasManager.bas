@@ -390,7 +390,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     End If
     
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
-    If (Not (pdImages(g_CurrentImage) Is Nothing)) And refreshScreen Then
+    If (Not pdImages(g_CurrentImage) Is Nothing) And refreshScreen Then
         
         ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
         
