@@ -61,10 +61,17 @@ Private m_XDirs() As Long, m_YDirs() As Long
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
 
-'Faster WAPI interop
+'Faster WAPI interop.  Rigorous testing shows that GDI+ regions are significantly faster to hit-test than GDI regions, so these
+' GDI functions are not currently used.
+Private Declare Function CreatePolygonRgn Lib "gdi32" (ByVal ptrToPointLArray As Long, ByVal numOfPoints As Long, ByVal fnPolyFillMode As Long) As Long
+Private Const GDI_POLY_ALTERNATE As Long = &H1
+Private Declare Function PtInRegion Lib "gdi32" (ByVal hRgn As Long, ByVal x As Long, ByVal y As Long) As Long
+
 Private Declare Function GdipIsVisiblePathPointI Lib "gdiplus" (ByVal hPath As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
 Private Declare Function GdipIsVisibleRegionPointI Lib "gdiplus" (ByVal hRegion As Long, ByVal x As Long, ByVal y As Long, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As GP_Result
-Private Declare Function PtInRegion Lib "gdi32" (ByVal hRgn As Long, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function GdipGetRegionScansCount Lib "gdiplus" (ByVal hRegion As Long, ByRef dstRectCount As Long, ByVal optTransformMatrix As Long) As GP_Result
+Private Declare Function GdipGetRegionScansI Lib "gdiplus" (ByVal hRegion As Long, ByVal ptrToRectLArray As Long, ByRef dstNumOfRects As Long, ByVal optTransformMatrix As Long) As GP_Result
+Private m_RectLCache() As RECTL, m_SizeOfRectCache As Long
 
 'If you don't want to find a starting point yourself, use this helper function to do it for you.
 ' The starting point is searched for starting in the top-left corner and moving LTR.
@@ -259,13 +266,24 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     'In debug mode, we want to track how much time we spend tracing outlines and removing filled shapes.  This gives us a
     ' better idea of where we might improve performance.
     Dim startTime As Currency, traceTime As Currency, fillTime As Currency
-    Dim gdipCreateTime As Currency, gdipCopyTime As Currency, gdipRegionTime As Currency, gdipBoundTime As Currency
+    Dim gdipCreateTime As Currency, gdipCopyTime As Currency, gdipRegionTime As Currency
     
     'Index into our precalculated direction arrays.
-    Dim i As Long, j As Long
+    Dim i As Long, j As Long, n As Long
     Dim intBounds As RECTL
     Dim intInitX As Long, intInitY As Long, intFinalX As Long, intFinalY As Long
+    Dim numOfRects As Long
     Dim tmpGdipHandle As Long, tmpResult As Long
+    
+    'Because we've typically added a 1-px blank byte border around our image data (during pre-processing), all edge coordinates
+    ' are going to be offset by (1, 1).  Create a generic transform now, which we'll use to offset edge coordinates before
+    ' reporting them back to our parent object.
+    Dim tmpTransform As pd2DTransform
+    Set tmpTransform = New pd2DTransform
+    tmpTransform.ApplyTranslation -xOffset, -yOffset
+    
+    Dim tmpMatrix As Long
+    tmpMatrix = tmpTransform.GetHandle
     
     'Starting at (x, y), look for the next valid edge pixel.  Once one is found, start tracing it.
     For y = initY To finalY
@@ -343,7 +361,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             
             'Add the temporary polgyon to our running collection.  (NOTE!  You might be tempted to use dstPath.AddPath here,
             ' passing the path object that we've already assembled.  Do *not* do this.  For some reason, .AddPath is insanely
-            ' slow compared to just adding the raw data points.  (Like, 1000x slower for very complicated paths.)
+            ' slow compared to just adding the raw data points.  (Like, 1000x slower for complicated paths.)
             dstPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
             
             #If DEBUGMODE = 1 Then
@@ -351,7 +369,12 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
                 VBHacks.GetHighResTime startTime
             #End If
             
-            'Create a region object from our outline.  (Regions are way faster to hit-test.)
+            'Create a region object from our outline.  Why do this when we already have a perfectly good path?  Because regions
+            ' are *significantly* faster to hit-test than paths.
+            
+            ' (ALSO NOTE: I have tested both GDI and GDI+ regions here.  For reasons I don't understand, GDI+ regions are much
+            ' faster to hit-test than GDI regions.  (At least several times faster, in fact, with a gap that widens as the region
+            ' gets more complex.)  I would have expected the opposite, but data doesn't lie - so we stick with GDI+ regions instead.
             tmpRegion.AddPath tmpPath, P2_CM_Replace
             tmpGdipHandle = tmpRegion.GetHandle()
             
@@ -361,28 +384,66 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             #End If
             
             'We now want to search the interior of the path region, and invert any/all points lying *inside* the polygon.
-            ' (This allows us to isolate holes in the region.)
-            intBounds = tmpRegion.GetRegionBoundsL()
-            intInitX = intBounds.Left
-            intInitY = intBounds.Top
-            intFinalX = intBounds.Left + intBounds.Right
-            intFinalY = intBounds.Top + intBounds.Bottom
+            ' (This allows us to isolate holes inside the path we just traced.)
             
-            #If DEBUGMODE = 1 Then
-                gdipBoundTime = gdipBoundTime + VBHacks.GetTimerDifferenceNow(startTime)
-                VBHacks.GetHighResTime startTime
-            #End If
+            'A naive approach to this might look something like this:
             
-            'Debug.Print "Searching path interior (" & intInitX & ", " & intInitY & ")-(" & intFinalX & ", " & intFinalY & ")..."
+'            intBounds = tmpRegion.GetRegionBoundsL()
+'            intInitX = intBounds.Left
+'            intInitY = intBounds.Top
+'            intFinalX = intBounds.Left + intBounds.Right
+'            intFinalY = intBounds.Top + intBounds.Bottom
+'
+'            For j = intInitY To intFinalY
+'            For i = intInitX To intFinalX
+'                GdipIsVisibleRegionPointI tmpGdipHandle, i, j, 0&, tmpResult
+'                If (tmpResult <> 0) Then
+'                    srcArray(i - xOffset, j - yOffset) = Not srcArray(i - xOffset, j - yOffset)
+'                End If
+'            Next i
+'            Next j
             
-            For j = intInitY To intFinalY
-            For i = intInitX To intFinalX
-                GdipIsVisibleRegionPointI tmpGdipHandle, i, j, 0&, tmpResult
-                If (tmpResult <> 0) Then
-                    srcArray(i - xOffset, j - yOffset) = Not srcArray(i - xOffset, j - yOffset)
+            'Unfortunately, hit-testing individual points against a complex region is pretty damn slow, so while this technique
+            ' does work - and the code is nice and simple - we want to use something faster.
+            
+            'Start by seeing how many basic rectangles are required to accurately represent the entirety of this region.
+            GdipGetRegionScansCount tmpGdipHandle, numOfRects, tmpMatrix
+            If (numOfRects > 0) Then
+                
+                'Next, ask GDI+ to give us a copy of the current region, constructed as a (potentially large) series of
+                ' nothing but basic rectangles.
+                If (numOfRects > m_SizeOfRectCache) Then
+                    m_SizeOfRectCache = numOfRects
+                    ReDim m_RectLCache(0 To m_SizeOfRectCache - 1) As RECTL
                 End If
-            Next i
-            Next j
+            
+                If (GdipGetRegionScansI(tmpGdipHandle, VarPtr(m_RectLCache(0)), numOfRects, tmpMatrix) = GP_OK) Then
+                    
+                    'We now have a full copy of this region, in the form of individual rectangles (the sum total of which
+                    ' represent the underlying region).
+                    
+                    'For each rect in this collection, we now need to manually invert all bytes.  This turns holes inside
+                    ' the region into a new sub-region, which we can then detect on subsequent passes of our trace algorithm.
+                    For n = 0 To numOfRects - 1
+                        
+                        With m_RectLCache(n)
+                            intInitX = .Left
+                            intInitY = .Top
+                            intFinalX = .Left + .Right - 1
+                            intFinalY = .Top + .Bottom - 1
+                        End With
+                        
+                        For j = intInitY To intFinalY
+                        For i = intInitX To intFinalX
+                            srcArray(i, j) = Not srcArray(i, j)
+                        Next i
+                        Next j
+                        
+                    Next n
+                
+                End If
+
+            End If
             
             #If DEBUGMODE = 1 Then
                 fillTime = fillTime + VBHacks.GetTimerDifferenceNow(startTime)
@@ -398,85 +459,12 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     Next y
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Detailed pdEdgeDetector report - Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", GdiP/Bounds: " & Format$(gdipBoundTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")
+        pdDebug.LogAction "Detailed pdEdgeDetector report || Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")
     #End If
     
     FindAllEdges = True
     
 End Function
-
-'It's generally trivial to create threshold maps of an image (where pixels below a threshold are marked "0", while pixels above a threshold
-' are marked "non-zero"), but it's a bit more obnoxious to convert this to an "edge" representation, where interior areas have been removed.
-' This helper function will complete such a task for you, but note that you must supply *both* a source and destination array.
-' (The destination array will be enlarged by 1 pixel on each side, to ensure no boundary issues.)
-'
-'IMPORTANT NOTE!  The source array *will be erased* by this function, by design.  If you want it to be retained, you *must* make a
-' manual copy prior to invoking this function.
-Friend Sub ConvertThresholdMapToEdgeMap(ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal srcXBound As Long, ByVal srcYBound As Long)
-
-    'First thing we want to do is initialize the destination array.  Note that this array has a guaranteed blank 1-px border around
-    ' all sides; this is crucial for simplifying our edge-detection techniques.
-    Dim xBound As Long, yBound As Long
-    xBound = srcXBound + 2
-    yBound = srcYBound + 2
-    
-    ReDim dstArray(0 To xBound, 0 To yBound) As Byte
-    
-    'Next, we need to copy all lines from the boundary check array to our outline array, offsetting them by (1) in each direction.
-    ' This guarantees a boundary of zeroes around the target image, which greatly accelerates edge detection.
-    Dim x As Long, y As Long
-    For y = 0 To srcYBound
-        CopyMemory_Strict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
-    Next y
-    
-    'The destination array now contains an exact copy of the source array, but with a 1-px border added.  Wipe the source array.
-    FillMemory VarPtr(srcArray(0, 0)), srcXBound * srcYBound, 0
-    
-    Dim pxIsEdge As Boolean
-    
-    'Next, we need to scan the destination array, and mark any outline pixels (*not* interior pixels) back onto the source map,
-    ' accounting for that 1-px border offset as we do so.
-    For y = 1 To srcYBound + 1
-    For x = 1 To srcXBound + 1
-        
-        pxIsEdge = False
-        
-        'We only care about pixels that are *not* thresholded.
-        If (dstArray(x, y) = 0) Then
-            
-            If (dstArray(x - 1, y - 1) <> 0) Then
-                pxIsEdge = True
-            ElseIf (dstArray(x, y - 1) <> 0) Then
-                pxIsEdge = True
-            ElseIf (dstArray(x + 1, y - 1) <> 0) Then
-                pxIsEdge = True
-            ElseIf (dstArray(x - 1, y) <> 0) Then
-                pxIsEdge = True
-            ElseIf (dstArray(x + 1, y) <> 0) Then
-                pxIsEdge = True
-            ElseIf (dstArray(x - 1, y + 1) <> 0) Then
-                pxIsEdge = True
-            ElseIf (dstArray(x, y + 1) <> 0) Then
-                pxIsEdge = True
-            ElseIf (dstArray(x + 1, y + 1) <> 0) Then
-                pxIsEdge = True
-            End If
-            
-            'If this is an edge pixel, mark it in the source array
-            If pxIsEdge Then srcArray(x - 1, y - 1) = 1
-        
-        End If
-        
-    Next x
-    Next y
-    
-    'The source array has now been re-processed to reflect *only* edge pixels.  Re-copy it into the destination, overwriting our
-    ' original copy as we go.
-    For y = 0 To srcYBound
-        CopyMemory_Strict VarPtr(dstArray(0, y + 1)) + 1, VarPtr(srcArray(0, y)), srcXBound
-    Next y
-    
-End Sub
 
 'To improve edge-detection performance, a source array needs to have a guaranteed blank set of pixels around its outside edge.
 ' Use this helper function to make that happen.
