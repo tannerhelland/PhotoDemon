@@ -207,33 +207,13 @@ Friend Sub RetrieveFinalPolygon(ByRef dstPoints() As POINTFLOAT, ByRef numOfPoin
 
 End Sub
 
-'Want to retrieve the finished point list into a path object instead?  Use this convenient function.  (Note that this function
-' does *not* erase the destination path, if one exists; instead, it adds the edge as a new, self-contained polygon.)
-Friend Sub RetrieveFinalPolygonIntoPath(ByRef dstPath As pd2DPath, Optional ByVal closeShape As Boolean = True)
-    
-    If (dstPath Is Nothing) Then Set dstPath = New pd2DPath
-    
-    Dim numOfPoints As Long
-    numOfPoints = m_StackPosition
-    
-    ReDim dstPoints(0 To numOfPoints - 1) As POINTFLOAT
-    
-    Dim i As Long
-    For i = 0 To numOfPoints - 1
-        dstPoints(i).x = m_Stack(i).x
-        dstPoints(i).y = m_Stack(i).y
-    Next i
-    
-    dstPath.AddPolygon numOfPoints, VarPtr(dstPoints(0)), closeShape
-    
-End Sub
-
 'Want to find every last edge in an image, including non-standard ones or ones that may not close properly?  Use this function.
 ' Complex polygons (including concave shapes, shapes with holes, or entirely separate polygons) are all handled correctly and
 ' returned as a unified pd2DPath object.
 Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte, ByVal startX As Long, ByVal startY As Long, ByVal maxX As Long, ByVal maxY As Long, Optional ByVal xOffset As Long = 0, Optional ByVal yOffset As Long = 0) As Boolean
     
     If (dstPath Is Nothing) Then Set dstPath = New pd2DPath Else dstPath.ResetPath
+    dstPath.SetFillRule P2_FR_OddEven
     m_StackPosition = 0
             
     'Current (x, y) positions.  (These start at startX and startY.)  After a shape is completed, these will advance to the next
@@ -352,6 +332,7 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             
             'The stack now describes a completed polygon.  Add it to a temporary path object.
             tmpPath.ResetPath
+            tmpPath.SetFillRule P2_FR_OddEven
             tmpPath.AddPolygonInt m_StackPosition, VarPtr(m_Stack(0)), True
             
             #If DEBUGMODE = 1 Then
