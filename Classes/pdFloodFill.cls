@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flood Fill Engine
 'Copyright 2014-2017 by Tanner Helland
 'Created: 11/October/14
-'Last updated: 30/April/17
-'Last update: add support for returning a vector path of the flood fill area's outline
+'Last updated: 13/May/17
+'Last update: myriad performance improvements
 '
 'This class supplies the flood fill algorithm for a number of different tools in PD (magic wand, bucket fill, etc).
 ' The flood fill approach itself is pretty basic - a stack is used in place of recursion, and a global mapping array
@@ -103,6 +103,9 @@ Private m_AntialiasingMode As Boolean
 'Obviously the function needs a starting x/y position
 Private m_InitPoint As POINTAPI
 
+'Flood fills always return a 32-bpp DIB that describes the flood fill results.  This DIB is painted via pd2D.
+Private m_Painter As pd2DPainter, m_Brush As pd2DBrush
+
 'Fast memory ops
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
@@ -153,9 +156,10 @@ End Sub
 ' with an alpha of the flood results (black/transparent = unfilled, white/opaque = filled, gray/partially transparent = partially filled).
 ' This allows the caller to use the flood results however they want, without having to modify this class to match.
 '
-'Optionally, the caller can also provide a target pdPath object; if supplied, this path will be filled with a vector representation
-' of the filled area.  (IMPORTANT DISCLAIMER: this feature currently only works with contiguous fills, not global ones.)
-Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByRef dstOutlinePath As pd2DPath = Nothing) As Boolean
+'In a change from earlier versions, the caller must also now provide a target pdPath object.  This path is filled with a
+' vector representation of the filled area, and it is also used to produce antialiased fill results.  The caller can obviously
+' discard this path if they don't need it, but it *will* be used regardless.
+Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByRef dstOutlinePath As pd2DPath) As Boolean
     
     'Make sure the passed x/y coords are valid.  If they aren't, exit now.
     If (m_InitPoint.x < 0) Or (m_InitPoint.y < 0) Or (m_InitPoint.x >= srcDIB.GetDIBWidth) Or (m_InitPoint.y >= srcDIB.GetDIBHeight) Then
@@ -194,35 +198,33 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Based on the specified search mode, call the appropriate flood function
     If (m_SearchMode = PDFS_CONTIGUOUS) Then
-        FloodFillContiguous srcDIB, dstDIB
+        FloodFillContiguous_Scanline srcDIB
+        'FloodFillContiguous srcDIB
     ElseIf (m_SearchMode = PDFS_WHOLEIMAGE) Then
-        FloodFillGlobal srcDIB, dstDIB
-    End If
-    
-    'If antialiasing was requested, apply it now.
-    If m_AntialiasingMode Then
-        
-        'For contiguous fill modes, we use a custom AA solution that provides better results.
-        If (m_SearchMode = PDFS_CONTIGUOUS) Then
-            FloodFillCustomAA dstDIB
-        
-        'For global fill modes, a simple quick blur will do
-        Else
-            Filters_Layers.QuickBlurDIB dstDIB, 1
-        End If
-        
+        FloodFillGlobal srcDIB
     End If
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Flood fill map generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
+        pdDebug.LogAction "FF-MAP: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
         VBHacks.GetHighResTime startTime
     #End If
     
-    'Finally, if the caller wants us to return an outline path, populate it last.
-    If (Not dstOutlinePath Is Nothing) Then GenerateFloodFillOutline dstOutlinePath
+    'From the flood fill results, generate an outline path
+    GenerateFloodFillOutline dstOutlinePath
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Flood fill outline generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
+        pdDebug.LogAction "FF-OUTLINE: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+        VBHacks.GetHighResTime startTime
+    #End If
+    
+    'Finally, render our floodfill results onto the destination DIB
+    Dim cSurface As pd2DSurface
+    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
+    m_Painter.FillPath cSurface, m_Brush, dstOutlinePath
+    Set cSurface = Nothing
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
     #End If
     
     InitiateFloodFill = True
@@ -256,11 +258,11 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
 
     'Because VB arrays are row-major, we're going to copy contiguous rows.
     Dim copySize As Long
-    copySize = m_BoundsX
+    copySize = m_BoundsX + 1
 
     Dim x As Long, y As Long
     For y = 0 To m_BoundsY
-        CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_FillResults(0, y)), m_BoundsX
+        CopyMemory_Strict VarPtr(m_OutlineCopy(0, y + 1)) + 1, VarPtr(m_FillResults(0, y)), copySize
     Next y
     
     'The m_OutlineCopy array now contains a valid copy of the filled area, with guaranteed blank boundary lines
@@ -274,11 +276,11 @@ Private Sub GenerateFloodFillOutline(ByRef dstPath As pd2DPath)
     
 End Sub
 
-'Perform a contiguous (default) flood fill.  Note that dstDIB is guaranteed to be properly initialized.
+'Perform a contiguous (default) flood fill.
 '
-'IMPORTANT NOTE!  As of v7.0, both source and destination DIBs are required to be 32-bpp.  Passing a 24-bpp image will
-' cause a hard crash.  (This matches PD's internal conversion to always-enforced 32-bpp sources.)
-Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
+'IMPORTANT NOTE!  As of v7.0, the source DIB is required to be 32-bpp.  Passing a 24-bpp image will cause a hard crash.
+' (This matches PD's internal conversion to always-enforced 32-bpp sources.)
+Private Function FloodFillContiguous(ByRef srcDIB As pdDIB) As Boolean
 
     'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
     ' if this class is used multiple times in a row.
@@ -295,13 +297,9 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     Dim x As Long, y As Long, quickX As Long, dstQuickX As Long
     
     'Generate direct references to the source and destination DIB data
-    Dim srcImageData() As Byte, dstImageData() As Long
-    Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
+    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    'For performance reasons, the destination DIB uses a Long-type array instead of a byte array (as we don't need access to individual bytes)
-    dstDIB.WrapLongArrayAroundDIB dstImageData, dstSA
     
     'A number of local variables are used to help optimize the flood function
     Dim isWithinTolerance As Boolean
@@ -355,7 +353,160 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     
     End Select
     
-    Const FILLED_PIXEL As Long = &HFFFFFFFF
+    'Start processing the stack!
+    Do
+    
+        'Reset the tolerance check
+        isWithinTolerance = False
+        
+        'Retrieve the next point from the stack.  Normally we would do this with a call to the pop function, e.g.:
+        'PopFromStack x, y
+        '
+        '...but it's faster to inline the function like so:
+        x = m_Stack(m_StackPosition).x
+        y = m_Stack(m_StackPosition).y
+        m_StackPosition = m_StackPosition - 1
+        
+        'Retrieve RGB/A values for this point
+        quickX = x * 4
+        b = srcImageData(quickX, y)
+        g = srcImageData(quickX + 1, y)
+        r = srcImageData(quickX + 2, y)
+        a = srcImageData(quickX + 3, y)
+    
+        'Compare this pixel against the reference
+        If (m_CompareMode = PDFC_COMPOSITE) Then
+            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+            isWithinTolerance = (thisValue <= modifiedTolerance)
+        
+        ElseIf (m_CompareMode = PDFC_COLOR) Then
+            thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+            isWithinTolerance = (thisValue <= modifiedTolerance)
+            
+        ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+            l = 213 * r + 715 * g + 72 * b
+            isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
+            
+        ElseIf (m_CompareMode = PDFC_RED) Then
+            isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
+            
+        ElseIf (m_CompareMode = PDFC_GREEN) Then
+            isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
+                
+        ElseIf (m_CompareMode = PDFC_BLUE) Then
+            isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
+                
+        ElseIf (m_CompareMode = PDFC_ALPHA) Then
+            isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
+        
+        End If
+        
+        'If this value is within the requested tolerance, mark it on the destination map
+        If isWithinTolerance Then
+            
+            'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
+            ' (required for generating a flood fill outline overlay)
+            m_AlreadyChecked(x, y) = 2
+            m_FillResults(x, y) = 255
+        
+            'Push our four neighboring pixels onto the stack, as necessary
+            If (x > 0) Then If (m_AlreadyChecked(x - 1, y) = 0) Then PushOntoStack x - 1, y
+            If (x < xBound) Then If (m_AlreadyChecked(x + 1, y) = 0) Then PushOntoStack x + 1, y
+            
+            If (y > 0) Then If (m_AlreadyChecked(x, y - 1) = 0) Then PushOntoStack x, y - 1
+            If (y < yBound) Then If (m_AlreadyChecked(x, y + 1) = 0) Then PushOntoStack x, y + 1
+            
+        End If
+                
+    'As long as there are more stack points to process, rinse and repeat
+    Loop While (m_StackPosition >= 0)
+    
+    'Release our array references
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    
+    FloodFillContiguous = True
+    
+End Function
+
+'Perform a contiguous (default) flood fill, using horizontal scanlines to improve performance.
+'
+'IMPORTANT NOTE!  As of v7.0, the source DIB is required to be 32-bpp.  Passing a 24-bpp image will cause a hard crash.
+' (This matches PD's internal conversion to always-enforced 32-bpp sources.)
+Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
+
+    'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
+    ' if this class is used multiple times in a row.
+    m_StackPosition = -1
+    
+    'Predetermine upper bounds for x/y checks
+    Dim xBound As Long, yBound As Long
+    xBound = srcDIB.GetDIBWidth - 1
+    yBound = srcDIB.GetDIBHeight - 1
+    
+    'Populate the initial stack point
+    PushOntoStack m_InitPoint.x, m_InitPoint.y
+    
+    Dim x As Long, y As Long, quickX As Long, dstQuickX As Long
+    
+    'Generate direct references to the source and destination DIB data
+    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
+    PrepSafeArray srcSA, srcDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    'A number of local variables are used to help optimize the flood function
+    Dim isWithinTolerance As Boolean
+    Dim modifiedTolerance As Double
+    
+    'Populate our reference comparison values
+    Dim r As Long, g As Long, b As Long, a As Long, l As Long
+    Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
+    
+    Dim thisValue As Double
+    
+    quickX = m_InitPoint.x * 4
+    y = m_InitPoint.y
+    
+    refB = srcImageData(quickX, y)
+    refG = srcImageData(quickX + 1, y)
+    refR = srcImageData(quickX + 2, y)
+    refA = srcImageData(quickX + 3, y)
+    
+    refL = 213 * refR + 715 * refG + 72 * refB
+    
+    'Calculate a reference tolerance value, which serves as the base for the flood fill
+    Select Case m_CompareMode
+    
+        Case PDFC_COMPOSITE
+            'Composite results do not require a base value, as they are independently processed against the reference
+            ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
+            ' by 4, to avoid the need for a divide function in the inner loop
+            modifiedTolerance = m_Tolerance * 4
+            
+        Case PDFC_COLOR
+            modifiedTolerance = m_Tolerance * 3
+        
+        Case PDFC_LUMINANCE
+        
+            'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
+            ' tolerance range to [0, 1000] instead of [0, 255.0]
+            modifiedTolerance = m_Tolerance * 1000
+            
+        Case PDFC_RED
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_GREEN
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_BLUE
+            modifiedTolerance = m_Tolerance
+            
+        Case PDFC_ALPHA
+            modifiedTolerance = m_Tolerance
+    
+    End Select
+    
+    Dim scanRight As Boolean, scanLeft As Boolean
+    Dim xIn As Long
     
     'Start processing the stack!
     Do
@@ -408,19 +559,147 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
             
-            dstImageData(x, y) = FILLED_PIXEL
-            
             'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
             ' (required for generating a flood fill outline overlay)
             m_AlreadyChecked(x, y) = 2
             m_FillResults(x, y) = 255
-        
-            'Push our four neighboring pixels onto the stack, as necessary
-            If (x > 0) Then If (m_AlreadyChecked(x - 1, y) = 0) Then PushOntoStack x - 1, y
-            If (x < xBound) Then If (m_AlreadyChecked(x + 1, y) = 0) Then PushOntoStack x + 1, y
             
+            'Push the pixels above and below this one onto the stack, as necessary
             If (y > 0) Then If (m_AlreadyChecked(x, y - 1) = 0) Then PushOntoStack x, y - 1
             If (y < yBound) Then If (m_AlreadyChecked(x, y + 1) = 0) Then PushOntoStack x, y + 1
+            
+            'Next, we're going to do a full scanline check in both the left and right directions
+            xIn = x + 1
+            scanRight = (xIn <= xBound)
+            Do While scanRight
+                If (m_AlreadyChecked(xIn, y) = 0) Then
+                    
+                    'Retrieve RGB/A values for this point
+                    quickX = xIn * 4
+                    b = srcImageData(quickX, y)
+                    g = srcImageData(quickX + 1, y)
+                    r = srcImageData(quickX + 2, y)
+                    a = srcImageData(quickX + 3, y)
+                
+                    'Compare this pixel against the reference
+                    If (m_CompareMode = PDFC_COMPOSITE) Then
+                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                        isWithinTolerance = (thisValue <= modifiedTolerance)
+                    
+                    ElseIf (m_CompareMode = PDFC_COLOR) Then
+                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                        isWithinTolerance = (thisValue <= modifiedTolerance)
+                        
+                    ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+                        l = 213 * r + 715 * g + 72 * b
+                        isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
+                        
+                    ElseIf (m_CompareMode = PDFC_RED) Then
+                        isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
+                        
+                    ElseIf (m_CompareMode = PDFC_GREEN) Then
+                        isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
+                            
+                    ElseIf (m_CompareMode = PDFC_BLUE) Then
+                        isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
+                            
+                    ElseIf (m_CompareMode = PDFC_ALPHA) Then
+                        isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
+                    
+                    End If
+                    
+                    'If this value is within the requested tolerance, mark it on the destination map
+                    If isWithinTolerance Then
+                        
+                        'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
+                        ' (required for generating a flood fill outline overlay)
+                        m_AlreadyChecked(xIn, y) = 2
+                        m_FillResults(xIn, y) = 255
+                        
+                        'Push the pixels above and below this one onto the stack, as necessary
+                        If (y > 0) Then If (m_AlreadyChecked(xIn, y - 1) = 0) Then PushOntoStack xIn, y - 1
+                        If (y < yBound) Then If (m_AlreadyChecked(xIn, y + 1) = 0) Then PushOntoStack xIn, y + 1
+                        
+                        xIn = xIn + 1
+                        scanRight = (xIn <= xBound)
+                    
+                    Else
+                        m_AlreadyChecked(xIn, y) = 1
+                        scanRight = False
+                    End If
+                    
+                Else
+                    scanRight = False
+                End If
+            Loop
+            
+            xIn = x - 1
+            scanLeft = (xIn >= 0)
+            Do While scanLeft
+                If (m_AlreadyChecked(xIn, y) = 0) Then
+                    
+                    'Retrieve RGB/A values for this point
+                    quickX = xIn * 4
+                    b = srcImageData(quickX, y)
+                    g = srcImageData(quickX + 1, y)
+                    r = srcImageData(quickX + 2, y)
+                    a = srcImageData(quickX + 3, y)
+                
+                    'Compare this pixel against the reference
+                    If (m_CompareMode = PDFC_COMPOSITE) Then
+                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                        isWithinTolerance = (thisValue <= modifiedTolerance)
+                    
+                    ElseIf (m_CompareMode = PDFC_COLOR) Then
+                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                        isWithinTolerance = (thisValue <= modifiedTolerance)
+                        
+                    ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+                        l = 213 * r + 715 * g + 72 * b
+                        isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
+                        
+                    ElseIf (m_CompareMode = PDFC_RED) Then
+                        isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
+                        
+                    ElseIf (m_CompareMode = PDFC_GREEN) Then
+                        isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
+                            
+                    ElseIf (m_CompareMode = PDFC_BLUE) Then
+                        isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
+                            
+                    ElseIf (m_CompareMode = PDFC_ALPHA) Then
+                        isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
+                    
+                    End If
+                    
+                    'If this value is within the requested tolerance, mark it on the destination map
+                    If isWithinTolerance Then
+                        
+                        'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
+                        ' (required for generating a flood fill outline overlay)
+                        m_AlreadyChecked(xIn, y) = 2
+                        m_FillResults(xIn, y) = 255
+                        
+                        'Push the pixels above and below this one onto the stack, as necessary
+                        If (y > 0) Then If (m_AlreadyChecked(xIn, y - 1) = 0) Then PushOntoStack xIn, y - 1
+                        If (y < yBound) Then If (m_AlreadyChecked(xIn, y + 1) = 0) Then PushOntoStack xIn, y + 1
+                        
+                        xIn = xIn - 1
+                        scanLeft = (xIn >= 0)
+                    
+                    Else
+                        m_AlreadyChecked(xIn, y) = 2
+                        scanLeft = False
+                    End If
+                    
+                Else
+                    scanLeft = False
+                End If
+            Loop
+            
+            'ORIG:
+            'If (x > 0) Then If (m_AlreadyChecked(x - 1, y) = 0) Then PushOntoStack x - 1, y
+            'If (x < xBound) Then If (m_AlreadyChecked(x + 1, y) = 0) Then PushOntoStack x + 1, y
             
         End If
                 
@@ -429,17 +708,16 @@ Private Function FloodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     
     'Release our array references
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    dstDIB.UnwrapLongArrayFromDIB dstImageData
     
-    FloodFillContiguous = True
+    FloodFillContiguous_Scanline = True
     
 End Function
 
-'Perform a full-image, non-contiguous flood fill.  Note that dstDIB is guaranteed to be properly initialized.
+'Perform a full-image, non-contiguous flood fill.
 '
-'IMPORTANT NOTE!  As of v7.0, both source and destination DIBs are required to be 32-bpp.  Passing a 24-bpp image will
-' cause a hard crash.  (This matches PD's internal conversion to always-enforced 32-bpp sources.)
-Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
+'IMPORTANT NOTE!  As of v7.0, the source DIB is required to be 32-bpp.  Passing a 24-bpp image will cause a hard crash.
+' (This matches PD's internal conversion to always-enforced 32-bpp sources.)
+Private Function FloodFillGlobal(ByRef srcDIB As pdDIB) As Boolean
     
     'Predetermine upper bounds for x/y checks
     Dim xBound As Long, yBound As Long
@@ -450,13 +728,9 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     Dim x As Long, y As Long, quickX As Long, dstQuickX As Long
     
     'Generate direct references to the source and destination DIB data
-    Dim srcImageData() As Byte, dstImageData() As Long
-    Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
+    Dim srcImageData() As Byte, srcSA As SAFEARRAY2D
     PrepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-    
-    'For performance reasons, the destination DIB uses a Long-type array instead of a byte array (as we don't need access to individual bytes)
-    dstDIB.WrapLongArrayAroundDIB dstImageData, dstSA
     
     'A number of local variables are used to help optimize the flood function
     Dim isWithinTolerance As Boolean
@@ -550,17 +824,13 @@ Private Function FloodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
         End If
         
         'If this value is within the requested tolerance, mark it on the destination map
-        If isWithinTolerance Then
-            dstImageData(x, y) = FILLED_PIXEL
-            m_FillResults(x, y) = 255
-        End If
+        If isWithinTolerance Then m_FillResults(x, y) = 255
         
     Next y
     Next x
         
     'Release our array references
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    dstDIB.UnwrapLongArrayFromDIB dstImageData
     
     FloodFillGlobal = True
     
@@ -701,5 +971,9 @@ Private Sub Class_Initialize()
     
     'Composite is the default tolerance mode
     m_CompareMode = PDFC_COMPOSITE
+    
+    'Prep some persistent pd2D renderers
+    Drawing2D.QuickCreatePainter m_Painter
+    Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100#
     
 End Sub
