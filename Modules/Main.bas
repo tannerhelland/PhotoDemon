@@ -732,7 +732,7 @@ Public Sub FinalShutdown()
     Dim i As Long
     For i = LBound(pdImages) To UBound(pdImages)
         If (Not pdImages(i) Is Nothing) Then
-            pdImages(i).DeactivateImage
+            pdImages(i).FreeAllImageResources
             Set pdImages(i) = Nothing
         End If
     Next i

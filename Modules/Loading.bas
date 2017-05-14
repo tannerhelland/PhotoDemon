@@ -457,7 +457,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         If (Not targetDIB Is Nothing) Then Set targetDIB = Nothing
         
         If (Not targetImage Is Nothing) Then
-            targetImage.DeactivateImage
+            targetImage.FreeAllImageResources
             Set targetImage = Nothing
         End If
     
@@ -615,7 +615,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         
         'Deactivate the (now useless) DIB and parent object
         If (Not tmpPDImage Is Nothing) Then
-            tmpPDImage.DeactivateImage
+            tmpPDImage.FreeAllImageResources
             Set tmpPDImage = Nothing
         End If
         

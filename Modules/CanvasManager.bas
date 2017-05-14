@@ -308,7 +308,7 @@ Public Function UnloadPDImage(ByVal imageIndex As Long, Optional ByVal resyncInt
     
     'Deactivate this DIB (note that this will take care of additional actions, like clearing the Undo/Redo cache
     ' for this image)
-    pdImages(imageIndex).DeactivateImage
+    pdImages(imageIndex).FreeAllImageResources
     
     'Remove this image from the thumbnail toolbar.  Note that we deliberately ignore the "resyncInterface" setting here,
     ' because the tabstrip needs to always reflect the currently active image.  (Also, it redraws quite quickly, so there's
@@ -375,7 +375,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     If (g_CurrentImage <> imageID) Then
         
         'Release some temporary resources on the old image, if we can
-        Set pdImages(g_CurrentImage).ScratchLayer = Nothing
+        pdImages(g_CurrentImage).DeactivateImage
         
         'Update the current form variable
         g_CurrentImage = imageID
