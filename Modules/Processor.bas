@@ -2082,7 +2082,7 @@ MainErrHandler:
         PDMsgBox addInfo, mType, "Invalid image file"
         
         'On an invalid picture load, there will be a blank form that needs to be dealt with.
-        pdImages(g_CurrentImage).DeactivateImage
+        pdImages(g_CurrentImage).FreeAllImageResources
         
         Exit Sub
     

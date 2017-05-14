@@ -741,6 +741,7 @@ Friend Sub SetSelectionShape(ByVal selShape As PD_SelectionShape)
     'Invalidate any internal trackers that are reliant on specific shapes
     If (m_SelectionShape <> ss_Wand) Then
         Set m_WandImage = Nothing
+        If (Not m_FloodFill Is Nothing) Then m_FloodFill.FreeUpResources
     End If
     
     If (m_SelectionShape <> ss_Raster) Then m_IsMaskReady = False
@@ -2787,6 +2788,18 @@ Private Sub RenderOutlineOnly(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, 
         
     End If
         
+End Sub
+
+'When resources are tight, you can call this sub to free some non-essential internal caches.  This will cause a performance hit
+' on subsequent selection actions, so please only do it if the savings are relevant.
+Friend Sub FreeNonEssentialResources()
+    
+    'The flood fill manager caches a lot of internal resources (like the fill stack), so we may be able to save some memory there.
+    If (Not m_FloodFill Is Nothing) Then m_FloodFill.FreeUpResources
+    
+    'If the current selection mask isn't actively being rendered, it doesn't need a DC attached.
+    m_SelMask.FreeFromDC
+    
 End Sub
 
 Private Sub Class_Initialize()

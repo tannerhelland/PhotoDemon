@@ -220,6 +220,10 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     'Finally, render our floodfill results onto the destination DIB
     Dim cSurface As pd2DSurface
     Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, m_AntialiasingMode
+    
+    If (m_Painter Is Nothing) Then Drawing2D.QuickCreatePainter m_Painter
+    If (m_Brush Is Nothing) Then Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100#
+    
     m_Painter.FillPath cSurface, m_Brush, dstOutlinePath
     Set cSurface = Nothing
     
@@ -862,101 +866,27 @@ Private Sub PopFromStack(ByRef x As Long, ByRef y As Long)
     m_StackPosition = m_StackPosition - 1
 End Sub
 
-'Apply a custom antialiasing solution to a DIB.  The DIB must contain the contents of a *contiguous* flood fill operation.
-' A global flood fill won't work, as it doesn't build a fill table.
-Private Function FloodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
+'This class automatically handles its own memory management, but if you're using a persistent instance of it, you can manually call
+' this function to free up cached resources.  (This class doesn't automatically free things like its custom flood fill stack, to make
+' subsequent flood fill requests faster.)
+Friend Sub FreeUpResources()
     
-    'Predetermine upper bounds for x/y checks
-    Dim xBound As Long, yBound As Long
-    xBound = floodFillDIB.GetDIBWidth - 1
-    yBound = floodFillDIB.GetDIBHeight - 1
+    m_StackHeight = INITIAL_STACK_HEIGHT - 1
+    ReDim m_Stack(0 To m_StackHeight) As POINTAPI
     
-    'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, quickX As Long
+    m_BoundsX = 0
+    m_BoundsY = 0
+    ReDim m_AlreadyChecked(0, 0) As Byte
     
-    'Build a lookup table of already premultiplied values
-    Dim fLookup() As Long
-    ReDim fLookup(0 To 255) As Long
+    m_OutlineBoundsX = 0
+    m_OutlineBoundsY = 0
+    ReDim m_FillResults(0, 0) As Byte
     
-    Dim tmpHold As RGBQUAD
+    Set m_Painter = Nothing
+    Set m_Brush = Nothing
+    Set m_FillOutline = Nothing
     
-    For x = 0 To 255
-        With tmpHold
-            .alpha = x
-            .Blue = x
-            .Green = x
-            .Red = x
-        End With
-        CopyMemory ByVal VarPtr(fLookup(x)), ByVal VarPtr(tmpHold), 4&
-    Next x
-    
-    'Wrap a long-type array around the flood fill data
-    Dim fImageData() As Long
-    Dim fSA As SAFEARRAY2D
-    floodFillDIB.WrapLongArrayAroundDIB fImageData, fSA
-        
-    'Populate our reference comparison values
-    Dim aaStrength As Long, finalResult As Byte
-    Dim yDownSafe As Boolean, yUpSafe As Boolean
-    
-    Dim constMultiplier As Double
-    constMultiplier = (255 / 18) * 0.8
-    
-    'Start processing the image!
-    For y = 0 To yBound
-    For x = 0 To xBound
-    
-        'The floodfill map is used to calculate antialiasing.  If it contains a 1 at this location, it means this pixel
-        ' was checked for the floodfill operation, but not actually filled.  That makes it a target for antialiasing.
-        If (m_AlreadyChecked(x, y) = 1) Then
-        
-            aaStrength = 0
-            
-            'To simplify boundary checks, mark y safety in advance
-            yDownSafe = (y > 0)
-            yUpSafe = (y < yBound)
-            
-            'Check the eight surrounding pixels in the AA table.  If one was filled, its value will be 2.  If one was
-            ' checked but unfilled, its value will be 1.  If a pixel was never checked, its value will be zero.
-            ' We calculate AA by adding a value of 2 for each filled pixel, and a value of 1 for each filled pixel,
-            ' and dividing the total by 18.  This provides maximum AA coverage of 88.8%, for a pixel surrounded on all
-            ' eight sides by filled pixels.  (Note that after some testing, I decided to always reduce the calculated
-            ' AA value by 20%.  This provides a softer AA effect, and hopefully more aesthetically pleasing results.)
-            
-            'Check the three pixels to the left (conditionally)
-            If (x > 0) Then
-                If yDownSafe Then aaStrength = aaStrength + m_AlreadyChecked(x - 1, y - 1)
-                aaStrength = aaStrength + m_AlreadyChecked(x - 1, y)
-                If yUpSafe Then aaStrength = aaStrength + m_AlreadyChecked(x - 1, y + 1)
-            End If
-            
-            'Check the pixels above and below
-            If yDownSafe Then aaStrength = aaStrength + m_AlreadyChecked(x, y - 1)
-            If yUpSafe Then aaStrength = aaStrength + m_AlreadyChecked(x, y + 1)
-            
-            'Check the pixels to the right (conditionally)
-            If (x < xBound) Then
-                If yDownSafe Then aaStrength = aaStrength + m_AlreadyChecked(x + 1, y - 1)
-                aaStrength = aaStrength + m_AlreadyChecked(x + 1, y)
-                If yUpSafe Then aaStrength = aaStrength + m_AlreadyChecked(x + 1, y + 1)
-            End If
-            
-            'We know the floodfill map at this position is unfilled, so we don't even need to retrieve the value to
-            ' calculate proper AA.
-            finalResult = aaStrength * constMultiplier
-            fImageData(x, y) = fLookup(finalResult)
-            
-        End If
-        
-    Next x
-    Next y
-        
-    'Release our array references
-    floodFillDIB.UnwrapLongArrayFromDIB fImageData
-    
-    FloodFillCustomAA = True
-
-End Function
+End Sub
 
 Private Sub Class_Initialize()
 
@@ -966,14 +896,15 @@ Private Sub Class_Initialize()
     ReDim m_Stack(0 To m_StackHeight) As POINTAPI
     
     'Reset our check and fill arrays
+    m_BoundsX = 0
+    m_BoundsY = 0
     ReDim m_AlreadyChecked(0, 0) As Byte
+    
+    m_OutlineBoundsX = 0
+    m_OutlineBoundsY = 0
     ReDim m_FillResults(0, 0) As Byte
     
     'Composite is the default tolerance mode
     m_CompareMode = PDFC_COMPOSITE
-    
-    'Prep some persistent pd2D renderers
-    Drawing2D.QuickCreatePainter m_Painter
-    Drawing2D.QuickCreateSolidBrush m_Brush, RGB(255, 255, 255), 100#
     
 End Sub

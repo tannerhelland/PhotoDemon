@@ -101,12 +101,13 @@ Public Function GetMemoryDC() As Long
     End If
 End Function
 
-Public Sub FreeMemoryDC(ByVal srcDC As Long)
+Public Sub FreeMemoryDC(ByRef srcDC As Long)
     If (srcDC <> 0) Then
         Dim failsafeCheck As Boolean
         failsafeCheck = CBool(DeleteDC(srcDC) <> 0)
         If failsafeCheck Then
             g_DCsDestroyed = g_DCsDestroyed + 1
+            srcDC = 0
         Else
             #If DEBUGMODE = 1 Then
                 If (Not pdDebug Is Nothing) Then pdDebug.LogAction "WARNING!  GDI.FreeMemoryDC() failed to release the requested DC.  DLL Error: #" & Err.LastDllError

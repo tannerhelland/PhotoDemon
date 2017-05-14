@@ -562,7 +562,7 @@ Private Sub SetUIMode_NoImages()
         Dim i As Long
         For i = 0 To UBound(pdImages)
             If (Not pdImages(i) Is Nothing) Then
-                pdImages(i).DeactivateImage
+                pdImages(i).FreeAllImageResources
                 Set pdImages(i) = Nothing
             End If
         Next i

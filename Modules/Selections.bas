@@ -76,6 +76,9 @@ Public Sub RemoveCurrentSelection()
     'Reset any internal selection state trackers
     pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
     
+    'Free as many unneeded caches as we can
+    pdImages(g_CurrentImage).mainSelection.FreeNonEssentialResources
+    
     'Synchronize all user-facing controls to match
     SyncTextToCurrentSelection g_CurrentImage
     

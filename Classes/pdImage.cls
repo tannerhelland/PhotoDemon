@@ -934,8 +934,23 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     
 End Function
 
-'When this DIB is no longer being used, we can deactivate it to save on resources.
+'When the attached image object is deactivated (e.g. the user leaves it loaded, but switches to a
+' different image), you can call this function to free up some internal memory caches and other objects.
+' This can free a non-trivial amount of resources when system memory is tight.
 Friend Sub DeactivateImage()
+
+    'Scratch layers aren't needed unless the image is actively being edited
+    Set ScratchLayer = Nothing
+    
+    'Some internal selection caches are free-able
+    If (Not mainSelection Is Nothing) Then mainSelection.FreeNonEssentialResources
+
+End Sub
+
+'When the attached image object is closed, we can deactivate a ton of items to save on resources.
+' (At present, note that this class itself is *not* freed; we do this to save time when reloading
+'  subsequent images - a very old design decision that should probably be revisited.)
+Friend Sub FreeAllImageResources()
     
     FreeInternalIcons
     
