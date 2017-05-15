@@ -198,8 +198,12 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     
     'Based on the specified search mode, call the appropriate flood function
     If (m_SearchMode = PDFS_CONTIGUOUS) Then
+        
+        'Contiguous floodfills use a new scanline-based implementation.  This provides a 30-40% performance improvement
+        ' over a naive implementation, although the code is quite a bit more complex.
         FloodFillContiguous_Scanline srcDIB
         'FloodFillContiguous srcDIB
+        
     ElseIf (m_SearchMode = PDFS_WHOLEIMAGE) Then
         FloodFillGlobal srcDIB
     End If
@@ -459,13 +463,13 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     
     'A number of local variables are used to help optimize the flood function
     Dim isWithinTolerance As Boolean
-    Dim modifiedTolerance As Double
+    Dim modifiedTolerance As Long
     
     'Populate our reference comparison values
     Dim r As Long, g As Long, b As Long, a As Long, l As Long
     Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
     
-    Dim thisValue As Double
+    Dim thisValue As Long
     
     quickX = m_InitPoint.x * 4
     y = m_InitPoint.y
@@ -510,7 +514,7 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     End Select
     
     Dim scanRight As Boolean, scanLeft As Boolean
-    Dim xIn As Long
+    Dim leftBound As Long, rightBound As Long, i As Long, yIn As Long
     
     'Start processing the stack!
     Do
@@ -537,113 +541,38 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
         If (m_CompareMode = PDFC_COMPOSITE) Then
             thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
             isWithinTolerance = (thisValue <= modifiedTolerance)
-        
         ElseIf (m_CompareMode = PDFC_COLOR) Then
             thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
             isWithinTolerance = (thisValue <= modifiedTolerance)
-            
         ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
             l = 213 * r + 715 * g + 72 * b
             isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-            
         ElseIf (m_CompareMode = PDFC_RED) Then
             isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-            
         ElseIf (m_CompareMode = PDFC_GREEN) Then
             isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-                
         ElseIf (m_CompareMode = PDFC_BLUE) Then
             isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                
         ElseIf (m_CompareMode = PDFC_ALPHA) Then
             isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
-        
         End If
         
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
             
-            'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
-            ' (required for generating a flood fill outline overlay)
+            'Mark this pixel as filled
             m_AlreadyChecked(x, y) = 2
             m_FillResults(x, y) = 255
             
-            'Push the pixels above and below this one onto the stack, as necessary
-            If (y > 0) Then If (m_AlreadyChecked(x, y - 1) = 0) Then PushOntoStack x, y - 1
-            If (y < yBound) Then If (m_AlreadyChecked(x, y + 1) = 0) Then PushOntoStack x, y + 1
-            
-            'Next, we're going to do a full scanline check in both the left and right directions
-            xIn = x + 1
-            scanRight = (xIn <= xBound)
-            Do While scanRight
-                If (m_AlreadyChecked(xIn, y) = 0) Then
-                    
-                    'Retrieve RGB/A values for this point
-                    quickX = xIn * 4
-                    b = srcImageData(quickX, y)
-                    g = srcImageData(quickX + 1, y)
-                    r = srcImageData(quickX + 2, y)
-                    a = srcImageData(quickX + 3, y)
-                
-                    'Compare this pixel against the reference
-                    If (m_CompareMode = PDFC_COMPOSITE) Then
-                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
-                        isWithinTolerance = (thisValue <= modifiedTolerance)
-                    
-                    ElseIf (m_CompareMode = PDFC_COLOR) Then
-                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-                        isWithinTolerance = (thisValue <= modifiedTolerance)
-                        
-                    ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
-                        l = 213 * r + 715 * g + 72 * b
-                        isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-                        
-                    ElseIf (m_CompareMode = PDFC_RED) Then
-                        isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-                        
-                    ElseIf (m_CompareMode = PDFC_GREEN) Then
-                        isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-                            
-                    ElseIf (m_CompareMode = PDFC_BLUE) Then
-                        isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                            
-                    ElseIf (m_CompareMode = PDFC_ALPHA) Then
-                        isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
-                    
-                    End If
-                    
-                    'If this value is within the requested tolerance, mark it on the destination map
-                    If isWithinTolerance Then
-                        
-                        'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
-                        ' (required for generating a flood fill outline overlay)
-                        m_AlreadyChecked(xIn, y) = 2
-                        m_FillResults(xIn, y) = 255
-                        
-                        'Push the pixels above and below this one onto the stack, as necessary
-                        If (y > 0) Then If (m_AlreadyChecked(xIn, y - 1) = 0) Then PushOntoStack xIn, y - 1
-                        If (y < yBound) Then If (m_AlreadyChecked(xIn, y + 1) = 0) Then PushOntoStack xIn, y + 1
-                        
-                        xIn = xIn + 1
-                        scanRight = (xIn <= xBound)
-                    
-                    Else
-                        m_AlreadyChecked(xIn, y) = 1
-                        scanRight = False
-                    End If
-                    
-                Else
-                    scanRight = False
-                End If
-            Loop
-            
-            xIn = x - 1
-            scanLeft = (xIn >= 0)
+            'Next, we're going to do a full scanline check in both the left and right directions.  Start with the
+            ' left direction.
+            leftBound = x - 1
+            scanLeft = (leftBound >= 0)
             Do While scanLeft
-                If (m_AlreadyChecked(xIn, y) = 0) Then
+                If (m_AlreadyChecked(leftBound, y) = 0) Then
                     
                     'Retrieve RGB/A values for this point
-                    quickX = xIn * 4
+                    quickX = leftBound * 4
                     b = srcImageData(quickX, y)
                     g = srcImageData(quickX + 1, y)
                     r = srcImageData(quickX + 2, y)
@@ -653,46 +582,30 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                     If (m_CompareMode = PDFC_COMPOSITE) Then
                         thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
                         isWithinTolerance = (thisValue <= modifiedTolerance)
-                    
                     ElseIf (m_CompareMode = PDFC_COLOR) Then
                         thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
                         isWithinTolerance = (thisValue <= modifiedTolerance)
-                        
                     ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
                         l = 213 * r + 715 * g + 72 * b
                         isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
-                        
                     ElseIf (m_CompareMode = PDFC_RED) Then
                         isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
-                        
                     ElseIf (m_CompareMode = PDFC_GREEN) Then
                         isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
-                            
                     ElseIf (m_CompareMode = PDFC_BLUE) Then
                         isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
-                            
                     ElseIf (m_CompareMode = PDFC_ALPHA) Then
                         isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
-                    
                     End If
                     
                     'If this value is within the requested tolerance, mark it on the destination map
                     If isWithinTolerance Then
-                        
-                        'Mark this pixel as filled; this simplifies both the antialiasing process, and the edge-detection process
-                        ' (required for generating a flood fill outline overlay)
-                        m_AlreadyChecked(xIn, y) = 2
-                        m_FillResults(xIn, y) = 255
-                        
-                        'Push the pixels above and below this one onto the stack, as necessary
-                        If (y > 0) Then If (m_AlreadyChecked(xIn, y - 1) = 0) Then PushOntoStack xIn, y - 1
-                        If (y < yBound) Then If (m_AlreadyChecked(xIn, y + 1) = 0) Then PushOntoStack xIn, y + 1
-                        
-                        xIn = xIn - 1
-                        scanLeft = (xIn >= 0)
-                    
+                        m_AlreadyChecked(leftBound, y) = 2
+                        m_FillResults(leftBound, y) = 255
+                        leftBound = leftBound - 1
+                        scanLeft = (leftBound >= 0)
                     Else
-                        m_AlreadyChecked(xIn, y) = 2
+                        m_AlreadyChecked(leftBound, y) = 1
                         scanLeft = False
                     End If
                     
@@ -701,9 +614,94 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                 End If
             Loop
             
-            'ORIG:
-            'If (x > 0) Then If (m_AlreadyChecked(x - 1, y) = 0) Then PushOntoStack x - 1, y
-            'If (x < xBound) Then If (m_AlreadyChecked(x + 1, y) = 0) Then PushOntoStack x + 1, y
+            leftBound = leftBound + 1
+            
+            rightBound = x + 1
+            scanRight = (rightBound <= xBound)
+            Do While scanRight
+                If (m_AlreadyChecked(rightBound, y) = 0) Then
+                    
+                    'Retrieve RGB/A values for this point
+                    quickX = rightBound * 4
+                    b = srcImageData(quickX, y)
+                    g = srcImageData(quickX + 1, y)
+                    r = srcImageData(quickX + 2, y)
+                    a = srcImageData(quickX + 3, y)
+                
+                    'Compare this pixel against the reference
+                    If (m_CompareMode = PDFC_COMPOSITE) Then
+                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB) + Abs(a - refA)
+                        isWithinTolerance = (thisValue <= modifiedTolerance)
+                    ElseIf (m_CompareMode = PDFC_COLOR) Then
+                        thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
+                        isWithinTolerance = (thisValue <= modifiedTolerance)
+                    ElseIf (m_CompareMode = PDFC_LUMINANCE) Then
+                        l = 213 * r + 715 * g + 72 * b
+                        isWithinTolerance = (Abs(l - refL) <= modifiedTolerance)
+                    ElseIf (m_CompareMode = PDFC_RED) Then
+                        isWithinTolerance = (Abs(r - refR) <= modifiedTolerance)
+                    ElseIf (m_CompareMode = PDFC_GREEN) Then
+                        isWithinTolerance = (Abs(g - refG) <= modifiedTolerance)
+                    ElseIf (m_CompareMode = PDFC_BLUE) Then
+                        isWithinTolerance = (Abs(b - refB) <= modifiedTolerance)
+                    ElseIf (m_CompareMode = PDFC_ALPHA) Then
+                        isWithinTolerance = (Abs(a - refA) <= modifiedTolerance)
+                    End If
+                    
+                    'If this value is within the requested tolerance, mark it on the destination map
+                    If isWithinTolerance Then
+                        m_AlreadyChecked(rightBound, y) = 2
+                        m_FillResults(rightBound, y) = 255
+                        rightBound = rightBound + 1
+                        scanRight = (rightBound <= xBound)
+                    Else
+                        m_AlreadyChecked(rightBound, y) = 1
+                        scanRight = False
+                    End If
+                    
+                Else
+                    scanRight = False
+                End If
+            Loop
+            
+            rightBound = rightBound - 1
+            
+            'Finally, push all neighboring pixels onto the stack.  Normally we would do this via the cleaner "PushOntoStack" function,
+            ' but for performance reasons, we inline the stack requests.
+            
+            'Start by figuring out the maximum stack size we may need (if every neighboring point would be added), and ensuring
+            ' at least that much space is available.
+            yIn = m_StackPosition + (rightBound - leftBound + 1) * 2
+            If (m_StackHeight < yIn) Then
+                m_StackHeight = yIn * 2 + 1
+                ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
+            End If
+            
+            'Now that a safe stack size is guaranteed, we can push the pixels above and below this one onto the stack
+            ' in one fell swoop, without worrying about safe memory allocations.
+            If (y > 0) Then
+                yIn = y - 1
+                For i = leftBound To rightBound
+                    If (m_AlreadyChecked(i, yIn) = 0) Then
+                        m_AlreadyChecked(i, yIn) = 1
+                        m_StackPosition = m_StackPosition + 1
+                        m_Stack(m_StackPosition).x = i
+                        m_Stack(m_StackPosition).y = yIn
+                    End If
+                Next i
+            End If
+            
+            If (y < yBound) Then
+                yIn = y + 1
+                For i = leftBound To rightBound
+                    If (m_AlreadyChecked(i, yIn) = 0) Then
+                        m_AlreadyChecked(i, yIn) = 1
+                        m_StackPosition = m_StackPosition + 1
+                        m_Stack(m_StackPosition).x = i
+                        m_Stack(m_StackPosition).y = yIn
+                    End If
+                Next i
+            End If
             
         End If
                 
