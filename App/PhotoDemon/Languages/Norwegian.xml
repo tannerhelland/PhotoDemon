@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2544</langversion>
+<langversion>6.8.2545</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5983,6 +5983,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Asynkron metadata sjekk komplett! Oppdaterer metadata samling</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>Photo filter</translation>
 </phrase>
@@ -6150,11 +6155,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Stop macro recording</original>
 <translation>Stopp makro opptak</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynkron metadata sjekk komplett! Oppdaterer metadata samling</translation>
 </phrase>
 
 <phrase>
@@ -6784,6 +6784,11 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>utjamning alternativer</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>antall gråtoner</translation>
 </phrase>
@@ -6796,11 +6801,6 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <phrase>
 <original>maximum</original>
 <translation>maksimum</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>utjamning alternativer</translation>
 </phrase>
 
 <phrase>
@@ -8744,6 +8744,11 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>hvis piksler ligge utenfor bilde</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>skala</translation>
 </phrase>
@@ -8751,11 +8756,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <phrase>
 <original>turbulence</original>
 <translation>turbulens</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>hvis piksler ligge utenfor bilde</translation>
 </phrase>
 
 <phrase>
@@ -9449,11 +9449,6 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>tid (fase)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>Høyden på krusninger  (amplitude)</translation>
 </phrase>
@@ -9461,6 +9456,11 @@ If du vil lagre den med et annet filnavn, velger du "Avbryt", og deretter bruke 
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>Lengden av krusninger  (bølgelengde)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>tid (fase)</translation>
 </phrase>
 
 <phrase>
@@ -13483,6 +13483,11 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>antialiased</translation>
 </phrase>
@@ -13612,7 +13617,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>Dette styrer hvilke kriterier tryllestaven  bruker for å avgjøre om en piksel bør legges til det gjeldende valget.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14997,10 +15002,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

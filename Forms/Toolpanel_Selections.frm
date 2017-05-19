@@ -706,7 +706,8 @@ Private Sub Form_Load()
     cboSelRender.Clear
     cboSelRender.AddItem " Highlight", 0
     cboSelRender.AddItem " Lightbox", 1
-    cboSelRender.AddItem " Outline", 2
+    cboSelRender.AddItem " Ants", 2
+    cboSelRender.AddItem " Outline", 3
     cboSelRender.ListIndex = 0
     
     csSelectionHighlight.Color = RGB(255, 58, 72)

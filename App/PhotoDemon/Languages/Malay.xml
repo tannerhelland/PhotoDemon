@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2544</langversion>
+<langversion>6.8.2545</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5984,6 +5984,11 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Metadata Asynchronous semak lengkap! Mengemaskini koleksi metadata</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>penapis Photo</translation>
 </phrase>
@@ -6151,11 +6156,6 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 <phrase>
 <original>Stop macro recording</original>
 <translation>Menghentikan rakaman makro</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Metadata Asynchronous semak lengkap! Mengemaskini koleksi metadata</translation>
 </phrase>
 
 <phrase>
@@ -6785,6 +6785,11 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>penggetaran pilihan...</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>beberapa warna kelabu</translation>
 </phrase>
@@ -6797,11 +6802,6 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <phrase>
 <original>maximum</original>
 <translation>maksimum</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>penggetaran pilihan...</translation>
 </phrase>
 
 <phrase>
@@ -8745,6 +8745,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>jika piksel terletak di luar imej</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>skala</translation>
 </phrase>
@@ -8752,11 +8757,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>turbulence</original>
 <translation>pergolakan</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>jika piksel terletak di luar imej</translation>
 </phrase>
 
 <phrase>
@@ -9450,11 +9450,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>masa (fasa)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>ketinggian riak (amplitud)</translation>
 </phrase>
@@ -9462,6 +9457,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>panjang riak (panjang gelombang)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>masa (fasa)</translation>
 </phrase>
 
 <phrase>
@@ -13484,6 +13484,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>Antialiased</translation>
 </phrase>
@@ -13613,7 +13618,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14998,10 +15003,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2544</langversion>
+<langversion>6.8.2545</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5977,6 +5977,11 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Asynchronous metadata Tarkistus valmis! Päivittäminen metadata kokoelma</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>kuva suodatin</translation>
 </phrase>
@@ -6144,11 +6149,6 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 <phrase>
 <original>Stop macro recording</original>
 <translation>Lopeta makron tallennus</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynchronous metadata Tarkistus valmis! Päivittäminen metadata kokoelma</translation>
 </phrase>
 
 <phrase>
@@ -6778,6 +6778,11 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>kiertelevät vaihtoehtoja</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>useita harmaan sävyjä</translation>
 </phrase>
@@ -6790,11 +6795,6 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <phrase>
 <original>maximum</original>
 <translation>enimmäismäärä</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>kiertelevät vaihtoehtoja</translation>
 </phrase>
 
 <phrase>
@@ -8738,6 +8738,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>Jos pikselit eivät kuulu kuva</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>asteikko</translation>
 </phrase>
@@ -8745,11 +8750,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <phrase>
 <original>turbulence</original>
 <translation>turbulenssi</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>Jos pikselit eivät kuulu kuva</translation>
 </phrase>
 
 <phrase>
@@ -9443,11 +9443,6 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>aika (vaihe)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>korkeus väreitä (amplitudi)</translation>
 </phrase>
@@ -9455,6 +9450,11 @@ If haluat tallentaa sen eri tiedoston nimi, valitse Peruuta, niin käytä File -
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>pituus väreitä (aallonpituus)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>aika (vaihe)</translation>
 </phrase>
 
 <phrase>
@@ -13477,6 +13477,11 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>antialiased</translation>
 </phrase>
@@ -13606,7 +13611,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 <translation>Tämä vaihtoehto tarkastuksia, jotka kriteerit taikasauvaa käyttää sen määrittämiseksi, onko pikseli olisi lisättävä nykyiseen valintaan.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14991,10 +14996,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

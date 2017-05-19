@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2544</langversion>
+<langversion>6.8.2545</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5979,6 +5979,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Asynkrona metadata Kontroll slutförd! Uppdaterar metadata insamling</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>Fotofilter...</translation>
 </phrase>
@@ -6146,11 +6151,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <phrase>
 <original>Stop macro recording</original>
 <translation>Stoppa makroinspelning</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynkrona metadata Kontroll slutförd! Uppdaterar metadata insamling</translation>
 </phrase>
 
 <phrase>
@@ -6780,6 +6780,11 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>dithering alternativ</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>antal grånyanser</translation>
 </phrase>
@@ -6792,11 +6797,6 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <phrase>
 <original>maximum</original>
 <translation>maximal</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>dithering alternativ</translation>
 </phrase>
 
 <phrase>
@@ -8740,6 +8740,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>om bildpunkter ligger utanför bilden</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>skala</translation>
 </phrase>
@@ -8747,11 +8752,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>turbulence</original>
 <translation>turbulens</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>om bildpunkter ligger utanför bilden</translation>
 </phrase>
 
 <phrase>
@@ -9445,11 +9445,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>tid (fas)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>höjd av krus (amplitud)</translation>
 </phrase>
@@ -9457,6 +9452,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>längd krus (våglängd)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>tid (fas)</translation>
 </phrase>
 
 <phrase>
@@ -13478,6 +13478,11 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>kantutjämnade</translation>
 </phrase>
@@ -13607,7 +13612,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Det här alternativet styr vilka kriterier trollspö använder för att avgöra om en pixel bör läggas till den aktuella markeringen.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14992,10 +14997,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

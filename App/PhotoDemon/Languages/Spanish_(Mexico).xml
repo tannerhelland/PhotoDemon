@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.259</langversion>
+<langversion>6.7.260</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -5975,6 +5975,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Metadatos asíncronos verificación completa! Colección de metadatos Actualización</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>filtro de fotos</translation>
 </phrase>
@@ -6142,11 +6147,6 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <phrase>
 <original>Stop macro recording</original>
 <translation>Detener la grabación de macros</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Metadatos asíncronos verificación completa! Colección de metadatos Actualización</translation>
 </phrase>
 
 <phrase>
@@ -6776,6 +6776,11 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>tramado opciones</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>número de tonos grises</translation>
 </phrase>
@@ -6788,11 +6793,6 @@ Do tienes una cuenta de GitHub? (Si usted no tiene idea de lo que esto significa
 <phrase>
 <original>maximum</original>
 <translation>máximo</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>tramado opciones</translation>
 </phrase>
 
 <phrase>
@@ -8736,6 +8736,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>si se encuentran fuera de píxeles de la imagen</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>escala</translation>
 </phrase>
@@ -8743,11 +8748,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <phrase>
 <original>turbulence</original>
 <translation>turbulencia</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>si se encuentran fuera de píxeles de la imagen</translation>
 </phrase>
 
 <phrase>
@@ -9441,11 +9441,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>tiempo (fase)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>altura de las ondulaciones (amplitud)</translation>
 </phrase>
@@ -9453,6 +9448,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>longitud de ondas (longitud de onda)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>tiempo (fase)</translation>
 </phrase>
 
 <phrase>
@@ -13473,6 +13473,11 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>antialias</translation>
 </phrase>
@@ -13602,7 +13607,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14987,10 +14992,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>
