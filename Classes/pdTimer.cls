@@ -57,7 +57,7 @@ Private Sub Class_Initialize()
 End Sub
 
 Private Sub Class_Terminate()
-    If (m_TimerID <> 0) Then StopTimer
+    If (m_TimerID <> 0) Then Me.StopTimer
 End Sub
 
 Public Property Get Interval() As Long

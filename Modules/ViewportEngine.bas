@@ -192,7 +192,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     If srcImage.IsSelectionActive Then
         
         'The selection engine handles the actual rendering process
-        srcImage.mainSelection.RenderSelectionToViewport m_FrontBuffer, srcImage, dstCanvas, Selections.GetSelectionRenderMode, Selections.GetSelectionRenderColor
+        srcImage.mainSelection.RenderSelectionToViewport m_FrontBuffer, srcImage, dstCanvas
     
     End If
     

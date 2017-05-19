@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2544</langversion>
+<langversion>6.8.2545</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5976,6 +5976,11 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Asenkron meta tamamlandı kontrol edin! Güncelleniyor meta toplama</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>Fotoğraf filtresi</translation>
 </phrase>
@@ -6143,11 +6148,6 @@ olduğunu. o tamamlandığında yeni bir bildirim alacaksınız.</translation>
 <phrase>
 <original>Stop macro recording</original>
 <translation>Makro Kaydı durdur</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asenkron meta tamamlandı kontrol edin! Güncelleniyor meta toplama</translation>
 </phrase>
 
 <phrase>
@@ -6777,6 +6777,11 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>seçenekleri dithering</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>gri tonları sayısı</translation>
 </phrase>
@@ -6789,11 +6794,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <phrase>
 <original>maximum</original>
 <translation>maksimum</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>seçenekleri dithering</translation>
 </phrase>
 
 <phrase>
@@ -8737,6 +8737,11 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>piksel görüntü dışında yalan söylersen</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>ölçek</translation>
 </phrase>
@@ -8744,11 +8749,6 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <phrase>
 <original>turbulence</original>
 <translation>türbülans</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>piksel görüntü dışında yalan söylersen</translation>
 </phrase>
 
 <phrase>
@@ -9442,11 +9442,6 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>Zaman (faz)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>dalgaların yüksekliği (genlik)</translation>
 </phrase>
@@ -9454,6 +9449,11 @@ If geçerli dosyasını kullanarak bu görüntüyü kurtaracak, ardından File k
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>dalgaların boyu (dalga boyu)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>Zaman (faz)</translation>
 </phrase>
 
 <phrase>
@@ -13475,6 +13475,11 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>antialiased</translation>
 </phrase>
@@ -13604,7 +13609,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>Sihirli değnek kullanan kriter Bu seçenek denetimleri piksel geçerli seçime ilave gerekip gerekmediğini belirlemek için.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14983,10 +14988,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

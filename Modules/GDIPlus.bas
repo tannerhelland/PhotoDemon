@@ -1103,6 +1103,7 @@ Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Lo
 Private Declare Function GdipGetPathWorldBoundsI Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTL, ByVal tmpTransformMatrix As Long, ByVal tmpPenHandle As Long) As GP_Result
 Private Declare Function GdipGetPenColor Lib "gdiplus" (ByVal hPen As Long, ByRef dstPARGBColor As Long) As GP_Result
 Private Declare Function GdipGetPenDashCap Lib "gdiplus" Alias "GdipGetPenDashCap197819" (ByVal hPen As Long, ByRef dstCap As GP_DashCap) As GP_Result
+Private Declare Function GdipGetPenDashOffset Lib "gdiplus" (ByVal hPen As Long, ByRef dstOffset As Single) As GP_Result
 Private Declare Function GdipGetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByRef dstDashStyle As GP_DashStyle) As GP_Result
 Private Declare Function GdipGetPenEndCap Lib "gdiplus" (ByVal hPen As Long, ByRef dstLineCap As GP_LineCap) As GP_Result
 Private Declare Function GdipGetPenStartCap Lib "gdiplus" (ByVal hPen As Long, ByRef dstLineCap As GP_LineCap) As GP_Result
@@ -1162,7 +1163,9 @@ Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBr
 Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As GP_WrapMode) As GP_Result
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal pathFillMode As GP_FillMode) As GP_Result
 Private Declare Function GdipSetPenColor Lib "gdiplus" (ByVal hPen As Long, ByVal pARGBColor As Long) As GP_Result
+Private Declare Function GdipSetPenDashArray Lib "gdiplus" (ByVal hPen As Long, ByVal ptrToDashArray As Long, ByVal numOfDashes As Long) As GP_Result
 Private Declare Function GdipSetPenDashCap Lib "gdiplus" Alias "GdipSetPenDashCap197819" (ByVal hPen As Long, ByVal newCap As GP_DashCap) As GP_Result
+Private Declare Function GdipSetPenDashOffset Lib "gdiplus" (ByVal hPen As Long, ByVal newPenOffset As Single) As GP_Result
 Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal hPen As Long, ByVal newDashStyle As GP_DashStyle) As GP_Result
 Private Declare Function GdipSetPenEndCap Lib "gdiplus" (ByVal hPen As Long, ByVal endCap As GP_LineCap) As GP_Result
 Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal hPen As Long, ByVal startCap As GP_LineCap, ByVal endCap As GP_LineCap, ByVal dashCap As GP_DashCap) As GP_Result
@@ -1902,7 +1905,7 @@ Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, 
     Dim hBrush As Long
     hBrush = GetGDIPlusSolidBrushHandle(eColor, eTransparency)
     
-    If hBrush <> 0 Then
+    If (hBrush <> 0) Then
         GdipFillEllipseI iGraphics, hBrush, x1, y1, xWidth, yHeight
         ReleaseGDIPlusBrush hBrush
     End If
@@ -5364,6 +5367,20 @@ Public Function GDIPlus_PathWindingModeOutline(ByVal hPath As Long, ByVal hTrans
     tmpReturn = GdipWindingModeOutline(hPath, hTransformMatrix, allowableError)
     GDIPlus_PathWindingModeOutline = CBool(tmpReturn = GP_OK)
     If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PenGetDashOffset(ByVal hPen As Long) As Single
+    Dim tmpReturn As Long
+    tmpReturn = GdipGetPenDashOffset(hPen, GDIPlus_PenGetDashOffset)
+    If (tmpReturn <> GP_OK) Then InternalGDIPlusError vbNullString, vbNullString, tmpReturn
+End Function
+
+Public Function GDIPlus_PenSetDashArray(ByVal hPen As Long, ByVal ptrToDashArray As Long, ByVal numOfDashes As Long) As Boolean
+    GDIPlus_PenSetDashArray = CBool(GdipSetPenDashArray(hPen, ptrToDashArray, numOfDashes) = GP_OK)
+End Function
+
+Public Function GDIPlus_PenSetDashOffset(ByVal hPen As Long, ByVal newOffset As Single) As Boolean
+    GDIPlus_PenSetDashOffset = CBool(GdipSetPenDashOffset(hPen, newOffset) = GP_OK)
 End Function
 
 Public Function GDIPlus_RegionAddRectF(ByVal dstRegion As Long, ByRef srcRectF As RECTF, Optional ByVal useCombineMode As GP_CombineMode = GP_CM_Replace) As Boolean

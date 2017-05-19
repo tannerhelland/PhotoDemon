@@ -59,11 +59,12 @@ End Enum
 Public Enum PD_SelectionRender
     PDSR_Highlight = 0
     PDSR_Lightbox = 1
-    PDSR_Outline = 2
+    PDSR_Ants = 2
+    PDSR_Outline = 3
 End Enum
 
 #If False Then
-    Private Const PDSR_Highlight = 0, PDSR_Lightbox = 1, PDSR_Outline = 2
+    Private Const PDSR_Highlight = 0, PDSR_Lightbox = 1, PDSR_Ants = 2, PDSR_Outline = 3
 #End If
 
 'PhotoDemon's language files provide a small amount of metadata to help the program know how to use them.  This type

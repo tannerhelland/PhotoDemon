@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2544</langversion>
+<langversion>6.8.2545</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5966,6 +5966,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Aszinkron metaadat-ellenőrzés kész! Frissítése metaadat gyűjtemény</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>Photo szűrő</translation>
 </phrase>
@@ -6133,11 +6138,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Stop macro recording</original>
 <translation>Állj makrórögzítést</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Aszinkron metaadat-ellenőrzés kész! Frissítése metaadat gyűjtemény</translation>
 </phrase>
 
 <phrase>
@@ -6767,6 +6767,11 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>szürkeárnyalás lehetőségek</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>számú szürke árnyalatok</translation>
 </phrase>
@@ -6779,11 +6784,6 @@ Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</
 <phrase>
 <original>maximum</original>
 <translation>maximális</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>szürkeárnyalás lehetőségek</translation>
 </phrase>
 
 <phrase>
@@ -8727,6 +8727,11 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>ha képpont kívül esik a kép</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>skála</translation>
 </phrase>
@@ -8734,11 +8739,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <phrase>
 <original>turbulence</original>
 <translation>turbulencia</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>ha képpont kívül esik a kép</translation>
 </phrase>
 
 <phrase>
@@ -9432,11 +9432,6 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>idő (fázis)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>magassága hullámai (amplitúdó)</translation>
 </phrase>
@@ -9444,6 +9439,11 @@ If szeretne menteni egy másik fájl nevét, válassza ki a "Mégse", majd a Fil
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>hossza hullámai (hullámhossz)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>idő (fázis)</translation>
 </phrase>
 
 <phrase>
@@ -13465,6 +13465,11 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>antialiased</translation>
 </phrase>
@@ -13594,7 +13599,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>Ez a beállítás milyen kritériumok varázspálca használja annak meghatározására, hogy egy pixel hozzá kell adni az aktuális választás.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14973,10 +14978,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

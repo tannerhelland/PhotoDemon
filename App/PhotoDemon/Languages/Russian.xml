@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2544</langversion>
+<langversion>6.8.2545</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -5983,6 +5983,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>Asynchronous metadata check complete!  Updating metadata collection</original>
+<translation>Асинхронные метаданные проверить полный! Сбор метаданных Обновление</translation>
+</phrase>
+
+<phrase>
 <original>Photo filter</original>
 <translation>Фото фильтр</translation>
 </phrase>
@@ -6150,11 +6155,6 @@ The update is automatically processing in the background.  You will receive a ne
 <phrase>
 <original>Stop macro recording</original>
 <translation>Остановить запись макроса</translation>
-</phrase>
-
-<phrase>
-<original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Асинхронные метаданные проверить полный! Сбор метаданных Обновление</translation>
 </phrase>
 
 <phrase>
@@ -6784,6 +6784,11 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <!-- BEGIN text for Adjustments_Color_Grayscale.frm (FormGrayscale) -->
 
 <phrase>
+<original>dithering options</original>
+<translation>размывания варианты</translation>
+</phrase>
+
+<phrase>
 <original>number of gray shades</original>
 <translation>Количество оттенков серого</translation>
 </phrase>
@@ -6796,11 +6801,6 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <phrase>
 <original>maximum</original>
 <translation>максимальная</translation>
-</phrase>
-
-<phrase>
-<original>dithering options</original>
-<translation>размывания варианты</translation>
 </phrase>
 
 <phrase>
@@ -8744,6 +8744,11 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Artistic_FiguredGlass.frm (FormFiguredGlass) -->
 
 <phrase>
+<original>if pixels lie outside the image</original>
+<translation>если пиксели находятся за пределами изображения</translation>
+</phrase>
+
+<phrase>
 <original>scale</original>
 <translation>масштаб</translation>
 </phrase>
@@ -8751,11 +8756,6 @@ If вы хотите сохранить его с другим именем фа
 <phrase>
 <original>turbulence</original>
 <translation>турбулентность</translation>
-</phrase>
-
-<phrase>
-<original>if pixels lie outside the image</original>
-<translation>если пиксели находятся за пределами изображения</translation>
 </phrase>
 
 <phrase>
@@ -9449,11 +9449,6 @@ If вы хотите сохранить его с другим именем фа
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>время (фаза)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>высота ряби (амплитуда)</translation>
 </phrase>
@@ -9461,6 +9456,11 @@ If вы хотите сохранить его с другим именем фа
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>длина неравномерностей (длина волны)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>время (фаза)</translation>
 </phrase>
 
 <phrase>
@@ -13483,6 +13483,11 @@ I искренние извинения за неудобства, но, к со
 </phrase>
 
 <phrase>
+<original>Ants</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Antialiased</original>
 <translation>Antialiased</translation>
 </phrase>
@@ -13612,7 +13617,7 @@ I искренние извинения за неудобства, но, к со
 <translation>Этот параметр определяет, какие критерии использует волшебная палочка, чтобы определить, следует ли пиксель быть добавлены к текущему выбору.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 59 phrases. 21 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 59 phrases. 20 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14997,10 +15002,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2525</phrasecount>
+<phrasecount>2526</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1964 are duplicates, so only 2525 unique phrases have been written to file. -->
-<!-- These 2525 phrases contain approximately 12400 total words. -->
+<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

@@ -43,11 +43,12 @@ Public Enum PD_2D_PEN_SETTINGS
     P2_PenAlignment = 8
     P2_PenStartCap = 9
     P2_PenEndCap = 10
-    [_P2_NumOfPenSettings] = 11
+    P2_PenDashOffset = 11
+    [_P2_NumOfPenSettings] = 12
 End Enum
 
 #If False Then
-    Private Const P2_PenStyle = 0, P2_PenColor = 1, P2_PenOpacity = 2, P2_PenWidth = 3, P2_PenLineJoin = 4, P2_PenLineCap = 5, P2_PenDashCap = 6, P2_PenMiterLimit = 7, P2_PenAlignment = 8, P2_PenStartCap = 9, P2_PenEndCap = 10, P2_NumOfPenSettings = 11
+    Private Const P2_PenStyle = 0, P2_PenColor = 1, P2_PenOpacity = 2, P2_PenWidth = 3, P2_PenLineJoin = 4, P2_PenLineCap = 5, P2_PenDashCap = 6, P2_PenMiterLimit = 7, P2_PenAlignment = 8, P2_PenStartCap = 9, P2_PenEndCap = 10, P2_PenDashOffset = 11, P2_NumOfPenSettings = 12
 #End If
 
 'Brushes support a *lot* of internal settings.
