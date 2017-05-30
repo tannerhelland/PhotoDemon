@@ -2382,6 +2382,95 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'If the current selection lies fully off-image, let's skip this step entirely.
     If Me.AreAllCoordinatesInvalid Then Exit Sub
     
+    'Regardless of what type of selection overlay we're rendering (highlight, outline, marching ants, etc), we now want to
+    ' produce a copy of the selection mask, scaled and cropped to match the current viewport.  (Subsequent rendering will
+    ' rely on this selection mask copy, instead of the full mask, which accelerates things greatly when the image is large.)
+    
+    'Start by requesting the current canvas intersection rect from the source image
+    Dim viewportIntersectRectCanvas As RECTF
+    srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
+    
+    'We now need to calculate an integer-only version of the "viewport space" coordinates.  (The width and height of
+    ' the overlay DIB are integer-only, obviously, and we can improve performance in our final render if we stick
+    ' to integer coordinates there as well.)
+    Dim imgViewportRectL As RECTL_WH
+    With viewportIntersectRectCanvas
+        imgViewportRectL.Left = Int(.Left)
+        imgViewportRectL.Top = Int(.Top)
+        imgViewportRectL.Width = Int(PDMath.Frac(.Left) + .Width + 0.999999)
+        imgViewportRectL.Height = Int(PDMath.Frac(.Top) + .Height + 0.999999)
+    End With
+    
+    'Next, we need to convert the current selection boundary coordinates from "image coordinates" to "viewport coordinates".
+    ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on
+    '  the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when
+    '  scroll and zoom are in effect.)
+    Dim dstRectF As RECTF
+    Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_Bounds, dstRectF
+    
+    'EXPERIMENTAL!  Clamp the converted rect to integer coordinates, to improve rendering along pixel boundaries
+    PDMath.GetIntClampedRectF dstRectF
+    
+    'If the overlay is supposedly ready, perform two additional checks: one against the source image region, and another against
+    ' the viewport region.  If either have changed since the last time we generated the overlay, we need to create a new overlay.
+    If m_OverlayIsReady Then
+        
+        'First, compare the viewport rect that we've already retrieved
+        If (Not PDMath.AreRectFsEqual(m_LastViewportRectF, viewportIntersectRectCanvas)) Then
+            m_LastViewportRectF = viewportIntersectRectCanvas
+            m_OverlayIsReady = False
+        End If
+        
+        'Finally, compare the base image rect
+        Dim curImgRectF As RECTF
+        srcImage.imgViewport.GetIntersectRectImage curImgRectF
+        
+        If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
+            m_LastImageRectF = curImgRectF
+            m_OverlayIsReady = False
+        End If
+        
+    End If
+    
+    Dim overlayWasRegenerated As Boolean: overlayWasRegenerated = False
+    
+    'If any of our "overlay is ready" checks failed, generate a new overlay now
+    If (Not m_OverlayIsReady) Then
+        
+        'Start by using GDI+ to generate a temp mask at the same size as the viewport intersection rect
+        If (m_OverlayReference Is Nothing) Then Set m_OverlayReference = New pdDIB
+        If (m_OverlayReference.GetDIBWidth <> imgViewportRectL.Width) Or (m_OverlayReference.GetDIBHeight <> imgViewportRectL.Height) Then
+            m_OverlayReference.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
+            m_OverlayReference.SetInitialAlphaPremultiplicationState True
+        Else
+            m_OverlayReference.ResetDIB 0
+        End If
+        
+        'Resize the selection mask into the overlay DIB
+        Dim isZoomedIn As Boolean
+        isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
+        
+        Dim interpolationType As GP_InterpolationMode
+        If isZoomedIn Then
+            interpolationType = GP_IM_NearestNeighbor
+        Else
+            If (g_ViewportPerformance = PD_PERF_BALANCED) Then interpolationType = GP_IM_Bilinear Else interpolationType = GP_IM_HighQualityBicubic
+        End If
+        
+        GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstRectF.Left - viewportIntersectRectCanvas.Left, dstRectF.Top - viewportIntersectRectCanvas.Top, dstRectF.Width, dstRectF.Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, True
+        
+        'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
+        ' viewport position/zoom) changes
+        m_OverlayIsReady = True
+        
+        'Also note that the overlay reference was regenerated; this means we have to generate a new UI DIB to match
+        overlayWasRegenerated = True
+        
+    End If
+    
+    'We have now covered all situations where the underlying mask reference may have changed.  (If it has,
+    ' the local "overlayWasRegenerated" value will be set to TRUE.)
+    
     'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
     ' renders the active selection's outline by treating the underlying data as a path, not a mask).
     Dim renderType As PD_SelectionRender, renderColor As Long
@@ -2414,95 +2503,12 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If useOutlineRenderingInstead Then
         RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, renderType
     Else
-        RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, renderType, renderColor
+        RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, dstRectF, overlayWasRegenerated, renderType, renderColor
     End If
     
 End Sub
 
-Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
-
-    'Pull an updated canvas intersection rect from the source image
-    Dim viewportIntersectRectCanvas As RECTF
-    srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
-    
-    'We now need to calculate an integer-only version of the "viewport space" coordinates.  (The width and height of
-    ' the overlay DIB are integer-only, obviously, and we can improve performance in our final render if we stick
-    ' to integer coordinates there as well.)
-    Dim imgLeft As Long, imgTop As Long, imgWidth As Long, imgHeight As Long
-    With viewportIntersectRectCanvas
-        imgLeft = Int(.Left)
-        imgTop = Int(.Top)
-        imgWidth = Int(PDMath.Frac(.Left) + .Width + 0.999999)
-        imgHeight = Int(PDMath.Frac(.Top) + .Height + 0.999999)
-    End With
-    
-    'Next, we need to convert the current selection boundary coordinates from "image coordinates" to "viewport coordinates".
-    ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render it on
-    '  the screen, we need to translate the coordinates to the current viewport - this makes them display accurately when
-    '  scroll and zoom are in effect.)
-    Dim dstLeft As Double, dstRight As Double, dstTop As Double, dstBottom As Double
-    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left, m_Bounds.Top, dstLeft, dstTop
-    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_Bounds.Left + m_Bounds.Width, m_Bounds.Top + m_Bounds.Height, dstRight, dstBottom
-    
-    'If the overlay is supposedly ready, perform two additional checks: one against the source image region, and another against
-    ' the viewport region.  If either have changed since the last time we generated the overlay, we need to create a new overlay.
-    If m_OverlayIsReady Then
-        
-        'First, compare the viewport rect that we've already retrieved
-        If (Not PDMath.AreRectFsEqual(m_LastViewportRectF, viewportIntersectRectCanvas)) Then
-            m_LastViewportRectF = viewportIntersectRectCanvas
-            m_OverlayIsReady = False
-        End If
-        
-        'Finally, compare the base image rect
-        Dim curImgRectF As RECTF
-        srcImage.imgViewport.GetIntersectRectImage curImgRectF
-        
-        If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
-            m_LastImageRectF = curImgRectF
-            m_OverlayIsReady = False
-        End If
-        
-    End If
-    
-    Dim overlayWasRegenerated As Boolean: overlayWasRegenerated = False
-    
-    'If any of our "overlay is ready" checks failed, generate a new overlay now
-    If (Not m_OverlayIsReady) Then
-        
-        'Start by using GDI+ to generate a temp mask at the same size as the viewport intersection rect
-        If (m_OverlayReference Is Nothing) Then Set m_OverlayReference = New pdDIB
-        If (m_OverlayReference.GetDIBWidth <> imgWidth) Or (m_OverlayReference.GetDIBHeight <> imgHeight) Then
-            m_OverlayReference.CreateBlank imgWidth, imgHeight, 32, 0, 0
-            m_OverlayReference.SetInitialAlphaPremultiplicationState True
-        Else
-            m_OverlayReference.ResetDIB 0
-        End If
-        
-        'Resize the selection mask into the overlay DIB
-        Dim isZoomedIn As Boolean
-        isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
-        
-        Dim interpolationType As GP_InterpolationMode
-        If isZoomedIn Then
-            interpolationType = GP_IM_NearestNeighbor
-        Else
-            If (g_ViewportPerformance = PD_PERF_BALANCED) Then interpolationType = GP_IM_Bilinear Else interpolationType = GP_IM_HighQualityBicubic
-        End If
-        
-        GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstLeft - viewportIntersectRectCanvas.Left, dstTop - viewportIntersectRectCanvas.Top, dstRight - dstLeft, dstBottom - dstTop, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, True
-        
-        'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
-        ' viewport position/zoom) changes
-        m_OverlayIsReady = True
-        
-        'Also note that the overlay reference was regenerated; this means we have to generate a new UI DIB to match
-        overlayWasRegenerated = True
-        
-    End If
-    
-    'We have now covered all situations where the underlying mask reference may have changed.  (If it has,
-    ' the local "overlayWasRegenerated" value will be set to TRUE.)
+Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RECTL_WH, ByRef dstRectF As RECTF, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
     
     'Before dealing with the actual overlay UI DIB, there's one last thing we need to check.  If the selection UI settings
     ' have changed since we last generated the overlay UI, we need to regenerate it now - *even if the reference mask
@@ -2525,8 +2531,8 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' overlay that we actually render.  (For small selections, for example, we can just fill the overlay DIB with
         ' transparency, then modify only the region touched by the current selection.)
         If (m_ViewportOverlay Is Nothing) Then Set m_ViewportOverlay = New pdDIB
-        If (m_ViewportOverlay.GetDIBWidth <> imgWidth) Or (m_ViewportOverlay.GetDIBHeight <> imgHeight) Then
-            m_ViewportOverlay.CreateBlank imgWidth, imgHeight, 32, 0, 0
+        If (m_ViewportOverlay.GetDIBWidth <> imgViewportRectL.Width) Or (m_ViewportOverlay.GetDIBHeight <> imgViewportRectL.Height) Then
+            m_ViewportOverlay.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
             m_ViewportOverlay.SetInitialAlphaPremultiplicationState True
         Else
             m_ViewportOverlay.ResetDIB 0
@@ -2625,14 +2631,17 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         Dim overlaySALine As SAFEARRAY1D, maskSALine As SAFEARRAY1D
         
         'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
+        Dim viewportIntersectRectCanvas As RECTF
+        srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
+    
         Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
-        loopStartX = Int(dstLeft - viewportIntersectRectCanvas.Left)
-        loopStartY = Int(dstTop - viewportIntersectRectCanvas.Top)
-        loopEndX = loopStartX + Int((dstRight - dstLeft) + 1.999999)
-        loopEndY = loopStartY + Int((dstBottom - dstTop) + 1.999999)
+        loopStartX = Int(dstRectF.Left - viewportIntersectRectCanvas.Left)
+        loopStartY = Int(dstRectF.Top - viewportIntersectRectCanvas.Top)
+        loopEndX = loopStartX + Int(dstRectF.Width + 1.999999)
+        loopEndY = loopStartY + Int(dstRectF.Height + 1.999999)
         
-        If (loopEndX > imgWidth - 1) Then loopEndX = imgWidth - 1
-        If (loopEndY > imgHeight - 1) Then loopEndY = imgHeight - 1
+        If (loopEndX > imgViewportRectL.Width - 1) Then loopEndX = imgViewportRectL.Width - 1
+        If (loopEndY > imgViewportRectL.Height - 1) Then loopEndY = imgViewportRectL.Height - 1
         If (loopStartX < 0) Then loopStartX = 0
         If (loopStartY < 0) Then loopStartY = 0
         If (loopStartX > loopEndX) Then loopStartX = loopEndX
@@ -2664,7 +2673,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     End If
     
     'Final task: rendering the actual overlay onto the destination viewport
-    m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgLeft, imgTop, imgWidth, imgHeight, 0, 0, imgWidth, imgHeight
+    m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left, imgViewportRectL.Top, imgViewportRectL.Width, imgViewportRectL.Height, 0, 0, imgViewportRectL.Width, imgViewportRectL.Height
     
 End Sub
 
