@@ -282,6 +282,55 @@ Public Sub ConvertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
     
 End Sub
 
+'Given a RectF containing image-space coordinates, produce a new RectF with coordinates translated to the specified viewport canvas.
+Public Sub ConvertImageCoordsToCanvasCoords_RectF(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcRectF As RECTF, ByRef dstRectF As RECTF, Optional ByVal forceInBounds As Boolean = False)
+
+    If (Not srcImage.imgViewport Is Nothing) Then
+    
+        'Get the current zoom value from the source image
+        Dim zoomVal As Double
+        zoomVal = g_Zoom.GetZoomValue(srcImage.GetZoom)
+            
+        'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
+        ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
+        ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
+        ' so we can ignore their value(s) here.
+        Dim translatedImageRect As RECTF
+        srcImage.imgViewport.GetImageRectTranslated translatedImageRect
+        
+        'Translating the canvas coordinate pair back to the image is now easy.  Add the top/left offset,
+        ' then multiply by zoom - that's all there is to it!
+        dstRectF.Left = (srcRectF.Left * zoomVal) + translatedImageRect.Left
+        dstRectF.Top = (srcRectF.Top * zoomVal) + translatedImageRect.Top
+        
+        'Width/height are even easier - just multiply by the current zoom
+        dstRectF.Width = srcRectF.Width * zoomVal
+        dstRectF.Height = srcRectF.Height * zoomVal
+        
+        'If the caller wants the coordinates bound-checked, apply them last
+        If forceInBounds Then
+        
+            'Get a copy of the current viewport intersection rect, which determines bounds of this function
+            Dim vIntersectRect As RECTF
+            srcImage.imgViewport.GetIntersectRectCanvas vIntersectRect
+            
+            If (dstRectF.Left < vIntersectRect.Left) Then dstRectF.Left = vIntersectRect.Left
+            If (dstRectF.Top < vIntersectRect.Top) Then dstRectF.Top = vIntersectRect.Top
+            If (dstRectF.Left + dstRectF.Width >= vIntersectRect.Left + vIntersectRect.Width) Then
+                dstRectF.Width = (vIntersectRect.Left + vIntersectRect.Width - 1) - dstRectF.Left
+                If dstRectF.Width < 0 Then dstRectF.Width = 0
+            End If
+            If (dstRectF.Top + dstRectF.Height >= vIntersectRect.Top + vIntersectRect.Height) Then
+                dstRectF.Top = (vIntersectRect.Top + vIntersectRect.Height - 1) - dstRectF.Height
+                If dstRectF.Height < 0 Then dstRectF.Height = 0
+            End If
+            
+        End If
+        
+    End If
+    
+End Sub
+
 'Given an (x,y) pair on the current image, convert the value to coordinates relative to the current layer.  This is especially relevant
 ' if the layer has one or more non-destructive affine transforms active.
 Public Function ConvertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal imgX As Single, ByVal imgY As Single, ByRef layerX As Single, ByRef layerY As Single) As Boolean
