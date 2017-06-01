@@ -58,8 +58,9 @@ Private m_InitPoint As POINTAPI
 Private m_XDirs() As Long, m_YDirs() As Long
 
 'Fast memory ops
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 
 'Faster WAPI interop.  Rigorous testing shows that GDI+ regions are significantly faster to hit-test than GDI regions, so these
 ' GDI functions are not currently used.
@@ -255,6 +256,51 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     Dim numOfRects As Long
     Dim tmpGdipHandle As Long, tmpResult As Long
     
+    'To improve performance, we're going to point a transient 1D array at certain rows during processing.
+    ' This requires unsafe array manipulation, but it can be meaningfully faster than 2D array accesses.
+    Dim tmpArray() As Byte, tmpSA As SAFEARRAY1D
+    
+    'Populate the safearray struct's unchanging values
+    Dim srcArrayBasePointer As Long, srcArrayStride As Long
+    srcArrayBasePointer = VarPtr(srcArray(0, 0))
+    srcArrayStride = UBound(srcArray(), 1) + 1
+    
+    With tmpSA
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcArrayStride
+        
+        'pvData *will* change as the function goes along, but let's at least start with a safe value
+        .pvData = srcArrayBasePointer
+        
+    End With
+    
+    'Point the uninitialized temporary array at our custom-built SafeArray struct
+    PutMem4 VarPtrArray(tmpArray()), VarPtr(tmpSA)
+    
+    'And now, a duplicate of the above steps, but designed for the outer loop
+    Dim tmpMasterArray() As Byte, tmpMasterSA As SAFEARRAY1D
+    Dim srcMasterPointer As Long, srcMasterStride As Long
+    srcMasterPointer = VarPtr(srcArray(0, 0))
+    srcMasterStride = UBound(srcArray(), 1) + 1
+    
+    With tmpMasterSA
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcMasterStride
+        
+        'pvData *will* change as the function goes along, but let's at least start with a safe value
+        .pvData = srcMasterPointer
+        
+    End With
+    
+    'Point the uninitialized temporary array at our custom-built SafeArray struct
+    PutMem4 VarPtrArray(tmpMasterArray()), VarPtr(tmpMasterSA)
+    
     'Because we've typically added a 1-px blank byte border around our image data (during pre-processing), all edge coordinates
     ' are going to be offset by (1, 1).  Create a generic transform now, which we'll use to offset edge coordinates before
     ' reporting them back to our parent object.
@@ -267,12 +313,11 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     
     'Starting at (x, y), look for the next valid edge pixel.  Once one is found, start tracing it.
     For y = initY To finalY
+        tmpMasterSA.pvData = srcMasterPointer + (y * srcMasterStride)
     For x = initX To finalX
         
         'Is this an edge pixel?
-        If (srcArray(x, y) <> 0) Then
-            
-            'Debug.Print "Starting contour search at (" & x & ", " & y & ")"
+        If (tmpMasterArray(x) <> 0) Then
             
             'It is!  Start tracing its contour.
             startX = x
@@ -359,11 +404,6 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             tmpRegion.AddPath tmpPath, P2_CM_Replace
             tmpGdipHandle = tmpRegion.GetHandle()
             
-            #If DEBUGMODE = 1 Then
-                gdipRegionTime = gdipRegionTime + VBHacks.GetTimerDifferenceNow(startTime)
-                VBHacks.GetHighResTime startTime
-            #End If
-            
             'We now want to search the interior of the path region, and invert any/all points lying *inside* the polygon.
             ' (This allows us to isolate holes inside the path we just traced.)
             
@@ -400,6 +440,11 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
             
                 If (GdipGetRegionScansI(tmpGdipHandle, VarPtr(m_RectLCache(0)), numOfRects, tmpMatrix) = GP_OK) Then
                     
+                    #If DEBUGMODE = 1 Then
+                        gdipRegionTime = gdipRegionTime + VBHacks.GetTimerDifferenceNow(startTime)
+                        VBHacks.GetHighResTime startTime
+                    #End If
+            
                     'We now have a full copy of this region, in the form of individual rectangles (the sum total of which
                     ' represent the underlying region).
                     
@@ -415,8 +460,9 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
                         End With
                         
                         For j = intInitY To intFinalY
+                            tmpSA.pvData = srcArrayBasePointer + (j * srcArrayStride)
                         For i = intInitX To intFinalX
-                            srcArray(i, j) = Not srcArray(i, j)
+                            tmpArray(i) = Not tmpArray(i)
                         Next i
                         Next j
                         
@@ -439,8 +485,12 @@ Friend Function FindAllEdges(ByRef dstPath As pd2DPath, ByRef srcArray() As Byte
     Next x
     Next y
     
+    'Before exiting, free any temporary source array pointers
+    PutMem4 VarPtrArray(tmpArray()), 0&
+    PutMem4 VarPtrArray(tmpMasterArray()), 0&
+     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Detailed pdEdgeDetector report || Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")
+        'pdDebug.LogAction "Detailed pdEdgeDetector report || Trace: " & Format$(traceTime * 1000, "#0") & ", GdiP/Create: " & Format$(gdipCreateTime * 1000, "#0") & ", GdiP/Copy: " & Format$(gdipCopyTime * 1000, "#0") & ", GdiP/Region: " & Format$(gdipRegionTime * 1000, "#0") & ", Fill: " & Format$(fillTime * 1000, "#0")
     #End If
     
     FindAllEdges = True
@@ -469,7 +519,6 @@ Friend Sub MakeArrayEdgeSafe(ByRef srcArray() As Byte, ByRef dstArray() As Byte,
     'The destination array now contains an exact copy of the source array, but with a 1-px border added.  Wipe the source array.
     
 End Sub
-
 
 Private Sub Class_Initialize()
 
