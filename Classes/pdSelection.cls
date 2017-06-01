@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection class
 'Copyright 2012-2017 by Tanner Helland
 'Created: 25/September/12
-'Last updated: 23/March/17
+'Last updated: 01/June/17
 'Last update: redesign the entire selection UI pipeline to prep for paint tool integration
 '
 'This class handles all selections in PhotoDemon.  Rectangular, elliptical, line, polygon, and lasso selections are
@@ -2810,7 +2810,10 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                         m_FinalOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
                     End If
                     
-                    m_FinalOutline.TranslatePath -imgViewportRectL.Left, -imgViewportRectL.Top
+                    'Translate the final path into its correct on-screen position, while also accounting for the 1px border we
+                    ' manually add to the transparent "overlay" DIB (which gives us room for outlines that extend "outside"
+                    ' the first row and column of pixels in the image).
+                    m_FinalOutline.TranslatePath -imgViewportRectL.Left + 1, -imgViewportRectL.Top + 1
                     
                 End If
                 
@@ -2839,8 +2842,8 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             'We now want to use those loop boundaries to produce a byte-only copy of the selection mask.  (This is required
             ' by the edge-detection engine, and it also gives a chance to better handle things like feathered selection edges.)
             Dim newWidth As Long, newHeight As Long
-            newWidth = (loopEndX - loopStartX) + 2
-            newHeight = (loopEndY - loopStartY) + 2
+            newWidth = (loopEndX - loopStartX) + 4
+            newHeight = (loopEndY - loopStartY) + 4
             
             If (newWidth <> m_ViewportByteCopyRect.Width) Or (newHeight <> m_ViewportByteCopyRect.Height) Then
                 ReDim m_ViewportByteCopy(0 To newWidth, 0 To newHeight) As Byte
@@ -2851,12 +2854,12 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             'We're going to offset each line by several pixels on either side; this guarantees blank boundary pixels,
             ' which lets us skip time-consuming boundary checks.
             Dim xModifier As Long, yModifier As Long
-            xModifier = (-loopStartX + 1)
-            yModifier = (-loopStartY + 1)
+            xModifier = (-loopStartX + 2)
+            yModifier = (-loopStartY + 2)
             
             Dim maskPixels() As Long, maskSALine As SAFEARRAY1D
             
-            Dim x As Long, y As Long, tmpYPosition As Long
+            Dim x As Long, y As Long, tmpXPosition As Long, tmpYPosition As Long
             
             For y = loopStartY To loopEndY
                 m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
@@ -2870,16 +2873,29 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             Next x
             Next y
             
-            'TODO: mirror edge pixels along the interior 1px border; this guarantees that marching ant outlines remain
-            ' *outside* the current viewport, when the selection is greatly zoomed-in.
+            'Next, we must manually mirror edge pixels along a 1px border on the top- and left- sides; this guarantees that
+            ' our outline path remains *outside* the current viewport, when the selection is greatly zoomed-in.
+            
+            'The top-left corner pixel is handled specially
+            m_ViewportByteCopy(loopStartX + xModifier - 1, loopStartY + yModifier - 1) = m_ViewportByteCopy(loopStartX + xModifier, loopStartY + yModifier)
+            
+            'Top row
+            tmpYPosition = loopStartY + yModifier
+            For x = loopStartX To loopEndX
+                m_ViewportByteCopy(x + xModifier, tmpYPosition - 1) = m_ViewportByteCopy(x + xModifier, tmpYPosition)
+            Next x
+            
+            'Left row
+            tmpXPosition = loopStartX + xModifier
+            For y = loopStartY To loopEndY
+                m_ViewportByteCopy(tmpXPosition - 1, y + yModifier) = m_ViewportByteCopy(tmpXPosition, y + yModifier)
+            Next y
             
             'Because the array wrapped around the reference DIB is scoped locally, we need to free it before exiting
             m_ViewportReference.UnwrapLongArrayFromDIB maskPixels
             
-            'We now want to generate a custom-built outline of this particular selection image.
+            'Find the edges of the temporary byte-map we've just generated
             If (m_ViewportEdges Is Nothing) Then Set m_ViewportEdges = New pdEdgeDetector
-            
-            'Find the edges of the current on-screen selection mask
             m_ViewportEdges.FindAllEdges m_FinalOutline, m_ViewportByteCopy, 1, 1, m_ViewportByteCopyRect.Width - 1, m_ViewportByteCopyRect.Height - 1, loopStartX - 1, loopStartY - 1
             
         End If
@@ -2893,10 +2909,12 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'We are now ready to render the actual outline onto the overlay DIB.
     If (Not m_FinalOutline Is Nothing) Then
     
-        'Start by making sure our cached overlay dimensions match the temporary viewport DIB generated by our parent function.
+        'Start by making sure our cached overlay dimensions are correct.  We need the overlay DIB to be at least 1-px larger
+        ' in each dimension than the temporary viewport DIB generated by our parent function; this allows us to paint our
+        ' outline "outside" the image itself, as appropriate.
         If (m_ViewportOverlay Is Nothing) Then Set m_ViewportOverlay = New pdDIB
-        If (m_ViewportOverlay.GetDIBWidth <> imgViewportRectL.Width + 1) Or (m_ViewportOverlay.GetDIBHeight <> imgViewportRectL.Height + 1) Then
-            m_ViewportOverlay.CreateBlank imgViewportRectL.Width + 1, imgViewportRectL.Height + 1, 32, 0, 0
+        If (m_ViewportOverlay.GetDIBWidth <> imgViewportRectL.Width + 2) Or (m_ViewportOverlay.GetDIBHeight <> imgViewportRectL.Height + 2) Then
+            m_ViewportOverlay.CreateBlank imgViewportRectL.Width + 2, imgViewportRectL.Height + 2, 32, 0, 0
             m_ViewportOverlay.SetInitialAlphaPremultiplicationState True
         Else
             m_ViewportOverlay.ResetDIB 0
@@ -2955,7 +2973,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     'Final task: rendering the final overlay onto the destination viewport.  If rendering and viewport settings haven't
     ' changed since the last render, this step may be the only thing this function actually performs (which is why it's
     ' so speedy during paint ops).
-    m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left, imgViewportRectL.Top, imgViewportRectL.Width + 1, imgViewportRectL.Height + 1, 0, 0, imgViewportRectL.Width + 1, imgViewportRectL.Height + 1
+    m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left - 1, imgViewportRectL.Top - 1, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2, 0, 0, imgViewportRectL.Width + 2, imgViewportRectL.Height + 2
     
     #If DEBUGMODE = 1 Then
         'pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
