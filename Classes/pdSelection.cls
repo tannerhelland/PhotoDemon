@@ -160,17 +160,17 @@ Private m_MaskHasBeenCreated As Boolean
 ' to recreate a mask from existing vector data.
 Private m_IsMaskReady As Boolean
 
-'To improve viewport performance, a resampled copy of the current mask is always maintained at the current viewport size.
-' This copy must be regenerated whenever the mask or viewport position/zoom changes, obviously.
-Private m_ViewportMask As pdDIB
-Private m_IsViewportMaskReady As Boolean
-
 'When in outline or marching ant rendering mode, the current on-screen outline (e.g. the selection outline *already transformed*
 ' to viewport coordinates) is cached to improve performance.  Similarly, certain outline rendering properties are also cached.
 Private m_FinalOutline As pd2DPath, m_FinalOutlineIsReady As Boolean
 Private Const ANT_DASH_SIZE As Single = 4#
 Private Const ANT_DASH_SPEED As Long = 280
 Private m_AntDashes() As Single, m_AntDashOffset As Single
+
+'External forces may need to suspend animations for various reasons (e.g. a separate dialog is being raised).
+' This value will be set to TRUE if animations are currently allowed; FALSE otherwise.  Note that this value is
+' only checked *inside* the timer event, so the timer itself still needs to be activated/deactivated properly.
+Private m_AnimationsAllowed As Boolean
 
 'Some types of transformations (basic shapes, like rectangles, etc), are transformable, meaning that after they are created, the user can
 ' click on them again to resize or move them.  Complex transformations (magic wand, lasso, etc), may not be transformable.  This boolean
@@ -199,18 +199,32 @@ Private m_FloodFill As pdFloodFill, m_WandOutline As pd2DPath
 ' use the notification timestamp from the parent image to determine when it's time to update our local copy.
 Private m_WandImage As pdDIB, m_WandImageTimestamp As Currency
 
-'To improve viewport rendering performance, selection objects store a viewport-sized buffer of the current
-' selection overlay.  (This is only used in selection visualization modes other than "outline", e.g. "highlight"
-' or "lightbox".)  Because this DIB is inextricably tied to the current viewport, it needs to be updated when
-' the current viewport changes.  (To facilitate this, we store *two* reference rects - one defining the current
-' viewport coordinates (needed to detect zoom changes on tiny images), and a second one, defining the portion of
-' the image currently visible in the viewport (needed to detect scroll changes on large images).
+'To improve viewport rendering performance, selection objects store a viewport-sized buffer of the current selection mask.
+' This viewport-sized DIB can be used as a reference for calculating any on-screen elements, e.g. the actual "highlight"
+' or "outline" objects that we render onto the viewport.  This reference DIB must be recreated whenever the viewport size
+' and/or position changes (e.g. when zoom or scroll are invoked); to that end, we store several viewport rect copies,
+' which we can compare against current viewport settings to detect changes.
 '
-'(Also, note that technically *two* DIBs are stored - one that is simply a resized copy of the current mask,
-' at the current viewport size/position; the other is the overlay itself, including any user-specified highlight
-' or lightbox colors.)
-Private m_OverlayReference As pdDIB, m_ViewportOverlay As pdDIB, m_OverlayIsReady As Boolean
+'Because of its universal helpfulness, this overlay is always synchronized, regardless of the current selection rendering
+' technique.  (Note that the position of the overlay is also cached in a RECTF object, although - importantly! - this RectF
+' is *not* boundary-checked against the size of the viewport.  Its coordinates may lay outside the overlay reference DIB,
+' by design.)
+Private m_ViewportReference As pdDIB, m_ViewportRefRectF As RECTF, m_ViewportRefReady As Boolean
 Private m_LastViewportRectF As RECTF, m_LastImageRectF As RECTF
+
+'To further improve viewport rendering performance when "highlight" and "lightbox" rendering modes are active, this class
+' also caches such overlays inside a persistent DIB.  Because this DIB is inextricably tied to the current viewport,
+' it must be updated whenever the cached overlay reference DIB, above, changes.
+Private m_ViewportOverlay As pdDIB, m_OverlayIsReady As Boolean
+
+'To further improve viewport rendering when the "outline" and "marching ant" rendering modes are active, this class caches
+' an extra copy of the selection mask, converted to a single-color byte array and clipped to [0, 255] values.  This array
+' also guarantees empty boundary pixels, and it must be regenerated whenever the reference DIB, above, changes.
+'
+'(Note that we also store the dimensions of this array, and its (x, y) offset relative to the underlying image.)
+Private m_ViewportByteCopy() As Byte
+Private m_ViewportByteCopyRect As RECTL_WH
+Private m_ViewportEdges As pdEdgeDetector
 
 'When selection UI settings change, we generate a local "hash" of the current settings.  Because we cache UI overlays
 ' locally (to improve rendering time), we need to regenerate the cache whenever rendering settings change, independent of
@@ -783,6 +797,7 @@ End Function
 
 Friend Sub SetPolygonClosedState(ByVal newState As Boolean)
     m_PolygonClosed = newState
+    m_ViewportRefReady = False
 End Sub
 
 'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle.  The mouse coordinate
@@ -1448,6 +1463,7 @@ Private Sub UpdateInternalCoords(Optional ByVal forciblyResetMask As Boolean = T
             'Wand selections require manual bounds-checking
             Case ss_Wand
                 If Me.IsLockedIn Then
+                    m_ViewportRefReady = False
                     m_OverlayIsReady = False
                     m_FinalOutlineIsReady = False
                     Me.FindNewBoundsManually True
@@ -1716,6 +1732,7 @@ Private Sub CreateSelectionMask()
     End If
     
     'Whenever a new mask is created, any viewport-specific overlays and outlines must be re-created to match
+    m_ViewportRefReady = False
     m_FinalOutlineIsReady = False
     m_OverlayIsReady = False
     
@@ -2314,7 +2331,16 @@ Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pd
             
             If (m_SelectionShape = ss_Polygon) Then
                 For i = 0 To m_NumOfPolygonPoints - 1
+                    
                     Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, polyX, polyY
+                    
+                    'If this is the initial point in a polygon selection, fill it to help orient the user
+                    If (i = 0) And (Not m_PolygonClosed) Then
+                        Dim cBrushFill As pd2DBrush
+                        Drawing2D.QuickCreateSolidBrush cBrushFill, g_Themer.GetGenericUIColor(UI_Accent), 75#
+                        cPainter.FillCircleF cSurface, cBrushFill, polyX, polyY, circRadius
+                        Set cBrushFill = Nothing
+                    End If
                     
                     If (i = curPOI) Then
                         cPainter.DrawCircleF cSurface, cPenBaseHighlight, polyX, polyY, circRadius
@@ -2362,14 +2388,9 @@ End Function
 '     proper location, and any color management has already been applied to it)
 ' 2) Source image (we could technically pull from our local copy, but I'd like to remove that dependency in the future)
 ' 3) Destination canvas (which determines things like the current zoom and scroll position)
-' 4) Viewport intersection rect (e.g. the rect of the front buffer where the image current resides; this may be the same size as
-'     the viewport DIB itself, or if the image is small and/or zoomed out, it may be a smaller size)
-' 5) Rendering options, if relevant.  (TODO: instead of passing these settings, have this renderer pull them directly from the
-'     Selection module - the viewport shouldn't have to know such granular selection data.)
 '
-'Note that this code renders *all* selection types.
-' (Also note that the renderColor default constant evaluates to RGB(112, 183, 255), but VB doesn't let us use RGB inside a function dec.)
-' TODO: allow light box translucency to be set by the user
+'Note that this function is the parent for *all* selection type rendering.  (After performing some required setup steps,
+' it will automatically forward subsequent rendering to an appropriate child function, depending on the current UI settings.)
 Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
     
     'If an update has been requested, but we are already in the middle of an update, deny subsequent requests
@@ -2379,20 +2400,25 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' until the last possible moment, reducing the potential of generating the mask more times than we actually require.)
     If (Not m_IsMaskReady) Then CreateSelectionMask
     
-    'If the current selection lies fully off-image, let's skip this step entirely.
+    'If the current selection lies fully off-image, skip rendering entirely.
     If Me.AreAllCoordinatesInvalid Then Exit Sub
     
+    'Debug builds may want to measure time taken; I've currently commented-out reporting capabilities, but this function
+    ' is fully wired for detailed reporting as future needs may require.
+    Dim startTime As Currency
+    
     'Regardless of what type of selection overlay we're rendering (highlight, outline, marching ants, etc), we now want to
-    ' produce a copy of the selection mask, scaled and cropped to match the current viewport.  (Subsequent rendering will
-    ' rely on this selection mask copy, instead of the full mask, which accelerates things greatly when the image is large.)
+    ' generate a copy of the selection mask, scaled and cropped to match the current viewport.  (Subsequent rendering will
+    ' rely on this selection mask copy, instead of the full mask, which greatly accelerates rendering when the base image
+    ' is very large but zoomed-out.)
     
     'Start by requesting the current canvas intersection rect from the source image
     Dim viewportIntersectRectCanvas As RECTF
     srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
     
     'We now need to calculate an integer-only version of the "viewport space" coordinates.  (The width and height of
-    ' the overlay DIB are integer-only, obviously, and we can improve performance in our final render if we stick
-    ' to integer coordinates there as well.)
+    ' the overlay DIB are integer-only, obviously, and we can improve performance in our final render if we use
+    ' integer coordinates there as well.)
     Dim imgViewportRectL As RECTL_WH
     With viewportIntersectRectCanvas
         imgViewportRectL.Left = Int(.Left)
@@ -2408,45 +2434,64 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     Dim dstRectF As RECTF
     Drawing.ConvertImageCoordsToCanvasCoords_RectF dstCanvas, srcImage, m_Bounds, dstRectF
     
-    'EXPERIMENTAL!  Clamp the converted rect to integer coordinates, to improve rendering along pixel boundaries
+    'EXPERIMENTAL!  Clamp the converted rect to integer coordinates, to improve rendering along pixel boundaries.
+    ' (I still need to do something similar in the central viewport; hence why this is labeled as "experimental".)
     PDMath.GetIntClampedRectF dstRectF
     
-    'If the overlay is supposedly ready, perform two additional checks: one against the source image region, and another against
-    ' the viewport region.  If either have changed since the last time we generated the overlay, we need to create a new overlay.
-    If m_OverlayIsReady Then
+    'If we've already cached a viewport-specific mask copy on a previous run, we now want to perform two additional checks:
+    ' one against the source image region, and another against the destination viewport region.  If either of these rects
+    ' have changed since we generated our existing overlay copy, we need to create a new overlay reference (e.g. a new copy
+    ' of the selection mask, pre-zoomed-and-translated-and-cropped to match the current viewport).
+    '
+    'This class will automatically detect internal changes that require a new viewport DIB (and thus set m_ViewportRefReady
+    ' to FALSE), but viewport-specific changes are not detected until this function is actually invoked.
+    If m_ViewportRefReady Then
         
-        'First, compare the viewport rect that we've already retrieved
+        'First, compare current and previous viewport rects
         If (Not PDMath.AreRectFsEqual(m_LastViewportRectF, viewportIntersectRectCanvas)) Then
             m_LastViewportRectF = viewportIntersectRectCanvas
-            m_OverlayIsReady = False
+            m_ViewportRefReady = False
         End If
         
-        'Finally, compare the base image rect
-        Dim curImgRectF As RECTF
-        srcImage.imgViewport.GetIntersectRectImage curImgRectF
-        
-        If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
-            m_LastImageRectF = curImgRectF
-            m_OverlayIsReady = False
+        'Finally, compare current and previous image rects
+        If m_ViewportRefReady Then
+            
+            Dim curImgRectF As RECTF
+            srcImage.imgViewport.GetIntersectRectImage curImgRectF
+            
+            If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
+                m_LastImageRectF = curImgRectF
+                m_ViewportRefReady = False
+            End If
+            
         End If
         
     End If
     
+    'If we regenerate our cached viewport image, we want to notify subsequent child functions, as they may need to
+    ' regenerate their own caches against the new temporary image.
     Dim overlayWasRegenerated As Boolean: overlayWasRegenerated = False
     
-    'If any of our "overlay is ready" checks failed, generate a new overlay now
-    If (Not m_OverlayIsReady) Then
+    'If any of our "viewport cache is ready" checks failed, generate a new cache now
+    If (Not m_ViewportRefReady) Then
         
-        'Start by using GDI+ to generate a temp mask at the same size as the viewport intersection rect
-        If (m_OverlayReference Is Nothing) Then Set m_OverlayReference = New pdDIB
-        If (m_OverlayReference.GetDIBWidth <> imgViewportRectL.Width) Or (m_OverlayReference.GetDIBHeight <> imgViewportRectL.Height) Then
-            m_OverlayReference.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
-            m_OverlayReference.SetInitialAlphaPremultiplicationState True
+        #If DEBUGMODE = 1 Then
+            VBHacks.GetHighResTime startTime
+        #End If
+        
+        'Prep a target DIB; if at all possible, we want to reuse our existing DIB (as allocating new memory can be
+        ' prohibitively expensive, given how frequently this function may be called).
+        If (m_ViewportReference Is Nothing) Then Set m_ViewportReference = New pdDIB
+        If (m_ViewportReference.GetDIBWidth <> imgViewportRectL.Width) Or (m_ViewportReference.GetDIBHeight <> imgViewportRectL.Height) Then
+            m_ViewportReference.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
+            m_ViewportReference.SetInitialAlphaPremultiplicationState True
         Else
-            m_OverlayReference.ResetDIB 0
+            m_ViewportReference.ResetDIB 0
         End If
         
-        'Resize the selection mask into the overlay DIB
+        'Paint a resized+translated selection mask into our cached DIB.  Note that the interpolation method used varies
+        ' by user setting; this is done to match the main viewport pipeline, and ensure accurate results when the viewport
+        ' is greatly zoomed-out.
         Dim isZoomedIn As Boolean
         isZoomedIn = (g_Zoom.GetZoomValue(srcImage.GetZoom()) > 1#)
         
@@ -2457,14 +2502,24 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             If (g_ViewportPerformance = PD_PERF_BALANCED) Then interpolationType = GP_IM_Bilinear Else interpolationType = GP_IM_HighQualityBicubic
         End If
         
-        GDI_Plus.GDIPlus_StretchBlt m_OverlayReference, dstRectF.Left - viewportIntersectRectCanvas.Left, dstRectF.Top - viewportIntersectRectCanvas.Top, dstRectF.Width, dstRectF.Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, True
+        With m_ViewportRefRectF
+            .Left = dstRectF.Left - viewportIntersectRectCanvas.Left
+            .Top = dstRectF.Top - viewportIntersectRectCanvas.Top
+            .Width = dstRectF.Width
+            .Height = dstRectF.Height
+            GDI_Plus.GDIPlus_StretchBlt m_ViewportReference, .Left, .Top, .Width, .Height, m_SelMask, m_Bounds.Left, m_Bounds.Top, m_Bounds.Width, m_Bounds.Height, , interpolationType, , , isZoomedIn, True
+        End With
         
-        'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
-        ' viewport position/zoom) changes
-        m_OverlayIsReady = True
+        'Mark the finished viewport cache as "ready"; we won't regenerate it unless the underlying selection mask
+        ' (or the current viewport position/zoom) changes
+        m_ViewportRefReady = True
         
         'Also note that the overlay reference was regenerated; this means we have to generate a new UI DIB to match
         overlayWasRegenerated = True
+        
+        #If DEBUGMODE = 1 Then
+            'pdDebug.LogAction "Selection viewport reference DIB generated in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+        #End If
         
     End If
     
@@ -2472,64 +2527,59 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     ' the local "overlayWasRegenerated" value will be set to TRUE.)
     
     'A few different criteria can cause us to silently switch between this function and RenderOutlineOnly (which, per its name,
-    ' renders the active selection's outline by treating the underlying data as a path, not a mask).
+    ' renders the active selection's outline by treating the underlying selection data as a vector path, not a raster mask).
     Dim renderType As PD_SelectionRender, renderColor As Long
     renderType = Selections.GetSelectionRenderMode
     renderColor = Selections.GetSelectionRenderColor
     
     'We use the RASTER OVERLAY FUNCTION if...
     ' 1) The user has requested "highlight" or "lightbox" rendering mode.
-    ' 2) The current selection is a raster selection.  (Raster selections do not currently support outlines - I'm actively
-    '     working on fixing this.)
-    '
-    'Note that PD's UI prevents this combination of inputs, so this exists purely as an emergency fallback
-    If (renderType = PDSR_Outline) Or (renderType = PDSR_Ants) Then
-        If (m_SelectionShape = ss_Raster) Then renderType = PDSR_Highlight
-    End If
     
-    'We silently switch to "outline"-style rendering if...
-    ' 1) The user has requested outline-only rendering, *and* this is not a raster selection.
-    '    (Raster selections do not currently support outline mode.)
-    ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn)
+    'We use "outline"-style rendering if...
+    ' 1) The user has requested outline-only rendering, or...
+    ' 2) A lasso selection is active but not locked-in (meaning it's still being drawn), or...
     ' 3) A polygon selection is active but not locked-in (meaning it's still being drawn)
-    Dim useOutlineRenderingInstead As Boolean: useOutlineRenderingInstead = False
-    useOutlineRenderingInstead = (((renderType = PDSR_Outline) Or (renderType = PDSR_Ants)) And (m_SelectionShape <> ss_Raster))
-    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed))
-    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
+    Dim useOutlineRenderingInstead As Boolean
+    useOutlineRenderingInstead = (renderType = PDSR_Outline) Or (renderType = PDSR_Ants)
+    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
+    If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = (m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed)
     
-    'If we are not using marching ants, disable the associated timer now (as a failsafe)
+    'If we are not using marching ants, disable the associated ant timer now (as a failsafe; this is typically solved elsewhere,
+    ' but better safe than sorry)
     If (renderType <> PDSR_Ants) Then m_AntTimer.StopTimer
     
     If useOutlineRenderingInstead Then
-        RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, renderType
+        RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
     Else
-        RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, dstRectF, overlayWasRegenerated, renderType, renderColor
+        RenderSelectionAsOverlay dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType, renderColor
     End If
     
 End Sub
 
-Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RECTL_WH, ByRef dstRectF As RECTF, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
+'Child function of RenderSelectionToViewport(), above.  Renders the current selection mask to a target viewport,
+' using the HIGHLIGHT or LIGHTBOX selection styles.
+Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RECTL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender, Optional ByVal renderColor As Long = 16758640)
     
-    'Before dealing with the actual overlay UI DIB, there's one last thing we need to check.  If the selection UI settings
-    ' have changed since we last generated the overlay UI, we need to regenerate it now - *even if the reference mask
-    ' hasn't changed*!
+    'To improve performance, this function caches the current selection overlay image as a persistent DIB.  (This lets
+    ' us cheat and directly AlphaBlend the cached result during intensive operations like paint strokes.)  If the associated
+    ' viewport cached has changed, we obviously need to regenerate our overlay cache - but we also need to regenerate the
+    ' cache if the current selection UI settings have changed (such as selection rendering color).
     Dim renderingSettingsChanged As Boolean: renderingSettingsChanged = False
     If (Not overlayWasRegenerated) Then
         renderingSettingsChanged = (StrComp(m_LastOverlayCache, GenerateArbitraryHash(renderType, renderColor), vbBinaryCompare) <> 0)
     End If
     
-    'If any of the preceding checks caused a new overlay to be generated - or if the selection UI settings have changed -
-    ' we need to generate a new UI DIB to match.
-    If (overlayWasRegenerated Or renderingSettingsChanged) Then
-    
-        'Because we have a new overlay reference, we now need to generate a matching overlay DIB.
-        ' This will be the actual 32-bpp image "overlaid" on the viewport.  (So it reflects things like the user's
-        ' currently selected highlight or lightbox UI settings.)
-                
-        'Start by making sure both overlay dimensions match.  Note that we calculate the base overlay color differently,
-        ' depending on the current selection type.  We do this because it allows us to shortcut the region of the
-        ' overlay that we actually render.  (For small selections, for example, we can just fill the overlay DIB with
-        ' transparency, then modify only the region touched by the current selection.)
+    'If any preceding checks failed, generate a new UI DIB to match current settings.
+    If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
+        
+        #If DEBUGMODE = 1 Then
+            'Debug.Print "rebuilding selection overlay (" & Timer & ")"
+        #End If
+        
+        'The following chunk of code generates the actual 32-bpp selection image "overlaid" on the viewport.
+        ' (Said another way, this image reflects things like the user's currently selected highlight or lightbox UI settings.)
+        
+        'Start by making sure our cached overlay dimensions match the temporary viewport DIB generated by our parent function.
         If (m_ViewportOverlay Is Nothing) Then Set m_ViewportOverlay = New pdDIB
         If (m_ViewportOverlay.GetDIBWidth <> imgViewportRectL.Width) Or (m_ViewportOverlay.GetDIBHeight <> imgViewportRectL.Height) Then
             m_ViewportOverlay.CreateBlank imgViewportRectL.Width, imgViewportRectL.Height, 32, 0, 0
@@ -2538,8 +2588,8 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             m_ViewportOverlay.ResetDIB 0
         End If
         
-        'In the future, I may allow selection masks to mask specific color channels (which would be rad), but for now,
-        ' we treat it as if it contains grayscale entities only.
+        'In the future, I may allow selection masks to mask specific color channels (which would be awesome), but for now,
+        ' we treat the mask as if it contains grayscale entities only.  That allows us to cheat and use byte-sized lookup tables.
         
         'Start by generating a lookup table of all 256 possible overlay colors.
         Dim overlayLookup() As Long
@@ -2615,7 +2665,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             
         End If
         
-        'To shortcut the per-pixel fill operation, fill the entire DIB with the default "background" color before we start.
+        'To shortcut per-pixel fill operations, fill the entire DIB with the default "background" color before we start.
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush
         Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, False
         GDI_Plus.GDIPlus_GraphicsSetCompositingMode cSurface.GetHandle, GP_CM_SourceCopy
@@ -2627,7 +2677,6 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' actual overlay UI style)
         Dim x As Long, y As Long
         Dim overlayPixels() As Long, maskPixels() As Long
-        Dim overlaySA As SAFEARRAY2D, maskSA As SAFEARRAY2D
         Dim overlaySALine As SAFEARRAY1D, maskSALine As SAFEARRAY1D
         
         'Finally, calculate loop bounds, and make sure there is no possible chance of OOB errors
@@ -2635,10 +2684,10 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
     
         Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
-        loopStartX = Int(dstRectF.Left - viewportIntersectRectCanvas.Left)
-        loopStartY = Int(dstRectF.Top - viewportIntersectRectCanvas.Top)
-        loopEndX = loopStartX + Int(dstRectF.Width + 1.999999)
-        loopEndY = loopStartY + Int(dstRectF.Height + 1.999999)
+        loopStartX = Int(m_ViewportRefRectF.Left)
+        loopStartY = Int(m_ViewportRefRectF.Top)
+        loopEndX = loopStartX + Int(m_ViewportRefRectF.Width + 1.999999)
+        loopEndY = loopStartY + Int(m_ViewportRefRectF.Height + 1.999999)
         
         If (loopEndX > imgViewportRectL.Width - 1) Then loopEndX = imgViewportRectL.Width - 1
         If (loopEndY > imgViewportRectL.Height - 1) Then loopEndY = imgViewportRectL.Height - 1
@@ -2651,7 +2700,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         ' per-scanline approach for accessing pixels.  This lets us use 1-dimensional arrays instead of 2-dimensional
         ' arrays for a slight performance boost.
         For y = loopStartY To loopEndY
-            m_OverlayReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
+            m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
             m_ViewportOverlay.WrapLongArrayAroundScanline overlayPixels, overlaySALine, y
         For x = loopStartX To loopEndX
             overlayPixels(x) = overlayLookup(maskPixels(x) And 255)
@@ -2660,7 +2709,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
         'Because the arrays wrapped around the target DIBs are scoped locally, we have to manually free them before
         ' the function exits.
-        m_OverlayReference.UnwrapLongArrayFromDIB maskPixels
+        m_ViewportReference.UnwrapLongArrayFromDIB maskPixels
         m_ViewportOverlay.UnwrapLongArrayFromDIB overlayPixels
         
         'Whenever we generate a new UI overlay, we need to generate a hash of the rendering settings used.  (If rendering
@@ -2669,223 +2718,214 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         'IMPORTANT NOTE: if new UI settings are added in the future, make sure they are reflected here, and also in the
         ' previously overlay cache check, above.
         m_LastOverlayCache = GenerateArbitraryHash(renderType, renderColor)
+        m_OverlayIsReady = True
         
     End If
     
-    'Final task: rendering the actual overlay onto the destination viewport
+    'Final task: rendering the actual overlay onto the destination viewport.  If rendering and viewport settings haven't
+    ' changed since the last render, this step may be the only thing this function actually performs (which is why it's
+    ' so speedy during paint ops).
     m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left, imgViewportRectL.Top, imgViewportRectL.Width, imgViewportRectL.Height, 0, 0, imgViewportRectL.Width, imgViewportRectL.Height
     
 End Sub
 
-'At present, all selection types except raster selections support rendering the current selection as an outline
-' (instead of an overlay).  It is assumed that the caller has verified whether this mode is what the user wants,
-' PRIOR to calling this function.
-'
-' TODO: figure out how to draw bordered selections.  This is easy for rects, ellipses, and lines, but polygon and lasso selections are
-'       much trickier.  GdipWidenPath doesn't work because it crosses itself on the inner loop, which makes for a messy, jumbled outline.
-'       We'd probably need a custom solution that removes inner loops - ugly project!
-' TODO: add outline support for generic raster selections
-Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal renderType As PD_SelectionRender)
+'Child function of RenderSelectionToViewport(), above.  Renders the current selection mask to a target viewport,
+' using the OUTLINE or MARCHING ANT selection styles.
+Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByRef imgViewportRectL As RECTL_WH, ByRef overlayWasRegenerated As Boolean, ByVal renderType As PD_SelectionRender)
     
-    'Outline rendering isn't free.  In debug builds we may want to time it.
+    'Outline rendering isn't free.  In debug builds you may want to profile it.
+    ' (At present, profile reports are commented-out, but timing is still tracked - so just uncomment the
+    '  various pdDebug.LogAction() calls to gather performance data.)
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
     #End If
     
-    'Rendering an outline happens in two steps:
-    ' 1a) First, we check if our existing outline path is accurate.  If it is, we don't need to generate a new one.
-    ' 1b) If (1a) fails, we need to cache a new outline copy
-    ' 2) Render the actual outline.  The complexities of this vary by user settings.
+    'Rendering an outline requires two broad stages:
+    ' 1a) See if our currently cached outline path is accurate.
+    ' 1b) If (1a) fails, we need to generate a new outline path, specific to the current viewport settings.
+    '     (This provides a huge speed boost when the current image is large and zoomed-out, as we only generate a path
+    '      relevant to the current on-screen representation.)
+    ' 2) Render the actual outline onto the target viewport DIB
     
-    'Start with task (1): figuring out if our existing outline is ready.
-    
-    'First, if the outline is supposedly ready, perform two additional checks: one against the source image region, and another against
-    ' the viewport region.  If either have changed since the last time we generated the overlay, we need to create a new overlay.
-    If m_FinalOutlineIsReady Then
-            
-        'Pull an updated canvas intersection rect from the source image
-        Dim viewportIntersectRectCanvas As RECTF
-        srcImage.imgViewport.GetIntersectRectCanvas viewportIntersectRectCanvas
+    'Let's begin with task (1): figuring out if our existing outline path is both:
+    ' 1) available, and...
+    ' 2) up-to-date.
+    If (Not m_FinalOutlineIsReady) Or (m_FinalOutline Is Nothing) Or overlayWasRegenerated Then
         
-        'We now need to calculate an integer-only version of the "viewport space" coordinates.  (The width and height of
-        ' the selection mask DIB are integer-only, obviously, and we can improve performance in our final render if we stick
-        ' to integer coordinates there as well.)
-        Dim imgLeft As Long, imgTop As Long, imgWidth As Long, imgHeight As Long
-        With viewportIntersectRectCanvas
-            imgLeft = Int(.Left)
-            imgTop = Int(.Top)
-            imgWidth = Int(PDMath.Frac(.Left) + .Width + 0.999999)
-            imgHeight = Int(PDMath.Frac(.Top) + .Height + 0.999999)
-        End With
-    
-        'First, compare the viewport rect that we've already retrieved
-        If (Not PDMath.AreRectFsEqual(m_LastViewportRectF, viewportIntersectRectCanvas)) Then
-            m_LastViewportRectF = viewportIntersectRectCanvas
-            m_FinalOutlineIsReady = False
-        End If
-        
-        'Finally, compare the base image rect
-        Dim curImgRectF As RECTF
-        srcImage.imgViewport.GetIntersectRectImage curImgRectF
-        
-        If (Not PDMath.AreRectFsEqual(curImgRectF, m_LastImageRectF)) Then
-            m_LastImageRectF = curImgRectF
-            m_FinalOutlineIsReady = False
-        End If
-        
-    End If
-    
-    Dim outlineWasRegenerated As Boolean: outlineWasRegenerated = False
-    
-    'If any of our "outline is ready" checks failed, generate a new overlay now
-    If (Not m_FinalOutlineIsReady) Or (m_FinalOutline Is Nothing) Then
-    
-        'To render an outline correctly, we must first translate all relevant points from the image coordinate space
-        ' to the viewport coordinate space.  The number of points required obviously varies by selection shape.
-        Dim tmpViewportSpace() As POINTFLOAT
-        Dim numOfRenderPoints As Long
-    
-        'Simple shapes (rectangles, ellipses), will use these dstLeft/Right/Top/Bottom values instead of a custom point array
-        Dim dstLeft As Double, dstRight As Double
-        Dim dstTop As Double, dstBottom As Double
-        
-        If (m_SelectionShape = ss_Rectangle) Or (m_SelectionShape = ss_Circle) Then
-            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersLocked.Left, m_CornersLocked.Top, dstLeft, dstTop
-            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersLocked.Left + m_CornersLocked.Width, m_CornersLocked.Top + m_CornersLocked.Height, dstRight, dstBottom
-        ElseIf (m_SelectionShape = ss_Line) Then
-            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersUnlocked.Left, m_CornersUnlocked.Top, dstLeft, dstTop
-            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_CornersUnlocked.Right, m_CornersUnlocked.Bottom, dstRight, dstBottom
-        End If
+        #If DEBUGMODE = 1 Then
+            'Debug.Print "rebuilding selection outline path (" & Timer & ")"
+        #End If
         
         If (m_FinalOutline Is Nothing) Then Set m_FinalOutline = New pd2DPath Else m_FinalOutline.ResetPath
         
-        'Generating an outline obviously varies by selection type
-        If (m_SelectionShape = ss_Rectangle) Then
-            
-            'Add the selection rectangle to the path
-            If (GetSelectionProperty_Long(sp_RoundedCornerRadius) > 0) Then
-                m_FinalOutline.AddRoundedRectangle_Relative dstLeft, dstTop, dstRight - dstLeft, dstBottom - dstTop, GetSelectionProperty_Long(sp_RoundedCornerRadius) * g_Zoom.GetZoomValue(m_parentPDImage.GetZoom)
-            Else
-                m_FinalOutline.AddRectangle_Absolute dstLeft, dstTop, dstRight, dstBottom
-            End If
-            
-            'If the selection is bordered, widen it now.  TODO!
-            'If (getSelectionProperty_Long(SP_AREA) = sa_Border) And (Not getSelectionProperty_Boolean(sp_BorderWidth_IGNORE)) Then
-            '    m_FinalOutline.ConvertPath_PenTrace getSelectionProperty_Long(sp_BorderWidth)
-            'End If
-                            
-        ElseIf (m_SelectionShape = ss_Circle) Then
+        'PD supports two different paths for populating an "outline path":
+        ' 1) 99% of the time, we want to perform a manual outline scan of the selection mask (scaled and zoomed to
+        '    match the current viewport).  This works for any selection tool, regardless of shape, feathering, or other
+        '    esoteric settings, which makes it universally awesome.
+        '
+        ' 2) As always, there is an exception, however: when rendering a lasso or polygon selection, if the selection has
+        '    *not yet been completed*, we want to simply render the current selection outline "as-is" - this is important for
+        '    conveying to the user that the selection itself is still "under construction".  For this, we use a separate,
+        '    dedicated rendering function based on the current in-progress polygon or lasso points.
+        Dim useLegacyVectorMode As Boolean
+        useLegacyVectorMode = (m_SelectionShape = ss_Lasso) And (Not m_LassoClosed)
+        If (Not useLegacyVectorMode) Then useLegacyVectorMode = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
         
-            'Add the ellipse to the path
-            m_FinalOutline.AddEllipse_Absolute dstLeft, dstTop, dstRight, dstBottom
-                        
-        ElseIf (m_SelectionShape = ss_Line) Then
+        If useLegacyVectorMode Then
         
-            'Add the line to the path
-            m_FinalOutline.AddLine dstLeft, dstTop, dstRight, dstBottom
-            
-            'Widen the path to encompass only the border of the line
-            Dim penPathBorder As pd2DPen
-            Drawing2D.QuickCreateSolidPen penPathBorder, GetSelectionProperty_Long(sp_LineWidth) * g_Zoom.GetZoomValue(srcImage.GetZoom), , , P2_LJ_Round, P2_LC_Round
-            m_FinalOutline.ConvertPath_PenTrace penPathBorder
-            Set penPathBorder = Nothing
-            
-        'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used
-        ' and the number of points.
-        ElseIf (m_SelectionShape = ss_Polygon) Or (m_SelectionShape = ss_Lasso) Then
-        
-            If (m_SelectionShape = ss_Polygon) Then numOfRenderPoints = m_NumOfPolygonPoints Else numOfRenderPoints = m_NumOfLassoPoints
-            
-            If (numOfRenderPoints > 0) Then
-            
-                'Convert the lasso or polygon array to viewport coordinate space
-                ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As POINTFLOAT
-                Dim tmpX As Double, tmpY As Double
+            'Polygon and lasso selections use roughly identical outline code; the only difference is the reference array used
+            ' and the number of points.
+            If (m_SelectionShape = ss_Polygon) Or (m_SelectionShape = ss_Lasso) Then
                 
-                Dim i As Long
+                Dim numOfRenderPoints As Long
+                If (m_SelectionShape = ss_Polygon) Then numOfRenderPoints = m_NumOfPolygonPoints Else numOfRenderPoints = m_NumOfLassoPoints
                 
-                For i = 0 To numOfRenderPoints - 1
+                If (numOfRenderPoints > 0) Then
+                
+                    'Convert the lasso or polygon array to viewport coordinate space
+                    Dim tmpViewportSpace() As POINTFLOAT
+                    ReDim tmpViewportSpace(0 To numOfRenderPoints - 1) As POINTFLOAT
                     
+                    Dim tmpX As Double, tmpY As Double
+                    
+                    Dim i As Long
+                    
+                    For i = 0 To numOfRenderPoints - 1
+                        
+                        If (m_SelectionShape = ss_Polygon) Then
+                            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
+                        Else
+                            Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
+                        End If
+                        
+                        tmpViewportSpace(i).x = tmpX
+                        tmpViewportSpace(i).y = tmpY
+                    Next i
+                    
+                    'Add the converted shape to the path object
                     If (m_SelectionShape = ss_Polygon) Then
-                        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, tmpX, tmpY
+                        m_FinalOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, GetSelectionProperty_Float(sp_PolygonCurvature)
                     Else
-                        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_LassoPoints(i).x, m_LassoPoints(i).y, tmpX, tmpY
+                        m_FinalOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
                     End If
                     
-                    tmpViewportSpace(i).x = tmpX
-                    tmpViewportSpace(i).y = tmpY
-                Next i
-                
-                'Add the converted shape to the path object
-                If (m_SelectionShape = ss_Polygon) Then
-                    m_FinalOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_PolygonClosed, True, GetSelectionProperty_Float(sp_PolygonCurvature)
-                Else
-                    m_FinalOutline.AddPolygon numOfRenderPoints, VarPtr(tmpViewportSpace(0)), m_LassoClosed, True, GetSelectionProperty_Float(sp_SmoothStroke)
+                    m_FinalOutline.TranslatePath -imgViewportRectL.Left, -imgViewportRectL.Top
+                    
                 End If
                 
             End If
-            
-        ElseIf (m_SelectionShape = ss_Wand) Then
         
-            'Wand selections already store their own path; all we need to do is copy the path, and transform it into the
-            ' target viewport coordinate space.
-            If (Not m_WandOutline Is Nothing) Then
-                Dim cTransform As pd2DTransform
-                Drawing.GetTransformFromImageToCanvas cTransform, dstCanvas, srcImage
-                m_FinalOutline.CloneExistingPath m_WandOutline
-                m_FinalOutline.ApplyTransformation cTransform
-            End If
-        
-        'Raster selections will go here someday...
+        '99% of the time, we'll be using our standard, "universal" outline detector.
         Else
-        
+            
+            'm_ViewportRefRectF stores the coordinates of where the current selection was rendered onto the cached image.
+            ' (Note that it may not be located at position (0, 0), especially if the image is zoomed out!)
+            '
+            'From its values, we want to construct an integer-only set of boundaries, appropriate for a per-pixel loop.
+            Dim loopStartX As Long, loopStartY As Long, loopEndX As Long, loopEndY As Long
+            loopStartX = Int(m_ViewportRefRectF.Left)
+            loopStartY = Int(m_ViewportRefRectF.Top)
+            If (loopStartX < 0) Then loopStartX = 0
+            If (loopStartY < 0) Then loopStartY = 0
+            loopEndX = loopStartX + Int(m_ViewportRefRectF.Width + 1.999999)
+            loopEndY = loopStartY + Int(m_ViewportRefRectF.Height + 1.999999)
+            
+            If (loopEndX > imgViewportRectL.Width - 1) Then loopEndX = imgViewportRectL.Width - 1
+            If (loopEndY > imgViewportRectL.Height - 1) Then loopEndY = imgViewportRectL.Height - 1
+            If (loopStartX > loopEndX) Then loopStartX = loopEndX
+            If (loopStartY > loopEndY) Then loopStartY = loopEndY
+            
+            'We now want to use those loop boundaries to produce a byte-only copy of the selection mask.  (This is required
+            ' by the edge-detection engine, and it also gives a chance to better handle things like feathered selection edges.)
+            Dim newWidth As Long, newHeight As Long
+            newWidth = (loopEndX - loopStartX) + 2
+            newHeight = (loopEndY - loopStartY) + 2
+            
+            If (newWidth <> m_ViewportByteCopyRect.Width) Or (newHeight <> m_ViewportByteCopyRect.Height) Then
+                ReDim m_ViewportByteCopy(0 To newWidth, 0 To newHeight) As Byte
+                m_ViewportByteCopyRect.Width = newWidth
+                m_ViewportByteCopyRect.Height = newHeight
+            End If
+            
+            'We're going to offset each line by several pixels on either side; this guarantees blank boundary pixels,
+            ' which lets us skip time-consuming boundary checks.
+            Dim xModifier As Long, yModifier As Long
+            xModifier = (-loopStartX + 1)
+            yModifier = (-loopStartY + 1)
+            
+            Dim maskPixels() As Long, maskSALine As SAFEARRAY1D
+            
+            Dim x As Long, y As Long, tmpYPosition As Long
+            
+            For y = loopStartY To loopEndY
+                m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
+                tmpYPosition = y + yModifier
+            For x = loopStartX To loopEndX
+                If ((maskPixels(x) And 255) > 0) Then
+                    m_ViewportByteCopy(x + xModifier, tmpYPosition) = 255
+                Else
+                    m_ViewportByteCopy(x + xModifier, tmpYPosition) = 0
+                End If
+            Next x
+            Next y
+            
+            'TODO: mirror edge pixels along the interior 1px border; this guarantees that marching ant outlines remain
+            ' *outside* the current viewport, when the selection is greatly zoomed-in.
+            
+            'Because the array wrapped around the reference DIB is scoped locally, we need to free it before exiting
+            m_ViewportReference.UnwrapLongArrayFromDIB maskPixels
+            
+            'We now want to generate a custom-built outline of this particular selection image.
+            If (m_ViewportEdges Is Nothing) Then Set m_ViewportEdges = New pdEdgeDetector
+            
+            'Find the edges of the current on-screen selection mask
+            m_ViewportEdges.FindAllEdges m_FinalOutline, m_ViewportByteCopy, 1, 1, m_ViewportByteCopyRect.Width - 1, m_ViewportByteCopyRect.Height - 1, loopStartX - 1, loopStartY - 1
+            
         End If
         
         'Mark the finished overlay as "ready"; we won't regenerate it unless the underlying selection mask (or the current
-        ' viewport position/zoom) changes
+        ' viewport position/zoom) changes.
         m_FinalOutlineIsReady = True
-        
-        'Also note that the outline path was regenerated; we may need to adjust our subsequent rendering decisions accordingly
-        outlineWasRegenerated = True
         
     End If
         
-    'We have now covered all situations where the underlying path outline may have changed.  (If it has, the local
-    ' "outlineWasRegenerated" value will be set to TRUE.
-    
-    'At present, we don't actually need to modify rendering behavior at all based on the outline was regenerated.
-    ' (In the future, we may want to reset the dash outline or similar.)
+    'We are now ready to render the actual outline onto the overlay DIB.
     If (Not m_FinalOutline Is Nothing) Then
     
+        'Start by making sure our cached overlay dimensions match the temporary viewport DIB generated by our parent function.
+        If (m_ViewportOverlay Is Nothing) Then Set m_ViewportOverlay = New pdDIB
+        If (m_ViewportOverlay.GetDIBWidth <> imgViewportRectL.Width + 1) Or (m_ViewportOverlay.GetDIBHeight <> imgViewportRectL.Height + 1) Then
+            m_ViewportOverlay.CreateBlank imgViewportRectL.Width + 1, imgViewportRectL.Height + 1, 32, 0, 0
+            m_ViewportOverlay.SetInitialAlphaPremultiplicationState True
+        Else
+            m_ViewportOverlay.ResetDIB 0
+        End If
+        
         'Draw the assembled path onto the canvas
         Dim cSurface As pd2DSurface, cPenUIBase As pd2DPen, cPenUITop As pd2DPen
         
-        'Certain combinations of selection features require us to use outline instead of ant mode.
-        Dim useClassicOutline As Boolean
-        useClassicOutline = (renderType = PDSR_Outline)
-        If (Not useClassicOutline) Then useClassicOutline = ((m_SelectionShape = ss_Lasso) And (Not m_LassoClosed))
-        If (Not useClassicOutline) Then useClassicOutline = ((m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed))
-        
-        'Antialiasing performance can be a sore spot with wand selections.  Improving this is TBD.
+        'I haven't made a final decision on using antialiasing for the rendering outline.  At present,
+        ' antialiasing is used for "outline" mode, but not "marching ant" mode.
         Dim useAA As Boolean
+        useAA = (renderType = PDSR_Outline)
         
-        If useClassicOutline Then
-            useAA = True
-        Else
-            useAA = False
-        End If
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, m_ViewportOverlay.GetDIBDC, useAA
         
-        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstDIB.GetDIBDC, useAA
+        'Half-pixel offsets solve some rendering problems, while also introducing other ones.  I've left it disabled for now,
+        ' pending additional testing.
+        'cSurface.SetSurfacePixelOffset P2_PO_Half
         
-        'PD's standard "white-on-black" outline is rendered here:
-        If useClassicOutline Then
+        'Render the outline using PD's standard "white-on-black" outline technique
+        If (renderType = PDSR_Outline) Then
+            
             Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, , P2_LJ_Round, P2_LC_Round
             m_Painter.DrawPath cSurface, cPenUIBase, m_FinalOutline
             m_Painter.DrawPath cSurface, cPenUITop, m_FinalOutline
         
-        'A classic, non-antialiased approach is available here:
+        'Render the outline using an animated "marching ants" approach
         Else
+            
             Dim cBlackPen As pd2DPen, cDottedPen As pd2DPen
             Set cBlackPen = New pd2DPen
             cBlackPen.SetPenColor vbBlack
@@ -2912,8 +2952,13 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
         
     End If
     
+    'Final task: rendering the final overlay onto the destination viewport.  If rendering and viewport settings haven't
+    ' changed since the last render, this step may be the only thing this function actually performs (which is why it's
+    ' so speedy during paint ops).
+    m_ViewportOverlay.AlphaBlendToDCEx dstDIB.GetDIBDC, imgViewportRectL.Left, imgViewportRectL.Top, imgViewportRectL.Width + 1, imgViewportRectL.Height + 1, 0, 0, imgViewportRectL.Width + 1, imgViewportRectL.Height + 1
+    
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
+        'pdDebug.LogAction "Selection outline rendered in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms."
     #End If
     
 End Sub
@@ -3339,6 +3384,13 @@ End Function
 Friend Sub NotifyRasterDataChanged()
     m_FinalOutlineIsReady = False
     m_OverlayIsReady = False
+    m_ViewportRefReady = False
+End Sub
+
+'Want to suspend (or subsequently re-enable) animations?  Use this sub.  Note that it does *not* touch the timer object,
+' by design - the activation and deactivation of the timer object is handled elsewhere.
+Friend Sub NotifyAnimationsAllowed(ByVal allowedState As Boolean)
+    m_AnimationsAllowed = allowedState
 End Sub
 
 Private Sub Class_Initialize()
@@ -3378,6 +3430,7 @@ Private Sub Class_Initialize()
     'We may not need a marching ants timer, but instantiate one regardless.  (This simplifies checking animation state
     ' inside the rendering loop.)
     Set m_AntTimer = New pdTimer
+    m_AnimationsAllowed = True
     
 End Sub
 
@@ -3392,24 +3445,29 @@ End Sub
 
 Private Sub m_AntTimer_Timer()
     
-    'Advance the current offset
-    m_AntDashOffset = m_AntDashOffset + 1#
-    If (m_AntDashOffset >= ANT_DASH_SIZE * 2) Then m_AntDashOffset = 0#
-    
-    'Perform a failsafe check to see if we're even needed
-    Dim okayToRender As Boolean
-    okayToRender = Me.IsLockedIn
-    
-    If okayToRender And (Not m_parentPDImage Is Nothing) Then
-        okayToRender = CBool(m_parentPDImage.imageID = g_CurrentImage)
-    Else
-        okayToRender = False
-    End If
-    
-    If okayToRender Then
-        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    Else
-        m_AntTimer.StopTimer
+    'Disallow animations if an external object has forcibly suspended them
+    If m_AnimationsAllowed Then
+            
+        'Advance the current offset
+        m_AntDashOffset = m_AntDashOffset + 1#
+        If (m_AntDashOffset >= ANT_DASH_SIZE * 2) Then m_AntDashOffset = 0#
+        
+        'Perform a failsafe check to see if we're even needed
+        Dim okayToRender As Boolean
+        okayToRender = Me.IsLockedIn
+        
+        If okayToRender And (Not m_parentPDImage Is Nothing) Then
+            okayToRender = CBool(m_parentPDImage.imageID = g_CurrentImage)
+        Else
+            okayToRender = False
+        End If
+        
+        If okayToRender Then
+            ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Else
+            m_AntTimer.StopTimer
+        End If
+        
     End If
     
 End Sub

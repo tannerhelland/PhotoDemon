@@ -137,11 +137,12 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     If (MacroStatus <> MacroBATCH) Then
         
         'Hot-patch the currently active language
-        If Not (g_Language Is Nothing) Then g_Language.RefreshAsRequired
+        If (Not g_Language Is Nothing) Then g_Language.RefreshAsRequired
     
     End If
     
-    'PD provides two failsafes to avoid unwanted user interaction during processing. First, we forcibly remove keyboard focus from the thread.
+    'PD provides two failsafes to avoid unwanted user interaction during processing. First, we forcibly remove keyboard focus
+    ' from the thread.
     m_FocusHWnd = g_WindowManager.GetFocusAPI
     g_WindowManager.SetFocusAPI 0
     
@@ -152,6 +153,11 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     'Next, complete part two of our "unwanted user interaction" failsafe: disable the main form to prevent the user from clicking additional
     ' menus or tools while this action is processing
     FormMain.Enabled = False
+    
+    'Before continuing, suspend any active UI animations
+    If (g_OpenImageCount > 0) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed False
+    End If
         
     #If DEBUGMODE = 1 Then
         If ShowDialog Then
@@ -2024,7 +2030,16 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     
     'Restore the mouse pointer to its default value.
     ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
-    If (MacroStatus <> MacroBATCH) And (m_NestedProcessingCount <= 1) Then Screen.MousePointer = vbDefault
+    If (MacroStatus <> MacroBATCH) And (m_NestedProcessingCount <= 1) Then
+    
+        Screen.MousePointer = vbDefault
+        
+        'While we're here, re-enable any running UI animations
+        If (g_OpenImageCount > 0) Then
+            If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
+        End If
+        
+    End If
     
     'Every time this sub is exited, decrement the process counter.  When this value reaches zero, we know we are about to exit
     ' the outermost processor request.
@@ -2036,23 +2051,22 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
 
 MainErrHandler:
     
-    'Reset the mouse pointer and access to the main form
+    'Reset the mouse pointer and allow access to the main form
     m_Processing = False
     Screen.MousePointer = vbDefault
     m_NestedProcessingCount = m_NestedProcessingCount - 1
     FormMain.Enabled = True
     
+    'Re-enable any running UI animations
+    If (g_OpenImageCount > 0) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
+    End If
+        
     'Ensure any pending UI syncs are flushed
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
 
-    'We'll use this string to hold additional error data
-    Dim addInfo As String
-    
-    'This variable stores the message box type
-    Dim mType As VbMsgBoxStyle
-    
-    'Tracks the user input from the message box
-    Dim msgReturn As VbMsgBoxResult
+    'Attempt to generate a human-readable error message
+    Dim addInfo As String, mType As VbMsgBoxStyle, msgReturn As VbMsgBoxResult
     
     'Ignore errors that aren't actually errors
     If (Err.Number = 0) Then

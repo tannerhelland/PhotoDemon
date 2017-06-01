@@ -1475,3 +1475,10 @@ Friend Sub ResetScratchLayer(Optional ByVal resetLayerSettingsToo As Boolean = F
     If resetLayerSettingsToo Then ScratchLayer.ResetLayerParameters
 
 End Sub
+
+'Want to suspend (or subsequently re-enable) animations?  Use this sub.  (At present, this only affects the
+' "marching ant" selection animation.)
+Friend Sub NotifyAnimationsAllowed(ByVal allowedState As Boolean)
+    If (Not mainSelection Is Nothing) Then mainSelection.NotifyAnimationsAllowed allowedState
+End Sub
+

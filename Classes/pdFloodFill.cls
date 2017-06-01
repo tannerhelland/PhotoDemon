@@ -107,8 +107,9 @@ Private m_InitPoint As POINTAPI
 Private m_Painter As pd2DPainter, m_Brush As pd2DBrush
 
 'Fast memory ops
-Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 Private Declare Sub CopyMemory_Strict Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPointer As Long, ByVal srcPointer As Long, ByVal numOfBytes As Long)
+Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 
 'Get/set functions for all relevant flood fill parameters
 Public Function GetAntialiasingMode() As Boolean
@@ -168,7 +169,7 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         Exit Function
     End If
     
-    'Flood filling is super-expensive.  Time it in debug builds.
+    'Flood filling is super-expensive.  We may want to time it in debug builds.
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
         VBHacks.GetHighResTime startTime
@@ -202,6 +203,8 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
         'Contiguous floodfills use a new scanline-based implementation.  This provides a 30-40% performance improvement
         ' over a naive implementation, although the code is quite a bit more complex.
         FloodFillContiguous_Scanline srcDIB
+        
+        'For reference, you can always test the original (much-simpler) implementation via this line:
         'FloodFillContiguous srcDIB
         
     ElseIf (m_SearchMode = PDFS_WHOLEIMAGE) Then
@@ -209,7 +212,7 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     End If
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FF-MAP: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+        'pdDebug.LogAction "FF-MAP: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
         VBHacks.GetHighResTime startTime
     #End If
     
@@ -217,7 +220,7 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     GenerateFloodFillOutline dstOutlinePath
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FF-OUTLINE: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+        'pdDebug.LogAction "FF-OUTLINE: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
         VBHacks.GetHighResTime startTime
     #End If
     
@@ -232,7 +235,7 @@ Public Function InitiateFloodFill(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, 
     Set cSurface = Nothing
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
+        'pdDebug.LogAction "FF-RENDER: " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
     #End If
     
     InitiateFloodFill = True
@@ -516,6 +519,65 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     Dim scanRight As Boolean, scanLeft As Boolean
     Dim leftBound As Long, rightBound As Long, i As Long, yIn As Long
     
+    'To improve performance, we're going to point transient 1D arrays at certain 2D array rows during processing.
+    ' This requires unsafe array manipulation, but it can be significantly faster than 2D array accesses (and because
+    ' this function is scanline-oriented, the gains are even more significant).
+    Dim tmpImageLine() As Byte, tmpImageSA As SAFEARRAY1D
+    
+    'Populate the safearray struct's unchanging values
+    Dim srcImageBasePointer As Long, srcImageStride As Long
+    srcImageBasePointer = srcDIB.GetDIBPointer
+    srcImageStride = srcDIB.GetDIBStride
+    
+    With tmpImageSA
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcImageStride
+        
+        'pvData *will* change as the function goes along, but let's at least start with a safe value
+        .pvData = srcImageBasePointer
+        
+    End With
+    
+    'Point the uninitialized temporary array at our custom-built SafeArray struct
+    PutMem4 VarPtrArray(tmpImageLine()), VarPtr(tmpImageSA)
+    
+    'Repeat the above steps, but for a 1D array that points at the "already checked" tracking array
+    Dim tmpTrackingLine() As Byte, tmpTrackingSA As SAFEARRAY1D
+    Dim srcTrackingBasePointer As Long, srcTrackingStride As Long
+    srcTrackingBasePointer = VarPtr(m_AlreadyChecked(0, 0))
+    srcTrackingStride = m_BoundsX + 1
+    
+    With tmpTrackingSA
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcTrackingStride
+        .pvData = srcTrackingBasePointer
+    End With
+    
+    PutMem4 VarPtrArray(tmpTrackingLine()), VarPtr(tmpTrackingSA)
+    
+    'And finally, repeat the above steps, but for a 1D array that points at the "fill results" tracking array
+    Dim tmpFillLine() As Byte, tmpFillSA As SAFEARRAY1D
+    Dim srcFillBasePointer As Long, srcFillStride As Long
+    srcFillBasePointer = VarPtr(m_FillResults(0, 0))
+    srcFillStride = m_BoundsX + 1
+    
+    With tmpFillSA
+        .cbElements = 1
+        .cDims = 1
+        .cLocks = 1
+        .lBound = 0
+        .cElements = srcFillStride
+        .pvData = srcFillBasePointer
+    End With
+    
+    PutMem4 VarPtrArray(tmpFillLine()), VarPtr(tmpFillSA)
+    
     'Start processing the stack!
     Do
     
@@ -531,11 +593,12 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
         m_StackPosition = m_StackPosition - 1
         
         'Retrieve RGB/A values for this point
+        tmpImageSA.pvData = srcImageBasePointer + (y * srcImageStride)
         quickX = x * 4
-        b = srcImageData(quickX, y)
-        g = srcImageData(quickX + 1, y)
-        r = srcImageData(quickX + 2, y)
-        a = srcImageData(quickX + 3, y)
+        b = tmpImageLine(quickX)
+        g = tmpImageLine(quickX + 1)
+        r = tmpImageLine(quickX + 2)
+        a = tmpImageLine(quickX + 3)
     
         'Compare this pixel against the reference
         If (m_CompareMode = PDFC_COMPOSITE) Then
@@ -561,22 +624,25 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
         If isWithinTolerance Then
             
             'Mark this pixel as filled
-            m_AlreadyChecked(x, y) = 2
-            m_FillResults(x, y) = 255
+            tmpTrackingSA.pvData = srcTrackingBasePointer + (y * srcTrackingStride)
+            tmpTrackingLine(x) = 2
+            
+            tmpFillSA.pvData = srcFillBasePointer + (y * srcFillStride)
+            tmpFillLine(x) = 255
             
             'Next, we're going to do a full scanline check in both the left and right directions.  Start with the
             ' left direction.
             leftBound = x - 1
             scanLeft = (leftBound >= 0)
             Do While scanLeft
-                If (m_AlreadyChecked(leftBound, y) = 0) Then
+                If (tmpTrackingLine(leftBound) = 0) Then
                     
                     'Retrieve RGB/A values for this point
                     quickX = leftBound * 4
-                    b = srcImageData(quickX, y)
-                    g = srcImageData(quickX + 1, y)
-                    r = srcImageData(quickX + 2, y)
-                    a = srcImageData(quickX + 3, y)
+                    b = tmpImageLine(quickX)
+                    g = tmpImageLine(quickX + 1)
+                    r = tmpImageLine(quickX + 2)
+                    a = tmpImageLine(quickX + 3)
                 
                     'Compare this pixel against the reference
                     If (m_CompareMode = PDFC_COMPOSITE) Then
@@ -600,12 +666,12 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                     
                     'If this value is within the requested tolerance, mark it on the destination map
                     If isWithinTolerance Then
-                        m_AlreadyChecked(leftBound, y) = 2
-                        m_FillResults(leftBound, y) = 255
+                        tmpTrackingLine(leftBound) = 2
+                        tmpFillLine(leftBound) = 255
                         leftBound = leftBound - 1
                         scanLeft = (leftBound >= 0)
                     Else
-                        m_AlreadyChecked(leftBound, y) = 1
+                        tmpTrackingLine(leftBound) = 1
                         scanLeft = False
                     End If
                     
@@ -619,14 +685,14 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
             rightBound = x + 1
             scanRight = (rightBound <= xBound)
             Do While scanRight
-                If (m_AlreadyChecked(rightBound, y) = 0) Then
+                If (tmpTrackingLine(rightBound) = 0) Then
                     
                     'Retrieve RGB/A values for this point
                     quickX = rightBound * 4
-                    b = srcImageData(quickX, y)
-                    g = srcImageData(quickX + 1, y)
-                    r = srcImageData(quickX + 2, y)
-                    a = srcImageData(quickX + 3, y)
+                    b = tmpImageLine(quickX)
+                    g = tmpImageLine(quickX + 1)
+                    r = tmpImageLine(quickX + 2)
+                    a = tmpImageLine(quickX + 3)
                 
                     'Compare this pixel against the reference
                     If (m_CompareMode = PDFC_COMPOSITE) Then
@@ -650,12 +716,12 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
                     
                     'If this value is within the requested tolerance, mark it on the destination map
                     If isWithinTolerance Then
-                        m_AlreadyChecked(rightBound, y) = 2
-                        m_FillResults(rightBound, y) = 255
+                        tmpTrackingLine(rightBound) = 2
+                        tmpFillLine(rightBound) = 255
                         rightBound = rightBound + 1
                         scanRight = (rightBound <= xBound)
                     Else
-                        m_AlreadyChecked(rightBound, y) = 1
+                        tmpTrackingLine(rightBound) = 1
                         scanRight = False
                     End If
                     
@@ -681,9 +747,10 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
             ' in one fell swoop, without worrying about safe memory allocations.
             If (y > 0) Then
                 yIn = y - 1
+                tmpTrackingSA.pvData = srcTrackingBasePointer + (yIn * srcTrackingStride)
                 For i = leftBound To rightBound
-                    If (m_AlreadyChecked(i, yIn) = 0) Then
-                        m_AlreadyChecked(i, yIn) = 1
+                    If (tmpTrackingLine(i) = 0) Then
+                        tmpTrackingLine(i) = 1
                         m_StackPosition = m_StackPosition + 1
                         m_Stack(m_StackPosition).x = i
                         m_Stack(m_StackPosition).y = yIn
@@ -693,9 +760,10 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
             
             If (y < yBound) Then
                 yIn = y + 1
+                tmpTrackingSA.pvData = srcTrackingBasePointer + (yIn * srcTrackingStride)
                 For i = leftBound To rightBound
-                    If (m_AlreadyChecked(i, yIn) = 0) Then
-                        m_AlreadyChecked(i, yIn) = 1
+                    If (tmpTrackingLine(i) = 0) Then
+                        tmpTrackingLine(i) = 1
                         m_StackPosition = m_StackPosition + 1
                         m_Stack(m_StackPosition).x = i
                         m_Stack(m_StackPosition).y = yIn
@@ -710,6 +778,9 @@ Private Function FloodFillContiguous_Scanline(ByRef srcDIB As pdDIB) As Boolean
     
     'Release our array references
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    PutMem4 VarPtrArray(tmpImageLine()), 0&
+    PutMem4 VarPtrArray(tmpTrackingLine()), 0&
+    PutMem4 VarPtrArray(tmpFillLine()), 0&
     
     FloodFillContiguous_Scanline = True
     
