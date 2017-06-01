@@ -796,6 +796,9 @@ Public Function DegreesToRadians(ByVal srcDegrees As Double) As Double
     DegreesToRadians = (srcDegrees * PI) / 180
 End Function
 
+'Given a RectF object, enlarge the boundaries to produce an integer-only RectF that is guaranteed
+' to encompass the entire original rect.  (Said another way, the modified rect will *never* be smaller
+' than the original rect.)
 Public Sub GetIntClampedRectF(ByRef srcRectF As RECTF)
     Dim xOffset As Single, yOffset As Single
     xOffset = srcRectF.Left - Int(srcRectF.Left)
@@ -804,6 +807,19 @@ Public Sub GetIntClampedRectF(ByRef srcRectF As RECTF)
     srcRectF.Top = Int(srcRectF.Top)
     srcRectF.Width = Int(srcRectF.Width + xOffset + 0.9999)
     srcRectF.Height = Int(srcRectF.Height + yOffset + 0.9999)
+End Sub
+
+'Given a RectF object, adjust the boundaries to produce an integer-only RectF that approximates the
+' original rect as closely as possible.  (This rect *may* be smaller than the original; for a rect
+' guaranteed to encompass the entire original area, use GetIntClampedRectF(), above.)
+Public Sub GetNearestIntRectF(ByRef srcRectF As RECTF)
+    Dim xOffset As Single, yOffset As Single
+    xOffset = PDMath.Frac(srcRectF.Left)
+    yOffset = PDMath.Frac(srcRectF.Top)
+    srcRectF.Left = Int(srcRectF.Left)
+    srcRectF.Top = Int(srcRectF.Top)
+    If (PDMath.Frac(srcRectF.Width + xOffset) >= 0.5) Then srcRectF.Width = Int(srcRectF.Width + 1#) Else srcRectF.Width = Int(srcRectF.Width)
+    If (PDMath.Frac(srcRectF.Height + yOffset) >= 0.5) Then srcRectF.Height = Int(srcRectF.Height + 1#) Else srcRectF.Height = Int(srcRectF.Height)
 End Sub
 
 Public Function ClampL(ByVal srcL As Long, ByVal minL As Long, ByVal maxL As Long) As Long

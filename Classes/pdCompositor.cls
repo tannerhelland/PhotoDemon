@@ -698,25 +698,7 @@ End Sub
 '
 'As of 7.0, an optional scratch layer index can be specified.  If >= 0, the source image's scratch layer will be rendered atop the layer at the
 ' requested position.  (For example, if the index is 0, the scratch layer will be rendered atop the background layer.)
-Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal paintScratchLayerIndex As Long = -1)
-    
-    'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
-    ' boundary regions for all individual layers.
-    Dim dstViewportRect As RECTF, srcImageRect As RECTF
-    
-    With dstViewportRect
-        .Left = dstX
-        .Top = dstY
-        .Width = dstWidth
-        .Height = dstHeight
-    End With
-    
-    With srcImageRect
-        .Left = srcX
-        .Top = srcY
-        .Width = srcWidth
-        .Height = srcHeight
-    End With
+Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal paintScratchLayerIndex As Long = -1)
         
     'A few other things to note before we begin:
     ' - dstDIB will have already been created by the caller.  It may contain a background checkerboard, so we can't
@@ -729,18 +711,13 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     'Check for the special case of 100% zoom (e.g. the source rect and dest rect are the same size).  When this happens, we can
     ' shortcut certain parts of the compositing process.
     Dim isRectZoomless As Boolean
-    
-    If (dstWidth = srcWidth) And (dstHeight = srcHeight) Then
-        isRectZoomless = True
-    Else
-        isRectZoomless = False
-    End If
+    isRectZoomless = (dstViewportRect.Width = srcImageRect.Width) And (dstViewportRect.Height = srcImageRect.Height)
     
     'Start by creating a temporary DIB the size of the destination image (viewport).  All compositing will be done to this DIB,
     ' and as the final step, we will AlphaBlend the finished image onto dstDIB.
     Dim dibWidthCalc As Long, dibHeightCalc As Long
-    dibWidthCalc = Int(dstWidth + (dstX - Int(dstX)) + 0.99)
-    dibHeightCalc = Int(dstHeight + (dstY - Int(dstY)) + 0.99)
+    dibWidthCalc = Int(dstViewportRect.Width + PDMath.Frac(dstViewportRect.Left) + 0.99)
+    dibHeightCalc = Int(dstViewportRect.Height + PDMath.Frac(dstViewportRect.Top) + 0.99)
     
     'Note that we try to avoid recreating this DIB unless absolutely necessary
     If (m_dstDIB.GetDIBWidth < dibWidthCalc) Or (m_dstDIB.GetDIBHeight < dibHeightCalc) Then
@@ -773,10 +750,11 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         Else
             paintLayerInterpMode = interpolationType
         End If
+        
     End If
     
-    'Now our work is pretty simple: iterate layers, and pass visible ones off to the helper function (which handles the messy
-    ' work of solving all the coordinate math)
+    'Now our work is pretty simple: iterate layers, and pass visible ones to helper functions (which handle the messy
+    ' work of solving all releveant coordinate math, and performing the actual painting steps)
     Dim i As Long
     For i = 0 To srcImage.GetNumOfLayers - 1
         
@@ -791,7 +769,7 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
             ' be added as a new layer, so we don't need to pre-merge anything.
             If ((paintScratchLayerIndex = i) And srcImage.GetLayerByIndex(i).IsLayerRaster) Then
                     
-                'We are now going to pass off the current paint layer to a dedicated renderer.  This isn't really ideal, but it's specially
+                'Pass this paint layer to a dedicated renderer (one specially
                 ' optimized for real-time performance, so different trade-offs are made from the standard renderer.
                 GetCompositedRect_PaintOp m_dstDIB, srcImage, srcImage.GetLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless
                 
@@ -818,20 +796,24 @@ Friend Sub GetCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     ' constructed with subpixel positioning already accounted for.
     '
     'For this release, I have left the original GDI+ paint method, in case I find it necessary to revert back in the future.
-    If isRectZoomless Then
-        m_dstDIB.AlphaBlendToDCEx dstDIB.GetDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
-    Else
-        
-        Dim bltWidth As Single, bltHeight As Single
-        bltWidth = dstWidth + (dstX - Int(dstX))
-        bltHeight = dstHeight + (dstY - Int(dstY))
-        GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), bltWidth, bltHeight, m_dstDIB, 0, 0, bltWidth, bltHeight, 1, GP_IM_NearestNeighbor, , True
-        
-        'While we might be able to get away with GDI's AlphaBlend here, it may cause bleeding on the trailing width/height edges,
-        ' which can cause the underlying checkerboard to show through.  (Also, the performance benefit isn't that meaningful.)
-        'm_dstDIB.AlphaBlendToDCEx dstDIB.GetDIBDC, Int(dstX), Int(dstY), bltWidth, bltHeight, 0, 0, bltWidth, bltHeight
-        
-    End If
+    With dstViewportRect
+    
+        If isRectZoomless Then
+            m_dstDIB.AlphaBlendToDCEx dstDIB.GetDIBDC, .Left, .Top, .Width, .Height, 0, 0, .Width, .Height
+        Else
+            
+            Dim bltWidth As Single, bltHeight As Single
+            bltWidth = .Width + PDMath.Frac(.Left)
+            bltHeight = .Height + PDMath.Frac(.Top)
+            GDIPlus_StretchBlt dstDIB, Int(.Left), Int(.Top), bltWidth, bltHeight, m_dstDIB, 0#, 0#, bltWidth, bltHeight, 1#, GP_IM_NearestNeighbor, , True
+            
+            'While we might be able to get away with GDI's AlphaBlend here, it may cause bleeding on the trailing width/height edges,
+            ' which can cause the underlying checkerboard to show through.  (Also, the performance benefit isn't that meaningful.)
+            'm_dstDIB.AlphaBlendToDCEx dstDIB.GetDIBDC, Int(.Left), Int(.Top), Int(bltWidth), Int(bltHeight), 0, 0, Int(bltWidth), Int(bltHeight)
+            
+        End If
+    
+    End With
     
     'The target DIB will always be premultiplied, by design
     dstDIB.SetInitialAlphaPremultiplicationState True
@@ -1182,7 +1164,7 @@ Private Sub GetCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                             ' (If non-destructive resizing is active, we'll also use the layer's specified resample mode instead of
                             '  the function-wide resample mode.)
                             If (srcLayer.GetLayerCanvasXModifier <> 1#) Or (srcLayer.GetLayerCanvasYModifier <> 1#) Then tmpResampleMode = srcLayer.GetLayerResizeQuality_GDIPlus Else tmpResampleMode = interpolationType
-                            GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, tmpResampleMode, , Not isBaseLayer, , True
+                            GDIPlus_StretchBlt lodDIB, (dstRect.Left - dstViewportRect.Left) - xOffsetInt, (dstRect.Top - dstViewportRect.Top) - yOffsetInt, dstRect.Width, dstRect.Height, srcDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1#, tmpResampleMode, , Not isBaseLayer, , True
                             
                             'Update the layer hash, so we can possibly skip this work in the future
                             srcLayer.SetViewportHash_FromLong levelOfDetail, testHash
@@ -2127,27 +2109,20 @@ End Function
 ' from the source coordinate space to the destination coordinate space.
 Private Function GetDstRectFromSrcRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single)
     
-    'To make our calculations easier, we're going to convert the source rectangle coordinates to a [0, 1] scale, relative to the total source area.
-    Dim tmpRectF As RECTF
-    
-    If (srcWidth = 0) Or (srcHeight = 0) Then
-        Exit Function
+    If (srcWidth <> 0#) And (srcHeight <> 0#) Then
+        
+        Dim wRatio As Single, hRatio As Single
+        wRatio = dstWidth / srcWidth
+        hRatio = dstHeight / srcHeight
+        
+        With dstRect
+            .Left = dstX + (srcRect.Left - srcX) * wRatio
+            .Width = srcRect.Width * wRatio
+            .Top = dstY + (srcRect.Top - srcY) * hRatio
+            .Height = srcRect.Height * hRatio
+        End With
+        
     End If
-    
-    With tmpRectF
-        .Left = (srcRect.Left - srcX) / srcWidth
-        .Width = srcRect.Width / srcWidth
-        .Top = (srcRect.Top - srcY) / srcHeight
-        .Height = srcRect.Height / srcHeight
-    End With
-    
-    'Using those source values, fill the destination rect
-    With dstRect
-        .Left = dstX + (tmpRectF.Left * dstWidth)
-        .Width = tmpRectF.Width * dstWidth
-        .Top = dstY + (tmpRectF.Top * dstHeight)
-        .Height = tmpRectF.Height * dstHeight
-    End With
 
 End Function
 

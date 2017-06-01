@@ -220,11 +220,11 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     VBHacks.GetHighResTime startTime
     
     'Regardless of the pipeline branch we follow, we need local copies of the relevant region rects calculated by stage 1 of the pipeline.
-    Dim ImageRect_CanvasCoords As RECTF, CanvasRect_ImageCoords As RECTF, CanvasRect_ActualPixels As RECTF
+    Dim imageRect_CanvasCoords As RECTF, canvasRect_ImageCoords As RECTF, canvasRect_ActualPixels As RECTF
     With srcImage.imgViewport
-        .GetCanvasRectActualPixels CanvasRect_ActualPixels
-        .GetCanvasRectImageCoords CanvasRect_ImageCoords
-        .GetImageRectCanvasCoords ImageRect_CanvasCoords
+        .GetCanvasRectActualPixels canvasRect_ActualPixels
+        .GetCanvasRectImageCoords canvasRect_ImageCoords
+        .GetImageRectCanvasCoords imageRect_CanvasCoords
     End With
     
     'We also need to wipe the back buffer
@@ -259,10 +259,10 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     ' when the scroll bars are at (0, 0).
     Dim translatedImageRect As RECTF
     With translatedImageRect
-        .Left = ImageRect_CanvasCoords.Left - xScroll_Canvas
-        .Top = ImageRect_CanvasCoords.Top - yScroll_Canvas
-        .Width = ImageRect_CanvasCoords.Width
-        .Height = ImageRect_CanvasCoords.Height
+        .Left = imageRect_CanvasCoords.Left - xScroll_Canvas
+        .Top = imageRect_CanvasCoords.Top - yScroll_Canvas
+        .Width = imageRect_CanvasCoords.Width
+        .Height = imageRect_CanvasCoords.Height
     End With
     
     'This translated rect allows us to shortcut a lot of coordinate math, so cache a copy inside the source image.
@@ -272,7 +272,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     ' a tiny window, and the image as a huge poster behind the window.  What we're going to do now is find the intersect rect
     ' between the window rect (which is easy - just the size of the canvas itself) and the image rect we've now calculated.
     Dim viewportRect As RECTF
-    srcImage.imgViewport.SetIntersectState GDI_Plus.IntersectRectF(viewportRect, CanvasRect_ActualPixels, translatedImageRect)
+    srcImage.imgViewport.SetIntersectState GDI_Plus.IntersectRectF(viewportRect, canvasRect_ActualPixels, translatedImageRect)
     
     If srcImage.imgViewport.GetIntersectState Then
         
@@ -292,9 +292,11 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         Drawing.ConvertCanvasCoordsToImageCoords dstCanvas, srcImage, viewportRect.Left, viewportRect.Top, srcLeft, srcTop, False
         
         'Width and height are easy - just the width/height of the viewport, divided by the current zoom!
-        Dim srcWidth As Double, srcHeight As Double
-        srcWidth = viewportRect.Width / m_ZoomRatio
-        srcHeight = viewportRect.Height / m_ZoomRatio
+        Dim srcRectF As RECTF
+        srcRectF.Left = srcLeft
+        srcRectF.Top = srcTop
+        srcRectF.Width = viewportRect.Width / m_ZoomRatio
+        srcRectF.Height = viewportRect.Height / m_ZoomRatio
         
         'We have now mapped the relevant viewport rect back into source coordinates, giving us everything we need for our render.
         
@@ -307,42 +309,26 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
         ' in the future... but for now, we leave it, just in case.
         If Drawing2D.IsRenderingEngineActive(P2_GDIPlusBackend) Then
-            
-            '***************************************
-            'PD provides two options for rendering the viewport.  One composites the full image in the background, and just snips
-            ' out the relevant bit of the finished image.  The other does not maintain a composited image copy, but instead returns
-            ' a composited rect whenever it's requested.  Branch down either path now.
-            '
-            'NOTE!  As of v7.0, the "composite full image in background" option has been disabled.  It would take a lot of work to
-            ' make it usable with paint tools, and it simply doesn't receive much testing.  As such, I've reworked the quality modes
-            ' to enable higher performance at the default setting, with "Best Quality" now using the highest-quality bicubic
-            ' resampling algorithm.  This gives us a large performance boost across all settings, while reducing the amount of
-            ' viewport pipelines I have to test before release.
-            '
-            'I'll look at reinstating this option in a later release, if performance allows.
-            
-            'If (g_ViewportPerformance = PD_PERF_BESTQUALITY) Then
-            '    GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcImage.compositeBuffer, srcLeft, srcTop, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor)
-            'End If
-            '***************************************
                 
             'We can now use PD's rect-specific compositor to retrieve only the relevant section of the current viewport.
             ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
-            ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
-            '        GDI+'s preprocessing, which screws up subpixel positioning.)
             
             'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
+            Dim vpInterpolation As GP_InterpolationMode
             If (g_ViewportPerformance = PD_PERF_FASTEST) Then
-                srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, GP_IM_NearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
-                
-            'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
-            ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
-            ' automatically (regardless of what method we request).
-            ElseIf (g_ViewportPerformance = PD_PERF_BALANCED) Then
-                srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_Bilinear, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
+                vpInterpolation = GP_IM_NearestNeighbor
             Else
-                srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, GP_IM_HighQualityBicubic, GP_IM_NearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
+                
+                'If we're zoomed-in, use nearest-neighbor regardless of the current settings
+                If (m_ZoomRatio > 1#) Then
+                    vpInterpolation = GP_IM_NearestNeighbor
+                Else
+                    If (g_ViewportPerformance = PD_PERF_BALANCED) Then vpInterpolation = GP_IM_Bilinear Else vpInterpolation = GP_IM_HighQualityBicubic
+                End If
+                
             End If
+            
+            srcImage.GetCompositedRect srcImage.canvasBuffer, viewportRect, srcRectF, vpInterpolation, pipelineOriginatedAtStageOne, CLC_Viewport, renderScratchLayerIndex
                     
         'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
         Else
@@ -350,14 +336,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         End If
         
         'Cache the relevant section of the image, in case outside functions require it.
-        Dim tmpSrcImageRect As RECTF
-        With tmpSrcImageRect
-            .Left = srcLeft
-            .Top = srcTop
-            .Width = srcWidth
-            .Height = srcHeight
-        End With
-        srcImage.imgViewport.SetIntersectRectImage tmpSrcImageRect
+        srcImage.imgViewport.SetIntersectRectImage srcRectF
         
     'The canvas and image do not overlap.  That's okay!  It means we don't have to do any compositing.  Exit now.
     Else
@@ -459,29 +438,29 @@ End Sub
     '   and the canvas buffer(s))
 
 'Because the full rendering pipeline must be executed when this function is called, it is considered highly expensive, even though
-' the math it performs is relatively quick.  The main issue raised by this function is that front and back buffers for the current canvas
-' likely need to be recreated (instead of just reused, as their size has likely changed), so whenever you need to call the viewport to
-' request a redraw, do your best to figure out how late in the pipeline you can call - performance will improve accordingly.
+' the math it performs is relatively quick.  The main issue caused by this function is that the current canvas's front and back buffers
+' will need to be recreated (instead of just reused, as their size has likely changed), so whenever you need to call the viewport to
+' request a redraw, try to figure out how late in the pipeline you can call - performance will improve accordingly.
 
 'While this function is primarily concerned with the math required to handle zoom and scroll operations correctly, there are a few
-' additional parameters that are occasionally necessary, which is why a paramArray is used.  For details on these, please refer to the
-' "Zoom to Coordinate" behavior, used when the mousewheel is applied while
-' over a specific pixel, will pass additional targetX and targetY parameters to the function.  If present, Stage1_InitializeBuffer will automatically
-' set the scroll bar values after its calculations are complete, in a way that preserves the on-screen position of the passed
-' coordinate.  (Note that it does this as closely as it can, but some zoom changes make this impossible, such as zooming out to a
-' point that scroll bars cannot reach).
+' additional parameters that are occasionally necessary, which is why a ParamArray is used.  For details on these, please refer to the
+' "Zoom to Coordinate" behavior, which is used when the mousewheel is invoked while over the current viewport.  That function will pass
+' additional targetX and targetY parameters to this function, which are then used to automatically set matching scroll bar values after
+' viewport calculations are complete, in a way that preserves the on-screen position of the passed coordinate.  (Note that the function
+' does this as closely as it can, but some zoom changes make this impossible, such as zooming out to a point that scroll bars cannot
+' physically reach).
 
 'As an important follow-up note, two sets of target coordinates must be passed for this capability to work: one set of coordinates
 ' in *canvas space*, and one set in *image space*.  Both are required, because Stage1_InitializeBuffer doesn't keep track of past zoom values.
 ' This means that once the viewport's zoom level has been changed (as will likely happen prior to calling this function, by mousewheel),
-' this function does know what the prior zoom level was - and a single set of coordinates is not enough to maintain image positioning.
+' this function doesn't know what the prior zoom level was - and a single set of coordinates is not enough to maintain image positioning.
 
 'Thus, when making use of "zoom to coordinate" behavior, you must handle zoom changes in the following order:
 ' 1) cache x/y coordinate values in two coordinate spaces: image and canvas
 ' 2) disable automatic canvas redraws
 ' 3) change the zoom value; this allows the zoom engine to reconstruct conditional values, like "fit to window"
 ' 4) re-enable automatic canvas redraws (this can happen now, or after step 5 - just don't forget to do it!)
-' 5) request a manual redraw via Stage1_InitializeBuffer, and be sure supply the previously cached x/y values
+' 5) request a manual redraw via Stage1_InitializeBuffer, and be sure supply your previously cached x/y values
 Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ParamArray ExtraSettings() As Variant)
     
     
@@ -494,25 +473,25 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     ' (Detailed explanation: this routine is automatically triggered by the main window's resize notifications.  When new images
     '  are loaded, the image tabstrip will likely appear, which in turn changes the available viewport space, just like a resize
     '  event.  To prevent this behavior from triggering multiple Stage1_InitializeBuffer requests, g_AllowViewportRendering exists.)
-    If Not g_AllowViewportRendering Then Exit Sub
+    If (Not g_AllowViewportRendering) Then Exit Sub
     
-    'Second, exit if the destination canvas has not been initialized yet; this can happen during program initialization.
-    If dstCanvas Is Nothing Then Exit Sub
+    'Second, exit if the destination canvas has not been initialized yet; this may happen during program initialization.
+    If (dstCanvas Is Nothing) Then Exit Sub
     
-    'Third, exit if no images have been loaded.  The canvas will take care of rendering a blank placeholder viewport.
-    If g_OpenImageCount = 0 Then
+    'Third, exit if no images have been loaded.  The canvas object itself will render a blank placeholder image.
+    If (g_OpenImageCount = 0) Then
         FormMain.mainCanvas(0).ClearCanvas
         Exit Sub
     End If
     
-    'Fourth, exit if the source image is invalid.
-    If srcImage Is Nothing Then Exit Sub
+    'Fourth, exit if the source image doesn't exist.  (This check exists as an emergency failsafe, only.)
+    If (srcImage Is Nothing) Then Exit Sub
     
     'Fifth, if the source image is inactive (e.g. it has been unloaded at some point in the past), do not execute a redraw.
-    ' (For performance reasons, PD does not shrink its primary pdImages() array unless required due to memory pressure.
-    '  Instead, it just deactivates entries by marking the .IsActive property - so that property must be considered
-    '  prior to executing events for an image.)
-    If Not srcImage.IsActive Then Exit Sub
+    ' For performance reasons, PD does not shrink its primary pdImages() array unless required due to memory pressure.
+    ' Instead, it just deactivates entries by marking the .IsActive property - so that property must be considered
+    ' *prior* to executing image events.
+    If (Not srcImage.IsActive) Then Exit Sub
     
     
     'If we made it all the way here, the full viewport pipeline needs to be executed.
@@ -520,11 +499,12 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'The fundamental problem this first pipeline stage must solve is: how much screen real-estate do we have to work with, and how
     ' will we fit the image into that real-estate.
     
-    'Potentially problematic is future feature additions, like rulers, which may interfere with our available viewport real-estate
-    ' (e.g. rulers).  To try and preempt changes from such such features, you'll notice various calls into the main pdCanvas object.
-    ' The goal is to have pdCanvas calculate the positioning of such features, so only minimal changes are required here.
+    'Potentially problematic is future feature additions, like rulers, which may interfere with our available viewport real-estate.
+    ' To try and preempt changes from such such features, you'll notice various calls into the main pdCanvas object.
+    ' My goal is to let pdCanvas calculate the positioning of such features, so only minimal changes are required here.
+    ' (I mention this because at present, those functions likely return "0" - but they still serve a purpose!)
     
-    'Finally, an important clarification is use of the terms "viewport" and "canvas".
+    'Finally, an important clarification is our use of the terms "viewport" and "canvas".
     
     ' Viewport = the area of the screen dedicated to *just the image*
     ' Canvas = the area of the screen dedicated to *the full canvas*, including any surrounding dead space (relevant when zoomed out,
@@ -539,7 +519,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     '
     'To that end, note any special requests now.
     Dim specialRequestActive As Boolean, specialRequestID As PD_VIEWPORT_SPECIAL_REQUEST
-    If UBound(ExtraSettings) >= LBound(ExtraSettings) Then
+    If (UBound(ExtraSettings) >= LBound(ExtraSettings)) Then
         specialRequestActive = True
         specialRequestID = CLng(ExtraSettings(0))
     End If
@@ -560,16 +540,16 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'In almost all cases, the width/height of the rect is calculated first, and the top/left comes later.
     
     'First is the image, translated to the canvas coordinate space (e.g. multiplied by zoom).
-    Dim ImageRect_CanvasCoords As RECTF
-    With ImageRect_CanvasCoords
+    Dim imageRect_CanvasCoords As RECTF
+    With imageRect_CanvasCoords
         .Width = (srcImage.Width * m_ZoomRatio)
         .Height = (srcImage.Height * m_ZoomRatio)
     End With
     
     'Before we can position the image rect, we need to know the size of the canvas.  pdCanvas is responsible for determining this, as it must
     ' account for the positioning of scroll bars, a status bar, rulers, and whatever else the user has enabled.
-    Dim CanvasRect_ActualPixels As RECTF
-    With CanvasRect_ActualPixels
+    Dim canvasRect_ActualPixels As RECTF
+    With canvasRect_ActualPixels
         .Left = 0
         .Top = 0
         .Width = dstCanvas.GetCanvasWidth()
@@ -577,52 +557,58 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     End With
     
     'While here, we want to calculate a second rect for the canvas: its size, in image coordinates.
-    Dim CanvasRect_ImageCoords As RECTF
-    With CanvasRect_ImageCoords
+    Dim canvasRect_ImageCoords As RECTF
+    With canvasRect_ImageCoords
         .Left = 0
         .Top = 0
-        .Width = CanvasRect_ActualPixels.Width / m_ZoomRatio
-        .Height = CanvasRect_ActualPixels.Height / m_ZoomRatio
+        .Width = canvasRect_ActualPixels.Width / m_ZoomRatio
+        .Height = canvasRect_ActualPixels.Height / m_ZoomRatio
     End With
     
-    'We now want to center the zoomed image relative to the canvas space.  The top-left of the centered image gives us a baseline for all
-    ' scroll bar behavior, if the image is smaller than the available canvas space.
-    With ImageRect_CanvasCoords
-        .Left = (CanvasRect_ActualPixels.Width / 2) - (.Width / 2)
-        .Top = (CanvasRect_ActualPixels.Height / 2) - (.Height / 2)
+    'We now want to center the zoomed image relative to the canvas space.  The top-left of the centered image gives us a baseline
+    ' for all scroll bar behavior, if the image is smaller than the available canvas space.
+    With imageRect_CanvasCoords
+        .Left = (canvasRect_ActualPixels.Width * 0.5) - (.Width * 0.5)
+        .Top = (canvasRect_ActualPixels.Height * 0.5) - (.Height * 0.5)
     End With
     
-    'imageRect_CanvasCoords now contains a RECTF of the image, with zoom applied, centered over the canvas.  The (.Top, .Left) coordinate pair
-    ' of this rect represents the (0, 0) position of the image, when the scrollbars are (0, 0).  As such, if they lie outside the canvas rect,
-    ' we want to reset them to (0, 0) position (so that (0, 0) in actual pixels represents pixel (0, 0) of the image, if the image is larger
-    ' than the canvas).
-    With ImageRect_CanvasCoords
-        If .Left < 0 Then .Left = 0
-        If .Top < 0 Then .Top = 0
+    'NEW IN 7.0: convert our calculated RectFs to their nearest integer-only estimates.  This should solve some obnoxious,
+    ' persistent issues with edge handling during rendering.
+    ' (I have suspended this feature pending further testing.)
+    'PDMath.GetNearestIntRectF canvasRect_ActualPixels
+    'PDMath.GetNearestIntRectF canvasRect_ImageCoords
+    'PDMath.GetNearestIntRectF imageRect_CanvasCoords
+    
+    'imageRect_CanvasCoords now contains a RECTF of the image, with zoom applied, centered over the canvas.  The (.Top, .Left)
+    ' coordinate pair of this rect represents the (0, 0) position of the image, when the scrollbars are (0, 0).  As such, if they
+    ' lie outside the canvas rect, we want to reset them to (0, 0) position (so that (0, 0) in actual pixels represents pixel (0, 0)
+    ' of the image, if the image is larger than the canvas).
+    With imageRect_CanvasCoords
+        If (.Left < 0) Then .Left = 0
+        If (.Top < 0) Then .Top = 0
     End With
     
-    'Pre-7.0, scroll bars were only displayed if absolutely necessary.  With the addition of paint tools, this is longer practical, so we now
-    ' assume that scroll bars are always visible and enabled, regardless of zoom or image size.
+    'Pre-7.0, scroll bars were only displayed if absolutely necessary.  With the addition of paint tools, this is longer practical,
+    ' so we now assume that scroll bars are always visible and enabled, regardless of zoom or image size - which also means we need
+    ' to always calculate max/min scroll bar limits, regardless of the current image or canvas size.
     
-    'As such, we always calculate max/min scroll bar limits, regardless of the image or canvas's size.
-    
-    'The scroll bars always represent a single-pixel increment (in the image coordinate space), which makes our life somewhat easier.
-    ' We basically want to allow the user to scroll long enough that they can create a "mostly empty" canvas.  How many pixels are required
-    ' for this depends on the size of the image, relative to the canvas.
+    'Note that at present, scroll bars only move in single-pixel increments (in the image coordinate space), which makes our life
+    ' somewhat easier.  We basically want to allow the user to scroll long enough that they can create a "mostly empty" canvas.
+    ' How many pixels this requires depends on the size of the image, relative to the current canvas.
     
     'Start by calculating the *required* scroll bar maximum: the amount of the image that cannot physically fit inside the canvas.
     Dim hScrollMin As Long, hScrollMax As Long, vScrollMin As Long, vScrollMax As Long
-    hScrollMax = (srcImage.Width - CanvasRect_ImageCoords.Width)
-    vScrollMax = (srcImage.Height - CanvasRect_ImageCoords.Height)
+    hScrollMax = (srcImage.Width - canvasRect_ImageCoords.Width)
+    vScrollMax = (srcImage.Height - canvasRect_ImageCoords.Height)
     
     'Minimum values are easy to calculate; let the user scroll the image halfway off the screen
-    hScrollMin = -1 * (CanvasRect_ImageCoords.Width * 0.5)
-    vScrollMin = -1 * (CanvasRect_ImageCoords.Height * 0.5)
+    hScrollMin = -1 * (canvasRect_ImageCoords.Width * 0.5)
+    vScrollMin = -1 * (canvasRect_ImageCoords.Height * 0.5)
     
     'If hScrollMax or vScrollMax are negative, it means the canvas is larger (in that dimension) than the zoomed image.  When this happens,
     ' rely solely on the "halfway off screen" scroll measurement.
-    If hScrollMax > 0 Then hScrollMax = hScrollMax - hScrollMin Else hScrollMax = -hScrollMin
-    If vScrollMax > 0 Then vScrollMax = vScrollMax - vScrollMin Else vScrollMax = -vScrollMin
+    If (hScrollMax > 0) Then hScrollMax = hScrollMax - hScrollMin Else hScrollMax = -hScrollMin
+    If (vScrollMax > 0) Then vScrollMax = vScrollMax - vScrollMin Else vScrollMax = -vScrollMin
     
     'We now have scroll bar max/min values.  Forward them to the destination pdCanvas object.
     With dstCanvas
@@ -649,19 +635,19 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     
     'Scroll bars are now prepped and ready!
     
-    'With all scroll bar data assembled, we have enough information to create the back buffer.
-    If (srcImage.canvasBuffer.GetDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.GetDIBHeight <> CanvasRect_ActualPixels.Height) Then
-        srcImage.canvasBuffer.CreateBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 32, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
+    'With all scroll bar data assembled, we have enough information to create a target back buffer.
+    If (srcImage.canvasBuffer.GetDIBWidth <> canvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.GetDIBHeight <> canvasRect_ActualPixels.Height) Then
+        srcImage.canvasBuffer.CreateBlank canvasRect_ActualPixels.Width, canvasRect_ActualPixels.Height, 32, g_Themer.GetGenericUIColor(UI_CanvasElement), 255
     Else
-        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
+        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, canvasRect_ActualPixels.Width, canvasRect_ActualPixels.Height, g_Themer.GetGenericUIColor(UI_CanvasElement), 255, GP_CM_SourceCopy
     End If
     
     'Because subsequent stages of the pipeline may need all the data we've assembled, store a copy of all relevant rects
     ' inside the source pdImage object.
     With srcImage.imgViewport
-        .SetCanvasRectActualPixels CanvasRect_ActualPixels
-        .SetCanvasRectImageCoords CanvasRect_ImageCoords
-        .SetImageRectCanvasCoords ImageRect_CanvasCoords
+        .SetCanvasRectActualPixels canvasRect_ActualPixels
+        .SetCanvasRectImageCoords canvasRect_ImageCoords
+        .SetImageRectCanvasCoords imageRect_CanvasCoords
     End With
     
     'The final step of this pipeline is optional.  If the user wants us to calculate specific scroll bar values, they must pass
@@ -671,7 +657,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     ' VSR_ResetToCustom: reset the scroll bar to two values supplied by the user (in (x, y) order)
     ' VSR_AutoCenter: forcibly center the image, regardless of zoom
     ' VSR_PreservePointPosition: given a point (typically the point under the mouse cursor), preserve its before-and-after position,
-    '                            even though zoom has changed!  This makes mousewheel scrolling way more intuitive.
+    '                            even though zoom has changed!  This makes mousewheel scrolling much more intuitive.
     
     'Check for a param array now, and if none is found, skip straight to the next pipeline stage
     If specialRequestActive Then
@@ -713,7 +699,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 '...then set a fake, "translated" image rect, that is correct for the case of h/v/scroll = 0.  (Normally stage 3 of the
                 ' pipeline creates a translated rect, but we have to provide one now because the canvas/image coordinate translation code
                 ' relies on that rect!)
-                srcImage.imgViewport.SetImageRectTranslated ImageRect_CanvasCoords
+                srcImage.imgViewport.SetImageRectTranslated imageRect_CanvasCoords
                 
                 'With those values successfully set, we can now translate the target image coords into canvas coords, for the case of
                 ' h/v/scroll = 0.
@@ -721,8 +707,8 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
                 Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
                 
                 'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new scroll bar values.
-                dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.GetZoomValue(srcImage.GetZoom)
-                dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.GetZoomValue(srcImage.GetZoom)
+                dstCanvas.SetScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / m_ZoomRatio
+                dstCanvas.SetScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / m_ZoomRatio
                 
         End Select
         
