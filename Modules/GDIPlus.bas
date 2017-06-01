@@ -1149,6 +1149,7 @@ Private Declare Function GdipSaveImageToStream Lib "gdiplus" (ByVal hImage As Lo
 Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, ByVal mOrder As GP_MatrixOrder) As GP_Result
 
 Private Declare Function GdipSetClipRect Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal useCombineMode As GP_CombineMode) As GP_Result
+Private Declare Function GdipSetClipRectI Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal useCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipSetClipRegion Lib "gdiplus" (ByVal hGraphics As Long, ByVal hRegion As Long, ByVal useCombineMode As GP_CombineMode) As GP_Result
 Private Declare Function GdipSetCompositingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newCompositingMode As GP_CompositingMode) As GP_Result
 Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByVal newCompositingQuality As GP_CompositingQuality) As GP_Result
@@ -2078,6 +2079,42 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     GdipDeleteGraphics hGraphics
     
     GDIPlusFillDIBRect_Pattern = True
+    
+End Function
+
+
+'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
+' Note that - by design - this function assumes a COPY operation, not a traditional PAINT operation.  Copying is faster,
+' and there should never be a need to alpha-blend the checkerboard pattern atop something.
+Public Function GDIPlusFillDIBRectI_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Long, ByVal y1 As Long, ByVal bltWidth As Long, ByVal bltHeight As Long, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0) As Boolean
+    
+    'Create a GDI+ copy of the image and request AA
+    Dim hGraphics As Long
+    
+    If (useThisDCInstead <> 0) Then
+        GdipCreateFromHDC useThisDCInstead, hGraphics
+    Else
+        GdipCreateFromHDC dstDIB.GetDIBDC, hGraphics
+    End If
+    
+    GdipSetSmoothingMode hGraphics, GP_SM_None
+    GdipSetCompositingQuality hGraphics, GP_CQ_AssumeLinear
+    GdipSetPixelOffsetMode hGraphics, GP_POM_HighSpeed
+    GdipSetCompositingMode hGraphics, GP_CM_SourceCopy
+    GdipSetClipRectI hGraphics, x1, y1, bltWidth, bltHeight, GP_CM_Replace
+    
+    'Create a texture fill brush from the source image
+    Dim srcBitmap As Long, hBrush As Long
+    GetGdipBitmapHandleFromDIB srcBitmap, srcDIB
+    GdipCreateTexture srcBitmap, GP_WM_Tile, hBrush
+    
+    'Apply the brush
+    GDIPlusFillDIBRectI_Pattern = (GdipFillRectangleI(hGraphics, hBrush, x1, y1, bltWidth, bltHeight) = GP_OK)
+    
+    'Release all created objects
+    ReleaseGDIPlusBrush hBrush
+    GdipDisposeImage srcBitmap
+    GdipDeleteGraphics hGraphics
     
 End Function
 

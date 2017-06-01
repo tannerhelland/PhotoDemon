@@ -435,7 +435,23 @@ Private Sub Form_Load()
         Select Case m_RotateTarget
         
             Case PD_AT_WHOLEIMAGE
-                pdImages(g_CurrentImage).GetCompositedRect smallDIB, 0, 0, dWidth, dHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, GP_IM_HighQualityBicubic, , CLC_Generic
+            
+                Dim dstRectF As RECTF, srcRectF As RECTF
+                With dstRectF
+                    .Left = 0#
+                    .Top = 0#
+                    .Width = dWidth
+                    .Height = dHeight
+                End With
+                
+                With srcRectF
+                    .Left = 0#
+                    .Top = 0#
+                    .Width = pdImages(g_CurrentImage).Width
+                    .Height = pdImages(g_CurrentImage).Height
+                End With
+                
+                pdImages(g_CurrentImage).GetCompositedRect smallDIB, dstRectF, srcRectF, GP_IM_HighQualityBicubic, , CLC_Generic
             
             Case PD_AT_SINGLELAYER
                 GDIPlusResizeDIB smallDIB, 0, 0, dWidth, dHeight, pdImages(g_CurrentImage).GetActiveDIB, 0, 0, pdImages(g_CurrentImage).GetActiveDIB.GetDIBWidth, pdImages(g_CurrentImage).GetActiveDIB.GetDIBHeight, GP_IM_HighQualityBicubic

@@ -348,8 +348,8 @@ End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
-Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
-    imgCompositor.GetCompositedRect Me, dstDIB, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight, interpolationType, ignoreInternalCaches, levelOfDetail, renderScratchLayerIndex
+Friend Sub GetCompositedRect(ByRef dstDIB As pdDIB, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As GP_InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False, Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic, Optional ByVal renderScratchLayerIndex As Long = -1)
+    imgCompositor.GetCompositedRect Me, dstDIB, dstViewportRect, srcImageRect, interpolationType, ignoreInternalCaches, levelOfDetail, renderScratchLayerIndex
 End Sub
 
 'Get the currently active layer index
@@ -895,26 +895,21 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     
     'We also need to determine the thumbnail's actual width and height, and any x and y offset necessary to preserve the
     ' aspect ratio and center the image on the thumbnail.
-    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
+    Dim tIcoWidth As Long, tIcoHeight As Long, tX As Single, tY As Single
     
     'Start by determining proper dimensions for the resized thumbnail image.
     PDMath.ConvertAspectRatio Me.Width, Me.Height, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
-    If tIcoWidth > tIcoHeight Then
+    If (tIcoWidth > tIcoHeight) Then
         tX = 0
-        tY = (thumbnailSize - tIcoHeight) / 2
+        tY = (thumbnailSize - tIcoHeight) * 0.5
     
     '...otherwise, center it horizontally
     Else
         tY = 0
-        tX = (thumbnailSize - tIcoWidth) / 2
+        tX = (thumbnailSize - tIcoWidth) * 0.5
     End If
-    
-    'Retrieve a composite version of the image
-    Dim compositeImage As pdDIB
-    Set compositeImage = New pdDIB
-    compositeImage.CreateBlank tIcoWidth, tIcoHeight, 32, 0
     
     'Prepare the destination DIB
     If (dstThumbnailDIB Is Nothing) Then Set dstThumbnailDIB = New pdDIB
@@ -924,8 +919,24 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
         dstThumbnailDIB.ResetDIB 0
     End If
     
-    'Note that the user's thumbnail performance setting affects the quality used here.
-    Me.GetCompositedRect dstThumbnailDIB, tX, tY, tIcoWidth, tIcoHeight, 0, 0, Me.Width, Me.Height, g_UserPreferences.GetThumbnailInterpolationPref(), , CLC_Thumbnail
+    'Retrieve a composited thumbnail.  (Note that the user's thumbnail performance setting affects the interpolation
+    ' method used.)
+    Dim dstRectF As RECTF, srcRectF As RECTF
+    With dstRectF
+        .Left = tX
+        .Top = tY
+        .Width = tIcoWidth
+        .Height = tIcoHeight
+    End With
+    
+    With srcRectF
+        .Left = 0#
+        .Top = 0#
+        .Width = Me.Width
+        .Height = Me.Height
+    End With
+    
+    Me.GetCompositedRect dstThumbnailDIB, dstRectF, srcRectF, g_UserPreferences.GetThumbnailInterpolationPref(), , CLC_Thumbnail
     
     'Uncomment the line below to profile different thumbnail resize strategies
     'Debug.Print "Time taken for image thumbnail generation: " & CStr((Timer - startTime) * 1000) & " ms"

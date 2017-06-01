@@ -122,7 +122,7 @@ Private Sub Form_Resize()
 End Sub
 
 'The navigator will periodically request new thumbnails.  Supply them whenever requested.
-Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single, thumbY As Single)
+Private Sub nvgMain_RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single)
     
     If (g_OpenImageCount > 0) Then
         
@@ -134,34 +134,44 @@ Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single,
         PDMath.ConvertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, thumbDIB.GetDIBWidth, thumbDIB.GetDIBHeight, thumbImageWidth, thumbImageHeight
         
         'From there, solve for the top-left corner of the centered image
-        If thumbImageWidth < thumbDIB.GetDIBWidth Then
-            thumbX = (thumbDIB.GetDIBWidth - thumbImageWidth) / 2
+        If (thumbImageWidth < thumbDIB.GetDIBWidth) Then
+            thumbX = (thumbDIB.GetDIBWidth - thumbImageWidth) * 0.5
         Else
             thumbX = 0
         End If
         
-        If thumbImageHeight < thumbDIB.GetDIBHeight Then
-            thumbY = (thumbDIB.GetDIBHeight - thumbImageHeight) / 2
+        If (thumbImageHeight < thumbDIB.GetDIBHeight) Then
+            thumbY = (thumbDIB.GetDIBHeight - thumbImageHeight) * 0.5
         Else
             thumbY = 0
         End If
         
         'Request the actual thumbnail now
         Dim iQuality As GP_InterpolationMode
-        Select Case g_InterfacePerformance
+        If (g_InterfacePerformance = PD_PERF_FASTEST) Then
+            iQuality = GP_IM_NearestNeighbor
+        ElseIf (g_InterfacePerformance = PD_PERF_BALANCED) Then
+            iQuality = GP_IM_Bilinear
+        ElseIf (g_InterfacePerformance = PD_PERF_BESTQUALITY) Then
+            iQuality = GP_IM_HighQualityBicubic
+        End If
         
-            Case PD_PERF_FASTEST
-                iQuality = GP_IM_NearestNeighbor
-            
-            Case PD_PERF_BALANCED
-                iQuality = GP_IM_Bilinear
-            
-            Case PD_PERF_BESTQUALITY
-                iQuality = GP_IM_HighQualityBicubic
+        Dim dstRectF As RECTF, srcRectF As RECTF
+        With dstRectF
+            .Left = thumbX
+            .Top = thumbY
+            .Width = thumbImageWidth
+            .Height = thumbImageHeight
+        End With
         
-        End Select
-        
-        pdImages(g_CurrentImage).GetCompositedRect thumbDIB, thumbX, thumbY, thumbImageWidth, thumbImageHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, iQuality, , CLC_Thumbnail
+        With srcRectF
+            .Left = 0#
+            .Top = 0#
+            .Width = pdImages(g_CurrentImage).Width
+            .Height = pdImages(g_CurrentImage).Height
+        End With
+                
+        pdImages(g_CurrentImage).GetCompositedRect thumbDIB, dstRectF, srcRectF, iQuality, , CLC_Thumbnail
         
         'Apply color management before exiting
         ColorManagement.ApplyDisplayColorManagement thumbDIB
