@@ -3481,7 +3481,7 @@ Private Sub m_AntTimer_Timer()
         End If
         
         If okayToRender Then
-            ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         Else
             m_AntTimer.StopTimer
         End If

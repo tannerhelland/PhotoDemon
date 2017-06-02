@@ -167,7 +167,7 @@ Public Sub PanImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     srcCanvas.SetRedrawSuspension False
     
     'Request the scroll-specific viewport pipeline stage
-    ViewportEngine.Stage3_ExtractRelevantRegion srcImage, FormMain.mainCanvas(0)
+    ViewportEngine.Stage2_CompositeAllLayers srcImage, FormMain.mainCanvas(0)
     
 End Sub
 
@@ -461,7 +461,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     Else
     
         'Manually request a canvas redraw
-        ViewportEngine.Stage2_CompositeAllLayers srcImage, srcCanvas, False, m_CurPOI
+        ViewportEngine.Stage2_CompositeAllLayers srcImage, srcCanvas, m_CurPOI
     
     End If
     

@@ -365,16 +365,16 @@ End Sub
 
 'Show/hide layer borders while using the move tool
 Private Sub chkLayerBorder_Click()
-    ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 End Sub
 
 'Show/hide layer transform nodes while using the move tool
 Private Sub chkLayerNodes_Click()
-    ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 End Sub
 
 Private Sub chkRotateNode_Click()
-    ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()

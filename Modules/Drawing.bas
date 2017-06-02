@@ -478,7 +478,7 @@ Public Sub GetTransformFromImageToCanvas(ByRef dstTransform As pd2DTransform, By
     srcImage.imgViewport.GetImageRectTranslated translatedImageRect
     
     'Apply scaling for zoom
-    dstTransform.ApplyScaling g_Zoom.GetZoomValue(srcImage.GetZoom), g_Zoom.GetZoomValue(srcImage.GetZoom)
+    dstTransform.ApplyScaling zoomVal, zoomVal
     
     'Translate according to the current viewport setting, plus the original coordinates, if any
     dstTransform.ApplyTranslation (srcX * zoomVal) + translatedImageRect.Left, (srcY * zoomVal) + translatedImageRect.Top
@@ -742,4 +742,14 @@ Public Sub ReleaseUIPensAndBrushes()
     Set m_PenUITop = Nothing
     Set m_PenUIBaseHighlight = Nothing
     Set m_PenUITopHighlight = Nothing
+End Sub
+
+Public Sub BorrowCachedUIPens(ByRef dstPenUIBase As pd2DPen, ByRef dstPenUITop As pd2DPen, Optional ByVal wantHighlightPens As Boolean = False)
+    If wantHighlightPens Then
+        Set dstPenUIBase = m_PenUIBaseHighlight
+        Set dstPenUITop = m_PenUITopHighlight
+    Else
+        Set dstPenUIBase = m_PenUIBase
+        Set dstPenUITop = m_PenUITop
+    End If
 End Sub

@@ -697,7 +697,7 @@ Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         
         'If an image has been loaded, and it is valid, redraw it now
         If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).IsActive Then
-            ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
     End If
@@ -830,7 +830,7 @@ Private Sub ValidateWorkingSpaceDisplayTransform(ByRef srcWorkingSpaceIndex As L
         If (srcDIB Is Nothing) Then
             use32bppPath = True
         Else
-            use32bppPath = CBool(srcDIB.GetDIBColorDepth = 32)
+            use32bppPath = (srcDIB.GetDIBColorDepth = 32)
         End If
         
         If use32bppPath Then

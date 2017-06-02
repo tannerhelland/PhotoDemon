@@ -948,11 +948,11 @@ Private Sub UpdateViewportWhilePainting(ByVal isFirstStroke As Boolean, ByVal st
         'Reset the frame drop counter and the "time since last viewport render" tracker
         m_FramesDropped = 0
         VBHacks.GetHighResTime m_TimeSinceLastRender
-        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , , pdImages(g_CurrentImage).GetActiveLayerIndex
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), srcCanvas, , pdImages(g_CurrentImage).GetActiveLayerIndex
     
     'If not enough time has passed since the last redraw, simply update the cursor
     Else
-        ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
+        ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), srcCanvas
     End If
     
     'Update our running "time to render" tracker
@@ -1329,11 +1329,11 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
     onScreenSize = Drawing.ConvertImageSizeToCanvasSize(m_BrushSize, pdImages(g_CurrentImage))
     
     Dim brushTooSmall As Boolean
-    If (onScreenSize < 7#) Then brushTooSmall = True
+    brushTooSmall = (onScreenSize < 7#)
     
-    'Create a pair of UI pens
+    'Borrow a pair of UI pens from the main rendering module
     Dim innerPen As pd2DPen, outerPen As pd2DPen
-    Drawing2D.QuickCreatePairOfUIPens outerPen, innerPen
+    Drawing.BorrowCachedUIPens outerPen, innerPen
     
     'Create other required pd2D drawing tools (a surface)
     Dim cSurface As pd2DSurface
@@ -1360,7 +1360,6 @@ Public Sub RenderBrushOutline(ByRef targetCanvas As pdCanvas)
         
         copyOfBrushOutline.CloneExistingPath m_BrushOutlinePath
         copyOfBrushOutline.ApplyTransformation canvasMatrix
-    
         m_Painter.DrawPath cSurface, outerPen, copyOfBrushOutline
         m_Painter.DrawPath cSurface, innerPen, copyOfBrushOutline
         

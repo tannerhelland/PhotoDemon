@@ -656,7 +656,7 @@ Private Sub CanvasView_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
                         
                         'Redraw the viewport and interface to match
-                        ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
+                        ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                         SyncInterfaceToCurrentImage
                         
                     End If
@@ -781,7 +781,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                         'If the layer under the mouse is not already active, activate it now
                         If (layerUnderMouse <> pdImages(g_CurrentImage).GetActiveLayerIndex) Then
                             Layers.SetActiveLayerByIndex layerUnderMouse, False
-                            ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
+                            ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
                         End If
                     
                     End If
@@ -843,7 +843,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
                     Tools.SetCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
                     
                     'Redraw the viewport immediately
-                    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), False, poi_CornerSE
+                    ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), poi_CornerSE
                 
                 End If
             
@@ -879,7 +879,7 @@ Private Sub CanvasView_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal 
     
     Select Case g_CurrentTool
         Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
-            ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+            ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
     End Select
     
     'If the mouse is not being used, clear the image coordinate display entirely
@@ -994,7 +994,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             
             Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
                 Paintbrush.NotifyBrushXY m_LMBDown, imgX, imgY, timeStamp, Me
-                ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+                ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
                 
             Case Else
             
@@ -1354,7 +1354,7 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     If (Not Me.GetRedrawSuspension) Then
         
         'Request the scroll-specific viewport pipeline stage
-        ViewportEngine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
         
         'Notify any other relevant UI elements
         RelayViewportChanges
@@ -1600,7 +1600,7 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
     If (Not Me.GetRedrawSuspension) Then
     
         'Request the scroll-specific viewport pipeline stage
-        ViewportEngine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
+        ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
         
         'Notify any other relevant UI elements
         RelayViewportChanges
@@ -1714,7 +1714,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' POI can be highlighted.
             If (m_LastPOI <> curPOI) Then
                 m_LastPOI = curPOI
-                ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
+                ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
             End If
             
         Case SELECT_RECT, SELECT_CIRC
@@ -1864,7 +1864,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 ' POI can be highlighted.
                 If (m_LastPOI <> curPOI) Then
                     m_LastPOI = curPOI
-                    ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
+                    ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
                 End If
                 
             'If the current layer is *not* a text layer, clicking anywhere will create a new text layer
@@ -1875,7 +1875,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         'Paint brushes are a little weird, because we custom-draw the current brush outline
         Case PAINT_BASICBRUSH, PAINT_SOFTBRUSH
             CanvasView.RequestCursor_System IDC_ICON
-            ViewportEngine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
+            ViewportEngine.Stage4_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me
         
         Case Else
             CanvasView.RequestCursor_System IDC_ARROW

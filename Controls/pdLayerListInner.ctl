@@ -384,7 +384,7 @@ Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal 
                 If (pdImages(g_CurrentImage).GetActiveLayer.GetLayerID <> pdImages(g_CurrentImage).GetLayerByIndex(clickedLayer).GetLayerID) Then
                     Processor.FlagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).GetActiveLayer.GetLayerVisibility
                     Layers.SetActiveLayerByIndex clickedLayer, False
-                    ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                    ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 End If
                 
             End If
@@ -471,7 +471,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
                 pdImages(g_CurrentImage).SetActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
-                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 SyncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box

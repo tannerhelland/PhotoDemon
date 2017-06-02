@@ -1269,6 +1269,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     
     'Reset the main viewport's scroll bars to (0, 0)
     g_AllowViewportRendering = False
+    FormMain.mainCanvas(0).SetScrollVisibility PD_BOTH, True
     FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
     
     'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc).
