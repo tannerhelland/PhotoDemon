@@ -26,7 +26,7 @@ Option Explicit
 'Add an already-created pdImage object to the master pdImages() collection.  Do not pass empty objects!
 Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
     
-    If (Not (srcImage Is Nothing)) Then
+    If (Not srcImage Is Nothing) Then
         
         Set pdImages(g_NumOfImagesLoaded) = srcImage
         
@@ -124,7 +124,7 @@ End Sub
 'Center the current image onscreen without changing zoom
 Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = False)
     
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
         
     'Prevent the viewport from auto-updating on scroll bar events
     FormMain.mainCanvas(0).SetRedrawSuspension True
@@ -137,7 +137,7 @@ Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = Fal
     FormMain.mainCanvas(0).SetRedrawSuspension False
         
     'Now fix scrollbars and everything
-    If Not suspendImmediateRedraw Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Notify external UI elements of the change
     FormMain.mainCanvas(0).RelayViewportChanges

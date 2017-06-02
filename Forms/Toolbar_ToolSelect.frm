@@ -774,7 +774,7 @@ Private Sub NewToolSelected()
     
     'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
     ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
-    If (g_OpenImageCount > 0) Then ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If (g_OpenImageCount > 0) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
     'Perform additional per-image initializations, as needed
     Tools.InitializeToolsDependentOnImage
@@ -918,7 +918,7 @@ Public Sub ResetToolButtonStates()
                 'Simply update the shape and redraw the viewport
                 pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selections.GetSelectionShapeFromCurrentTool
                 SyncTextToCurrentSelection g_CurrentImage
-                ViewportEngine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
             Else
                 Process "Remove selection", , , UNDO_SELECTION

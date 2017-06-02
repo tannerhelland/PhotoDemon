@@ -60,7 +60,8 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     ' incompatible color formats, and about a bazillion other problems.  As such, this function dumps a *lot* of information to
     ' the debug log, to help narrow down problems.
     #If DEBUGMODE = 1 Then
-        Dim startTime As Double: startTime = Timer
+        Dim startTime As Currency
+        VBHacks.GetHighResTime startTime
         pdDebug.LogAction "Image load requested for """ & GetFilename(srcFile) & """.  Baseline memory reading:"
         pdDebug.LogAction "", PDM_MEM_REPORT
     #End If
@@ -468,7 +469,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     '*************************************************************************************************************************************
     
     'Synchronize all interface elements to match the newly loaded image(s)
-    If handleUIDisabling Then SyncInterfaceToCurrentImage
+    If handleUIDisabling Then Interface.SyncInterfaceToCurrentImage
     
     'Synchronize any non-destructive settings to the currently active layer
     If (handleUIDisabling And loadSuccessful) Then
@@ -485,7 +486,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     If handleUIDisabling Then Processor.MarkProgramBusyState False, True, CBool(g_OpenImageCount > 1)
         
     'Report success/failure back to the user
-    LoadFileAsNewImage = CBool(loadSuccessful And (Not (targetImage Is Nothing)))
+    LoadFileAsNewImage = CBool(loadSuccessful And (Not targetImage Is Nothing))
     
     If LoadFileAsNewImage Then
         Message "Image loaded successfully."
@@ -497,7 +498,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     End If
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Image loaded in %1 seconds", Format$((Timer - startTime), "0.000")
+        pdDebug.LogAction "Image loaded in " & Format$(VBHacks.GetTimerDifferenceNow(startTime) * 1000, "#0") & " ms"
     #End If
         
 End Function
