@@ -13,7 +13,7 @@ Attribute VB_Name = "LittleCMS"
 '
 ' http://www.littlecms.com/
 '
-'PhotoDemon has been designed against v 2.7.0.  It may not work with other versions.
+'PhotoDemon has been designed against v 2.8.0.  It may not work with other versions.
 ' Additional documentation regarding the use of LittleCMS is available as part of the official LittleCMS library,
 ' available from https://github.com/mm2/Little-CMS.
 '
