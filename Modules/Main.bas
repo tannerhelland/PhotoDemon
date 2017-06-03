@@ -737,6 +737,9 @@ Public Sub FinalShutdown()
         End If
     Next i
     
+    'Report final viewport profiling data
+    ViewportEngine.ReportViewportProfilingData
+    
     'Free any ugly VB-specific workaround data
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Releasing VB-specific hackarounds..."
