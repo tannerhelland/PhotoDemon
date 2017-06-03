@@ -54,9 +54,11 @@ Private m_ZoomRatio As Double
 'm_FrontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
 Private m_FrontBuffer As pdDIB
 
-'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.  Note that stage 5 is ignored because
-' it only affects changes in zoom values (or switching between images).
+'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.  Note that stage 1
+' is ignored because it is only called under specific circumstances that are very difficult to profile accurately
+' (e.g. changes in zoom values or switching between images).
 Private m_TimeStage2 As Currency, m_TimeStage3 As Currency, m_TimeStage4 As Currency
+Private m_TotalTime As Currency, m_TotalTimeStage2 As Currency, m_TotalTimeStage3 As Currency, m_TotalTimeStage4 As Currency
 
 'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
@@ -128,6 +130,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             'Before exiting, calculate the time spent in this stage
             m_TimeStage4 = VBHacks.GetTimerDifferenceNow(startTime)
+            If fullPipelineCall Then m_TotalTimeStage4 = m_TotalTimeStage4 + m_TimeStage4
             
         End If
         
@@ -186,6 +189,7 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
             
             'Before exiting, calculate the time spent in this stage
             m_TimeStage3 = VBHacks.GetTimerDifferenceNow(startTime)
+            If fullPipelineCall Then m_TotalTimeStage3 = m_TotalTimeStage3 + m_TimeStage3
             
             'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
             ' remaining UI elements!
@@ -352,6 +356,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         
         'Before exiting, calculate the time spent in this stage
         m_TimeStage2 = VBHacks.GetTimerDifferenceNow(startTime)
+        m_TotalTimeStage2 = m_TotalTimeStage2 + m_TimeStage2
         
         'Note that calls to this function may need to be relayed to other UI elements.  (For example, viewport rulers need to
         ' be repositioned, and if the navigator panel is open, it needs to reflect the new scroll position, if any.)
@@ -364,6 +369,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         
         'If timing reports are enabled, we report them after the rest of the pipeline has finished.
         If g_DisplayTimingReports Then
+            m_TotalTime = m_TotalTime + VBHacks.GetTimerDifferenceNow(startTime)
             Debug.Print "Viewport render timing by stage (net, 2, 3, 4): " & Format(CStr(VBHacks.GetTimerDifferenceNow(startTime) * 1000), "#0") & " ms, " & Format(CStr(m_TimeStage2 * 1000), "#0") & " ms, " & Format(CStr(m_TimeStage3 * 1000), "#0") & " ms, " & Format(CStr(m_TimeStage4 * 1000), "#0") & " ms"
         End If
     
@@ -712,4 +718,16 @@ Public Sub EraseViewportBuffers()
         m_FrontBuffer.EraseDIB
         Set m_FrontBuffer = Nothing
     End If
+End Sub
+
+'Report the current viewport performance profiling data to pdDebug.  Useless in non-debug builds.
+Public Sub ReportViewportProfilingData()
+
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Final viewport perf data, by stage:"
+        pdDebug.LogAction "2: " & Format$((m_TotalTimeStage2 / m_TotalTime) * 100, "00.0") & "%"
+        pdDebug.LogAction "3: " & Format$((m_TotalTimeStage3 / m_TotalTime) * 100, "00.0") & "%"
+        pdDebug.LogAction "4: " & Format$((m_TotalTimeStage4 / m_TotalTime) * 100, "00.0") & "%"
+    #End If
+
 End Sub
