@@ -1074,7 +1074,7 @@ Public Function GetLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, O
         curPOI = pdImages(g_CurrentImage).GetActiveLayer.CheckForPointOfInterest(layerX, layerY)
         
         'If the mouse is over a point of interest, return this layer and immediately exit
-        If (curPOI <> poi_Undefined) Then
+        If (curPOI <> poi_Undefined) And (curPOI <> poi_Interior) Then
             GetLayerUnderMouse = pdImages(g_CurrentImage).GetActiveLayerIndex
             Exit Function
         End If
