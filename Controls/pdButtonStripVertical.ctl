@@ -540,12 +540,14 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
-        If Len(resName) <> 0 Then Set srcDIB = Nothing
+        If (Len(resName) <> 0) Then Set srcDIB = Nothing
+        .btImages.FreeFromDC
+        
     End With
     
     'Note that images are now active; this causes alignment changes, so we must reflow the button strip
     m_ImagesActive = True
-    If m_Buttons(itemIndex).btImageWidth > m_ImageSize Then
+    If (m_Buttons(itemIndex).btImageWidth > m_ImageSize) Then
         m_ImageSize = m_Buttons(itemIndex).btImageWidth
         UpdateControlLayout
     End If
@@ -910,7 +912,7 @@ Private Sub RedrawBackBuffer()
                 End If
                 
                 'Paint the button image, if any, while branching for enabled/disabled/hovered variants
-                If Not (.btImages Is Nothing) Then
+                If (Not .btImages Is Nothing) Then
                     
                     'Determine which image from the spritesheet to use.  (This is just a pixel offset.)
                     Dim pxOffset As Long

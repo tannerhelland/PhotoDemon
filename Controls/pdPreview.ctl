@@ -693,7 +693,7 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
     End If
     
     'It's entirely possible for srcDIB to be nothing, particularly inside the IDE, so this check is necessary.
-    If Not (srcDIB Is Nothing) Then
+    If (Not srcDIB Is Nothing) Then
         
         'srcDIB points at either the original or effect image.  We don't care which, as we render them identically.
         
@@ -709,8 +709,8 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         
         'Calculate the aspect ratio of this DIB and the target picture box
         Dim srcAspect As Double, dstAspect As Double
-        If srcHeight > 0 Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
-        If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
+        If (srcHeight > 0) Then srcAspect = srcWidth / srcHeight Else srcAspect = 1#
+        If (dstHeight > 0) Then dstAspect = dstWidth / dstHeight Else dstAspect = 1#
             
         Dim finalWidth As Long, finalHeight As Long
         If (dstWidth <= srcWidth) Or (dstHeight <= srcHeight) Or Me.ViewportFitFullImage Then
@@ -756,11 +756,10 @@ Private Sub RedrawBackBuffer(Optional ByVal overrideWithOriginalImage As Boolean
         GDI_Plus.GDIPlusFillPatternToDC bufferDC, previewX, previewY, finalWidth, finalHeight, g_CheckerboardPattern, True
         
         'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
-        If (srcWidth < dstWidth) And (srcHeight < dstHeight) Then
-            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , GP_IM_NearestNeighbor, bufferDC
-        Else
-            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , GP_IM_Bicubic, bufferDC
-        End If
+        Dim interpMode As GP_InterpolationMode
+        If (srcWidth < dstWidth) And (srcHeight < dstHeight) Then interpMode = GP_IM_NearestNeighbor Else interpMode = GP_IM_HighQualityBicubic
+        GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , interpMode, bufferDC
+        srcDIB.FreeFromDC
         
         'We also draw a border around the final result
         Dim halfBorder As Long

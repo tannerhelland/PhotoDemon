@@ -78,7 +78,7 @@ Friend Function GetParamVersion() As Double
     If GetParamValue("version", versionString) Then
         GetParamVersion = CDblCustom(versionString)
     Else
-        GetParamVersion = 0
+        GetParamVersion = 0#
     End If
     
 End Function
@@ -93,11 +93,7 @@ Friend Function DoesParamExist(ByRef paramName As String) As Boolean
     'Make the parameter name XML-safe
     paramName = GetXMLSafeName(paramName)
     
-    If InStr(1, m_ParamString, "<" & paramName & ">") Then
-        DoesParamExist = True
-    Else
-        DoesParamExist = False
-    End If
+    DoesParamExist = (InStr(1, m_ParamString, "<" & paramName & ">") <> 0)
     
 End Function
 
@@ -419,6 +415,6 @@ Private Function CDblCustom(ByVal srcString As String) As Double
     If (InStr(1, srcString, ",") > 0) Then srcString = Replace$(srcString, ",", ".")
     
     'We can now use Val() to convert to Double
-    If IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0
+    If IsNumberLocaleUnaware(srcString) Then CDblCustom = Val(srcString) Else CDblCustom = 0#
     
 End Function

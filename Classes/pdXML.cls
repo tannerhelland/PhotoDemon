@@ -938,7 +938,7 @@ Public Function GetXMLSafeTagName(ByRef srcText As String) As String
         
         'Compare a single character from the text against our list of valid characters. If a character is NOT found
         ' in the list of valid characters, replace it with an underscore.
-        If (InStr(validChars, Mid$(goodString, i, 1)) = 0) Then Mid$(goodString, i, 1) = "_"
+        If (InStr(1, validChars, Mid$(goodString, i, 1), vbBinaryCompare) = 0) Then Mid$(goodString, i, 1) = "_"
             
     Next i
     
@@ -983,11 +983,7 @@ Public Function FindAllAttributeValues(ByRef sArray() As String, ByVal tagName A
     Loop
     
     'If at least one matching tag was found, return true
-    If tagsFound > 0 Then
-        FindAllAttributeValues = True
-    Else
-        FindAllAttributeValues = False
-    End If
+    FindAllAttributeValues = (tagsFound > 0)
 
 End Function
 
@@ -1054,13 +1050,13 @@ End Function
 Private Function CDblCustom(ByVal srcString As String) As Double
 
     'Replace commas with periods
-    If InStr(1, srcString, ",") > 0 Then srcString = Replace(srcString, ",", ".")
+    If (InStr(1, srcString, ",", vbBinaryCompare) > 0) Then srcString = Replace(srcString, ",", ".", , , vbBinaryCompare)
     
     'We can now use Val() to convert to Double
     If IsNumberLocaleUnaware(srcString) Then
         CDblCustom = Val(srcString)
     Else
-        CDblCustom = 0
+        CDblCustom = 0#
     End If
 
 End Function
@@ -1077,7 +1073,7 @@ Private Function IsNumberLocaleUnaware(ByRef Expression As String) As Boolean
     Dim Positive As Boolean
     Dim Exponent As Boolean
     Dim x As Long
-    For x = 1& To Len(Expression)
+    For x = 1 To Len(Expression)
         Select Case Mid$(Expression, x, 1&)
         Case "0" To "9"
             Number = True

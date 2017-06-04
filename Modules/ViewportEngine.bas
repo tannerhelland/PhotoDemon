@@ -724,10 +724,12 @@ End Sub
 Public Sub ReportViewportProfilingData()
 
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Final viewport perf data, by stage:"
-        pdDebug.LogAction "2: " & Format$((m_TotalTimeStage2 / m_TotalTime) * 100, "00.0") & "%"
-        pdDebug.LogAction "3: " & Format$((m_TotalTimeStage3 / m_TotalTime) * 100, "00.0") & "%"
-        pdDebug.LogAction "4: " & Format$((m_TotalTimeStage4 / m_TotalTime) * 100, "00.0") & "%"
+        If (m_TotalTime <> 0#) Then
+            pdDebug.LogAction "Final viewport perf data, by stage:"
+            pdDebug.LogAction "2: " & Format$((m_TotalTimeStage2 / m_TotalTime) * 100, "00.0") & "%"
+            pdDebug.LogAction "3: " & Format$((m_TotalTimeStage3 / m_TotalTime) * 100, "00.0") & "%"
+            pdDebug.LogAction "4: " & Format$((m_TotalTimeStage4 / m_TotalTime) * 100, "00.0") & "%"
+        End If
     #End If
 
 End Sub

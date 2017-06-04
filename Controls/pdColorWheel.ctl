@@ -579,11 +579,16 @@ Private Sub CreateColorWheel()
     loopWidth = (m_WheelBuffer.GetDIBWidth - 1) * 4
     loopHeight = (m_WheelBuffer.GetDIBHeight - 1)
     
+    Dim fastDivisor As Single
+    fastDivisor = 1# / 255#
+    
     Dim fLookup() As Single
     ReDim fLookup(0 To 255) As Single
     For x = 0 To 255
-        fLookup(x) = CSng(x) / 255
+        fLookup(x) = CSng(x) * fastDivisor
     Next x
+    
+    fastDivisor = 1# / PI_DOUBLE
     
     For y = 0 To loopHeight
     For x = 0 To loopWidth Step 4
@@ -603,7 +608,7 @@ Private Sub CreateColorWheel()
         Else
         
             'Remap the coordinates so that (0, 0) represents the center of the image
-            nX = (x \ 4) - m_HueWheelCenterX
+            nX = (x * 0.25) - m_HueWheelCenterX
             nY = y - m_HueWheelCenterY
             
             'Calculate an angle for this pixel
@@ -612,7 +617,7 @@ Private Sub CreateColorWheel()
             'ATan2() returns an angle that is positive for counter-clockwise angles (y > 0), and negative for
             ' clockwise angles (y < 0), on the range [-Pi, +Pi].  Convert this angle to the absolute range [0, 1],
             ' which is the range used by our HSV conversion function.
-            pxAngle = (pxAngle + PI) / PI_DOUBLE
+            pxAngle = (pxAngle + PI) * fastDivisor
             
             'Calculate an RGB triplet that corresponds to this hue (with max value and saturation)
             Colors.fHSVtoRGB pxAngle, 1#, 1#, r, g, b
@@ -750,7 +755,10 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     If g_IsProgramRunning Then
         
         'Paint the hue wheel (currently left-aligned)
-        If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.AlphaBlendToDC bufferDC
+        If (Not m_WheelBuffer Is Nothing) Then
+            m_WheelBuffer.AlphaBlendToDC bufferDC
+            m_WheelBuffer.FreeFromDC
+        End If
         
         'Prep various painting objects
         Dim cSurface As pd2DSurface, cBrush As pd2DBrush, cPen As pd2DPen
@@ -771,11 +779,12 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         m_Painter.DrawCircleF cSurface, cPen, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter
         
         'Paint the saturation+value square
-        If Not (m_SquareBuffer Is Nothing) Then
+        If (Not m_SquareBuffer Is Nothing) Then
             
             'Copy the square into place.  Note that we must use GDI+ to support subpixel positioning.
             With m_SVRectF
                 GDI_Plus.GDIPlus_StretchBlt Nothing, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.GetDIBWidth, m_SquareBuffer.GetDIBHeight, , GP_IM_Bilinear, bufferDC
+                m_SquareBuffer.FreeFromDC
             End With
             
             'Trace the edges of the square, to help separate the bright portions from the background
@@ -842,17 +851,17 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         Dim COLOR_CIRCLE_RADIUS As Single, COLOR_CIRCLE_CHECK As Single
         COLOR_CIRCLE_RADIUS = FixDPIFloat(5#)
         COLOR_CIRCLE_CHECK = COLOR_CIRCLE_RADIUS - FixDPIFloat(3#)
-        If svX < COLOR_CIRCLE_CHECK Then svX = COLOR_CIRCLE_CHECK
-        If svY < COLOR_CIRCLE_CHECK Then svY = COLOR_CIRCLE_CHECK
-        If svX > (m_SVRectF.Width - (COLOR_CIRCLE_CHECK + 1)) Then svX = (m_SVRectF.Width - (COLOR_CIRCLE_CHECK + 1))
-        If svY > (m_SVRectF.Height - (COLOR_CIRCLE_CHECK + 1)) Then svY = (m_SVRectF.Height - (COLOR_CIRCLE_CHECK + 1))
+        If (svX < COLOR_CIRCLE_CHECK) Then svX = COLOR_CIRCLE_CHECK
+        If (svY < COLOR_CIRCLE_CHECK) Then svY = COLOR_CIRCLE_CHECK
+        If (svX > (m_SVRectF.Width - (COLOR_CIRCLE_CHECK + 1))) Then svX = (m_SVRectF.Width - (COLOR_CIRCLE_CHECK + 1))
+        If (svY > (m_SVRectF.Height - (COLOR_CIRCLE_CHECK + 1))) Then svY = (m_SVRectF.Height - (COLOR_CIRCLE_CHECK + 1))
         
         'Pad the circle by the current SV square's offset
         svX = svX + m_SVRectF.Left
         svY = svY + m_SVRectF.Top
         
         'Draw a canvas-style circle around that point
-        Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, m_MouseDownBox
+        Drawing.BorrowCachedUIPens cPenUIBase, cPenUITop, m_MouseDownBox
         m_Painter.DrawCircleF cSurface, cPenUIBase, svX, svY, COLOR_CIRCLE_RADIUS
         m_Painter.DrawCircleF cSurface, cPenUITop, svX, svY, COLOR_CIRCLE_RADIUS
         
@@ -924,8 +933,8 @@ End Function
 
 'Given an arbitrary HSV triplet, return the corresponding RGB long
 Private Function GetHypotheticalRGB(ByVal h As Double, ByVal s As Double, ByVal v As Double) As Long
-    If (s < 0) Then s = 0:    If (s > 1) Then s = 1
-    If (v < 0) Then v = 0:    If (v > 1) Then v = 1
+    If (s < 0#) Then s = 0#:      If (s > 1#) Then s = 1#
+    If (v < 0#) Then v = 0#:      If (v > 1#) Then v = 1#
     Dim r As Long, g As Long, b As Long
     Colors.HSVtoRGB h, s, v, r, g, b
     GetHypotheticalRGB = RGB(r, g, b)
