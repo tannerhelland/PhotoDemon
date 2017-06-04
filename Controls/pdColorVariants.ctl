@@ -253,10 +253,10 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         'See if the mouse cursor is inside a box
         m_MouseInsideRegion = GetRegionFromPoint(x, y)
         
-        If m_MouseInsideRegion >= 0 Then
+        If (m_MouseInsideRegion >= 0) Then
         
             'If the primary color box is clicked, raise a full color selection dialog
-            If m_MouseInsideRegion = 0 Then
+            If (m_MouseInsideRegion = 0) Then
                 DisplayColorSelection
             Else
                 m_ColorList(0) = m_ColorList(m_MouseInsideRegion)
@@ -646,73 +646,71 @@ Private Sub CalculateVariantColors()
         rFloat = rNew / 255: gFloat = gNew / 255: bFloat = bNew / 255
         hNew = hPrimary: sNew = sPrimary: vNew = vPrimary
         
-        Select Case i
+        If (i = CV_HueUp) Then
+            hNew = hNew + hChange
+            If (hNew > 1) Then hNew = 1 - hNew
+            Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
+                
+        ElseIf (i = CV_SaturationUp) Then
+                
+            'Use a fake saturation calculation
+            grayNew = Colors.GetHQLuminance(rNew, gNew, bNew)
+            rNew = rNew + (rNew - grayNew) * 0.4
+            gNew = gNew + (gNew - grayNew) * 0.4
+            bNew = bNew + (bNew - grayNew) * 0.4
+            rNew = PDMath.ClampL(rNew, 0, 255)
+            gNew = PDMath.ClampL(gNew, 0, 255)
+            bNew = PDMath.ClampL(bNew, 0, 255)
+            
+        ElseIf (i = CV_ValueUp) Then
+                
+            'Use a fake value calculation
+            rNew = PDMath.ClampL(rNew + rgbChange, 0, 255)
+            gNew = PDMath.ClampL(gNew + rgbChange, 0, 255)
+            bNew = PDMath.ClampL(bNew + rgbChange, 0, 255)
+            
+        ElseIf (i = CV_RedUp) Then
+            rNew = PDMath.ClampL(rNew + rgbChange, 0, 255)
+                
+        ElseIf (i = CV_GreenUp) Then
+            gNew = PDMath.ClampL(gNew + rgbChange, 0, 255)
+                
+        ElseIf (i = CV_BlueUp) Then
+            bNew = PDMath.ClampL(bNew + rgbChange, 0, 255)
+                
+        ElseIf (i = CV_ValueDown) Then
+                
+            'Use a fake value calculation
+            rNew = PDMath.ClampL(rNew - rgbChange, 0, 255)
+            gNew = PDMath.ClampL(gNew - rgbChange, 0, 255)
+            bNew = PDMath.ClampL(bNew - rgbChange, 0, 255)
+            
+        ElseIf (i = CV_SaturationDown) Then
+                
+            'Use a fake saturation calculation
+            grayNew = Colors.GetHQLuminance(rNew, gNew, bNew)
+            rNew = rNew + (grayNew - rNew) * 0.3
+            gNew = gNew + (grayNew - gNew) * 0.3
+            bNew = bNew + (grayNew - bNew) * 0.3
+            rNew = PDMath.ClampL(rNew, 0, 255)
+            gNew = PDMath.ClampL(gNew, 0, 255)
+            bNew = PDMath.ClampL(bNew, 0, 255)
+            
+        ElseIf (i = CV_HueDown) Then
+            hNew = hNew - hChange
+            If (hNew < 0#) Then hNew = 1 + hNew
+            Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
         
-            Case CV_HueUp
-                hNew = hNew + hChange
-                If hNew > 1 Then hNew = 1 - hNew
-                Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
+        ElseIf (i = CV_BlueDown) Then
+            bNew = PDMath.ClampL(bNew - rgbChange, 0, 255)
                 
-            Case CV_SaturationUp
+        ElseIf (i = CV_GreenDown) Then
+            gNew = PDMath.ClampL(gNew - rgbChange, 0, 255)
                 
-                'Use a fake saturation calculation
-                grayNew = Colors.GetHQLuminance(rNew, gNew, bNew)
-                rNew = rNew + (rNew - grayNew) * 0.4
-                gNew = gNew + (gNew - grayNew) * 0.4
-                bNew = bNew + (bNew - grayNew) * 0.4
-                rNew = PDMath.ClampL(rNew, 0, 255)
-                gNew = PDMath.ClampL(gNew, 0, 255)
-                bNew = PDMath.ClampL(bNew, 0, 255)
-            
-            Case CV_ValueUp
-                
-                'Use a fake value calculation
-                rNew = PDMath.ClampL(rNew + rgbChange, 0, 255)
-                gNew = PDMath.ClampL(gNew + rgbChange, 0, 255)
-                bNew = PDMath.ClampL(bNew + rgbChange, 0, 255)
-                
-            Case CV_RedUp
-                rNew = PDMath.ClampL(rNew + rgbChange, 0, 255)
-                
-            Case CV_GreenUp
-                gNew = PDMath.ClampL(gNew + rgbChange, 0, 255)
-                
-            Case CV_BlueUp
-                bNew = PDMath.ClampL(bNew + rgbChange, 0, 255)
-                
-            Case CV_ValueDown
-                
-                'Use a fake value calculation
-                rNew = PDMath.ClampL(rNew - rgbChange, 0, 255)
-                gNew = PDMath.ClampL(gNew - rgbChange, 0, 255)
-                bNew = PDMath.ClampL(bNew - rgbChange, 0, 255)
-            
-            Case CV_SaturationDown
-                
-                'Use a fake saturation calculation
-                grayNew = Colors.GetHQLuminance(rNew, gNew, bNew)
-                rNew = rNew + (grayNew - rNew) * 0.3
-                gNew = gNew + (grayNew - gNew) * 0.3
-                bNew = bNew + (grayNew - bNew) * 0.3
-                rNew = PDMath.ClampL(rNew, 0, 255)
-                gNew = PDMath.ClampL(gNew, 0, 255)
-                bNew = PDMath.ClampL(bNew, 0, 255)
-            
-            Case CV_HueDown
-                hNew = hNew - hChange
-                If hNew < 0 Then hNew = 1 + hNew
-                Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
-            
-            Case CV_BlueDown
-                bNew = PDMath.ClampL(bNew - rgbChange, 0, 255)
-                
-            Case CV_GreenDown
-                gNew = PDMath.ClampL(gNew - rgbChange, 0, 255)
-                
-            Case CV_RedDown
-                rNew = PDMath.ClampL(rNew - rgbChange, 0, 255)
+        ElseIf (i = CV_RedDown) Then
+            rNew = PDMath.ClampL(rNew - rgbChange, 0, 255)
         
-        End Select
+        End If
         
         'Cache the new RGB values
         m_ColorList(i) = RGB(rNew, gNew, bNew)
@@ -759,14 +757,14 @@ Private Sub RedrawBackBuffer()
         'Draw a special outline around the central primary color, to help it stand out more.  (But only do this if
         ' the central primary color is UNSELECTED; if it's selected, we'll paint it in the accent color momentarily.)
         If (m_MouseInsideRegion <> CV_Primary) Then
-            Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop
+            Drawing.BorrowCachedUIPens cPenUIBase, cPenUITop
             m_Painter.DrawPath cSurface, cPenUIBase, m_ColorRegions(CV_Primary)
             m_Painter.DrawPath cSurface, cPenUITop, m_ColorRegions(CV_Primary)
         End If
         
         'If a subregion is currently hovered, trace it with a highlight outline.
         If (m_MouseInsideRegion >= 0) Then
-            Drawing2D.QuickCreatePairOfUIPens cPenUIBase, cPenUITop, True
+            Drawing.BorrowCachedUIPens cPenUIBase, cPenUITop, True
             m_Painter.DrawPath cSurface, cPenUIBase, m_ColorRegions(m_MouseInsideRegion)
             m_Painter.DrawPath cSurface, cPenUITop, m_ColorRegions(m_MouseInsideRegion)
         End If
@@ -784,15 +782,15 @@ End Sub
 Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     
     'Failsafe for compile-time errors when properties are written
-    If Not g_IsProgramRunning Then Exit Sub
+    If (Not g_IsProgramRunning) Then Exit Sub
     
     Dim toolString As String, hexString As String, rgbString As String
     
-    If activeIndex >= 0 Then
+    If (activeIndex >= 0) Then
         hexString = "#" & UCase(Colors.GetHexStringFromRGB(m_ColorList(activeIndex)))
         rgbString = Colors.ExtractRed(m_ColorList(activeIndex)) & ", " & Colors.ExtractGreen(m_ColorList(activeIndex)) & ", " & Colors.ExtractBlue(m_ColorList(activeIndex))
         toolString = hexString & vbCrLf & rgbString
-        If activeIndex = CV_Primary Then toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
+        If (activeIndex = CV_Primary) Then toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
     End If
     
     Select Case activeIndex

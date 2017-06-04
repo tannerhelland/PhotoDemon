@@ -416,7 +416,7 @@ Private Sub UserControl_Initialize()
     Set m_Colors = New pdThemeColors
     Dim colorCount As PDCANVAS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "PDCanvas", colorCount
-    If Not g_IsProgramRunning Then UpdateColorList
+    If (Not g_IsProgramRunning) Then UpdateColorList
     
     'Update the control size parameters at least once
     UpdateControlLayout

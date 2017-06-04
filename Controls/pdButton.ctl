@@ -141,7 +141,7 @@ Public Property Get UseCustomBackColor() As Boolean
 End Property
 
 Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
-    If newSetting <> m_UseCustomBackColor Then
+    If (newSetting <> m_UseCustomBackColor) Then
         m_UseCustomBackColor = newSetting
         RedrawBackBuffer
     End If
@@ -152,7 +152,7 @@ Public Property Get UseCustomBackgroundColor() As Boolean
 End Property
 
 Public Property Let UseCustomBackgroundColor(ByVal newSetting As Boolean)
-    If newSetting <> m_UseCustomBackgroundColor Then
+    If (newSetting <> m_UseCustomBackgroundColor) Then
         m_UseCustomBackgroundColor = newSetting
         RedrawBackBuffer
     End If
@@ -274,7 +274,7 @@ End Sub
 Private Sub MakeLostFocusUIChanges()
     
     'If a focus rect has been drawn, remove it now
-    If m_FocusRectActive Or m_ButtonStateDown Or m_MouseInsideUC Then
+    If (m_FocusRectActive Or m_ButtonStateDown Or m_MouseInsideUC) Then
         m_FocusRectActive = False
         m_ButtonStateDown = False
         m_MouseInsideUC = False
@@ -289,7 +289,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
     'When space is pressed, raise a click event.
     If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
         
-        If m_FocusRectActive And Me.Enabled Then
+        If (m_FocusRectActive And Me.Enabled) Then
             m_ButtonStateDown = True
             RedrawBackBuffer
             RaiseEvent Click
@@ -342,7 +342,7 @@ End Sub
 
 'When the mouse enters the button, we must initiate a repaint (to reflect its hovered state)
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal timeStamp As Long)
-    If Not m_MouseInsideUC Then
+    If (Not m_MouseInsideUC) Then
         m_MouseInsideUC = True
         RedrawBackBuffer
     End If
@@ -399,6 +399,7 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
         If (Len(resName) <> 0) Then Set srcDIB = Nothing
+        m_Images.FreeFromDC
         
     'If no DIB is provided, remove any existing images
     Else
@@ -461,7 +462,7 @@ End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.RequestIDERepaint UserControl.hDC
+    If (Not g_IsProgramRunning) Then ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -519,7 +520,7 @@ Private Sub UpdateControlLayout()
         m_CaptionRect.Right = bWidth - hTextPadding
         
         'If a button image is active, forcibly calculate its position first.  Its position is hard-coded.
-        If Not (m_Images Is Nothing) Then
+        If (Not m_Images Is Nothing) Then
         
             Const leftButtonPadding As Long = 12&
             btImageCoords.x = FixDPI(leftButtonPadding)
@@ -541,7 +542,7 @@ Private Sub UpdateControlLayout()
     Else
         
         'Determine positioning of the button image, if any
-        If Not (m_Images Is Nothing) Then
+        If (Not m_Images Is Nothing) Then
             btImageCoords.x = (bWidth - m_ImageWidth) \ 2
             btImageCoords.y = (bHeight - m_ImageHeight) \ 2
         End If
@@ -608,7 +609,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Paint the image, if any
-    If Not (m_Images Is Nothing) Then
+    If (Not m_Images Is Nothing) Then
         
         'Determine which image from the spritesheet to use.  (This is just a pixel offset.)
         Dim pxOffset As Long

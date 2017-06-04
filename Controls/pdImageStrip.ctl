@@ -1202,14 +1202,20 @@ Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByR
     offsetX = thumbRectF.Left
     offsetY = thumbRectF.Top
     
-    If (g_InterfacePerformance <> PD_PERF_FASTEST) Then m_Thumbs(thumbIndex).thumbShadow.AlphaBlendToDC targetDC, 192, offsetX, offsetY + FixDPI(1)
+    If (g_InterfacePerformance <> PD_PERF_FASTEST) Then
+        m_Thumbs(thumbIndex).thumbShadow.AlphaBlendToDC targetDC, 192, offsetX, offsetY + FixDPI(1)
+        m_Thumbs(thumbIndex).thumbShadow.FreeFromDC
+    End If
+    
     m_Thumbs(thumbIndex).thumbDIB.AlphaBlendToDC targetDC, 255, offsetX + FixDPI(THUMB_BORDER_PADDING), offsetY + FixDPI(THUMB_BORDER_PADDING)
+    m_Thumbs(thumbIndex).thumbDIB.FreeFromDC
     
     '...then an asterisk in the bottom-left if the parent image has unsaved changes...
-    If Not (pdImages(m_Thumbs(thumbIndex).indexInPDImages) Is Nothing) Then
-        If Not pdImages(m_Thumbs(thumbIndex).indexInPDImages).GetSaveState(pdSE_AnySave) Then
+    If (Not pdImages(m_Thumbs(thumbIndex).indexInPDImages) Is Nothing) Then
+        If (Not pdImages(m_Thumbs(thumbIndex).indexInPDImages).GetSaveState(pdSE_AnySave)) Then
             If (m_ModifiedIcon Is Nothing) Then GetChangedImageResources
             m_ModifiedIcon.AlphaBlendToDC targetDC, 230, offsetX + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2), offsetY + m_ThumbHeight - FixDPI(THUMB_BORDER_PADDING) - m_ModifiedIcon.GetDIBHeight - FixDPI(2)
+            m_ModifiedIcon.FreeFromDC
         End If
     End If
     
@@ -1218,11 +1224,14 @@ Private Sub RenderThumbTab(ByVal targetDC As Long, ByVal thumbIndex As Long, ByR
         
         If (m_CloseIconShadow Is Nothing) Then GetCloseImageResources
         m_CloseIconShadow.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2 + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(2)
+        m_CloseIconShadow.FreeFromDC
         
         If (thumbIndex = m_CloseIconHovered) Then
             m_CloseIconRed.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
+            m_CloseIconRed.FreeFromDC
         Else
             m_CloseIconGray.AlphaBlendToDC targetDC, 230, offsetX + (m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) + m_CloseIconRed.GetDIBWidth + FixDPI(2))), offsetY + FixDPI(THUMB_BORDER_PADDING) + FixDPI(2)
+            m_CloseIconGray.FreeFromDC
         End If
         
     End If
@@ -1232,9 +1241,7 @@ End Sub
 'When the control's size is changed in some way, call this function to perform some internal maintenance tasks,
 ' and raise an event our parent can deal with.
 Public Sub UpdateAgainstTabstripPreferences()
-    
     RaiseEvent PositionChanged
-    
 End Sub
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this

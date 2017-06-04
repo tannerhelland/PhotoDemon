@@ -586,7 +586,7 @@ Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Lo
 End Sub
 
 Private Sub UserControl_Hide()
-    If (Not (m_EditBox Is Nothing)) Then m_EditBox.Visible = False
+    If (Not m_EditBox Is Nothing) Then m_EditBox.Visible = False
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -1057,7 +1057,7 @@ End Function
 ' out if it's time to raise a matching Got/LostFocusAPI event for the control as a whole.
 Private Sub EvaluateFocusCount()
     If (m_FocusCount <> 0) Then
-        If Not m_HasFocus Then
+        If (Not m_HasFocus) Then
             m_HasFocus = True
             RaiseEvent GotFocusAPI
         End If
@@ -1092,7 +1092,7 @@ End Sub
 'When this control has special knowledge of a state change that affects the edit box's visual appearance, call this function.
 ' It will relay the relevant themed colors to the edit box class.
 Private Sub RelayUpdatedColorsToEditBox()
-    If (Not (m_EditBox Is Nothing)) Then
+    If (Not m_EditBox Is Nothing) Then
         m_EditBox.BackColor = m_Colors.RetrieveColor(PDS_Background, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
         m_EditBox.TextColor = m_Colors.RetrieveColor(PDS_Text, Me.Enabled, m_EditBox.HasFocus, m_MouseOverEditBox)
     End If

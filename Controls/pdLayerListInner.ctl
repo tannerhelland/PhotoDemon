@@ -802,6 +802,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                     If (m_LayerThumbnails(i).CanonicalLayerID = layerID) Then
                         pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
                         ColorManagement.ApplyDisplayColorManagement m_LayerThumbnails(i).thumbDIB
+                        m_LayerThumbnails(i).thumbDIB.FreeFromDC
                         layerUpdateSuccessful = True
                         Exit For
                     End If
@@ -826,6 +827,7 @@ Private Sub CacheLayerThumbnails(Optional ByVal layerID As Long = -1)
                             m_LayerThumbnails(i).CanonicalLayerID = pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerID
                             pdImages(g_CurrentImage).GetLayerByIndex(i).RequestThumbnail m_LayerThumbnails(i).thumbDIB, m_ThumbHeight
                             ColorManagement.ApplyDisplayColorManagement m_LayerThumbnails(i).thumbDIB
+                            m_LayerThumbnails(i).thumbDIB.FreeFromDC
                         End If
                         
                     Next i
@@ -884,11 +886,9 @@ Private Sub UpdateControlLayout()
     m_ThumbHeight = Interface.FixDPI(LAYER_BLOCK_HEIGHT) - Interface.FixDPI(THUMBNAIL_PADDING) * 2
     m_ThumbWidth = m_ThumbHeight
     
-    'See if a scroll bar needs to be displayed
-    UpdateLayerScrollbarVisibility
-    
-    'No other special preparation is required for this control, so proceed with recreating the back buffer
-    RedrawBackBuffer
+    'See if a scroll bar needs to be displayed.  Note that this will return TRUE if a redraw was requested -
+    ' in that case, we can skip requesting our own redraw.
+    If (Not UpdateLayerScrollbarVisibility) Then RedrawBackBuffer
             
 End Sub
 
@@ -1066,6 +1066,8 @@ Private Sub RedrawBackBuffer()
                                 m_LayerThumbnails(layerIndex).thumbDIB.AlphaBlendToDC bufferDC, 76, objOffsetX, objOffsetY
                             End If
                             
+                            m_LayerThumbnails(layerIndex).thumbDIB.FreeFromDC
+                            
                         End If
                         
                         'Move the running offsets right
@@ -1227,7 +1229,10 @@ End Function
 
 'When an action occurs that potentially affects the visibility of the vertical scroll bar (such as resizing the form
 ' vertically, or adding a new layer to the image), call this function.  Any changes will be bubbled upward to our parent.
-Private Sub UpdateLayerScrollbarVisibility()
+'
+'Returns: TRUE if the backbuffer was redrawn due to a visibility change; FALSE otherwise.  Use this to determine if you
+' need to provide your own redraw.
+Private Function UpdateLayerScrollbarVisibility() As Boolean
     
     Dim maxBoxSize As Long
     maxBoxSize = Interface.FixDPIFloat(LAYER_BLOCK_HEIGHT) * m_NumOfThumbnails - 1
@@ -1238,16 +1243,18 @@ Private Sub UpdateLayerScrollbarVisibility()
             m_ScrollMax = 0
             RaiseEvent ScrollMaxChanged(0)
             RedrawBackBuffer
+            UpdateLayerScrollbarVisibility = True
         End If
     Else
         If (m_ScrollMax <> (maxBoxSize - m_ListRect.Height)) Then
             m_ScrollMax = (maxBoxSize - m_ListRect.Height)
             RaiseEvent ScrollMaxChanged(m_ScrollMax)
             RedrawBackBuffer
+            UpdateLayerScrollbarVisibility = True
         End If
     End If
     
-End Sub
+End Function
 
 'Before this control does any painting, we need to retrieve relevant colors from PD's primary theming class.  Note that this
 ' step must also be called if/when PD's visual theme settings change.

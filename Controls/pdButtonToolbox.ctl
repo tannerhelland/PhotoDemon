@@ -273,6 +273,8 @@ Public Sub AssignImage(Optional ByVal resName As String = vbNullString, Optional
             If initAlphaState Then srcDIB.SetAlphaPremultiplication True
         End If
         
+        m_ButtonImages.FreeFromDC
+        
     End If
     
     'Request a control layout update, which will also calculate a centered position for the new image
@@ -311,15 +313,17 @@ Private Sub GenerateVariantButtonImages()
     finalX = (m_ButtonWidth - 1) * 4
     
     Dim r As Long, g As Long, b As Long, gray As Long, alpha As Long
+    Dim tmpY As Long
     
     'Paint the hovered segment of the sprite strip
     For y = initY To finalY
+        tmpY = y - offsetY
     For x = initX To finalX Step 4
-        alpha = srcPixels(x + 3, y - offsetY)
+        alpha = srcPixels(x + 3, tmpY)
         If (alpha <> 0) Then
-            srcPixels(x, y) = hLookup(srcPixels(x, y - offsetY))
-            srcPixels(x + 1, y) = hLookup(srcPixels(x + 1, y - offsetY))
-            srcPixels(x + 2, y) = hLookup(srcPixels(x + 2, y - offsetY))
+            srcPixels(x, y) = hLookup(srcPixels(x, tmpY))
+            srcPixels(x + 1, y) = hLookup(srcPixels(x + 1, tmpY))
+            srcPixels(x + 2, y) = hLookup(srcPixels(x + 2, tmpY))
             srcPixels(x + 3, y) = alpha
         End If
     Next x
@@ -382,6 +386,9 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = vbNullString, 
     Set btImageHover_Pressed = New pdDIB
     btImageHover_Pressed.CreateFromExistingDIB btImage_Pressed
     ScaleDIBRGBValues btImageHover_Pressed, UC_HOVER_BRIGHTNESS, True
+    
+    btImage_Pressed.FreeFromDC
+    btImageHover_Pressed.FreeFromDC
     
     'If the control is currently pressed, request a redraw
     If Value Then RedrawBackBuffer
@@ -659,11 +666,13 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
         If (m_ButtonWidth <> 0) Then
             
             If Me.Enabled Then
-                If Value And (Not (btImage_Pressed Is Nothing)) Then
+                If Value And (Not btImage_Pressed Is Nothing) Then
                     If ucSupport.IsMouseInside Then
                         btImageHover_Pressed.AlphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                        btImageHover_Pressed.FreeFromDC
                     Else
                         btImage_Pressed.AlphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                        btImage_Pressed.FreeFromDC
                     End If
                 Else
                     If ucSupport.IsMouseInside Then

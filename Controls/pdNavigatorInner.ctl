@@ -322,7 +322,7 @@ Private Sub RedrawBackBuffer()
     If g_IsProgramRunning Then
     
         'If an image has been loaded, determine a centered position for the image's thumbnail
-        If g_OpenImageCount <= 0 Then
+        If (g_OpenImageCount <= 0) Then
             With m_ThumbRect
                 .Width = 0
                 .Height = 0

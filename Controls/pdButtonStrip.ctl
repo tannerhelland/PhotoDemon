@@ -560,7 +560,8 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
         
         'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
         Set tmpDIB = Nothing
-        If Len(resName) <> 0 Then Set srcDIB = Nothing
+        If (Len(resName) <> 0) Then Set srcDIB = Nothing
+        .btImages.FreeFromDC
     End With
     
     'Update the control layout to account for this new button
@@ -724,11 +725,11 @@ Private Sub UpdateControlLayout()
             buttonWidth = m_Buttons(i).btBounds.Right - m_Buttons(i).btBounds.Left
             
             'Next, we are going to calculate all text metrics.  We can skip this step for buttons without captions.
-            If Len(m_Buttons(i).btCaptionTranslated) <> 0 Then
+            If (Len(m_Buttons(i).btCaptionTranslated) <> 0) Then
             
                 'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
                 ' remove the width of the image, plus padding, in advance.
-                If Not (m_Buttons(i).btImages Is Nothing) Then
+                If (Not m_Buttons(i).btImages Is Nothing) Then
                     buttonWidth = buttonWidth - (m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING))
                 End If
                 
@@ -768,7 +769,7 @@ Private Sub UpdateControlLayout()
             With m_Buttons(i)
                 
                 'Again, handling branches according to the presence of a caption
-                If Len(.btCaptionTranslated) <> 0 Then
+                If (Len(.btCaptionTranslated) <> 0) Then
                 
                     'No image...
                     If (.btImages Is Nothing) Then
@@ -947,7 +948,7 @@ Private Sub RedrawBackBuffer()
                 End If
                 
                 'Paint the button's caption, if one exists
-                If Len(.btCaptionTranslated) <> 0 Then
+                If (Len(.btCaptionTranslated) <> 0) Then
                 
                     If isButtonSelected Then
                         If isButtonHovered Then curColor = fontColorSelectedHover Else curColor = fontColorSelected
@@ -959,7 +960,7 @@ Private Sub RedrawBackBuffer()
                     ' rect we already calculated in previous steps.
                     
                     '(Remember that a font size of "0" means that text fits inside this button at the control's default font size)
-                    If .btFontSize = 0 Then
+                    If (.btFontSize = 0) Then
                         Set tmpFont = Fonts.GetMatchingUIFont(m_FontSize, m_FontBold)
                         
                     'Text does not fit the button area; use the custom font size we calculated in a previous step
@@ -977,7 +978,7 @@ Private Sub RedrawBackBuffer()
                 End If
                 
                 'Paint the button image, if any, while branching for enabled/disabled/hovered variants
-                If Not (.btImages Is Nothing) Then
+                If (Not .btImages Is Nothing) Then
                     
                     'Determine which image from the spritesheet to use.  (This is just a pixel offset.)
                     Dim pxOffset As Long
@@ -1002,7 +1003,7 @@ Private Sub RedrawBackBuffer()
         If (m_ButtonHoverIndex >= 0) And (m_ColoringMode = CM_DEFAULT) Then
         
             'Color changes when the active button is hovered, to indicate no change will be made.
-            If m_ButtonHoverIndex = m_ButtonIndex Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
+            If (m_ButtonHoverIndex = m_ButtonIndex) Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
             With m_Buttons(m_ButtonHoverIndex).btBounds
                 GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, GP_LJ_Miter
             End With
@@ -1027,8 +1028,8 @@ Public Sub UpdateAgainstCurrentTheme()
             
             'See if translations are necessary.
             Dim isTranslationActive As Boolean
-                
-            If Not (g_Language Is Nothing) Then
+            
+            If (Not g_Language Is Nothing) Then
                 If g_Language.TranslationActive Then
                     isTranslationActive = True
                 Else
