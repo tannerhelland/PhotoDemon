@@ -104,7 +104,7 @@ End Sub
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
 '
 'The optional parameter, "bottomLayerIsFullSize", should be set to TRUE if the bottom layer is the size of the image.  This saves
-' us some processing time, because we don't have to check for rect intersection.
+' some processing time, because we don't have to check for rect intersection.
 Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
 
     Dim xOffset As Double, yOffset As Double
@@ -161,11 +161,9 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         If (Not bottomLayer.AffineTransformsActive(True)) Then
         
             If (bottomLayer.GetLayerOpacity = 100) Then
-                
                 With bottomLayer
                     BitBlt tmpDIB.GetDIBDC, xOffset, yOffset, .GetLayerWidth(False), .GetLayerHeight(False), .layerDIB.GetDIBDC, 0, 0, vbSrcCopy
                 End With
-                
             Else
                 With bottomLayer
                     .layerDIB.AlphaBlendToDC tmpDIB.GetDIBDC, .GetLayerOpacity * 2.55, xOffset, yOffset
@@ -176,7 +174,7 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         Else
             
             'If the only active transform is rescaling, we can use a shortcut StretchBlt function for a performance boost.
-            If Not bottomLayer.AffineTransformsActive(False) Then
+            If (Not bottomLayer.AffineTransformsActive(False)) Then
             
                 With bottomLayer
                     GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .GetLayerWidth(True), .GetLayerHeight(True), .layerDIB, 0, 0, .GetLayerWidth(False), .GetLayerHeight(False), .GetLayerOpacity / 100, .GetLayerResizeQuality_GDIPlus
@@ -202,16 +200,16 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             End If
             
             'With the bottom layer successfully rendered onto the destination DIB, we can reset all non-destructive size modifiers now.
-            bottomLayer.SetLayerCanvasXModifier 1
-            bottomLayer.SetLayerCanvasYModifier 1
-            bottomLayer.SetLayerAngle 0
+            bottomLayer.SetLayerCanvasXModifier 1#
+            bottomLayer.SetLayerCanvasYModifier 1#
+            bottomLayer.SetLayerAngle 0#
             bottomLayer.SetLayerShearX 0#
             bottomLayer.SetLayerShearY 0#
             
         End If
         
         'We now need to calculate a new layer offset for this temporary DIB, which will eventually be copied into the bottom layer.
-        ' Without this, the main composite won't know where to stick the layer!
+        ' (Without this, the parent image won't know where to position the layer!)
         bottomLayer.SetLayerOffsetX finalRect.Left
         bottomLayer.SetLayerOffsetY finalRect.Top
         
@@ -229,13 +227,13 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         
     End If
     
-    'The bottom layer DIB now represents the target for the final layer merge.  It has had any non-destructive effects processed, its opacity
-    ' has been accounted for (and it's tracking value reset to 100), and any non-destructive transformations (resize, scaling, etc) have been
-    ' made permanent.
+    'The bottom layer DIB now represents the target for the final layer merge.  It has had any non-destructive effects processed,
+    ' its opacity has been accounted for (and it's tracking value reset to 100), and any non-destructive transformations (resize,
+    ' scaling, etc) have been made permanent.
     
     'Now all we need to do is merge the top layer onto it.
     
-    'If the top layer has no non-destructive resizing active, this step becomes much easier.
+    'If the top layer has no non-destructive resizing active, this step is simple.
     If (Not topLayer.AffineTransformsActive(True)) Then
         
         'We don't even need a temporary DIB - just composite the current layer as-is
@@ -249,7 +247,7 @@ Public Sub MergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     Else
     
         'Rescale-only transforms can use a shortcut copy method
-        If Not topLayer.AffineTransformsActive(False) Then
+        If (Not topLayer.AffineTransformsActive(False)) Then
             
             With topLayer
                 tmpDIB.CreateBlank .GetLayerWidth(True), .GetLayerHeight(True), 32, 0
@@ -292,9 +290,9 @@ End Sub
 'Just like a regular merge operation, the optional parameter "bottomLayerIsFullSize" can be set to TRUE if the bottom layer is the
 ' same size as the current image.  This saves processing time as we can skip certain rect intersection tests.
 '
-'Also, unlike the regular MergeLayers(), this sub *does not* handle vector layers, by design.  Instead of a merge, paint ops on a
-' vector layer will be placed into their own, new raster layer.
-Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal ptrToPaintbrushRectF As Long = 0)
+'Also, unlike the regular MergeLayers(), this sub *does not* handle vector layers, by design.  Instead of a merge,
+' paint ops on a vector layer are placed into a completely new raster layer.
+Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal ptrToPaintbrushRectF As Long = 0, Optional ByRef parentImage As pdImage = Nothing)
     
     #If DEBUGMODE = 1 Then
         Dim startTime As Currency
@@ -319,18 +317,18 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     
     UnionRectF finalRect, topRect, bottomRect
     
-    'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass this rect entirely, e.g. if the
-    ' bottom layer is image-sized and the top layer has no active affine transforms.)
+    'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass this rect entirely,
+    ' e.g. if the bottom layer is image-sized and the top layer has no active affine transforms.)
     
-    'If the bottom layer is the size of the image itself (e.g. when flattening the image), we can use its DIB as the target DIB instead of
-    ' creating a temporary one.  This can provide a nice performance boost depending on the complexity of subsequent layers.
+    'If the bottom layer is the size of the image itself, we can use its DIB as the target DIB
+    ' instead of creating a temporary one.  This provides a nice performance boost.
     bottomLayerIsFullSize = CBool(bottomLayerIsFullSize And (Not bottomLayer.AffineTransformsActive(True)))
     
     If bottomLayerIsFullSize Then
         xOffset = topRect.Left
         yOffset = topRect.Top
     
-    'The bottom layer is not full-sized.  At present, the scratch layer is *always* full-sized, so we need to prepare a
+    'The bottom layer is not full-sized.  At present, the paint scratch layer is *always* full-sized, so we need to prepare a
     ' new layer DIB for the bottom layer.
     Else
         
@@ -433,6 +431,17 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
     ' and it has been resized to account for the union with the paintbrush layer.
     
     'Next, we need to merge the top layer onto it.
+    
+    'Before merging the top layer, check for an active selection.  If one exists, we need to preprocess the paint layer against it.
+    If (Not parentImage Is Nothing) Then
+        If parentImage.IsSelectionActive Then
+            
+            'A selection is active.  Pre-mask the paint scratch layer against it.
+            ' (TODO: pass the paint rect, if any, and use that to constrain the processed area - this should yield a performance boost)
+            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.mainSelection.GetMaskDIB
+            
+        End If
+    End If
     
     'Unlike regular layers, we know that the paintbrush layer will never have any active transforms, so we can simply composite the top
     ' layer as-is (without checking for active transforms, like stretching or rotation).

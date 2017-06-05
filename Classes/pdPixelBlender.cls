@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Pixel Blender class
 'Copyright 2014-2017 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 14/October/15
-'Last update: implement alpha inheritance
+'Last updated: 04/June/17
+'Last update: ongoing performance improvements
 '
 'This class exists for a single purpose: blending colors from two DIBs, using any of the blend and/or alpha modes
 ' supported by PD.
@@ -37,13 +37,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Temporary blending DIB.  We try to minimize how often we create this, but it allows us for much better organization throughout the class,
-' because we aren't forced to modify the source DIBs we are passed if the caller doesn't want us to.
+'Temporary blending DIB.  We try to minimize how often we create this, but it allows us for much better organization throughout
+' the class, because we aren't forced to modify the source DIBs we are passed if the caller doesn't want us to.
 Private m_topDIBCopy As pdDIB
 
 'If we are asked to blend two DIBs but the bottom one has its alpha channel locked, we make a temporary copy of its alpha values.
 ' After the blend, we restore the original values (regardless of any changes caused by the blend).
 Private m_AlphaCopy() As Byte
+
+Private Const ONE_DIV_255 As Single = 1# / 255#
 
 'Given two DIBs, blend them together and place the result inside the bottom DIB.
 ' IMPORTANT NOTES FOR THIS FUNCTION:
@@ -263,6 +265,101 @@ Private Function CalculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
 End Function
 
+'Prior to applying a pixel blend, you can use this function to pre-mask the top DIB in a blend.  At present, PD uses this
+' to apply a selection mask (if any) to a paint stroke prior to merging it onto its base layer.  Because of this limitation,
+' this function currently assumes that the two layers are guaranteed to be the same size.
+'
+'dstDIB itself is used to store the result of the masking, so create a copy prior to masking if you need a backup.
+Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB)
+
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
+    Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    finalX = dstDIB.GetDIBStride - 1
+    initY = 0
+    finalY = dstDIB.GetDIBHeight - 1
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = CSng(i) * ONE_DIV_255
+    Next i
+    
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = dstDIB.GetDIBStride:  bottomDIBPointer = dstDIB.GetDIBPointer
+    
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = maskDIB.GetDIBStride:  topDIBPointer = maskDIB.GetDIBPointer
+    
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    PrepInternalSafeArray1D bottomSA, dstDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+    
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    PrepInternalSafeArray1D topSA, maskDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+    
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single, bottomAInt As Byte
+    Dim newR As Single, newG As Single, newB As Single
+    
+    For y = initY To finalY
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * y
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        
+    For x = initX To finalX Step 4
+        
+        'Retrieve mask layer alpha.  (We don't care about mask layer colors at present.)
+        topAInt = topPixels(x + 3)
+        
+        'Ignore opaque mask pixels
+        If (topAInt <> 255) Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(x + 3)
+            
+            'If the bottom pixel is transparent, ignore it
+            If (bottomAInt <> 0) Then
+                
+                'The destination pixel is *not* transparent, meaning we must process it
+                topA = intToFloat(topAInt)
+                
+                'Pixels are already premultiplied, so we can simply multiply by the mask value!
+                bottomPixels(x) = bottomPixels(x) * topA
+                bottomPixels(x + 1) = bottomPixels(x + 1) * topA
+                bottomPixels(x + 2) = bottomPixels(x + 2) * topA
+                bottomPixels(x + 3) = bottomAInt * topA
+                
+            End If
+            
+        End If
+    
+    Next x
+    Next y
+    
+    'Clear all temporary array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'All blend mode functions return premultiplied DIBs, by design.
+    dstDIB.SetInitialAlphaPremultiplicationState True
+    
+End Sub
+
 'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
 ' the actual blending code inside each blend function, because special alpha handling is never required.
 Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
@@ -308,7 +405,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             ReDim intToFloat(0 To 255) As Single
             Dim i As Long
             For i = 0 To 255
-                intToFloat(i) = i / 255
+                intToFloat(i) = CSng(i) * ONE_DIV_255
             Next i
             
             '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -321,9 +418,11 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             
             Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
             PrepInternalSafeArray1D bottomSA, bottomDIB
+            CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
             
             Dim topPixels() As Byte, topSA As SAFEARRAY1D
             PrepInternalSafeArray1D topSA, topDIB
+            CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
             
             'Note: we don't actually copy the SafeArray structs into place until the loops start.
             
@@ -342,10 +441,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 
                 'Point each 1D pixel array at the proper scanline
                 bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-                CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-                
                 topSA.pvData = topDIBPointer + topScanlineSize * y
-                CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
                 
             For x = initX To finalX Step 4
                 
@@ -454,7 +550,7 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -467,9 +563,11 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -490,10 +588,7 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -528,11 +623,11 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
                 
                 'Un-premultiply both top and bottom RGB values.
                 ' (Note that these divisions are safe; alpha values cannot physically be zero, as we've already checked for that case.)
-                If (topA <> 1) Then
+                If (topA <> 1#) Then
                     topR = topR / topA: topG = topG / topA: topB = topB / topA
                 End If
                 
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     bottomR = bottomR / bottomA: bottomG = bottomG / bottomA: bottomB = bottomB / bottomA
                 End If
                 
@@ -544,7 +639,7 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -552,7 +647,7 @@ Private Sub ApplyBlendMode_Color(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
                 
                 'Copy the final RGB values into the top layer, and premultiply them.  Note that top layer's alpha remains unchanged!
                 ' (A final, blended alpha value will be handled by a subsequent function.)
-                topA = topA * 255
+                topA = topA * 255#
                 topPixels(x) = newB * topA: topPixels(x + 1) = newG * topA: topPixels(x + 2) = newR * topA
                     
             End If
@@ -601,9 +696,11 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -623,10 +720,7 @@ Private Sub ApplyBlendMode_ColorBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -750,9 +844,11 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -772,10 +868,7 @@ Private Sub ApplyBlendMode_ColorDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -899,9 +992,11 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -921,10 +1016,7 @@ Private Sub ApplyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1031,9 +1123,11 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1053,10 +1147,7 @@ Private Sub ApplyBlendMode_Difference(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1166,9 +1257,11 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1188,10 +1281,7 @@ Private Sub ApplyBlendMode_Divide(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1313,9 +1403,11 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1334,10 +1426,7 @@ Private Sub ApplyBlendMode_Erase(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1419,9 +1508,11 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1441,10 +1532,7 @@ Private Sub ApplyBlendMode_Exclusion(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1551,9 +1639,11 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1573,10 +1663,7 @@ Private Sub ApplyBlendMode_GrainExtract(ByRef topDIB As pdDIB, ByRef bottomDIB A
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1698,9 +1785,11 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1720,10 +1809,7 @@ Private Sub ApplyBlendMode_GrainMerge(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1845,9 +1931,11 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1867,10 +1955,7 @@ Private Sub ApplyBlendMode_HardLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -1977,9 +2062,11 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -1999,10 +2086,7 @@ Private Sub ApplyBlendMode_HardMix(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -2096,7 +2180,7 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
     ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        intToFloat(i) = i / 255
+        intToFloat(i) = CSng(i) * ONE_DIV_255
     Next i
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
@@ -2109,9 +2193,11 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -2132,10 +2218,7 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -2185,7 +2268,7 @@ Private Sub ApplyBlendMode_Hue(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
                     
                 'If the bottom layer contains transparency, mix the newly calculated RGB values against the original top layer
                 ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                If (bottomA <> 1) Then
+                If (bottomA <> 1#) Then
                     newR = topR + bottomA * (newR - topR)
                     newG = topG + bottomA * (newG - topG)
                     newB = topB + bottomA * (newB - topB)
@@ -2242,9 +2325,11 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -2264,10 +2349,7 @@ Private Sub ApplyBlendMode_Lighten(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -2374,9 +2456,11 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -2396,10 +2480,7 @@ Private Sub ApplyBlendMode_LinearBurn(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -2509,9 +2590,11 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -2531,10 +2614,7 @@ Private Sub ApplyBlendMode_LinearDodge(ByRef topDIB As pdDIB, ByRef bottomDIB As
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -2644,9 +2724,11 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -2666,10 +2748,7 @@ Private Sub ApplyBlendMode_LinearLight(ByRef topDIB As pdDIB, ByRef bottomDIB As
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -2794,9 +2873,11 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -2817,10 +2898,7 @@ Private Sub ApplyBlendMode_Luminosity(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -2928,9 +3006,11 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -2950,10 +3030,7 @@ Private Sub ApplyBlendMode_Multiply(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -3060,9 +3137,11 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -3082,10 +3161,7 @@ Private Sub ApplyBlendMode_Overlay(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -3192,9 +3268,11 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -3214,10 +3292,7 @@ Private Sub ApplyBlendMode_PinLight(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -3324,9 +3399,11 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -3347,10 +3424,7 @@ Private Sub ApplyBlendMode_Saturation(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -3457,9 +3531,11 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -3479,10 +3555,7 @@ Private Sub ApplyBlendMode_Screen(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -3589,9 +3662,11 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -3611,10 +3686,7 @@ Private Sub ApplyBlendMode_SoftLight(ByRef topDIB As pdDIB, ByRef bottomDIB As p
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -3721,9 +3793,11 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -3743,10 +3817,7 @@ Private Sub ApplyBlendMode_Subtract(ByRef topDIB As pdDIB, ByRef bottomDIB As pd
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -3856,9 +3927,11 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
     
     Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
     PrepInternalSafeArray1D bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
     
     Dim topPixels() As Byte, topSA As SAFEARRAY1D
     PrepInternalSafeArray1D topSA, topDIB
+    CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
     'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
@@ -3878,10 +3951,7 @@ Private Sub ApplyBlendMode_VividLight(ByRef topDIB As pdDIB, ByRef bottomDIB As 
         
         'Point each 1D pixel array at the proper scanline
         bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-        
         topSA.pvData = topDIBPointer + topScanlineSize * y
-        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
         
     For x = initX To finalX Step 4
         
@@ -4066,20 +4136,19 @@ End Sub
 Private Sub fHSVtoRGB(ByRef h As Single, ByRef s As Single, ByRef v As Single, ByRef r As Single, ByRef g As Single, ByRef b As Single)
 
     'If saturation is 0, RGB are calculated identically
-    If s = 0 Then
+    If (s = 0#) Then
         r = v
         g = v
         b = v
-        Exit Sub
-    
+        
     'If saturation is not 0, we have to calculate RGB independently
     Else
        
         Dim var_H As Single
-        var_H = h * 6
+        var_H = h * 6#
         
         'To keep our math simple, limit hue to [0, 5.9999999]
-        If var_H >= 6 Then var_H = 0
+        If (var_H >= 6#) Then var_H = 0
         
         Dim var_I As Long
         var_I = Int(var_H)
@@ -4089,39 +4158,36 @@ Private Sub fHSVtoRGB(ByRef h As Single, ByRef s As Single, ByRef v As Single, B
         var_2 = v * (1 - s * (var_H - var_I))
         var_3 = v * (1 - s * (1 - (var_H - var_I)))
         
-        Select Case var_I
-        
-            Case 0
-                r = v
-                g = var_3
-                b = var_1
+        If (var_I = 0) Then
+            r = v
+            g = var_3
+            b = var_1
                 
-            Case 1
-                r = var_2
-                g = v
-                b = var_1
+        ElseIf (var_I = 1) Then
+            r = var_2
+            g = v
+            b = var_1
                 
-            Case 2
-                r = var_1
-                g = v
-                b = var_3
+        ElseIf (var_I = 2) Then
+            r = var_1
+            g = v
+            b = var_3
                 
-            Case 3
-                r = var_1
-                g = var_2
-                b = v
+        ElseIf (var_I = 3) Then
+            r = var_1
+            g = var_2
+            b = v
             
-            Case 4
-                r = var_3
-                g = var_1
-                b = v
+        ElseIf (var_I = 4) Then
+            r = var_3
+            g = var_1
+            b = v
                 
-            Case Else
-                r = v
-                g = var_1
-                b = var_2
-                
-        End Select
+        Else
+            r = v
+            g = var_1
+            b = var_2
+        End If
                 
     End If
 
@@ -4129,12 +4195,12 @@ End Sub
 
 'Return the minimum of two floating-point values
 Private Function fMin(x As Single, y As Single) As Single
-    If x > y Then fMin = y Else fMin = x
+    If (x > y) Then fMin = y Else fMin = x
 End Function
 
 'Return the maximum of two floating-point values
 Private Function fMax(x As Single, y As Single) As Single
-    If x < y Then fMax = y Else fMax = x
+    If (x < y) Then fMax = y Else fMax = x
 End Function
 
 'Return the maximum of three floating point values
