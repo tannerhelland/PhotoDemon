@@ -93,10 +93,10 @@ Private m_Blender As pdPixelBlender
 ' *will crash* if you call it directly without meeting this criteria.
 '
 'TODO: profile an integer-based implementation.
-Friend Sub CompositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
+Friend Sub CompositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     'The blend class handles this for us
-    m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, bottomAlphaMode, topAlphaMode, True, ptrToTopLayerAlternateRectF
+    m_Blender.BlendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, bottomAlphaMode, topAlphaMode, True, ptrToTopLayerAlternateRectF, topLayerMask
     
 End Sub
 
@@ -1630,7 +1630,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
     ' any/all transforms applied, but it has not had *any* blend mode, non-destructive FX, opacity, or alpha mode calculations
     ' applied, by design.
     
-    'Next, we want to merge the paint stroke image onto it.  The paint strkoe may have its own combination of blend and/or
+    'Next, we want to merge the paint stroke image onto it.  The paint stroke may have its own combination of blend and/or
     ' alpha modes, and we must handle those just like any other layer.
     
     'Start by calculating the intersection rect between the paintbrush image (which is always the full size of the base image),
@@ -1656,8 +1656,20 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         ' LOD DIB to hold our resized results.  Cache that reference now
         Set lodDIB = srcImage.ScratchLayer.TmpLODDIB(CLC_Viewport)
         
-        'Check for non-standard blend or alpha modes.  As expected, they require a custom processing pipeline.
-        nonStandardBlendingActive = CBool(srcImage.ScratchLayer.GetLayerBlendMode <> BL_NORMAL) Or CBool(srcImage.ScratchLayer.GetLayerAlphaMode <> LA_NORMAL) Or CBool(srcLayer.GetLayerAlphaMode = LA_LOCKED)
+        'Check for non-standard blend or alpha modes for this paint stroke.  As expected, they require a custom processing pipeline.
+        nonStandardBlendingActive = CBool(srcImage.ScratchLayer.GetLayerBlendMode <> BL_NORMAL) Or CBool(srcImage.ScratchLayer.GetLayerAlphaMode <> LA_NORMAL)
+        
+        'We also need to check if the destination layer (*not* the paint layer) has locked alpha values.  If it does, we will
+        ' pre-process the paint stroke alpha to match.
+        If (Not nonStandardBlendingActive) Then nonStandardBlendingActive = CBool(srcLayer.GetLayerAlphaMode = LA_LOCKED)
+        
+        'Finally, if a selection mask is active, we need to pre-process the paint stroke against the selection mask,
+        ' and remove any stroke details that fall outside the selection boundary.
+        Dim srcMask As pdDIB
+        If srcImage.IsSelectionActive Then
+            nonStandardBlendingActive = True
+            Set srcMask = srcImage.mainSelection.GetMaskDIB_ViewportCopy()
+        End If
         
         'Just like the base layer, we now need to perform a composite operation similar to StretchBlt, where we calculate a
         ' destination rectangle and a source rectangle.  We know that these two rectangles define the same rectangle of the
@@ -1721,7 +1733,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
         
         'Create a new DIB in the cheapest way possible (e.g., if the current temporary DIB size is acceptable,
         ' just reset it instead of fully redrawing it)
-        If (lodDIB.GetDIBWidth < dibWidthCalc) Or (lodDIB.GetDIBHeight < dibHeightCalc) Then
+        If (lodDIB.GetDIBWidth <> dibWidthCalc) Or (lodDIB.GetDIBHeight <> dibHeightCalc) Then
             
             'We should only ever need to recreate the DIB on the first paint stroke, but just in case, reset the event tracker to match
             isFirstPaintEvent = True
@@ -1781,7 +1793,7 @@ Private Sub GetCompositedRect_PaintOp(ByRef dstDIB As pdDIB, ByRef srcImage As p
             End If
             
             'Composite and blend in one fell swoop
-            CompositeAndBlendDIBs lodDIB, srcImage.ScratchLayer.TmpLODDIB(CLC_Painting), srcImage.ScratchLayer.GetLayerBlendMode, xOffsetInt, yOffsetInt, srcImage.ScratchLayer.GetLayerOpacity / 100, targetAlphaMode, srcImage.ScratchLayer.GetLayerAlphaMode
+            CompositeAndBlendDIBs lodDIB, srcImage.ScratchLayer.TmpLODDIB(CLC_Painting), srcImage.ScratchLayer.GetLayerBlendMode, xOffsetInt, yOffsetInt, srcImage.ScratchLayer.GetLayerOpacity / 100, targetAlphaMode, srcImage.ScratchLayer.GetLayerAlphaMode, , srcMask
         
         'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost.
         ' (Note that this is only possible because subpixel offsets have already been accounted for, when creating the temporary DIB.)

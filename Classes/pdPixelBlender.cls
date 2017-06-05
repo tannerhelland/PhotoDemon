@@ -53,7 +53,7 @@ Private Const ONE_DIV_255 As Single = 1# / 255#
 ' - A full blend (including alpha handling) will be applied.
 ' - The bottom DIB must already be large enough to hold the result of the composition.
 ' - The two DIBs should overlap at least partially.  If they don't, correctness of the function is not guaranteed.
-Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
+Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal bottomAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal topAlphaMode As LAYER_ALPHAMODE = LA_NORMAL, Optional ByVal applyFinalBlend As Boolean = True, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long, xOffsetBottom As Long, yOffsetBottom As Long
     
@@ -65,7 +65,7 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         
         'Because we are potentially doing a *lot* of calculations here, we need to make a temporary copy of the top DIB.  (Our copy will
         ' be a beaten, mangled mess by the end of this function, and we aren't allowed to make changes to the caller's copy.)
-        If (m_topDIBCopy.GetDIBWidth < topDIB.GetDIBWidth) Or (m_topDIBCopy.GetDIBHeight < topDIB.GetDIBHeight) Then
+        If (m_topDIBCopy.GetDIBWidth <> topDIB.GetDIBWidth) Or (m_topDIBCopy.GetDIBHeight <> topDIB.GetDIBHeight) Then
             m_topDIBCopy.CreateBlank topDIB.GetDIBWidth, topDIB.GetDIBHeight, 32, 0, 0
         End If
         BitBlt m_topDIBCopy.GetDIBDC, 0, 0, topDIB.GetDIBWidth, topDIB.GetDIBHeight, topDIB.GetDIBDC, 0, 0, vbSrcCopy
@@ -77,8 +77,8 @@ Friend Sub BlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         
         'Note that we can skip these steps if none of these special alpha modes are active for the top DIB.
         
-        If (topAlphaMode <> LA_NORMAL) Or (bottomAlphaMode <> LA_NORMAL) Then
-            PreProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF
+        If (topAlphaMode <> LA_NORMAL) Or (bottomAlphaMode <> LA_NORMAL) Or (Not topLayerMask Is Nothing) Then
+            PreProcessAlphaEffects m_topDIBCopy, bottomDIB, bottomAlphaMode, topAlphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False, ptrToTopLayerAlternateRectF, topLayerMask
         End If
         
         'With alpha inheritance successfully applied to non-overlapping regions of the bottom layer, we can now forward further handling to
@@ -290,7 +290,7 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Opti
     Else
         Dim tmpRectF As RECTF
         CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToPaintbrushRectF, LenB(tmpRectF)
-        initX = Int(tmpRectF.Left)
+        initX = Int(tmpRectF.Left) * 4
         initY = Int(tmpRectF.Top)
         finalX = Int(tmpRectF.Left + tmpRectF.Width + 0.9999) - 1
         finalX = finalX * 4
@@ -381,15 +381,104 @@ End Sub
 
 'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
 ' the actual blending code inside each blend function, because special alpha handling is never required.
-Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0)
+Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal bottomAlphaMode As LAYER_ALPHAMODE, ByVal topAlphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False, Optional ByVal ptrToTopLayerAlternateRectF As Long = 0, Optional ByRef topLayerMask As pdDIB = Nothing)
     
     'Only some settings require us to use this function.
     Dim needToStay As Boolean
-    needToStay = CBool(bottomAlphaMode <> LA_NORMAL) Or CBool(topAlphaMode <> LA_NORMAL)
+    needToStay = (bottomAlphaMode <> LA_NORMAL) Or (topAlphaMode <> LA_NORMAL) Or (Not topLayerMask Is Nothing)
     
     If needToStay Then
+        
+        Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+        Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+        Dim bottomA As Single, bottomAInt As Byte
+        
+        Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+        Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+        Dim topPixels() As Byte, topSA As SAFEARRAY1D
+        Dim topScanlineSize As Long, topDIBPointer As Long
+        
+        'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+        ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
+        Dim intToFloat() As Single
+        ReDim intToFloat(0 To 255) As Single
+        Dim i As Long
+        For i = 0 To 255
+            intToFloat(i) = CSng(i) * ONE_DIV_255
+        Next i
+            
+        'Before going any further, the first alpha task we must handle is masking.  (Masking takes priority over any other
+        ' alpha settings.)
+        If (Not topLayerMask Is Nothing) Then
+            
+            Dim tmpInitX As Long, tmpInitY As Long, tmpFinalX As Long, tmpFinalY As Long
+            
+            'Perform failsafe checks against the mask boundaries
+            tmpInitX = initX * 4
+            tmpInitY = initY
+            tmpFinalX = finalX * 4
+            tmpFinalY = finalY
+            If (tmpFinalX > topLayerMask.GetDIBStride - 1) Then tmpFinalX = topLayerMask.GetDIBStride - 1
+            If (tmpFinalY > topLayerMask.GetDIBHeight - 1) Then tmpFinalY = topLayerMask.GetDIBHeight - 1
+            
+            '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+            ' which we reset between scanlines.
+            bottomScanlineSize = topDIB.GetDIBStride:  bottomDIBPointer = topDIB.GetDIBPointer
+            topScanlineSize = topLayerMask.GetDIBStride:  topDIBPointer = topLayerMask.GetDIBPointer
+            
+            PrepInternalSafeArray1D bottomSA, topDIB
+            CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+            
+            PrepInternalSafeArray1D topSA, topLayerMask
+            CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
     
-        'Some alpha modes can be completely shortcutted via helper functions
+            For y = tmpInitY To tmpFinalY
+                
+                'Point each 1D pixel array at the proper scanline
+                bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * y
+                topSA.pvData = topDIBPointer + topScanlineSize * y
+                
+            For x = tmpInitX To tmpFinalX Step 4
+                
+                'Retrieve mask layer alpha.  (We don't care about mask layer colors at present.)
+                topAInt = topPixels(x + 3)
+                
+                'Ignore opaque mask pixels
+                If (topAInt <> 255) Then
+                    
+                    'Retrieve target layer alpha
+                    bottomAInt = bottomPixels(x + 3)
+                    
+                    'If the target pixel is transparent, ignore it
+                    If (bottomAInt <> 0) Then
+                        
+                        'The destination pixel is *not* transparent, meaning we must process it
+                        topA = intToFloat(topAInt)
+                        
+                        'Pixels are already premultiplied, so we can simply multiply by the mask value!
+                        bottomPixels(x) = bottomPixels(x) * topA
+                        bottomPixels(x + 1) = bottomPixels(x + 1) * topA
+                        bottomPixels(x + 2) = bottomPixels(x + 2) * topA
+                        bottomPixels(x + 3) = bottomAInt * topA
+                        
+                    End If
+                    
+                End If
+            
+            Next x
+            Next y
+            
+            'Clear all temporary array references
+            CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+            CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+            
+            'All blend mode functions return premultiplied DIBs, by design.
+            topDIB.SetInitialAlphaPremultiplicationState True
+        
+        End If
+        
+        'Next comes locked alpha.  If alpha is locked for the destination, we don't care about further processing;
+        ' instead, we cache alpha values and bail immediately.
         If (bottomAlphaMode = LA_LOCKED) Then
             
             'Locked alpha is a little weird, because we're copying out the alpha values of the *bottom* layer.  Because the rect
@@ -408,6 +497,7 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             
             DIBs.RetrieveTransparencyTable bottomDIB, m_AlphaCopy, ptrToTopLayerAlternateRectF
             Exit Sub
+            
         End If
     
         If (topAlphaMode = LA_INHERIT) Then
@@ -418,39 +508,16 @@ Private Sub PreProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             finalX = finalX * 4
             xOffset = xOffset * 4
             
-            'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
-            ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
-            Dim intToFloat() As Single
-            ReDim intToFloat(0 To 255) As Single
-            Dim i As Long
-            For i = 0 To 255
-                intToFloat(i) = CSng(i) * ONE_DIV_255
-            Next i
-            
             '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
             ' which we reset between scanlines.
-            Dim bottomScanlineSize As Long, bottomDIBPointer As Long
             bottomScanlineSize = bottomDIB.GetDIBStride:  bottomDIBPointer = bottomDIB.GetDIBPointer
-            
-            Dim topScanlineSize As Long, topDIBPointer As Long
             topScanlineSize = topDIB.GetDIBStride:  topDIBPointer = topDIB.GetDIBPointer
             
-            Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
             PrepInternalSafeArray1D bottomSA, bottomDIB
             CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
             
-            Dim topPixels() As Byte, topSA As SAFEARRAY1D
             PrepInternalSafeArray1D topSA, topDIB
             CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-            
-            'Note: we don't actually copy the SafeArray structs into place until the loops start.
-            
-            'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-            Dim x As Long, y As Long, bottomX As Long, bottomY As Long
-            
-            'New and old RGB values
-            Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
-            Dim bottomA As Single, bottomAInt As Byte
             
             For y = initY To finalY
                 

@@ -209,11 +209,11 @@ End Sub
 'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
 Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False) As Boolean
 
-    If Not (srcImage.imgViewport Is Nothing) Then
+    If (Not srcImage.imgViewport Is Nothing) Then
     
-        'Get the current zoom value from the source image
+        'Get the current zoom value from the source image, then invert it.  (We're only going to use that value in division.)
         Dim zoomVal As Double
-        zoomVal = g_Zoom.GetZoomValue(srcImage.GetZoom)
+        zoomVal = 1 / g_Zoom.GetZoomValue(srcImage.GetZoom)
         
         'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
         ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
@@ -224,8 +224,8 @@ Public Function ConvertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, By
         
         'Translating the canvas coordinate pair back to the image is now easy.  Subtract the top/left offset,
         ' then divide by zoom - that's all there is to it!
-        imgX = (canvasX - translatedImageRect.Left) / zoomVal
-        imgY = (canvasY - translatedImageRect.Top) / zoomVal
+        imgX = (canvasX - translatedImageRect.Left) * zoomVal
+        imgY = (canvasY - translatedImageRect.Top) * zoomVal
         
         'If the caller wants the coordinates bound-checked, apply it now
         If forceInBounds Then

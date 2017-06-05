@@ -266,6 +266,10 @@ Friend Function GetMaskDIB() As pdDIB
     Set GetMaskDIB = m_SelMask
 End Function
 
+Friend Function GetMaskDIB_ViewportCopy() As pdDIB
+    Set GetMaskDIB_ViewportCopy = m_ViewportReference
+End Function
+
 Friend Sub SetParentReference(ByRef srcImage As pdImage)
     Set m_parentPDImage = srcImage
 End Sub
