@@ -285,7 +285,7 @@ End Sub
 ' opacity, etc), with the exception of non-destructive transforms (which are made permanent).  Paint merges are also unique because
 ' we don't look at the top layer's boundaries for the intersection rect - instead, we use the rect supplied by the paintbrush engine,
 ' which is the region of the paint layer where painting has occurred.  (In most cases, this will be significantly smaller than the
-' full layer rect.)
+' full layer rect - and note that it will already be cropped to the image dimensions, as necessary.)
 '
 'Just like a regular merge operation, the optional parameter "bottomLayerIsFullSize" can be set to TRUE if the bottom layer is the
 ' same size as the current image.  This saves processing time as we can skip certain rect intersection tests.
@@ -438,7 +438,7 @@ Public Sub MergeLayers_PaintStyle(ByRef paintLayer As pdLayer, ByRef bottomLayer
             
             'A selection is active.  Pre-mask the paint scratch layer against it.
             ' (TODO: pass the paint rect, if any, and use that to constrain the processed area - this should yield a performance boost)
-            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.mainSelection.GetMaskDIB
+            m_Blender.ApplyMaskToTopDIB paintLayer.layerDIB, parentImage.mainSelection.GetMaskDIB, ptrToPaintbrushRectF
             
         End If
     End If
