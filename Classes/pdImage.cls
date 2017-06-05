@@ -322,7 +322,7 @@ End Sub
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
 Friend Sub MergeTwoLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True, Optional ByVal usePaintStyleMerge As Boolean = False, Optional ByVal ptrToPaintbrushRectF As Long = 0)
     If usePaintStyleMerge Then
-        imgCompositor.MergeLayers_PaintStyle topLayer, bottomLayer, bottomLayerIsFullSize, ptrToPaintbrushRectF
+        imgCompositor.MergeLayers_PaintStyle topLayer, bottomLayer, bottomLayerIsFullSize, ptrToPaintbrushRectF, Me
     Else
         imgCompositor.MergeLayers topLayer, bottomLayer, bottomLayerIsFullSize
     End If
