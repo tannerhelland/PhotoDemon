@@ -269,16 +269,35 @@ End Function
 ' to apply a selection mask (if any) to a paint stroke prior to merging it onto its base layer.  Because of this limitation,
 ' this function currently assumes that the two layers are guaranteed to be the same size.
 '
+'An optional RectF pointer can be passed; this defines the area of the target DIB that contains useful information.
+' It is assumed that any pixels *not* inside this rect have already been forced to RGBA(0, 0, 0, 0).
+'
 'dstDIB itself is used to store the result of the masking, so create a copy prior to masking if you need a backup.
-Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB)
+Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB, Optional ByVal ptrToPaintbrushRectF As Long = 0)
 
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
     Dim initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    finalX = dstDIB.GetDIBStride - 1
-    initY = 0
-    finalY = dstDIB.GetDIBHeight - 1
+    
+    'If no rect is provided, process the entire image
+    If (ptrToPaintbrushRectF = 0) Then
+        initX = 0
+        finalX = dstDIB.GetDIBStride - 1
+        initY = 0
+        finalY = dstDIB.GetDIBHeight - 1
+    
+    'If a rect *is* provided, constrain our loop boundaries accordingly
+    Else
+        Dim tmpRectF As RECTF
+        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToPaintbrushRectF, LenB(tmpRectF)
+        initX = Int(tmpRectF.Left)
+        initY = Int(tmpRectF.Top)
+        finalX = Int(tmpRectF.Left + tmpRectF.Width + 0.9999) - 1
+        finalX = finalX * 4
+        If (finalX > dstDIB.GetDIBStride - 1) Then finalX = dstDIB.GetDIBStride - 1
+        finalY = Int(tmpRectF.Top + tmpRectF.Height + 0.9999) - 1
+        If (finalY > dstDIB.GetDIBHeight - 1) Then finalY = dstDIB.GetDIBHeight - 1
+    End If
     
     'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
     ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
@@ -329,10 +348,10 @@ Friend Sub ApplyMaskToTopDIB(ByRef dstDIB As pdDIB, ByRef maskDIB As pdDIB)
         'Ignore opaque mask pixels
         If (topAInt <> 255) Then
             
-            'Retrieve bottom layer alpha
+            'Retrieve target layer alpha
             bottomAInt = bottomPixels(x + 3)
             
-            'If the bottom pixel is transparent, ignore it
+            'If the target pixel is transparent, ignore it
             If (bottomAInt <> 0) Then
                 
                 'The destination pixel is *not* transparent, meaning we must process it
