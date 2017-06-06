@@ -733,28 +733,24 @@ Private Sub NewToolSelected()
             If SelectionsAllowed(False) Then
             
                 'A selection is already active!
-                
+
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
                 If (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
                     SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.IsTransformable
-                
+
                 'A selection is already active, and it doesn't match the current tool type!
                 Else
-                
+
                     'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
                     If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Rectangle) Then
                         pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Circle
-                        
+
                     ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Circle) Then
                         pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Rectangle
-                        
-                    'A selection exists, but it does not match the current tool, and it cannot be non-destructively
-                    ' changed to the current type.  Remove it.
-                    Else
-                        Process "Remove selection", , , UNDO_SELECTION
+
                     End If
-                
+                    
                 End If
                 
             End If
@@ -773,7 +769,7 @@ Private Sub NewToolSelected()
     End Select
     
     'Vecause tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
-    ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
+    ' (Note that we can use a relatively late pipeline stage, as only tool-specific overlays need to be redrawn.)
     If (g_OpenImageCount > 0) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
     'Perform additional per-image initializations, as needed
@@ -900,33 +896,6 @@ Public Sub ResetToolButtonStates()
     'Next, some tools display information about the current layer.  Synchronize that information before proceeding, so that the
     ' option panel's information is correct as soon as the window appears.
     Tools.SyncToolOptionsUIToCurrentLayer
-    
-    'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
-    ' tool used to create the current selection, we don't want to erase the current selection.  If they are switching
-    ' to a *different* selection tool, however, then we *do* want to erase the current selection.
-    
-    'Is a selection active?
-    If SelectionsAllowed(False) Then
-        
-        'Does the existing selection differ from the current one?
-        If ((Selections.GetRelevantToolFromSelectShape() <> g_CurrentTool) And Tools.IsSelectionToolActive) Then
-            
-            'Switching between rectangle and circle selections is an exception to the usual rule; these are interchangeable.
-            If ((g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Rectangle)) Or _
-                ((g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Circle)) Then
-                
-                'Simply update the shape and redraw the viewport
-                pdImages(g_CurrentImage).mainSelection.SetSelectionShape Selections.GetSelectionShapeFromCurrentTool
-                SyncTextToCurrentSelection g_CurrentImage
-                ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-                
-            Else
-                Process "Remove selection", , , UNDO_SELECTION
-            End If
-            
-        End If
-        
-    End If
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
     If Tools.IsSelectionToolActive Then toolpanel_Selections.UpdateSelectionPanelLayout

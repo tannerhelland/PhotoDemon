@@ -109,9 +109,9 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             ' draw transform nodes around the selection area.  (Note that lasso selections are currently an exception to this rule;
             ' they only support the "move" interaction, which is applied by click-dragging anywhere in the lasso region.)
             ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_WAND) Then
-                If srcImage.IsSelectionActive Then srcImage.mainSelection.RenderTransformNodes srcImage, dstCanvas
+                If srcImage.IsSelectionActive Then srcImage.mainSelection.RenderTransformNodes srcImage, dstCanvas, g_CurrentTool
                     
-            'Text tools currently draw layer boundaries at all times; I'm working on this (TODO!)
+            'Text tools currently draw layer boundaries at all times; I'm working on letting the user control this (TODO!)
             ElseIf (g_CurrentTool = VECTOR_TEXT) Or (g_CurrentTool = VECTOR_FANCYTEXT) Then
                 
                 If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
