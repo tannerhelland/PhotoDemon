@@ -2232,141 +2232,147 @@ Private Sub GetSelectionCorners(ByRef dstPoints() As POINTFLOAT)
 End Sub
 
 'While a selection tool is active, we draw transform nodes around it.  The viewport renderer invokes this function as necessary.
-Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+Friend Sub RenderTransformNodes(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ByVal curToolID As PDTools)
     
     'If an update has been requested, but we are already in the middle of one, deny subsequent requests
     If m_RejectRefreshRequests Then Exit Sub
     
-    'Before drawing the nodes, we need to convert any relevant selection coordinates from "image coordinates" to "viewport coordinates".
-    ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
-    '   on the screen, we need to figure out where they lie in the current viewport, accounting for things like zoom and scroll.)
-    '
-    'We always generate this list of points, regardless of selection type.
-    Dim selCorners() As POINTFLOAT
-    ReDim selCorners(0 To 3) As POINTFLOAT
-    GetSelectionCorners selCorners
-    
-    'Transform those corners into the destination viewport coordinate space
-    Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, selCorners, False
-    
-    'Convert the current point of interest value, if any, to an index into our list of selection corners
-    Dim curPOI As PD_PointOfInterest
-    curPOI = m_CurrentPOI
-    
-    Dim i As Long
-    
-    'pd2D is used for all rendering.  Note that a "highlight" pen is only created if a POI is currently in use
-    Dim cSurface As pd2DSurface, cPainter As pd2DPainter
-    Drawing2D.QuickCreatePainter cPainter
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True, dstCanvas.hWnd
-    
-    Dim cPenBaseNormal As pd2DPen, cPenTopNormal As pd2DPen, cPenBaseHighlight As pd2DPen, cPenTopHighlight As pd2DPen
-    Drawing2D.QuickCreatePairOfUIPens cPenBaseNormal, cPenTopNormal, False
-    If (curPOI <> poi_Undefined) Then Drawing2D.QuickCreatePairOfUIPens cPenBaseHighlight, cPenTopHighlight, True
-    
-    'If the current selection supports "resize by corner node", we want to handle that case now.
-    If Me.DoesShapeSupportCornerResize() Then
-    
-        'Convert the current POI, if any, to its matching position in the "corner node point array"
-        Dim cornerPOI As PD_PointOfInterest
+    'Transform nodes are only rendered if the current selection shape matches the current selection tool.  (Otherwise, the
+    ' selection is treated as "static", and only the default outline/highlight/whatever is drawn.)
+    If (Selections.GetRelevantToolFromSelectShape() = curToolID) Then
         
-        If (curPOI <> poi_Undefined) Then
-            If (curPOI = poi_CornerNW) Then
-                cornerPOI = 0
-            ElseIf (curPOI = poi_CornerNE) Then
-                cornerPOI = 1
-            ElseIf (curPOI = poi_CornerSW) Then
-                cornerPOI = 2
-            ElseIf (curPOI = poi_CornerSE) Then
-                cornerPOI = 3
+        'Before drawing the nodes, we need to convert any relevant selection coordinates from "image coordinates" to "viewport coordinates".
+        ' (Remember that the selection's location is stored as coordinates relative to the IMAGE ITSELF - but to render the transform nodes
+        '   on the screen, we need to figure out where they lie in the current viewport, accounting for things like zoom and scroll.)
+        '
+        'We always generate this list of points, regardless of selection type.
+        Dim selCorners() As POINTFLOAT
+        ReDim selCorners(0 To 3) As POINTFLOAT
+        GetSelectionCorners selCorners
+        
+        'Transform those corners into the destination viewport coordinate space
+        Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, selCorners, False
+        
+        'Convert the current point of interest value, if any, to an index into our list of selection corners
+        Dim curPOI As PD_PointOfInterest
+        curPOI = m_CurrentPOI
+        
+        Dim i As Long
+        
+        'pd2D is used for all rendering.  Note that a "highlight" pen is only created if a POI is currently in use
+        Dim cSurface As pd2DSurface, cPainter As pd2DPainter
+        Drawing2D.QuickCreatePainter cPainter
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, dstCanvas.hDC, True, dstCanvas.hWnd
+        
+        Dim cPenBaseNormal As pd2DPen, cPenTopNormal As pd2DPen, cPenBaseHighlight As pd2DPen, cPenTopHighlight As pd2DPen
+        Drawing2D.QuickCreatePairOfUIPens cPenBaseNormal, cPenTopNormal, False
+        If (curPOI <> poi_Undefined) Then Drawing2D.QuickCreatePairOfUIPens cPenBaseHighlight, cPenTopHighlight, True
+        
+        'If the current selection supports "resize by corner node", we want to handle that case now.
+        If Me.DoesShapeSupportCornerResize() Then
+        
+            'Convert the current POI, if any, to its matching position in the "corner node point array"
+            Dim cornerPOI As PD_PointOfInterest
+            
+            If (curPOI <> poi_Undefined) Then
+                If (curPOI = poi_CornerNW) Then
+                    cornerPOI = 0
+                ElseIf (curPOI = poi_CornerNE) Then
+                    cornerPOI = 1
+                ElseIf (curPOI = poi_CornerSW) Then
+                    cornerPOI = 2
+                ElseIf (curPOI = poi_CornerSE) Then
+                    cornerPOI = 3
+                Else
+                    cornerPOI = poi_Undefined
+                End If
             Else
                 cornerPOI = poi_Undefined
             End If
-        Else
-            cornerPOI = poi_Undefined
-        End If
-        
-        'Render the corner transform nodes, with the currently interactive node (if any) highlighted to match
-        Dim cornerSize As Single, halfCornerSize As Single
-        cornerSize = 12#
-        halfCornerSize = cornerSize * 0.5
-        
-        'In keeping with convention, corner nodes are rendered as squares centered over each node
-        For i = 0 To 3
-            If (i = cornerPOI) Then
-                cPainter.DrawRectangleF cSurface, cPenBaseHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
-                cPainter.DrawRectangleF cSurface, cPenTopHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
-            Else
-                cPainter.DrawRectangleF cSurface, cPenBaseNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
-                cPainter.DrawRectangleF cSurface, cPenTopNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
-            End If
-        Next i
-        
-    End If
-    
-    'If the current selection also supports custom points of interest, let's draw those next
-    If Me.DoesShapeSupportCustomPOIs() Then
-        
-        Dim circRadius As Single
-        circRadius = 7#
-        
-        'Some shapes have been migrated to a nice, uniform set of POI handlers.  These can be handled using universal code.
-        If (m_SelectionShape = ss_Line) Or (m_SelectionShape = ss_Wand) Then
             
-            Dim poiList() As POINTFLOAT
-            Me.GetCurrentPOIList poiList
+            'Render the corner transform nodes, with the currently interactive node (if any) highlighted to match
+            Dim cornerSize As Single, halfCornerSize As Single
+            cornerSize = 12#
+            halfCornerSize = cornerSize * 0.5
             
-            Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, poiList, False
-            
-            For i = 0 To UBound(poiList)
-                If (i = curPOI) Then
-                    cPainter.DrawCircleF cSurface, cPenBaseHighlight, poiList(i).x, poiList(i).y, circRadius
-                    cPainter.DrawCircleF cSurface, cPenTopHighlight, poiList(i).x, poiList(i).y, circRadius
+            'In keeping with convention, corner nodes are rendered as squares centered over each node
+            For i = 0 To 3
+                If (i = cornerPOI) Then
+                    cPainter.DrawRectangleF cSurface, cPenBaseHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                    cPainter.DrawRectangleF cSurface, cPenTopHighlight, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
                 Else
-                    cPainter.DrawCircleF cSurface, cPenBaseNormal, poiList(i).x, poiList(i).y, circRadius
-                    cPainter.DrawCircleF cSurface, cPenTopNormal, poiList(i).x, poiList(i).y, circRadius
+                    cPainter.DrawRectangleF cSurface, cPenBaseNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
+                    cPainter.DrawRectangleF cSurface, cPenTopNormal, selCorners(i).x - halfCornerSize, selCorners(i).y - halfCornerSize, cornerSize, cornerSize
                 End If
             Next i
-        
-        'Legacy rendering path for outlier selection types follows
-        Else
             
-            Dim polyX As Double, polyY As Double
-            
-            If (m_SelectionShape = ss_Polygon) Then
-                For i = 0 To m_NumOfPolygonPoints - 1
-                    
-                    Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, polyX, polyY
-                    
-                    'If this is the initial point in a polygon selection, fill it to help orient the user
-                    If (i = 0) And (Not m_PolygonClosed) Then
-                        Dim cBrushFill As pd2DBrush
-                        Drawing2D.QuickCreateSolidBrush cBrushFill, g_Themer.GetGenericUIColor(UI_Accent), 75#
-                        cPainter.FillCircleF cSurface, cBrushFill, polyX, polyY, circRadius
-                        Set cBrushFill = Nothing
-                    End If
-                    
-                    If (i = curPOI) Then
-                        cPainter.DrawCircleF cSurface, cPenBaseHighlight, polyX, polyY, circRadius
-                        cPainter.DrawCircleF cSurface, cPenTopHighlight, polyX, polyY, circRadius
-                    Else
-                        cPainter.DrawCircleF cSurface, cPenBaseNormal, polyX, polyY, circRadius
-                        cPainter.DrawCircleF cSurface, cPenTopNormal, polyX, polyY, circRadius
-                    End If
-                    
-                Next i
-            End If
-        
         End If
+        
+        'If the current selection also supports custom points of interest, let's draw those next
+        If Me.DoesShapeSupportCustomPOIs() Then
+            
+            Dim circRadius As Single
+            circRadius = 7#
+            
+            'Some shapes have been migrated to a nice, uniform set of POI handlers.  These can be handled using universal code.
+            If (m_SelectionShape = ss_Line) Or (m_SelectionShape = ss_Wand) Then
+                
+                Dim poiList() As POINTFLOAT
+                Me.GetCurrentPOIList poiList
+                
+                Drawing.ConvertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, poiList, False
+                
+                For i = 0 To UBound(poiList)
+                    If (i = curPOI) Then
+                        cPainter.DrawCircleF cSurface, cPenBaseHighlight, poiList(i).x, poiList(i).y, circRadius
+                        cPainter.DrawCircleF cSurface, cPenTopHighlight, poiList(i).x, poiList(i).y, circRadius
+                    Else
+                        cPainter.DrawCircleF cSurface, cPenBaseNormal, poiList(i).x, poiList(i).y, circRadius
+                        cPainter.DrawCircleF cSurface, cPenTopNormal, poiList(i).x, poiList(i).y, circRadius
+                    End If
+                Next i
+            
+            'Legacy rendering path for outlier selection types follows
+            Else
+                
+                Dim polyX As Double, polyY As Double
+                
+                If (m_SelectionShape = ss_Polygon) Then
+                    For i = 0 To m_NumOfPolygonPoints - 1
+                        
+                        Drawing.ConvertImageCoordsToCanvasCoords dstCanvas, srcImage, m_PolygonPoints(i).x, m_PolygonPoints(i).y, polyX, polyY
+                        
+                        'If this is the initial point in a polygon selection, fill it to help orient the user
+                        If (i = 0) And (Not m_PolygonClosed) Then
+                            Dim cBrushFill As pd2DBrush
+                            Drawing2D.QuickCreateSolidBrush cBrushFill, g_Themer.GetGenericUIColor(UI_Accent), 75#
+                            cPainter.FillCircleF cSurface, cBrushFill, polyX, polyY, circRadius
+                            Set cBrushFill = Nothing
+                        End If
+                        
+                        If (i = curPOI) Then
+                            cPainter.DrawCircleF cSurface, cPenBaseHighlight, polyX, polyY, circRadius
+                            cPainter.DrawCircleF cSurface, cPenTopHighlight, polyX, polyY, circRadius
+                        Else
+                            cPainter.DrawCircleF cSurface, cPenBaseNormal, polyX, polyY, circRadius
+                            cPainter.DrawCircleF cSurface, cPenTopNormal, polyX, polyY, circRadius
+                        End If
+                        
+                    Next i
+                End If
+            
+            End If
+            
+        End If
+        
+        'We don't need to manually free these pd2D objects, obviously, but I've added the code here just in case
+        ' this function gets expanded in the future.
+        Set cSurface = Nothing: Set cPainter = Nothing
+        Set cPenBaseNormal = Nothing: Set cPenTopNormal = Nothing
+        Set cPenBaseHighlight = Nothing: Set cPenTopHighlight = Nothing
         
     End If
     
-    'We don't need to manually free these pd2D objects, obviously, but I've added the code here just in case
-    ' this function gets expanded in the future.
-    Set cSurface = Nothing: Set cPainter = Nothing
-    Set cPenBaseNormal = Nothing: Set cPenTopNormal = Nothing
-    Set cPenBaseHighlight = Nothing: Set cPenTopHighlight = Nothing
-        
 End Sub
 
 'The selection engine caches a lot of local objects in an effort to improve performance.  To detect setting changes,
@@ -2869,7 +2875,7 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
                 m_ViewportReference.WrapLongArrayAroundScanline maskPixels, maskSALine, y
                 tmpYPosition = y + yModifier
             For x = loopStartX To loopEndX
-                If ((maskPixels(x) And 255) > 0) Then
+                If ((maskPixels(x) And 255) > 64) Then
                     m_ViewportByteCopy(x + xModifier, tmpYPosition) = 255
                 Else
                     m_ViewportByteCopy(x + xModifier, tmpYPosition) = 0

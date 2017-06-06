@@ -176,7 +176,7 @@ End Function
 'Given two DIBs, fill one with a median-filtered version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D

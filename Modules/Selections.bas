@@ -466,6 +466,12 @@ Public Function IsCoordSelectionPOI(ByVal imgX As Double, ByVal imgY As Double, 
         Exit Function
     End If
     
+    'Similarly, POIs are only enabled if the current selection tool matches the current selection shape
+    If (g_CurrentTool <> Selections.GetRelevantToolFromSelectShape()) Then
+        IsCoordSelectionPOI = poi_Undefined
+        Exit Function
+    End If
+    
     'We're now going to compare the passed coordinate against a hard-coded list of "points of interest."  These POIs
     ' differ by selection type, as different selections allow for different levels of interaction.  (For example, a polygon
     ' selection behaves differently when a point is dragged, vs a rectangular selection.)
@@ -712,6 +718,7 @@ Public Sub InvertCurrentSelection()
     
     'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
     ' being non-transformable)
+    pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Raster
     pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
     pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
     
@@ -993,6 +1000,7 @@ Public Sub ShrinkCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal sh
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
+        pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Raster
         pdImages(g_CurrentImage).mainSelection.NotifyRasterDataChanged
         pdImages(g_CurrentImage).mainSelection.FindNewBoundsManually
         
@@ -1405,6 +1413,14 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
 End Sub
 
 Public Sub NotifySelectionMouseDown(ByRef srcCanvas As pdCanvas, ByVal imgX As Single, ByVal imgY As Single)
+    
+    'Before processing the mouse event, check to see if a selection is already active.  If it is, and its type
+    ' does *not* match the current selection tool, remove it before proceeding.
+    If pdImages(g_CurrentImage).IsSelectionActive Then
+        If (pdImages(g_CurrentImage).mainSelection.GetSelectionShape <> Selections.GetSelectionShapeFromCurrentTool()) Then
+            Process "Remove selection", , , UNDO_SELECTION
+        End If
+    End If
     
     'Because the wand tool is extremely simple, handle it specially
     If (g_CurrentTool = SELECT_WAND) Then

@@ -585,8 +585,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Selection Tool Panel
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 13/May/15
-'Last update: finish migrating all relevant controls to this dedicated form
+'Last updated: 06/June/17
+'Last update: allow selection property changes even if the current tool and shape don't match; however, these are
+'             now processed somewhat differently.  (See individual UI element events for details.)
 '
 'This form includes all user-editable settings for PD's various selection tools.
 '
@@ -604,7 +605,7 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 Private Sub btsWandArea_Click(ByVal buttonIndex As Long)
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_WandSearchMode, buttonIndex
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -614,7 +615,7 @@ End Sub
 Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
 
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_WandSampleMerged, buttonIndex
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -623,14 +624,10 @@ End Sub
 
 Private Sub cboSelArea_Click(Index As Integer)
 
-    If cboSelArea(Index).ListIndex = sa_Border Then
-        sltSelectionBorder(Index).Visible = True
-    Else
-        sltSelectionBorder(Index).Visible = False
-    End If
+    sltSelectionBorder(Index).Visible = (cboSelArea(Index).ListIndex = sa_Border)
     
     'If a selection is already active, change its type to match the current selection, then redraw it
-    If SelectionsAllowed(False) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_Area, cboSelArea(Index).ListIndex
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -638,14 +635,12 @@ Private Sub cboSelArea_Click(Index As Integer)
     
 End Sub
 
+'The "selection rendering technique" dropdown always receives event processing, even if the current selection
+' tool does not match the active selection shape.  (Other tool changes are typically restricted by selection type.)
 Private Sub cboSelRender_Click()
 
     'Show or hide the color selector, as appropriate
-    If (cboSelRender.ListIndex = PDSR_Highlight) Then
-        csSelectionHighlight.Visible = True
-    Else
-        csSelectionHighlight.Visible = False
-    End If
+    csSelectionHighlight.Visible = (cboSelRender.ListIndex = PDSR_Highlight)
     
     'Redraw the viewport
     Selections.NotifySelectionRenderChange
@@ -653,6 +648,8 @@ Private Sub cboSelRender_Click()
 
 End Sub
 
+'Selection smoothing is handled universally, even if the current selection shape does not match the active
+' selection tool.  (This is done because selection smoothing is universally supported across all shapes.)
 Private Sub cboSelSmoothing_Click()
 
     UpdateSelectionPanelLayout
@@ -676,7 +673,7 @@ Private Sub cboWandCompare_Click()
     End If
     
     'If a selection is already active, change its type to match the current option, then redraw it
-    If SelectionsAllowed(False) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_WandCompareMethod, cboWandCompare.ListIndex
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -786,21 +783,21 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
 End Sub
 
 Private Sub sltCornerRounding_Change()
-    If SelectionsAllowed(True) Then
+    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_RoundedCornerRadius, sltCornerRounding.Value
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltPolygonCurvature_Change()
-    If SelectionsAllowed(True) Then
+    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_PolygonCurvature, sltPolygonCurvature.Value
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltSelectionBorder_Change(Index As Integer)
-    If SelectionsAllowed(False) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_BorderWidth, sltSelectionBorder(Index).Value
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -814,7 +811,7 @@ Private Sub sltSelectionFeathering_Change()
 End Sub
 
 Private Sub sltSelectionLineWidth_Change()
-    If SelectionsAllowed(True) Then
+    If SelectionsAllowed(True) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_LineWidth, sltSelectionLineWidth.Value
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -829,24 +826,20 @@ Public Sub UpdateSelectionPanelLayout()
     
     'Display the border slider as necessary
     If (Selections.GetSelectionSubPanelFromCurrentTool < cboSelArea.Count - 1) And (Selections.GetSelectionSubPanelFromCurrentTool > 0) Then
-        If cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border Then
-            sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = True
-        Else
-            sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = False
-        End If
+        sltSelectionBorder(Selections.GetSelectionSubPanelFromCurrentTool).Visible = (cboSelArea(Selections.GetSelectionSubPanelFromCurrentTool).ListIndex = sa_Border)
     End If
     
 End Sub
 
 Private Sub sltSmoothStroke_Change()
-    If SelectionsAllowed(False) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_SmoothStroke, sltSmoothStroke.Value
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 End Sub
 
 Private Sub sltWandTolerance_Change()
-    If SelectionsAllowed(False) Then
+    If SelectionsAllowed(False) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
         pdImages(g_CurrentImage).mainSelection.SetSelectionProperty sp_WandTolerance, sltWandTolerance.Value
         ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -857,9 +850,11 @@ Private Sub tudSel_Change(Index As Integer)
     UpdateSelectionsValuesViaText
 End Sub
 
+'All text boxes wrap this function.  Note that text box changes are not relayed unless the current selection shape
+' matches the current selection tool.
 Private Sub UpdateSelectionsValuesViaText()
     If SelectionsAllowed(True) Then
-        If Not pdImages(g_CurrentImage).mainSelection.GetAutoRefreshSuspend Then
+        If (Not pdImages(g_CurrentImage).mainSelection.GetAutoRefreshSuspend) And (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
             pdImages(g_CurrentImage).mainSelection.UpdateViaTextBox
             ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
