@@ -54,9 +54,9 @@ Public Enum CSIDLs
     CSIDL_MYPICTURES = &H27
 End Enum
 
-Private Const SHGFP_TYPE_CURRENT = &H0 'current value for user, verify it exists
-Private Const MAX_LENGTH = 260
-Private Const S_OK = 0
+Private Const SHGFP_TYPE_CURRENT As Long = &H0 'current value for user, verify it exists
+Private Const MAX_LENGTH As Long = 260
+Private Const S_OK As Long = 0
 
 'To make PhotoDemon compatible with the PortableApps spec (http://portableapps.com/), several sub-folders are necessary.  These include:
 '  /App/ subfolder, which contains information ESSENTIAL and UNIVERSAL for each PhotoDemon install (e.g. plugin DLLs, master language files)
