@@ -3021,6 +3021,8 @@ End Sub
 '        request a render if they want one.)
 Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
     
+    ReadSelectionFromFile = False
+    
     'Like all other PD-specific files, selection files are just pdPackage instances
     Dim cPackage As pdPackager
     Set cPackage = New pdPackager
@@ -3032,8 +3034,7 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
         ' in which case we'll load the actual mask straight from the file.)
         m_IsMaskReady = False
         
-        Dim dibLoadedSuccessfully As Boolean
-        dibLoadedSuccessfully = False
+        Dim dibLoadedSuccessfully As Boolean: dibLoadedSuccessfully = False
         
         'Retrieve the file-specific header from the package.  This contains details like selection format version, which we need
         ' before we proceed with full parsing.
@@ -3058,9 +3059,9 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                     m_IsLocked = headerXML.GetBool("SelIsLocked", False)
                     m_IsTransformable = headerXML.GetBool("SelIsTransformable", True)
                     
-                    'Raster selections (e.g. selections that can't be described with vectors) store a full copy of their selection mask
-                    ' in the selection file.  Load it conditionally.
-                    If (m_SelectionShape = ss_Raster) Then
+                    'Certain selection types (e.g. selections that can't be fully described with vectors) store a full copy of their
+                    ' selection mask in the selection file.  Check for these and load them conditionally.
+                    If (m_SelectionShape = ss_Raster) Or (m_SelectionShape = ss_Wand) Then
                         
                         'Retrieve the original parent image's width and height.  If the original containing image had the same dimensions
                         ' as our current image (e.g. during Undo/Redo operations), we can create the selection mask directly from the
@@ -3095,20 +3096,26 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                             
                             tmpDIB.RetrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                             tmpDIB.SetInitialAlphaPremultiplicationState headerXML.GetBool("SelMaskAlphaPremultiplied", True)
+                            
                             If cPackage.GetNodeDataByName_UnsafeDstPointer("SelMask", False, tmpDIBPointer) Then
-                                m_SelMask.CreateFromExistingDIB tmpDIB, m_parentPDImage.Width, m_parentPDImage.Height, True
+                                m_SelMask.CreateBlank m_parentPDImage.Width, m_parentPDImage.Height, tmpDIB.GetDIBColorDepth, 0, 0
+                                GDI_Plus.GDIPlusResizeDIB m_SelMask, 0, 0, m_parentPDImage.Width, m_parentPDImage.Height, tmpDIB, 0, 0, tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, GP_IM_HighQualityBicubic
+                                m_SelMask.SetInitialAlphaPremultiplicationState tmpDIB.GetAlphaPremultiplication()
+                                Set tmpDIB = Nothing
                             End If
                             
                         End If
                         
-                        'Note that the mask has been created; this is crucial for successful raster loads
+                        'Note that a mask has been created; this prevents PD from attempting to create a new copy.
+                        ' (For magic wand selections, this is particularly bad as the wand may generate totally new boundaries
+                        '  on a new image.)
                         m_MaskHasBeenCreated = True
                         m_IsMaskReady = True
                         
                     End If
                     
                     'If this selection isn't a vector, we need to manually find its boundaries now
-                    If ((m_SelectionShape = ss_Raster) And (Not m_SelMask Is Nothing)) Then
+                    If (((m_SelectionShape = ss_Raster) Or (m_SelectionShape = ss_Wand)) And (Not m_SelMask Is Nothing)) Then
                         Me.NotifyRasterDataChanged
                         Me.FindNewBoundsManually
                     End If
@@ -3133,21 +3140,18 @@ Friend Function ReadSelectionFromFile(ByVal srcFilename As String, Optional igno
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "WARNING!  pdSelection failed to retrieve the actual header string for this file."
                     #End If
-                    ReadSelectionFromFile = False
                 End If
             
             Else
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "WARNING!  pdSelection found an unknown version in this file header."
                 #End If
-                ReadSelectionFromFile = False
             End If
             
         Else
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  pdSelection failed to load a valid header from this saved selection file."
             #End If
-            ReadSelectionFromFile = False
         End If
         
     End If
@@ -3175,7 +3179,8 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     
     'Prep a secondary descriptor
     Dim maskWillBeEmbedded As Boolean
-    maskWillBeEmbedded = ((m_SelectionShape = ss_Raster) And m_MaskHasBeenCreated)
+    maskWillBeEmbedded = ((m_SelectionShape = ss_Raster) And m_MaskHasBeenCreated) Or ((m_SelectionShape = ss_Wand) And m_MaskHasBeenCreated)
+    
     Dim tmpXML As pdParamXML
     Set tmpXML = New pdParamXML
     With tmpXML
@@ -3200,7 +3205,7 @@ Friend Function WriteSelectionToFile(ByVal dstFilename As String, Optional ByVal
     'Add the secondary descriptor to the same node (in the header chunk)
     cPackage.AddNodeDataFromString nodeIndex, True, tmpXML.GetParamString(), compressXML, xmlCompressionLevel
     
-    'Finally, if this is a raster-type selection, add the full mask as well
+    'Finally, if this is a raster or magic-wand selection, add the full mask as well
     If maskWillBeEmbedded Then
         Dim maskDIBPointer As Long, maskDIBLength As Long
         m_SelMask.RetrieveDIBPointerAndSize maskDIBPointer, maskDIBLength
