@@ -186,7 +186,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
     'Use a pdFSO instance to enumerate PNG files for us.
     Dim pngList As pdStringStack
     
-    If cFile.RetrieveAllFiles(g_UserPreferences.GetIconPath, pngList, False, False, "png") Then
+    If cFile.RetrieveAllFiles(g_UserPreferences.GetIconPath, pngList, False, False, "pdtmp") Then
     
         Dim chkFile As String, fileOK As Boolean
         Dim i As Long
@@ -204,7 +204,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
                 For i = 0 To numEntries - 1
                     
                     'If this hash matches one on file, mark it as OK.
-                    If (StrComp(chkFile, mruManager.GetMRUThumbnailPath(i), vbTextCompare) = 0) Then
+                    If (StrComp(chkFile, mruManager.GetMRUThumbnailPath(i), vbBinaryCompare) = 0) Then
                         fileOK = True
                         Exit For
                     End If
