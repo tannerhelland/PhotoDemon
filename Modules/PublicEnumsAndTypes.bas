@@ -415,11 +415,12 @@ End Enum
 'pdPixelIterator also supports multiple modes of operation, which determine what kind of histogram it generates.
 Public Enum PD_PIXEL_ITERATOR_MODE
     PDPIM_RGBA = 0
-    PDPIM_LUMINANCE = 1
+    PDPIM_Luminance = 1
+    PDPIM_ByteArray = 2
 End Enum
 
 #If False Then
-    Private Const PDPIM_RGBA = 0, PDPIM_LUMINANCE = 1
+    Private Const PDPIM_RGBA = 0, PDPIM_Luminance = 1, PDPIM_ByteArray = 2
 #End If
 
 Public Enum PD_LUMINANCE_MODE

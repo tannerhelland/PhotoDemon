@@ -178,7 +178,7 @@ End Function
 Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() As Byte, Optional ByVal toNormalize As Boolean = True) As Boolean
     
     'Make sure the DIB exists
-    If srcDIB Is Nothing Then Exit Function
+    If (srcDIB Is Nothing) Then Exit Function
     
     'Make sure the source DIB isn't empty
     If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
@@ -215,9 +215,9 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         For y = initY To finalY
                 
             'Get the source pixel color values
-            r = ImageData(quickVal + 2, y)
-            g = ImageData(quickVal + 1, y)
             b = ImageData(quickVal, y)
+            g = ImageData(quickVal + 1, y)
+            r = ImageData(quickVal + 2, y)
             
             'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
             grayVal = (213 * r + 715 * g + 72 * b) \ 1000
@@ -228,9 +228,9 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             
             'If normalization has been requested, check max/min values now
             If toNormalize Then
-                If grayVal < minVal Then
+                If (grayVal < minVal) Then
                     minVal = grayVal
-                ElseIf grayVal > maxVal Then
+                ElseIf (grayVal > maxVal) Then
                     maxVal = grayVal
                 End If
             End If
@@ -248,7 +248,7 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             curRange = maxVal - minVal
             
             'Prevent DBZ errors
-            If curRange = 0 Then curRange = 1
+            If (curRange = 0) Then curRange = 1
             
             'Build a normalization lookup table
             Dim normalizedLookup() As Byte
@@ -258,9 +258,9 @@ Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
                 
                 grayVal = (CDbl(x - minVal) / CDbl(curRange)) * 255
                 
-                If grayVal < 0 Then
+                If (grayVal < 0) Then
                     grayVal = 0
-                ElseIf grayVal > 255 Then
+                ElseIf (grayVal > 255) Then
                     grayVal = 255
                 End If
                 
@@ -651,7 +651,7 @@ Public Function RetrieveTransparencyTable(ByRef srcDIB As pdDIB, ByRef dstTransp
     
 End Function
 
-'Given a binary table (e.g. a byte array at the same dimensions as the image, containing the desired per-pixel alpha values),
+'Given a transparency table (e.g. a byte array at the same dimensions as the image, containing the desired per-pixel alpha values),
 ' apply said transparency table to the current DIB.  Optionally, you can pass a pointer to a RectF struct that defines the
 ' target region; if non-null, only that region will be updated - IMPORTANTLY, if you use this functionality, you must also
 ' supply an identical RectF structure to the RetrieveTransparencyTable function.  If you don't, the results will be incorrect.
@@ -1265,4 +1265,64 @@ Public Function ResizeDIBByPixelCount(ByRef srcDIB As pdDIB, ByRef dstDIB As pdD
     
     End If
 
+End Function
+
+'Given a byte array, construct a 32-bpp DIB where each channel is set to the grayscale equivalent of the input array.  This is used
+' with selection to generate a transparent + grayscale copy of a single byte array.  Note that the DIB *must* already exist as a
+' 32-bpp DIB matching the size of the input table.
+'
+'Returns TRUE if successful, and srcDIB will be filled with a premultiplied 32-bpp DIB matching the input table
+Public Function Construct32bppDIBFromByteMap(ByRef srcDIB As pdDIB, ByRef srcMap() As Byte) As Boolean
+
+    If (srcDIB Is Nothing) Then Exit Function
+    
+    If (srcDIB.GetDIBColorDepth = 32) Then
+        If (srcDIB.GetDIBDC <> 0) And (srcDIB.GetDIBWidth <> 0) And (srcDIB.GetDIBHeight <> 0) Then
+            
+            Dim x As Long, y As Long
+            Dim allowedToProceed As Boolean: allowedToProceed = True
+            
+            Dim initX As Long, initY As Long, finalX As Long, finalY As Long
+            initX = 0
+            initY = 0
+            finalX = (srcDIB.GetDIBWidth - 1)
+            finalY = (srcDIB.GetDIBHeight - 1)
+            
+            'Construct a lookup table of premultiplied input values
+            Dim lTable() As Long
+            ReDim lTable(0 To 255) As Long
+            
+            Dim tmpR As Single, tmpG As Single, tmpB As Single, tmpA As Single
+            Dim tmpQuad As RGBQUAD
+            
+            For x = 0 To 255
+                tmpQuad.alpha = x
+                tmpA = x * (x / 255)
+                tmpQuad.Red = tmpA
+                tmpQuad.Green = tmpA
+                tmpQuad.Blue = tmpA
+                CopyMemory ByVal VarPtr(lTable(x)), ByVal VarPtr(tmpQuad), LenB(tmpQuad)
+            Next x
+            
+            Dim imgData() As Long, tmpSA As SAFEARRAY1D
+            
+            'Loop through the image, checking alphas as we go
+            For y = initY To finalY
+                srcDIB.WrapLongArrayAroundScanline imgData, tmpSA, y
+            For x = initX To finalX
+                imgData(x) = lTable(srcMap(x, y))
+            Next x
+            Next y
+            
+            srcDIB.UnwrapLongArrayFromDIB imgData
+            
+            srcDIB.SetInitialAlphaPremultiplicationState True
+            
+            Construct32bppDIBFromByteMap = True
+            
+        End If
+    Else
+        Debug.Print "WARNING!  pdDIB.Construct32bppDIBFromByteMap() requires a 32-bpp DIB to operate correctly."
+    End If
+    
 End Function
