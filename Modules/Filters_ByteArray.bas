@@ -795,7 +795,7 @@ NextDitheredPixel:
 End Function
 
 'Contrast-correct a byte array.  (This function is based off PD's white balance algorithm.)
-Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal percentIgnore As Double) As Long
+Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, ByVal percentIgnore As Double) As Boolean
 
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -902,5 +902,360 @@ Public Function ContrastCorrect_ByteArray(ByRef srcArray() As Byte, ByVal arrayW
     Next x
     
     ContrastCorrect_ByteArray = True
+    
+End Function
+
+'Find the range-based median of each entry in a given byte array.  pdPixelIterator is used.
+Public Function Median_ByteArray(ByVal mRadius As Long, ByVal mPercent As Double, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = arrayWidth - 1
+    finalY = arrayHeight - 1
+    
+    'Just to be safe, make sure the radius isn't larger than the image itself
+    If (finalY - initY) < (finalX - initX) Then
+        If (mRadius > (finalY - initY)) Then mRadius = finalY - initY
+    Else
+        If (mRadius > (finalX - initX)) Then mRadius = finalX - initX
+    End If
+    
+    If (mRadius < 1) Then mRadius = 1
+        
+    mPercent = mPercent / 100
+    If (mPercent < 0.01) Then mPercent = 0.01
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = FindBestProgBarValue()
+    End If
+    
+    'The number of pixels in the current median box are tracked dynamically.
+    Dim numOfPixels As Long
+    numOfPixels = 0
+            
+    'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
+    Dim lValues() As Long
+    ReDim lValues(0 To 255) As Long
+    
+    Dim cutoffTotal As Long
+    Dim l As Long
+    Dim startY As Long, stopY As Long, yStep As Long, i As Long
+    
+    Dim directionDown As Boolean
+    directionDown = True
+    
+    'Prep the pixel iterator
+    Dim cPixelIterator As pdPixelIterator
+    Set cPixelIterator = New pdPixelIterator
+    
+    If cPixelIterator.InitializeIterator_ByteArray(srcArray, arrayWidth, arrayHeight, mRadius, mRadius, kernelShape) Then
+    
+        numOfPixels = cPixelIterator.LockTargetHistograms_ByteArray(lValues)
+        
+        'Loop through each pixel in the image, applying the filter as we go
+        For x = initX To finalX
+            
+            'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
+            If directionDown Then
+                startY = initY
+                stopY = finalY
+                yStep = 1
+            Else
+                startY = finalY
+                stopY = initY
+                yStep = -1
+            End If
+            
+            'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
+            For y = startY To stopY Step yStep
+            
+                'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
+                ' actual median value.
+                
+                'Loop through each color component histogram, until we've passed the desired percentile of pixels
+                l = 0
+                cutoffTotal = (mPercent * numOfPixels)
+                If (cutoffTotal = 0) Then cutoffTotal = 1
+        
+                i = -1
+                Do
+                    i = i + 1
+                    l = l + lValues(i)
+                Loop Until (l >= cutoffTotal)
+                l = i
+                
+                'Finally, apply the results to the destination array.
+                dstArray(x, y) = l
+                
+                'Move the iterator in the correct direction
+                If directionDown Then
+                    If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown_Byte
+                Else
+                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp_Byte
+                End If
+        
+            Next y
+            
+            'Reverse y-directionality on each pass
+            directionDown = Not directionDown
+            If (x < finalX) Then numOfPixels = cPixelIterator.MoveXRight_Byte
+            
+            'Update the progress bar every (progBarCheck) lines
+            If (Not suppressMessages) Then
+                If (x And progBarCheck) = 0 Then
+                    If UserPressedESC() Then Exit For
+                    SetProgBarVal x + modifyProgBarOffset
+                End If
+            End If
+            
+        Next x
+        
+        'Release the pixel iterator
+        cPixelIterator.ReleaseTargetHistograms_ByteArray lValues
+          
+        Median_ByteArray = (Not g_cancelCurrentAction)
+    
+    Else
+        Median_ByteArray = True
+    End If
+    
+End Function
+
+'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
+Public Function Dilate_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = arrayWidth - 1
+    finalY = arrayHeight - 1
+    
+    'Just to be safe, make sure the radius isn't larger than the image itself
+    If (finalY - initY) < (finalX - initX) Then
+        If (mRadius > (finalY - initY)) Then mRadius = finalY - initY
+    Else
+        If (mRadius > (finalX - initX)) Then mRadius = finalX - initX
+    End If
+    
+    If (mRadius < 1) Then mRadius = 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = FindBestProgBarValue()
+    End If
+    
+    'The number of pixels in the current median box are tracked dynamically.
+    Dim numOfPixels As Long
+    numOfPixels = 0
+            
+    'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
+    Dim lValues() As Long
+    ReDim lValues(0 To 255) As Long
+    
+    Dim startY As Long, stopY As Long, yStep As Long, i As Long
+    
+    Dim directionDown As Boolean
+    directionDown = True
+    
+    'Prep the pixel iterator
+    Dim cPixelIterator As pdPixelIterator
+    Set cPixelIterator = New pdPixelIterator
+    
+    If cPixelIterator.InitializeIterator_ByteArray(srcArray, arrayWidth, arrayHeight, mRadius, mRadius, kernelShape) Then
+    
+        numOfPixels = cPixelIterator.LockTargetHistograms_ByteArray(lValues)
+        
+        'Loop through each pixel in the image, applying the filter as we go
+        For x = initX To finalX
+            
+            'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
+            If directionDown Then
+                startY = initY
+                stopY = finalY
+                yStep = 1
+            Else
+                startY = finalY
+                stopY = initY
+                yStep = -1
+            End If
+            
+            'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
+            For y = startY To stopY Step yStep
+            
+                'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
+                ' actual median value.
+                
+                'Loop through each color component histogram, until we've passed the desired percentile of pixels
+                For i = 255 To 0 Step -1
+                    If (lValues(i) <> 0) Then Exit For
+                Next i
+                
+                'Finally, apply the results to the destination array.
+                dstArray(x, y) = i
+                
+                'Move the iterator in the correct direction
+                If directionDown Then
+                    If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown_Byte
+                Else
+                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp_Byte
+                End If
+        
+            Next y
+            
+            'Reverse y-directionality on each pass
+            directionDown = Not directionDown
+            If (x < finalX) Then numOfPixels = cPixelIterator.MoveXRight_Byte
+            
+            'Update the progress bar every (progBarCheck) lines
+            If (Not suppressMessages) Then
+                If (x And progBarCheck) = 0 Then
+                    If UserPressedESC() Then Exit For
+                    SetProgBarVal x + modifyProgBarOffset
+                End If
+            End If
+            
+        Next x
+        
+        'Release the pixel iterator
+        cPixelIterator.ReleaseTargetHistograms_ByteArray lValues
+          
+        Dilate_ByteArray = (Not g_cancelCurrentAction)
+    
+    Else
+        Dilate_ByteArray = True
+    End If
+    
+End Function
+
+
+'Find the range-based maximum value of each segment of a given byte array.  pdPixelIterator is used.
+Public Function Erode_ByteArray(ByVal mRadius As Long, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = arrayWidth - 1
+    finalY = arrayHeight - 1
+    
+    'Just to be safe, make sure the radius isn't larger than the image itself
+    If (finalY - initY) < (finalX - initX) Then
+        If (mRadius > (finalY - initY)) Then mRadius = finalY - initY
+    Else
+        If (mRadius > (finalX - initX)) Then mRadius = finalX - initX
+    End If
+    
+    If (mRadius < 1) Then mRadius = 1
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If (Not suppressMessages) Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax finalX
+        Else
+            SetProgBarMax modifyProgBarMax
+        End If
+        progBarCheck = FindBestProgBarValue()
+    End If
+    
+    'The number of pixels in the current median box are tracked dynamically.
+    Dim numOfPixels As Long
+    numOfPixels = 0
+            
+    'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
+    Dim lValues() As Long
+    ReDim lValues(0 To 255) As Long
+    
+    Dim startY As Long, stopY As Long, yStep As Long, i As Long
+    
+    Dim directionDown As Boolean
+    directionDown = True
+    
+    'Prep the pixel iterator
+    Dim cPixelIterator As pdPixelIterator
+    Set cPixelIterator = New pdPixelIterator
+    
+    If cPixelIterator.InitializeIterator_ByteArray(srcArray, arrayWidth, arrayHeight, mRadius, mRadius, kernelShape) Then
+    
+        numOfPixels = cPixelIterator.LockTargetHistograms_ByteArray(lValues)
+        
+        'Loop through each pixel in the image, applying the filter as we go
+        For x = initX To finalX
+            
+            'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
+            If directionDown Then
+                startY = initY
+                stopY = finalY
+                yStep = 1
+            Else
+                startY = finalY
+                stopY = initY
+                yStep = -1
+            End If
+            
+            'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
+            For y = startY To stopY Step yStep
+            
+                'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
+                ' actual median value.
+                
+                'Loop through each color component histogram, until we've passed the desired percentile of pixels
+                For i = 0 To 255
+                    If (lValues(i) <> 0) Then Exit For
+                Next i
+                
+                'Finally, apply the results to the destination array.
+                dstArray(x, y) = i
+                
+                'Move the iterator in the correct direction
+                If directionDown Then
+                    If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown_Byte
+                Else
+                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp_Byte
+                End If
+        
+            Next y
+            
+            'Reverse y-directionality on each pass
+            directionDown = Not directionDown
+            If (x < finalX) Then numOfPixels = cPixelIterator.MoveXRight_Byte
+            
+            'Update the progress bar every (progBarCheck) lines
+            If (Not suppressMessages) Then
+                If (x And progBarCheck) = 0 Then
+                    If UserPressedESC() Then Exit For
+                    SetProgBarVal x + modifyProgBarOffset
+                End If
+            End If
+            
+        Next x
+        
+        'Release the pixel iterator
+        cPixelIterator.ReleaseTargetHistograms_ByteArray lValues
+          
+        Erode_ByteArray = (Not g_cancelCurrentAction)
+    
+    Else
+        Erode_ByteArray = True
+    End If
     
 End Function

@@ -1317,7 +1317,9 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     Dim dstDIBCD As Long, selDIBCD As Long, dstQuickX As Long, selQuickX As Long
     dstDIBCD = imgLayers(targetLayerIndex).layerDIB.GetDIBColorDepth \ 8
     selDIBCD = mainSelection.GetMaskDIB.GetDIBColorDepth \ 8
-            
+    
+    Const BYTE_TO_FLOAT As Single = 1 / 255
+    
     For x = leftBound To rightBound
         dstQuickX = x * dstDIBCD
         selQuickX = x * selDIBCD
@@ -1346,7 +1348,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
                     r = dstImageData(dstQuickX + 2, y)
                     
                     'Calculate a new multiplier, based on the strength of the selection at this location
-                    blendAlpha = thisAlpha / 255
+                    blendAlpha = thisAlpha * BYTE_TO_FLOAT
                     
                     'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
                     dstImageData(dstQuickX, y) = b * blendAlpha
