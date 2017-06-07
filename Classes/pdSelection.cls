@@ -3374,6 +3374,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     
     If (m_SelMask Is Nothing) Then
         RequestThumbnail = False
+        Debug.Print "WARNING!  pdSelection.RequestThumbnail was called, but no selection exists."
         Exit Function
     End If
     
@@ -3390,12 +3391,12 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     'If the form is wider than it is tall, center the thumbnail vertically
     If (tIcoWidth > tIcoHeight) Then
         tX = 0
-        tY = (thumbnailSize - tIcoHeight) / 2
+        tY = (thumbnailSize - tIcoHeight) * 0.5
     
     '...otherwise, center it horizontally
     Else
         tY = 0
-        tX = (thumbnailSize - tIcoWidth) / 2
+        tX = (thumbnailSize - tIcoWidth) * 0.5
     End If
     
     'Prepare the destination DIB
@@ -3403,7 +3404,7 @@ Friend Function RequestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     If (dstThumbnailDIB.GetDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.GetDIBHeight <> thumbnailSize) Then
         dstThumbnailDIB.CreateBlank thumbnailSize, thumbnailSize, 32, 0
     Else
-        dstThumbnailDIB.EraseDIB 0
+        dstThumbnailDIB.ResetDIB 0
     End If
     
     'Note that the user's thumbnail performance setting affects the quality used here.
