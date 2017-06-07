@@ -2555,8 +2555,17 @@ Friend Sub RenderSelectionToViewport(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If (Not useOutlineRenderingInstead) Then useOutlineRenderingInstead = (m_SelectionShape = ss_Polygon) And (Not m_PolygonClosed)
     
     'If we are not using marching ants, disable the associated ant timer now (as a failsafe; this is typically solved elsewhere,
-    ' but better safe than sorry)
-    If (renderType <> PDSR_Ants) Then m_AntTimer.StopTimer
+    ' but better safe than sorry).
+    If (renderType <> PDSR_Ants) Then
+        
+        'As a failsafe, forcibly disable animations prior to stopping the timer; this helps against any pending timer events
+        ' firing as a result of stopping the timer
+        Dim initAnimState As Boolean: initAnimState = m_AnimationsAllowed
+        m_AnimationsAllowed = False
+        m_AntTimer.StopTimer
+        m_AnimationsAllowed = initAnimState
+        
+    End If
     
     If useOutlineRenderingInstead Then
         RenderSelectionAsOutline dstDIB, srcImage, dstCanvas, imgViewportRectL, overlayWasRegenerated, renderType
@@ -2583,7 +2592,7 @@ Private Sub RenderSelectionAsOverlay(ByRef dstDIB As pdDIB, ByRef srcImage As pd
     If (overlayWasRegenerated Or renderingSettingsChanged Or (Not m_OverlayIsReady)) Then
         
         #If DEBUGMODE = 1 Then
-            'Debug.Print "rebuilding selection overlay (" & Timer & ")"
+            Debug.Print "rebuilding selection overlay (" & Timer & ")"
         #End If
         
         'The following chunk of code generates the actual 32-bpp selection image "overlaid" on the viewport.
@@ -2977,6 +2986,10 @@ Private Sub RenderSelectionAsOutline(ByRef dstDIB As pdDIB, ByRef srcImage As pd
             End If
         
         End If
+        
+        'Update the overlay hash; even though we don't track this locally, it is necessary for overlay and lightbox rendering
+        ' to detect changes to their rendering mode options.
+        m_LastOverlayCache = GenerateArbitraryHash(renderType)
         
     End If
     
