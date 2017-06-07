@@ -280,21 +280,21 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 i = -1
                 Do
                     i = i + 1
-                    If rValues(i) > 0 Then r = r + rValues(i)
+                    r = r + rValues(i)
                 Loop Until (r >= cutoffTotal)
                 r = i
                 
                 i = -1
                 Do
                     i = i + 1
-                    If gValues(i) > 0 Then g = g + gValues(i)
+                    g = g + gValues(i)
                 Loop Until (g >= cutoffTotal)
                 g = i
                 
                 i = -1
                 Do
                     i = i + 1
-                    If bValues(i) > 0 Then b = b + bValues(i)
+                    b = b + bValues(i)
                 Loop Until (b >= cutoffTotal)
                 b = i
                 
@@ -305,16 +305,16 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                    If (y < finalY) Then numOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                    If (y > initY) Then numOfPixels = cPixelIterator.MoveYUp
                 End If
         
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            If (x < finalX) Then numOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If Not suppressMessages Then
