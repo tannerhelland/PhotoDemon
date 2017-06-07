@@ -1311,7 +1311,6 @@ Private Type BitmapData
     Reserved As Long
 End Type
 
-
 'Use GDI+ to resize a DIB.  (Technically, to copy a resized portion of a source image into a destination image.)
 ' The call is formatted similar to StretchBlt, as it used to replace StretchBlt when working with 32bpp data.
 ' FOR FUTURE REFERENCE: after a bunch of profiling on my Win 7 PC, I can state with 100% confidence that
