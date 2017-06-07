@@ -790,7 +790,7 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
     If ShowDialog Then
         
         Dim retRadius As Double
-        If DisplaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK Then
+        If (DisplaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK) Then
             Process "Sharpen selection", False, Str(retRadius), UNDO_SELECTION
         End If
         
@@ -801,44 +801,29 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         'Unselect any existing selection
         pdImages(g_CurrentImage).mainSelection.LockRelease
         pdImages(g_CurrentImage).SetSelectionActive False
-        
-       'Point an array at the current selection mask
-        Dim selMaskData() As Byte
-        Dim selMaskSA As SAFEARRAY2D
-        
-        'Create a second local array.  This will contain the a copy of the selection mask, and we will use it as our source reference
-        ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-        Dim srcDIB As pdDIB
-        Set srcDIB = New pdDIB
-        srcDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.GetMaskDIB
                 
-        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-        Dim x As Long, y As Long
+        'Retrieve just the alpha channel of the current selection, and clone it so that we have two copies
+        Dim tmpArray() As Byte
+        DIBs.RetrieveTransparencyTable pdImages(g_CurrentImage).mainSelection.GetMaskDIB, tmpArray
         
-        'Unsharp masking requires a gaussian blur DIB to operate.  Create one now.
-        QuickBlurDIB srcDIB, sharpenRadius, True
+        Dim tmpDstArray() As Byte
+        ReDim tmpDstArray(0 To pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth - 1, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBHeight - 1) As Byte
+        CopyMemory ByVal VarPtr(tmpDstArray(0, 0)), ByVal VarPtr(tmpArray(0, 0)), pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth * pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBHeight
         
-        'Now that we have a gaussian DIB created in workingDIB, we can point arrays toward it and the source DIB
-        PrepSafeArray selMaskSA, pdImages(g_CurrentImage).mainSelection.GetMaskDIB
-        CopyMemory ByVal VarPtrArray(selMaskData()), VarPtr(selMaskSA), 4
+        'Blur the first temporary array
+        Dim arrWidth As Long, arrHeight As Long
+        arrWidth = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth
+        arrHeight = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBHeight
+        Filters_ByteArray.HorizontalBlur_ByteArray tmpArray, arrWidth, arrHeight, sharpenRadius, sharpenRadius
+        Filters_ByteArray.VerticalBlur_ByteArray tmpArray, arrWidth, arrHeight, sharpenRadius, sharpenRadius
         
-        Dim srcImageData() As Byte
-        Dim srcSA As SAFEARRAY2D
-        PrepSafeArray srcSA, srcDIB
-        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
-        'These values will help us access locations in the array more quickly.
-        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-        Dim xStride As Long, qvDepth As Long
-        qvDepth = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBColorDepth \ 8
-        
-        'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-        ' based on the size of the area to be processed.
+        'We're now going to perform an "unsharp mask" effect, but because we're using a single channel, it goes a bit faster
         Dim progBarCheck As Long
-        SetProgBarMax pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth
+        SetProgBarMax pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBHeight
         progBarCheck = FindBestProgBarValue()
         
-        'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
+        'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10
+        ' for selections (which are predictably feathered, using exact gaussian techniques).
         Dim scaleFactor As Double, invScaleFactor As Double
         scaleFactor = sharpenRadius
         invScaleFactor = 1 - scaleFactor
@@ -847,64 +832,40 @@ Public Sub SharpenCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal s
         iWidth = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth - 1
         iHeight = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBHeight - 1
         
-        Dim blendVal As Double
+        Dim lOrig As Long, lBlur As Long, lDelta As Single, lFull As Single, lNew As Long
+        Dim x As Long, y As Long
         
-        'More color variables - in this case, sums for each color component
-        Dim r As Long, g As Long, b As Long
-        Dim r2 As Long, g2 As Long, b2 As Long
-        Dim newR As Long, newG As Long, newB As Long
-        Dim tLumDelta As Long
-        
-        'The final step of the smart blur function is to find edges, and replace them with the blurred data as necessary
-        For x = 0 To iWidth
-            xStride = x * qvDepth
         For y = 0 To iHeight
-                
-            'Retrieve the original image's pixels
-            r = selMaskData(xStride + 2, y)
-            g = selMaskData(xStride + 1, y)
-            b = selMaskData(xStride, y)
+        For x = 0 To iWidth
             
-            'Now, retrieve the gaussian pixels
-            r2 = srcImageData(xStride + 2, y)
-            g2 = srcImageData(xStride + 1, y)
-            b2 = srcImageData(xStride, y)
+            'Retrieve the original and blurred byte values
+            lOrig = tmpDstArray(x, y)
+            lBlur = tmpArray(x, y)
             
-            tLumDelta = Abs(GetLuminance(r, g, b) - GetLuminance(r2, g2, b2))
-                
-            newR = (scaleFactor * r) + (invScaleFactor * r2)
-            If newR > 255 Then newR = 255
-            If newR < 0 Then newR = 0
-                
-            newG = (scaleFactor * g) + (invScaleFactor * g2)
-            If newG > 255 Then newG = 255
-            If newG < 0 Then newG = 0
-                
-            newB = (scaleFactor * b) + (invScaleFactor * b2)
-            If newB > 255 Then newB = 255
-            If newB < 0 Then newB = 0
+            'Calculate the delta between the two, which is then converted to a blend factor
+            lDelta = Abs(lOrig - lBlur) / 255
             
-            blendVal = tLumDelta / 255
+            'Calculate a "fully" sharpened value; we're going to manually feather between this value and the original,
+            ' based on the delta between the two.
+            lFull = (scaleFactor * lOrig) + (invScaleFactor * lBlur)
             
-            newR = BlendColors(newR, r, blendVal)
-            newG = BlendColors(newG, g, blendVal)
-            newB = BlendColors(newB, b, blendVal)
+            'Feather to arrive at a final "unsharp" value
+            lNew = ((1 - lDelta) * lFull) + (lDelta * lOrig)
+            If (lNew < 0) Then
+                lNew = 0
+            ElseIf (lNew > 255) Then
+                lNew = 255
+            End If
             
-            selMaskData(xStride + 2, y) = newR
-            selMaskData(xStride + 1, y) = newG
-            selMaskData(xStride, y) = newB
-                    
-        Next y
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
+            'Since we're doing a per-pixel loop, we can safely store the result back into the destination array
+            tmpDstArray(x, y) = lNew
+            
         Next x
+            If (x And progBarCheck) = 0 Then SetProgBarVal y
+        Next y
         
-        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
-        
-        CopyMemory ByVal VarPtrArray(selMaskData), 0&, 4
-        Erase selMaskData
-        
-        Set srcDIB = Nothing
+        'Reconstruct the DIB from the finished transparency table
+        DIBs.Construct32bppDIBFromByteMap pdImages(g_CurrentImage).mainSelection.GetMaskDIB, tmpDstArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
@@ -1059,26 +1020,34 @@ Public Sub BorderCurrentSelection(ByVal ShowDialog As Boolean, Optional ByVal bo
         'Bordering a selection requires two passes: a grow pass and a shrink pass.  The results of these two passes are then blended
         ' to create the final bordered selection.
         
-        'Start by creating the grow and shrink DIBs using a median function.
-        Dim growDIB As pdDIB
-        Set growDIB = New pdDIB
-        growDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.GetMaskDIB
+        'First, extract selection data into a byte array so we can use optimized analysis functions
+        Dim arrWidth As Long, arrHeight As Long
+        arrWidth = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth
+        arrHeight = pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBHeight
         
-        Dim shrinkDIB As pdDIB
-        Set shrinkDIB = New pdDIB
-        shrinkDIB.CreateFromExistingDIB pdImages(g_CurrentImage).mainSelection.GetMaskDIB
+        Dim srcArray() As Byte
+        DIBs.RetrieveTransparencyTable pdImages(g_CurrentImage).mainSelection.GetMaskDIB, srcArray
         
-        'Use a median function to dilate and erode the existing mask
-        CreateMedianDIB borderRadius, 1, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.GetMaskDIB, shrinkDIB, False, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth * 2
-        CreateMedianDIB borderRadius, 99, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.GetMaskDIB, growDIB, False, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth * 2, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth
+        'Next, generate a shrink (erode) pass
+        Dim shrinkBytes() As Byte
+        ReDim shrinkBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
+        Filters_ByteArray.Erode_ByteArray borderRadius, PDPRS_Circle, srcArray, shrinkBytes, arrWidth, arrHeight, False, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth * 2
         
-        'Blend those two DIBs together, and use the difference between the two to calculate the new border area
-        pdImages(g_CurrentImage).mainSelection.GetMaskDIB.CreateFromExistingDIB growDIB
-        BitBlt pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBHeight, shrinkDIB.GetDIBDC, 0, 0, vbSrcInvert
+        'Generate a grow (dilate) pass
+        Dim growBytes() As Byte
+        ReDim growBytes(0 To arrWidth - 1, 0 To arrHeight - 1) As Byte
+        Filters_ByteArray.Dilate_ByteArray borderRadius, PDPRS_Circle, srcArray, growBytes, arrWidth, arrHeight, False, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth * 2, pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBWidth
         
-        'Erase the temporary DIBs
-        Set growDIB = Nothing
-        Set shrinkDIB = Nothing
+        'Finally, XOR those results together: that's our border!
+        Dim x As Long, y As Long
+        For y = 0 To arrHeight - 1
+        For x = 0 To arrWidth - 1
+            srcArray(x, y) = shrinkBytes(x, y) Xor growBytes(x, y)
+        Next x
+        Next y
+        
+        'Reconstruct the target DIB from our final array
+        DIBs.Construct32bppDIBFromByteMap pdImages(g_CurrentImage).mainSelection.GetMaskDIB, srcArray
         
         'Ask the selection to find new boundaries.  This will also set all relevant parameters for the modified selection (such as
         ' being non-transformable)
