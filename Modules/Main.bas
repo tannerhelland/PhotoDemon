@@ -337,9 +337,10 @@ Public Sub ContinueLoadingProgram()
     g_Resources.NotifyThemeChange
     Drawing.CacheUIPensAndBrushes
     Paintbrush.InitializeBrushEngine
+    Selections.InitializeSelectionRendering
     
     '*************************************************************************************************************************************
-    ' PhotoDemon works very well with multiple monitors.  Check for such a situation now.
+    ' PhotoDemon works well with multiple monitors.  Check for such a situation now.
     '*************************************************************************************************************************************
     
     #If DEBUGMODE = 1 Then

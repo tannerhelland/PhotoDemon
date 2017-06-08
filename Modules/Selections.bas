@@ -30,6 +30,15 @@ End Enum
     Private Const SEL_GROW = 0, SEL_SHRINK = 1, SEL_BORDER = 2, SEL_FEATHER = 3, SEL_SHARPEN = 4
 #End If
 
+Public Enum PD_SelectionRenderSetting
+    PDSR_RenderMode = 0
+    PDSR_HighlightColor = 1
+End Enum
+
+#If False Then
+    Private Const PDSR_RenderMode = 0, PDSR_HighlightColor = 1
+#End If
+
 'This module caches the current selection mode and/or color, and the viewport pipeline retrieves these cached values as necessary
 ' during rendering.
 Private m_CurSelectionMode As PD_SelectionRender, m_CurSelectionColor As Long
@@ -1284,11 +1293,47 @@ Public Function SelectionsAllowed(ByVal transformableMatters As Boolean) As Bool
     
 End Function
 
+'Called at program startup.  At present, all it does is cache the current user preferences for selection rendering settings;
+' this ensures the settings are up-to-date, even if the user does not activate a specific selection tool.  (Why does this matter?
+' Selections can be loaded directly from file, without ever invoking a tool.)
+Public Sub InitializeSelectionRendering()
+
+    If (Not g_UserPreferences Is Nothing) Then
+        
+        'Rendering mode (marching ants, highlight, etc)
+        m_CurSelectionMode = g_UserPreferences.GetPref_Long("Tools", "SelectionRenderMode", 0)
+        
+        'Highlight mode color
+        Dim tmpString As String
+        tmpString = g_UserPreferences.GetPref_String("Tools", "SelectionHighlightColor", "#FF3A48")
+        m_CurSelectionColor = Colors.GetRGBLongFromHex(tmpString)
+        
+        'TODO: lightbox color, opacity for various modes
+        
+    End If
+
+End Sub
+
 'Whenever a selection render setting changes (like switching between outline and highlight mode), you must call this function
 ' so that we can cache the new render settings.
-Public Sub NotifySelectionRenderChange()
-    m_CurSelectionMode = toolpanel_Selections.cboSelRender.ListIndex
-    m_CurSelectionColor = toolpanel_Selections.csSelectionHighlight.Color
+Public Sub NotifySelectionRenderChange(ByVal settingType As PD_SelectionRenderSetting, ByVal newValue As Variant)
+    
+    Select Case settingType
+        
+        Case PDSR_RenderMode
+            m_CurSelectionMode = newValue
+            
+            'Selection rendering settings are cached in PD's main preferences file.  This allows outside functions to access
+            ' them correctly, even if selection tools have not been loaded this session.  (This can happen if the user runs
+            ' the program, loads an image, then loads a selection directly from file, without invoking a specific tool.)
+            If (Not g_UserPreferences Is Nothing) Then g_UserPreferences.WritePreference "Tools", "SelectionRenderMode", Trim$(Str(m_CurSelectionMode))
+            
+        Case PDSR_HighlightColor
+            m_CurSelectionColor = newValue
+            If (Not g_UserPreferences Is Nothing) Then g_UserPreferences.WritePreference "Tools", "SelectionHighlightColor", Colors.GetHexStringFromRGB(m_CurSelectionColor)
+            
+    End Select
+    
 End Sub
 
 Public Function GetSelectionRenderMode() As PD_SelectionRender

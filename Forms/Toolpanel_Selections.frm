@@ -638,12 +638,12 @@ End Sub
 'The "selection rendering technique" dropdown always receives event processing, even if the current selection
 ' tool does not match the active selection shape.  (Other tool changes are typically restricted by selection type.)
 Private Sub cboSelRender_Click()
-
+    
     'Show or hide the color selector, as appropriate
     csSelectionHighlight.Visible = (cboSelRender.ListIndex = PDSR_Highlight)
     
     'Redraw the viewport
-    Selections.NotifySelectionRenderChange
+    Selections.NotifySelectionRenderChange PDSR_RenderMode, cboSelRender.ListIndex
     If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
@@ -683,7 +683,7 @@ End Sub
 Private Sub csSelectionHighlight_ColorChanged()
     
     'Redraw the viewport
-    Selections.NotifySelectionRenderChange
+    Selections.NotifySelectionRenderChange PDSR_HighlightColor, csSelectionHighlight.Color
     If SelectionsAllowed(False) Then ViewportEngine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
@@ -779,7 +779,13 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     For i = 0 To tudSel.Count - 1
         tudSel(i).Value = 0
     Next i
-
+    
+    'Pull certain universal selection settings from PD's main preferences file
+    If (Not g_UserPreferences Is Nothing) Then
+        cboSelRender.ListIndex = Selections.GetSelectionRenderMode()
+        csSelectionHighlight.Color = Selections.GetSelectionRenderColor()
+    End If
+    
 End Sub
 
 Private Sub sltCornerRounding_Change()
