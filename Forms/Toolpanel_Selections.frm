@@ -691,6 +691,8 @@ End Sub
 Private Sub Form_Load()
     
     'Suspend any visual updates while the form is being loaded
+    ViewportEngine.DisableRendering
+    
     Dim suspendActive As Boolean
     If (g_OpenImageCount > 0) Then
         suspendActive = True
@@ -756,6 +758,8 @@ Private Sub Form_Load()
     If suspendActive Then
         If pdImages(g_CurrentImage).IsSelectionActive Then Selections.SyncTextToCurrentSelection g_CurrentImage
     End If
+    
+    ViewportEngine.EnableRendering
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     UpdateAgainstCurrentTheme

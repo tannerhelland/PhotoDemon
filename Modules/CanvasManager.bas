@@ -71,77 +71,81 @@ End Function
 'Fit the current image onscreen at as large a size as possible (but never larger than 100% zoom)
 Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = False)
     
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If (g_OpenImageCount <> 0) Then
     
-    'Disable AutoScroll, because that messes with our calculations
-    g_AllowViewportRendering = False
+        ViewportEngine.DisableRendering
+            
+        'If the "fit all" zoom value is greater than 100%, use 100%.  Otherwise, use the "fit all" value as-is.
+        Dim newZoomIndex As Long
+        newZoomIndex = g_Zoom.GetZoomFitAllIndex
         
-    'If the "fit all" zoom value is greater than 100%, use 100%.  Otherwise, use the "fit all" value as-is.
-    Dim newZoomIndex As Long
-    newZoomIndex = g_Zoom.GetZoomFitAllIndex
-    
-    If (g_Zoom.GetZoomValue(newZoomIndex) > 1) Then newZoomIndex = g_Zoom.GetZoom100Index
-    
-    'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
-    ' the user switches between loaded images).
-    FormMain.mainCanvas(0).SetZoomDropDownIndex newZoomIndex
-    pdImages(g_CurrentImage).SetZoom newZoomIndex
-    
-    'Re-enable scrolling
-    g_AllowViewportRendering = True
+        If (g_Zoom.GetZoomValue(newZoomIndex) > 1) Then newZoomIndex = g_Zoom.GetZoom100Index
         
-    'Now fix scrollbars and everything
-    If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+        'Update the main canvas zoom drop-down, and the pdImage container for this image (so that zoom is restored properly when
+        ' the user switches between loaded images).
+        FormMain.mainCanvas(0).SetZoomDropDownIndex newZoomIndex
+        pdImages(g_CurrentImage).SetZoom newZoomIndex
+        
+        'Re-enable scrolling
+        ViewportEngine.EnableRendering
+            
+        'Now fix scrollbars and everything
+        If (Not suppressRendering) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+        
+        'Notify external UI elements of the change
+        FormMain.mainCanvas(0).RelayViewportChanges
     
-    'Notify external UI elements of the change
-    FormMain.mainCanvas(0).RelayViewportChanges
-    
+    End If
+
 End Sub
 
 'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
 Public Sub FitOnScreen()
     
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount <> 0) Then
         
-    'Disable AutoScroll, because that messes with our calculations
-    g_AllowViewportRendering = False
-    
-    'Set zoom to the "fit whole" index
-    FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoomFitAllIndex
-    pdImages(g_CurrentImage).SetZoom g_Zoom.GetZoomFitAllIndex
-    
-    'Re-enable scrolling
-    g_AllowViewportRendering = True
+        ViewportEngine.DisableRendering
         
-    'Now fix scrollbars and everything
-    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
-    
-    'Notify external UI elements of the change
-    FormMain.mainCanvas(0).RelayViewportChanges
+        'Set zoom to the "fit whole" index
+        FormMain.mainCanvas(0).SetZoomDropDownIndex g_Zoom.GetZoomFitAllIndex
+        pdImages(g_CurrentImage).SetZoom g_Zoom.GetZoomFitAllIndex
+        
+        'Re-enable scrolling
+        ViewportEngine.EnableRendering
+            
+        'Now fix scrollbars and everything
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
+        
+        'Notify external UI elements of the change
+        FormMain.mainCanvas(0).RelayViewportChanges
+        
+    End If
     
 End Sub
 
 'Center the current image onscreen without changing zoom
 Public Sub CenterOnScreen(Optional ByVal suspendImmediateRedraw As Boolean = False)
     
-    If (g_OpenImageCount = 0) Then Exit Sub
+    If (g_OpenImageCount <> 0) Then
+            
+        'Prevent the viewport from auto-updating on scroll bar events
+        FormMain.mainCanvas(0).SetRedrawSuspension True
         
-    'Prevent the viewport from auto-updating on scroll bar events
-    FormMain.mainCanvas(0).SetRedrawSuspension True
-    
-    'Set both canvas scrollbars to their midpoint
-    FormMain.mainCanvas(0).SetScrollValue PD_HORIZONTAL, (FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL) + FormMain.mainCanvas(0).GetScrollMax(PD_HORIZONTAL)) / 2
-    FormMain.mainCanvas(0).SetScrollValue PD_VERTICAL, (FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL) + FormMain.mainCanvas(0).GetScrollMax(PD_VERTICAL)) / 2
-    
-    'Re-enable scrolling
-    FormMain.mainCanvas(0).SetRedrawSuspension False
+        'Set both canvas scrollbars to their midpoint
+        FormMain.mainCanvas(0).SetScrollValue PD_HORIZONTAL, (FormMain.mainCanvas(0).GetScrollMin(PD_HORIZONTAL) + FormMain.mainCanvas(0).GetScrollMax(PD_HORIZONTAL)) / 2
+        FormMain.mainCanvas(0).SetScrollValue PD_VERTICAL, (FormMain.mainCanvas(0).GetScrollMin(PD_VERTICAL) + FormMain.mainCanvas(0).GetScrollMax(PD_VERTICAL)) / 2
         
-    'Now fix scrollbars and everything
-    If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
-    'Notify external UI elements of the change
-    FormMain.mainCanvas(0).RelayViewportChanges
-    
+        'Re-enable scrolling
+        FormMain.mainCanvas(0).SetRedrawSuspension False
+            
+        'Now fix scrollbars and everything
+        If (Not suspendImmediateRedraw) Then ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        'Notify external UI elements of the change
+        FormMain.mainCanvas(0).RelayViewportChanges
+        
+    End If
+        
 End Sub
 
 'Previously, we could unload images by just unloading their containing form.  As image canvases are all custom-drawn now, this shortcut

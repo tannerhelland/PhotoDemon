@@ -417,12 +417,12 @@ Private Sub CmbZoom_Click()
         
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)
-        If g_AllowViewportRendering Then
+        If ViewportEngine.IsRenderingEnabled Then
             
             'If the user has selected any of the "fit xyz" zoom options, we want to re-center the viewport as part
             ' of updating zoom.  If they have *not* selected this, we want to preserve the current center point
             ' of the viewport.
-            If cmbZoom.ListIndex < g_Zoom.GetZoomFitWidthIndex Then
+            If (cmbZoom.ListIndex < g_Zoom.GetZoomFitWidthIndex) Then
                 ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
             Else
                 ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero

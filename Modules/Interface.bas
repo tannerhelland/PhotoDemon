@@ -447,9 +447,9 @@ Private Sub SyncUI_CurrentImageSettings()
     
     'Restore the zoom value for this particular image (again, only if the form has been initialized)
     If (pdImages(g_CurrentImage).Width <> 0) Then
-        g_AllowViewportRendering = False
+        ViewportEngine.DisableRendering
         FormMain.mainCanvas(0).SetZoomDropDownIndex pdImages(g_CurrentImage).GetZoom
-        g_AllowViewportRendering = True
+        ViewportEngine.EnableRendering
     End If
     
 End Sub

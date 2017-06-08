@@ -54,6 +54,11 @@ Private m_ZoomRatio As Double
 'm_FrontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
 Private m_FrontBuffer As pdDIB
 
+'In most cases, viewport rendering is automatically triggered as underlying actions require it, but if a bunch of requests need to
+' be batched, it's useful to forcibly delay automatic redraws.  This variable tracks forcible viewport suspensions; interact with it
+' via the safe Enable/Disable wrapper functions, below.
+Private m_DisableViewportRendering As Boolean
+
 'As part of continued viewport optimizations, we track the amount of time spent in each viewport stage.  Note that stage 1
 ' is ignored because it is only called under specific circumstances that are very difficult to profile accurately
 ' (e.g. changes in zoom values or switching between images).
@@ -691,11 +696,11 @@ End Sub
 ' handled it.)
 Private Function ViewportRenderingAllowed(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas) As Boolean
     
-    'First, see if the public g_AllowViewportRendering tracker has been forcibly disabled.
+    'First, see if viewport rendering has been forcibly disabled.
     ' (Detailed explanation: viewport redraws are automatically triggered by the main window's resize notifications.  When new images
     '  are loaded, the image tabstrip will likely appear, which in turn changes the available viewport space, just like a resize
-    '  event.  To prevent this behavior from triggering multiple viewport render requests, g_AllowViewportRendering exists.)
-    ViewportRenderingAllowed = g_AllowViewportRendering
+    '  event.  To prevent this behavior from triggering multiple viewport render requests, m_DisableViewportRendering exists.)
+    ViewportRenderingAllowed = (Not m_DisableViewportRendering)
     If ViewportRenderingAllowed Then
         
         'Make sure the source and destination rendering targets are valid
@@ -709,6 +714,21 @@ Private Function ViewportRenderingAllowed(ByRef srcImage As pdImage, ByRef dstCa
         
     End If
     
+End Function
+
+'Call this function to disable *all* viewport pipeline stages.  Note that viewport rendering will remain disabled until
+' EnableRendering() is called - so do not forget to call it when you're done!
+Public Sub DisableRendering()
+    m_DisableViewportRendering = True
+End Sub
+
+'Rendering is enabled by default.  This function only needs to be called after DisableRendering() has been forcibly invoked.
+Public Sub EnableRendering()
+    m_DisableViewportRendering = False
+End Sub
+
+Public Function IsRenderingEnabled() As Boolean
+    IsRenderingEnabled = (Not m_DisableViewportRendering)
 End Function
 
 'When all images have been unloaded, the temporary front buffer can also be erased to keep memory usage as low as possible.

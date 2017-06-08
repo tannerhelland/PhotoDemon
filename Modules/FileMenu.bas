@@ -538,7 +538,7 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         newImage.SetDPI newDPI, newDPI, False
         
         'Disable viewport rendering, then reset the main viewport
-        g_AllowViewportRendering = False
+        ViewportEngine.DisableRendering
         FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
         
         'Reset the file format markers; at save-time engine, PD will run heuristics on the image's contents and suggest a better format accordingly.
@@ -562,13 +562,13 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         'If the user wants us to resize the image to fit on-screen, do that now
         If (g_AutozoomLargeImages = 0) Then FitImageToViewport True
         
-        'g_AllowViewportRendering may have been reset by this point (by the FitImageToViewport sub, among others), so set it back to False, then
+        'Viewport rendering may have been reset by this point (by the FitImageToViewport sub, among others), so disable it again, then
         ' update the zoom combo box to match the zoom assigned by the window-fit function.
-        g_AllowViewportRendering = False
+        ViewportEngine.DisableRendering
         FormMain.mainCanvas(0).SetZoomDropDownIndex newImage.GetZoom
     
         'Now that the image's window has been fully sized and moved around, use ViewportEngine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
-        g_AllowViewportRendering = True
+        ViewportEngine.EnableRendering
         ViewportEngine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
         
         'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
