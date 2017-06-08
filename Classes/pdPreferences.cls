@@ -19,23 +19,20 @@ Attribute VB_Exposed = False
 'Last update: let this class handle preset saving/loading for the main window panels (instead of each panel managing
 '             a separate, standalone preset file on its own)
 '
-'This class is the newest incarnation of the former "INI Handler" module.  It is responsible for managing all interaction with user
-' settings, which are currently stored in an XML file.  This class is also capable of generating a default preferences file
-' (necessary for first run), determining system folders (also necessary for first run), and saving/loading any user preferences
-' to/from a persistent file on the user's HDD.
+'This class is the modern incarnation of PD's old "INI file" module.  It is responsible for managing all interaction
+' with persistent user settings.
 '
-'Because the preferences XML file may receive new preferences with any new version of the software, this class must also handle the
-' possibility of missing values.  As such, any requests for preferences must specify a default value, which will be used if the
-' requested preference does not exist in the file.  Also, if a preference update is requested and that preference cannot be found,
-' it will automatically be appended to the end of its section.
+'By default, user settings are stored in an XML file in the \Data\ subfolder.  This class will generate a default
+' settings file on first run.
 '
-'When PhotoDemon is run for the first time, a default preferences file is created.  To increase usability, this file is automatically
-' populated with intelligent preferences - such as setting the user's initial Open/Save folders to the system "Pictures" folder,
-' and automatically setting the "Temp" folder to the OS Temp folder.
+'Because the settings XML file may receive new settings with each new version, all setting interaction functions
+' require the caller to specify a default value, which will be used if the requested setting does not exist in the
+' XML file.  Also note that if code attempts to write a setting value, but that setting value does not exist,
+' it will automatically be appended as a "new" setting at the end of its respective section.
 '
-'Finally, please do not interact with the XML file directly.  Always pass preference writes and reads through this class.  I cannot
-' guarantee that the XML format or style will remain consistent between versions, but as long as you stick to the wrapping functions
-' in this class, preferences will be read/written correctly.
+'Finally, let me state again that you should *never* interact with the XML settings file directly.  Always pass
+' setting read/writes through this class.  I cannot guarantee that the XML format or style will remain consistent
+' between versions, but as long as you stick to the wrapping functions in this class, settings will be handled correctly.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -540,6 +537,8 @@ Private Sub CreateNewPreferencesFile()
     
     m_XMLEngine.WriteTag "Tools", "", True
         m_XMLEngine.WriteTag "ClearSelectionAfterCrop", "True"
+        m_XMLEngine.WriteTag "SelectionRenderMode", "0"
+        m_XMLEngine.WriteTag "SelectionHighlightColor", "#FF3A48"
     m_XMLEngine.CloseTag "Tools"
     m_XMLEngine.WriteBlankLine
     
@@ -736,7 +735,7 @@ Private Function GetPreference(ByRef strSectionHeader As String, ByRef strVariab
 End Function
 
 'Write a string value to the preferences file
-Friend Function WritePreference(strSectionHeader As String, strVariableName As String, strValue As String) As Boolean
+Friend Function WritePreference(ByVal strSectionHeader As String, ByVal strVariableName As String, ByVal strValue As String) As Boolean
 
     'I find it helpful to give preference strings names with spaces, to improve readability.  However, XML doesn't allow tags to have
     ' spaces in the name.  So remove any spaces before interacting with the XML file.
