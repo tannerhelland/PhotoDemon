@@ -1180,7 +1180,7 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     ConvertCanvasCoordsToImageCoords Me, pdImages(g_CurrentImage), x, y, imgX, imgY, True
     
     'Suspend automatic viewport redraws until we are done with our calculations
-    g_AllowViewportRendering = False
+    ViewportEngine.DisableRendering
     
     'Calculate a new zoom value
     If StatusBar.IsZoomEnabled Then
@@ -1192,7 +1192,7 @@ Public Sub CanvasView_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByV
     End If
     
     'Re-enable automatic viewport redraws
-    g_AllowViewportRendering = True
+    ViewportEngine.EnableRendering
     
     'Request a manual redraw from ViewportEngine.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.

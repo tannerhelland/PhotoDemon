@@ -1268,7 +1268,7 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     CheckParentMonitor True
     
     'Reset the main viewport's scroll bars to (0, 0)
-    g_AllowViewportRendering = False
+    ViewportEngine.DisableRendering
     FormMain.mainCanvas(0).SetScrollVisibility PD_BOTH, True
     FormMain.mainCanvas(0).SetScrollValue PD_BOTH, 0
     
@@ -1279,14 +1279,14 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     'If the user wants us to resize the image to fit on-screen, do that now
     If (g_AutozoomLargeImages = 0) Then
         
-        'Normally we would want to re-enable "g_AllowViewportRendering", but the FitImageToViewport function handles that
+        'Normally we would want to re-enable viewport rendering, but the FitImageToViewport function handles that
         ' reinitialization internally.
         FitImageToViewport
     
     'If the "view 100%" option is checked instead, reset the zoom listbox to match and paint the main window immediately
     Else
         FormMain.mainCanvas(0).SetZoomDropDownIndex srcImage.GetZoom
-        g_AllowViewportRendering = True
+        ViewportEngine.EnableRendering
         ViewportEngine.Stage1_InitializeBuffer srcImage, FormMain.mainCanvas(0), VSR_ResetToZero
     End If
     

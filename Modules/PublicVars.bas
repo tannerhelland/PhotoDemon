@@ -85,9 +85,6 @@ Public g_IsProgramCompiled As Boolean
 ' are being run in a compiled EXE, when actually their properties are just being written as part of .exe compiling.
 Public g_IsProgramRunning As Boolean
 
-'Temporary loading variable to disable Autozoom feature
-Public g_AllowViewportRendering As Boolean
-
 'For the Open and Save common dialog boxes, it's polite to remember what format the user used last, then default
 ' the boxes to that.  (Note that these values are stored in the preferences file as well, but that is only accessed
 ' upon program load and unload.)
