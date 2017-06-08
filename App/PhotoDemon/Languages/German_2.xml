@@ -6,8 +6,8 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2545</langversion>
-<langstatus>Fertig</langstatus>
+<langversion>6.8.2761</langversion>
+<langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
 
@@ -1763,7 +1763,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>PNGQuant could not write file.  Default 32bpp image was saved instead.</original>
-<translation>PNGQuant konnte Datei nicht schreiben. Standard 32bpp Bild wurde stattdessen gespeichert.</translation>
+<translation>PNGQuant konnte Datei nicht schreiben. Default 32bpp Bild wurde stattdessen gespeichert.</translation>
 </phrase>
 
 <!-- Plugin_PNGQuant.bas contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
@@ -1878,8 +1878,8 @@ Melden Sie dies bitte via Menü "Hilfe > Fehlerbericht eireichen".</translation>
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
 <translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie sich auf einem Wechselmedium befindet, verwenden Sie bitte wieder das richtige Medium (Floppy-Disk, CD, USB- oder portables Laufwerk). Wenn die Datei sich nicht auf einem portablen Medium befindet, stellen Sie sicher, dass:
-1) die Datei nicht inzwischen gelöscht wurde und ...
-2) der Speicherort der Datei korrekt angegeben wurde.</translation>
+1) die Datei nicht gelöscht worden ist und ...
+2) der angegebene Speicherort der Datei in PhotoDemon korrekt ist.</translation>
 </phrase>
 
 <phrase>
@@ -4037,7 +4037,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Reset all settings to their default values.</original>
-<translation>Alle Einstellungen auf deren Standardwerte zurücksetzen.</translation>
+<translation>Alle Einstellungen auf deren Defaultwerte zurücksetzen.</translation>
 </phrase>
 
 <phrase>
@@ -5957,7 +5957,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>This copy of PhotoDemon is up to date.</original>
-<translation>Diese Kopie von PhotoDemon ist auf dem neuesten Stand.</translation>
+<translation>Dieses Exemplar von PhotoDemon ist auf dem neuesten Stand.</translation>
 </phrase>
 
 <phrase>
@@ -5978,7 +5978,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <original>This copy of PhotoDemon is the newest version available.
 
 (Current version: %1.%2.%3)</original>
-<translation>Diese Kopie von PhotoDemon ist die neueste verfügbare Version.
+<translation>Dieses Exemplar von PhotoDemon ist die neueste verfügbare Version.
 
 (Aktuelle Version: %1.%2.%3)</translation>
 </phrase>
@@ -8465,7 +8465,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>default</original>
-<translation>Standard</translation>
+<translation>Default</translation>
 </phrase>
 
 <phrase>
@@ -8520,7 +8520,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Because this image has not been saved before, you will be prompted to provide a file name for it.</original>
-<translation>Da dieses Bild bisher nicht gespeichert worden ist, werden Sie aufgefordert, einen Dateinamen dafür anzugeben.</translation>
+<translation>Da dieses Bild bisher nicht gespeichert worden ist, werden Sie aufgefordert, einen Dateinamen für dieses anzugeben.</translation>
 </phrase>
 
 <phrase>
@@ -11705,7 +11705,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Einstellungen" und wählen "Auf fehlende Plugins beim Programmstart prüfen" aus. Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Voreinstellungen" und aktivieren "Auf fehlende Plugins beim Programmstart prüfen". Das nächste Mal, wenn Sie PhotoDemon laden, wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
 </phrase>
 
 <phrase>
@@ -11999,7 +11999,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>low (default)</original>
-<translation>Niedrig (Standard)</translation>
+<translation>Niedrig (Default)</translation>
 </phrase>
 
 <phrase>
@@ -12192,7 +12192,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>basic (default)</original>
-<translation>Grundlegend (Standard)</translation>
+<translation>Grundlegend (Default)</translation>
 </phrase>
 
 <phrase>
@@ -12202,7 +12202,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>please wait while a new preview image is created</original>
-<translation>Bitte warten, während ein neues Vorschaubild erstelle wird</translation>
+<translation>Bitte warten, während ein neues Vorschaubild erstellt wird</translation>
 </phrase>
 
 <phrase>
@@ -12335,7 +12335,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</original>
-<translation></translation>
+<translation>PhotoDemon is Copyright %1 2001-2017 by Tanner Helland and Contributors</translation>
 </phrase>
 
 <!-- Help_About.frm contains 14 phrases. 3 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -12709,7 +12709,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>stretching to new size  (default)</original>
-<translation>Auf neue Größe strecken (Standard)</translation>
+<translation>Auf neue Größe strecken (Default)</translation>
 </phrase>
 
 <phrase>
@@ -12852,7 +12852,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>default (above current layer)</original>
-<translation>Standard (über aktuellem Layer)</translation>
+<translation>Default (über aktuellem Layer)</translation>
 </phrase>
 
 <phrase>
@@ -13143,7 +13143,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation>Wenn das aktuelle Bild noch nicht gespeichert wurde, werden Sie aufgefordert, es vor dem Schließen zu speichern.</translation>
+<translation>Wenn das aktuelle Bild nicht gespeichert worden ist, werden Sie aufgefordert, es vor dem Schließen zu speichern.</translation>
 </phrase>
 
 <phrase>
@@ -13153,7 +13153,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Da Sie Eingabeaufforderungen zum Speichern abgeschaltet haben (via Bearbeiten > Einstellungen), werden Sie KEINE Aufforderung erhalten, um dieses Bild vor dem Schließen zu speichern.</translation>
+<translation>Da Sie Eingabeaufforderungen zum Speichern abgeschaltet haben (via Bearbeiten > Voreinstellungen), werden Sie KEINE Aufforderung erhalten, um dieses Bild vor dem Schließen zu speichern.</translation>
 </phrase>
 
 <phrase>
@@ -13483,7 +13483,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Ants</original>
-<translation></translation>
+<translation>Ameisen</translation>
 </phrase>
 
 <phrase>
@@ -13730,12 +13730,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>h. padding</original>
-<translation>Polsterung horiz.</translation>
+<translation>Padding horiz.</translation>
 </phrase>
 
 <phrase>
 <original>v. padding</original>
-<translation>Polsterung vert.</translation>
+<translation>Padding vert.</translation>
 </phrase>
 
 <phrase>
@@ -14053,7 +14053,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.</original>
 <translation>Leider konnte die Master-Sprachdatei auf diesem PC nicht gefunden werden. Diese Datei ist im offiziellen Release von PhotoDemon enthalten, aber möglicherweise in Entwickler- oder Beta-Builds.
 
-Um mit einer neuen Übersetzung zu beginnen, laden Sie bitte eine frische Kopie von PhotoDemon herunter photodemon.org.</translation>
+Um mit einer neuen Übersetzung zu beginnen, laden Sie bitte ein frisches Exemplar von PhotoDemon herunter unter photodemon.org.</translation>
 </phrase>
 
 <phrase>
@@ -14065,7 +14065,7 @@ Um mit einer neuen Übersetzung zu beginnen, laden Sie bitte eine frische Kopie 
 <original>Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date.
 
 To continue, please download a fresh copy of PhotoDemon from photodemon.org.</original>
-<translation>Leider konnte diese Sprachdatei nicht geladen werden. Es ist möglich, dass die Kopie auf diesem PC veraltet ist.
+<translation>Leider konnte diese Sprachdatei nicht geladen werden. Es ist möglich, dass das Exemplar auf diesem PC veraltet ist.
 
 Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unter photodemon.org.</translation>
 </phrase>
@@ -14323,12 +14323,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>when using the "Save As" command, set the default file format according to</original>
-<translation>Bei Verwendung von "Speichern unter" das Standarddateiformat entspr. festlegen auf</translation>
+<translation>Bei Verwendung des Befehls "Speichern unter" das Default-Dateiformat entsprechend festlegen auf</translation>
 </phrase>
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>Bei Verwendung von "Speichern"</translation>
+<translation>Wenn "Speichern" verwendet wird</translation>
 </phrase>
 
 <phrase>
@@ -14343,7 +14343,7 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>default file format when saving</original>
-<translation>Standarddateiformat beim Speichern</translation>
+<translation>Default-Dateiformat beim Speichern</translation>
 </phrase>
 
 <phrase>
@@ -14513,12 +14513,12 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 
 <phrase>
 <original>Saving preferences</original>
-<translation>Einstellungen werden gespeichert</translation>
+<translation>Voreinstellungen werden gespeichert</translation>
 </phrase>
 
 <phrase>
 <original>Preferences updated.</original>
-<translation>Einstellungen aktualisiert.</translation>
+<translation>Voreinstellungen aktualisiert.</translation>
 </phrase>
 
 <phrase>
@@ -14535,14 +14535,14 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <original>This action will reset all preferences to their default values.  It cannot be undone.
 
 Are you sure you want to continue?</original>
-<translation>Diese Aktion wird alle Einstellungen auf deren Standardwerte zurücksetzen. Dies kann nicht rückgängig gemacht werden.
+<translation>Diese Aktion wird alle Voreinstellungen auf deren Defaultwerte zurücksetzen. Es kann nicht rückgängig gemacht werden.
 
 Wollen Sie wirklich fortfahren?</translation>
 </phrase>
 
 <phrase>
 <original>Reset all preferences</original>
-<translation>Alle Einstellungen zurücksetzen</translation>
+<translation>Alle Voreinstellungen zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -14557,7 +14557,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed.</original>
-<translation>Die Titelleiste des Hauptfensters von PhotoDemon zeigt Informationen über das derzeitig geladene Bild an. Verwenden Sie diese Einstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
+<translation>Die Titelleiste des Hauptfensters von PhotoDemon zeigt Informationen über das derzeitig geladene Bild an. Verwenden Sie diese Voreinstellung, um zu steuern, wie viele Informationen angezeigt werden.</translation>
 </phrase>
 
 <phrase>
@@ -14662,7 +14662,7 @@ Wollen Sie wirklich fortfahren?</translation>
 
 <phrase>
 <original>Most photo editors use the format of the current image as the default in the "Save As" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the "last used" option.</original>
-<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Standard im Dialog "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es hilfreich PhotoDemon daran zu erinnern - daher die "zuletzt verwendet"-Option.</translation>
+<translation>Die meisten Fotoeditoren verwenden das Format des aktuellen Bildes als Default im Dialog "Speichern unter". Beim Arbeiten mit RAW-Bildern, die eventuell als JPEG gespeichert werden, ist es hilfreich PhotoDemon daran zu erinnern - daher die "zuletzt verwendet"-Option.</translation>
 </phrase>
 
 <phrase>
@@ -14819,7 +14819,7 @@ Wollen Sie wirklich fortfahren?</translation>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistische oder andere - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plugins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzereinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
+<translation>Die Entwickler von PhotoDemon nehmen Privatsphäre bzw. Datenschutz sehr ernst, sodass keine Informationen - statistische oder andere - während des Update-Prozesses hochgeladen werden. Updates umfassen einfach das Herunterladen verschiedener kleiner XML-Dateien von photodemon.org. Diese Dateien enthalten die neueste Software, Plugins und Sprache - einschließlich ihrer Versionsnummern. Wenn aktualsierte Versionen gefunden werden und die Benutzervoreinstellungen es erlauben, dann werden die aktualisierten Dateien automatisch heruntergeladen und gepatcht.
 
 Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, photodemon.org von Zeit zu Zeit zu besuchen, um auf neue Versionen zu prüfen.</translation>
 </phrase>
