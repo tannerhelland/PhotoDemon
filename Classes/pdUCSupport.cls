@@ -217,7 +217,7 @@ Friend Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
         Set m_Colors = New pdThemeColors
         Dim colorCount As UCSUPPORT_COLOR_LIST: colorCount = [_Count]
         m_Colors.InitializeColorList "GenericPDControl", colorCount
-        If Not g_IsProgramRunning Then UpdateColorList
+        If (Not g_IsProgramRunning) Then UpdateColorList
         
         'Flicker-free double-buffered window painting.  For IDE support of windowless controls, we have no choice but to subclass.
         ' (Note that in older versions, we only requested erase events if noBackBufferRequired = TRUE.  That has since changed,
@@ -264,7 +264,7 @@ Friend Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
             If g_IsProgramRunning Then
                 m_MouseEvents.AddInputTracker m_hWnd, appCommandEvents
                 m_ControlIsNotInteractive = (Not controlIsInteractive)
-                If m_ControlIsNotInteractive Then m_MouseEvents.SetSystemCursor IDC_ARROW
+                If m_ControlIsNotInteractive Then m_MouseEvents.SetSystemCursor IDC_ARROW, False
             End If
         End If
         
@@ -731,7 +731,6 @@ Private Sub m_FocusDetector_GotFocusReliable()
 End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
-    If Not (m_MouseEvents Is Nothing) Then m_MouseEvents.SetSystemCursor IDC_ARROW
     m_MouseButtonState = 0
     RaiseEvent LostFocusAPI
 End Sub

@@ -352,21 +352,17 @@ Public Sub Shutdown()
 End Sub
 
 'Assign a system cursor to the underlying hWnd.  Call this function without a parameter to reset the cursor to the default arrow.
-Public Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT)
+Public Sub SetSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT, Optional ByVal applyImmediately As Boolean = True)
     
     'Load the relevant cursor handle
-    Dim tmpCursorHandle As Long
     If (systemCursorType = IDC_DEFAULT) Then
-        tmpCursorHandle = LoadCursor(0, IDC_ARROW)
+        m_CursorHandle = LoadCursor(0, IDC_ARROW)
     Else
-        tmpCursorHandle = LoadCursor(0, systemCursorType)
+        m_CursorHandle = LoadCursor(0, systemCursorType)
     End If
     
     'Check for duplicate cursor requests, and ignore them as necessary
-    If (GetCursor() <> tmpCursorHandle) Then
-        m_CursorHandle = tmpCursorHandle
-        ApplyCursor False
-    End If
+    If applyImmediately Then ApplyCursor False
         
 End Sub
 
@@ -822,6 +818,8 @@ Private Function HandleMouseMove(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal 
         
         RaiseEvent MouseEnter(m_retMouseButton, m_retShiftConstants, m_MouseX, m_MouseY)
         
+    Else
+        ApplyCursor False
     End If
         
     'There are two ways to raise MouseMove events for a window.  If high-resolution tracking is active,
