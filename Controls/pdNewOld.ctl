@@ -395,7 +395,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     End If
     
     'Next, draw borders around the new and old items
-    If g_IsProgramRunning Then
+    If g_IsProgramRunning And (bufferDC <> 0) Then
             
         Dim cSurface As pd2DSurface, cPen As pd2DPen
         Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True

@@ -365,6 +365,14 @@ Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
 End Sub
 
+'Shortcut function for setting the slider L/R gradient colors and Value all at once.  I've gone back and forth on the
+' best way to do this (in PD, the color dialog needs this ability), because setting each property individually
+' obviously works, but it also causes a lot of redundant redraws, which isn't great performance-wise.  This helper
+' function seems like the least of many evils.
+Public Sub SetGradientColorsAndValueAtOnce(ByVal leftGradientColor As OLE_COLOR, ByVal rightGradientColor As OLE_COLOR, ByVal newValue As Single)
+    pdssPrimary.SetGradientColorsAndValueAtOnce leftGradientColor, rightGradientColor, newValue
+End Sub
+
 Private Sub pdssPrimary_Change()
     Me.Value = pdssPrimary.Value
 End Sub

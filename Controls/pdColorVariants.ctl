@@ -733,7 +733,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    If g_IsProgramRunning Then
+    If g_IsProgramRunning And (bufferDC <> 0) Then
     
         Dim borderColor As Long
         borderColor = m_Colors.RetrieveColor(PDCV_Border, Me.Enabled, False, False)
