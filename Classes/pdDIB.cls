@@ -772,10 +772,11 @@ Public Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
             If colorSetIsSkippable Then
                 FillMemory m_dibBits, m_dibStride * m_dibHeight, 0&
             Else
+                
                 If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
                 
                 Drawing2D.QuickCreatePainter cPainter
-                Drawing2D.QuickCreateSurfaceFromDC cSurface, m_dibDC, False
+                Drawing2D.QuickCreateSurfaceFromDC cSurface, Me.GetDIBDC, False
                 Drawing2D.QuickCreateSolidBrush cBrush, initialColor, initialAlpha / 2.55
                 cPainter.FillRectangleF cSurface, cBrush, 0, 0, imgWidth + 1, imgHeight + 1
                 Set cSurface = Nothing
