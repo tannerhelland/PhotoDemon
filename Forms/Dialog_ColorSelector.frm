@@ -365,7 +365,7 @@ Private Sub cmdBarMini_OKClick()
     hstColors.PushNewHistoryItem CStr(m_NewColor)
     
     'Save all last-used settings to file
-    If Not (m_lastUsedSettings Is Nothing) Then
+    If (Not m_lastUsedSettings Is Nothing) Then
         m_lastUsedSettings.SaveAllControlValues
         m_lastUsedSettings.SetParentForm Nothing
     End If
@@ -470,37 +470,28 @@ End Sub
 
 'Use this sub to resync all text boxes to the current RGB/HSV values
 Private Sub RedrawAllTextBoxes()
-
+    
     'We don't want the _Change events for the text boxes firing while we resync them, so we disable any resyncing in advance
     m_suspendTextResync = True
     
-    'Start by matching up the text values themselves
-    sldRGB(0).Value = m_Red
-    sldRGB(1).Value = m_Green
-    sldRGB(2).Value = m_Blue
+    'As of 7.0, new helper functions allow us to change slider values and gradient colors simultaneously.
+    ' This improves performance by coalescing redraw events.
+    sldRGB(0).SetGradientColorsAndValueAtOnce RGB(0, m_Green, m_Blue), RGB(255, m_Green, m_Blue), m_Red
+    sldRGB(1).SetGradientColorsAndValueAtOnce RGB(m_Red, 0, m_Blue), RGB(m_Red, 255, m_Blue), m_Green
+    sldRGB(2).SetGradientColorsAndValueAtOnce RGB(m_Red, m_Green, 0), RGB(m_Red, m_Green, 255), m_Blue
     
+    'The HSV sliders have their own redraw code.  They do not support RGB gradients (as their gradients must
+    ' be calculated in the HSV space).
     sldHSV(0).Value = m_Hue * 359
     sldHSV(1).Value = m_Saturation * 100
     sldHSV(2).Value = m_Value * 100
     
-    'Next, we need to prep all our color bar sliders
-    
-    'The RGB sliders support standard RGB gradients, so no special redraws are required
-    sldRGB(0).GradientColorLeft = RGB(0, m_Green, m_Blue)
-    sldRGB(0).GradientColorRight = RGB(255, m_Green, m_Blue)
-    sldRGB(1).GradientColorLeft = RGB(m_Red, 0, m_Blue)
-    sldRGB(1).GradientColorRight = RGB(m_Red, 255, m_Blue)
-    sldRGB(2).GradientColorLeft = RGB(m_Red, m_Green, 0)
-    sldRGB(2).GradientColorRight = RGB(m_Red, m_Green, 255)
-    
-    'The HSV sliders have their own redraw code.  They do not support RGB gradients (as their gradients must
-    ' be calculated in the HSV space).
     sldHSV(0).RequestOwnerDrawChange
     sldHSV(1).RequestOwnerDrawChange
     sldHSV(2).RequestOwnerDrawChange
     
     'Update the hex representation box
-    If (Not m_suspendHexInput) Then txtHex = Colors.GetHexStringFromRGB(RGB(m_Red, m_Green, m_Blue))
+    If (Not m_suspendHexInput) Then txtHex.Text = Colors.GetHexStringFromRGB(RGB(m_Red, m_Green, m_Blue))
     
     'Re-enable syncing
     m_suspendTextResync = False
@@ -509,10 +500,10 @@ End Sub
 
 Private Sub hstColors_DrawHistoryItem(ByVal histIndex As Long, ByVal histValue As String, ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
-    If ((Len(histValue) <> 0) And g_IsProgramRunning) Then
+    If (Len(histValue) <> 0) And g_IsProgramRunning And (targetDC <> 0) Then
     
         Dim tmpRectF As RECTF
-        CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+        If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
         If (Not m_Painter Is Nothing) Then
             
@@ -637,9 +628,9 @@ End Sub
 Private Sub noColor_DrawNewItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
     
     Dim tmpRectF As RECTF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If g_IsProgramRunning And (Not m_Painter Is Nothing) Then
+    If g_IsProgramRunning And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long
@@ -658,9 +649,9 @@ End Sub
 Private Sub noColor_DrawOldItem(ByVal targetDC As Long, ByVal ptrToRectF As Long)
 
     Dim tmpRectF As RECTF
-    CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, 16&
+    If (ptrToRectF <> 0) Then CopyMemory ByVal VarPtr(tmpRectF), ByVal ptrToRectF, LenB(tmpRectF)
     
-    If g_IsProgramRunning And (Not m_Painter Is Nothing) Then
+    If g_IsProgramRunning And (Not m_Painter Is Nothing) And (targetDC <> 0) Then
         
         'Note that this control *is* color-managed inside this dialog
         Dim cmResult As Long
@@ -765,39 +756,44 @@ Private Sub sldHSV_RenderTrackImage(Index As Integer, dstDIB As pdDIB, ByVal lef
     
     Dim gradientValue As Double, gradientMax As Double
     gradientMax = (rightBoundary - leftBoundary)
+    If (gradientMax <> 0#) Then gradientMax = 1 / gradientMax Else gradientMax = 1#
     
     Dim targetColor As Long, targetHeight As Long, targetDC As Long
     targetDC = dstDIB.GetDIBDC
     targetHeight = dstDIB.GetDIBHeight
     
     'Simple gradient-ish code implementation of drawing any individual color component
-    Dim x As Long
-    For x = 0 To dstDIB.GetDIBWidth - 1
+    If (targetDC <> 0) Then
         
-        If (x <= leftBoundary) Then
-            targetColor = leftColor
-        ElseIf (x >= rightBoundary) Then
-            targetColor = rightColor
-        Else
-            gradientValue = (x - leftBoundary) / gradientMax
-        
-            If (Index = 0) Then
-                h = gradientValue
-            ElseIf (Index = 1) Then
-                s = gradientValue
-            ElseIf (Index = 2) Then
-                v = gradientValue
+        Dim x As Long
+        For x = 0 To dstDIB.GetDIBWidth - 1
+            
+            If (x <= leftBoundary) Then
+                targetColor = leftColor
+            ElseIf (x >= rightBoundary) Then
+                targetColor = rightColor
+            Else
+                gradientValue = (x - leftBoundary) * gradientMax
+            
+                If (Index = 0) Then
+                    h = gradientValue
+                ElseIf (Index = 1) Then
+                    s = gradientValue
+                ElseIf (Index = 2) Then
+                    v = gradientValue
+                End If
+                
+                Colors.HSVtoRGB h, s, v, r, g, b
+                targetColor = RGB(r, g, b)
+                
             End If
             
-            Colors.HSVtoRGB h, s, v, r, g, b
-            targetColor = RGB(r, g, b)
+            'Draw the finished color onto the target DIB
+            GDI.DrawLineToDC targetDC, x, 0, x, targetHeight, targetColor
             
-        End If
-        
-        'Draw the finished color onto the target DIB
-        GDI.DrawLineToDC targetDC, x, 0, x, targetHeight, targetColor
-        
-    Next x
+        Next x
+    
+    End If
     
 End Sub
 

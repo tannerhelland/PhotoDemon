@@ -805,7 +805,7 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     
     'This control's render code relies on GDI+ exclusively, so there's no point calling it in the IDE - sorry!
-    If g_IsProgramRunning Then
+    If g_IsProgramRunning And (bufferDC <> 0) Then
     
         'Relay any recently changed/modified colors to the edit box, so it can repaint itself to match
         RelayUpdatedColorsToEditBox

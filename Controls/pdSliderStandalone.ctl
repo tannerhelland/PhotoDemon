@@ -420,10 +420,10 @@ Public Property Let Value(ByVal newValue As Double)
         ' silently forced in-bounds.  This is by design.
         If (m_Value < m_Min) Then m_Value = m_Min
         If (m_Value > m_Max) Then m_Value = m_Max
-                
+        
         'Because we support subpixel positioning for the slider, value changes always require a redraw, even if the slider's
         ' position only changes by a miniscule amount
-        RedrawBackBuffer True
+        RedrawBackBuffer
         
         If Me.Enabled Then RaiseEvent Change
         PropertyChanged "Value"
@@ -467,6 +467,32 @@ End Sub
 
 Public Sub SetPositionAndSize(ByVal newLeft As Long, ByVal newTop As Long, ByVal newWidth As Long, ByVal newHeight As Long)
     ucSupport.RequestFullMove newLeft, newTop, newWidth, newHeight, True
+End Sub
+
+'Shortcut function for setting the slider L/R gradient colors and Value all at once.  I've gone back and forth on the
+' best way to do this (in PD, the color dialog needs this ability), because setting each property individually
+' obviously works, but it also causes a lot of redundant redraws, which isn't great performance-wise.  This helper
+' function seems like the least of many evils.
+Public Sub SetGradientColorsAndValueAtOnce(ByVal leftGradientColor As OLE_COLOR, ByVal rightGradientColor As OLE_COLOR, ByVal newValue As Single)
+
+    'Set both left and right gradient colors, then generate a new gradient DIB (but do *not* yet redraw the slider itself)
+    leftGradientColor = ConvertSystemColor(leftGradientColor)
+    m_GradientColorLeft = leftGradientColor
+    
+    rightGradientColor = ConvertSystemColor(rightGradientColor)
+    m_GradientColorRight = rightGradientColor
+    
+    CreateGradientTrack
+    RenderTrack False, True
+    
+    PropertyChanged "GradientColorLeft"
+    PropertyChanged "GradientColorRight"
+    
+    'Finally, set the .Value property.  Note that this control - by design - skips redraws if a .Value change doesn't
+    ' actually change the existing value; to ensure a redraw occurs, trick it into recognizing a changed value.
+    m_Value = newValue - 1
+    Me.Value = newValue
+
 End Sub
 
 'This function serves two purposes: most of the time, we use it for hit-detection against the track slider, but some functions
@@ -751,7 +777,7 @@ End Sub
 
 'Render a custom slider to the slider area.  Note that the background gradient, if any, should already have been created
 ' in a separate CreateGradientTrack request.
-Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False)
+Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False, Optional ByVal skipScreenEntirely As Boolean = False)
     
     'Drawing is done in several stages.  The bulk of the slider is rendered to a persistent slider-only DIB, which contains everything
     ' but the knob and "highlighted" portion of the track.  These are rendered in a separate step, as they are the most common update
@@ -869,7 +895,7 @@ Private Sub RenderTrack(Optional ByVal refreshImmediately As Boolean = False)
     End With
         
     'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
-    RedrawBackBuffer refreshImmediately
+    If (Not skipScreenEntirely) Then RedrawBackBuffer refreshImmediately
         
 End Sub
 
@@ -977,7 +1003,7 @@ Private Sub CreateOwnerDrawnTrack()
     If (Not g_IsProgramRunning) Then Exit Sub
     
     Dim trackRadius As Single
-    trackRadius = (m_TrackDiameter) \ 2
+    trackRadius = (m_TrackDiameter) * 0.5
     
     'It's important that the renderer know where the left and right edges of the final track will appear.  Note that
     ' these are *not* the same as the left and right edges of the DIB.  (The rounded edges of the default track style
@@ -1103,7 +1129,7 @@ Private Sub ApplyAlphaToGradientDIB()
     ' to the internal DIB.  This will allows us to alpha-blend the custom DIB over a copy of the background line, to retain a small border.
     
     Dim trackRadius As Single
-    trackRadius = (m_TrackDiameter) \ 2
+    trackRadius = (m_TrackDiameter) * 0.5
     
     'Start by creating the image we're going to use as our alpha mask.
     Dim alphaMask As pdDIB
@@ -1114,22 +1140,26 @@ Private Sub ApplyAlphaToGradientDIB()
     
     'Next, render a slightly smaller line than the typical track onto the alpha mask.  Antialiasing will automatically set the relevant
     ' alpha bytes for the region of interest.
-    Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, CBool(m_KnobStyle = DefaultKnobStyle)
-    If (m_KnobStyle = DefaultKnobStyle) Then
-        Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
-        m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
-    
-    'When using a hollow knob, we make the underlying gradient much larger, so it's easier for the user to see the color
-    ' beneath the current position.
-    ElseIf (m_KnobStyle = SquareStyle) Then
-    
-        Dim cBrush As pd2DBrush
-        Drawing2D.QuickCreateSolidBrush cBrush, vbBlack
+    If (alphaMask.GetDIBDC <> 0) Then
         
-        Dim tmpRectF As RECTF
-        GetKnobRectF tmpRectF
-        m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 3, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
+        Drawing2D.QuickCreateSurfaceFromDC cSurface, alphaMask.GetDIBDC, CBool(m_KnobStyle = DefaultKnobStyle)
+        If (m_KnobStyle = DefaultKnobStyle) Then
+            Drawing2D.QuickCreateSolidPen cPen, m_TrackDiameter - 1, vbBlack, , , P2_LC_Round
+            m_Painter.DrawLineF cSurface, cPen, trackRadius, m_GradientDIB.GetDIBHeight \ 2, m_GradientDIB.GetDIBWidth - trackRadius, m_GradientDIB.GetDIBHeight \ 2
         
+        'When using a hollow knob, we make the underlying gradient much larger, so it's easier for the user to see the color
+        ' beneath the current position.
+        ElseIf (m_KnobStyle = SquareStyle) Then
+        
+            Dim cBrush As pd2DBrush
+            Drawing2D.QuickCreateSolidBrush cBrush, vbBlack
+            
+            Dim tmpRectF As RECTF
+            GetKnobRectF tmpRectF
+            m_Painter.FillRectangleF_AbsoluteCoords cSurface, cBrush, trackRadius - m_TrackDiameter + 2, (m_GradientDIB.GetDIBHeight \ 2) - (tmpRectF.Height / 2) + 3, m_GradientDIB.GetDIBWidth, (m_GradientDIB.GetDIBHeight \ 2) + (tmpRectF.Height / 2) - 2
+            
+        End If
+    
     End If
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself

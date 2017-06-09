@@ -615,7 +615,7 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
     'There are a couple different ways to apply the repaint.  If the caller specifies a fill rect, we obey it, but if they don't,
     ' we want to wipe the entire buffer.  As a convenience to the caller, we also apply the backcolor inside the IDE.
     If (Not m_NoBackBufferMode) Then
-        If g_IsProgramRunning Then
+        If g_IsProgramRunning And (m_BackBuffer.GetDIBDC <> 0) Then
             
             'Use GDI+ to apply the fill
             Dim cSurface As pd2DSurface, cBrush As pd2DBrush
@@ -1193,7 +1193,7 @@ End Sub
 Friend Sub RequestIDERepaint(ByVal targetDC As Long)
 
     If (Not g_IsProgramRunning) And (m_hDC = 0) And (Not m_NoBackBufferMode) Then
-        If Not (m_BackBuffer Is Nothing) Then
+        If (Not m_BackBuffer Is Nothing) Then
             CacheWindowDimensions
             If m_CustomCaptionPaintingActive Then
                 AskForARepaint False

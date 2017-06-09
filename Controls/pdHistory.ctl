@@ -601,7 +601,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
     Dim bufferDC As Long
     bufferDC = ucSupport.GetBackBufferDC(True, m_Colors.RetrieveColor(PDH_Background, Me.Enabled))
     
-    If g_IsProgramRunning Then
+    If g_IsProgramRunning And (bufferDC <> 0) Then
         
         Dim i As Long
         
@@ -628,7 +628,7 @@ Private Sub RedrawBackBuffer(Optional ByVal paintImmediately As Boolean = False)
         
         'Next, draw a grid around the rendered history items
         Dim cSurface As pd2DSurface, cPen As pd2DPen
-        If (m_HistoryCount > 0) Then
+        If (m_HistoryCount > 0) And (bufferDC <> 0) Then
             
             Drawing2D.QuickCreateSurfaceFromDC cSurface, bufferDC, True
             Drawing2D.QuickCreateSolidPen cPen, 1#, m_Colors.RetrieveColor(PDH_Border, Me.Enabled), 100#

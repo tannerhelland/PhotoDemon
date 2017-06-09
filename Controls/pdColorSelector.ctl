@@ -434,7 +434,7 @@ Private Sub RedrawBackBuffer()
     bufferDC = ucSupport.GetBackBufferDC(True)
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable button portion.
-    If g_IsProgramRunning Then
+    If g_IsProgramRunning And (bufferDC <> 0) Then
     
         'Calculate default border colors.  (Note that there are two: one for hover state, and one for default state)
         Dim defaultBorderColor As Long, activeBorderColor As Long
