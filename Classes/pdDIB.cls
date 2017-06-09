@@ -764,7 +764,7 @@ Public Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
         'This DIB is fine as-is!  Simply reset color and alpha-premultiplication to match the requested values.
         If (colorDepth = 24) Then
             If (initialColor <> vbWhite) And (initialColor <> vbBlack) Then initialColor = TranslateColor(initialColor)
-            GDI.FillRectToDC m_dibDC, 0, 0, imgWidth, imgHeight, initialColor
+            GDI.FillRectToDC Me.GetDIBDC, 0, 0, imgWidth, imgHeight, initialColor
         Else
             
             colorSetIsSkippable = (initialAlpha = 0) And (initialColor = 0)
@@ -784,6 +784,9 @@ Public Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
             End If
                     
         End If
+        
+        'We probably created (or reused) an existing DC during the creation phase; if we did, clear it now
+        Me.FreeFromDC
                 
     Else
     
@@ -893,6 +896,10 @@ Public Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
             Else
                 Me.EraseDIB
             End If
+            
+            'Our parent may not use this DIB right away, so free it from its DC; the DC will be auto-created when
+            ' it's next requested.
+            Me.FreeFromDC
             
         End If
         
