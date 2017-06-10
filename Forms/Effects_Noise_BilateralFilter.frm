@@ -178,7 +178,7 @@ Private Sub InitSpatialFunc(ByVal kernelSize As Long, ByVal spatialFactor As Dou
     
         Dim i As Long, k As Long
         
-        ReDim spatialFunc(-kernelSize To kernelSize, -kernelSize To kernelSize) As Double
+        ReDim m_spatialFunc(-kernelSize To kernelSize, -kernelSize To kernelSize) As Double
         
         For i = -kernelSize To kernelSize
             For k = -kernelSize To kernelSize
