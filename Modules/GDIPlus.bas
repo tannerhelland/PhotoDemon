@@ -1376,37 +1376,56 @@ End Function
 
 'Simpler rotate/flip function, and limited to the constants specified by the enum.
 Public Function GDIPlusRotateFlipDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotationType As GP_RotateFlip) As Boolean
+    
+    'Wrap a GDI+ bitmap handle around the source DIB
+    Dim hGdipBitmap As Long
+    If GetGdipBitmapHandleFromDIB(hGdipBitmap, srcDIB) Then
+        
+        'Apply the rotation
+        If (GdipImageRotateFlip(hGdipBitmap, rotationType) = GP_OK) Then
+            
+            'Resize the target DIB to match
+            Dim newWidth As Long, newHeight As Long
+            GdipGetImageWidth hGdipBitmap, newWidth
+            GdipGetImageHeight hGdipBitmap, newHeight
+    
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            If (dstDIB.GetDIBWidth <> newWidth) Or (dstDIB.GetDIBHeight <> newHeight) Or (dstDIB.GetDIBColorDepth <> srcDIB.GetDIBColorDepth) Then
+                dstDIB.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth, 0
+            End If
+    
+            'Copy the rotated source into the destination DIB
+            Dim hGraphics As Long
+            If (GdipCreateFromHDC(dstDIB.GetDIBDC, hGraphics) = GP_OK) Then
+        
+                'For performance reasons, allow the renderer to copy pixels instead of blending them (as the target image
+                ' is guaranteed to be empty).  Note that we don't care if this fails; the result will be correct
+                ' either way.
+                GdipSetCompositingMode hGraphics, GP_CM_SourceCopy
+        
+                'Render the rotated image
+                GDIPlusRotateFlipDIB = GdipDrawImageI(hGraphics, hGdipBitmap, 0, 0) = GP_OK
+        
+                'Release both the destination graphics object and the source bitmap object
+                GdipDeleteGraphics hGraphics
+                
+            End If
+            
+        End If
+        
+        GdipDisposeImage hGdipBitmap
+        
+    End If
+    
+End Function
 
-    GDIPlusRotateFlipDIB = True
-    
-    'We need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
-    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
-    Dim tBitmap As Long
-    GetGdipBitmapHandleFromDIB tBitmap, srcDIB
-    
-    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
-    
-    'Apply the rotation
-    GdipImageRotateFlip tBitmap, rotationType
-    
-    'Resize the target DIB
-    Dim newWidth As Long, newHeight As Long
-    GdipGetImageWidth tBitmap, newWidth
-    GdipGetImageHeight tBitmap, newHeight
-    
-    dstDIB.CreateBlank newWidth, newHeight, srcDIB.GetDIBColorDepth, 0
-    
-    'Obtain a GDI+ handle to the target DIB
-    Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.GetDIBDC, iGraphics
-    
-    'Render the rotated image
-    GdipDrawImage iGraphics, tBitmap, 0, 0
-    
-    'Release both the destination graphics object and the source bitmap object
-    GdipDeleteGraphics iGraphics
-    GdipDisposeImage tBitmap
-    
+'In-place rotate/flip function, which reduces the need for extra allocations
+Public Function GDIPlusRotateFlip_InPlace(ByRef srcDIB As pdDIB, ByVal rotationType As GP_RotateFlip) As Boolean
+    Dim hGdipBitmap As Long
+    If GetGdipBitmapHandleFromDIB(hGdipBitmap, srcDIB) Then
+        GDIPlusRotateFlip_InPlace = GdipImageRotateFlip(hGdipBitmap, rotationType) = GP_OK
+        GdipDisposeImage hGdipBitmap
+    End If
 End Function
 
 'Use GDI+ to rotate a DIB.  (Technically, to copy a rotated portion of a source image into a destination image.)
