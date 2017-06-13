@@ -2030,14 +2030,12 @@ Public Function CropNullPaddedLayer() As Boolean
         
         'With our work complete, point ImageData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
         
         'If we made it all the way here, our search for null borders completed successfully.
         
         'If all border values are 0, return FALSE.  This basically means that the interesting bits of the layer
         ' extend to the full size of the image, so we can't trim it.
         If (newLeft = 0) And (newTop = 0) And (newRight = 0) And (newBottom = 0) Then
-            Debug.Print "Layer null padding scan completed successfully, but no trimmable edges were found."
             CropNullPaddedLayer = False
         Else
         
@@ -2045,12 +2043,14 @@ Public Function CropNullPaddedLayer() As Boolean
             Dim tmpCropDIB As pdDIB
             Set tmpCropDIB = New pdDIB
             tmpCropDIB.CreateBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
-            Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
             BitBlt tmpCropDIB.GetDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.GetDIBDC, newLeft, newTop, vbSrcCopy
             tmpCropDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication
             
+            'Want to know what was cropped?  Use this line to report:
+            'Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
+            
             'Replace the current layer DIB with our temporary DIB
-            layerDIB.CreateFromExistingDIB tmpCropDIB
+            Set layerDIB = tmpCropDIB
             
             'Modify our layer offsets to reflect our new size
             myLayerData.l_OffsetX = newLeft
@@ -2060,7 +2060,8 @@ Public Function CropNullPaddedLayer() As Boolean
             CropNullPaddedLayer = True
             
         End If
-        
+    
+    'Failsafe check for nonexistent layer DIB
     Else
         Debug.Print "Request for layer null padding trim denied - layer DIB does not currently exist!"
         CropNullPaddedLayer = False
@@ -2070,22 +2071,17 @@ End Function
 
 'Null-pad this layer (with transparent pixels) against the size of our parent pdImage.  Note that the parent pdImage's dimensions
 ' must be explicitly passed, because layers do not maintain a link to their parent.
-' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.  (It really isn't, but there are some egregious performance
-'       considerations with layers that lie off-canvas, so a solution needs to be carefully planned.)
 Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long, Optional ByVal applyCanvasTransformsFirst As Boolean = True)
 
-    'If this layer has transforms applied to it, we have to make them permanent before proceeding.  Otherwise, the resulting image may
-    ' not look right.
+    'If this layer has transforms applied to it, we have to make them permanent before proceeding.
     '
     'Note that this behavior can be overridden if a function is ABSOLUTELY CERTAIN that the end result won't botch the transform, but this
     ' is only true for pixel transforms that operate strictly in separate x/y domains, such as resizing.  Note that this setting may be
     ' forcibly ignored if the layer has complex affine transforms active (like rotation), because those transforms change the (x, y) domain
     ' of the layer relative to the (x, y) domain of the image.
     Dim mustMakeCanvasTransformsPermanent As Boolean
-    mustMakeCanvasTransformsPermanent = applyCanvasTransformsFirst
-    mustMakeCanvasTransformsPermanent = mustMakeCanvasTransformsPermanent Or Me.AffineTransformsActive(False)
-    
-    If mustMakeCanvasTransformsPermanent Then MakeCanvasTransformsPermanent parentImageWidth, parentImageHeight
+    mustMakeCanvasTransformsPermanent = applyCanvasTransformsFirst Or Me.AffineTransformsActive(False)
+    If mustMakeCanvasTransformsPermanent Then Me.MakeCanvasTransformsPermanent parentImageWidth, parentImageHeight
     
     'We can skip this step for layers that are already the size of the image.  This is common for background layers.
     Dim nullPaddingUnnecessary As Boolean
@@ -2101,16 +2097,15 @@ Public Sub ConvertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
         'Create a blank destination DIB at the size of the parent image
         Dim tmpPaddingDIB As pdDIB
         Set tmpPaddingDIB = New pdDIB
-        tmpPaddingDIB.CreateBlank parentImageWidth, parentImageHeight, 32, 0
+        tmpPaddingDIB.CreateBlank parentImageWidth, parentImageHeight, 32, 0, 0
     
         'Copy the current layer into the temporary DIB, with proper offsets applied
         BitBlt tmpPaddingDIB.GetDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.GetDIBWidth, layerDIB.GetDIBHeight, layerDIB.GetDIBDC, 0, 0, vbSrcCopy
     
         'Replace our current layer DIB with the temporary DIB
-        Dim alphaPremultiplicationState As Boolean: alphaPremultiplicationState = layerDIB.GetAlphaPremultiplication
+        tmpPaddingDIB.SetInitialAlphaPremultiplicationState layerDIB.GetAlphaPremultiplication
         Set Me.layerDIB = tmpPaddingDIB
-        Me.layerDIB.SetInitialAlphaPremultiplicationState alphaPremultiplicationState
-    
+        
         'Reset layer offset values
         myLayerData.l_OffsetX = 0
         myLayerData.l_OffsetY = 0
