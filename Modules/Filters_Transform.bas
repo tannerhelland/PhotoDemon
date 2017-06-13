@@ -3,10 +3,10 @@ Attribute VB_Name = "Filters_Transform"
 'Image Transformations Interface (including flip/mirror/rotation/crop/etc)
 'Copyright 2003-2017 by Tanner Helland
 'Created: 25/January/03
-'Last updated: 08/May/14
-'Last update: convert rotate 90/270 functions to use GDI+; this gives a small but welcome speed improvement
+'Last updated: 13/June/17
+'Last update: routine code-cleanup, minor optimizations
 '
-'Runs all image transformations, including rotate, flip, mirror and crop at present.
+'Functions for generic 2D transformations, including rotate, flip, mirror and crop.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -225,7 +225,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     
         'Update the current image size
         pdImages(g_CurrentImage).UpdateSize
-        DisplaySize pdImages(g_CurrentImage)
+        Interface.DisplaySize pdImages(g_CurrentImage)
         
         Message "Finished. "
         SetProgBarVal 0
@@ -359,6 +359,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         Dim r As Long, g As Long, b As Long
         Dim thisAlpha As Long, origAlpha As Long, blendAlpha As Double
         Dim srcQuickX As Long, srcQuickY As Long, dstQuickX As Long, selQuickX As Long
+        Const ONE_DIVIDED_BY_255 As Double = 1# / 255#
         
         Dim x As Long, y As Long
         Dim imgWidth As Long, imgHeight As Long
@@ -432,7 +433,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
                         r = srcImageData(srcQuickX + 2, srcQuickY)
                         
                         'Calculate a new multiplier, based on the strength of the selection at this location
-                        blendAlpha = thisAlpha / 255
+                        blendAlpha = thisAlpha * ONE_DIVIDED_BY_255
                         
                         'Apply the multiplier to the existing pixel data (which is already premultiplied, saving us a bunch of time now)
                         dstImageData(dstQuickX, y) = b * blendAlpha
@@ -496,12 +497,15 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         
     End If
     
-    'Update the viewport.  For full-image crops
+    'Update the viewport.  For full-image crops, we need to refresh the entire viewport pipeline (as the image size
+    ' may have changed).
     If (targetLayerIndex = -1) Then
         pdImages(g_CurrentImage).UpdateSize False, selectionWidth, selectionHeight
-        DisplaySize pdImages(g_CurrentImage)
+        Interface.DisplaySize pdImages(g_CurrentImage)
         ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         CanvasManager.CenterOnScreen
+    
+    'For individual layers, we can use some existing viewport pipeline data
     Else
         ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
@@ -516,7 +520,7 @@ End Sub
 Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
-    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
+    flipAllLayers = (targetLayerIndex = -1)
 
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
@@ -575,7 +579,7 @@ End Sub
 Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
-    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
+    flipAllLayers = (targetLayerIndex = -1)
     
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
@@ -630,12 +634,11 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     
 End Sub
 
-'Rotate an image 90 clockwise
-' TODO: test PlgBlt as an alternative implementation (PD currently uses GDI+, which is not the fastest kid on the block)
+'Rotate an image 90 degrees clockwise
 Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
-    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
+    flipAllLayers = (targetLayerIndex = -1)
     
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
@@ -645,11 +648,9 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Message "Rotating image clockwise..."
     
-    'A temporary DIB will hold the contents of the layer as it is being rotated
     Dim copyDIB As pdDIB
     Set copyDIB = New pdDIB
     
-    'Lots of helper variables for a function like this
     Dim imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
@@ -690,15 +691,10 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         copyDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.CreateBlank tmpLayerRef.GetLayerHeight(False), tmpLayerRef.GetLayerWidth(False), 32
+        tmpLayerRef.layerDIB.CreateBlank imgHeight, imgWidth, 32
         
         'Use GDI+ to apply the rotation
-        
-        'Full rotation call for reference:
-        'GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, 90, InterpolationModeNearestNeighbor
-        
-        'Simple rotate/flip call:
-        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_90FlipNone
+        GDI_Plus.GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_90FlipNone
         
         'Mark the correct alpha state and remove any null-padding
         tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
@@ -715,7 +711,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'Update the current image size, if necessary
     If flipAllLayers Then
         pdImages(g_CurrentImage).UpdateSize False, imgHeight, imgWidth
-        DisplaySize pdImages(g_CurrentImage)
+        Interface.DisplaySize pdImages(g_CurrentImage)
     End If
     
     Message "Finished. "
@@ -728,11 +724,11 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     
 End Sub
 
-'Rotate an image 180
+'Rotate an image 180 degrees
 Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
-    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
+    flipAllLayers = (targetLayerIndex = -1)
     
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
@@ -787,12 +783,11 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     
 End Sub
 
-'Rotate an image 90 counter-clockwise
-' TODO: test PlgBlt as an alternative implementation (PD currently uses GDI+, which is not the fastest kid on the block)
+'Rotate an image 90 degrees counter-clockwise
 Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Dim flipAllLayers As Boolean
-    If targetLayerIndex = -1 Then flipAllLayers = True Else flipAllLayers = False
+    flipAllLayers = (targetLayerIndex = -1)
     
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
@@ -802,11 +797,9 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
 
     Message "Rotating image counter-clockwise..."
     
-    'A temporary DIB will hold the contents of the layer as it is being rotated
     Dim copyDIB As pdDIB
     Set copyDIB = New pdDIB
     
-    'Lots of helper variables for a function like this
     Dim imgWidth As Long, imgHeight As Long
     imgWidth = pdImages(g_CurrentImage).Width
     imgHeight = pdImages(g_CurrentImage).Height
@@ -847,23 +840,18 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         copyDIB.CreateFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.CreateBlank tmpLayerRef.GetLayerHeight(False), tmpLayerRef.GetLayerWidth(False), 32
+        tmpLayerRef.layerDIB.CreateBlank imgHeight, imgWidth, 32
         
         'Use GDI+ to apply the rotation
-        
-        'Full rotate reference:
-        'GDIPlusRotateDIB tmpLayerRef.layerDIB, (tmpLayerRef.layerDIB.getDIBWidth - copyDIB.getDIBWidth) / 2, (tmpLayerRef.layerDIB.getDIBHeight - copyDIB.getDIBHeight) / 2, copyDIB.getDIBWidth, copyDIB.getDIBHeight, copyDIB, 0, 0, copyDIB.getDIBWidth, copyDIB.getDIBHeight, -90, InterpolationModeNearestNeighbor
-        
-        'Simpler rotate/flip only reference:
-        GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_270FlipNone
+        GDI_Plus.GDIPlusRotateFlipDIB copyDIB, tmpLayerRef.layerDIB, GP_RF_270FlipNone
         
         'Mark the correct alpha state and remove any null-padding
         tmpLayerRef.layerDIB.SetInitialAlphaPremultiplicationState True
         If flipAllLayers Then tmpLayerRef.CropNullPaddedLayer
         
-        'Notify the parent image of the change
+        'Notify the parent of the change
         pdImages(g_CurrentImage).NotifyImageChanged UNDO_LAYER, i
-        
+    
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
     
@@ -872,7 +860,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'Update the current image size, if necessary
     If flipAllLayers Then
         pdImages(g_CurrentImage).UpdateSize False, imgHeight, imgWidth
-        DisplaySize pdImages(g_CurrentImage)
+        Interface.DisplaySize pdImages(g_CurrentImage)
     End If
     
     Message "Finished. "
@@ -890,21 +878,21 @@ End Sub
 Public Function GetInterpolatedVal(ByVal x1 As Double, ByVal y1 As Double, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
         
     'Retrieve the four surrounding pixel values
-    Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
+    Dim topLeft As Single, topRight As Single, bottomLeft As Single, bottomRight As Single
     topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
     topRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1))
     bottomLeft = iData(Int(x1) * iDepth + iOffset, Int(y1 + 1))
     bottomRight = iData(Int(x1 + 1) * iDepth + iOffset, Int(y1 + 1))
     
     'Calculate blend ratios
-    Dim yBlend As Double
-    Dim xBlend As Double, xBlendInv As Double
+    Dim yBlend As Single
+    Dim xBlend As Single, xBlendInv As Single
     yBlend = y1 - Int(y1)
     xBlend = x1 - Int(x1)
     xBlendInv = 1 - xBlend
     
     'Blend in the x-direction
-    Dim topRowColor As Double, bottomRowColor As Double
+    Dim topRowColor As Single, bottomRowColor As Single
     topRowColor = topRight * xBlend + topLeft * xBlendInv
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
@@ -918,7 +906,7 @@ End Function
 Public Function GetInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, ByVal xMax As Long, yMax As Long, ByRef iData() As Byte, ByRef iOffset As Long, ByRef iDepth As Long) As Byte
         
     'Retrieve the four surrounding pixel values
-    Dim topLeft As Double, topRight As Double, bottomLeft As Double, bottomRight As Double
+    Dim topLeft As Single, topRight As Single, bottomLeft As Single, bottomRight As Single
     topLeft = iData(Int(x1) * iDepth + iOffset, Int(y1))
     If Int(x1) = xMax Then
         topRight = iData(0 + iOffset, Int(y1))
@@ -946,14 +934,14 @@ Public Function GetInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, B
     End If
     
     'Calculate blend ratios
-    Dim yBlend As Double
-    Dim xBlend As Double, xBlendInv As Double
+    Dim yBlend As Single
+    Dim xBlend As Single, xBlendInv As Single
     yBlend = y1 - Int(y1)
     xBlend = x1 - Int(x1)
     xBlendInv = 1 - xBlend
     
     'Blend in the x-direction
-    Dim topRowColor As Double, bottomRowColor As Double
+    Dim topRowColor As Single, bottomRowColor As Single
     topRowColor = topRight * xBlend + topLeft * xBlendInv
     bottomRowColor = bottomRight * xBlend + bottomLeft * xBlendInv
     
@@ -997,7 +985,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     
     'Finally, update the parent image's size and DPI values
     pdImages(g_CurrentImage).UpdateSize False, curLayerBounds.Width, curLayerBounds.Height
-    DisplaySize pdImages(g_CurrentImage)
+    Interface.DisplaySize pdImages(g_CurrentImage)
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
     ' appearance of any of the layers, we can leave it as-is!
@@ -1040,12 +1028,12 @@ Public Sub MenuFitCanvasToAllLayers()
         With curLayerBounds
         
             'Check for new minimum offsets
-            If .Left < dstLeft Then dstLeft = .Left
-            If .Top < dstTop Then dstTop = .Top
+            If (.Left < dstLeft) Then dstLeft = .Left
+            If (.Top < dstTop) Then dstTop = .Top
             
             'Check for new maximum right/top
-            If .Left + .Width > dstRight Then dstRight = .Left + .Width
-            If .Top + .Height > dstBottom Then dstBottom = .Top + .Height
+            If (.Left + .Width > dstRight) Then dstRight = .Left + .Width
+            If (.Top + .Height > dstBottom) Then dstBottom = .Top + .Height
         
         End With
     
@@ -1066,7 +1054,7 @@ Public Sub MenuFitCanvasToAllLayers()
     
     'Finally, update the parent image's size
     pdImages(g_CurrentImage).UpdateSize False, (dstRight - dstLeft), (dstBottom - dstTop)
-    DisplaySize pdImages(g_CurrentImage)
+    Interface.DisplaySize pdImages(g_CurrentImage)
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
     ' appearance of any of the layers, we can leave it as-is!
@@ -1127,8 +1115,10 @@ Public Sub TrimImage()
         
         'If this pixel is transparent, keep scanning.  Otherwise, note that we have found a non-transparent pixel
         ' and exit the loop.
-        If srcImageData(x * 4 + 3, y) > 0 Then colorFails = True
-        If colorFails Then Exit For
+        If (srcImageData(x * 4 + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
         
     Next x
         If colorFails Then Exit For
@@ -1139,11 +1129,9 @@ Public Sub TrimImage()
     '2) The loop progressed part-way through the image and terminated
     
     'Check for case (1) and warn the user if it occurred
-    If Not colorFails Then
+    If (Not colorFails) Then
     
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-        Erase srcImageData
-        
         SetProgBarVal 0
         ReleaseProgressBar
         
@@ -1168,8 +1156,10 @@ Public Sub TrimImage()
         quickVal = x * 4
     For y = initY To finalY
     
-        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
-        If colorFails Then Exit For
+        If (srcImageData(quickVal + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
         
     Next y
         If colorFails Then Exit For
@@ -1188,8 +1178,10 @@ Public Sub TrimImage()
         quickVal = x * 4
     For y = initY To finalY
     
-        If srcImageData(quickVal + 3, y) > 0 Then colorFails = True
-        If colorFails Then Exit For
+        If (srcImageData(quickVal + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
         
     Next y
         If colorFails Then Exit For
@@ -1209,8 +1201,10 @@ Public Sub TrimImage()
     For y = finalY To initY Step -1
     For x = initX To finalX
         
-        If srcImageData(x * 4 + 3, y) > 0 Then colorFails = True
-        If colorFails Then Exit For
+        If (srcImageData(x * 4 + 3, y) <> 0) Then
+            colorFails = True
+            Exit For
+        End If
         
     Next x
         If colorFails Then Exit For
@@ -1251,7 +1245,7 @@ Public Sub TrimImage()
     
         'Finally, update the parent image's size
         pdImages(g_CurrentImage).UpdateSize False, (newRight - newLeft), (newBottom - newTop)
-        DisplaySize pdImages(g_CurrentImage)
+        Interface.DisplaySize pdImages(g_CurrentImage)
     
         'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
         ' appearance of any of the layers, we can leave it as-is!
