@@ -1899,8 +1899,8 @@ Private Sub m_MetadataTimer_Timer()
                             If (Not pdImages(curImageID) Is Nothing) Then
                             
                                 'Create the imgMetadata object as necessary, and load the selected metadata into it!
-                                If (pdImages(curImageID).imgMetadata Is Nothing) Then Set pdImages(curImageID).imgMetadata = New pdMetadata
-                                pdImages(curImageID).imgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
+                                If (pdImages(curImageID).ImgMetadata Is Nothing) Then Set pdImages(curImageID).ImgMetadata = New pdMetadata
+                                pdImages(curImageID).ImgMetadata.LoadAllMetadata Mid$(mdString, startPosition, terminalPosition - startPosition), curImageID
                                 
                             End If
                         End If
@@ -3891,13 +3891,13 @@ Private Sub MnuMetadata_Click(Index As Integer)
         'Map photo location
         Case 3
             
-            If Not pdImages(g_CurrentImage).imgMetadata.HasGPSMetadata Then
+            If Not pdImages(g_CurrentImage).ImgMetadata.HasGPSMetadata Then
                 PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly + vbApplicationModal + vbInformation, "No GPS data found"
                 Exit Sub
             End If
             
             Dim gMapsURL As String, latString As String, lonString As String
-            If pdImages(g_CurrentImage).imgMetadata.FillLatitudeLongitude(latString, lonString) Then
+            If pdImages(g_CurrentImage).ImgMetadata.FillLatitudeLongitude(latString, lonString) Then
                 
                 'Build a valid Google maps URL (you can use Google to see what the various parameters mean)
                                 

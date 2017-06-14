@@ -631,15 +631,21 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
             ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
             If pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
-                FormMain.MnuEdit(4).Enabled = True
                 FormMain.MnuEdit(5).Enabled = True
             Else
-                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-                FormMain.MnuEdit(4).Enabled = False
                 FormMain.MnuEdit(5).Enabled = False
+            End If
+            
+            'Repeat the above steps, but use the "Repeat" detection algorithm (which uses slightly different criteria;
+            ' e.g. "Rotate Whole Image" cannot be faded, but it can be repeated)
+            If pdImages(g_CurrentImage).undoManager.DoesStackContainRepeatableCommand(tmpActionName) Then
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
+                FormMain.MnuEdit(4).Enabled = True
+            Else
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+                FormMain.MnuEdit(4).Enabled = False
             End If
             
             'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)

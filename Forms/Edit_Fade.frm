@@ -140,7 +140,7 @@ Private Sub Form_Load()
     'Retrieve a copy of the relevant previous image state
     Set m_prevLayerDIB = New pdDIB
     
-    If Not pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False) Then
+    If (Not pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(m_prevLayerDIB, m_relevantLayerID, m_actionName, False)) Then
         
         'Many checks are performed prior to initiating this form, to make sure a valid previous Undo state exists - so this failsafe
         ' code should never trigger.  FYI!

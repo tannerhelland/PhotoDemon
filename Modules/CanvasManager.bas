@@ -32,7 +32,7 @@ Public Function AddImageToMasterCollection(ByRef srcImage As pdImage) As Boolean
         
         'Activate the image and assign it a unique ID.  (IMPORTANT: at present, the ID always correlates to the
         ' image's position in the collection.  Do not change this behavior.)
-        pdImages(g_NumOfImagesLoaded).IsActive = True
+        pdImages(g_NumOfImagesLoaded).ChangeActiveState True
         pdImages(g_NumOfImagesLoaded).imageID = g_NumOfImagesLoaded
         
         'Newly loaded images are always auto-activated.
@@ -173,7 +173,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         If redrawScreen Then
         
             If (g_OpenImageCount > 0) Then
-                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
+                ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
             Else
                 FormMain.mainCanvas(0).ClearCanvas
             End If
@@ -396,7 +396,7 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
     If (Not pdImages(g_CurrentImage) Is Nothing) And refreshScreen Then
         
-        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.GetHScrollValue, pdImages(g_CurrentImage).imgViewport.GetVScrollValue
+        ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).ImgViewport.GetHScrollValue, pdImages(g_CurrentImage).ImgViewport.GetVScrollValue
         
         'Reflow any image-window-specific chrome (status bar, rulers, etc)
         FormMain.mainCanvas(0).AlignCanvasView
@@ -414,18 +414,18 @@ End Sub
 'Find out whether the mouse pointer is over image contents or just the viewport
 Public Function IsMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcImage As pdImage) As Boolean
 
-    If (srcImage.imgViewport Is Nothing) Then
+    If (srcImage.ImgViewport Is Nothing) Then
         IsMouseOverImage = False
         Exit Function
     End If
     
     'Make sure the image is currently visible in the viewport
-    If srcImage.imgViewport.GetIntersectState Then
+    If srcImage.ImgViewport.GetIntersectState Then
         
         'Remember: the imgViewport's intersection rect contains the intersection of the canvas and the image.
         ' If the target point lies inside this, it's over the image!
         Dim intRect As RECTF
-        srcImage.imgViewport.GetIntersectRectCanvas intRect
+        srcImage.ImgViewport.GetIntersectRectCanvas intRect
         IsMouseOverImage = PDMath.IsPointInRectF(x1, y1, intRect)
         
     Else
@@ -437,7 +437,7 @@ End Function
 'Find out whether the mouse pointer is over a given layer in an image
 Public Function IsMouseOverLayer(ByVal imgX As Long, ByVal imgY As Long, ByRef srcImage As pdImage, ByRef srcLayerIndex As Long) As Boolean
 
-    If srcImage.imgViewport Is Nothing Then
+    If srcImage.ImgViewport Is Nothing Then
         IsMouseOverLayer = False
         Exit Function
     End If

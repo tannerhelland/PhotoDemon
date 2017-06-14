@@ -72,18 +72,18 @@ Option Explicit
 Private Const UNDO_DEBUG_MODE As Boolean = False
 
 'In the Undo/Redo stack, which entry is this image currently on?
-Private undoNum As Long
+Private m_UndoNum As Long
 
 'How many Undo/Redo entries exist in our stack?
-Private undoMax As Long
-Private undoTotal As Long
+Private m_UndoMax As Long
+Private m_UndoTotal As Long
 
 'Are Undo/Redo operations allowed for this image?  (This is used to determine the state of undo/redo buttons and
 ' menu items.)
-Private undoState As Boolean
-Private redoState As Boolean
+Private m_UndoState As Boolean
+Private m_RedoState As Boolean
 
-'Note that the UndoType struct is now declared publicly, so you can find it in the Public_Enums_and_Types module.
+'Note that the UndoType struct is now declared Friendly, so you can find it in the Friend_Enums_and_Types module.
 ' (Declaration mirrored here for clarity)
 
 'Information about each Undo entry is stored in an array; the array is dynamically resized as necessary when new
@@ -91,7 +91,7 @@ Private redoState As Boolean
 ' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
 ' buttons so the user knows which action they are undo/redoing.)
 
-' Public Type undoEntry
+' Friend Type PD_UndoEntry
 '     processID As String             'Name of the associated action (e.g. "Gaussian blur")
 '     processParamString As String    'Processor string supplied to the action
 '     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
@@ -100,32 +100,32 @@ Private redoState As Boolean
 '     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
 ' End Type
 
-Private undoStack() As UndoEntry
+Private m_UndoStack() As PD_UndoEntry
 
 'If the user performs 10 actions, then presses Undo 5 times and saves the image, we need to disable the Save button
 ' at that Undo point, because it was the last point at which the image was saved.  Thus we must track the last point
 ' in the Undo/Redo stack where the image was saved.  Note that we separately track flat image saves (JPEG, PNG, etc),
 ' and layered image saves (PDI).  External functions can request either or both of these values as they need 'em.
-Private undoNumAtLastSave_Flat As Long, undoNumAtLastSave_PDI As Long
+Private m_UndoNumAtLastSave_Flat As Long, m_UndoNumAtLastSave_PDI As Long
 
 'We need access to the parent class so we can request things like "write your current data out to file".
 Public parentPDImage As pdImage
 
 'As part of PD's Undo/Redo chain, we can write the Undo/Redo stack to an XML file.  These constants are used to help
 ' us ID and parse such data correctly.
-Private Const pdUndoVersionID As Long = 64
+Private Const PD_UNDO_VERSION_ID As Long = 64
 
 'The size of the Undo/Redo Thumbnail
 Private Const UNDO_THUMB_SMALL As Long = 48
 Private Const UNDO_THUMB_LARGE As Long = 256
 
 'When an image is saved, this class needs to be notified so that it can make a note of the current undo index
-Public Sub NotifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
+Friend Sub NotifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
     
     Dim saveIndex As Long
     
-    If (undoNum > 0) Then
-        saveIndex = undoNum
+    If (m_UndoNum > 0) Then
+        saveIndex = m_UndoNum
     Else
         saveIndex = 1
     End If
@@ -135,27 +135,27 @@ Public Sub NotifyImageSaved(ByVal typeOfSave As PD_SAVE_EVENT)
         'This value should never be passed in!
         Case pdSE_AnySave
             Debug.Print "The pdSE_AnySave type is only for GETTING image save state, not SETTING it!  Fix this!"
-            undoNumAtLastSave_Flat = saveIndex
-            undoNumAtLastSave_PDI = saveIndex
+            m_UndoNumAtLastSave_Flat = saveIndex
+            m_UndoNumAtLastSave_PDI = saveIndex
                 
         'Image has been saved to PDI format, meaning layers are intact
         Case pdSE_SavePDI
-            undoNumAtLastSave_PDI = saveIndex
+            m_UndoNumAtLastSave_PDI = saveIndex
                 
         'Image has been saved to some flat format (JPEG, PNG, etc).  Layers are not intact.
         Case pdSE_SaveFlat
-            undoNumAtLastSave_Flat = saveIndex
+            m_UndoNumAtLastSave_Flat = saveIndex
         
     End Select
     
 End Sub
 
-Public Function GetUndoState() As Boolean
-    GetUndoState = undoState
+Friend Function GetUndoState() As Boolean
+    GetUndoState = m_UndoState
 End Function
 
-Public Function GetRedoState() As Boolean
-    GetRedoState = redoState
+Friend Function GetRedoState() As Boolean
+    GetRedoState = m_RedoState
 End Function
 
 'Create an Undo entry (e.g. save a copy of the present image or selection to the temp directory)
@@ -169,7 +169,7 @@ End Function
 '     previous Undo entry with this new one, if the layer ID and processID match.  The caller must have *explicit* knowledge
 '     that this behavior is appropriate, as there is no way to retrieve the overwritten Undo entry.  (PD uses this for
 '     non-destructive changes to a layer, if the non-destructive type doesn't change between Undo requests.)
-Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
+Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
     
     #If DEBUGMODE = 1 Then
         Dim timeAtUndoStart As Currency
@@ -177,15 +177,15 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     #End If
     
     'If the caller is okay with us coalescing this into the previous entry, test for coalescence acceptability
-    If (coalescenceAllowed And (undoNum > 0)) Then
+    If (coalescenceAllowed And (m_UndoNum > 0)) Then
         
         'If this processID and layerID match the previous ones, we are okay to just overwrite that entry with this one.
-        If (StrComp(processID, undoStack(undoNum - 1).processID, vbBinaryCompare) = 0) And (targetLayerID = undoStack(undoNum - 1).undoLayerID) Then
+        If (StrComp(processID, m_UndoStack(m_UndoNum - 1).processID, vbBinaryCompare) = 0) And (targetLayerID = m_UndoStack(m_UndoNum - 1).undoLayerID) Then
             
             'As an additional failsafe, make sure the Undo type is layer-safe, and vector-safe.  This guarantees that only
             ' non-destructive changes are allowed to coalesce.
-            If (processType = UNDO_LAYER_VECTORSAFE) And (undoStack(undoNum - 1).undoType = UNDO_LAYER_VECTORSAFE) Then
-                undoNum = undoNum - 1
+            If (processType = UNDO_LAYER_VECTORSAFE) And (m_UndoStack(m_UndoNum - 1).undoType = UNDO_LAYER_VECTORSAFE) Then
+                m_UndoNum = m_UndoNum - 1
             End If
             
         End If
@@ -198,11 +198,11 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'Previously, we notified the user when undo/redo data was saved.  This was stupid, but it is sometimes helpful to
     ' display that info in the debug window.
-    'Debug.Print "Saved " & GetCurrentUndoFilename() & " as Undo file #" & undoNum & "."
+    'Debug.Print "Saved " & GetCurrentUndoFilename() & " as Undo file #" & m_UndoNum & "."
     
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
-    If (undoNum <> UBound(undoStack)) Then ReDim Preserve undoStack(0 To undoNum) As UndoEntry
-    With undoStack(undoNum)
+    If (m_UndoNum <> UBound(m_UndoStack)) Then ReDim Preserve m_UndoStack(0 To m_UndoNum) As PD_UndoEntry
+    With m_UndoStack(m_UndoNum)
         .processID = processID
         .processParamString = pParamString
         .undoType = processType
@@ -213,8 +213,8 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     'If the present image is NOT the last image in the undo train (i.e., the user pressed Undo before running
     ' the current operation), treat this action as the new "last" Undo entry in the stack.  However, we still need
     ' to remember that Undo files exist past this point, so we can clean them up when we exit - hence the need for
-    ' a separate undoTotal variable.
-    undoMax = undoNum
+    ' a separate m_UndoTotal variable.
+    m_UndoMax = m_UndoNum
     
     'Next, we will store a copy of the current image thumbnail in two sizes: 256x256, and 48x48
     
@@ -225,30 +225,30 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     
     'First, obtain a large copy of the thumbnail.  The source of the thumbnail changes depending on the undo type.
     Dim largeThumbSize As Long: largeThumbSize = FixDPI(UNDO_THUMB_LARGE)
-    If (undoStack(undoNum).thumbnailLarge Is Nothing) Then Set undoStack(undoNum).thumbnailLarge = New pdDIB
+    If (m_UndoStack(m_UndoNum).thumbnailLarge Is Nothing) Then Set m_UndoStack(m_UndoNum).thumbnailLarge = New pdDIB
     
     Select Case processType
     
         Case UNDO_NOTHING
-            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_EVERYTHING
-            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
             
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_IMAGEHEADER
-            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            parentPDImage.GetLayerByID(targetLayerID).RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.GetLayerByID(targetLayerID).RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_LAYERHEADER
-            parentPDImage.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
         
         Case UNDO_SELECTION
-            parentPDImage.mainSelection.RequestThumbnail undoStack(undoNum).thumbnailLarge, largeThumbSize
+            parentPDImage.MainSelection.RequestThumbnail m_UndoStack(m_UndoNum).thumbnailLarge, largeThumbSize
             
     End Select
     
@@ -257,21 +257,21 @@ Public Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     #End If
     
     'Increase our Undo count
-    undoNum = undoNum + 1
-    undoMax = undoMax + 1
+    m_UndoNum = m_UndoNum + 1
+    m_UndoMax = m_UndoMax + 1
     
     'If the present image is *truly* the last one in the Undo train, note that we have more Undo files to delete
     ' when our parent is unloaded.
-    If (undoMax > undoTotal) Then undoTotal = undoMax
+    If (m_UndoMax > m_UndoTotal) Then m_UndoTotal = m_UndoMax
     
     'If this is not the first Undo entry, make a note that the user is now allowed to initiate Undo actions.
-    undoState = (undoNum > 1)
+    m_UndoState = (m_UndoNum > 1)
     
     'Because we have just created Undo data, the user is not allowed to initiate Redo actions.
-    redoState = False
+    m_RedoState = False
     
     'If this action changed pixel data, mark the image as NOT being saved in its current state.
-    If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) And (undoNum > 1) Then
+    If (processType <> UNDO_NOTHING) And (processType <> UNDO_SELECTION) And (m_UndoNum > 1) Then
         parentPDImage.SetSaveState False, pdSE_AnySave
     End If
     
@@ -297,14 +297,14 @@ End Sub
 ' active selections.  This ensures that if the user uses Undo to return to a pre-Crop state, everything is restored properly.
 ' (Without this function, Undo-ing a crop action would cause the selection to be lost unless the user returned to the point when the
 ' selection was first created.)
-Public Sub ForceLastUndoDataToIncludeEverything()
+Friend Sub ForceLastUndoDataToIncludeEverything()
     
     'Overwrite the previous action's Undo data with a full image backup.  Note that all the settings from the previous
     ' action are retained; the only thing we're doing differently is specifying the Undo type as UNDO_EVERYTHING.
-    Saving.SaveUndoData parentPDImage, GenerateUndoFilename(undoNum - 1), UNDO_EVERYTHING, -1
+    Saving.SaveUndoData parentPDImage, GenerateUndoFilename(m_UndoNum - 1), UNDO_EVERYTHING, -1
     
     'Update the stack entry at that point to reflect the UNDO_EVERYTHING usage
-    With undoStack(undoNum - 1)
+    With m_UndoStack(m_UndoNum - 1)
         .undoType = UNDO_EVERYTHING
         .undoLayerID = -1
     End With
@@ -316,14 +316,14 @@ End Sub
 
 'This special command can be used to revert the image to its last saved state.  For images that have never been
 ' saved (e.g. those pasted from the clipboard, etc), it will undo to the image's original state.
-Public Sub RevertToLastSavedState()
+Friend Sub RevertToLastSavedState()
     
     Dim targetUndoPoint As Long
     
-    If (undoNumAtLastSave_Flat > undoNumAtLastSave_PDI) Then
-        targetUndoPoint = undoNumAtLastSave_Flat
+    If (m_UndoNumAtLastSave_Flat > m_UndoNumAtLastSave_PDI) Then
+        targetUndoPoint = m_UndoNumAtLastSave_Flat
     Else
-        targetUndoPoint = undoNumAtLastSave_PDI
+        targetUndoPoint = m_UndoNumAtLastSave_PDI
     End If
     
     'Failsafe check to make sure the specified index is valid
@@ -335,7 +335,7 @@ End Sub
 
 'Move to a specific location in the Undo/Redo chain.  Note that this function may take some time if the requested
 ' point is quite far into the Undo/Redo chain.
-Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
+Friend Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     
     'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
     ' this global variable to determine if they should fire, so we must set it before doing anything else.
@@ -344,7 +344,7 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     Message "Reconstructing image..."
     
     'Start by resetting the image to its default state, e.g. Undo 0.
-    LoadUndo GenerateUndoFilename(0), UNDO_EVERYTHING, UNDO_EVERYTHING, , True
+    ImageImporter.LoadUndo GenerateUndoFilename(0), UNDO_EVERYTHING, UNDO_EVERYTHING, , True
     
     'From this point, we now want to advance the Undo stack to the requested index by applying successive diff entries
     ' until the final index is reached.
@@ -352,7 +352,7 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     
         Dim i As Long
         For i = 1 To undoIndex - 1
-            LoadUndo GenerateUndoFilename(i), undoStack(i).undoType, undoStack(i).undoType, undoStack(i).undoLayerID, True
+            LoadUndo GenerateUndoFilename(i), m_UndoStack(i).undoType, m_UndoStack(i).undoType, m_UndoStack(i).undoLayerID, True
         Next i
     
     End If
@@ -360,20 +360,20 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     'Our parent pdImage object has now been successively reconstructed.  Set all Undo variables to their proper values, then
     ' redraw the screen and exit.
     
-    'undoNum is always one higher than the state of the image.  (This is easily remembered because the base Undo copy is created at
-    ' point 0 right when an image is loaded, and because the undoNum is immediately advanced, it starts at value 1.)
-    undoNum = undoIndex
+    'm_UndoNum is always one higher than the state of the image.  (This is easily remembered because the base Undo copy is created at
+    ' point 0 right when an image is loaded, and because the m_UndoNum is immediately advanced, it starts at value 1.)
+    m_UndoNum = undoIndex
     
     'Allow saving contingent on the image's state
     parentPDImage.SetSaveState False, pdSE_AnySave
-    If (undoNum = undoNumAtLastSave_PDI) Then parentPDImage.SetSaveState True, pdSE_SavePDI
-    If (undoNum = undoNumAtLastSave_Flat) Then parentPDImage.SetSaveState True, pdSE_SaveFlat
+    If (m_UndoNum = m_UndoNumAtLastSave_PDI) Then parentPDImage.SetSaveState True, pdSE_SavePDI
+    If (m_UndoNum = m_UndoNumAtLastSave_Flat) Then parentPDImage.SetSaveState True, pdSE_SaveFlat
     
     'See if Undoing is allowed
-    undoState = (undoNum > 1)
+    m_UndoState = (m_UndoNum > 1)
     
     'See if redoing is allowed
-    redoState = (undoNum <> undoMax)
+    m_RedoState = (m_UndoNum <> m_UndoMax)
     
     'Select the relevant tool for this action, if one is provided
     'NOTE: as of 7.0, I have disabled this capability.  It's not as useful as I thought it would be, and it's very
@@ -398,30 +398,30 @@ Public Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
 End Sub
 
 'Restore the last undo entry, e.g. "the user just clicked Undo".
-Public Sub RestoreUndoData()
+Friend Sub RestoreUndoData()
     
     'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
     ' this global variable to determine if they should fire, so we must set it before doing anything else.
     g_UndoRedoActive = True
         
     'Decrement the Undo stack pointer
-    undoNum = undoNum - 1
-    If (undoNum < 0) Then undoNum = 0
+    m_UndoNum = m_UndoNum - 1
+    If (m_UndoNum < 0) Then m_UndoNum = 0
     
     'If this is not the last Undo state, continue to allow the user to Undo, but if we are at the bottom of the Undo stack
     ' (e.g. the image is in its original state), disable further Undo-ing.
-    undoState = (undoNum > 1)
+    m_UndoState = (m_UndoNum > 1)
     
     'If we are not at the top of the Undo stack, also enable Redo-ing
-    redoState = (undoNum < undoMax)
+    m_RedoState = (m_UndoNum < m_UndoMax)
         
     'If this image initially existed on the user's hard drive (e.g. it was not imported from the clipboard or
     ' some other source), note that the image has now BEEN SAVED (because it has not changed at all from its original
     ' appearance).
-    If (undoNum = undoNumAtLastSave_Flat) Or (undoNum = undoNumAtLastSave_PDI) Then
+    If (m_UndoNum = m_UndoNumAtLastSave_Flat) Or (m_UndoNum = m_UndoNumAtLastSave_PDI) Then
     
-        'In the special case of UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
-        If Len(parentPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
+        'In the special case of m_UndoNumAtLastSave = 0, check to see if this image exists on the hard drive
+        If Len(parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
             
             If (parentPDImage.GetCurrentFileFormat = PDIF_PDI) Then
                 parentPDImage.SetSaveState True, pdSE_SavePDI
@@ -450,9 +450,9 @@ Public Sub RestoreUndoData()
     'First, we ask our search routine to find the nearest relevant diff for this Undo type.  Some parameters (like the undoLayerID)
     ' will be ignored if this undo entry isn't layer-specific.
     Dim nearestDiffIndex As Long
-    nearestDiffIndex = FindNearestDiffIndex(undoNum, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID)
+    nearestDiffIndex = FindNearestDiffIndex(m_UndoNum, m_UndoStack(m_UndoNum).undoType, m_UndoStack(m_UndoNum).undoLayerID)
     
-    'Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & undoStack(nearestDiffIndex).undoType
+    'Debug.Print "Nearest diff index: " & nearestDiffIndex & "; undo type: " & m_undoStack(nearestDiffIndex).undoType
     
     'We now have to handle some tricky diff-related business.  If the Undo type is a full pdImage reconstruction (meaning the entire
     ' layer stack is being recreated as part of the Undo process), we have to re-apply all diffs in two steps: first, we have to
@@ -465,11 +465,11 @@ Public Sub RestoreUndoData()
     ' UNDO_LAYERHEADER diff after the fact, to make sure the layer's header is up-to-date against any header-only changes that occurred
     ' since the latest full layer DIB write-to-file.
     Dim suspendRedraws As Boolean
-    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGE_VECTORSAFE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Or (undoStack(undoNum).undoType = UNDO_LAYER) Or (undoStack(undoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
+    If (m_UndoStack(m_UndoNum).undoType = UNDO_EVERYTHING) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGE) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGE_VECTORSAFE) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGEHEADER) Or (m_UndoStack(m_UndoNum).undoType = UNDO_LAYER) Or (m_UndoStack(m_UndoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
         
         'If we are reverting the image to its original state, we do not need to process any extra layer data, as we already know
         ' the the source file will be accurate (because a full copy of the image is always created at Undo point 0).
-        suspendRedraws = (undoNum > 0)
+        suspendRedraws = (m_UndoNum > 0)
         
     Else
         suspendRedraws = False
@@ -477,7 +477,7 @@ Public Sub RestoreUndoData()
     
     'With the most recent relevant diff file identified, we can now launch the undo loading routine for that diff.  It will
     ' automatically apply any changes against the relevant parts of the current pdImage object.
-    ImageImporter.LoadUndo GenerateUndoFilename(nearestDiffIndex), undoStack(nearestDiffIndex).undoType, undoStack(undoNum).undoType, undoStack(undoNum).undoLayerID, suspendRedraws
+    ImageImporter.LoadUndo GenerateUndoFilename(nearestDiffIndex), m_UndoStack(nearestDiffIndex).undoType, m_UndoStack(m_UndoNum).undoType, m_UndoStack(m_UndoNum).undoLayerID, suspendRedraws
     
     'If redraws have been suspended, we know that we need to reconstruct one or more layers in the image against their
     ' most recent diff.
@@ -489,19 +489,19 @@ Public Sub RestoreUndoData()
         'The amount of diffs we need to reconstruct varies by Undo type.
         
         'If this is a full image Undo, all layers need to be checked against their most recent diffs.
-        If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGE_VECTORSAFE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Then
+        If (m_UndoStack(m_UndoNum).undoType = UNDO_EVERYTHING) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGE) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGE_VECTORSAFE) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGEHEADER) Then
         
             'For UNDO_EVERYTHING, UNDO_IMAGE, and UNDO_IMAGE_VECTORSAFE entries, we may need to reconstruct the layer stack
             ' before any further processing occurs.
-            If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGE_VECTORSAFE) Then
+            If (m_UndoStack(m_UndoNum).undoType = UNDO_EVERYTHING) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGE) Or (m_UndoStack(m_UndoNum).undoType = UNDO_IMAGE_VECTORSAFE) Then
             
                 'Search for the nearest relevant pdImage header diff, as it may have changed independent of the rest
                 ' of the pdImage stack (for example, if the user has rearranged layer order)
-                nearestImageDiffHeader = FindNearestDiffIndex(undoNum, UNDO_IMAGEHEADER)
+                nearestImageDiffHeader = FindNearestDiffIndex(m_UndoNum, UNDO_IMAGEHEADER)
                 
                 'If a more recent layer header was found, apply it now.
                 If (nearestImageDiffHeader > nearestDiffIndex) Then
-                    ImageImporter.LoadUndo GenerateUndoFilename(nearestImageDiffHeader), undoStack(nearestImageDiffHeader).undoType, UNDO_IMAGEHEADER, , suspendRedraws
+                    ImageImporter.LoadUndo GenerateUndoFilename(nearestImageDiffHeader), m_UndoStack(nearestImageDiffHeader).undoType, UNDO_IMAGEHEADER, , suspendRedraws
                 End If
                 
                 'Also reset the nearestDiffIndex value to match the header's location; subsequent layer checks
@@ -520,39 +520,39 @@ Public Sub RestoreUndoData()
             
                 'Start by reconstructing a layer DIB using the default UNDO_LAYER type.  (Note that this check will also
                 ' return UNDO_LAYER_VECTORSAFE and UNDO_LAYER_HEADER results.)
-                nearestLayerDiffDIB = FindNearestDiffIndex(undoNum, UNDO_LAYER, curLayerID)
+                nearestLayerDiffDIB = FindNearestDiffIndex(m_UndoNum, UNDO_LAYER, curLayerID)
                 
                 'If the nearest diff for this layer is *not* the same as the nearest diff for the full image, apply this diff
                 ' to the layer in question.
                 If (nearestLayerDiffDIB > nearestDiffIndex) Then
-                    ImageImporter.LoadUndo GenerateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
+                    ImageImporter.LoadUndo GenerateUndoFilename(nearestLayerDiffDIB), m_UndoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
                 End If
                 
                 'Next, we must reconstruct the layer header, as it too may have changed (for example, if the user moved the layer
                 ' since the last action)
-                nearestLayerDiffHeader = FindNearestDiffIndex(undoNum, UNDO_LAYERHEADER, curLayerID)
+                nearestLayerDiffHeader = FindNearestDiffIndex(m_UndoNum, UNDO_LAYERHEADER, curLayerID)
                 
                 'If a more recent layer header was found, apply it now.
                 If (nearestLayerDiffHeader > nearestDiffIndex) And (nearestLayerDiffHeader > nearestLayerDiffDIB) Then
-                    ImageImporter.LoadUndo GenerateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
+                    ImageImporter.LoadUndo GenerateUndoFilename(nearestLayerDiffHeader), m_UndoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
                 End If
                 
             Next i
         
         'If this is a just a layer Undo, we simply need to verify the layer header against any diffs more recent than the last
         ' full DIB reconstruction for this layer.
-        ElseIf (undoStack(undoNum).undoType = UNDO_LAYER) Or (undoStack(undoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
+        ElseIf (m_UndoStack(m_UndoNum).undoType = UNDO_LAYER) Or (m_UndoStack(m_UndoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
         
             'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
-            curLayerID = undoStack(undoNum).undoLayerID
+            curLayerID = m_UndoStack(m_UndoNum).undoLayerID
             
             'Next, look for the most recent layer header diff, as it may have changed independent of the layer DIB
             ' (for example, if the user moves a layer after painting on it)
-            nearestLayerDiffHeader = FindNearestDiffIndex(undoNum, UNDO_LAYERHEADER, curLayerID)
+            nearestLayerDiffHeader = FindNearestDiffIndex(m_UndoNum, UNDO_LAYERHEADER, curLayerID)
                 
             'If a more recent layer header was found, apply it now.
             If (nearestLayerDiffHeader > nearestDiffIndex) Then
-                LoadUndo GenerateUndoFilename(nearestLayerDiffHeader), undoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
+                LoadUndo GenerateUndoFilename(nearestLayerDiffHeader), m_UndoStack(nearestLayerDiffHeader).undoType, UNDO_LAYERHEADER, curLayerID, suspendRedraws
             End If
         
         End If
@@ -596,7 +596,7 @@ Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
         ' layer data, which means such an entry works for multiple types of Undo requests.
         '
         'This select case statement matches the requested undoIndex against any valid diff file for that type of Undo data.
-        Select Case undoStack(i).undoType
+        Select Case m_UndoStack(i).undoType
         
             'UNDO_EVERYTHING works for all possible Undo types, as it has a copy of everything we would ever need!
             Case UNDO_EVERYTHING
@@ -629,7 +629,7 @@ Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             Case UNDO_LAYER
                 If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYER_VECTORSAFE) Or (undoTypeCheck = UNDO_LAYERHEADER)) Then
                     
-                    If (relevantLayerID = undoStack(i).undoLayerID) Then
+                    If (relevantLayerID = m_UndoStack(i).undoLayerID) Then
                         FindNearestDiffIndex = i
                         Exit For
                     End If
@@ -640,7 +640,7 @@ Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             Case UNDO_LAYER_VECTORSAFE
                 If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYER_VECTORSAFE) Or (undoTypeCheck = UNDO_LAYERHEADER)) Then
                     
-                    If (relevantLayerID = undoStack(i).undoLayerID) Then
+                    If (relevantLayerID = m_UndoStack(i).undoLayerID) Then
                         FindNearestDiffIndex = i
                         Exit For
                     End If
@@ -650,7 +650,7 @@ Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             'UNDO_LAYERHEADER contains relevant diff information for matching UNDO_LAYER_HEADER actions,
             ' but *only if the layer ID matches the requested one!*
             Case UNDO_LAYERHEADER
-                If (undoTypeCheck = UNDO_LAYERHEADER) And (relevantLayerID = undoStack(i).undoLayerID) Then
+                If (undoTypeCheck = UNDO_LAYERHEADER) And (relevantLayerID = m_UndoStack(i).undoLayerID) Then
                     FindNearestDiffIndex = i
                     Exit For
                 End If
@@ -679,29 +679,29 @@ Private Function FindNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
 End Function
 
 'Restore a redo entry, e.g. "the user just clicked Redo"
-Public Sub RestoreRedoData()
+Friend Sub RestoreRedoData()
     
     'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
     ' this global variable to determine if they should fire, so we must set it before doing anything else.
     g_UndoRedoActive = True
     
     'If we're not at the top of the Undo stack, advance the stack index by one
-    If (undoNum < undoMax) Then
+    If (m_UndoNum < m_UndoMax) Then
         
-        undoNum = undoNum + 1
+        m_UndoNum = m_UndoNum + 1
         
         'Allow saving contingent on the image's state
         parentPDImage.SetSaveState False, pdSE_AnySave
-        If (undoNum = undoNumAtLastSave_PDI) Then parentPDImage.SetSaveState True, pdSE_SavePDI
-        If (undoNum = undoNumAtLastSave_Flat) Then parentPDImage.SetSaveState True, pdSE_SaveFlat
+        If (m_UndoNum = m_UndoNumAtLastSave_PDI) Then parentPDImage.SetSaveState True, pdSE_SavePDI
+        If (m_UndoNum = m_UndoNumAtLastSave_Flat) Then parentPDImage.SetSaveState True, pdSE_SaveFlat
     
     End If
     
     'Undoing is always allowed after the user has Redone something
-    undoState = True
+    m_UndoState = True
     
     'If we're at the end of our action chain, disable any further Redo-ing
-    redoState = (undoNum <> undoMax)
+    m_RedoState = (m_UndoNum <> m_UndoMax)
     
     'Select the relevant tool for this action, if one is provided
     'NOTE: as of 7.0, I have disabled this capability.  It's not as useful as I thought it would be, and it's very
@@ -711,7 +711,7 @@ Public Sub RestoreRedoData()
     'The great thing about Redo is that it chronogically moves in the same direction as PD's Undo diff files.  So unlike
     ' Undo - which requires us to traverse the undo timeline in reverse, looking for a relevant diff file - we can simply
     ' apply the next valid diff in line, no extra work required!
-    ImageImporter.LoadUndo GenerateUndoFilename(undoNum - 1), GetUndoProcessType, GetUndoProcessType, undoStack(undoNum - 1).undoLayerID
+    ImageImporter.LoadUndo GenerateUndoFilename(m_UndoNum - 1), GetUndoProcessType, GetUndoProcessType, m_UndoStack(m_UndoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
     If UNDO_DEBUG_MODE Then DebugUndo "user clicked Redo"
@@ -725,6 +725,48 @@ Public Sub RestoreRedoData()
     
 End Sub
 
+'New, simplified interface for "FillDIBWithLastUndoCopy".  You can still call that function if need be, but this function will
+' supply a faster result if you just need to know if there are one or more repeatable commands in the current Undo/Redo stack.
+Friend Function DoesStackContainRepeatableCommand(Optional ByRef nameOfProcessorAction As String) As Boolean
+    
+    'If the stack is empty, there is nothing to repeat; return FALSE
+    If (m_UndoNum <= 1) Then
+        DoesStackContainRepeatableCommand = False
+    Else
+        
+        Dim actionFound As Boolean
+        actionFound = False
+    
+        'Search the stack, looking for a destructive action.  (Note that we do *not* go all the way back to stack position 0,
+        ' as that is the original image!)
+        Dim i As Long
+        For i = m_UndoNum - 1 To 1 Step -1
+        
+            With m_UndoStack(i)
+                
+                If (.undoType <> UNDO_NOTHING) And (.undoType <> UNDO_SELECTION) Then
+                    
+                    'Certain actions are not repeatable; specifically, "Fade" and "Repeat" cannot be "faded" or "repeated".
+                    ' In these instances, we want to continue searching backward, to find the original function that those
+                    ' calls faded or repeated.
+                    If (Not Strings.StringsEqual(.processID, "FADE", True)) And (Not Strings.StringsEqual(.processID, "REPEAT", True)) Then
+                        actionFound = True
+                        nameOfProcessorAction = .processID
+                        Exit For
+                    End If
+                    
+                End If
+            
+            End With
+            
+        Next i
+        
+        DoesStackContainRepeatableCommand = actionFound
+        
+    End If
+    
+End Function
+
 'Find the last modified layer in the image, and fill a supplied DIB with the contents of that layer *prior to its current state*,
 ' (obviously, as the caller has access to the current state).  This is currently used by the "Edit > Fade..." feature.
 '
@@ -733,9 +775,9 @@ End Sub
 ' this function will also return the name of the action responsible for the change.
 '
 'This function will return FALSE if no layer-specific changes have been made, and thus no Fade action would be relevant.
-Public Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLayerID As Long, Optional ByRef nameOfProcessorAction As String, Optional ByVal checkStateOnly As Boolean = True) As Boolean
+Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLayerID As Long, Optional ByRef nameOfProcessorAction As String, Optional ByVal checkStateOnly As Boolean = True) As Boolean
     
-    If undoNum = 0 Then
+    If (m_UndoNum = 0) Then
         FillDIBWithLastUndoCopy = 0
         Exit Function
     End If
@@ -749,19 +791,19 @@ Public Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
     layerChangeIndex = -1
     
     Dim i As Long
-    For i = undoNum - 1 To 0 Step -1
+    For i = m_UndoNum - 1 To 0 Step -1
     
         'A layer-specific edit has been found.  This is the last action the user committed that modified a layer, so it will contain
         ' a copy of the image as it appeared *after the change was made*.  What this function needs to do is find the state of this
         ' layer *prior to the change* - and now that we know which layer is affected, we can do that!
-        If (undoStack(i).undoType = UNDO_LAYER) Or (undoStack(i).undoType = UNDO_LAYER_VECTORSAFE) Then
+        If (m_UndoStack(i).undoType = UNDO_LAYER) Or (m_UndoStack(i).undoType = UNDO_LAYER_VECTORSAFE) Then
             
             'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
             ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
-            If (StrComp(UCase$(undoStack(i).processID), "FADE", vbBinaryCompare) <> 0) And (StrComp(UCase$(undoStack(i).processID), "REPEAT", vbBinaryCompare) <> 0) Then
+            If (StrComp(UCase$(m_UndoStack(i).processID), "FADE", vbBinaryCompare) <> 0) And (StrComp(UCase$(m_UndoStack(i).processID), "REPEAT", vbBinaryCompare) <> 0) Then
                 actionFound = True
-                affectedLayerID = undoStack(i).undoLayerID
-                nameOfProcessorAction = undoStack(i).processID
+                affectedLayerID = m_UndoStack(i).undoLayerID
+                nameOfProcessorAction = m_UndoStack(i).processID
                 layerChangeIndex = i
                 Exit For
             End If
@@ -789,15 +831,15 @@ Public Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         Dim relevantVectorIndex As Long
         relevantVectorIndex = FindNearestDiffIndex(layerChangeIndex, UNDO_LAYER_VECTORSAFE, affectedLayerID)
         
-        'relevantDiffIndex will now contain the index in the UndoStack array corresponding to the previous state of the affected layer.
+        'relevantDiffIndex will now contain the index in the m_undoStack array corresponding to the previous state of the affected layer.
         ' Load the relevant portion of that Undo file into the target DIB.
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
         
         If (relevantVectorIndex > relevantDiffIndex) Then
-            ImageImporter.LoadUndo GenerateUndoFilename(relevantVectorIndex), undoStack(relevantVectorIndex).undoType, UNDO_LAYER_VECTORSAFE, affectedLayerID, True, tmpLayer
+            ImageImporter.LoadUndo GenerateUndoFilename(relevantVectorIndex), m_UndoStack(relevantVectorIndex).undoType, UNDO_LAYER_VECTORSAFE, affectedLayerID, True, tmpLayer
         Else
-            ImageImporter.LoadUndo GenerateUndoFilename(relevantDiffIndex), undoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
+            ImageImporter.LoadUndo GenerateUndoFilename(relevantDiffIndex), m_UndoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
         End If
         
         'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
@@ -812,8 +854,8 @@ Public Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
 End Function
 
 'Get the filename of the current Undo file, using the same formula as generateUndoFilename below
-Public Function GetCurrentUndoFilename()
-    GetCurrentUndoFilename = GenerateUndoFilename(undoNum)
+Friend Function GetCurrentUndoFilename()
+    GetCurrentUndoFilename = GenerateUndoFilename(m_UndoNum)
 End Function
 
 'Generate a unique Undo/Redo file name, including full temp path.
@@ -829,9 +871,9 @@ Private Function GenerateUndoFilename(ByVal uIndex As Long) As String
     
 End Function
 
-'Publicly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
+'Friendly accessible mechanism for generating a unique Undo/Redo file name.  Any changes to the private function, above,
 ' should be mirrored here.
-Public Function GenerateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByVal originalSessionID As String) As String
+Friend Function GenerateUndoFilenameExternal(ByVal imageID As Long, ByVal uIndex As Long, ByVal originalSessionID As String) As String
     GenerateUndoFilenameExternal = g_UserPreferences.GetTempPath & "~cPDU_(" & originalSessionID & ")_" & imageID & "_" & uIndex & "_.pdtmp"
 End Function
 
@@ -850,20 +892,20 @@ Private Function GenerateUndoHeaderFilename() As String
 End Function
 
 'Erase all undo files that this class has created
-Public Sub ClearUndos()
+Friend Sub ClearUndos()
     
     'Remember that we have no Undo files for this image
-    undoState = False
+    m_UndoState = False
     
     'If Undo data has already been cleared, exit
-    If (undoTotal = 0) Then Exit Sub
+    If (m_UndoTotal = 0) Then Exit Sub
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
     'Destroy every potential Undo file
     Dim i As Long
-    For i = 0 To undoTotal
+    For i = 0 To m_UndoTotal
         
         'Check image data first...
         If cFile.FileExist(GenerateUndoFilename(i)) Then cFile.KillFile GenerateUndoFilename(i)
@@ -881,48 +923,48 @@ Public Sub ClearUndos()
     If cFile.FileExist(GenerateUndoHeaderFilename() & ".pdasi") Then cFile.KillFile GenerateUndoHeaderFilename() & ".pdasi"
     
     'Set the current and maximum Undo number to 0
-    undoNum = 0
-    undoMax = 0
-    undoTotal = 0
+    m_UndoNum = 0
+    m_UndoMax = 0
+    m_UndoTotal = 0
     
 End Sub
 
 'Return the tool associated with the current Undo state
-Public Function GetUndoTool() As Long
-    If (undoNum > 0) Then GetUndoTool = undoStack(undoNum - 1).relevantTool
+Friend Function GetUndoTool() As Long
+    If (m_UndoNum > 0) Then GetUndoTool = m_UndoStack(m_UndoNum - 1).relevantTool
 End Function
 
 'Return the process type associated with the current Undo state
-Public Function GetUndoProcessType() As PD_UNDO_TYPE
-    If undoState Then
-        GetUndoProcessType = undoStack(undoNum - 1).undoType
+Friend Function GetUndoProcessType() As PD_UNDO_TYPE
+    If m_UndoState Then
+        GetUndoProcessType = m_UndoStack(m_UndoNum - 1).undoType
     Else
         GetUndoProcessType = UNDO_NOTHING
     End If
 End Function
 
 'Return the process type associated with the current Redo state
-Public Function GetRedoProcessType() As PD_UNDO_TYPE
-    If redoState Then
-        GetRedoProcessType = undoStack(undoNum).undoType
+Friend Function GetRedoProcessType() As PD_UNDO_TYPE
+    If m_RedoState Then
+        GetRedoProcessType = m_UndoStack(m_UndoNum).undoType
     Else
         GetRedoProcessType = UNDO_NOTHING
     End If
 End Function
 
 'Return the processID associated with the current Undo state
-Public Function GetUndoProcessID() As String
-    If undoState Then
-        GetUndoProcessID = g_Language.TranslateMessage(undoStack(undoNum - 1).processID)
+Friend Function GetUndoProcessID() As String
+    If m_UndoState Then
+        GetUndoProcessID = g_Language.TranslateMessage(m_UndoStack(m_UndoNum - 1).processID)
     Else
         GetUndoProcessID = ""
     End If
 End Function
 
 'Return the processID associated with the current Redo state
-Public Function GetRedoProcessID() As String
-    If redoState Then
-        GetRedoProcessID = g_Language.TranslateMessage(undoStack(undoNum).processID)
+Friend Function GetRedoProcessID() As String
+    If m_RedoState Then
+        GetRedoProcessID = g_Language.TranslateMessage(m_UndoStack(m_UndoNum).processID)
     Else
         GetRedoProcessID = ""
     End If
@@ -930,10 +972,10 @@ End Function
 
 'Given a type of Undo action, find the last relevant parameter string.  This is used by PD's central processor to detect on-canvas
 ' changes to the image since the last Undo was created.
-Public Function GetLastParamString(ByVal requestedUndoType As PD_UNDO_TYPE) As String
+Friend Function GetLastParamString(ByVal requestedUndoType As PD_UNDO_TYPE) As String
 
     'If no Undos have been created, exit immediately
-    If undoNum = 0 Then
+    If m_UndoNum = 0 Then
         GetLastParamString = ""
         Exit Function
     End If
@@ -942,9 +984,9 @@ Public Function GetLastParamString(ByVal requestedUndoType As PD_UNDO_TYPE) As S
     ' param string and exit immediately.
     Dim i As Long
     
-    For i = undoNum - 1 To 0 Step -1
-        If undoStack(i).undoType = requestedUndoType Then
-            GetLastParamString = undoStack(i).processParamString
+    For i = m_UndoNum - 1 To 0 Step -1
+        If m_UndoStack(i).undoType = requestedUndoType Then
+            GetLastParamString = m_UndoStack(i).processParamString
             Exit Function
         End If
     Next i
@@ -956,17 +998,17 @@ End Function
 
 'Undo/redo data handling is complex.  Sometimes it is helpful to see how our Undo/Redo stack looks - use this sub
 ' to print out a full list to the debug window.
-Public Sub DebugUndo(ByVal sourceOfDebugRequest As String)
+Friend Sub DebugUndo(ByVal sourceOfDebugRequest As String)
 
     Dim i As Long
     Debug.Print "---"
     Debug.Print " Current Undo stack:"
     Debug.Print "  (Displaying because " & sourceOfDebugRequest & ")"
-    For i = 0 To UBound(undoStack)
-        If i = undoNum - 1 Then
-            Debug.Print "  * " & i & ": " & undoStack(i).processID & ", T:" & undoStack(i).undoType & ", L:" & undoStack(i).undoLayerID
+    For i = 0 To UBound(m_UndoStack)
+        If i = m_UndoNum - 1 Then
+            Debug.Print "  * " & i & ": " & m_UndoStack(i).processID & ", T:" & m_UndoStack(i).undoType & ", L:" & m_UndoStack(i).undoLayerID
         Else
-            Debug.Print "  " & i & ": " & undoStack(i).processID & ", T:" & undoStack(i).undoType & ", L:" & undoStack(i).undoLayerID
+            Debug.Print "  " & i & ": " & m_UndoStack(i).processID & ", T:" & m_UndoStack(i).undoType & ", L:" & m_UndoStack(i).undoLayerID
         End If
     Next i
     Debug.Print "---"
@@ -976,14 +1018,14 @@ End Sub
 Private Sub Class_Initialize()
     
     'Initialize all relevant undo/redo tracking variables
-    ReDim undoStack(0) As UndoEntry
+    ReDim m_UndoStack(0) As PD_UndoEntry
     
-    undoNum = 0
-    undoMax = 0
-    undoNumAtLastSave_Flat = 0
-    undoNumAtLastSave_PDI = 0
-    undoState = False
-    redoState = False
+    m_UndoNum = 0
+    m_UndoMax = 0
+    m_UndoNumAtLastSave_Flat = 0
+    m_UndoNumAtLastSave_PDI = 0
+    m_UndoState = False
+    m_RedoState = False
     
 End Sub
 
@@ -993,7 +1035,7 @@ Private Sub Class_Terminate()
 End Sub
 
 'Write the Undo stack out to file, in XML format, with an attached thumbnail image as well (for AutoSave purposes)
-Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
+Friend Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     'The undo/redo engine is the source of a lot of processing time, particularly when painting.  In an attempt to
     ' better profile it, detailed timing measurements are currently reported in nightly builds.
@@ -1008,24 +1050,24 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     xmlEngine.PrepareNewXML "Undo stack"
     
     'Write out the XML version we're using for this macro
-    xmlEngine.WriteTag "pdUndoVersion", pdUndoVersionID
+    xmlEngine.WriteTag "pdUndoVersion", PD_UNDO_VERSION_ID
     xmlEngine.WriteBlankLine
     
     'Write out some basic information about our parent pdImage object.  In the event of a critical program crash,
     ' the AutoSave engine can use this information to reconstruct any missing images.
     xmlEngine.WriteTag "imageID", parentPDImage.imageID
-    xmlEngine.WriteTag "friendlyName", parentPDImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString) & "." & parentPDImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
-    xmlEngine.WriteTag "originalPath", parentPDImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    xmlEngine.WriteTag "friendlyName", parentPDImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString) & "." & parentPDImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
+    xmlEngine.WriteTag "originalPath", parentPDImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     xmlEngine.WriteBlankLine
     
     'Write out the size of the current Undo stack, including the Max and Total values
-    xmlEngine.WriteTag "StackHeight", undoMax
-    xmlEngine.WriteTag "StackAbsoluteMaximum", undoTotal
-    xmlEngine.WriteTag "CurrentStackPointer", undoNum
+    xmlEngine.WriteTag "StackHeight", m_UndoMax
+    xmlEngine.WriteTag "StackAbsoluteMaximum", m_UndoTotal
+    xmlEngine.WriteTag "CurrentStackPointer", m_UndoNum
     
-    'We probably don't need the undoNumAtLastSave values, but it doesn't hurt to embed them, "just in case"
-    xmlEngine.WriteTag "UndoNumAtLastSave_Flat", undoNumAtLastSave_Flat
-    xmlEngine.WriteTag "UndoNumAtLastSave_PDI", undoNumAtLastSave_PDI
+    'We probably don't need the m_UndoNumAtLastSave values, but it doesn't hurt to embed them, "just in case"
+    xmlEngine.WriteTag "UndoNumAtLastSave_Flat", m_UndoNumAtLastSave_Flat
+    xmlEngine.WriteTag "UndoNumAtLastSave_PDI", m_UndoNumAtLastSave_PDI
     
     'Finally, add the current session ID, a 16-character string unique to each running PD instance.  This ID is appended to all
     ' Undo files, which allows multiple PD sessions to run concurrently without trouble.
@@ -1033,20 +1075,20 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     xmlEngine.WriteBlankLine
     
-    'Next, we're going to write out all Undo stack entries. If PD's "UndoEntry" type is ever changed, note
+    'Next, we're going to write out all Undo stack entries. If PD's "PD_UndoEntry" type is ever changed, note
     ' that this function will need to be updated to match!
     Dim i As Long
-    For i = 0 To UBound(undoStack)
+    For i = 0 To UBound(m_UndoStack)
         
         'Start each undo entry with a unique numeric identifier (that corresponds to its location in the stack)
         xmlEngine.WriteTagWithAttribute "UndoEntry", "index", i, "", True
         
         'Write out all the properties of this entry
-        xmlEngine.WriteTag "ProcessID", undoStack(i).processID
-        xmlEngine.WriteTag "ProcessParameters", undoStack(i).processParamString
-        xmlEngine.WriteTag "UndoType", undoStack(i).undoType
-        xmlEngine.WriteTag "RelevantLayerID", undoStack(i).undoLayerID
-        xmlEngine.WriteTag "RelevantTool", undoStack(i).relevantTool
+        xmlEngine.WriteTag "ProcessID", m_UndoStack(i).processID
+        xmlEngine.WriteTag "ProcessParameters", m_UndoStack(i).processParamString
+        xmlEngine.WriteTag "UndoType", m_UndoStack(i).undoType
+        xmlEngine.WriteTag "RelevantLayerID", m_UndoStack(i).undoLayerID
+        xmlEngine.WriteTag "RelevantTool", m_UndoStack(i).relevantTool
         
         'Close this undo entry
         xmlEngine.CloseTag "UndoEntry"
@@ -1069,8 +1111,8 @@ Public Sub WriteUndoDataToXML(ByVal dstFilename As String)
     
     'As an added bonus (new to PD 6.4), also write out a thumbnail of the image *as it appears right now*.  The Autosave engine
     ' will use this as an image preview if something goes horribly wrong.
-    If (undoNum > 0) Then
-        If (Not (undoStack(undoNum - 1).thumbnailLarge Is Nothing)) Then undoStack(undoNum - 1).thumbnailLarge.WriteToFile GenerateUndoHeaderFilename & ".pdasi"
+    If (m_UndoNum > 0) Then
+        If (Not (m_UndoStack(m_UndoNum - 1).thumbnailLarge Is Nothing)) Then m_UndoStack(m_UndoNum - 1).thumbnailLarge.WriteToFile GenerateUndoHeaderFilename & ".pdasi"
     End If
     
     #If DEBUGMODE = 1 Then
@@ -1081,7 +1123,7 @@ End Sub
 
 'Given an XML string generated by another pdUndo instance, reconstruct this stack to match.  This is used by the Autosave engine
 ' to restore a full previous session.
-Public Function ReconstructStackFromExternalSource(ByRef srcXMLString As String) As Boolean
+Friend Function ReconstructStackFromExternalSource(ByRef srcXMLString As String) As Boolean
 
     'Initiate an XML parser
     Dim xmlEngine As pdXML
@@ -1094,18 +1136,18 @@ Public Function ReconstructStackFromExternalSource(ByRef srcXMLString As String)
         If xmlEngine.IsPDDataType("Undo stack") And xmlEngine.ValidateLoadedXMLData("pdUndoVersion") Then
             
             'The file checks out!  Start by initiating a few module-level values to match the data in the file.
-            undoMax = xmlEngine.GetUniqueTag_Long("StackHeight")
-            undoTotal = xmlEngine.GetUniqueTag_Long("StackAbsoluteMaximum")
-            undoNum = xmlEngine.GetUniqueTag_Long("CurrentStackPointer")
-            undoNumAtLastSave_Flat = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave_Flat")
-            undoNumAtLastSave_PDI = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave_PDI")
+            m_UndoMax = xmlEngine.GetUniqueTag_Long("StackHeight")
+            m_UndoTotal = xmlEngine.GetUniqueTag_Long("StackAbsoluteMaximum")
+            m_UndoNum = xmlEngine.GetUniqueTag_Long("CurrentStackPointer")
+            m_UndoNumAtLastSave_Flat = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave_Flat")
+            m_UndoNumAtLastSave_PDI = xmlEngine.GetUniqueTag_Long("UndoNumAtLastSave_PDI")
             
             'Next, we must reconstruct the Undo stack itself.  Start by preparing the stack array.
-            ReDim undoStack(0 To undoTotal) As UndoEntry
+            ReDim m_UndoStack(0 To m_UndoTotal) As PD_UndoEntry
             
             'Start retrieving individual stack entries from the file
             Dim i As Long
-            For i = 0 To UBound(undoStack)
+            For i = 0 To UBound(m_UndoStack)
                 
                 'Start by finding the location of the tag we want
                 Dim tagPosition As Long
@@ -1114,7 +1156,7 @@ Public Function ReconstructStackFromExternalSource(ByRef srcXMLString As String)
                 'If a matching tag was found, retrieve its data and store it in the stack
                 If (tagPosition > 0) Then
                 
-                    With undoStack(i)
+                    With m_UndoStack(i)
                     
                         .processID = xmlEngine.GetUniqueTag_String("ProcessID", , tagPosition)
                         .processParamString = xmlEngine.GetUniqueTag_String("ProcessParameters", , tagPosition)
@@ -1125,7 +1167,7 @@ Public Function ReconstructStackFromExternalSource(ByRef srcXMLString As String)
                     End With
                     
                     'Initialize the thumbnail DIB, even though it won't contain anything useful.
-                    Set undoStack(i).thumbnailLarge = New pdDIB
+                    Set m_UndoStack(i).thumbnailLarge = New pdDIB
                 
                 End If
                 
@@ -1148,27 +1190,27 @@ End Function
 ' (all passed ByRef, obviously):
 ' 1) Number of Undo entries
 ' 2) Current Undo entry
-' 3) Array of type undoEntry, to receive the full contents of the stack
-Friend Sub CopyUndoStack(ByRef numOfUndos As Long, ByRef curUndoNumber As Long, ByRef stackList() As UndoEntry)
+' 3) Array of type PD_UndoEntry, to receive the full contents of the stack
+Friend Sub CopyUndoStack(ByRef numOfUndos As Long, ByRef curUndoNumber As Long, ByRef stackList() As PD_UndoEntry)
 
-    numOfUndos = undoMax
-    curUndoNumber = undoNum
+    numOfUndos = m_UndoMax
+    curUndoNumber = m_UndoNum
     
-    ReDim stackList(0 To undoMax) As UndoEntry
+    ReDim stackList(0 To m_UndoMax) As PD_UndoEntry
     
     Dim i As Long
-    For i = 0 To undoMax - 1
+    For i = 0 To m_UndoMax - 1
         
         With stackList(i)
             
-            .processID = undoStack(i).processID
-            .processParamString = undoStack(i).processParamString
-            .relevantTool = undoStack(i).relevantTool
-            .undoLayerID = undoStack(i).undoLayerID
-            .undoType = undoStack(i).undoType
+            .processID = m_UndoStack(i).processID
+            .processParamString = m_UndoStack(i).processParamString
+            .relevantTool = m_UndoStack(i).relevantTool
+            .undoLayerID = m_UndoStack(i).undoLayerID
+            .undoType = m_UndoStack(i).undoType
             
             Set .thumbnailLarge = New pdDIB
-            .thumbnailLarge.CreateFromExistingDIB undoStack(i).thumbnailLarge
+            .thumbnailLarge.CreateFromExistingDIB m_UndoStack(i).thumbnailLarge
             
         End With
         
