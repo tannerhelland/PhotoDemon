@@ -887,8 +887,8 @@ End Property
 Public Property Let ScrollValue(ByRef newValue As Long)
     
     'Range-check the incoming value
-    If newValue < 0 Then newValue = 0
-    If newValue > m_ScrollMax Then newValue = m_ScrollMax
+    If (newValue < 0) Then newValue = 0
+    If (newValue > m_ScrollMax) Then newValue = m_ScrollMax
     m_ScrollValue = newValue
     
     'Changing the scroll value changes the on-screen position of list elements, so we need to recalculate rendering data.
@@ -901,9 +901,9 @@ Private Sub CalculateNewScrollMax()
     
     Dim newScrollMax As Long
     newScrollMax = m_TotalHeight - m_ListRectF.Height
-    If newScrollMax < 0 Then newScrollMax = 0
+    If (newScrollMax < 0) Then newScrollMax = 0
     
-    If newScrollMax <> m_ScrollMax Then
+    If (newScrollMax <> m_ScrollMax) Then
         m_ScrollMax = newScrollMax
         RaiseEvent ScrollMaxChanged
     End If
@@ -937,7 +937,7 @@ Public Sub CalculateRenderMetrics()
     If (m_ListRectF.Height <= 0) Or (m_DefaultHeight <= 0) Then Exit Sub
     
     'Lists with uniform item sizes can skip a lot of messy handling.
-    If m_SizeMode = PDLH_FIXED Then
+    If (m_SizeMode = PDLH_FIXED) Then
     
         'Calculate the first overlapping item that overlaps the viewable area (and cache it)
         i = m_ScrollValue \ m_DefaultHeight
@@ -950,9 +950,9 @@ Public Sub CalculateRenderMetrics()
             i = i + 1
             
             'If we're past the number of items in the list, exit immediately
-            If i >= m_NumOfItems Then Exit Do
+            If (i >= m_NumOfItems) Then Exit Do
             
-        Loop While (i * m_DefaultHeight) < m_ScrollValue + m_ListRectF.Height
+        Loop While (i * m_DefaultHeight) < (m_ScrollValue + m_ListRectF.Height)
         
         m_LastRenderIndex = i - 1
         
@@ -980,8 +980,8 @@ Public Sub CalculateRenderMetrics()
             'If overlap is found, render the rect
             If ((itemTop >= 0) And (itemTop <= m_ListRectF.Height)) Or ((itemBottom >= 0) And (itemBottom <= m_ListRectF.Height)) Then
                 
-                If i < m_FirstRenderIndex Then m_FirstRenderIndex = i
-                If i > m_LastRenderIndex Then m_LastRenderIndex = i
+                If (i < m_FirstRenderIndex) Then m_FirstRenderIndex = i
+                If (i > m_LastRenderIndex) Then m_LastRenderIndex = i
                 
                 oneItemFound = True
             

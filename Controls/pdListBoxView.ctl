@@ -412,7 +412,7 @@ Private Sub UpdateControlLayout()
 End Sub
 
 'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
-Private Sub RedrawBackBuffer()
+Private Sub RedrawBackBuffer(Optional ByVal forciblyRedrawScreen As Boolean = False)
     
     Dim enabledState As Boolean
     enabledState = Me.Enabled
@@ -563,7 +563,7 @@ Private Sub RedrawBackBuffer()
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.RequestRepaint
+    ucSupport.RequestRepaint forciblyRedrawScreen
     
 End Sub
 
