@@ -167,10 +167,10 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
             srcWidth = previewTarget.GetPreviewWidth
             srcHeight = previewTarget.GetPreviewHeight
                 
-            If srcDIB.GetDIBWidth < srcWidth Then
+            If (srcDIB.GetDIBWidth < srcWidth) Then
                 srcWidth = srcDIB.GetDIBWidth
-                If srcDIB.GetDIBHeight < srcHeight Then srcHeight = srcDIB.GetDIBHeight
-            ElseIf srcDIB.GetDIBHeight < srcHeight Then
+                If (srcDIB.GetDIBHeight < srcHeight) Then srcHeight = srcDIB.GetDIBHeight
+            ElseIf (srcDIB.GetDIBHeight < srcHeight) Then
                 srcHeight = srcDIB.GetDIBHeight
             End If
             
@@ -218,7 +218,7 @@ Public Sub PreviewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
         End If
         
         'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
-        If Not previewTarget.HasOriginalImage Then previewTarget.SetOriginalImage workingDIB
+        If (Not previewTarget.HasOriginalImage) Then previewTarget.SetOriginalImage workingDIB
         
         'Make a note of this preview target's unique ID value.  We can use this in the future to avoid regenerating workingDIB
         ' from scratch.
@@ -305,9 +305,9 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     ' happens, we have to do some extra handling to render a correct image; basically, we must null-pad
     ' the current layer DIB to the size of the image, then extract the relevant bits after the fact.
     Dim tmpLayer As pdLayer, selBounds As RECTF
-    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
         Set tmpLayer = New pdLayer
-        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
+        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
     End If
             
     'If this is a preview, we need to calculate new width and height for the image that will appear in the preview window.
@@ -324,7 +324,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
         'Check for an active selection; if one is present, use that instead of the full DIB.  Note that no special processing is
         ' applied to the selected area - a full rectangle is passed to the source function, with no accounting for non-rectangular
         ' boundaries or feathering.  All that work is handled *after* the processing is complete.
-        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
             
             'Before proceeding further, null-pad the layer in question.  This will allow any possible selection to work,
             ' regardless of the layer's actual area.
@@ -368,7 +368,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             'The full image is being previewed.  Retrieve the entire thing.
             If previewTarget.ViewportFitFullImage Then
             
-                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
                     srcWidth = selBounds.Width
                     srcHeight = selBounds.Height
                 Else
@@ -384,7 +384,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 
                 'If a selection is active, and the selected area is smaller than the preview window, constrain the source area
                 ' to the selection boundaries.
-                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+                If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
                 
                     If (selBounds.Width < srcWidth) Then
                         srcWidth = selBounds.Width
@@ -426,7 +426,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             ' primary image.  If they cancel, we'll simply discard the temporary DIB.
             
             'Just like with a full image, if a selection is active, we only want to process the selected area.
-            If pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+            If pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn Then
             
                 'Start by chopping out the full rectangular bounding area of the selection, and placing it inside a temporary object.
                 ' This is done at the same color depth as the source image.  (Note that we do not do any preprocessing of the selection
@@ -528,7 +528,7 @@ Public Sub PrepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     
     'If a selection is active, make a backup of the selected area.  (We do this regardless of whether the current
     ' action is a preview or not.)
-    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
         If (workingDIBBackup Is Nothing) Then Set workingDIBBackup = New pdDIB
         workingDIBBackup.CreateFromExistingDIB workingDIB
     End If
@@ -606,18 +606,18 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     
     'Regardless of whether or not this is a preview, we process selections identically - by merging the newly modified
     ' workingDIB with its original version (as stored in workingDIBBackup), while accounting for any selection intricacies.
-    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+    If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
         
         'Retrieve the current selection boundaries
         Dim selBounds As RECTF
-        selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
+        selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
         
         'Before continuing further, create a copy of the selection mask at the relevant image size; note that "relevant size"
         ' is obviously calculated differently for previews.
         Dim selMaskCopy As pdDIB
         Set selMaskCopy = New pdDIB
         selMaskCopy.CreateBlank selBounds.Width, selBounds.Height
-        BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).mainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
+        BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left, selBounds.Top, vbSrcCopy
         
         'If this is a preview, resize the selection mask to match the preview size
         If isPreview Then
@@ -638,7 +638,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
                 vOffset = previewTarget.offsetY
                 
                 selMaskCopy.CreateBlank workingDIB.GetDIBWidth, workingDIB.GetDIBHeight
-                BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).mainSelection.GetMaskDC(), selBounds.Left + hOffset, selBounds.Top + vOffset, vbSrcCopy
+                BitBlt selMaskCopy.GetDIBDC, 0, 0, selMaskCopy.GetDIBWidth, selMaskCopy.GetDIBHeight, pdImages(g_CurrentImage).MainSelection.GetMaskDC(), selBounds.Left + hOffset, selBounds.Top + vOffset, vbSrcCopy
                 
             End If
             
@@ -736,7 +736,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     If (Not isPreview) Then
         
         'If a selection is active, copy the processed area into its proper place.
-        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
         
             If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.SetAlphaPremultiplication True
             BitBlt pdImages(g_CurrentImage).GetActiveDIB().GetDIBDC, selBounds.Left, selBounds.Top, selBounds.Width, selBounds.Height, workingDIBBackup.GetDIBDC, 0, 0, vbSrcCopy
@@ -776,7 +776,7 @@ Public Sub FinalizeImageData(Optional isPreview As Boolean = False, Optional pre
     Else
         
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
-        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn) Then
+        If (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn) Then
             
             If (workingDIBBackup.GetDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
                 workingDIBBackup.SetAlphaPremultiplication True
