@@ -581,7 +581,7 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
             
             'Create a new DIB that's exactly the same size as the old one
             If Me.CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 24) Then
-                BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
                 ConvertTo24bpp = True
             End If
     
@@ -648,7 +648,7 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             If Me.CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32) Then
                 
                 'Copy the image data from the temporary DIB without modification
-                BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
+                BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
                 
                 'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
                 ' be completely transparent (and we don't want that!)
@@ -698,7 +698,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
             'Use that bitmap object to create a new, blank DIB of the same size
             Dim targetColorDepth As Long
             If (tmpBitmap.BitsPerPixel = 32) Then targetColorDepth = 32 Else targetColorDepth = 24
-            If CreateBlank(tmpBitmap.Width, tmpBitmap.Height, targetColorDepth, , 255) Then
+            If Me.CreateBlank(tmpBitmap.Width, tmpBitmap.Height, targetColorDepth, , 255) Then
             
                 'Create a new DC
                 Dim tmpDC As Long
@@ -712,7 +712,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
                     
                     'Use BitBlt to copy the pixel data to this DIB
-                    BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDC, 0, 0, vbSrcCopy
+                    BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
                     SelectObject tmpDC, oldBitmap
@@ -926,7 +926,7 @@ Public Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
             If (fillColor = vbWhite) Then
                 Me.ResetDIB 255
             Else
-                GDI.FillRectToDC m_dibDC, 0, 0, m_dibWidth + 1, m_dibHeight + 1, fillColor
+                GDI.FillRectToDC Me.GetDIBDC, 0, 0, m_dibWidth + 1, m_dibHeight + 1, fillColor
             End If
         End If
         
@@ -950,7 +950,7 @@ Public Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
             If ((fillColor <> vbBlack) And (fillAlphaL <> 0)) Then
                 
                 Dim tmpSurface As Long, tmpBrush As Long
-                tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(m_dibDC)
+                tmpSurface = GDI_Plus.GetGDIPlusGraphicsFromDC(Me.GetDIBDC)
                 tmpBrush = GDI_Plus.GetGDIPlusSolidBrushHandle(fillColor, fillAlpha * 2.55)
                 GDI_Plus.GDIPlus_GraphicsSetCompositingMode tmpSurface, GP_CM_SourceCopy
                 GDI_Plus.GDIPlus_FillRectI tmpSurface, tmpBrush, -1, -1, m_dibWidth + 2, m_dibHeight + 2
