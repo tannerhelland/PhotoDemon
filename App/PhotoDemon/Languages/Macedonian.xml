@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.53</langversion>
+<langversion>1.0.54</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -917,13 +917,13 @@ To овозможи поддршка за ПИО компресирани фај
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>Повторување: %1</translation>
+<original>Fade: %1</original>
+<translation>Затемнување: %1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>Затемнување: %1</translation>
+<original>Repeat: %1</original>
+<translation>Повторување: %1</translation>
 </phrase>
 
 <phrase>
@@ -2387,7 +2387,7 @@ In меѓувреме, ве молиме пробајте да зачувате 
 <translation>Кликнете на првата точка да се заврши изборот на полигон</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2511,6 +2511,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Операција запрено.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Нема доволно меморија на располагање да се продолжи оваа операција. Ослободете системската меморија (RAM меморија) и обидете се повторно. Ако проблемот продолжи, намалување на вредноста на зумирање и обидете се повторно.</translation>
 </phrase>
@@ -2518,11 +2523,6 @@ Please enter a numeric value.</original>
 <phrase>
 <original>Out of memory</original>
 <translation>Нема меморија</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Операција запрено.</translation>
 </phrase>
 
 <phrase>
@@ -13257,7 +13257,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -15000,12 +15000,18 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

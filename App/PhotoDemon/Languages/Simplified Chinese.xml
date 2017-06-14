@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2769</langversion>
+<langversion>6.8.2770</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -917,13 +917,13 @@ To enable support for compressed PDI files, click Help > Check for Updates, and 
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>重复：%1</translation>
+<original>Fade: %1</original>
+<translation>淡出：%1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>淡出：%1</translation>
+<original>Repeat: %1</original>
+<translation>重复：%1</translation>
 </phrase>
 
 <phrase>
@@ -2380,7 +2380,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 <translation>点击第一个点完成多边形选择</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2503,6 +2503,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>操作停止。</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>没有足够的可用内存来继续此操作。请释放系统内存（RAM），然后再试一次。如果问题仍然存在，降低缩放值，然后再试一次。</translation>
 </phrase>
@@ -2510,11 +2515,6 @@ Please enter a numeric value.</original>
 <phrase>
 <original>Out of memory</original>
 <translation>超出内存</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>操作停止。</translation>
 </phrase>
 
 <phrase>
@@ -13244,7 +13244,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>画笔（软刷）</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14984,12 +14984,18 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

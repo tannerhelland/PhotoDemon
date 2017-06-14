@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Spanish (Mexico)</langname>
-<langversion>6.7.260</langversion>
+<langversion>6.7.261</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -918,13 +918,13 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>Repetir: %1</translation>
+<original>Fade: %1</original>
+<translation>Fundido: %1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>Fundido: %1</translation>
+<original>Repeat: %1</original>
+<translation>Repetir: %1</translation>
 </phrase>
 
 <phrase>
@@ -2379,7 +2379,7 @@ In Mientras tanto, intenta guardar la imagen en un formato alternativo. También
 <translation>Haga clic en el primer punto para completar la selección de polígonos</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2503,6 +2503,11 @@ Please válida Introduzca un valor numérico.</translation>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Operación detuvo.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>No hay suficiente memoria disponible para continuar con esta operación. Libera la memoria del sistema (RAM) y vuelva a intentarlo. Si el problema persiste, reduzca el valor de zoom y vuelva a intentarlo.</translation>
 </phrase>
@@ -2510,11 +2515,6 @@ Please válida Introduzca un valor numérico.</translation>
 <phrase>
 <original>Out of memory</original>
 <translation>Fuera de la memoria</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Operación detuvo.</translation>
 </phrase>
 
 <phrase>
@@ -13247,7 +13247,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14990,12 +14990,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

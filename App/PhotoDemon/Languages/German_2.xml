@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2761</langversion>
+<langversion>6.8.2775</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -918,13 +918,13 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>Wiederholen: %1</translation>
+<original>Fade: %1</original>
+<translation>Ausblenden: %1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>Ausblenden: %1</translation>
+<original>Repeat: %1</original>
+<translation>Wiederholen: %1</translation>
 </phrase>
 
 <phrase>
@@ -1393,7 +1393,7 @@ Verifizieren Sie bitte, dass diese Bilder vorhanden sind und sie ein unterstütz
 
 <phrase>
 <original>Shift</original>
-<translation>Umsch</translation>
+<translation>Shift</translation>
 </phrase>
 
 <phrase>
@@ -2388,7 +2388,7 @@ Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern
 <translation>Klicken Sie auf den ersten Punkt, um die Polygon-Auswahl abzuschließen</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2512,6 +2512,11 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Operation angehalten.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Es ist nicht genügend Speicher verfügbar, um diese Operation fortzusetzen. Machen Sie bitte Systemspeicher (RAM) frei und versuchen es erneut. Wenn das Problem bestehen bleibt, reduzieren Sie den Zoom-Wert und versuchen es erneut.</translation>
 </phrase>
@@ -2519,11 +2524,6 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <phrase>
 <original>Out of memory</original>
 <translation>Platz im Hauptspeicher reicht nicht aus</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Operation angehalten.</translation>
 </phrase>
 
 <phrase>
@@ -3739,7 +3739,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>(enter text here)</original>
-<translation>(Text hier eingeben)</translation>
+<translation>(Hier Text eingeben)</translation>
 </phrase>
 
 <phrase>
@@ -3749,7 +3749,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
-<translation>Mausrad = VERTIKAL SCROLLEN, Shift+Mausrad = HORIZONTAL SCROLLEN - Strg+Mausrad =ZOOMEN</translation>
+<translation>Mausrad = VERTIKAL SCROLLEN,  Shift + Mausrad = HORIZONTAL SCROLLEN,  Strg + Mausrad = ZOOMEN</translation>
 </phrase>
 
 <phrase>
@@ -13256,7 +13256,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Malpinsel (weiche Spitze)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14999,12 +14999,18 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>
