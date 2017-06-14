@@ -517,113 +517,113 @@ Private Function CalculateIdealXMPGroupName(ByRef dstMetadata As PDMetadataItem)
         'There are hundreds of potential XMP namespaces.  Rather than try to convert all of them into human-readable versions,
         ' PD just sorts through the most common ones.  Other coders are welcome to expand this list, using the reference at
         ' http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/XMP.html
-        If StringsEqual(GroupName, "xmp-aas") Then
+        If Strings.StringsEqual(GroupName, "xmp-aas") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Apple)")
-        ElseIf StringsEqual(GroupName, "xmp-acdsee") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-acdsee") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (ACD Systems)")
-        ElseIf StringsEqual(GroupName, "xmp-album") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-album") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Album)")
-        ElseIf StringsEqual(GroupName, "xmp-apple-fi") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-apple-fi") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Apple)")
-        ElseIf StringsEqual(GroupName, "xmp-aux") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-aux") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe)")
-        ElseIf StringsEqual(GroupName, "xmp-cc") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-cc") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Creative Commons)")
-        ElseIf StringsEqual(GroupName, "xmp-cell") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-cell") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Sony Ericcson)")
-        ElseIf StringsEqual(GroupName, "xmp-creatoratom") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-creatoratom") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe After Effects)")
-        ElseIf StringsEqual(GroupName, "xmp-crs") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-crs") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Photoshop Camera Raw)")
-        ElseIf StringsEqual(GroupName, "xmp-dc") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-dc") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Dublin Core)")
-        ElseIf StringsEqual(GroupName, "xmp-dex") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-dex") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Description Explorer)")
-        ElseIf StringsEqual(GroupName, "xmp-dicom") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-dicom") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (DICOM)")
-        ElseIf StringsEqual(GroupName, "xmp-digikam") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-digikam") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (DigiKam)")
-        ElseIf StringsEqual(GroupName, "xmp-exif") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-exif") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF)")
-        ElseIf StringsEqual(GroupName, "xmp-exifex") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-exifex") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF 2.3)")
-        ElseIf StringsEqual(GroupName, "xmp-expressionmedia") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-expressionmedia") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Expression Media)")
-        ElseIf StringsEqual(GroupName, "xmp-extensis") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-extensis") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Extensis Portfolio)")
-        ElseIf StringsEqual(GroupName, "xmp-fpv") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-fpv") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Fast Picture Viewer)")
-        ElseIf StringsEqual(GroupName, "xmp-getty") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-getty") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Getty Images)")
-        ElseIf StringsEqual(GroupName, "xmp-gpano") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-gpano") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Google Photosphere)")
-        ElseIf StringsEqual(GroupName, "xmp-ics") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-ics") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IDimager)")
-        ElseIf StringsEqual(GroupName, "xmp-iptccore") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-iptccore") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IPTC Core)")
-        ElseIf StringsEqual(GroupName, "xmp-iptcext") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-iptcext") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (IPTC Extension)")
-        ElseIf StringsEqual(GroupName, "xmp-lr") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-lr") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Lightroom)")
-        ElseIf StringsEqual(GroupName, "xmp-mediapro") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mediapro") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (iView MediaPro)")
-        ElseIf StringsEqual(GroupName, "xmp-microsoft") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-microsoft") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.0)")
-        ElseIf StringsEqual(GroupName, "xmp-mp") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mp") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.2)")
-        ElseIf StringsEqual(GroupName, "xmp-mp1") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mp1") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Microsoft Photo 1.1)")
-        ElseIf StringsEqual(GroupName, "xmp-mwg-coll") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mwg-coll") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
-        ElseIf StringsEqual(GroupName, "xmp-mwg-kw") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mwg-kw") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
-        ElseIf StringsEqual(GroupName, "xmp-mwg-rs") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-mwg-rs") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (MWG)")
-        ElseIf StringsEqual(GroupName, "xmp-pdf") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pdf") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe PDF)")
-        ElseIf StringsEqual(GroupName, "xmp-pdfx") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pdfx") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe PDF extended)")
-        ElseIf StringsEqual(GroupName, "xmp-photomech") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-photomech") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PhotoMechanic)")
-        ElseIf StringsEqual(GroupName, "xmp-photoshop") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-photoshop") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe Photoshop)")
-        ElseIf StringsEqual(GroupName, "xmp-pixellive") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pixellive") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PixelLive)")
-        ElseIf StringsEqual(GroupName, "xmp-plus") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-plus") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Plus License Data)")
-        ElseIf StringsEqual(GroupName, "xmp-pmi") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pmi") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM for images)")
-        ElseIf StringsEqual(GroupName, "xmp-prism") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-prism") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM)")
-        ElseIf StringsEqual(GroupName, "xmp-prl") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-prl") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Rights)")
-        ElseIf StringsEqual(GroupName, "xmp-prm") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-prm") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Recipe)")
-        ElseIf StringsEqual(GroupName, "xmp-pur") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-pur") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (PRISM Usage Rights)")
-        ElseIf StringsEqual(GroupName, "xmp-rdf") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-rdf") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (RDF)")
-        ElseIf StringsEqual(GroupName, "xmp-swf") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-swf") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Adobe SWF)")
-        ElseIf StringsEqual(GroupName, "xmp-tiff") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-tiff") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (EXIF-TIFF)")
-        ElseIf StringsEqual(GroupName, "xmp-x") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-x") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Toolkit)")
-        ElseIf StringsEqual(GroupName, "xmp-xmp") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmp") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (General)")
-        ElseIf StringsEqual(GroupName, "xmp-xmpbj") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpbj") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Basic Job)")
-        ElseIf StringsEqual(GroupName, "xmp-xmpdm") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpdm") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Dynamic Media)")
-        ElseIf StringsEqual(GroupName, "xmp-xmpmm") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpmm") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Media Management)")
-        ElseIf StringsEqual(GroupName, "xmp-xmpnote") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpnote") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Note)")
-        ElseIf StringsEqual(GroupName, "xmp-xmpplus") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmpplus") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Picture Licensing)")
-        ElseIf StringsEqual(GroupName, "xmp-xmprights") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmprights") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Rights Management)")
-        ElseIf StringsEqual(GroupName, "xmp-xmptpg") Then
+        ElseIf Strings.StringsEqual(GroupName, "xmp-xmptpg") Then
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Paged Text)")
         Else
             dstMetadata.TagGroupFriendly = g_Language.TranslateMessage("XMP (Misc)")
@@ -633,10 +633,6 @@ Private Function CalculateIdealXMPGroupName(ByRef dstMetadata As PDMetadataItem)
         
     End If
     
-End Function
-
-Private Function StringsEqual(ByRef str1 As String, ByRef str2 As String) As Boolean
-    StringsEqual = CBool(StrComp(str1, str2, vbBinaryCompare) = 0)
 End Function
 
 Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boolean

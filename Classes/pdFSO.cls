@@ -19,6 +19,7 @@ Attribute VB_Exposed = False
 'Last update: minor code cleanup
 'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
 '              pdUnicode (for simplifying various string format conversions, when reading/writing text files primarily)
+'              Strings module (which could probably be semi-merged with pdUnicode, for convenience)
 '
 'This class provides convenient, Unicode-friendly replacements for VB's various file and folder functions.  In some cases, the VB
 ' equivalents have been directly reproduced.  In others, the functions have been rewritten to make fail states easier to detect
@@ -453,13 +454,13 @@ Friend Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
         
     'To further simplify searching for extension matches in the whitelist, we enforce strict formatting of the string
     If whiteListInUse Then
-        If Not StringsEqual(Left$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = "|" & onlyAllowTheseExtensions
-        If Not StringsEqual(Right$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = onlyAllowTheseExtensions & "|"
+        If Not Strings.StringsEqual(Left$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = "|" & onlyAllowTheseExtensions
+        If Not Strings.StringsEqual(Right$(onlyAllowTheseExtensions, 1), "|") Then onlyAllowTheseExtensions = onlyAllowTheseExtensions & "|"
     End If
         
     If blackListInUse Then
-        If Not StringsEqual(Left$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = "|" & doNotAllowTheseExtensions
-        If Not StringsEqual(Right$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = doNotAllowTheseExtensions & "|"
+        If Not Strings.StringsEqual(Left$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = "|" & doNotAllowTheseExtensions
+        If Not Strings.StringsEqual(Right$(doNotAllowTheseExtensions, 1), "|") Then doNotAllowTheseExtensions = doNotAllowTheseExtensions & "|"
     End If
         
     'To eliminate the need for expensive recursion, we use a stack structure to store subfolders that still need to be searched.
@@ -626,7 +627,7 @@ Friend Function GenerateRelativePath(ByVal baseFolder As String, ByVal thisFolde
     If (InStr(1, thisFolder, baseFolder) = 1) Then
         
         'Check equality first; equal strings mean no relative folder is required
-        If StringsEqual(baseFolder, thisFolder) Then
+        If Strings.StringsEqual(baseFolder, thisFolder) Then
             GenerateRelativePath = ""
         
         'Strings are not equal, but baseFolder is contained within thisFolder.  Perfect!
@@ -664,11 +665,11 @@ Friend Function DirW(Optional ByVal sParam As String = vbNullString) As String
     If (Len(sParam) > 0) Then
     
         'First, prepend "\\?\" to sParam.  This enables long file paths.
-        If (Not StringsEqual(Left$(sParam, 4), "\\?\")) Then sParam = "\\?\" & sParam
+        If (Not Strings.StringsEqual(Left$(sParam, 4), "\\?\")) Then sParam = "\\?\" & sParam
     
         'FindFirstFile fails if the requested path has a trailing slash.  If the user hands us a bare path, assume that they
         ' want to iterate all files and folders within that folder.
-        If (StringsEqual(Right$(sParam, 1), "\") Or StringsEqual(Right$(sParam, 1), "/")) Then sParam = sParam & "*"
+        If (Strings.StringsEqual(Right$(sParam, 1), "\") Or Strings.StringsEqual(Right$(sParam, 1), "/")) Then sParam = sParam & "*"
         
     End If
     
@@ -724,8 +725,8 @@ Friend Function DirW(Optional ByVal sParam As String = vbNullString) As String
                 
                 If (Len(retString) <= 2) Then
                     keepSearching = False
-                    keepSearching = StringsEqual(retString, ".")
-                    If (Not keepSearching) Then keepSearching = StringsEqual(retString, "..")
+                    keepSearching = Strings.StringsEqual(retString, ".")
+                    If (Not keepSearching) Then keepSearching = Strings.StringsEqual(retString, "..")
                 Else
                     keepSearching = False
                 End If
@@ -1081,7 +1082,7 @@ End Function
 'Given a path, make sure the right backslash is existant
 Friend Function EnforcePathSlash(ByRef srcPath As String) As String
     
-    If (Not StringsEqual(Right$(srcPath, 1), "\")) And (Not StringsEqual(Right$(srcPath, 1), "/")) Then
+    If (Not Strings.StringsEqual(Right$(srcPath, 1), "\")) And (Not Strings.StringsEqual(Right$(srcPath, 1), "/")) Then
         EnforcePathSlash = srcPath & "\"
     Else
         EnforcePathSlash = srcPath
@@ -1129,12 +1130,12 @@ Friend Function GetFileExtension(sFile As String) As String
     For i = Len(sFile) To 1 Step -1
     
         'If we find a path before we find an extension, return a blank string
-        If StringsEqual(Mid$(sFile, i, 1), "\") Or StringsEqual(Mid$(sFile, i, 1), "/") Then
+        If Strings.StringsEqual(Mid$(sFile, i, 1), "\") Or Strings.StringsEqual(Mid$(sFile, i, 1), "/") Then
             GetFileExtension = vbNullString
             Exit For
         End If
         
-        If StringsEqual(Mid$(sFile, i, 1), ".") Then
+        If Strings.StringsEqual(Mid$(sFile, i, 1), ".") Then
             GetFileExtension = Right$(sFile, Len(sFile) - i)
             Exit For
         End If
@@ -1166,11 +1167,6 @@ Friend Function TrimNull(ByRef origString As String) As String
        TrimNull = origString
     End If
     
-End Function
-
-'VB's default string comparison function is overly cumbersome.  This wrapper makes string equality checks tidier.
-Private Function StringsEqual(ByRef srcString1 As String, ByRef srcString2 As String) As Boolean
-    StringsEqual = (StrComp(srcString1, srcString2, vbBinaryCompare) = 0)
 End Function
 
 'Given a potential filename, scan and replace any invalid characters with a character of the caller's choosing
