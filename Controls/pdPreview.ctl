@@ -584,7 +584,7 @@ Private Sub UserControl_Show()
             If (pdImages(g_CurrentImage).GetNumOfLayers <> 0) Then
                 If pdImages(g_CurrentImage).IsSelectionActive Then
                     Dim selBounds As RECTF
-                    selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
+                    selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
                     m_SrcImageWidth = selBounds.Width
                     m_SrcImageHeight = selBounds.Height
                 Else

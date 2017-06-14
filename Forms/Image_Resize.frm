@@ -446,7 +446,7 @@ End Sub
 
 'Resize an image using any one of several resampling algorithms.  (Some algorithms are provided by FreeImage.)
 Public Sub ResizeImage(ByVal resizeParams As String)
-    
+        
     'Parse incoming parameters into type-appropriate vars
     Dim imgWidth As Double, imgHeight As Double, imgDPI As Long
     Dim resampleMethod As PD_RESAMPLE_ADVANCED, fitMethod As PD_RESIZE_FIT, newBackColor As Long
@@ -511,7 +511,7 @@ Public Sub ResizeImage(ByVal resizeParams As String)
     'If the image contains an active selection, automatically deactivate it
     If pdImages(g_CurrentImage).IsSelectionActive And (thingToResize = PD_AT_WHOLEIMAGE) Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     'Because most resize methods require a temporary DIB, create one here

@@ -260,7 +260,7 @@ End Enum
 ' Undos are created.  We track the ID of each action in preparation for a future History browser that allows the
 ' user to jump to any arbitrary Undo/Redo state.  (Also, to properly update the text of the Undo/Redo menu and
 ' buttons so the user knows which action they are undo/redoing.)
-Public Type UndoEntry
+Public Type PD_UndoEntry
     processID As String             'Name of the associated action (e.g. "Gaussian blur")
     processParamString As String    'Processor string supplied to the action
     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)

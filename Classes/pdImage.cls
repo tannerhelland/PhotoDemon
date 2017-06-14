@@ -47,7 +47,7 @@ Public imageID As Long
 
 'The main pdImages array isn't resized when images are deleted (unless *all* images are deleted).  Images that have
 ' been unloaded are marked as "not active" via this variable.
-Public IsActive As Boolean
+Private m_IsActive As Boolean
 
 'Image dimensions
 Public Width As Long
@@ -58,15 +58,15 @@ Public Height As Long
 ' - "OriginalFileName"
 ' - "OriginalFileExtension"
 ' - "CurrentLocationOnDisk"
-Public imgStorage As pdDictionary
+Public ImgStorage As pdDictionary
 
 'Persistent buffer, for storing the fully composited image.  This composite is only updated when absolutely necessary;
 ' otherwise, look at grabbing the dedicated canvasBuffer, below.
-Public compositeBuffer As pdDIB
+Public CompositeBuffer As pdDIB
 
 'Image's canvas buffer.  This holds a composited version of the image, extracted and cropped to reflect the current viewport.
 ' It is cached here to make viewport rendering faster and more reliable.
-Public canvasBuffer As pdDIB
+Public CanvasBuffer As pdDIB
 
 'Scratch layer.  This layer can be used for any temporary work relevant to this image (e.g. storing paintbrush strokes).
 ' Note that no guarantees are made regarding the scratch layer's initialization, size, or other attributes.  You should
@@ -74,18 +74,18 @@ Public canvasBuffer As pdDIB
 Public ScratchLayer As pdLayer
 
 'Image's selection data (stored and handled by a pdSelection instance)
-Public mainSelection As pdSelection
+Public MainSelection As pdSelection
 Private m_SelectionIsActive As Boolean
 
 'Metadata handler/storage class.  This class is automatically filled with an image file's metadata at load-time.
 ' NOTE: THE EXIFTOOL PLUGIN IS REQUIRED FOR METADATA HANDLING.
-Public imgMetadata As pdMetadata
+Public ImgMetadata As pdMetadata
 
 'All Undo/Redo actions are handled through this publicly available Undo/Redo handler class
-Public undoManager As pdUndo
+Public UndoManager As pdUndo
     
 'Various viewport actions are now handled through a separate pdViewport class
-Public imgViewport As pdViewport
+Public ImgViewport As pdViewport
 
 'Image resolution (in DPI).  In general, we don't deal with differing x/y resolutions - in that case,
 ' use the m_DPI value, which will return the average resolution of the two.
@@ -209,6 +209,16 @@ Friend Function GetTimeOfLastChange() As Currency
     GetTimeOfLastChange = m_TimeAtLastModify
 End Function
 
+'To improve performance, PD doesn't always free image resources when an image is finished.  To see if an image is
+' "active" (the PD word for "open and editable by a user"), use this function.
+Friend Function IsActive() As Boolean
+    IsActive = m_IsActive
+End Function
+
+Friend Sub ChangeActiveState(ByVal newActiveState As Boolean)
+    m_IsActive = newActiveState
+End Sub
+
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
 ' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
 
@@ -264,9 +274,10 @@ Friend Sub RebuildCompositeBuffer(Optional ByVal renderScratchLayerIndex As Long
     Else
         
         'Rebuild the composite cache
-        imgCompositor.GetCompositedImage Me, compositeBuffer, , renderScratchLayerIndex
+        imgCompositor.GetCompositedImage Me, CompositeBuffer, , renderScratchLayerIndex
         
-        'Mark the cache as clean
+        'Mark the cache as clean.  (NOTE: this is disabled pending further testing; I'm not sure that all changes
+        ' are being tracked correctly, so composites are currently generated on every request as a workaround)
         'm_CompositeCacheClean = True
         
     End If
@@ -335,11 +346,11 @@ End Sub
 Friend Sub GetCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
     
     'If the current composite cache is dirty, rebuild it
-    If (Not m_CompositeCacheClean) Then RebuildCompositeBuffer
+    If (Not m_CompositeCacheClean) Then Me.RebuildCompositeBuffer
     
     'Give the caller a copy of the composited image
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-    dstDIB.CreateFromExistingDIB compositeBuffer
+    dstDIB.CreateFromExistingDIB CompositeBuffer
     
     'Change premultiplication, if requested by the caller.  (By default, the composite image is stored in premultiplied format.)
     If (dstDIB.GetAlphaPremultiplication <> premultiplicationStatus) Then dstDIB.SetAlphaPremultiplication premultiplicationStatus
@@ -663,8 +674,8 @@ Friend Function WriteExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.WriteTag "curLayer", m_curLayer
     
     'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
-    If imgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.WriteTag "pngBackgroundColor", imgStorage.GetEntry_Long("pngBackgroundColor")
-    If imgStorage.DoesKeyExist("OriginalFileSize") Then xmlEngine.WriteTag "OriginalFileSize", imgStorage.GetEntry_Long("OriginalFileSize")
+    If ImgStorage.DoesKeyExist("pngBackgroundColor") Then xmlEngine.WriteTag "pngBackgroundColor", ImgStorage.GetEntry_Long("pngBackgroundColor")
+    If ImgStorage.DoesKeyExist("OriginalFileSize") Then xmlEngine.WriteTag "OriginalFileSize", ImgStorage.GetEntry_Long("OriginalFileSize")
     
     xmlEngine.WriteBlankLine
     
@@ -741,7 +752,7 @@ Friend Function ReadExternalData(ByRef srcFilename As String, Optional ByVal fil
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
             ' only as necessary.
-            If xmlEngine.DoesTagExist("pngBackgroundColor") Then imgStorage.AddEntry "pngBackgroundColor", xmlEngine.GetUniqueTag_Long("pngBackgroundColor")
+            If xmlEngine.DoesTagExist("pngBackgroundColor") Then ImgStorage.AddEntry "pngBackgroundColor", xmlEngine.GetUniqueTag_Long("pngBackgroundColor")
             
         End If
         
@@ -861,7 +872,7 @@ Friend Sub SetSaveState(ByVal newSaveState As Boolean, ByVal typeOfSaveEvent As 
         
         'Remember the undo value at this juncture; if the user performs additional actions, but "Undos" to this point,
         ' we want to disable the save button for them
-        undoManager.NotifyImageSaved typeOfSaveEvent
+        UndoManager.NotifyImageSaved typeOfSaveEvent
     
     'Some change has occurred, meaning the image has not been saved (to any format) in its current state
     Else
@@ -954,7 +965,7 @@ Friend Sub DeactivateImage()
     Set ScratchLayer = Nothing
     
     'Some internal selection caches are free-able
-    If (Not mainSelection Is Nothing) Then mainSelection.FreeNonEssentialResources
+    If (Not MainSelection Is Nothing) Then MainSelection.FreeNonEssentialResources
 
 End Sub
 
@@ -966,24 +977,24 @@ Friend Sub FreeAllImageResources()
     FreeInternalIcons
     
     'Erase any internal image buffers
-    If (Not compositeBuffer Is Nothing) Then Set compositeBuffer = Nothing
-    If (Not canvasBuffer Is Nothing) Then Set canvasBuffer = Nothing
+    If (Not CompositeBuffer Is Nothing) Then Set CompositeBuffer = Nothing
+    If (Not CanvasBuffer Is Nothing) Then Set CanvasBuffer = Nothing
     
     'Erase the selection manager (*very* important because of circular references)
-    If (Not mainSelection Is Nothing) Then
-        mainSelection.SetParentReference Nothing
-        Set mainSelection = Nothing
+    If (Not MainSelection Is Nothing) Then
+        MainSelection.SetParentReference Nothing
+        Set MainSelection = Nothing
     End If
         
     'Deactivate the Undo/Redo handler (*very* important because of circular references)
-    If (Not undoManager Is Nothing) Then
-        undoManager.ClearUndos
-        Set undoManager.parentPDImage = Nothing
-        Set undoManager = Nothing
+    If (Not UndoManager Is Nothing) Then
+        UndoManager.ClearUndos
+        Set UndoManager.parentPDImage = Nothing
+        Set UndoManager = Nothing
     End If
     
     'Release the viewport renderer
-    If (Not imgViewport Is Nothing) Then Set imgViewport = Nothing
+    If (Not ImgViewport Is Nothing) Then Set ImgViewport = Nothing
     
     'Release the compositor
     If (Not imgCompositor Is Nothing) Then Set imgCompositor = Nothing
@@ -998,10 +1009,10 @@ Friend Sub FreeAllImageResources()
     End If
     
     'It doesn't make a big difference, but we can also empty out this image's String-type variables to save a bit of space.
-    Set imgStorage = Nothing
+    Set ImgStorage = Nothing
     
     'Mark this image as inactive
-    IsActive = False
+    Me.ChangeActiveState False
     
 End Sub
 
@@ -1042,41 +1053,41 @@ End Function
 Private Sub Class_Initialize()
 
     'Initially, mark the image as *not* having been saved
-    IsActive = False
+    m_IsActive = False
     m_hasBeenSavedPDI = False
     m_hasBeenSavedFlat = False
 
     'Initialize the public storage dictionary
-    Set imgStorage = New pdDictionary
+    Set ImgStorage = New pdDictionary
 
     'Add initial key/value pairs to the dictionary.  Doing this here saves us from having to check key existence in subsequent functions.
 
         'Lossless filetypes always present an export dialog at least once.  Beyond that point, any use of the Save command will
         ' re-save the file using previous settings.  Save As will still trigger a new dialog, however.
-        imgStorage.AddEntry "hasSeenJPEGPrompt", False
-        imgStorage.AddEntry "hasSeenJP2Prompt", False
-        imgStorage.AddEntry "hasSeenWebPPrompt", False
-        imgStorage.AddEntry "hasSeenJXRPrompt", False
+        ImgStorage.AddEntry "hasSeenJPEGPrompt", False
+        ImgStorage.AddEntry "hasSeenJP2Prompt", False
+        ImgStorage.AddEntry "hasSeenWebPPrompt", False
+        ImgStorage.AddEntry "hasSeenJXRPrompt", False
 
     'Initialize the composite and canvas buffers
-    Set compositeBuffer = New pdDIB
-    Set canvasBuffer = New pdDIB
+    Set CompositeBuffer = New pdDIB
+    Set CanvasBuffer = New pdDIB
 
     'Initialize the main selection
-    Set mainSelection = New pdSelection
+    Set MainSelection = New pdSelection
     m_SelectionIsActive = False
-    mainSelection.SetSelectionShape ss_Rectangle
-    mainSelection.SetParentReference Me
+    MainSelection.SetSelectionShape ss_Rectangle
+    MainSelection.SetParentReference Me
 
     'Initialize the metadata object (which may not get used, but this prevents errors if other functions try to access metadata)
-    Set imgMetadata = New pdMetadata
+    Set ImgMetadata = New pdMetadata
 
     'Initialize the Undo/Redo handler
-    Set undoManager = New pdUndo
-    Set undoManager.parentPDImage = Me
+    Set UndoManager = New pdUndo
+    Set UndoManager.parentPDImage = Me
 
     'Initialize the viewport manager
-    Set imgViewport = New pdViewport
+    Set ImgViewport = New pdViewport
 
     'Create at least one blank layer, so that functions referencing a layer object don't break
     ReDim imgLayers(0) As pdLayer
@@ -1104,19 +1115,19 @@ Private Sub Class_Terminate()
     FreeInternalIcons
     
     Set imgCompositor = Nothing
-    Set imgViewport = Nothing
-    If (Not undoManager Is Nothing) Then Set undoManager.parentPDImage = Nothing
-    Set undoManager = Nothing
-    Set imgMetadata = Nothing
+    Set ImgViewport = Nothing
+    If (Not UndoManager Is Nothing) Then Set UndoManager.parentPDImage = Nothing
+    Set UndoManager = Nothing
+    Set ImgMetadata = Nothing
     
     'Note: if the main selection object has an active reference to us, it's circular, so this _Terminate() event won't be
     ' called at all!
-    If (Not mainSelection Is Nothing) Then mainSelection.SetParentReference Nothing
-    Set mainSelection = Nothing
+    If (Not MainSelection Is Nothing) Then MainSelection.SetParentReference Nothing
+    Set MainSelection = Nothing
     
-    Set canvasBuffer = Nothing
-    Set compositeBuffer = Nothing
-    Set imgStorage = Nothing
+    Set CanvasBuffer = Nothing
+    Set CompositeBuffer = Nothing
+    Set ImgStorage = Nothing
     
     'Forcibly release all image layers
     Dim i As Long
@@ -1171,7 +1182,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     'Start by initializing the destination DIB to the size of the active selection
     If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     Dim maskBounds As RECTF
-    maskBounds = mainSelection.GetBoundaryRect
+    maskBounds = MainSelection.GetBoundaryRect
     dstDIB.CreateBlank maskBounds.Width, maskBounds.Height, 32, 0
     dstDIB.SetInitialAlphaPremultiplicationState True
     
@@ -1183,7 +1194,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     
     Dim selData() As Byte
     Dim selSA As SAFEARRAY2D
-    PrepSafeArray selSA, mainSelection.GetMaskDIB
+    PrepSafeArray selSA, MainSelection.GetMaskDIB
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
@@ -1207,7 +1218,7 @@ Friend Function RetrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     dstDIBCD = dstDIB.GetDIBColorDepth \ 8
     
     Dim selDIBCD As Long
-    selDIBCD = mainSelection.GetMaskDIB.GetDIBColorDepth \ 8
+    selDIBCD = MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
             
     For x = 0 To dstDIB.GetDIBWidth - 1
         dstQuickX = x * dstDIBCD
@@ -1292,7 +1303,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     'We now need pointers to two separate sets of image data: destination DIB, and selection mask.
     Dim selData() As Byte
     Dim selSA As SAFEARRAY2D
-    PrepSafeArray selSA, mainSelection.GetMaskDIB
+    PrepSafeArray selSA, MainSelection.GetMaskDIB
     CopyMemory ByVal VarPtrArray(selData()), VarPtr(selSA), 4
             
     Dim dstImageData() As Byte
@@ -1301,7 +1312,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     Dim maskBounds As RECTF
-    maskBounds = mainSelection.GetBoundaryRect
+    maskBounds = MainSelection.GetBoundaryRect
     
     Dim leftBound As Long, topBound As Long, rightBound As Long, bottomBound As Long
     leftBound = maskBounds.Left
@@ -1316,7 +1327,7 @@ Friend Function EraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     
     Dim dstDIBCD As Long, selDIBCD As Long, dstQuickX As Long, selQuickX As Long
     dstDIBCD = imgLayers(targetLayerIndex).layerDIB.GetDIBColorDepth \ 8
-    selDIBCD = mainSelection.GetMaskDIB.GetDIBColorDepth \ 8
+    selDIBCD = MainSelection.GetMaskDIB.GetDIBColorDepth \ 8
     
     Const BYTE_TO_FLOAT As Single = 1 / 255
     
@@ -1492,6 +1503,6 @@ End Sub
 'Want to suspend (or subsequently re-enable) animations?  Use this sub.  (At present, this only affects the
 ' "marching ant" selection animation.)
 Friend Sub NotifyAnimationsAllowed(ByVal allowedState As Boolean)
-    If (Not mainSelection Is Nothing) Then mainSelection.NotifyAnimationsAllowed allowedState
+    If (Not MainSelection Is Nothing) Then MainSelection.NotifyAnimationsAllowed allowedState
 End Sub
 

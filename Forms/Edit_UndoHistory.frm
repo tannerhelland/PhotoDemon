@@ -87,7 +87,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This array contains the contents of the current Undo stack, as copied from the pdUndo class
-Private m_undoEntries() As UndoEntry
+Private m_undoEntries() As PD_UndoEntry
 
 'Total number of Undo entries, and index of the current Undo entry (e.g. the current image state in the undo/redo chain).
 Private m_numOfUndos As Long, m_curUndoIndex As Long
@@ -109,16 +109,16 @@ Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
     Select Case typeOfUndo
     
         Case UNDO_EVERYTHING
-            newText = ""
+            newText = vbNullString
             
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_IMAGEHEADER
-            newText = ""
+            newText = vbNullString
             
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER
             If Not (pdImages(g_CurrentImage).GetLayerByID(layerID) Is Nothing) Then
                 newText = g_Language.TranslateMessage("layer: %1", pdImages(g_CurrentImage).GetLayerByID(layerID).GetLayerName())
             Else
-                newText = ""
+                newText = vbNullString
             End If
         
         Case UNDO_SELECTION
@@ -151,7 +151,7 @@ Private Sub Form_Load()
     m_DescriptionFont.SetTextAlignment vbLeftJustify
     
     'Retrieve a copy of all Undo data from the current image's undo manager
-    pdImages(g_CurrentImage).undoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
+    pdImages(g_CurrentImage).UndoManager.CopyUndoStack m_numOfUndos, m_curUndoIndex, m_undoEntries
     
     'Populate the owner-drawn listbox with the retrieved Undo data (including thumbnails)
     lstUndo.ListItemHeight = FixDPI(BLOCKHEIGHT)
