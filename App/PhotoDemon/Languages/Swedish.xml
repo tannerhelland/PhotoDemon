@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2545</langversion>
+<langversion>6.8.2546</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -918,13 +918,13 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>Upprepa: %1</translation>
+<original>Fade: %1</original>
+<translation>Fade: %1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>Fade: %1</translation>
+<original>Repeat: %1</original>
+<translation>Upprepa: %1</translation>
 </phrase>
 
 <phrase>
@@ -2383,7 +2383,7 @@ In tiden, försök att spara bilden till en annan format. Du kan också låta Ph
 <translation>Klicka på den första punkten för att slutföra polygon val</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2507,6 +2507,11 @@ Please ange ett numeriskt värde.</translation>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Operation stoppades.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Det finns inte tillräckligt med minne för att fortsätta denna operation. Frigör systemminne (RAM) och försök igen. Om problemet kvarstår, minska zoomvärdet och försök igen.</translation>
 </phrase>
@@ -2514,11 +2519,6 @@ Please ange ett numeriskt värde.</translation>
 <phrase>
 <original>Out of memory</original>
 <translation>Slut på minne</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Operation stoppades.</translation>
 </phrase>
 
 <phrase>
@@ -13252,7 +13252,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Pensel (mjuk spets borste)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14995,12 +14995,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

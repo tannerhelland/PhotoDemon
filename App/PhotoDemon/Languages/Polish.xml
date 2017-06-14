@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2545</langversion>
+<langversion>6.8.2546</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -917,13 +917,13 @@ To włączyć obsługę plików skompresowanych PDI, należy kliknąć Pomoc> Sp
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>Powtarzam: %1</translation>
+<original>Fade: %1</original>
+<translation>Fade: %1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>Fade: %1</translation>
+<original>Repeat: %1</original>
+<translation>Powtarzam: %1</translation>
 </phrase>
 
 <phrase>
@@ -2375,7 +2375,7 @@ In międzyczasie spróbuj zapisywania obrazu w alternatywnym formacie. Można r�
 <translation>Kliknij na pierwszy punkt, aby zakończyć wybór wielokąta</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2499,6 +2499,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Operacja przerwana.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Nie ma wystarczającej ilości dostępnej pamięci, aby kontynuować tę operację. Proszę zwolnić pamięci systemowej (RAM) i spróbuj ponownie. Jeśli problem nie ustąpi, należy zmniejszyć wartość powiększenia i spróbuj ponownie.</translation>
 </phrase>
@@ -2506,11 +2511,6 @@ Please enter a numeric value.</original>
 <phrase>
 <original>Out of memory</original>
 <translation>Brak pamięci</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Operacja przerwana.</translation>
 </phrase>
 
 <phrase>
@@ -13241,7 +13241,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <translation>Pędzel (szczotka miękka końcówką)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14978,12 +14978,18 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

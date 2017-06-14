@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.257</langversion>
+<langversion>6.7.258</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -918,13 +918,13 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>%1 wiederholen</translation>
+<original>Fade: %1</original>
+<translation>%1 ausblenden</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>%1 ausblenden</translation>
+<original>Repeat: %1</original>
+<translation>%1 wiederholen</translation>
 </phrase>
 
 <phrase>
@@ -2377,7 +2377,7 @@ Versuchen Sie bitte vorläufig, das Bild in einem anderen Format zu speichern. S
 <translation>Klicken Sie nochmal auf den ersten Punkt, um die Vieleckauswahl komplett zu machen </translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2501,6 +2501,11 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Vorgang angehalten.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Es ist nicht genügend Speicher vorhanden, um diesen Vorgang fortsetzen. Bitte machen Sie Arbeitsspeicher (RAM) frei und versuchen Sie es noch mal. Wenn das Problem weiterhin besteht, reduzieren Sie den Zoom-Wert und versuchen Sie es dann noch einmal.</translation>
 </phrase>
@@ -2508,11 +2513,6 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <phrase>
 <original>Out of memory</original>
 <translation>Zu wenig Speicher</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Vorgang angehalten.</translation>
 </phrase>
 
 <phrase>
@@ -13245,7 +13245,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14988,12 +14988,18 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

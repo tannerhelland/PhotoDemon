@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2545</langversion>
+<langversion>6.8.2546</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -917,13 +917,13 @@ To támogatásának engedélyezéséhez tömörített PDI fájlokat, kattintson 
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>Ismétlés: %1</translation>
+<original>Fade: %1</original>
+<translation>Fade: %1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>Fade: %1</translation>
+<original>Repeat: %1</original>
+<translation>Ismétlés: %1</translation>
 </phrase>
 
 <phrase>
@@ -2375,7 +2375,7 @@ In Addig kérjük, próbálja menteni a képet, hogy egy alternatív formátum. 
 <translation>Kattints az első pontra a sokszög kiválasztási</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2499,6 +2499,11 @@ Please enter a numeric value.</original>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Működés megállt.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Nincs elég memória áll rendelkezésre, hogy továbbra is ezt a műveletet. Szabadítson fel a rendszer memória (RAM), és próbálja újra. Ha a probléma továbbra is fennáll, csökkentse a nagyítási érték, és próbálja újra.</translation>
 </phrase>
@@ -2506,11 +2511,6 @@ Please enter a numeric value.</original>
 <phrase>
 <original>Out of memory</original>
 <translation>Elfogyott a memória</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Működés megállt.</translation>
 </phrase>
 
 <phrase>
@@ -13239,7 +13239,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 <translation>Ecset (lágy hegyű kefe)</translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14976,12 +14976,18 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>

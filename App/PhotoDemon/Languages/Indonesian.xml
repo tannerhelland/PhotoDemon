@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.199</langversion>
+<langversion>6.6.200</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -918,13 +918,13 @@ Untuk mengaktifkan dukungan untuk kompresi file PDI, klik Bantuan> Memeriksa pem
 </phrase>
 
 <phrase>
-<original>Repeat: %1</original>
-<translation>Ulang: %1</translation>
+<original>Fade: %1</original>
+<translation>Pudar: %1</translation>
 </phrase>
 
 <phrase>
-<original>Fade: %1</original>
-<translation>Pudar: %1</translation>
+<original>Repeat: %1</original>
+<translation>Ulang: %1</translation>
 </phrase>
 
 <phrase>
@@ -2379,7 +2379,7 @@ Kali Ini,Tolong Lindungi Berkas Gambar Dengan Format Yang Berbeda. Anda juga bol
 <translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
 </phrase>
 
-<!-- Selections.bas contains 65 phrases. 32 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<!-- Selections.bas contains 66 phrases. 33 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for Selections.bas-->
 
@@ -2503,6 +2503,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>Operation halted.</original>
+<translation>Operasi dihentikan.</translation>
+</phrase>
+
+<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
 <translation>Memori tidak cukup untuk meneruskan operasi ini. Tolong  bebaskan ingatan sistem (RAM) dan Coba lagi. Jika masalah berterusan, mengurangkan Nilai Besar dan Coba lagi.</translation>
 </phrase>
@@ -2510,11 +2515,6 @@ Please masukkan nilai berangka.</translation>
 <phrase>
 <original>Out of memory</original>
 <translation>Dari Memori</translation>
-</phrase>
-
-<phrase>
-<original>Operation halted.</original>
-<translation>Operasi dihentikan.</translation>
 </phrase>
 
 <phrase>
@@ -13252,7 +13252,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 53 phrases. 13 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 51 phrases. 11 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14995,12 +14995,18 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for Strings.bas -->
+
+<!-- Strings.bas contains 0 phrases. -->
+
+<!-- END text for Strings.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2526</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1963 are duplicates, so only 2526 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4488 phrases. -->
+<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
 <!-- These 2526 phrases contain approximately 12401 total words. -->
 
 </pdData>
