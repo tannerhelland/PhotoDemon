@@ -1755,74 +1755,70 @@ Private Function GetXMLValue_SingleLine(ByRef srcLine As String) As String
     End If
 End Function
 
-Private Function StringsEqual(ByRef str1 As String, ByRef str2 As String) As Boolean
-    StringsEqual = CBool(StrComp(str1, str2, vbBinaryCompare) = 0)
-End Function
-
 Private Function GetStrictMDDatatype(ByRef textRepresentation As String) As PD_Metadata_Datatype
     
-    If StringsEqual(textRepresentation, "int8s") Then
+    If Strings.StringsEqual(textRepresentation, "int8s") Then
         GetStrictMDDatatype = MD_int8s
-    ElseIf StringsEqual(textRepresentation, "int8u") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "int8u") Then
         GetStrictMDDatatype = MD_int8u
-    ElseIf StringsEqual(textRepresentation, "int16s") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "int16s") Then
         GetStrictMDDatatype = MD_int16s
-    ElseIf StringsEqual(textRepresentation, "int16u") Or StringsEqual(textRepresentation, "int16uRev") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "int16u") Or Strings.StringsEqual(textRepresentation, "int16uRev") Then
         GetStrictMDDatatype = MD_int16u
-    ElseIf StringsEqual(textRepresentation, "int32s") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "int32s") Then
         GetStrictMDDatatype = MD_int32s
-    ElseIf StringsEqual(textRepresentation, "int32u") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "int32u") Then
         GetStrictMDDatatype = MD_int32u
-    ElseIf StringsEqual(textRepresentation, "int64s") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "int64s") Then
         GetStrictMDDatatype = MD_int64s
-    ElseIf StringsEqual(textRepresentation, "int64u") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "int64u") Then
         GetStrictMDDatatype = MD_int64u
-    ElseIf StringsEqual(textRepresentation, "rational32s") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "rational32s") Then
         GetStrictMDDatatype = MD_rational32s
-    ElseIf StringsEqual(textRepresentation, "rational32u") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "rational32u") Then
         GetStrictMDDatatype = MD_rational32u
-    ElseIf StringsEqual(textRepresentation, "rational64s") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "rational64s") Then
         GetStrictMDDatatype = MD_rational64s
-    ElseIf StringsEqual(textRepresentation, "rational64u") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "rational64u") Then
         GetStrictMDDatatype = MD_rational64u
-    ElseIf StringsEqual(textRepresentation, "fixed16s") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "fixed16s") Then
         GetStrictMDDatatype = MD_fixed16s
-    ElseIf StringsEqual(textRepresentation, "fixed16u") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "fixed16u") Then
         GetStrictMDDatatype = MD_fixed16u
-    ElseIf StringsEqual(textRepresentation, "fixed32s") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "fixed32s") Then
         GetStrictMDDatatype = MD_fixed32s
-    ElseIf StringsEqual(textRepresentation, "fixed32u") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "fixed32u") Then
         GetStrictMDDatatype = MD_fixed32u
-    ElseIf StringsEqual(textRepresentation, "float") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "float") Then
         GetStrictMDDatatype = MD_float
-    ElseIf StringsEqual(textRepresentation, "double") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "double") Then
         GetStrictMDDatatype = MD_double
-    ElseIf StringsEqual(textRepresentation, "extended") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "extended") Then
         GetStrictMDDatatype = MD_extended
-    ElseIf StringsEqual(textRepresentation, "ifd") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "ifd") Then
         GetStrictMDDatatype = MD_ifd
-    ElseIf StringsEqual(textRepresentation, "ifd64") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "ifd64") Then
         GetStrictMDDatatype = MD_ifd64
-    ElseIf StringsEqual(textRepresentation, "string") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "string") Then
         GetStrictMDDatatype = MD_string
-    ElseIf StringsEqual(textRepresentation, "undef") Or StringsEqual(textRepresentation, "?") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "undef") Or Strings.StringsEqual(textRepresentation, "?") Then
         GetStrictMDDatatype = MD_undef
-    ElseIf StringsEqual(textRepresentation, "binary") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "binary") Then
         GetStrictMDDatatype = MD_binary
     
     'This group of data types are XMP-specific.  They are always stored as strings, but said strings may need to
     ' observe particular formatting to work.
-    ElseIf StringsEqual(textRepresentation, "integer") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "integer") Then
         GetStrictMDDatatype = MD_integerstring
-    ElseIf StringsEqual(textRepresentation, "real") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "real") Then
         GetStrictMDDatatype = MD_floatstring
-    ElseIf StringsEqual(textRepresentation, "rational") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "rational") Then
         GetStrictMDDatatype = MD_rationalstring
-    ElseIf StringsEqual(textRepresentation, "date") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "date") Then
         GetStrictMDDatatype = MD_datestring
-    ElseIf StringsEqual(textRepresentation, "boolean") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "boolean") Then
         GetStrictMDDatatype = MD_booleanstring
-    ElseIf StringsEqual(textRepresentation, "lang-alt") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "lang-alt") Then
         GetStrictMDDatatype = MD_string
     'All XMP information is stored as character strings. The Writable column specifies the information format:
     ' integer is a string of digits (possibly beginning with a '+' or '-'),
@@ -1834,7 +1830,7 @@ Private Function GetStrictMDDatatype(ByRef textRepresentation As String) As PD_M
     
     'Data types past this point do not appear in the official ExifTool documentation, but they have been observed in
     ' the database.  This list may not be all-inclusive.
-    ElseIf StringsEqual(textRepresentation, "digits") Then
+    ElseIf Strings.StringsEqual(textRepresentation, "digits") Then
         GetStrictMDDatatype = MD_integerstring
     ElseIf (InStr(1, textRepresentation, "string", vbBinaryCompare) <> 0) Then
         GetStrictMDDatatype = MD_string
