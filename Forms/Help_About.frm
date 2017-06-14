@@ -184,8 +184,13 @@ Attribute VB_Exposed = False
 'PhotoDemon About Dialog
 'Copyright 2001-2017 by Tanner Helland
 'Created: 6/12/01
-'Last updated: 04/Jan/17
-'Last update: greatly simplify dialog layout and design
+'Last updated: 14/June/17
+'Last update: update contributor list
+'
+'PhotoDemon would not be possible without the help of many, many amazing people.  THANK YOU!
+'
+'If you contributed to PhotoDemon's development in some way, but your name isn't listed here,
+' please let me know!  I can always be reached via http://photodemon.org/about/contact/
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -240,6 +245,7 @@ Private Sub Form_Load()
     'Shout-outs to designers, programmers, testers and sponsors
     GenerateContributor "Abhijit Mhapsekar"
     GenerateContributor "A.G. Violette", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=55938&lngWId=1"
+    GenerateContributor "Alexander Dorn"
     GenerateContributor "Allan Lima"
     GenerateContributor "Andrew Yeoman"
     GenerateContributor "Ari Sohandri Putra", "http://arisohandrip.indonesiaz.com/"
@@ -252,12 +258,14 @@ Private Sub Form_Load()
     GenerateContributor "ChenLin"
     GenerateContributor "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546"
     GenerateContributor "Dana Seaman", "http://www.cyberactivex.com/"
+    GenerateContributor "Davor Sikic"
     GenerateContributor "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control"
     GenerateContributor "Djordje Djoric", "https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/"
     GenerateContributor "Dirk Hartmann", "http://www.taichi-zentrum-heidelberg.de"
     GenerateContributor "Dosadi", "http://eztwain.com/eztwain1.htm"
     GenerateContributor "Easy RGB", "http://www.easyrgb.com/"
     GenerateContributor "Everaldo Coelho", "http://www.everaldo.com/"
+    GenerateContributor "Francis DC"
     GenerateContributor "Frank Donckers", "http://www.planetsourcecode.com/vb/scripts/BrowseCategoryOrSearchResults.asp?lngWId=1&txtCriteria=donckers"
     GenerateContributor "Frans van Beers", "https://plus.google.com/+FransvanBeers/"
     GenerateContributor "FreeImage Project", "http://freeimage.sourceforge.net/"
@@ -268,15 +276,19 @@ Private Sub Form_Load()
     GenerateContributor "Helmut Kuerbiss"
     GenerateContributor "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1"
     GenerateContributor "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html"
+    GenerateContributor "Johannes Nendel"
+    GenerateContributor "Joseph Greco"
     GenerateContributor "Karl Peterson", "http://vb.mvps.org/"
     GenerateContributor "Kroc Camen", "http://camendesign.com"
     GenerateContributor "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736"
     GenerateContributor "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
+    GenerateContributor "Leonid Blyakher"
     GenerateContributor "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1"
     GenerateContributor "Mark James", "http://www.famfamfam.com/lab/icons/silk/"
     GenerateContributor "Mohammad Reza Karimi"
     GenerateContributor "Nguyen Van Hung"
     GenerateContributor "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/"
+    GenerateContributor "Old Abiquiu Photographic"
     GenerateContributor "Paul Bourke", "http://paulbourke.net/miscellaneous/"
     GenerateContributor "Peter Burn"
     GenerateContributor "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/"
@@ -288,6 +300,7 @@ Private Sub Form_Load()
     GenerateContributor "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp"
     GenerateContributor "Tango Icon Library", "http://tango.freedesktop.org/"
     GenerateContributor "Tom Loos", "http://www.designedbyinstinct.com"
+    GenerateContributor "Vladimir Vissoultchev", "https://github.com/wqweto"
     GenerateContributor "Will Stampfer", "https://github.com/epmatsw"
     GenerateContributor "Yusuke Kamiyamane", "http://p.yusukekamiyamane.com/"
     GenerateContributor "Zhu JinYong", "http://www.planetsourcecode.com/vb/authors/ShowBio.asp?lngAuthorId=2211529461&lngWId=1"
@@ -299,29 +312,6 @@ Private Sub Form_Load()
         lstContributors.AddItem vbNullString
     Next i
     lstContributors.SetAutomaticRedraws True, True
-    
-'    Dim extraString1 As String, extraString2 As String
-'    extraString1 = g_Language.TranslateMessage("PhotoDemon is released under an open-source BSD license")
-'    GenerateContributor extraString1
-'    extraString1 = g_Language.TranslateMessage("For more information on licensing, please visit")
-'    GenerateContributor extraString1, "http://photodemon.org/about/license/", True
-'    GenerateContributor ""
-'    extraString1 = g_Language.TranslateMessage("Please note that PhotoDemon uses several third-party plugins")
-'    GenerateContributor extraString1
-'    GenerateContributor ""
-'    extraString1 = g_Language.TranslateMessage("These plugins are also free and open source...")
-'    extraString2 = g_Language.TranslateMessage("...but they are governed by their own licenses, separate from PhotoDemon")
-'    GenerateContributor extraString1, extraString2
-'    GenerateContributor ""
-'    extraString1 = g_Language.TranslateMessage("For more information on plugin licensing, please visit:")
-'    GenerateContributor extraString1
-'    GenerateContributor "ExifTool", "http://dev.perl.org/licenses/", True
-'    GenerateContributor "EZTwain", "http://eztwain.com/ezt1faq.htm", True
-'    GenerateContributor "FreeImage", "http://freeimage.sourceforge.net/license.html", True
-'    GenerateContributor "PNGQuant", "http://pngquant.org/#source", True
-'    GenerateContributor "zLib", "http://www.zlib.net/zlib_license.html", True
-'    GenerateContributor ""
-'    GenerateContributor g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
