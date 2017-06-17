@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Text Box control
 'Copyright 2014-2017 by Tanner Helland
 'Created: 03/November/14
-'Last updated: 09/March/17
-'Last update: add back a minimal hooking solution, to solve issues with VB eating arrow keys
+'Last updated: 17/June/17
+'Last update: attempted fix for issues reported at https://github.com/tannerhelland/PhotoDemon/commit/25870dd93ae74e79fa146e88ee66989dd0223312
 '
 'This class contains code that was formerly implemented directly inside the pdTextBox user control.  To simplify
 ' the embedding of this window into other user controls (like pdSpinner), I've separated the text box events into
@@ -203,6 +203,7 @@ Private Const WM_KEYDOWN As Long = &H100
 Private Const WM_SYSKEYDOWN As Long = &H104
 Private Const WM_KEYUP As Long = &H101
 Private Const WM_CHAR As Long = &H102
+Private Const WM_IME_CHAR As Long = &H286
 Private Const WM_UNICHAR As Long = &H109
 Private Const UNICODE_NOCHAR As Long = &HFFFF&
 Private Const WM_SETFOCUS As Long = &H7
@@ -727,11 +728,25 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         End If
         
         'If we previously cached a Unicode character in WM_KEYDOWN, cast it back to wParam now.
-        If ((Not msgEaten) And (m_CharCache <> 0)) Then
+        If (Not msgEaten) Then
+            
+            'Some WM_CHAR messages may not originate from the keyboard; instead, PD may raise them manually from
+            ' windo messages that the default window proc may garble (e.g. WM_IME_CHAR, below).  If our character
+            ' cache is empty, it means this is one of those messages; grab the current wParam and use it instead
+            ' of our (blank) cached value.
+            If (m_CharCache = 0) Then m_CharCache = wParam
+            
             msgEaten = True
-            HandleEditBoxMsgs = VBHacks.DefaultSubclassProc(hWnd, uiMsg, m_CharCache, lParam)
+            HandleEditBoxMsgs = VBHacks.DefaultSubclassProc(hWnd, uiMsg, m_CharCache And &HFFFF&, lParam)
             m_CharCache = 0
+            
         End If
+        
+    'Potential bug-fix added June 2017; manually handle IME-originating chars as well, just in case the def
+    ' subclass proc fails to process them correctly.
+    ElseIf (uiMsg = WM_IME_CHAR) Then
+        HandleEditBoxMsgs = SendMessage(hWnd, WM_CHAR, wParam, ByVal lParam)
+        msgEaten = True
     
     'WM_UNICHAR messages are never sent by Windows.  However, third-party IMEs may send them.  Before allowing WM_UNICHAR
     ' messages to pass, Windows will first probe a window by sending the UNICODE_NOCHAR value.  If a window responds with 1
