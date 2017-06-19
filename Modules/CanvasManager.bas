@@ -401,7 +401,8 @@ Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         'Reflow any image-window-specific chrome (status bar, rulers, etc)
         FormMain.mainCanvas(0).AlignCanvasView
         
-        'Notify the thumbnail bar that a new image has been selected
+        'Run the main SyncInterfaceToImage function, and notify a few peripheral functions of the updated image
+        ' (e.g. updating thumbnails, window captions, etc)
         Interface.NotifyNewActiveImage g_CurrentImage
         
         'Make sure any tool initializations that vary by image are up-to-date.

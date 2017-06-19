@@ -55,7 +55,7 @@ Private Const LOCALE_SISO3166CTRYNAME As Long = &H5A   'ISO 4166 abbreviated cou
 
 'Array of currently available languages
 Private m_numOfLanguages As Long
-Private m_AvailableLanguages() As pdLanguageFile
+Private m_AvailableLanguages() As PDLanguageFile
 
 'Array ID of the current language.  If no language is selected (e.g. PhotoDemon is using its default text), this value is -1
 Private m_currentLanguage As Long
@@ -101,11 +101,13 @@ Friend Sub RefreshAsRequired()
     
     If m_ActiveLanguageWasPatched Then
         
-        Debug.Print "Patching active language file now..."
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "pdTranslate paused to patch the active language file..."
+        #End If
         
         m_ActiveLanguageWasPatched = False
-        UndoTranslations FormMain
-        ApplyLanguage True, False
+        Me.UndoTranslations FormMain
+        Me.ApplyLanguage True, False
         
     End If
     
@@ -113,9 +115,9 @@ End Sub
 
 'External functions can request the a copy of all found languages; they must provide an array of type pdLanguageFile, which this
 ' function will then fill with the data assembled from Checkm_availableLanguages().
-Friend Sub CopyListOfLanguages(ByRef dstListOfLanguages() As pdLanguageFile)
+Friend Sub CopyListOfLanguages(ByRef dstListOfLanguages() As PDLanguageFile)
     
-    ReDim dstListOfLanguages(0 To m_numOfLanguages - 1) As pdLanguageFile
+    ReDim dstListOfLanguages(0 To m_numOfLanguages - 1) As PDLanguageFile
     
     'Copy all language data entries into the new array.
     Dim i As Long
@@ -475,7 +477,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
                         
                         'If, for some ungodly reason, the user has more than 100 languages available, dynamically resize the array to fit.
                         nLanguages = nLanguages + 1
-                        If (nLanguages > UBound(m_AvailableLanguages)) Then ReDim Preserve m_AvailableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
+                        If (nLanguages > UBound(m_AvailableLanguages)) Then ReDim Preserve m_AvailableLanguages(0 To (nLanguages + 1) * 2) As PDLanguageFile
                         
                     End If
                     
@@ -490,7 +492,7 @@ Private Function TallyLanguageFilesInFolder(ByRef srcFolder As String, Optional 
                 m_AvailableLanguages(nLanguages).IsOfficial = isOfficialFolder
                 
                 nLanguages = nLanguages + 1
-                If (nLanguages > UBound(m_AvailableLanguages)) Then ReDim Preserve m_AvailableLanguages(0 To (nLanguages + 1) * 2) As pdLanguageFile
+                If (nLanguages > UBound(m_AvailableLanguages)) Then ReDim Preserve m_AvailableLanguages(0 To (nLanguages + 1) * 2) As PDLanguageFile
             
             End If
             
@@ -521,7 +523,7 @@ Friend Sub CheckAvailableLanguages()
     VBHacks.GetHighResTime startTime
         
     m_numOfLanguages = 0
-    ReDim m_AvailableLanguages(0 To 99) As pdLanguageFile
+    ReDim m_AvailableLanguages(0 To 99) As PDLanguageFile
     
     'Language file names and attributes are cached inside a dedicated language settings file.  This file lets
     ' us bypass a lot of obnoxious and time-consuming validation steps.
@@ -580,7 +582,7 @@ Friend Sub CheckAvailableLanguages()
     m_numOfLanguages = m_numOfLanguages + 1
     
     'Resize the array to contain only the number of languages found
-    ReDim Preserve m_AvailableLanguages(0 To m_numOfLanguages - 1) As pdLanguageFile
+    ReDim Preserve m_AvailableLanguages(0 To m_numOfLanguages - 1) As PDLanguageFile
     
     'Sort the array alphabetically by language name (because we are going to fill the languages submenu with the entries)
     SortLanguageData
@@ -641,7 +643,7 @@ Private Sub PopulateLanguageMenu()
 End Sub
 
 'Given a language file (or partial language file), extract the key language information and place it in the passed variable.
-Private Sub FillLanguageInfo(ByRef srcXmlEngine As pdXML, ByRef targetLangHolder As pdLanguageFile)
+Private Sub FillLanguageInfo(ByRef srcXmlEngine As pdXML, ByRef targetLangHolder As PDLanguageFile)
 
     'First, get the language ID and name - these are the most important values, and technically the only REQUIRED ones.
     With targetLangHolder
@@ -659,7 +661,7 @@ Private Sub FillLanguageInfo(ByRef srcXmlEngine As pdXML, ByRef targetLangHolder
         
 End Sub
 
-Private Sub GetCachedLanguageInfo(ByRef srcFilename As String, ByRef dstLangHolder As pdLanguageFile)
+Private Sub GetCachedLanguageInfo(ByRef srcFilename As String, ByRef dstLangHolder As PDLanguageFile)
     With dstLangHolder
         .langID = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langid")
         .LangName = m_LangCacheXML.GetUniqueTag_String(srcFilename & "-langname")
@@ -670,7 +672,7 @@ Private Sub GetCachedLanguageInfo(ByRef srcFilename As String, ByRef dstLangHold
 End Sub
 
 'Cache key language information inside the user's preference file.  This allows for faster retrieval on future runs.
-Private Sub CacheLanguageInfo(ByRef srcFilename As String, ByRef srcLangHolder As pdLanguageFile)
+Private Sub CacheLanguageInfo(ByRef srcFilename As String, ByRef srcLangHolder As PDLanguageFile)
     With srcLangHolder
         m_LangCacheXML.UpdateTag srcFilename & "-langid", .langID
         m_LangCacheXML.UpdateTag srcFilename & "-langname", .LangName
@@ -685,7 +687,7 @@ End Sub
 Private Sub SortLanguageData()
 
     Dim i As Long, j As Long
-    Dim langTmp As pdLanguageFile
+    Dim langTmp As PDLanguageFile
     
     'Loop through all entries in the languages array, sorting them as we go
     For i = 0 To m_numOfLanguages - 1
@@ -706,7 +708,7 @@ End Sub
 'External functions can use this retrieve the current pdLanguageFile contents for a given language ID.
 ' Note that this ONLY SUPPORTS OFFICIAL LANGUAGE FILES, by design.  User language files should not be modified by PD itself.
 ' Returns TRUE if a match is found; FALSE otherwise.
-Friend Function GetPDLanguageFileObject(ByRef dstLanguageFileObject As pdLanguageFile, ByVal languageID As String) As Boolean
+Friend Function GetPDLanguageFileObject(ByRef dstLanguageFileObject As PDLanguageFile, ByVal languageID As String) As Boolean
     
     languageID = Trim$(UCase(languageID))
     

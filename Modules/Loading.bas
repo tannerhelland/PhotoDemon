@@ -263,7 +263,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         End If
         
         'Any remaining attributes of interest should be stored in the target image now
-        targetImage.imgStorage.AddEntry "OriginalFileSize", cFile.FileLenW(srcFile)
+        targetImage.ImgStorage.AddEntry "OriginalFileSize", cFile.FileLenW(srcFile)
         
         'We've now completed the bulk of the image load process.  In nightly builds, dump a bunch of image-related data out to file;
         ' such data is invaluable when tracking down bugs.
@@ -290,7 +290,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
             pdDebug.LogAction vbTab & "Detected format: " & g_ImageFormats.GetInputFormatDescription(g_ImageFormats.GetIndexOfInputPDIF(targetImage.GetOriginalFileFormat)), , True
             pdDebug.LogAction vbTab & "Image dimensions: " & targetImage.Width & "x" & targetImage.Height, , True
-            pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.imgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
+            pdDebug.LogAction vbTab & "Image size (original file): " & Format(CStr(targetImage.ImgStorage.GetEntry_Long("OriginalFileSize")), "###,###,###,###") & " Bytes", , True
             pdDebug.LogAction vbTab & "Image size (as loaded, approximate): " & Format(CStr(targetImage.EstimateRAMUsage), "###,###,###,###") & " Bytes", , True
             pdDebug.LogAction vbTab & "Original color depth: " & targetImage.GetOriginalColorDepth, , True
             pdDebug.LogAction vbTab & "ICC profile embedded: " & targetDIB.ICCProfile.HasICCData, , True
@@ -345,7 +345,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             'TODO: deal with prompt options here!
             
             'Add a flag to this pdImage object noting that the multipage loading path *was* utilized.
-            targetImage.imgStorage.AddEntry "MultipageImportActive", True
+            targetImage.ImgStorage.AddEntry "MultipageImportActive", True
             
             'We now have several options for loading the remaining pages in this file.
             
@@ -377,7 +377,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
             
         'Add a flag to this pdImage object noting that the multipage loading path was *not* utilized.
         Else
-            targetImage.imgStorage.AddEntry "MultipageImportActive", False
+            targetImage.ImgStorage.AddEntry "MultipageImportActive", False
         End If
             
         '*************************************************************************************************************************************
@@ -388,13 +388,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         If g_ExifToolEnabled And (decoderUsed <> PDIDE_INTERNAL) Then
             
             'Some tools may have already stopped to load metadata
-            If (Not targetImage.imgMetadata.HasMetadata) Then
+            If (Not targetImage.ImgMetadata.HasMetadata) Then
             
                 If ExifTool.IsMetadataFinished Then
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "Metadata retrieved successfully."
                     #End If
-                    targetImage.imgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, targetImage.imageID
+                    targetImage.ImgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, targetImage.imageID
                 Else
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "Metadata parsing hasn't finished; switching to asynchronous wait mode..."
@@ -406,7 +406,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
             'Next, retrieve any specific metadata-related entries that may be useful to further processing, like image resolution
             Dim xResolution As Double, yResolution As Double
-            If targetImage.imgMetadata.GetResolution(xResolution, yResolution) Then
+            If targetImage.ImgMetadata.GetResolution(xResolution, yResolution) Then
                 targetImage.SetDPI xResolution, yResolution
             End If
         
@@ -422,13 +422,13 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' goes wrong before the user performs a manual save (e.g. AutoSave).
         '
         '(Note that all Undo behavior is disabled during batch processing, to improve performance, so we can skip this step.)
-        If (MacroStatus <> MacroBATCH) Then
+        If (Macros.GetMacroStatus <> MacroBATCH) Then
             
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Creating initial auto-save entry (this may take a moment)..."
             #End If
             
-            targetImage.undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+            targetImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
             
         End If
             
@@ -491,7 +491,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     If LoadFileAsNewImage Then
         Message "Image loaded successfully."
     Else
-        If (MacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
+        If (Macros.GetMacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
             Message "Failed to load %1", srcFile
             PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image import failed", srcFile
         End If
@@ -938,7 +938,7 @@ Public Sub DuplicateCurrentImage()
     
     'We can now use the standard image load routine to import the temporary file
     Dim sTitle As String
-    sTitle = pdImages(g_CurrentImage).imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    sTitle = pdImages(g_CurrentImage).ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If Len(sTitle) = 0 Then sTitle = g_Language.TranslateMessage("[untitled image]")
     sTitle = sTitle & " - " & g_Language.TranslateMessage("Copy")
     

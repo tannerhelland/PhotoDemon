@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2546</langversion>
+<langversion>6.8.2547</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1806,11 +1806,6 @@ To включить поддержку сканера, пожалуйста, с�
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>Удалить выбор</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1825,21 +1820,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>Затраченное время</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>секунд</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Действие отменено.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Существует не хватает памяти для продолжения этой операции. Пожалуйста освободить системную память (RAM) путем отключения ненужных программ - особенно ваш веб-браузер, если он открыт - то повторите операцию.</translation>
 </phrase>
@@ -1847,29 +1827,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Недостаточно памяти. Функция отменена.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>К сожалению, этот графический файл является недопустимым. Это может произойти, если файл не содержит данных изображения, или, если он содержит данные изображения в неподдерживаемом format.
-
-- Если вы загрузили этот файл из Интернета, загрузка может быть прекращено досрочно. Пожалуйста, попытайтесь загрузить изображение again.
-
-- Если этот файл образ пришел из цифровой камеры, сканера или другой программы редактирования изображений, вполне возможно, что PhotoDemon просто не понимает этот формат файла. Пожалуйста, сохраните изображение в универсальном формате (такие как JPEG или PNG), а затем перезагрузить его.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Недопустимое изображение. загрузка изображения отменена.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Файл Недопустимое изображение</translation>
 </phrase>
 
 <phrase>
@@ -1921,53 +1878,13 @@ Error номер %
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Благодарим Вас за отправку отчета об ошибке. Чтобы убедиться, что ваша ошибка устранена как можно быстрее, PhotoDemon нуждается в вас, чтобы ответить на еще один question.
-
-Do у вас есть аккаунт GitHub? (Если вы понятия не имеете, что это значит, ответ "нет".)</translation>
+<original>Time taken</original>
+<translation>Затраченное время</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Спасибо за PhotoDemon лучше</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon автоматически открыл GitHub отчет об ошибке веб-страницы для вас. В поле Заголовок введите следующий номер ошибки с кратким описанием проблемы:, %1
-
-Any дополнительные детали вы можете предоставить в большом текстовом поле, в том числе шаги, которые привели к этой ошибке поможет ему получить фиксированный так быстро, как possible.
-
-When закончена, нажмите на кнопку Отправить Новая проблема. Спасибо!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub инструкции отчет об ошибке</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon автоматически открывает веб-страницу отчет об ошибке для вас. В поле Комментарий, пожалуйста, опишите шаги, которые привели к этому error.
-
-Also в этом окне, пожалуйста, включите следующий номер ошибки: %1
-
-When По завершении нажмите кнопку Отправить. Спасибо!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>Инструкции отчет о ошибке</translation>
+<original>seconds</original>
+<translation>секунд</translation>
 </phrase>
 
 <phrase>
@@ -2125,7 +2042,67 @@ When По завершении нажмите кнопку Отправить. �
 <translation>оттенок</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>Удалить выбор</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Действие отменено.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Благодарим Вас за отправку отчета об ошибке. Чтобы убедиться, что ваша ошибка устранена как можно быстрее, PhotoDemon нуждается в вас, чтобы ответить на еще один question.
+
+Do у вас есть аккаунт GitHub? (Если вы понятия не имеете, что это значит, ответ "нет".)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Спасибо за PhotoDemon лучше</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon автоматически открыл GitHub отчет об ошибке веб-страницы для вас. В поле Заголовок введите следующий номер ошибки с кратким описанием проблемы:, %1
+
+Any дополнительные детали вы можете предоставить в большом текстовом поле, в том числе шаги, которые привели к этой ошибке поможет ему получить фиксированный так быстро, как possible.
+
+When закончена, нажмите на кнопку Отправить Новая проблема. Спасибо!</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>GitHub инструкции отчет об ошибке</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon автоматически открывает веб-страницу отчет об ошибке для вас. В поле Комментарий, пожалуйста, опишите шаги, которые привели к этому error.
+
+Also в этом окне, пожалуйста, включите следующий номер ошибки: %1
+
+When По завершении нажмите кнопку Отправить. Спасибо!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>Инструкции отчет о ошибке</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -15008,10 +14985,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>

@@ -277,9 +277,9 @@ Public Sub SyncInterfaceToCurrentImage()
         
         'TODO: move selection settings into the tool handler; they're too low-level for this function
         'If a selection is active on this image, update the text boxes to match
-        If pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
+        If pdImages(g_CurrentImage).IsSelectionActive And (Not pdImages(g_CurrentImage).MainSelection Is Nothing) Then
             SetUIGroupState PDUI_Selections, True
-            SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.IsTransformable()
+            SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).MainSelection.IsTransformable()
             SyncTextToCurrentSelection g_CurrentImage
         Else
             SetUIGroupState PDUI_Selections, False
@@ -423,9 +423,9 @@ Private Sub SyncUI_CurrentImageSettings()
     ResetMenuIcons
     
     'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-    If (Not pdImages(g_CurrentImage).imgMetadata Is Nothing) Then
-        SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).imgMetadata.HasMetadata
-        SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).imgMetadata.HasGPSMetadata()
+    If (Not pdImages(g_CurrentImage).ImgMetadata Is Nothing) Then
+        SetUIGroupState PDUI_Metadata, pdImages(g_CurrentImage).ImgMetadata.HasMetadata
+        SetUIGroupState PDUI_GPSMetadata, pdImages(g_CurrentImage).ImgMetadata.HasGPSMetadata()
     Else
         SetUIGroupState PDUI_Metadata, False
         SetUIGroupState PDUI_GPSMetadata, False
@@ -612,13 +612,13 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
         SetUIGroupState PDUI_Save, Not pdImages(g_CurrentImage).GetSaveState(pdSE_AnySave)
         
         'Undo, Redo, Repeat and Fade are all closely related
-        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
+        If Not (pdImages(g_CurrentImage).UndoManager Is Nothing) Then
         
-            SetUIGroupState PDUI_Undo, pdImages(g_CurrentImage).undoManager.GetUndoState
-            SetUIGroupState PDUI_Redo, pdImages(g_CurrentImage).undoManager.GetRedoState
+            SetUIGroupState PDUI_Undo, pdImages(g_CurrentImage).UndoManager.GetUndoState
+            SetUIGroupState PDUI_Redo, pdImages(g_CurrentImage).UndoManager.GetRedoState
             
             'Undo history is enabled if either Undo or Redo is active
-            If pdImages(g_CurrentImage).undoManager.GetUndoState Or pdImages(g_CurrentImage).undoManager.GetRedoState Then
+            If pdImages(g_CurrentImage).UndoManager.GetUndoState Or pdImages(g_CurrentImage).UndoManager.GetRedoState Then
                 FormMain.MnuEdit(2).Enabled = True
             Else
                 FormMain.MnuEdit(2).Enabled = False
@@ -630,7 +630,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             
             'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
             ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
-            If pdImages(g_CurrentImage).undoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
+            If pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
                 FormMain.MnuEdit(5).Enabled = True
             Else
@@ -640,7 +640,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             
             'Repeat the above steps, but use the "Repeat" detection algorithm (which uses slightly different criteria;
             ' e.g. "Rotate Whole Image" cannot be faded, but it can be repeated)
-            If pdImages(g_CurrentImage).undoManager.DoesStackContainRepeatableCommand(tmpActionName) Then
+            If pdImages(g_CurrentImage).UndoManager.DoesStackContainRepeatableCommand(tmpActionName) Then
                 FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                 FormMain.MnuEdit(4).Enabled = True
             Else
@@ -702,8 +702,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip pdImages(g_CurrentImage).undoManager.GetUndoProcessID, "Undo"
-                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.GetUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
+                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip pdImages(g_CurrentImage).UndoManager.GetUndoProcessID, "Undo"
+                FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             Else
                 toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip "Undo last action"
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
@@ -721,8 +721,8 @@ Public Sub SetUIGroupState(ByVal metaItem As PD_UI_Group, ByVal newState As Bool
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip pdImages(g_CurrentImage).undoManager.GetRedoProcessID, "Redo"
-                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.GetRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
+                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip pdImages(g_CurrentImage).UndoManager.GetRedoProcessID, "Redo"
+                FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).UndoManager.GetRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             Else
                 toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip "Redo previous action"
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
@@ -1579,22 +1579,22 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     
         'Start by seeing if this image has some kind of filename.  This field should always be populated by the load function,
         ' but better safe than sorry!
-        If Len(srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0 Then
+        If Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) <> 0 Then
         
             'This image has a filename!  Next, check the user's preference for long or short window captions
             
             'The user prefers short captions.  Use just the filename and extension (no folders ) as the base.
             If g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0) = 0 Then
-                captionBase = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+                captionBase = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
                 appendFileFormat = True
             Else
             
                 'The user prefers long captions.  Make sure this image has such a location; if they do not, fallback
                 ' and use just the filename.
-                If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
-                    captionBase = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+                If Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) <> 0 Then
+                    captionBase = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
                 Else
-                    captionBase = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+                    captionBase = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
                     appendFileFormat = True
                 End If
                 
@@ -1606,8 +1606,8 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
         End If
         
         'File format can be useful when working with multiple copies of the same image; PD tries to append it, as relevant
-        If appendFileFormat And (Len(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
-            captionBase = captionBase & " [" & UCase(srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
+        If appendFileFormat And (Len(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) <> 0) Then
+            captionBase = captionBase & " [" & UCase(srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)) & "]"
         End If
         
     Else
@@ -1752,26 +1752,24 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
         'All messages are translatable, but we don't want to translate them if the translation object isn't ready yet.
         ' This only happens for a few messages when the program is first loaded, and at some point, I will eventually getting
         ' around to removing them entirely.
-        If (Not (g_Language Is Nothing)) Then
+        If (Not g_Language Is Nothing) Then
             If g_Language.ReadyToTranslate Then
                 If g_Language.TranslationActive Then newString = g_Language.TranslateMessage(mString)
             End If
         End If
         
         'Once the message is translated, we can add back in any optional text supplied in the ParamArray
-        If UBound(ExtraText) >= LBound(ExtraText) Then
-        
+        If (UBound(ExtraText) >= LBound(ExtraText)) Then
             For i = LBound(ExtraText) To UBound(ExtraText)
                 newString = Replace$(newString, "%" & i + 1, CStr(ExtraText(i)))
             Next i
-        
         End If
         
         'While macros are active, append a "Recording" message to help orient the user
-        If (MacroStatus = MacroSTART) Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
+        If (Macros.GetMacroStatus = MacroSTART) Then newString = newString & " {-" & g_Language.TranslateMessage("Recording") & "-}"
         
         'Post the message to the screen
-        If (MacroStatus <> MacroBATCH) Then FormMain.mainCanvas(0).DisplayCanvasMessage newString
+        If (Macros.GetMacroStatus <> MacroBATCH) Then FormMain.mainCanvas(0).DisplayCanvasMessage newString
         
         'Update the global "previous message" string, so external functions can access it.
         m_LastFullMessage = newString
@@ -1814,8 +1812,8 @@ Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As pdButtonStrip, Optional ByV
     
 End Sub
 
-'Use whenever you want the user to not be allowed to interact with the primary PD window.  Make sure that call "enableUserInput", below,
-' when you are done processing!
+'Use whenever you want the user to not be allowed to interact with the primary PD window.  Make sure that call EnableUserInput(),
+' below, when you are done processing!
 Public Sub DisableUserInput()
 
     'Set the "input disabled" flag, which individual functions can use to modify their own behavior
@@ -1824,12 +1822,17 @@ Public Sub DisableUserInput()
     'We also forcibly disable drag/drop whenever the interface is locked.
     g_AllowDragAndDrop = False
     
+    'Suspend any active UI animations
+    If (g_OpenImageCount > 0) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed False
+    End If
+    
     'Forcibly disable the main form
     FormMain.Enabled = False
 
 End Sub
 
-'Sister function to "disableUserInput", above
+'Sister function to DisableUserInput(), above
 Public Sub EnableUserInput()
     
     'Start a countdown timer on the main form.  When it terminates, user input will be restored.  A timer is required because
@@ -1840,6 +1843,11 @@ Public Sub EnableUserInput()
     
     'Drag/drop allowance doesn't suffer the issue described above, so we can enable it immediately
     g_AllowDragAndDrop = True
+    
+    'Restore any active UI animations
+    If (g_OpenImageCount > 0) Then
+        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
+    End If
     
     'Re-enable the main form
     FormMain.Enabled = True
@@ -2047,7 +2055,9 @@ End Sub
 'This function will quickly and efficiently check the last unprocessed keypress submitted by the user.  If an ESC keypress was found,
 ' this function will return TRUE.  It is then up to the calling function to determine how to proceed.
 Public Function UserPressedESC(Optional ByVal displayConfirmationPrompt As Boolean = True) As Boolean
-
+    
+    g_cancelCurrentAction = False
+    
     Dim tmpMsg As winMsg
     
     'GetInputState returns a non-0 value if key or mouse events are pending.  By Microsoft's own admission, it is much faster
@@ -2062,23 +2072,19 @@ Public Function UserPressedESC(Optional ByVal displayConfirmationPrompt As Boole
         PeekMessage tmpMsg, 0, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE
         
         'ESC keypress found!
-        If tmpMsg.wParam = vbKeyEscape Then
+        If (tmpMsg.wParam = vbKeyEscape) Then
             
             'If the calling function requested a confirmation prompt, display it now; otherwise exit immediately.
             If displayConfirmationPrompt Then
                 Dim msgReturn As VbMsgBoxResult
-                msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", LastProcess.Id)
-                If msgReturn = vbYes Then g_cancelCurrentAction = True Else g_cancelCurrentAction = False
+                msgReturn = PDMsgBox("Are you sure you want to cancel %1?", vbInformation + vbYesNo + vbApplicationModal, "Cancel image processing", Processor.GetLastProcessorID)
+                g_cancelCurrentAction = (msgReturn = vbYes)
             Else
                 g_cancelCurrentAction = True
             End If
             
-        Else
-            g_cancelCurrentAction = False
         End If
         
-    Else
-        g_cancelCurrentAction = False
     End If
     
     UserPressedESC = g_cancelCurrentAction
@@ -2109,11 +2115,15 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Op
     'If an image is *not* specified, assume this is in reference to the currently active image
     If (affectedImageIndex < 0) Then affectedImageIndex = g_CurrentImage
     
-    'Generate new taskbar and titlebar icons for the affected image
-    CreateCustomFormIcons pdImages(affectedImageIndex)
+    If (Not pdImages(affectedImageIndex) Is Nothing) Then
     
-    'Notify the image tabstrip of any changes
-    FormMain.mainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
+        'Generate new taskbar and titlebar icons for the affected image
+        CreateCustomFormIcons pdImages(affectedImageIndex)
+        
+        'Notify the image tabstrip of any changes
+        FormMain.mainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
+        
+    End If
     
 End Sub
 
@@ -2156,7 +2166,7 @@ Public Sub NotifyNewActiveImage(Optional ByVal newImageIndex As Long = -1)
     FormMain.mainCanvas(0).NotifyTabstripNewActiveImage newImageIndex
     
     'A newly activated image requires a whole swath of UI changes.  Ask SyncInterfaceToCurrentImage to handle this for us.
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
 End Sub
 

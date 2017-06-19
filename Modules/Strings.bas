@@ -46,17 +46,22 @@ Private Declare Function CompareStringW Lib "kernel32" (ByVal lcID As PD_LocaleI
 Private Declare Function CompareStringOrdinal Lib "kernel32" (ByVal ptrToStr1 As Long, ByVal str1Len As Long, ByVal ptrToStr2 As Long, ByVal str2Len As Long, ByVal bIgnoreCase As Long) As Long
 
 'High-performance string equality function.  Returns TRUE/FALSE for equality, with support for case-insensitivity.
-Public Function StringsEqual(ByVal firstString As String, ByVal secondString As String, Optional ByVal caseInsensitiveCompare As Boolean = False) As Boolean
+Public Function StringsEqual(ByVal firstString As String, ByVal secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
     
     'Cheat and compare length first
     If (Len(firstString) <> Len(secondString)) Then
         StringsEqual = False
     Else
-        If caseInsensitiveCompare Then
+        If ignoreCase Then
             StringsEqual = (CompareStringOrdinal(StrPtr(firstString), Len(firstString), StrPtr(secondString), Len(secondString), 1) = 2)
         Else
             StringsEqual = VBHacks.MemCmp(StrPtr(firstString), StrPtr(secondString), Len(firstString) * 2)
         End If
     End If
     
+End Function
+
+'Convenience not-wrapper to StringsEqual, above
+Public Function StringsNotEqual(ByVal firstString As String, ByVal secondString As String, Optional ByVal ignoreCase As Boolean = False) As Boolean
+    StringsNotEqual = Not StringsEqual(firstString, secondString, ignoreCase)
 End Function

@@ -777,78 +777,74 @@ End Function
 'This function will return FALSE if no layer-specific changes have been made, and thus no Fade action would be relevant.
 Friend Function FillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLayerID As Long, Optional ByRef nameOfProcessorAction As String, Optional ByVal checkStateOnly As Boolean = True) As Boolean
     
-    If (m_UndoNum = 0) Then
-        FillDIBWithLastUndoCopy = 0
-        Exit Function
-    End If
+    FillDIBWithLastUndoCopy = False
     
-    'First things first: start searching the Undo/Redo stack for a layer-specific edit.  We don't care what edit, just that it's
-    ' layer-specific.
-    Dim actionFound As Boolean
-    actionFound = False
+    If (m_UndoNum <> 0) Then
     
-    Dim layerChangeIndex As Long
-    layerChangeIndex = -1
-    
-    Dim i As Long
-    For i = m_UndoNum - 1 To 0 Step -1
-    
-        'A layer-specific edit has been found.  This is the last action the user committed that modified a layer, so it will contain
-        ' a copy of the image as it appeared *after the change was made*.  What this function needs to do is find the state of this
-        ' layer *prior to the change* - and now that we know which layer is affected, we can do that!
-        If (m_UndoStack(i).undoType = UNDO_LAYER) Or (m_UndoStack(i).undoType = UNDO_LAYER_VECTORSAFE) Then
+        'First things first: start searching the Undo/Redo stack for a layer-specific edit.  We don't care which edit, just that
+        ' it's a layer-specific action.
+        Dim actionFound As Boolean: actionFound = False
+        Dim layerChangeIndex As Long: layerChangeIndex = -1
+        
+        Dim i As Long
+        For i = m_UndoNum - 1 To 0 Step -1
+        
+            'A layer-specific edit has been found.  This is the last action the user committed that modified a layer, so it will contain
+            ' a copy of the image as it appeared *after the change was made*.  What this function needs to do is find the state of this
+            ' layer *prior to the change* - and now that we know which layer is affected, we can do that!
+            If (m_UndoStack(i).undoType = UNDO_LAYER) Or (m_UndoStack(i).undoType = UNDO_LAYER_VECTORSAFE) Then
+                
+                'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
+                ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
+                If Strings.StringsNotEqual(m_UndoStack(i).processID, "Fade", True) And Strings.StringsNotEqual(m_UndoStack(i).processID, "Repeat", True) Then
+                    actionFound = True
+                    affectedLayerID = m_UndoStack(i).undoLayerID
+                    nameOfProcessorAction = m_UndoStack(i).processID
+                    layerChangeIndex = i
+                    Exit For
+                End If
+                
+            End If
+        
+        Next i
+        
+        'If a relevant layer was found, actionFound will be set to TRUE.  If a relevant layer was not found, return FALSE and exit.
+        If actionFound Then
             
-            'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
-            ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
-            If (StrComp(UCase$(m_UndoStack(i).processID), "FADE", vbBinaryCompare) <> 0) And (StrComp(UCase$(m_UndoStack(i).processID), "REPEAT", vbBinaryCompare) <> 0) Then
-                actionFound = True
-                affectedLayerID = m_UndoStack(i).undoLayerID
-                nameOfProcessorAction = m_UndoStack(i).processID
-                layerChangeIndex = i
-                Exit For
+            FillDIBWithLastUndoCopy = True
+            
+            'Some functions, like SyncInterfaceToCurrentImage, only care if a recent Layer modification exists.  They don't actually need
+            ' us to return the relevant DIB.  If checkStateOnly = TRUE, exit now.
+            If (Not checkStateOnly) Then
+                
+                'Armed with the knowledge of which layer is being affected, we now need to find the last relevant DIFF index for that layer.
+                ' Use the built-in function to do that.
+                Dim relevantDiffIndex As Long
+                relevantDiffIndex = FindNearestDiffIndex(layerChangeIndex, UNDO_LAYER, affectedLayerID)
+                
+                'Check also for vector-safe actions, which are identical to UNDO_LAYER but for operations that support vector-safe modifications.
+                Dim relevantVectorIndex As Long
+                relevantVectorIndex = FindNearestDiffIndex(layerChangeIndex, UNDO_LAYER_VECTORSAFE, affectedLayerID)
+                
+                'relevantDiffIndex will now contain the index in the m_undoStack array corresponding to the previous state of the affected layer.
+                ' Load the relevant portion of that Undo file into the target DIB.
+                Dim tmpLayer As pdLayer
+                Set tmpLayer = New pdLayer
+                
+                If (relevantVectorIndex > relevantDiffIndex) Then
+                    ImageImporter.LoadUndo GenerateUndoFilename(relevantVectorIndex), m_UndoStack(relevantVectorIndex).undoType, UNDO_LAYER_VECTORSAFE, affectedLayerID, True, tmpLayer
+                Else
+                    ImageImporter.LoadUndo GenerateUndoFilename(relevantDiffIndex), m_UndoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
+                End If
+                
+                'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
+                Set dstDIB = tmpLayer.layerDIB
+                Set tmpLayer = Nothing
+                
             End If
             
         End If
-    
-    Next i
-    
-    'If a relevant layer was found, actionFound will be set to TRUE.  If a relevant layer was not found, return FALSE and exit.
-    If actionFound Then
         
-        'Some functions, like SyncInterfaceToCurrentImage, only care if a recent Layer modification exists.  They don't actually need
-        ' us to return the relevant DIB.  If checkStateOnly = TRUE, exit now.
-        If checkStateOnly Then
-            FillDIBWithLastUndoCopy = True
-            Exit Function
-        End If
-        
-        'Armed with the knowledge of which layer is being affected, we now need to find the last relevant DIFF index for that layer.
-        ' Use the built-in function to do that.
-        Dim relevantDiffIndex As Long
-        relevantDiffIndex = FindNearestDiffIndex(layerChangeIndex, UNDO_LAYER, affectedLayerID)
-        
-        'Check also for vector-safe actions, which are identical to UNDO_LAYER but for operations that support vector-safe modifications.
-        Dim relevantVectorIndex As Long
-        relevantVectorIndex = FindNearestDiffIndex(layerChangeIndex, UNDO_LAYER_VECTORSAFE, affectedLayerID)
-        
-        'relevantDiffIndex will now contain the index in the m_undoStack array corresponding to the previous state of the affected layer.
-        ' Load the relevant portion of that Undo file into the target DIB.
-        Dim tmpLayer As pdLayer
-        Set tmpLayer = New pdLayer
-        
-        If (relevantVectorIndex > relevantDiffIndex) Then
-            ImageImporter.LoadUndo GenerateUndoFilename(relevantVectorIndex), m_UndoStack(relevantVectorIndex).undoType, UNDO_LAYER_VECTORSAFE, affectedLayerID, True, tmpLayer
-        Else
-            ImageImporter.LoadUndo GenerateUndoFilename(relevantDiffIndex), m_UndoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
-        End If
-        
-        'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
-        Set dstDIB = tmpLayer.layerDIB
-        Set tmpLayer = Nothing
-        FillDIBWithLastUndoCopy = True
-        
-    Else
-        FillDIBWithLastUndoCopy = False
     End If
     
 End Function

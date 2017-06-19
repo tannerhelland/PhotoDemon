@@ -236,7 +236,7 @@ Public Sub ContinueLoadingProgram()
     g_UserPreferences.LoadUserSettings False
         
     'Mark the Macro recorder as "not recording"
-    MacroStatus = MacroSTOP
+    Macros.SetMacroStatus MacroSTOP
     
     'Note that no images have been loaded yet
     g_NumOfImagesLoaded = 0

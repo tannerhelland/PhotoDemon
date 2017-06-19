@@ -648,3 +648,14 @@ End Enum
 #If False Then
     Private Const ResizeFitStretch = 0, ResizeFitInclusive = 1, ResizeFitExclusive = 2
 #End If
+
+'Internal struct for tracking processor calls.  These are constructed from data passed to the Processor module.
+' (NOTE: this struct was finalized in 2013; previous struct versions are no longer supported.)
+Public Type PD_ProcessCall
+    pcID As String
+    pcParameters As String
+    pcUndoType As PD_UNDO_TYPE
+    pcTool As Long
+    pcRaiseDialog As Boolean
+    pcRecorded As Boolean
+End Type

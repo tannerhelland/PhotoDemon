@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2546</langversion>
+<langversion>6.8.2547</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1799,11 +1799,6 @@ To lehetővé lapolvasótámaszt másolja a EZTW32.dll fájlt (letölthető http
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>eltávolítani választás</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1816,21 +1811,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>időt</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>másodperc</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Művelet megszakítva.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Nincs elég memória áll rendelkezésre, hogy továbbra is ezt a műveletet. Szabadítson fel a rendszer memória (RAM) leállításával szükségtelen programokat - főleg a böngésző, ha nyitva van -, majd próbálja újra a műveletet.</translation>
 </phrase>
@@ -1838,29 +1818,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Elfogyott a memória. Funkció kikapcsolva.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Sajnos, ez a képfájl érvénytelennek tűnik. Ez akkor fordulhat elő, ha a fájl nem tartalmaz képadatokat, vagy ha az nem tartalmaz képadatokat támogatott format.
-
-- Ha letöltötte ezt a képet a az internet, a letöltési lehet idő előtt megszakadt. Kérjük, próbálja meg letölteni a képet again.
-
-- Ha a képfájl jött egy digitális fényképezőgép, szkenner, vagy más képszerkesztő programot, akkor lehetséges, hogy PhotoDemon egyszerűen nem érti az adott formátumot. Kérjük, mentse a képet általános formátumban (például JPEG vagy PNG), majd töltse be újra.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Érvénytelen kép. Kép terhelés törölték.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Érvénytelen képfájl</translation>
 </phrase>
 
 <phrase>
@@ -1909,53 +1866,13 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Köszönjük, hogy elküldte a hibajelentést. Ahhoz, hogy a hiba a címzettje a lehető leggyorsabban, PhotoDemon szüksége, hogy válaszoljon egy több question.
-
-Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</translation>
+<original>Time taken</original>
+<translation>időt</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Köszönöm, hogy PhotoDemon jobb</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon automatikusan nyitott GitHub hibajelentés weboldal az Ön számára. A Cím mezőbe, írja be az alábbi hiba számát egy rövid leírást a probléma: %1
-
-Any további részleteket tud nyújtani a nagy szövegdobozba, beleértve azokat a lépéseket, vezetett fel a hiba, amely segít, hogy kap rögzített leggyorsabban possible.
-
-When kész, kattintson a Submit Új probléma gombra. Köszönöm!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub hibajelentés utasítások</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon automatikusan nyitott hibajelentés weboldal az Ön számára. A Megjegyzés mezőbe, írja le azokat a lépéseket, vezetett ehhez error.
-
-Also abban a dobozban, kérjük, az alábbi hiba száma: %1
-
-When elkészült, kattintson a Küldés gombra. Köszönöm!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>Hibajelentés utasítások</translation>
+<original>seconds</original>
+<translation>másodperc</translation>
 </phrase>
 
 <phrase>
@@ -2113,7 +2030,67 @@ When elkészült, kattintson a Küldés gombra. Köszönöm!</translation>
 <translation>színez</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>eltávolítani választás</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Művelet megszakítva.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Köszönjük, hogy elküldte a hibajelentést. Ahhoz, hogy a hiba a címzettje a lehető leggyorsabban, PhotoDemon szüksége, hogy válaszoljon egy több question.
+
+Do van egy GitHub számla? (Ha nincs ötlete, mit jelent ez, a válasz "Nem".)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Köszönöm, hogy PhotoDemon jobb</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon automatikusan nyitott GitHub hibajelentés weboldal az Ön számára. A Cím mezőbe, írja be az alábbi hiba számát egy rövid leírást a probléma: %1
+
+Any további részleteket tud nyújtani a nagy szövegdobozba, beleértve azokat a lépéseket, vezetett fel a hiba, amely segít, hogy kap rögzített leggyorsabban possible.
+
+When kész, kattintson a Submit Új probléma gombra. Köszönöm!</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>GitHub hibajelentés utasítások</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon automatikusan nyitott hibajelentés weboldal az Ön számára. A Megjegyzés mezőbe, írja le azokat a lépéseket, vezetett ehhez error.
+
+Also abban a dobozban, kérjük, az alábbi hiba száma: %1
+
+When elkészült, kattintson a Küldés gombra. Köszönöm!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>Hibajelentés utasítások</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -14984,10 +14961,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>
