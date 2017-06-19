@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2546</langversion>
+<langversion>6.8.2547</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1801,11 +1801,6 @@ To umožňují podpěru skeneru, zkopírujte prosím soubor EZTW32.dll (k dispoz
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>Odstraňte výběr</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1818,21 +1813,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>doba potřebná</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>sekundy</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Akce byla zrušena.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Není k dispozici dostatek paměti pokračovat v této operaci. Uvolněte systémové paměti (RAM) tím, že vypne nepotřebné programy - zejména webového prohlížeče, pokud je otevřen - zkuste akci znovu.</translation>
 </phrase>
@@ -1840,29 +1820,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Nedostatek paměti. Funkce zrušena.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Bohužel, tento soubor s obrázkem se zdá být neplatná. Tato situace může nastat, pokud soubor neobsahuje obrazová data, nebo pokud obsahuje obrazová data v nepodporované format.
-
-- Pokud jste stáhli tento obrázek z internetu, může být stahování předčasně ukončeno. Prosím, zkuste stáhnout obrázek again.
-
---li tento soubor s obrázkem přišel z digitálního fotoaparátu, skeneru nebo jiného programu pro úpravu obrázků, je možné, že PhotoDemon prostě nerozumí tento konkrétní formát souboru. Prosím uložit obrázek v obecném formátu (například JPEG nebo PNG), poté jej znovu.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Neplatný obrázek. load image zrušena.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Neplatný soubor s obrázkem</translation>
 </phrase>
 
 <phrase>
@@ -1911,53 +1868,13 @@ Error počet %vbCrLf Popis: %vbCrLf vbCrLf %3</translation>
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Děkujeme za odeslání zprávy o chybě. Aby se ujistil, vaše chyba je řešena tak rychle, jak je to možné, PhotoDemon tě potřebuje zodpovědět ještě jednu question.
-
-Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)</translation>
+<original>Time taken</original>
+<translation>doba potřebná</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Díky, PhotoDemon lepší</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon automaticky otevřel GitHub bug report webové stránky pro vás. Do pole název zadejte následující číslo chyby s krátkým popisem problému: %1
-
-Any další podrobnosti, které můžete poskytnout ve velkém textovém poli, včetně kroků, které vedly k této chybě, pomůže to opraveny tak rychle, jak possible.
-
-When hotovi, klikněte na tlačítko Odeslat nová emise. Děkuji!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub pokyny chyba zpráva</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon automaticky otevřel bug report webové stránky pro vás. V poli Komentář, popište kroky, které vedly k tomuto error.
-
-Also v této kolonce, prosím zahrnout následující číslo chyby: %1
-
-When dokončení klepněte na tlačítko Odeslat. Děkuji!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>Návod k hlášení o chybě</translation>
+<original>seconds</original>
+<translation>sekundy</translation>
 </phrase>
 
 <phrase>
@@ -2115,7 +2032,67 @@ When dokončení klepněte na tlačítko Odeslat. Děkuji!</translation>
 <translation>nádech</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>Odstraňte výběr</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Akce byla zrušena.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Děkujeme za odeslání zprávy o chybě. Aby se ujistil, vaše chyba je řešena tak rychle, jak je to možné, PhotoDemon tě potřebuje zodpovědět ještě jednu question.
+
+Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Díky, PhotoDemon lepší</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon automaticky otevřel GitHub bug report webové stránky pro vás. Do pole název zadejte následující číslo chyby s krátkým popisem problému: %1
+
+Any další podrobnosti, které můžete poskytnout ve velkém textovém poli, včetně kroků, které vedly k této chybě, pomůže to opraveny tak rychle, jak possible.
+
+When hotovi, klikněte na tlačítko Odeslat nová emise. Děkuji!</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>GitHub pokyny chyba zpráva</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon automaticky otevřel bug report webové stránky pro vás. V poli Komentář, popište kroky, které vedly k tomuto error.
+
+Also v této kolonce, prosím zahrnout následující číslo chyby: %1
+
+When dokončení klepněte na tlačítko Odeslat. Děkuji!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>Návod k hlášení o chybě</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -14986,10 +14963,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>

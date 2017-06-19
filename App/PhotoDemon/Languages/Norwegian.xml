@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2546</langversion>
+<langversion>6.8.2547</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1806,11 +1806,6 @@ To aktivere skannerstøtten, kan du kopiere EZTW32.dll filen (tilgjengelig for n
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>Fjern avgrensning</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1825,21 +1820,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>tiden det tar</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>sekunder</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Handlingen er avbrutt.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Det er ikke nok minne til å fortsette denne operasjonen. Frigjør systemminne  (RAM) ved å slå av unødvendige programmer - spesielt nettleseren, hvis den er åpen - prøv deretter handlingen på nytt.</translation>
 </phrase>
@@ -1847,29 +1827,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Tomt for minne. Funksjon kansellert.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Dessverre  synes dette bildefilen  for å være ugyldig. Dette kan skje hvis en fil ikke inneholder bildedata, eller om det inneholder bildedata  i en uegnet format.
-
-- Hvis du lastet ned bildet fra Internett, kan nedlastingen er avsluttet for tidlig. Vennligst prøv å laste ned bildet again.
-
-- Hvis denne bildefilen  kom fra et digitalt kamera, skanner eller andre bilderedigeringsprogram, er det mulig at PhotoDemon rett og slett ikke forstår dette filformatet. Vennligst lagre bildet i et generisk  format (for eksempel JPEG eller PNG), legg det.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Ugyldig bilde. Bilde belastning kansellert.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Ugyldig bildefil</translation>
 </phrase>
 
 <phrase>
@@ -1921,53 +1878,13 @@ Error nummer %
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Takk for at du sender en feilrapport. For å sørge for at feilen blir rettet så raskt som mulig, må PhotoDemon du å svare på en mer question.
-
-Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, svaret "Nei".)</translation>
+<original>Time taken</original>
+<translation>tiden det tar</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Takk for å gjøre PhotoDemon bedre</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon automatisk har åpnet en GitHub feilrapport  nettside for deg. I Tittel-boksen, skriver du inn følgende feil tall med en kort beskrivelse av problemet: %1
-
-Any flere detaljer du kan gi i den store tekstboksen, inkludert trinnene som førte opp til denne feilen, vil hjelpe det bli løst så raskt som possible.
-
-When ferdig, klikker du på Send New Issue knappen. Takk skal du ha!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub bug rapport instruksjoner</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon automatisk har åpnet en feilrapport  nettside for deg. I kommentarfeltet, kan du beskrive trinnene som førte til denne error.
-
-Also i den boksen, må du inkludere følgende feilnummer: %1
-
-When ferdig, klikker du på Send-knappen. Takk skal du ha!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>Bug rapport instruksjoner</translation>
+<original>seconds</original>
+<translation>sekunder</translation>
 </phrase>
 
 <phrase>
@@ -2125,7 +2042,67 @@ When ferdig, klikker du på Send-knappen. Takk skal du ha!</translation>
 <translation>tint</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>Fjern avgrensning</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Handlingen er avbrutt.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Takk for at du sender en feilrapport. For å sørge for at feilen blir rettet så raskt som mulig, må PhotoDemon du å svare på en mer question.
+
+Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, svaret "Nei".)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Takk for å gjøre PhotoDemon bedre</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon automatisk har åpnet en GitHub feilrapport  nettside for deg. I Tittel-boksen, skriver du inn følgende feil tall med en kort beskrivelse av problemet: %1
+
+Any flere detaljer du kan gi i den store tekstboksen, inkludert trinnene som førte opp til denne feilen, vil hjelpe det bli løst så raskt som possible.
+
+When ferdig, klikker du på Send New Issue knappen. Takk skal du ha!</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>GitHub bug rapport instruksjoner</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon automatisk har åpnet en feilrapport  nettside for deg. I kommentarfeltet, kan du beskrive trinnene som førte til denne error.
+
+Also i den boksen, må du inkludere følgende feilnummer: %1
+
+When ferdig, klikker du på Send-knappen. Takk skal du ha!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>Bug rapport instruksjoner</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -15008,10 +14985,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>

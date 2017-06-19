@@ -898,14 +898,12 @@ Private Sub cmdCancel_Click()
     
     If (m_CurrentPage = picContainer.Count - 1) Then
         
-        If MacroStatus <> MacroSTOP Then
+        If (Macros.GetMacroStatus <> MacroSTOP) Then
         
             Dim msgReturn As VbMsgBoxResult
             msgReturn = PDMsgBox("Are you sure you want to cancel the current batch process?", vbApplicationModal + vbYesNoCancel + vbInformation, "Cancel batch processing")
             
-            If msgReturn = vbYes Then
-                MacroStatus = MacroCANCEL
-            End If
+            If (msgReturn = vbYes) Then Macros.SetMacroStatus MacroCANCEL
             
         Else
             Unload Me
@@ -1693,7 +1691,7 @@ Private Sub PrepareForBatchConversion()
     'g_UserPreferences.SetPref_String "Batch Process", "Input Folder", Dir1.Path
 
     'Let the rest of the program know that batch processing has begun
-    MacroStatus = MacroBATCH
+    Macros.SetMacroStatus MacroBATCH
     
     Dim curBatchFile As Long
     Dim tmpFilename As String, tmpFileExtension As String
@@ -1733,13 +1731,12 @@ Private Sub PrepareForBatchConversion()
     
         'Pause for keypresses - this allows the user to press "Escape" to cancel the operation
         DoEvents
-        If (MacroStatus = MacroCANCEL) Then GoTo MacroCanceled
+        If (Macros.GetMacroStatus = MacroCANCEL) Then GoTo MacroCanceled
     
         tmpFilename = lstFiles.List(curBatchFile)
         
         'Give the user a progress update
-        MacroMessage = g_Language.TranslateMessage("Processing image # %1 of %2. %3", (curBatchFile + 1), totalNumOfFiles, timeMsg)
-        BatchConvertMessage MacroMessage
+        BatchConvertMessage g_Language.TranslateMessage("Processing image # %1 of %2. %3", (curBatchFile + 1), totalNumOfFiles, timeMsg)
         sysProgBar.Value = curBatchFile
         sysProgBar.Refresh
         
@@ -1748,13 +1745,13 @@ Private Sub PrepareForBatchConversion()
             
             'Check to see if the image file is a multipage file
             Dim howManyPages As Long
-            howManyPages = IsMultiImage(tmpFilename)
+            howManyPages = Plugin_FreeImage.IsMultiImage(tmpFilename)
             
             'TODO: integrate this with future support for exporting multipage files.  At present, to avoid complications,
             ' PD will only load the first page/frame of a multipage file during conversion.
             
             'Load the current image
-            If LoadFileAsNewImage(tmpFilename, , False, True, False) Then
+            If Loading.LoadFileAsNewImage(tmpFilename, , False, True, False) Then
             
                 'With the image loaded, it is time to apply any requested photo editing actions.
                 If (btsPhotoOps.ListIndex = 1) Then
@@ -1933,7 +1930,7 @@ Private Sub PrepareForBatchConversion()
     'Carry on
     Next curBatchFile
     
-    MacroStatus = MacroSTOP
+    Macros.SetMacroStatus MacroSTOP
     
     Screen.MousePointer = vbDefault
     
@@ -1952,7 +1949,7 @@ Private Sub PrepareForBatchConversion()
     
 MacroCanceled:
 
-    MacroStatus = MacroSTOP
+    Macros.SetMacroStatus MacroSTOP
     
     Screen.MousePointer = vbDefault
     

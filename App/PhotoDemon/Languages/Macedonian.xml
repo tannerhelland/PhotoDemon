@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.54</langversion>
+<langversion>1.0.55</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1806,11 +1806,6 @@ To овозможи поддршка скенер, молам копирајте
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>Отстрани избор</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1825,21 +1820,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>потребно подолго време</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>секунди</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Акција откажани.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Нема доволно меморија на располагање да се продолжи оваа операција. Ослободете системската меморија (RAM) од страна на затворање на непотребни програми - особено во вашиот веб прелистувач, ако тоа е отворен - тогаш пробај со акција повторно.</translation>
 </phrase>
@@ -1847,29 +1827,6 @@ Please report this bug via the Help -> Submit Bug Report menu.</original>
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Нема меморија. Функција откажани.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>За жал, ова сликата се појавува да биде валиден. Ова може да се случи ако датотеката не содржи податоци за слики, или ако содржи податоци за слики на неподдржан format.
-
-- Ако сте ја преземале оваа слика од интернет, симнување може да заврши предвреме. Ве молиме обидете се да ја преземете сликата again.
-
-- Ако сликата дојде од една дигитална камера, скенер, или друга програма за уредување на слики, тоа е можно дека PhotoDemon едноставно не се разбере овој формат на датотека. Ве молиме да ја зачувате сликата во генерички формат (како на пример JPEG или PNG), а потоа повторно ставете го.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Невалиден слика. Вчитај слика откажани.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Невалидна датотека со слика</translation>
 </phrase>
 
 <phrase>
@@ -1921,53 +1878,13 @@ Error број %
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Ви благодариме за поднесување на извештај за бубачка. За да бидете сигурни дека вашата бубачка се однесува како што е можно побрзо, PhotoDemon ќе мора да одговори на уште еден question.
-
-Do имате сметка на GitHub? (Ако немате идеја што значи тоа, одговорот е "Не".)</translation>
+<original>Time taken</original>
+<translation>потребно подолго време</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Ви благодариме за правење PhotoDemon подобро</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon автоматски ја отвори веб страница извештај за бубачки GitHub за вас. Во полето за наслов, ве молиме внесете ја следнава грешка број со краток опис на проблемот: %1
-
-Any дополнителни детали може да се обезбеди во голем поле за текст, вклучувајќи го и чекорите кои доведоа до оваа грешка, ќе помогне да се добие фиксна толку брзо како што possible.
-
-When завршите, кликнете на Прати копчето Нов проблем. Ти благодарам!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>инструкции извештај за бубачка GitHub</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon автоматски ја отвори веб страница извештај за бубачки за вас. Во полето за коментар, ве молиме опишете ги чекорите кои доведоа до оваа error.
-
-Also во таа кутија, молам вклучи следнава грешка: %1
-
-When заврши, кликнете на копчето Submit. Ти благодарам!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>инструкциите за пријавување на бубачки</translation>
+<original>seconds</original>
+<translation>секунди</translation>
 </phrase>
 
 <phrase>
@@ -2125,7 +2042,67 @@ When заврши, кликнете на копчето Submit. Ти благо�
 <translation>боја</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>Отстрани избор</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Акција откажани.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Ви благодариме за поднесување на извештај за бубачка. За да бидете сигурни дека вашата бубачка се однесува како што е можно побрзо, PhotoDemon ќе мора да одговори на уште еден question.
+
+Do имате сметка на GitHub? (Ако немате идеја што значи тоа, одговорот е "Не".)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Ви благодариме за правење PhotoDemon подобро</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon автоматски ја отвори веб страница извештај за бубачки GitHub за вас. Во полето за наслов, ве молиме внесете ја следнава грешка број со краток опис на проблемот: %1
+
+Any дополнителни детали може да се обезбеди во голем поле за текст, вклучувајќи го и чекорите кои доведоа до оваа грешка, ќе помогне да се добие фиксна толку брзо како што possible.
+
+When завршите, кликнете на Прати копчето Нов проблем. Ти благодарам!</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>инструкции извештај за бубачка GitHub</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon автоматски ја отвори веб страница извештај за бубачки за вас. Во полето за коментар, ве молиме опишете ги чекорите кои доведоа до оваа error.
+
+Also во таа кутија, молам вклучи следнава грешка: %1
+
+When заврши, кликнете на копчето Submit. Ти благодарам!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>инструкциите за пријавување на бубачки</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -15008,10 +14985,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>

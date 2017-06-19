@@ -25,24 +25,8 @@ Attribute VB_Name = "Processor"
 Option Explicit
 Option Compare Text
 
-'Data type for tracking processor calls - used for macros (NOTE: this is the 2013 model; older models are no longer supported.)
-Public Type ProcessCall
-    Id As String
-    Dialog As Boolean
-    Parameters As String
-    MakeUndo As PD_UNDO_TYPE
-    Tool As Long
-    Recorded As Boolean
-End Type
-
-'During macro recording, all requests to the processor are stored in this array.
-Public Processes() As ProcessCall
-
-'How many processor requests we currently have stored.
-Public ProcessCount As Long
-
-'Full processor information of the previous request (used to provide a "Repeat Last Action" feature)
-Public LastProcess As ProcessCall
+'Full processor information of the previous request (used to provide the "Repeat Last Action" feature)
+Private m_LastProcess As PD_ProcessCall
 
 'Track processing (e.g. whether or not the actual Processor() function is running right now)
 Private m_Processing As Boolean
@@ -100,7 +84,7 @@ Private prevNDFXLayerID As Long, prevNDFXSetting() As Variant
 ' - *recordAction: are macros allowed to record this action?  Actions are assumed to be recordable.  However, some PhotoDemon functions
 '                  are actually several actions strung together; when these are used, subsequent actions are marked as "not recordable"
 '                  to prevent them from being executed twice.
-Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = False, Optional processParameters As String = "", Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
 
     'Main error handler for the software processor is initialized by this line
     On Error GoTo MainErrHandler
@@ -109,61 +93,41 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     ' the midst of a nested processor request.
     m_NestedProcessingCount = m_NestedProcessingCount + 1
     
-    'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
-    ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
-    If (Not ShowDialog) Then
-        If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_IMAGE_VECTORSAFE) Or (createUndo = UNDO_LAYER) Then Screen.MousePointer = vbHourglass
-    End If
+    'PD provides several failsafes to avoid unwanted user interaction during processing.  One of these failsafes involves forcibly
+    ' removing keyboard focus from our thread.  To ensure that we can properly restore focus when we exit, we cache the currently
+    ' focused object prior to disabling it.  (Note that this only triggers on top-level Process calls; nested calls will just
+    ' grab the cleared value of "0", which defeats the whole point.)
+    If (m_NestedProcessingCount = 1) Then m_FocusHWnd = g_WindowManager.GetFocusAPI
     
-    'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
-    
-    'Notify the live language updater that it is free to apply an immediate refresh.  (It will have already determined if any internals
-    ' need to be updated to match various update processes, so there is no performance penalty if hot-patches are not required.)
-    ' (Additionally, note that language files must be patched PRIOR to the main form being disabled; if we don't do this, interface items
-    ' won't update correctly.)
-    If (MacroStatus <> MacroBATCH) Then
-        
-        'Hot-patch the currently active language
-        If (Not g_Language Is Nothing) Then g_Language.RefreshAsRequired
-    
-    End If
-    
-    'PD provides two failsafes to avoid unwanted user interaction during processing. First, we forcibly remove keyboard focus
-    ' from the thread.
-    m_FocusHWnd = g_WindowManager.GetFocusAPI
-    g_WindowManager.SetFocusAPI 0
-    
-    'With focus removed from any valid objects, now is a good time to mark the software processor as busy
-    ' (but only when we're not showing a dialog!)
-    If (Not ShowDialog) Then m_Processing = True
-    
-    'Next, complete part two of our "unwanted user interaction" failsafe: disable the main form to prevent the user from clicking additional
-    ' menus or tools while this action is processing
-    FormMain.Enabled = False
-    
-    'Before continuing, suspend any active UI animations
-    If (g_OpenImageCount > 0) Then
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed False
-    End If
-        
+    'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
     #If DEBUGMODE = 1 Then
-        If ShowDialog Then
+        If raiseDialog Then
             pdDebug.LogAction "Show """ & processID & """ dialog", PDM_PROCESSOR
         Else
-            pdDebug.LogAction """" & processID & """: " & processParameters, PDM_PROCESSOR
+            pdDebug.LogAction """" & processID & """: " & Replace$(processParameters, vbCrLf, vbNullString), PDM_PROCESSOR
         End If
     #End If
-        
+    
+    'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
+    ' (At present, the only live-patching task PD handles is language file updates.  Note that we must initiate this *prior*
+    '  to disabling the main form, or things like menus won't update correctly.)
+    If (Not g_Language Is Nothing) Then g_Language.RefreshAsRequired
+    
     'If we are simply repeating the last command, replace all the method parameters (which will be blank) with data from the
     ' LastEffectsCall object; this simple approach lets us repeat the last action effortlessly!
     If Strings.StringsEqual(processID, "repeat last action", True) Then
-        processID = LastProcess.Id
-        ShowDialog = LastProcess.Dialog
-        processParameters = LastProcess.Parameters
-        createUndo = LastProcess.MakeUndo
-        relevantTool = LastProcess.Tool
-        recordAction = LastProcess.Recorded
+        With m_LastProcess
+            processID = .pcID
+            raiseDialog = .pcRaiseDialog
+            processParameters = .pcParameters
+            createUndo = .pcUndoType
+            relevantTool = .pcTool
+            recordAction = .pcRecorded
+        End With
     End If
+    
+    'Before proceeding, deactivate any interactive UI elements
+    SetProcessorUI_Busy processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
     'Create a parameter parser to handle the parameter string.  This can parse out individual function parameters as specific
     ' data types as necessary.  (Some pre-processing steps require parameter knowledge.)
@@ -178,288 +142,55 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
     Set cXMLParams = New pdParamXML
     If (Len(processParameters) <> 0) Then cXMLParams.SetParamString processParameters
     
-    'If the current layer is a vector layer, and the requested operation is *not* vector-safe, raise a rasterization warning.
-    ' This gives the user a chance to back out before permanently ruining the layer.  (Note that the raised dialog offers a "remember
-    ' my choice" setting, which the user can use to avoid this step entirely.)
-    '
-    '(Also: if this is a showDialog operation, we skip this step, so the user can play around without being bombarded by
-    ' rasterization prompts.)
-    '
-    'Obviously, we skip this step if no images are loaded
-    
     Dim i As Long
     
-    If (g_OpenImageCount > 0) Then
-    
-        Dim okayToRasterize As VbMsgBoxResult
-        okayToRasterize = vbCancel
-        
-        'First, check for the case of operations that modify an entire image (e.g. "Flatten").  Three criteria must be met:
-        ' 1) No dialog is being shown
-        ' 2) The current layer must contain one or more vector layers
-        ' 3) The Undo type must be UNDO_IMAGE or UNDO_EVERYTHING.  Header-only Undo operations do not require rasterization.
-        Dim rasterizeImagePromptNeeded As Boolean
-        rasterizeImagePromptNeeded = (Not ShowDialog)
-        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
-        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING))
-        
-        'A few exceptions exist to the above code.  Layer merge operations typically require us to make a full Undo/Redo copy of the
-        ' entire image stack, meeting the above criteria, but note that we only need to display a rasterize prompt if one or more of
-        ' the *merged layers* are vector layers.  (Merging two image layers in an image with other vector layers shouldn't display a prompt.)
-        If rasterizeImagePromptNeeded And ((processID = "Merge layer down") Or (processID = "Merge layer up") Or (processID = "Merge visible layers")) Then
-            
-            'For each case, determine if a vector layer is being merged, and if not, reset rasterizeImagePromptNeeded
-            Select Case processID
-            
-                Case "Merge layer down"
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerRaster Then
-                        rasterizeImagePromptNeeded = False
-                    End If
-                
-                Case "Merge layer up"
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerRaster Then
-                        rasterizeImagePromptNeeded = False
-                    End If
-                
-                Case "Merge visible layers"
-                    
-                    rasterizeImagePromptNeeded = False
-                    For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
-                        
-                        'If a vector layer is found, restore rasterizeImagePromptNeeded and exit the loop
-                        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility And pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
-                            rasterizeImagePromptNeeded = True
-                            Exit For
-                        End If
-                    
-                    Next i
-            
-            End Select
-            
-        End If
-        
-        If rasterizeImagePromptNeeded Then
-            
-            okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType, , True)
-            
-            'If rasterization is okay, immediately apply it to all relevant layers
-            If okayToRasterize = vbYes Then
-                
-                Select Case processID
-                    
-                    'When merging layers, only the merged layers need to be rasterized
-                    Case "Merge layer down"
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) - 1
-                        
-                    Case "Merge layer up"
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
-                        If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) + 1
-                    
-                    Case "Merge visible layers"
-                        For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
-                            If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility And pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
-                                Layers.RasterizeLayer i
-                            End If
-                        Next i
-                        
-                    'For any other case, rasterize all vector layers
-                    Case Else
-                        Layers.RasterizeLayer -1
-                    
-                End Select
-                
-            'If the user doesn't want rasterization, bail immediately.
-            Else
-                
-                'Reset default tracking values and/or UI states prior to exiting
-                m_Processing = False
-                Screen.MousePointer = vbDefault
-                m_NestedProcessingCount = m_NestedProcessingCount - 1
-                FormMain.Enabled = True
-                
-                Exit Sub
-                
-            End If
-            
-        End If
-        
-        'Next, if this operation modifies just one layer, raise a "rasterize single layer" dialog.
-        ' (Note that we skip this step if we already rasterized all layers, above.)
-        If (Not rasterizeImagePromptNeeded) Then
-            
-            rasterizeImagePromptNeeded = (Not ShowDialog)
-            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
-            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And CBool(createUndo = UNDO_LAYER)
-            
-            'Previously, I also checked for "(createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)" but I no longer think this
-            ' is necessary, as those cases should have been covered by the previous check (which rasterizes *all* vector layers as necessary).
-            
-            'Display a prompt as necessary
-            If rasterizeImagePromptNeeded Then
-                
-                okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType)
-                
-                'If rasterization is okay, apply it immediately
-                If okayToRasterize = vbYes Then
-                
-                    Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
-                
-                'If the user doesn't want rasterization, bail immediately.
-                Else
-                    
-                    'Reset default tracking values and/or UI states prior to exiting
-                    m_Processing = False
-                    Screen.MousePointer = vbDefault
-                    m_NestedProcessingCount = m_NestedProcessingCount - 1
-                    FormMain.Enabled = True
-                    
-                    Exit Sub
-                    
-                End If
-                
-            End If
-            
-        End If
-        
+    'Next, we need to check for actions that may require us to rasterize one or more vector layers before proceeding.
+    ' The process for checking this is rather involved, so we offload it to a separate function.
+    '
+    'The important thing to note is that a *FALSE* return requires us to immediately exit the processor, as the user has
+    ' chosen to cancel the current action.
+    If (Not CheckRasterizeRequirements(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction)) Then
+        SetProcessorUI_Idle processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
+        Exit Sub
     End If
     
     'If a selection is active, certain functions (primarily transformations) will remove it before proceeding. This is typically
     ' done by functions that resize or reorient the image in a way that makes the selection's shape irrelevant. Because PD requires
     ' the selection mask and image size to remain in sync, errors may occur if selections persist after a size change - and this is
     ' particularly relevant for the Undo/Redo engine, because it will crash if it attempts to load an Undo file of an image, and the
-    ' image size is not the same as the current selection assumes.
+    ' image size is not the same as the current selection.
     '
-    'Anyway, before moving deeper into the processor, we must check for actions that disallow selections, and prior to processing them,
-    ' initiate a Remove Selection process request.
-    If (Not ShowDialog) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    'Anyway, before moving deeper into the processor, check for actions that disallow selections, and prior to processing them,
+    ' initiate a Remove Selection request.
+    RemoveSelectionAsNecessary processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
-        'Only worry about this if a selection is actually active
-        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) Then
+    'If we made it all the way here, notify the macro recorder that something interesting has happened.
+    ' (It may choose to store this action for later playback.)
+    Macros.NotifyProcessorEvent processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
-            Dim removeSelectionInAdvance As Boolean
-            removeSelectionInAdvance = False
-            
-            'If this action reorients or resizes the image, mark the selection for removal
-            Select Case processID
-            
-                Case "Resize image", "Resize", "Content-aware image resize", "Canvas size"
-                    removeSelectionInAdvance = True
-                    
-                Case "Fit canvas to layer", "Fit canvas to all layers", "Trim empty borders"
-                    removeSelectionInAdvance = True
-                    
-                Case "Rotate image 90 clockwise", "Rotate 90 clockwise", "Rotate image 180", "Rotate 180"
-                    removeSelectionInAdvance = True
-                    
-                Case "Rotate image 90 counter-clockwise", "Rotate 90 counter-clockwise", "Arbitrary image rotation", "Arbitrary rotation"
-                    removeSelectionInAdvance = True
-                    
-                Case "Flip image vertically", "Flip vertically", "Flip image horizontally", "Flip horizontally"
-                    removeSelectionInAdvance = True
-                    
-                Case Else
-                    removeSelectionInAdvance = False
-            
-            End Select
-            
-            'If selection removal is required, process the removal before proceeding with the original process request
-            If removeSelectionInAdvance Then
-                Process "Remove selection", , , UNDO_SELECTION
-                removeSelectionInAdvance = False
-            End If
-            
-            'We also need to catch another strange occurrence here.  PD's "Crop" command forcibly clears the selection upon completion.
-            ' This is done as a convenience, as post-crop, a selection is unlikely to be useful.  Unfortunately, this behavior wreaks
-            ' havoc on PD's Undo/Redo engine, because the Undo/Redo engine only saves image state *after* an action has completed.
-            ' So the image's state post-Crop is saved nicely, but pre-Crop it may not be, because the selection is removed out-of-process.
-            ' We also can't remove the selection prior to cropping, because we obviously need its data to process the crop!
-            
-            'Thus the need for this workaround.  Prior to applying a crop, we ask the Undo/Redo engine to forcibly change its previous
-            ' Undo record to an UNDO_EVERYTHING entry.  This will back up both the image and selection state prior to the crop, without
-            ' doing anything problematic like adding dummy entries to the Undo/Redo chain.
-            '
-            '(Note that the initial "Crop" process (e.g. the one generated by the main menu) requests showDialog as TRUE, even though
-            ' no dialog is shown.  It does this to fire off some diagnostic code that determines whether a non-destructive crop can
-            ' be applied; anyway, because of this, we only need to forcibly modify the previous Undo entry if showDialog is FALSE.)
-            If (processID = "Crop") And (Not ShowDialog) Then pdImages(g_CurrentImage).UndoManager.ForceLastUndoDataToIncludeEverything
-            
-        End If
-        
-    End If
-    
-    'If the macro recorder is running and this action is marked as recordable, store it in our running stack of processor calls
-    If (MacroStatus = MacroSTART) And recordAction Then
-    
-        'Increase the process count
-        ProcessCount = ProcessCount + 1
-        
-        'Copy the current process's information into the tracking array
-        ReDim Preserve Processes(0 To ProcessCount) As ProcessCall
-        
-        With Processes(ProcessCount)
-            .Id = processID
-            .Dialog = ShowDialog
-            .Parameters = processParameters
-            .MakeUndo = createUndo
-            .Tool = relevantTool
-            .Recorded = recordAction
-        End With
-        
-    End If
-    
-    'If a dialog is being displayed, forcibly disable Undo creation
-    If ShowDialog Then createUndo = UNDO_NOTHING
+    'If a dialog is being displayed, forcibly disable Undo creation.  (This is really just a failsafe; PD's various dialog functions
+    ' are smart about not requesting Undo/Redo events for dialog actions.)
+    If raiseDialog Then createUndo = UNDO_NOTHING
     
     'If this action requires us to create an Undo entry, do so now.  (We can also use this identifier to initiate a few
     ' other, related actions.)
     If (createUndo <> UNDO_NOTHING) Then
         
-        'Temporarily disable drag-and-drop operations for the main form while external actions are processing
-        g_AllowDragAndDrop = False
-        FormMain.OLEDropMode = 0
-        
-        'Save this action's information in the LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action)
-        FormMain.MnuEdit(2).Enabled = True
-        With LastProcess
-            .Id = processID
-            .Dialog = ShowDialog
-            .Parameters = processParameters
-            .MakeUndo = createUndo
-            .Tool = relevantTool
-            .Recorded = recordAction
+        'Save this action's information in the m_LastProcess variable (to be used if the user clicks on Edit -> Redo Last Action)
+        With m_LastProcess
+            .pcID = processID
+            .pcRaiseDialog = raiseDialog
+            .pcParameters = processParameters
+            .pcUndoType = createUndo
+            .pcTool = relevantTool
+            .pcRecorded = recordAction
         End With
         
         'If the user wants us to time how long this action takes, mark the current time now
         If g_DisplayTimingReports Then VBHacks.GetHighResTime m_ProcessingTime
         
         'Finally, perform a check for any on-canvas modifications that have not yet had their Undo data saved.
-        
-        'First, check for on-canvas modifications to the selection (e.g. feathering slider changes, etc)
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then
-        
-            If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) And (createUndo <> UNDO_EVERYTHING) Then
-            
-                'Ask the Undo engine to return the last selection param string it has on file
-                Dim lastSelParamString As String
-                lastSelParamString = pdImages(g_CurrentImage).UndoManager.GetLastParamString(UNDO_SELECTION)
-                
-                'If such a param string exists, compare it against the current selection param string
-                If (Len(lastSelParamString) <> 0) Then
-                
-                    'If the last selection Undo param string does not match the current selection param string, the user has
-                    ' modified the selection in some way since the last Undo was created.  Create a new entry now.
-                    If (StrComp(lastSelParamString, pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, vbTextCompare) <> 0) Then
-                        pdImages(g_CurrentImage).UndoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION, , -1
-                    End If
-                
-                End If
-            
-            End If
-            
-        End If
-        
-        'In the future, additional on-canvas modifications can be checked here.
+        CheckForCanvasModifications createUndo
         
     End If
         
@@ -492,7 +223,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         ' This includes actions like opening or saving images.  These actions are never recorded.
         
         Case "New image"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormNewImage
             Else
                 FileMenu.CreateNewImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
@@ -526,7 +257,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
             
         Case "Batch wizard"
-            If ShowDialog Then
+            If raiseDialog Then
                 
                 'Because the Batch Wizard window provides a custom drag/drop implementation, we disable regular drag/drop while it's active
                 g_AllowDragAndDrop = False
@@ -536,7 +267,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
             
         Case "Print"
-            If ShowDialog Then
+            If raiseDialog Then
                 
                 'As a temporary workaround, Vista+ users are routed through the default Windows photo printing
                 ' dialog.  XP users get the old PD print dialog.
@@ -568,14 +299,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             Plugin_EZTwain.Twain32Scan
             
         Case "Screen capture"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormScreenCapture
             Else
                 ScreenCapture.CaptureScreen cXMLParams.GetParamString
             End If
             
         Case "Internet import"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormInternetImport
             End If
             
@@ -597,7 +328,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
             
         Case "Undo history"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormUndoHistory
             Else
                 pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint cParams.GetLong(1)
@@ -659,14 +390,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Resize operations; note that prior to 6.4, "Resize" was used in place of "Resize image".  To preserve functionality of old macros,
         ' we add the old "Resize" operator here as well.
         Case "Resize image", "Resize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowResizeDialog PD_AT_WHOLEIMAGE
             Else
                 FormResize.ResizeImage cXMLParams.GetParamString()
             End If
             
         Case "Content-aware image resize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowContentAwareResizeDialog PD_AT_WHOLEIMAGE
             Else
                 FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_WHOLEIMAGE
@@ -674,7 +405,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Canvas size operations
         Case "Canvas size"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormCanvasSize
             Else
                 FormCanvasSize.ResizeCanvas cXMLParams.GetParamString
@@ -692,7 +423,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             'The main form will submit "Crop" requests with showDialog set to TRUE.  This tells us to ask the crop handler if a
             ' non-destructive crop is possible.  Depending on what it finds, it will submit a second "Crop" requests with showDialog
             ' set to FALSE.  This tells us to actually apply the crop instead of just running diagnostics.
-            If ShowDialog Then
+            If raiseDialog Then
                 Filters_Transform.SeeIfCropCanBeAppliedNonDestructively
             Else
                 CropToSelection , cParams.GetBool(1, False)
@@ -706,7 +437,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         'Rotate operations
         Case "Straighten image"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowStraightenDialog PD_AT_WHOLEIMAGE
             Else
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
@@ -722,7 +453,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             Filters_Transform.MenuRotate270Clockwise
             
         Case "Arbitrary image rotation", "Arbitrary rotation"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowRotateDialog PD_AT_WHOLEIMAGE
             Else
                 FormRotate.RotateArbitrary cXMLParams.GetParamString
@@ -757,7 +488,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             Layers.AddBlankLayer cParams.GetLong(1)
         
         Case "Add new layer"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormNewLayer
             Else
                 Layers.AddNewLayer cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetBool(6), cParams.GetString(7)
@@ -769,7 +500,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             ' has already been created, and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
             '
             'During macro playback, "New text layer" becomes more important, as we do actually need to create the layer!
-            If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
+            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
                 
                 'Start by creating a new layer
                 If StrComp(processID, "New text layer", vbTextCompare) Then
@@ -796,7 +527,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             End If
         
         Case "New layer from file"
-            Layers.LoadImageAsNewLayer ShowDialog, processParameters
+            Layers.LoadImageAsNewLayer raiseDialog, processParameters
         
         Case "Duplicate layer"
             Layers.DuplicateLayerByIndex cParams.GetLong(1)
@@ -848,7 +579,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         'Destructive layer orientation changes
         Case "Straighten layer"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowStraightenDialog PD_AT_SINGLELAYER
             Else
                 FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
@@ -864,7 +595,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuRotate270Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
             
         Case "Arbitrary layer rotation"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowRotateDialog PD_AT_SINGLELAYER
             Else
                 FormRotate.RotateArbitrary cXMLParams.GetParamString
@@ -878,14 +609,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 
         'Destructive layer size changes
         Case "Resize layer"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowResizeDialog PD_AT_SINGLELAYER
             Else
                 FormResize.ResizeImage cXMLParams.GetParamString()
             End If
         
         Case "Content-aware layer resize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowContentAwareResizeDialog PD_AT_SINGLELAYER
             Else
                 FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_SINGLELAYER
@@ -896,14 +627,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         'Change layer alpha
         Case "Color to alpha"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormTransparency_FromColor
             Else
                 FormTransparency_FromColor.ColorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Remove alpha channel"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormConvert24bpp
             Else
                 ConvertImageColorDepth 24, cParams.GetLong(1)
@@ -918,7 +649,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Flatten image
         Case "Flatten image"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormLayerFlatten
             Else
                 Layers.FlattenImage cXMLParams.GetParamString
@@ -960,35 +691,35 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             Selections.InvertCurrentSelection
             
         Case "Grow selection"
-            If ShowDialog Then
+            If raiseDialog Then
                 Selections.GrowCurrentSelection True
             Else
                 Selections.GrowCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Shrink selection"
-            If ShowDialog Then
+            If raiseDialog Then
                 Selections.ShrinkCurrentSelection True
             Else
                 Selections.ShrinkCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Feather selection"
-            If ShowDialog Then
+            If raiseDialog Then
                 Selections.FeatherCurrentSelection True
             Else
                 Selections.FeatherCurrentSelection False, cParams.GetDouble(1)
             End If
         
         Case "Sharpen selection"
-            If ShowDialog Then
+            If raiseDialog Then
                 Selections.SharpenCurrentSelection True
             Else
                 Selections.SharpenCurrentSelection False, cParams.GetDouble(1)
             End If
             
         Case "Border selection"
-            If ShowDialog Then
+            If raiseDialog Then
                 Selections.BorderCurrentSelection True
             Else
                 Selections.BorderCurrentSelection False, cParams.GetDouble(1)
@@ -1000,7 +731,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Load/save selection from/to file
         Case "Load selection"
-            If ShowDialog Then
+            If raiseDialog Then
                 Selections.LoadSelectionFromFile True
             Else
                 Selections.LoadSelectionFromFile False, cParams.GetParamString
@@ -1063,42 +794,42 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Luminance adjustment functions
         Case "Brightness and contrast"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormBrightnessContrast
             Else
                 FormBrightnessContrast.BrightnessContrast cXMLParams.GetParamString
             End If
         
         Case "Curves"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormCurves
             Else
                 FormCurves.ApplyCurveToImage cParams.GetParamString
             End If
             
         Case "Gamma"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormGamma
             Else
                 FormGamma.GammaCorrect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
         
         Case "Levels"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormLevels
             Else
                 FormLevels.MapImageLevels cParams.GetParamString
             End If
             
         Case "Shadow and highlight"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormShadowHighlight
             Else
                 FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetLong(6), cParams.GetDouble(7)
             End If
             
         Case "White balance"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormWhiteBalance
             Else
                 FormWhiteBalance.AutoWhiteBalance cParams.GetDouble(1)
@@ -1106,42 +837,42 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Color adjustments
         Case "Color balance"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormColorBalance
             Else
                 FormColorBalance.ApplyColorBalance cXMLParams.GetParamString()
             End If
             
         Case "Hue and saturation"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormHSL
             Else
                 FormHSL.AdjustImageHSL cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Replace color"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormReplaceColor
             Else
                 FormReplaceColor.ReplaceSelectedColor cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3), cParams.GetDouble(4)
             End If
             
         Case "Temperature"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormColorTemp
             Else
                 FormColorTemp.ApplyTemperatureToImage cXMLParams.GetParamString
             End If
             
         Case "Tint"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormTint
             Else
                 FormTint.adjustTint cParams.GetLong(1)
             End If
             
         Case "Vibrance"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormVibrance
             Else
                 FormVibrance.Vibrance cParams.GetDouble(1)
@@ -1149,7 +880,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Miscellaneous adjustments
         Case "Colorize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormColorize
             Else
                 FormColorize.ColorizeImage cParams.GetDouble(1), cParams.GetBool(2)
@@ -1157,7 +888,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Grayscale conversions
         Case "Black and white"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormGrayscale
             Else
                 FormGrayscale.MasterGrayscaleFunction cParams.GetLong(1), cParams.GetString(2), cParams.GetLong(3, 256), cParams.GetLong(4, 0)
@@ -1176,14 +907,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Monochrome conversion
         ' (Note: all monochrome conversion operations are condensed into a single function.  (Past versions spread them across multiple functions.))
         Case "Color to monochrome"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMonochrome
             Else
                 FormMonochrome.MasterBlackWhiteConversion cXMLParams.GetParamString
             End If
             
         Case "Monochrome to grayscale"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMonoToColor
             Else
                 FormMonoToColor.ConvertMonoToColor cParams.GetLong(1)
@@ -1194,14 +925,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         'Channel operations
         Case "Channel mixer"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormChannelMixer
             Else
                 FormChannelMixer.ApplyChannelMixer cXMLParams.GetParamString()
             End If
             
         Case "Rechannel"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRechannel
             Else
                 FormRechannel.RechannelImage cXMLParams.GetParamString
@@ -1227,7 +958,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FormHistogram.StretchHistogram
             
         Case "Equalize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormEqualize
             Else
                 FormEqualize.EqualizeHistogram cXMLParams.GetParamString
@@ -1235,35 +966,35 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Photography sub-menu functions
         Case "Exposure"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormExposure
             Else
                 FormExposure.Exposure cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
         
         Case "HDR"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormHDR
             Else
                 FormHDR.ApplyImitationHDR cParams.GetDouble(1), cParams.GetDouble(2)
             End If
             
         Case "Photo filter"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPhotoFilters
             Else
                 FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
         
         Case "Red-eye removal"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRedEye
             Else
                 FormRedEye.ApplyRedEyeCorrection cXMLParams.GetParamString
             End If
         
         Case "Split toning"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSplitTone
             Else
                 FormSplitTone.SplitTone cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4)
@@ -1275,63 +1006,63 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Artistic
         Case "Colored pencil"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPencil
             Else
                 FormPencil.fxColoredPencil cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3)
             End If
             
         Case "Comic book"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormComicBook
             Else
                 FormComicBook.fxComicBook cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, 0)
             End If
             
         Case "Figured glass"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormFiguredGlass
             Else
                 FormFiguredGlass.FiguredGlassFX cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
         
         Case "Film noir"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormFilmNoir
             Else
                 FormFilmNoir.fxFilmNoir cXMLParams.GetParamString
             End If
             
         Case "Glass tiles"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormGlassTiles
             Else
                 FormGlassTiles.GlassTiles cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
         
         Case "Kaleidoscope"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormKaleidoscope
             Else
                 FormKaleidoscope.KaleidoscopeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetBool(5), cParams.GetDouble(6), cParams.GetDouble(7)
             End If
             
         Case "Modern art"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormModernArt
             Else
                 FormModernArt.ApplyModernArt cXMLParams.GetParamString
             End If
             
         Case "Oil painting"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormOilPainting
             Else
                 FormOilPainting.ApplyOilPaintingEffect cXMLParams.GetParamString
             End If
             
         Case "Posterize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPosterize
             Else
                 FormPosterize.ReduceImageColors_BitRGB cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
@@ -1341,14 +1072,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             FormPosterize.ReduceImageColors_BitRGB_ErrorDif cParams.GetByte(1), cParams.GetByte(2), cParams.GetByte(3), cParams.GetBool(4)
                     
         Case "Relief"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRelief
             Else
                 FormRelief.ApplyReliefEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
             
         Case "Stained glass"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormStainedGlass
             Else
                 FormStainedGlass.fxStainedGlass cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetLong(6)
@@ -1358,21 +1089,21 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Standard blur filters
         Case "Box blur"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormBoxBlur
             Else
                 FormBoxBlur.BoxBlurFilter cXMLParams.GetParamString()
             End If
             
         Case "Gaussian blur"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormGaussianBlur
             Else
                 FormGaussianBlur.GaussianBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
             End If
             
         Case "Surface blur"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSurfaceBlur
             Else
                 FormSurfaceBlur.SurfaceBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3), cParams.GetLong(4, 1)
@@ -1380,21 +1111,21 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         'Motion (directional) blurs
         Case "Motion blur"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMotionBlur
             Else
                 FormMotionBlur.MotionBlurFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetLong(4)
             End If
             
         Case "Radial blur"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRadialBlur
             Else
                 FormRadialBlur.RadialBlurFilter cParams.GetDouble(1), cParams.GetBool(2), cParams.GetBool(3)
             End If
         
         Case "Zoom blur"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormZoomBlur
             Else
                 FormZoomBlur.ApplyZoomBlur cXMLParams.GetParamString
@@ -1402,14 +1133,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         'Miscellaneous blurs
         Case "Kuwahara filter"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormKuwahara
             Else
                 FormKuwahara.Kuwahara cParams.GetLong(1)
             End If
             
         Case "Symmetric nearest-neighbor"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSNN
             Else
                 FormSNN.ApplySymmetricNearestNeighbor cXMLParams.GetParamString
@@ -1417,7 +1148,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'TODO: The next two blurs are currently unused; their inclusion in 7.0 is still pending a final decision
         Case "Chroma blur"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormChromaBlur
             Else
                 FormChromaBlur.ChromaBlurFilter cXMLParams.GetParamString()
@@ -1430,112 +1161,112 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Distort filters
                     
         Case "Correct lens distortion"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormLensCorrect
             Else
                 FormLensCorrect.CorrectLensDistortion cXMLParams.GetParamString()
             End If
         
         Case "Donut"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormDonut
             Else
                 FormDonut.ApplyDonutDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6), cParams.GetDouble(7), cParams.GetDouble(8)
             End If
         
         Case "Apply lens distortion"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormLens
             Else
                 FormLens.ApplyLensDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
             End If
             
         Case "Miscellaneous distort"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMiscDistorts
             Else
                 FormMiscDistorts.ApplyMiscDistort cParams.GetString(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Pan and zoom"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPanAndZoom
             Else
                 FormPanAndZoom.PanAndZoomFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
         
         Case "Perspective"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPerspective
             Else
                 FormPerspective.PerspectiveImage cParams.GetParamString
             End If
             
         Case "Pinch and whirl"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPinch
             Else
                 FormPinch.PinchImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetDouble(6), cParams.GetDouble(7)
             End If
             
         Case "Poke"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPoke
             Else
                 FormPoke.ApplyPokeDistort cParams.GetDouble(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetDouble(4), cParams.GetDouble(5)
             End If
             
         Case "Polar conversion"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPolar
             Else
                 FormPolar.ConvertToPolar cParams.GetLong(1), cParams.GetBool(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
             
         Case "Ripple"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRipple
             Else
                 FormRipple.RippleImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6), cParams.GetDouble(7), cParams.GetDouble(8)
             End If
             
         Case "Rotate"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRotateDistort
             Else
                 FormRotateDistort.RotateFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetDouble(4), cParams.GetDouble(5)
             End If
             
         Case "Shear"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormShear
             Else
                 FormShear.ShearImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Spherize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSpherize
             Else
                 FormSpherize.SpherizeImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetBool(4), cParams.GetLong(5), cParams.GetLong(6)
             End If
         
         Case "Squish"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSquish
             Else
                 FormSquish.SquishImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
             
         Case "Swirl"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSwirl
             Else
                 FormSwirl.SwirlImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
             End If
             
         Case "Waves"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormWaves
             Else
                 FormWaves.WaveImage cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6)
@@ -1544,35 +1275,35 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         
         'Edge filters
         Case "Emboss"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormEmbossEngrave
             Else
                 FormEmbossEngrave.ApplyEmbossEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4)
             End If
             
         Case "Enhance edges"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormEdgeEnhance
             Else
                 FormEdgeEnhance.ApplyEdgeEnhancement cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3)
             End If
             
         Case "Find edges"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormFindEdges
             Else
                 FormFindEdges.ApplyEdgeDetection cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
             
         Case "Range filter"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRangeFilter
             Else
                 FormRangeFilter.ApplyRangeFilter cXMLParams.GetParamString
             End If
             
         Case "Trace contour"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormContour
             Else
                 FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
@@ -1587,49 +1318,49 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Lights and shadows
         
         Case "Black light"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormBlackLight
             Else
                 FormBlackLight.fxBlackLight cXMLParams.GetParamString()
             End If
         
         Case "Cross-screen"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormCrossScreen
             Else
                 FormCrossScreen.CrossScreenFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5), cParams.GetLong(6)
             End If
         
         Case "Lens flare"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormLensFlare
             Else
                 FormLensFlare.LensFlare cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5), cParams.GetDouble(6), cParams.GetDouble(7)
             End If
             
         Case "Rainbow"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormRainbow
             Else
                 FormRainbow.ApplyRainbowEffect cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4)
             End If
             
         Case "Sunshine"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSunshine
             Else
                 FormSunshine.SunShine cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetDouble(6)
             End If
             
         Case "Dilate (maximum rank)"
-            If ShowDialog Then
+            If raiseDialog Then
                 FormMedian.showMedianDialog 100
             Else
                 FormMedian.ApplyMedianFilter cXMLParams.GetParamString
             End If
             
         Case "Erode (minimum rank)"
-            If ShowDialog Then
+            If raiseDialog Then
                 FormMedian.showMedianDialog 1
             Else
                 FormMedian.ApplyMedianFilter cXMLParams.GetParamString
@@ -1641,7 +1372,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuAtmospheric
             
         Case "Fog"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormFog
             Else
                 FormFog.fxFog cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
@@ -1651,7 +1382,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuFrozen
             
         Case "Ignite"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormIgnite
             Else
                 FormIgnite.fxBurn cParams.GetDouble(1), cParams.GetLong(2), cParams.GetLong(3)
@@ -1661,7 +1392,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuLava
                     
         Case "Metal"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMetal
             Else
                 FormMetal.ApplyMetalFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
@@ -1674,42 +1405,42 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Noise
         
         Case "Add film grain"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormFilmGrain
             Else
                 FormFilmGrain.AddFilmGrain cParams.GetDouble(1), cParams.GetDouble(2)
             End If
         
         Case "Add RGB noise"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormNoise
             Else
                 FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
             End If
         
         Case "Anisotropic diffusion"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormAnisotropic
             Else
                 FormAnisotropic.ApplyAnisotropicDiffusion cXMLParams.GetParamString()
             End If
         
         Case "Bilateral smoothing"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormBilateral
             Else
                 FormBilateral.BilateralWrapper cXMLParams.GetParamString()
             End If
             
         Case "Mean shift"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMeanShift
             Else
                 FormMeanShift.ApplyMeanShiftFilter cXMLParams.GetParamString
             End If
             
         Case "Median"
-            If ShowDialog Then
+            If raiseDialog Then
                 FormMedian.showMedianDialog 50
             Else
                 FormMedian.ApplyMedianFilter cXMLParams.GetParamString
@@ -1719,35 +1450,35 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Pixelate
         
         Case "Color halftone"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormColorHalftone
             Else
                 FormColorHalftone.ColorHalftoneFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
             End If
         
         Case "Crystallize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormCrystallize
             Else
                 FormCrystallize.fxCrystallize cParams.GetLong(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
         
         Case "Fragment"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormFragment
             Else
                 FormFragment.Fragment cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
             End If
         
         Case "Mezzotint"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMezzotint
             Else
                 FormMezzotint.ApplyMezzotintEffect cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
             End If
         
         Case "Mosaic"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormMosaic
             Else
                 FormMosaic.MosaicFilter cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3, 0#)
@@ -1757,14 +1488,14 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Sharpen
         
         Case "Sharpen"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSharpen
             Else
                 FormSharpen.ApplySharpenFilter cParams.GetDouble(1)
             End If
             
         Case "Unsharp mask"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormUnsharpMask
             Else
                 FormUnsharpMask.UnsharpMask cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3), cParams.GetLong(4, 2)
@@ -1777,49 +1508,49 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             MenuAntique
                     
         Case "Diffuse"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormDiffuse
             Else
                 FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
         
         Case "Outline"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormOutlineEffect
             Else
                 FormOutlineEffect.ApplyOutlineEffect cXMLParams.GetParamString()
             End If
         
         Case "Palettize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPalettize
             Else
                 FormPalettize.ApplyPalettizeEffect processParameters
             End If
             
         Case "Portrait glow"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormPortraitGlow
             Else
                 FormPortraitGlow.ApplyPortraitGlow cXMLParams.GetParamString()
             End If
         
         Case "Solarize"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormSolarize
             Else
                 FormSolarize.SolarizeImage cParams.GetByte(1)
             End If
             
         Case "Twins"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormTwins
             Else
                 FormTwins.GenerateTwins cParams.GetLong(1)
             End If
             
         Case "Vignetting"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormVignette
             Else
                 FormVignette.ApplyVignette cXMLParams.GetParamString()
@@ -1829,7 +1560,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'Custom filters
         
         Case "Custom filter"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormCustomFilter
             Else
                 ApplyConvolutionFilter cParams.GetParamString
@@ -1864,7 +1595,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
         'SPECIAL OPERATIONS
         Case "Fade"
-            If ShowDialog Then
+            If raiseDialog Then
                 ShowPDDialog vbModal, FormFadeLast
             Else
                 FormFadeLast.fxFadeLastAction cParams.GetDouble(1), cParams.GetLong(2)
@@ -1873,7 +1604,6 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
         'This secret action is used internally by PD when we need some response from the processor engine - like checking for
         ' non-destructive layer changes - but the user is not actually modifying the image.
         Case "Do nothing"
-        
         
         'Other specialized returns are handled here
         Case Else
@@ -1885,8 +1615,7 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 ' "modify layer" instructions follow the same basic structure: the first parameter is a generic layer header setting
                 ' ID, and the second is a layer setting value.
                 Case "Modify layer"
-                    
-                    If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
+                    If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
                         pdImages(g_CurrentImage).GetActiveLayer.SetGenericLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
                     End If
                 
@@ -1894,23 +1623,18 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
                 ' will ever be triggered is during macro playback.  If encountered, all "modify text layer" instructions follow the same
                 ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
                 Case "Modify text layer"
-                    
-                    If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
-                    
-                        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then
-                            pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
-                        End If
-                    
+                    If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+                        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
                     End If
                     
                 'Non-destructive "quick-fix" type effects follow the same logic as above.
                 Case "Non-destructive effect"
-                    If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
+                    If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
                         pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState cParams.GetLong(1), cParams.GetVariant(2)
                     End If
-            
+                
+                'DEBUG FAILSAFE
                 Case Else
-                    'DEBUG FAILSAFE
                     ' This function should never be passed a process ID it can't parse, but if that happens, ask the user to report the unparsed ID
                     If (Len(processID) <> 0) Then PDMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
             
@@ -1918,124 +1642,54 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
             
     End Select
     
-    'If the user wants us to time this action, display the results now.  (Note - only do this for actions that will change the image
-    ' in some way, as determined by the createUndo param)
-    If g_DisplayTimingReports And (createUndo <> UNDO_NOTHING) Then
-        
-        Dim timingString As String
-        timingString = g_Language.TranslateMessage("Time taken")
-        timingString = timingString & ": " & Format$(CStr(VBHacks.GetTimerDifferenceNow(m_ProcessingTime)), "#0.0000") & " "
-        timingString = timingString & g_Language.TranslateMessage("seconds")
-        
-        Message timingString
-        
-    End If
+    'If the user wants us to time this action, display the results now.  (Note that we only do this for actions that change the image
+    ' in some way, as determined by whether meaningful Undo/Redo data is created.)
+    If g_DisplayTimingReports And (createUndo <> UNDO_NOTHING) Then ReportProcessorTimeTaken m_ProcessingTime
     
-    'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
-    ' as well as the image tab-bar.
-    If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
-        Interface.NotifyImageChanged g_CurrentImage
-    End If
+    'If the current image has been modified, notify the interface manager of the change.  It will handle things like generating
+    ' new thumbnail icons.  (Note that we disable non-essential UI updates while performing batch conversions, to improve performance.)
+    If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageChanged g_CurrentImage
     
-    'If the user canceled the requested action before it completed, we need to roll back the undo data we created
-    If g_cancelCurrentAction Then
-        
-        'Reset any interface elements that may still be in "processing" mode.
-        ReleaseProgressBar
-        Message "Action canceled."
-    
-        'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
-        g_cancelCurrentAction = False
-        
-    'If the user did not cancel the action, and the action modified the image in any way, create an Undo entry now.
-    Else
-    
-        'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:
-        ' 1) If this processor request was just for displaying a dialog
-        ' 2) If macro recording has been disabled for this action.  (This is typically used when an internal PD function
-        '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
-        ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
-        '     during macro playback)
-        If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not ShowDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
-        
-            'An Undo file should be created.  In most cases, the parameters used are automatic (e.g. the image's active layer is
-            ' assumed as the target, etc).  In some rare cases, however, we may need to supply custom parameters to the Undo engine.
-            ' Check for those now.
-            Dim affectedLayerID As Long
-            affectedLayerID = pdImages(g_CurrentImage).GetActiveLayerID
-            
-            'The "Edit > Fade" action is unique, because it does not necessarily affect the active layer (e.g. if the user blurs
-            ' a layer, then switches to a new layer, Fade will affect the *old layer* only).  Find the relevant layer ID
-            ' before calling the Undo engine.
-            If (processID = "Fade") Then
-                Dim tmpDIB As pdDIB
-                pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
-            End If
-        
-            'Create the Undo data
-            pdImages(g_CurrentImage).UndoManager.CreateUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool
-            
-        End If
-    
-    End If
+    'After an action completes, figure out if we need to push a new entry onto the Undo/Redo stack.  (Note that for convenience,
+    ' this sub will also handle roll-back of some UI elements if the current operation was canceled prematurely.)
+    FinalizeUndoRedoState processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
     'From this point onward, we're only going to be finalizing UI updates.  Some of these updates will not trigger
     ' if the central processor is active (by design, to avoid excessive redraws), so to ensure that they trigger *now*,
-    ' we mark the processor as "idle".
+    ' we need to mark the processor as "idle".
     m_Processing = False
     
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
-        
         If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "processor call complete", True
-    
-        'Also, re-enable drag and drop operations
-        g_AllowDragAndDrop = True
-        FormMain.OLEDropMode = 1
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied (via the
     ' ActivatePDImage function, above).  If an undo-related action was *not* applied, it's harder to know if an interface
     ' sync is required.  Run some tests to see if we can skip this step.
     Else
         
-        If (MacroStatus <> MacroBATCH) Then
+        If (Macros.GetMacroStatus <> MacroBATCH) Then
             
-            'If a dialog was raised via PD's ShowDialog function, we may be able to skip a UI sync
-            If ShowDialog Then
+            'If a dialog was raised via PD's raiseDialog function, we may be able to skip a UI sync
+            If raiseDialog Then
             
-                'If the raised dialog was canceled, skip a UI sync entirely
-                If Not (Interface.GetLastShowDialogResult = vbCancel) Then SyncInterfaceToCurrentImage
+                'If the raised dialog was canceled, skip a UI sync entirely, as nothing has changed
+                If Not (Interface.GetLastShowDialogResult = vbCancel) Then Interface.SyncInterfaceToCurrentImage
             
             'If no dialog was shown, a resync is required as we can't guarantee that the image state is unchanged
             Else
-                SyncInterfaceToCurrentImage
+                Interface.SyncInterfaceToCurrentImage
             End If
             
         End If
         
     End If
     
-    'Unlock the main form
-    If (MacroStatus <> MacroBATCH) Then FormMain.Enabled = True
+    'Re-enable the main form and restore things like selection animations and proper control focus
+    SetProcessorUI_Idle processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
-    'Restore focus to whichever control had it previously
-    If (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI m_FocusHWnd
-    
-    'If an update is available, and we haven't displayed a notification yet, do so now
+    'PD periodically checks for background updates.  If one is available, and we haven't displayed a notification yet, do so now
     If g_ShowUpdateNotification Then Updates.DisplayUpdateNotification
-    
-    'Restore the mouse pointer to its default value.
-    ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
-    If (MacroStatus <> MacroBATCH) And (m_NestedProcessingCount <= 1) Then
-    
-        Screen.MousePointer = vbDefault
-        
-        'While we're here, re-enable any running UI animations
-        If (g_OpenImageCount > 0) Then
-            If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
-        End If
-        
-    End If
     
     'Every time this sub is exited, decrement the process counter.  When this value reaches zero, we know we are about to exit
     ' the outermost processor request.
@@ -2047,16 +1701,8 @@ Public Sub Process(ByVal processID As String, Optional ShowDialog As Boolean = F
 
 MainErrHandler:
     
-    'Reset the mouse pointer and allow access to the main form
-    m_Processing = False
-    Screen.MousePointer = vbDefault
-    m_NestedProcessingCount = m_NestedProcessingCount - 1
-    FormMain.Enabled = True
-    
-    'Re-enable any running UI animations
-    If (g_OpenImageCount > 0) Then
-        If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).NotifyAnimationsAllowed True
-    End If
+    'Re-enable the main form and restore things like selection animations and proper control focus
+    SetProcessorUI_Idle processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
         
     'Ensure any pending UI syncs are flushed
     Interface.SyncInterfaceToCurrentImage
@@ -2081,21 +1727,6 @@ MainErrHandler:
         Message "Out of memory.  Function canceled."
         mType = vbExclamation + vbOKOnly + vbApplicationModal
     
-    'Invalid picture error
-    ElseIf (Err.Number = 481) Then
-        On Error GoTo 0
-        addInfo = g_Language.TranslateMessage("Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format." & vbCrLf & vbCrLf & "- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again." & vbCrLf & vbCrLf & "- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.")
-        Message "Invalid image.  Image load canceled."
-        mType = vbExclamation + vbOKOnly + vbApplicationModal
-    
-        'Since we know about this error, there's no need to display the extended box.  Display a smaller one, then exit.
-        PDMsgBox addInfo, mType, "Invalid image file"
-        
-        'On an invalid picture load, there will be a blank form that needs to be dealt with.
-        pdImages(g_CurrentImage).FreeAllImageResources
-        
-        Exit Sub
-    
     'File not found error
     ElseIf (Err.Number = 53) Then
         On Error GoTo 0
@@ -2114,32 +1745,8 @@ MainErrHandler:
     'Create the message box to return the error information
     msgReturn = PDMsgBox("PhotoDemon has experienced an error.  Details on the problem include:" & vbCrLf & vbCrLf & "Error number %1" & vbCrLf & "Description: %2" & vbCrLf & vbCrLf & "%3", mType, "PhotoDemon Error Handler", Err.Number, Err.Description, addInfo)
     
-    'If the message box return value is "Yes", the user has opted to file a bug report.
-    If (msgReturn = vbYes) Then
-    
-        'GitHub requires a login for submitting Issues; check for that first
-        Dim secondaryReturn As VbMsgBoxResult
-    
-        secondaryReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making PhotoDemon better")
-    
-        'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
-        If (secondaryReturn = vbYes) Then
-            'Shell a browser window with the GitHub issue report form
-            OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
-            
-            'Display one final message box with additional instructions
-            PDMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions", Err.Number
-            
-        Else
-            'Shell a browser window with the photodemon.org contact form
-            OpenURL "http://photodemon.org/about/contact/"
-            
-            'Display one final message box with additional instructions
-            PDMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "Also in that box, please include the following error number: %1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions", Err.Number
-            
-        End If
-    
-    End If
+    'If the message box return value is "Yes", the user is willing to file a bug report.
+    If (msgReturn = vbYes) Then FileErrorReport Err.Number
         
 End Sub
 
@@ -2160,6 +1767,19 @@ End Sub
 Public Sub ResetProcessor()
     InitializeProcessor
 End Sub
+
+'Internal reporting method for Processor timer updates.  Pass the start time, and this function will automatically report elapsed time.
+Private Sub ReportProcessorTimeTaken(ByVal srcStartTime As Currency)
+
+    Dim timingString As String
+    timingString = g_Language.TranslateMessage("Time taken")
+    timingString = timingString & ": " & Format$(VBHacks.GetTimerDifferenceNow(srcStartTime), "#0.0000") & " "
+    timingString = timingString & g_Language.TranslateMessage("seconds")
+    
+    Message timingString
+    
+End Sub
+
 
 'I'm now testing a better method for tracking non-destructive changes to image settings.
 
@@ -2296,7 +1916,7 @@ Public Sub FlagInitialNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE
     prevNDFXSetting(ndfxSettingID) = ndfxSettingValue
     
     'As a failsafe against layer changes occurring simultaneous with focus changes, also make a note of the current layer.
-    If prevNDFXLayerID <> targetLayerID Then prevNDFXLayerID = targetLayerID
+    If (prevNDFXLayerID <> targetLayerID) Then prevNDFXLayerID = targetLayerID
     
 End Sub
 
@@ -2317,42 +1937,25 @@ Public Sub FlagFinalNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_F
 End Sub
 
 'Micro processor to be used ONLY for non-destructive FX.  I have deliberately declared it as private to avoid using it elsewhere.
-Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
+Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
 
     'Mark the software processor as busy, but only if we're not showing a dialog.
-    If (Not ShowDialog) Then m_Processing = True
+    If (Not raiseDialog) Then m_Processing = True
     
     'If no layer is specified, assume we're operating on the currently active layer
     If (targetLayerID = -1) Then targetLayerID = pdImages(g_CurrentImage).GetActiveLayerID
     
-    'If the macro recorder is running and this action is marked as recordable, store it in our running stack of processor calls
-    If (MacroStatus = MacroSTART) And recordAction Then
-    
-        'Increase the process count
-        ProcessCount = ProcessCount + 1
-        
-        'Copy the current process's information into the tracking array
-        ReDim Preserve Processes(0 To ProcessCount) As ProcessCall
-        
-        With Processes(ProcessCount)
-            .Id = processID
-            .Dialog = ShowDialog
-            .Parameters = processParameters
-            .MakeUndo = createUndo
-            .Tool = relevantTool
-            .Recorded = recordAction
-        End With
-        
-    End If
+    'Notify the macro recorder that something interesting has happened
+    Macros.NotifyProcessorEvent processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction
     
     'If a dialog is being displayed, forcibly disable Undo creation
-    If ShowDialog Then createUndo = UNDO_NOTHING
+    If raiseDialog Then createUndo = UNDO_NOTHING
     
     'Finally, create a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types when it comes time to use them.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
-    If Len(processParameters) <> 0 Then cParams.SetParamString processParameters
+    If (Len(processParameters) <> 0) Then cParams.SetParamString processParameters
     
     'Perform the actual command processing.
     '
@@ -2380,9 +1983,9 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog 
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
-    If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) And (Not pdImages(g_CurrentImage) Is Nothing) Then
         Interface.NotifyImageChanged g_CurrentImage, targetLayerID
-        ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
+        IconsAndCursors.ChangeAppIcons pdImages(g_CurrentImage).GetImageIcon(False), pdImages(g_CurrentImage).GetImageIcon(True)
     End If
     
     'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:
@@ -2391,7 +1994,7 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional ShowDialog 
     '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
     ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
     '     during macro playback)
-    If (createUndo <> UNDO_NOTHING) And (MacroStatus <> MacroBATCH) And (Not ShowDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) And (Not raiseDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
     
         'An Undo file should be created.  In most cases, the parameters used are automatic (e.g. the image's active layer is
         ' assumed as the target, etc).  In some rare cases, however, we may need to supply custom parameters to the Undo engine.
@@ -2536,11 +2139,11 @@ End Function
 ' error-trap returns.  You will break PD if you mark it as busy and then never release the busy state.
 'NOTE: The optional "changeCursor" boolean can be used to apply a busy cursor if you are marking the program as busy.  That parameter
 ' is ignored when marking the program as NOT busy, so the caller doesn't have to worry about resetting it correctly.
-Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal changeCursor As Boolean = False, Optional ByVal maintainFocus As Boolean = True)
+Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal changeCursor As Boolean = False, Optional ByVal maintainFocus As Boolean = True, Optional ByVal markProcessingState As Boolean = True)
 
     If newState Then
         
-        m_Processing = True
+        If markProcessingState Then m_Processing = True
         
         'Make a note of the window that has keyboard focus, then forcibly remove it
         If maintainFocus Then
@@ -2556,19 +2159,20 @@ Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal change
         
         'Temporarily disable drag-and-drop operations for the main form while external actions are processing
         g_AllowDragAndDrop = False
-        FormMain.OLEDropMode = 0
+        FormMain.OLEDropMode = vbOLEDropNone
         
     Else
         
         m_Processing = False
         Interface.EnableUserInput
         
-        'Always reset the cursor to match, regardless of the passed cursor state
-        Screen.MousePointer = vbDefault
+        'Always reset the cursor to match, regardless of the passed cursor state.
+        ' (Note that the only time we skip this is during batch processing; the batch manager owns the cursor then.)
+        If (Macros.GetMacroStatus <> MacroBATCH) Then Screen.MousePointer = vbDefault
         
         'Re-enable drag and drop operations
         g_AllowDragAndDrop = True
-        FormMain.OLEDropMode = 1
+        FormMain.OLEDropMode = vbOLEDropManual
         
         'Restore keyboard focus to whichever control had it previously
         If maintainFocus And (m_FocusHWnd <> 0) Then g_WindowManager.SetFocusAPI m_FocusHWnd
@@ -2580,3 +2184,356 @@ End Sub
 Public Function IsProgramBusy() As Boolean
     IsProgramBusy = m_Processing
 End Function
+
+Public Function GetLastProcessorID() As String
+    GetLastProcessorID = m_LastProcess.pcID
+End Function
+
+'Look for miscellaneous non-destructive operations that may have occurred since the last process request.  (At present, this is only
+' required for selection actions - and in fact, selection modifications should probably be rewritten to operate like other
+' non-destructive actions in the program!)
+Private Sub CheckForCanvasModifications(ByVal createUndo As PD_UNDO_TYPE)
+
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then
+    
+        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) And (createUndo <> UNDO_EVERYTHING) Then
+        
+            'Ask the Undo engine to return the last selection param string it has on file
+            Dim lastSelParamString As String
+            lastSelParamString = pdImages(g_CurrentImage).UndoManager.GetLastParamString(UNDO_SELECTION)
+            
+            'If such a param string exists, compare it against the current selection param string
+            If (Len(lastSelParamString) <> 0) Then
+            
+                'If the last selection Undo param string does not match the current selection param string, the user has
+                ' modified the selection in some way since the last Undo was created.  Create a new entry now.
+                If Strings.StringsNotEqual(lastSelParamString, pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, True) Then
+                    pdImages(g_CurrentImage).UndoManager.CreateUndoData "Modify selection", pdImages(g_CurrentImage).MainSelection.GetSelectionAsXML, UNDO_SELECTION
+                End If
+            
+            End If
+        
+        End If
+        
+    End If
+        
+End Sub
+
+'Certain processor actions (like rotating the image) require us to remove the active selection.  We could probably work around this
+' in the future, but at present, we simply remove the selection before proceeding.
+Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+
+    If (Not raiseDialog) And (Not pdImages(g_CurrentImage) Is Nothing) Then
+    
+        'Only worry about this step if a selection is currently active
+        If pdImages(g_CurrentImage).IsSelectionActive And (createUndo <> UNDO_SELECTION) Then
+    
+            Dim removeSelectionInAdvance As Boolean
+            removeSelectionInAdvance = False
+            
+            'If this action reorients or resizes the image, mark the selection for removal
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Resize image", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Resize", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Content-aware image resize", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Canvas size", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Fit canvas to layer", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Fit canvas to all layers", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Trim empty borders", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate image 90 clockwise", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate 90 clockwise", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate image 180", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate 180", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate image 90 counter-clockwise", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Rotate 90 counter-clockwise", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Arbitrary image rotation", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Arbitrary rotation", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Flip image vertically", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Flip vertically", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Flip image horizontally", processID, True)
+            removeSelectionInAdvance = removeSelectionInAdvance Or Strings.StringsEqual("Flip horizontally", processID, True)
+            
+            'If selection removal is required, process the removal before proceeding with the original process request
+            If removeSelectionInAdvance Then Processor.Process "Remove selection", , , UNDO_SELECTION
+            
+            'We also need to catch another strange occurrence here.  PD's "Crop" command forcibly clears the selection upon completion.
+            ' This is done as a convenience, as post-crop, a selection is unlikely to be useful.  Unfortunately, this behavior wreaks
+            ' havoc on PD's Undo/Redo engine, because the Undo/Redo engine only saves image state *after* an action has completed.
+            ' So the image's state post-Crop is saved nicely, but pre-Crop it may not be, because the selection is removed out-of-process.
+            ' We also can't remove the selection prior to cropping, because we obviously need its data to process the crop!
+            
+            'Thus the need for this workaround.  Prior to applying a crop, we ask the Undo/Redo engine to forcibly change its previous
+            ' Undo record to an UNDO_EVERYTHING entry.  This will back up both the image and selection state prior to the crop, without
+            ' doing anything problematic like adding dummy entries to the Undo/Redo chain.
+            '
+            '(Note that the initial "Crop" process (e.g. the one generated by the main menu) requests raiseDialog as TRUE, even though
+            ' no dialog is shown.  It does this to trigger some diagnostic functions that determine whether a non-destructive crop can
+            ' be applied; anyway, because of this, we only need to forcibly modify the previous Undo entry if raiseDialog is FALSE.)
+            If Strings.StringsEqual("Crop", processID, True) And (Not raiseDialog) Then pdImages(g_CurrentImage).UndoManager.ForceLastUndoDataToIncludeEverything
+            
+        End If
+        
+    End If
+    
+End Sub
+
+'Applying certain actions to vector layers (e.g. "blurring" a vector layer) requires us to rasterize said layer.  Rasterize dialogs
+' allow the user to completely cancel the current action, which means the return of this function *must* be dealt with!
+'
+'Returns: TRUE if allowed to proceed, FALSE otherwise.  If FALSE is returned, you *must* halt the current operation.
+Private Function CheckRasterizeRequirements(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True) As Boolean
+    
+    'The vast majority of actions either...
+    ' 1) Don't require forcible rasterization, or...
+    ' 2) Are allowed to rasterize to keep the user happy.
+    '
+    'Assume that the user is more likely to proceed than cancel, and we will deal with cancellation states as they arise.
+    CheckRasterizeRequirements = True
+    
+    'TODO!  Migrate all relevant actions to XML params
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    If (Len(processParameters) <> 0) Then cParams.SetParamString processParameters
+    
+    'If the current layer is a vector layer, and the requested operation is *not* vector-safe, raise a rasterization warning.
+    ' This gives the user a chance to back out before permanently ruining the layer.  (Note that the rasterization dialog
+    ' offers a "remember my choice" setting, and if that was previously used, we'll skip the dialog portion entirely.)
+    '
+    '(Also: if this is a showDialog operation, we skip this step, so the user can play around without being bombarded by
+    ' rasterization prompts.)
+    
+    'Start with obvious "this check is pointless" states, like no images being loaded
+    If (g_OpenImageCount > 0) Then
+        
+        Dim i As Long
+        
+        Dim okayToRasterize As VbMsgBoxResult
+        okayToRasterize = vbCancel
+        
+        'First, check for the case of operations that modify an entire image (e.g. "Flatten").  Three criteria must be met:
+        ' 1) No dialog is being shown
+        ' 2) The current layer must contain one or more vector layers
+        ' 3) The Undo type must be UNDO_IMAGE or UNDO_EVERYTHING.  Header-only Undo operations (e.g. "Canvas Size") do not
+        '    affect vector layers in a destructive manner.
+        Dim rasterizeImagePromptNeeded As Boolean
+        rasterizeImagePromptNeeded = (Not raiseDialog)
+        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (pdImages(g_CurrentImage).GetNumOfVectorLayers > 0)
+        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING))
+        
+        'If this action requires rasterization, let's now check for a few exceptions.
+        ' 1) Layer merge operations require us to make a full Undo/Redo copy of the entire image stack, because layer IDs are directly
+        '    affected by the result (e.g. one ID goes missing after the merge).  This means they use undo type "UNDO_IMAGE".  However,
+        '    if an image contains vector layers, we only need to display a rasterize prompt if one or more of the *merged layers* are
+        '    vector layers.  (Merging two raster layers in an image with other vector layers shouldn't display a prompt.)
+        '
+        'Handle such exceptions now.
+        If rasterizeImagePromptNeeded And (Strings.StringsEqual(processID, "Merge layer down", True) Or Strings.StringsEqual(processID, "Merge layer up", True) Or Strings.StringsEqual(processID, "Merge visible layers", True)) Then
+            
+            'For each case, determine if a vector layer is being merged, and if not, reset rasterizeImagePromptNeeded.
+            ' (These checks must be handled manually, as the layers potentially involved vary by action - e.g. "Merge layer down"
+            '  affects different layers than "Merge visible layers".)
+            If Strings.StringsEqual(processID, "Merge layer down", True) Then
+                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerRaster Then
+                    rasterizeImagePromptNeeded = False
+                End If
+                
+            ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
+                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerRaster Then
+                    rasterizeImagePromptNeeded = False
+                End If
+            
+            ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
+                
+                rasterizeImagePromptNeeded = False
+                For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+                    
+                    'If a vector layer is found, restore rasterizeImagePromptNeeded and exit the loop
+                    If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility And pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
+                        rasterizeImagePromptNeeded = True
+                        Exit For
+                    End If
+                
+                Next i
+            
+            End If
+            
+        End If
+        
+        'If we need to do a "special-case whole-image" rasterization, do so now.
+        If rasterizeImagePromptNeeded Then
+            
+            okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType, , True)
+            If (okayToRasterize = vbYes) Then
+                
+                'When merging layers, only the merged layers need to be rasterized.  (We want to perform as few rasterizations
+                ' as possible, so we manually handle each merge case specially.)
+                If Strings.StringsEqual(processID, "Merge layer down", True) Then
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) - 1
+                    
+                ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) + 1
+                    
+                ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
+                    For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
+                        If pdImages(g_CurrentImage).GetLayerByIndex(i).GetLayerVisibility And pdImages(g_CurrentImage).GetLayerByIndex(i).IsLayerVector Then
+                            Layers.RasterizeLayer i
+                        End If
+                    Next i
+                        
+                'For any other case, rasterize all vector layers
+                Else
+                    Layers.RasterizeLayer -1
+                End If
+                
+            'If the user doesn't want rasterization, bail immediately.
+            Else
+                CheckRasterizeRequirements = False
+            End If
+            
+        End If
+        
+        'At this point, we have dealt with "full-image" modifications - like "Flatten" or "Merge layers" - that may require rasterization.
+        
+        'Next, we want to deal with operations that modify just *one* layer.  (These are much easier to handle.)
+        If CheckRasterizeRequirements And (Not rasterizeImagePromptNeeded) Then
+            
+            rasterizeImagePromptNeeded = (Not raiseDialog)
+            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And pdImages(g_CurrentImage).GetActiveLayer.IsLayerVector
+            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (createUndo = UNDO_LAYER)
+            
+            'As before, display a "do you want to rasterize?" prompt as necessary
+            If rasterizeImagePromptNeeded Then
+                
+                okayToRasterize = Layers.AskIfOkayToRasterizeLayer(pdImages(g_CurrentImage).GetActiveLayer.GetLayerType)
+                
+                'If rasterization is okay, apply it immediately
+                If (okayToRasterize = vbYes) Then
+                    Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
+                
+                'If the user doesn't want rasterization, bail immediately.
+                Else
+                    CheckRasterizeRequirements = False
+                End If
+                
+            End If
+            
+        End If
+        
+    End If
+    
+End Function
+
+'Processor functions that need to enable/disable various UI elements can use these simplified wrappers.
+'
+'Calls to SetProcessorUI_Busy() *MUST ALWAYS* be paired with subsequent calls to SetProcessorUI_Idle(), or the UI will remain locked.
+Private Sub SetProcessorUI_Busy(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+    
+    'The generic MarkProgramBusyState() function will handle most of this for us, but we first need to figure out if it's appropriate
+    ' to do things like display an hourglass cursor.
+    Dim useBusyCursor As Boolean: useBusyCursor = False
+    
+    'If we are modifying the image in some way, and the action is likely to take awhile, display a busy cursor.
+    If (Not raiseDialog) Then
+        If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_IMAGE_VECTORSAFE) Or (createUndo = UNDO_LAYER) Then useBusyCursor = True
+    End If
+    
+    'Note that the processor is currently running; some UI tasks use this to suspend painting ops.  (If we're just being used as
+    ' a thin wrapper to raise a dialog, we'll skip this step, as it's pointless!)
+    If (Not raiseDialog) Then m_Processing = True
+    
+    Processor.MarkProgramBusyState True, useBusyCursor, False, (Not raiseDialog)
+    
+End Sub
+
+Private Sub SetProcessorUI_Idle(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+    
+    m_Processing = False
+    m_NestedProcessingCount = m_NestedProcessingCount - 1
+    Processor.MarkProgramBusyState False, True, False
+    
+    'Manually handle focus restoration
+    If (m_NestedProcessingCount = 0) And (m_FocusHWnd <> 0) Then
+        g_WindowManager.SetFocusAPI m_FocusHWnd
+        m_FocusHWnd = 0
+    End If
+    
+End Sub
+
+'After a processor action completes, call this function to push a new entry onto the Undo/Redo stack (as necessary)
+Private Sub FinalizeUndoRedoState(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True)
+
+    'If the user canceled the requested action before it completed, we may need to manually roll back some processor phases
+    If g_cancelCurrentAction Then
+        
+        'Reset any interface elements that may still be in "processing" mode
+        ProgressBars.ReleaseProgressBar
+        Message "Action canceled."
+    
+        'Reset the cancel trigger; if this is not done, the user will not be able to cancel subsequent actions.
+        g_cancelCurrentAction = False
+        
+    'If the user did not cancel the current process request, and this request modified the image, push the current image state
+    ' onto the Undo/Redo stack
+    Else
+    
+        'Generally, we assume that actions want us to create Undo data for them.  However, there are a few known exceptions:
+        ' 1) If this processor request was a UI-only action (e.g. displaying a dialog)
+        ' 2) If macro recording has been forcibly disabled.  (This is typically used when an internal PD function
+        '     utilizes other functions, but we only want a single Undo point created for the full set of actions.)
+        ' 3) If we are in the midst of playing back a recorded macro.  (Undo/Redo entries take time and memory to process,
+        '     so we ignore them during macro playback)
+        If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) And recordAction Then
+            If (Not pdImages(g_CurrentImage) Is Nothing) Then
+                
+                'In most cases, the Undo/Redo engine can automatically figure out what layer is affected by the current action.
+                ' In some rare cases, however, the affected portion of the image may not be obvious.
+                '
+                'Let's start by grabbing the active layer ID.  (We cache it in case subsequent modifications cause it to change.)
+                Dim affectedLayerID As Long
+                affectedLayerID = pdImages(g_CurrentImage).GetActiveLayerID
+                
+                'The "Edit > Fade" action is unique, because it does not necessarily affect the active layer (e.g. if the user blurs
+                ' a layer, then switches to a new layer, Fade will affect the *old layer* only).  Find the relevant layer ID
+                ' before calling the Undo engine.
+                If Strings.StringsEqual(processID, "Fade", True) Then
+                    Dim tmpDIB As pdDIB
+                    pdImages(g_CurrentImage).UndoManager.FillDIBWithLastUndoCopy tmpDIB, affectedLayerID, , True
+                End If
+            
+                'Create the Undo data
+                pdImages(g_CurrentImage).UndoManager.CreateUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool
+            
+            End If
+        End If
+    
+    End If
+    
+End Sub
+
+'If the processor experiences an error, and the user is willing to file a bug report, this function will trigger
+Private Sub FileErrorReport(ByVal errNumber As Long)
+
+    'GitHub requires a login for submitting Issues; check for that first
+    Dim secondaryReturn As VbMsgBoxResult
+
+    secondaryReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNo, "Thanks for making PhotoDemon better")
+
+    'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
+    If (secondaryReturn = vbYes) Then
+        'Shell a browser window with the GitHub issue report form
+        OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
+        
+        'Display one final message box with additional instructions
+        PDMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions", errNumber
+        
+    Else
+        'Shell a browser window with the photodemon.org contact form
+        OpenURL "http://photodemon.org/about/contact/"
+        
+        'Display one final message box with additional instructions
+        PDMsgBox "PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error." & vbCrLf & vbCrLf & "Also in that box, please include the following error number: %1" & vbCrLf & vbCrLf & "When finished, click the Submit button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "Bug report instructions", errNumber
+        
+    End If
+    
+End Sub

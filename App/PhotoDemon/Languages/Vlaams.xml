@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.258</langversion>
+<langversion>6.7.259</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1798,11 +1798,6 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>Verwijder selectie</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1817,21 +1812,6 @@ A.U.B. rapporteer deze bug via de Help -> Indienen Bug Report menu.</translation
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>Tijd in beslag genomen</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>seconden</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Actie geannuleerd.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Er is niet genoeg geheugen beschikbaar om deze bewerking voort te zetten. Gelieve systeemgeheugen (RAM) vrij te maken door het afsluiten van onnodige programma's - Zeker je web browser , als deze open is - probeer het dan opnieuw</translation>
 </phrase>
@@ -1839,29 +1819,6 @@ A.U.B. rapporteer deze bug via de Help -> Indienen Bug Report menu.</translation
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Onvoldoende geheugen. Functie geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Helaas blijkt dit afbeeldingsbestand ongeldig te zijn. Dit kan gebeuren als een bestand geen afbeeldingsgegevens bevat, of als het afbeeldingsgegevens bevat in een niet-ondersteunde indeling.
-
-- Als u deze foto hebt gedownload via het internet, kan de download voortijdig beëindigd zijn. Probeer het downloaden van de afbeelding opnieuw.
-
-- Als dit afbeeldingsbestand afkomstig is van een digitale camera, scanner of een ander beeldbewerkingsprogramma, is het mogelijk dat PhotoDemon gewoon dit bepaald bestandsformaat niet begrijpt. Sla de afbeelding op in een generiek formaat (zoals JPEG of PNG), en probeer dan weer terug.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Ongeldige afbeelding. Afbeelding laden geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Ongeldig afbeeldingsbestand</translation>
 </phrase>
 
 <phrase>
@@ -1913,52 +1870,13 @@ Beschrijving: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Hartelijk dank voor het indienen van een foutenrapport. Om ervoor te zorgen dat uw bug is zo snel mogelijk opgelost wordt, heeft PhotoDemon je nodig om een vraag te beantwoorden.
-
-Hebt u een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord " Nee".)</translation>
+<original>Time taken</original>
+<translation>Tijd in beslag genomen</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Bedankt voor het verbeteren van PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon heeft automatisch een GitHub bug report webpagina voor u geopend . Vul in het vak Titel, volgend foutnummer in met een korte beschrijving van het probleem: %1
-
-Alle extra details die u in het grote tekstvak opgeeft, met inbegrip van de stappen die leidden tot deze fout, zullen helpen het om het probleem zo snel mogelijk op te lossen.
-Wanneer u klaar bent, klikt u op de Submit New Issue knop. Dank je wel!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub bug report instructies</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon heeft automatisch een bug rapport webpagina voor u geopend. In het vak Opmerking, beschrijf je de stappen die hebben geleid tot deze error.
-
-Tevens, gelieve in dat vak het volgende fout nummer te noteren: %1
-
-Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>Bug report instructies</translation>
+<original>seconds</original>
+<translation>seconden</translation>
 </phrase>
 
 <phrase>
@@ -2116,7 +2034,66 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 <translation>tint</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>Verwijder selectie</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Actie geannuleerd.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Hartelijk dank voor het indienen van een foutenrapport. Om ervoor te zorgen dat uw bug is zo snel mogelijk opgelost wordt, heeft PhotoDemon je nodig om een vraag te beantwoorden.
+
+Hebt u een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord " Nee".)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Bedankt voor het verbeteren van PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon heeft automatisch een GitHub bug report webpagina voor u geopend . Vul in het vak Titel, volgend foutnummer in met een korte beschrijving van het probleem: %1
+
+Alle extra details die u in het grote tekstvak opgeeft, met inbegrip van de stappen die leidden tot deze fout, zullen helpen het om het probleem zo snel mogelijk op te lossen.
+Wanneer u klaar bent, klikt u op de Submit New Issue knop. Dank je wel!</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>GitHub bug report instructies</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon heeft automatisch een bug rapport webpagina voor u geopend. In het vak Opmerking, beschrijf je de stappen die hebben geleid tot deze error.
+
+Tevens, gelieve in dat vak het volgende fout nummer te noteren: %1
+
+Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>Bug report instructies</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -14997,10 +14974,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>

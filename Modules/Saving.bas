@@ -28,7 +28,7 @@ Option Explicit
 Public Function IsCommonDialogRequired(ByRef srcImage As pdImage) As Boolean
     
     'At present, this heuristic is pretty simple: if the image hasn't been saved to disk before, require a Save As instead.
-    If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
+    If Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
         IsCommonDialogRequired = True
     Else
         IsCommonDialogRequired = False
@@ -81,7 +81,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
     Dim needToDisplayDialog As Boolean: needToDisplayDialog = forceOptionsDialog
     
     'Make sure we're not in the midst of a batch process operation
-    If (MacroStatus <> MacroBATCH) Then
+    If (Macros.GetMacroStatus <> MacroBATCH) Then
         
         'See if this format even supports dialogs...
         If g_ImageFormats.IsExportDialogSupported(saveFormat) Then
@@ -92,12 +92,12 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
             
                 'See if the user has already seen this dialog...
                 dictEntry = "HasSeenExportDialog" & saveExtension
-                needToDisplayDialog = Not srcImage.imgStorage.GetEntry_Boolean(dictEntry, False)
+                needToDisplayDialog = Not srcImage.ImgStorage.GetEntry_Boolean(dictEntry, False)
                 
                 'If the user has seen a dialog, we'll perform one last failsafe check.  Make sure that the exported format's
                 ' parameter string exists; if it doesn't, we need to prompt them again.
                 dictEntry = "ExportParams" & saveExtension
-                If (Not needToDisplayDialog) And (Len(srcImage.imgStorage.GetEntry_String(dictEntry, vbNullString)) = 0) Then
+                If (Not needToDisplayDialog) And (Len(srcImage.ImgStorage.GetEntry_String(dictEntry, vbNullString)) = 0) Then
                     #If DEBUGMODE = 1 Then
                         pdDebug.LogAction "WARNING!  PhotoDemon_SaveImage found an image where HasSeenExportDialog = TRUE, but ExportParams = null.  Fix this!"
                     #End If
@@ -128,7 +128,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         'After a successful dialog invocation, immediately save the metadata parameters to the parent pdImage object.
         ' ExifTool will handle those settings separately, independent of the format-specific export engine.
         If Saving.GetExportParamsFromDialog(srcImage, saveFormat, saveParameters, metadataParameters) Then
-            srcImage.imgStorage.AddEntry "MetadataSettings", metadataParameters
+            srcImage.ImgStorage.AddEntry "MetadataSettings", metadataParameters
             
         'If the user cancels the dialog, exit immediately
         Else
@@ -139,8 +139,8 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         
     Else
         dictEntry = "ExportParams" & saveExtension
-        saveParameters = srcImage.imgStorage.GetEntry_String(dictEntry, vbNullString)
-        metadataParameters = srcImage.imgStorage.GetEntry_String("MetadataSettings", vbNullString)
+        saveParameters = srcImage.ImgStorage.GetEntry_String(dictEntry, vbNullString)
+        metadataParameters = srcImage.ImgStorage.GetEntry_String("MetadataSettings", vbNullString)
     End If
     
     'As saving can be somewhat lengthy for large images and/or complex formats, lock the UI now.  Note that we *must* call
@@ -160,20 +160,20 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         'The file was saved successfully!  Copy the save parameters into the parent pdImage object; subsequent "save" actions
         ' can use these instead of querying the user again.
         dictEntry = "ExportParams" & saveExtension
-        srcImage.imgStorage.AddEntry dictEntry, saveParameters
+        srcImage.ImgStorage.AddEntry dictEntry, saveParameters
         
         'If a dialog was displayed, note that as well
         If (needToDisplayDialog) Then
             dictEntry = "HasSeenExportDialog" & saveExtension
-            srcImage.imgStorage.AddEntry dictEntry, True
+            srcImage.ImgStorage.AddEntry dictEntry, True
         End If
         
         'Similarly, remember the file's location and selected name for future saves
         Dim cFile As pdFSO
         Set cFile = New pdFSO
-        srcImage.imgStorage.AddEntry "CurrentLocationOnDisk", dstPath
-        srcImage.imgStorage.AddEntry "OriginalFileName", cFile.GetFilename(dstPath, True)
-        srcImage.imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(dstPath)
+        srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", dstPath
+        srcImage.ImgStorage.AddEntry "OriginalFileName", cFile.GetFilename(dstPath, True)
+        srcImage.ImgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(dstPath)
         
         'Update the parent image's save state.
         If (saveFormat = PDIF_PDI) Then srcImage.SetSaveState True, pdSE_SavePDI Else srcImage.SetSaveState True, pdSE_SaveFlat
@@ -182,15 +182,15 @@ Public Function PhotoDemon_SaveImage(ByRef srcImage As pdImage, ByVal dstPath As
         ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
         ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
         ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
-        If g_ExifToolEnabled And (Not (srcImage.imgMetadata Is Nothing)) And (Not (saveFormat = PDIF_PDI)) Then
-            srcImage.imgMetadata.WriteAllMetadata dstPath, srcImage
+        If g_ExifToolEnabled And (Not (srcImage.ImgMetadata Is Nothing)) And (Not (saveFormat = PDIF_PDI)) Then
+            srcImage.ImgMetadata.WriteAllMetadata dstPath, srcImage
         End If
         
         'With all save work complete, we can now update various UI bits to reflect the new image.  Note that these changes are
         ' only applied if we are *not* in the midst  of a batch conversion.
-        If (MacroStatus <> MacroBATCH) Then
+        If (Macros.GetMacroStatus <> MacroBATCH) Then
             g_RecentFiles.MRU_AddNewFile dstPath, srcImage
-            SyncInterfaceToCurrentImage
+            Interface.SyncInterfaceToCurrentImage
             Interface.NotifyImageChanged g_CurrentImage
         End If
         
@@ -248,7 +248,7 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
     'If the image is being saved to a layered format (like multipage TIFF), various parts of the export engine may
     ' want to inject useful information into the finished file (e.g. ExifTool can append things like page names).
     ' Mark the outgoing file now.
-    srcImage.imgStorage.AddEntry "MetadataSettings", metadataParameters
+    srcImage.ImgStorage.AddEntry "MetadataSettings", metadataParameters
     MarkMultipageExportStatus srcImage, saveFormat, saveParameters, metadataParameters
     
     'With all save parameters collected, we can offload the rest of the save process to per-format save functions.
@@ -260,7 +260,7 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
         ' (Note: I don't like embedding metadata in a separate step, but that's a necessary evil of routing all metadata handling
         ' through an external plugin.  Exiftool requires an existant file to be used as a target, and an existant metadata file
         ' to be used as its source.  It cannot operate purely in-memory - but hey, that's why it's asynchronous!)
-        If g_ExifToolEnabled And (Not (srcImage.imgMetadata Is Nothing)) And (Not (saveFormat = PDIF_PDI)) Then
+        If g_ExifToolEnabled And (Not (srcImage.ImgMetadata Is Nothing)) And (Not (saveFormat = PDIF_PDI)) Then
             
             'Sometimes, PD may process images faster than ExifTool can parse the source file's metadata.
             ' Check for this, and pause until metadata processing catches up.
@@ -280,7 +280,7 @@ Public Function PhotoDemon_BatchSaveImage(ByRef srcImage As pdImage, ByVal dstPa
                 
             End If
             
-            srcImage.imgMetadata.WriteAllMetadata dstPath, srcImage
+            srcImage.ImgMetadata.WriteAllMetadata dstPath, srcImage
             
             Do While ExifTool.IsVerificationModeActive
                 Sleep 50
@@ -312,7 +312,7 @@ Private Sub MarkMultipageExportStatus(ByRef srcImage As pdImage, ByVal outputPDI
     End If
     
     'If the outgoing image is multipage, add a special dictionary entry that other functions can easily test.
-    srcImage.imgStorage.AddEntry "MultipageExportActive", saveIsMultipage
+    srcImage.ImgStorage.AddEntry "MultipageExportActive", saveIsMultipage
     
 End Sub
 
@@ -525,12 +525,12 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal pdiPath A
     Next i
     
     'Next, if the "write metadata" flag has been set, and the image has metadata, add a metadata entry to the file.
-    If (Not writeHeaderOnlyFile) And WriteMetadata And Not (srcPDImage.imgMetadata Is Nothing) Then
+    If (Not writeHeaderOnlyFile) And WriteMetadata And Not (srcPDImage.ImgMetadata Is Nothing) Then
     
-        If srcPDImage.imgMetadata.HasMetadata Then
+        If srcPDImage.ImgMetadata.HasMetadata Then
             nodeIndex = pdiWriter.AddNode("pdMetadata_Raw", -1, 2)
-            pdiWriter.AddNodeDataFromString nodeIndex, True, srcPDImage.imgMetadata.GetOriginalXMLMetadataString, compressHeaders
-            pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.imgMetadata.GetSerializedXMLData, compressHeaders
+            pdiWriter.AddNodeDataFromString nodeIndex, True, srcPDImage.ImgMetadata.GetOriginalXMLMetadataString, compressHeaders
+            pdiWriter.AddNodeDataFromString nodeIndex, False, srcPDImage.ImgMetadata.GetSerializedXMLData, compressHeaders
         End If
     
     End If
@@ -804,7 +804,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
         'EVERYTHING, meaning a full copy of the pdImage stack and any selection data
         Case UNDO_EVERYTHING
             undoSuccess = Saving.SavePhotoDemonImage(srcPDImage, dstUndoFilename, True, PD_CE_Lz4, undoCmpEngine, False, False, undoCmpLevel, , True)
-            srcPDImage.mainSelection.WriteSelectionToFile dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel
+            srcPDImage.MainSelection.WriteSelectionToFile dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel
             
         'A full copy of the pdImage stack
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
@@ -824,7 +824,7 @@ Public Function SaveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
             
         'Selection data only
         Case UNDO_SELECTION
-            undoSuccess = srcPDImage.mainSelection.WriteSelectionToFile(dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel)
+            undoSuccess = srcPDImage.MainSelection.WriteSelectionToFile(dstUndoFilename & ".selection", undoCmpEngine, undoCmpLevel, undoCmpEngine, undoCmpLevel)
             
         'Anything else (this should never happen, but good to have a failsafe)
         Case Else

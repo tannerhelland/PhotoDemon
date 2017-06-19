@@ -204,7 +204,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
-            If Not dstImage.imgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
+            If Not dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
                 
                 'For invalid metadata, do not reject the rest of the PDI file.  Instead, just warn the user and carry on.
                 Debug.Print "PDI Metadata Node rejected by metadata parser."
@@ -227,7 +227,7 @@ Public Function LoadPhotoDemonImage(ByVal pdiPath As String, ByRef dstDIB As pdD
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
-            dstImage.imgMetadata.RecreateFromSerializedXMLData retString
+            dstImage.ImgMetadata.RecreateFromSerializedXMLData retString
         
         End If
         
@@ -730,21 +730,21 @@ Public Function LoadSVG(ByVal imagePath As String, ByRef dstDIB As pdDIB, ByRef 
         #End If
         
         'Hang out while we wait for ExifTool to finish processing this image's metadata
-        Do While (Not dstImage.imgMetadata.HasMetadata)
+        Do While (Not dstImage.ImgMetadata.HasMetadata)
             DoEvents
             If ExifTool.IsMetadataFinished Then
-                dstImage.imgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, dstImage.imageID
+                dstImage.ImgMetadata.LoadAllMetadata ExifTool.RetrieveMetadataString, dstImage.imageID
             End If
         Loop
         
         'Retrieve the target SVG's width and height
         Dim svgWidth As String, svgHeight As String
-        svgWidth = dstImage.imgMetadata.GetTagValue("SVG:ImageWidth", vbBinaryCompare, True)
-        svgHeight = dstImage.imgMetadata.GetTagValue("SVG:ImageHeight", vbBinaryCompare, True)
+        svgWidth = dstImage.ImgMetadata.GetTagValue("SVG:ImageWidth", vbBinaryCompare, True)
+        svgHeight = dstImage.ImgMetadata.GetTagValue("SVG:ImageHeight", vbBinaryCompare, True)
         
         'If there's a viewbox, grab it too
         Dim svgHasViewbox As Boolean
-        svgHasViewbox = dstImage.imgMetadata.DoesTagExistFullName("SVG:ViewBox", , vbBinaryCompare)
+        svgHasViewbox = dstImage.ImgMetadata.DoesTagExistFullName("SVG:ViewBox", , vbBinaryCompare)
         
         Dim svgWidthL As Long, svgHeightL As Long
         If (Len(svgWidth) <> 0) Then
@@ -818,7 +818,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         'UNDO_EVERYTHING: a full copy of both the pdImage stack and all selection data is wanted
         Case UNDO_EVERYTHING
             ImageImporter.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
-            pdImages(g_CurrentImage).mainSelection.ReadSelectionFromFile undoFile & ".selection"
+            pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
         'UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE: a full copy of the pdImage stack is wanted
@@ -894,7 +894,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
         '                 Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_SELECTION, we don't have to do
         '                 any special processing.
         Case UNDO_SELECTION
-            pdImages(g_CurrentImage).mainSelection.ReadSelectionFromFile undoFile & ".selection"
+            pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
             
@@ -910,20 +910,20 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If selectionDataLoaded Then
     
         'Activate the selection as necessary
-        pdImages(g_CurrentImage).SetSelectionActive pdImages(g_CurrentImage).mainSelection.IsLockedIn
+        pdImages(g_CurrentImage).SetSelectionActive pdImages(g_CurrentImage).MainSelection.IsLockedIn
         
         'Synchronize the text boxes as necessary
-        SyncTextToCurrentSelection g_CurrentImage
+        Selections.SyncTextToCurrentSelection g_CurrentImage
     
     End If
     
     'If a selection is active, request a redraw of the selection mask before rendering the image to the screen.  (If we are
     ' "undoing" an action that changed the image's size, the selection mask will be out of date.  Thus we need to re-render
     ' it before rendering the image or OOB errors may occur.)
-    If pdImages(g_CurrentImage).IsSelectionActive Then pdImages(g_CurrentImage).mainSelection.RequestNewMask
+    If pdImages(g_CurrentImage).IsSelectionActive Then pdImages(g_CurrentImage).MainSelection.RequestNewMask
         
     'Render the image to the screen, if requested
-    If Not suspendRedraw Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    If (Not suspendRedraw) Then ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -996,7 +996,7 @@ Public Function CascadeLoadGenericImage(ByRef srcFile As String, ByRef dstImage 
             dstImage.SetOriginalColorDepth dstDIB.GetOriginalColorDepth
             
             If (dstDIB.GetOriginalFormat = PDIF_PNG) And (dstDIB.GetBackgroundColor <> -1) Then
-                dstImage.imgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
+                dstImage.ImgStorage.AddEntry "pngBackgroundColor", dstDIB.GetBackgroundColor
             End If
             
         End If
@@ -1142,7 +1142,7 @@ Public Function ApplyPostLoadICCHandling(ByRef targetDIB As pdDIB, Optional ByRe
             If (targetImage Is Nothing) Then
                 colorManagementNeeded = True
             Else
-                colorManagementNeeded = (Not targetImage.imgStorage.DoesKeyExist("Tone-mapping"))
+                colorManagementNeeded = (Not targetImage.ImgStorage.DoesKeyExist("Tone-mapping"))
             End If
         
             If colorManagementNeeded Then
@@ -1199,7 +1199,7 @@ Public Function SyncRecoveredAutosaveImage(ByRef srcFile As String, ByRef srcIma
         pdDebug.LogAction "SyncRecoveredAutosaveImage invoked; attempting to recover usable data from the Autosave database..."
     #End If
     
-    srcImage.imgStorage.AddEntry "CurrentLocationOnDisk", srcFile
+    srcImage.ImgStorage.AddEntry "CurrentLocationOnDisk", srcFile
             
     'Ask the AutoSave engine to synchronize this image's data against whatever it can recover from the Autosave database
     Autosaves.AlignLoadedImageWithAutosave srcImage
@@ -1207,7 +1207,7 @@ Public Function SyncRecoveredAutosaveImage(ByRef srcFile As String, ByRef srcIma
     'This is a bit wacky, but - the Autosave engine will automatically update the "locationOnDisk" attribute based on
     ' information inside the Autosave recovery database.  We thus want to overwrite the original srcFile value (which points
     ' at a temp file copy of whatever we're attempting to recover), with the new, recovered srcFile value.
-    srcFile = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    srcFile = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     
     SyncRecoveredAutosaveImage = True
     
@@ -1234,9 +1234,9 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     
         'The calling routine didn't specify a custom image name, so we can assume this is a normal image file.
         'Prep all default attributes using the filename itself.
-        targetImage.imgStorage.AddEntry "CurrentLocationOnDisk", srcFile
-        targetImage.imgStorage.AddEntry "OriginalFileName", cFile.GetFilename(srcFile, True)
-        targetImage.imgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(srcFile)
+        targetImage.ImgStorage.AddEntry "CurrentLocationOnDisk", srcFile
+        targetImage.ImgStorage.AddEntry "OriginalFileName", cFile.GetFilename(srcFile, True)
+        targetImage.ImgStorage.AddEntry "OriginalFileExtension", cFile.GetFileExtension(srcFile)
         
         'Note the image's save state; PDI files are specially marked as having been "saved losslessly".
         If (targetImage.GetCurrentFileFormat = PDIF_PDI) Then
@@ -1249,9 +1249,9 @@ Public Function GenerateExtraPDImageAttributes(ByRef srcFile As String, ByRef ta
     
         'The calling routine has specified a file name.  Assume this is a special case, and force a Save As...
         ' dialog in the future by not specifying a location on disk
-        targetImage.imgStorage.AddEntry "CurrentLocationOnDisk", ""
-        targetImage.imgStorage.AddEntry "OriginalFileName", suggestedFilename
-        targetImage.imgStorage.AddEntry "OriginalFileExtension", ""
+        targetImage.ImgStorage.AddEntry "CurrentLocationOnDisk", ""
+        targetImage.ImgStorage.AddEntry "OriginalFileName", suggestedFilename
+        targetImage.ImgStorage.AddEntry "OriginalFileExtension", ""
         
         'For this special case, mark the image as being totally unsaved; this forces us to eventually show a save prompt
         targetImage.SetSaveState False, pdSE_AnySave
@@ -1291,10 +1291,10 @@ Public Sub ApplyPostLoadUIChanges(ByRef srcFile As String, ByRef srcImage As pdI
     End If
     
     'Notify the UI manager that it now has one more image to deal with
-    If (MacroStatus <> MacroBATCH) Then Interface.NotifyImageAdded srcImage.imageID
+    If (Macros.GetMacroStatus <> MacroBATCH) Then Interface.NotifyImageAdded srcImage.imageID
                             
     'Add this file to the MRU list (unless specifically told not to)
-    If addToRecentFiles And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile srcFile, srcImage
+    If addToRecentFiles And (Macros.GetMacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile srcFile, srcImage
     
 End Sub
 
@@ -1472,7 +1472,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
-            If Not dstImage.imgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
+            If Not dstImage.ImgMetadata.LoadAllMetadata(retString, dstImage.imageID) Then
                 
                 'For invalid metadata, do not reject the rest of the PDI file.  Instead, just warn the user and carry on.
                 Debug.Print "PDI Metadata Node rejected by metadata parser."
@@ -1499,7 +1499,7 @@ Private Function LoadPDI_Legacy(ByVal pdiPath As String, ByRef dstDIB As pdDIB, 
             
             'Pass the string to the parent image's metadata handler, which will parse the XML data and prepare a matching
             ' internal metadata struct.
-            dstImage.imgMetadata.RecreateFromSerializedXMLData retString
+            dstImage.ImgMetadata.RecreateFromSerializedXMLData retString
         
         End If
         

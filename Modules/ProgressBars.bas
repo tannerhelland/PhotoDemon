@@ -52,7 +52,7 @@ End Function
 
 Public Sub SetProgBarMax(ByVal pbVal As Long)
     
-    If (MacroStatus <> MacroBATCH) And (pbVal <> 0) Then
+    If (Macros.GetMacroStatus <> MacroBATCH) And (pbVal <> 0) Then
         
         Dim prevProgBarValue As Long
         
@@ -90,7 +90,7 @@ End Sub
 
 Public Sub SetProgBarVal(ByVal pbVal As Long)
     
-    If (MacroStatus <> MacroBATCH) Then
+    If (Macros.GetMacroStatus <> MacroBATCH) Then
         
         If (Not curProgBar Is Nothing) Then
             curProgBar.Value = pbVal

@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2546</langversion>
+<langversion>6.8.2547</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1802,11 +1802,6 @@ To programı üzerine kayıp olarak kutlandı) plug-in dizine ve programı yükl
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>Kaldır seçimi</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1821,21 +1816,6 @@ Yardım aracılığıyla bu hatayı rapor edin -> Hata Raporu menüsünü gönde
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>Geçen süre</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>saniye</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Eylem iptal edildi.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Bu işleme devam etmek yeterli bellek yok. gereksiz programları kapatarak sistem belleği (RAM) kadar ücretsiz Lütfen - özellikle web tarayıcınızı, açık ise - daha sonra eylemi yeniden deneyin.</translation>
 </phrase>
@@ -1843,29 +1823,6 @@ Yardım aracılığıyla bu hatayı rapor edin -> Hata Raporu menüsünü gönde
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Bellek yetersiz. İşlev iptal edildi.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Ne yazık ki, bu resim dosyası geçersiz görünüyor. Bir dosya görüntü verileri içermiyor oluşabilir, ya da internetten bu görseli indirilen Eğer desteklenmeyen bir format.
-
-- görüntü verilerini içeriyorsa, indir erken sonlandırıldı olabilir. Görüntüyü indirmeyi deneyin again.
-
-- bu görüntü dosyası bir dijital fotoğraf makinesi, tarayıcı veya diğer görüntü düzenleme programı geldiyse, bu PhotoDemon sadece bu özel dosya biçimini anlamıyor mümkündür. genel biçimi (örneğin JPEG veya PNG gibi) görüntü kaydetmek, lütfen daha sonra tekrar yükleyin.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Geçersiz resim. Görüntü yükü iptal edildi.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Geçersiz resim dosyası</translation>
 </phrase>
 
 <phrase>
@@ -1917,53 +1874,13 @@ Açıklama: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Bir hata raporu gönderdiğiniz için teşekkür ederiz. böcek mümkün olduğunca çabuk ele emin olmak için, PhotoDemon bir GitHub hesabınız varsa question.
-
-Do bir daha cevap sana ihtiyacı var? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)</translation>
+<original>Time taken</original>
+<translation>Geçen süre</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Daha iyi PhotoDemon yapmak için teşekkürler</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon sizin için otomatik olarak bir GitHub hata raporu web sayfasını açtı. Başlık kutusuna, sorun kısa bir bilgi ile, aşağıdaki hata girin: Bu hata yol açan adımlar da dahil olmak üzere geniş metin kutusuna sağlayabilir %1
-
-Any ek ayrıntılar, o kadar hızlı bir şekilde sabit olsun yardımcı olacak possible.
-
-When Yeni Sayı Gönder düğmesini tıklayın, bitmiş. Teşekkür ederim!</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>GitHub hata raporu talimatları</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon sizin için otomatik olarak bir hata raporu web sayfası açtı. Açıklama kutusuna, bu kutunun bu error.
-
-Also yol açan adımları açıklayın lütfen aşağıdaki hata numarasını ekleyin: 1
-
-When bitmiş %Gönder düğmesini tıklayın. Teşekkür ederim!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>Hata raporu talimatları</translation>
+<original>seconds</original>
+<translation>saniye</translation>
 </phrase>
 
 <phrase>
@@ -2121,7 +2038,67 @@ When bitmiş %Gönder düğmesini tıklayın. Teşekkür ederim!</translation>
 <translation>renk</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>Kaldır seçimi</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Eylem iptal edildi.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Bir hata raporu gönderdiğiniz için teşekkür ederiz. böcek mümkün olduğunca çabuk ele emin olmak için, PhotoDemon bir GitHub hesabınız varsa question.
+
+Do bir daha cevap sana ihtiyacı var? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Daha iyi PhotoDemon yapmak için teşekkürler</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon sizin için otomatik olarak bir GitHub hata raporu web sayfasını açtı. Başlık kutusuna, sorun kısa bir bilgi ile, aşağıdaki hata girin: Bu hata yol açan adımlar da dahil olmak üzere geniş metin kutusuna sağlayabilir %1
+
+Any ek ayrıntılar, o kadar hızlı bir şekilde sabit olsun yardımcı olacak possible.
+
+When Yeni Sayı Gönder düğmesini tıklayın, bitmiş. Teşekkür ederim!</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>GitHub hata raporu talimatları</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon sizin için otomatik olarak bir hata raporu web sayfası açtı. Açıklama kutusuna, bu kutunun bu error.
+
+Also yol açan adımları açıklayın lütfen aşağıdaki hata numarasını ekleyin: 1
+
+When bitmiş %Gönder düğmesini tıklayın. Teşekkür ederim!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>Hata raporu talimatları</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -14994,10 +14971,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>

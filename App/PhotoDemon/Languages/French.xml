@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.258</langversion>
+<langversion>6.7.259</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1798,11 +1798,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 <!-- BEGIN text for Processor.bas -->
 
 <phrase>
-<original>Remove selection</original>
-<translation>Supprimer la sélection</translation>
-</phrase>
-
-<phrase>
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
@@ -1817,21 +1812,6 @@ s'il vous plaît envoyer ce bug via le Help -> Envoyer de rapport de bogues menu
 </phrase>
 
 <phrase>
-<original>Time taken</original>
-<translation>Temps pris</translation>
-</phrase>
-
-<phrase>
-<original>seconds</original>
-<translation>secondes</translation>
-</phrase>
-
-<phrase>
-<original>Action canceled.</original>
-<translation>Action annulée.</translation>
-</phrase>
-
-<phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
 <translation>Il n'y a pas assez de mémoire disponible pour continuer cette opération. S'il vous plaît libérer de la mémoire système jusqu'à vive (RAM) de fermer des programmes inutiles - en particulier votre navigateur, si elle est ouverte - puis essayez à nouveau l'action.</translation>
 </phrase>
@@ -1839,29 +1819,6 @@ s'il vous plaît envoyer ce bug via le Help -> Envoyer de rapport de bogues menu
 <phrase>
 <original>Out of memory.  Function canceled.</original>
 <translation>Manque de mémoire. Fonction d'annulation.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, this image file appears to be invalid.  This can happen if a file does not contain image data, or if it contains image data in an unsupported format.
-
-- If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
-
-- If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Malheureusement, ce fichier image s'affiche comme invalide. Cela peut se produire si un fichier ne contient pas de données d'image, ou si elle contient des données d'image dans un format non supporté
-
--. Si vous avez téléchargé cette image à partir d'Internet, le téléchargement peut avoir mis fin prématurément. S'il vous plaît essayez de télécharger à nouveau l'image
-
--. Si ce fichier image provient d'un appareil photo numérique, un scanner ou tout autre programme de retouche d'image, il est possible que PhotoDemon ne comprend tout simplement pas ce format de fichier particulier. S'il vous plaît enregistrer l'image dans un format générique (tel que JPEG ou PNG), puis rechargez-le.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image.  Image load canceled.</original>
-<translation>Image invalide. Chargement de l'image est annulée.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid image file</original>
-<translation>Fichier image valide</translation>
 </phrase>
 
 <phrase>
@@ -1912,53 +1869,13 @@ Description: %2
 </phrase>
 
 <phrase>
-<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
-
-Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Merci de nous envoyer un rapport de bogue. Pour vous assurer que votre bug est traitée aussi vite que possible, PhotoDemon a besoin de vous pour répondre à une autre question. 
-
- Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifie, répondez «Non'.)</translation>
+<original>Time taken</original>
+<translation>Temps pris</translation>
 </phrase>
 
 <phrase>
-<original>Thanks for making PhotoDemon better</original>
-<translation>Merci d'avoir fait mieux PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
-
-Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
-
-When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon a automatiquement ouvert une page web bug GitHub rapport pour vous. Dans la zone Titre, s'il vous plaît entrer le numéro d'erreur suivant avec une brève description du problème: %1
-
-Tous les détails supplémentaires que vous pouvez fournir, dans la grande zone de texte, y compris les étapes qui ont conduit à cette erreur, l'aidera à se fixer le plus rapidement possible.
-
-Lorsque vous avez terminé, cliquez sur le bouton Soumettre Nouvelle émission. Je vous remercie !</translation>
-</phrase>
-
-<phrase>
-<original>GitHub bug report instructions</original>
-<translation>Instructions GitHub rapports de bogues</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
-
-Also in that box, please include the following error number: %1
-
-When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon a automatiquement ouvert un rapport bug page web pour vous. Dans la boîte de commentaire, veuillez décrire les étapes qui ont mené à cette error.
-
-Aussi dans cette case, veuillez indiquer le nombre d'erreur suivant: %1
-
-Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
-</phrase>
-
-<phrase>
-<original>Bug report instructions</original>
-<translation>Instructions de rapports de bogues</translation>
+<original>seconds</original>
+<translation>secondes</translation>
 </phrase>
 
 <phrase>
@@ -2116,7 +2033,67 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 <translation>teinte</translation>
 </phrase>
 
-<!-- Processor.bas contains 91 phrases. 37 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<phrase>
+<original>Remove selection</original>
+<translation>Supprimer la sélection</translation>
+</phrase>
+
+<phrase>
+<original>Action canceled.</original>
+<translation>Action annulée.</translation>
+</phrase>
+
+<phrase>
+<original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
+
+Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
+<translation>Merci de nous envoyer un rapport de bogue. Pour vous assurer que votre bug est traitée aussi vite que possible, PhotoDemon a besoin de vous pour répondre à une autre question. 
+
+ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifie, répondez «Non'.)</translation>
+</phrase>
+
+<phrase>
+<original>Thanks for making PhotoDemon better</original>
+<translation>Merci d'avoir fait mieux PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1
+
+Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
+
+When finished, click the Submit New Issue button.  Thank you!</original>
+<translation>PhotoDemon a automatiquement ouvert une page web bug GitHub rapport pour vous. Dans la zone Titre, s'il vous plaît entrer le numéro d'erreur suivant avec une brève description du problème: %1
+
+Tous les détails supplémentaires que vous pouvez fournir, dans la grande zone de texte, y compris les étapes qui ont conduit à cette erreur, l'aidera à se fixer le plus rapidement possible.
+
+Lorsque vous avez terminé, cliquez sur le bouton Soumettre Nouvelle émission. Je vous remercie !</translation>
+</phrase>
+
+<phrase>
+<original>GitHub bug report instructions</original>
+<translation>Instructions GitHub rapports de bogues</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon has automatically opened a bug report webpage for you.  In the Comment box, please describe the steps that led to this error.
+
+Also in that box, please include the following error number: %1
+
+When finished, click the Submit button.  Thank you!</original>
+<translation>PhotoDemon a automatiquement ouvert un rapport bug page web pour vous. Dans la boîte de commentaire, veuillez décrire les étapes qui ont mené à cette error.
+
+Aussi dans cette case, veuillez indiquer le nombre d'erreur suivant: %1
+
+Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
+</phrase>
+
+<phrase>
+<original>Bug report instructions</original>
+<translation>Instructions de rapports de bogues</translation>
+</phrase>
+
+<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -14998,10 +14975,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2526</phrasecount>
+<phrasecount>2523</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4488 phrases. -->
-<!-- 1962 are duplicates, so only 2526 unique phrases have been written to file. -->
-<!-- These 2526 phrases contain approximately 12401 total words. -->
+<!-- As of this build, PhotoDemon contains 4484 phrases. -->
+<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
+<!-- These 2523 phrases contain approximately 12302 total words. -->
 
 </pdData>
