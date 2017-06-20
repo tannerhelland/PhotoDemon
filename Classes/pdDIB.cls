@@ -345,7 +345,7 @@ Public Function ForceNewAlpha(ByVal newAlpha As Byte) As Boolean
     If (m_dibColorDepth = 32) Then
 
         'Make sure this DIB isn't empty
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
+        If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
             
             'Loop through the image and force each alpha value to the user's specified value
             Dim iData() As Byte, tmpSA As SAFEARRAY2D
@@ -486,6 +486,9 @@ Public Function CreateFromDC(ByVal srcDC As Long, ByVal srcX As Long, ByVal srcY
             
         End If
         
+        'Our internal DC may not be immediately required; free it until requested again
+        Me.FreeFromDC
+        
     End If
     
 End Function
@@ -553,6 +556,10 @@ Public Function CreateFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
             
         End If
         
+        'Free this DIB and the source DIB from their DCs, as they may not be required again for some time
+        srcDIB.FreeFromDC
+        Me.FreeFromDC
+        
     End If
     
 End Function
@@ -566,7 +573,7 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
     If (m_dibColorDepth = 32) Then
 
         'Make sure this DIB isn't empty
-        If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
+        If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
     
             'Create a temporary DIB to hold a copy of this DIB's data (because it's about to get deleted)
             Dim tmpDIB As pdDIB
@@ -584,6 +591,9 @@ Public Function ConvertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As
                 BitBlt Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, tmpDIB.GetDIBDC, 0, 0, vbSrcCopy
                 ConvertTo24bpp = True
             End If
+            
+            'Minimize GDI resources by freeing our DC
+            Me.FreeFromDC
     
         End If
     
@@ -597,8 +607,10 @@ End Function
 'Convert this DIB to 32bpp mode
 Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As Boolean
     
+    ConvertTo32bpp = False
+    
     'Make sure this DIB isn't empty
-    If (Me.GetDIBDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
+    If (m_dibHandle <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
 
         Dim iData() As Byte, tmpSA As SAFEARRAY2D
         Dim x As Long, y As Long, quickX As Long
@@ -630,9 +642,7 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             'Per PD-convention, re-apply premultiplication now
             Me.SetAlphaPremultiplication True
             
-            'Exit
             ConvertTo32bpp = True
-            Exit Function
             
         Else
         
@@ -642,7 +652,7 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             tmpDIB.CreateFromExistingDIB Me
             
             'Now erase our own DIB
-            EraseDIB
+            Me.EraseDIB
     
             'Create a new DIB that's exactly the same size as the old one
             If Me.CreateBlank(tmpDIB.GetDIBWidth, tmpDIB.GetDIBHeight, 32) Then
@@ -669,22 +679,23 @@ Public Function ConvertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
                 If (newTransparency <> 255) Then Me.SetAlphaPremultiplication True Else Me.SetInitialAlphaPremultiplicationState True
                 
                 ConvertTo32bpp = True
-                Exit Function
                 
             End If
             
         End If
         
+        'Minimize GDI resources by freeing our DC
+        Me.FreeFromDC
+        
     End If
     
-    'If we made it to this line, something went horribly wrong
-    ConvertTo32bpp = False
-
 End Function
 
 'Give this DIB a picture from a standard VB picture object
 Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional forceWhiteBackground As Boolean = False) As Boolean
 
+    CreateFromPicture = False
+    
     'Make sure the picture we're passed isn't empty
     If (Not srcPicture Is Nothing) Then
     
@@ -722,26 +733,19 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     ' black background. We typically want the background to be white, so perform a composite if requested.
                     If forceWhiteBackground And (m_dibColorDepth = 32) Then CompositeBackgroundColor
                     
-                    'Success!
                     CreateFromPicture = True
-                    Exit Function
+                    
+                    'Minimize GDI resources by freeing our DC
+                    Me.FreeFromDC
                     
                 End If
             
-                CreateFromPicture = False
-            
             End If
             
-            CreateFromPicture = False
-        
         End If
         
-        CreateFromPicture = False
-    
     End If
     
-    CreateFromPicture = False
-
 End Function
 
 'Create a blank DIB. If no colorDepth is specified, it will default to 24bpp (16 million colors, no alpha-channel).
@@ -822,18 +826,7 @@ Public Function CreateBlank(ByVal imgWidth As Long, ByVal imgHeight As Long, Opt
         End With
         
         'If we don't already have a compatible DC, create one now
-        If (Me.GetDIBDC = 0) Then
-            m_dibDC = GDI.GetMemoryDC()
-            
-        'If we already have a DC, empty it
-        Else
-            
-            If (m_dibHandle <> 0) Then
-                SelectObject m_dibDC, m_dibHandleOriginal
-                DeleteObject m_dibHandle
-            End If
-            
-        End If
+        If (Me.GetDIBDC = 0) Then m_dibDC = GDI.GetMemoryDC()
         
         If (m_dibDC <> 0) Then
             
@@ -967,6 +960,9 @@ Public Sub FillWithColor(Optional ByVal fillColor As Long = vbBlack, Optional By
         
     End If
     
+    'Minimize GDI resources by freeing our DC
+    Me.FreeFromDC
+    
 End Sub
 
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
@@ -977,6 +973,7 @@ Public Sub EraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
         
         If (m_dibDC <> 0) Then SelectObject m_dibDC, m_dibHandleOriginal
         DeleteObject m_dibHandle
+        m_dibHandle = 0
         
         'Inside debug mode, decrement a global DIB counter
         #If DEBUGMODE = 1 Then
@@ -1158,6 +1155,9 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         dstPicture.Picture = dstPicture.Image
         dstPicture.Refresh
     End If
+    
+    'Minimize GDI resources by freeing our DC
+    Me.FreeFromDC
     
 End Sub
 
@@ -1486,6 +1486,9 @@ Public Sub WriteToBitmapFile(ByRef dstFilename As String)
             pdDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
         #End If
     End If
+    
+    'Minimize GDI resources by freeing our DC
+    Me.FreeFromDC
         
 End Sub
 
@@ -2015,6 +2018,9 @@ Public Sub AlphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
         
     AlphaBlend dstDC, dstX, dstY, newWidth, newHeight, Me.GetDIBDC, 0, 0, m_dibWidth, m_dibHeight, bfParams
     
+    'Minimize GDI resources by freeing our DC
+    Me.FreeFromDC
+    
 End Sub
 
 'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects premultiplied image data
@@ -2038,5 +2044,8 @@ Public Sub AlphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY 
     End If
     
     AlphaBlend dstDC, dstX, dstY, dstWidth, dstHeight, Me.GetDIBDC, srcX, srcY, srcWidth, srcHeight, bfParams
+    
+    'Minimize GDI resources by freeing our DC
+    Me.FreeFromDC
     
 End Sub
