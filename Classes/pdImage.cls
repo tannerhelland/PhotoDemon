@@ -306,6 +306,12 @@ Friend Sub NotifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal
     
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_EVERYTHING
             m_CompositeCacheClean = False
+            
+            'Notify all layers of potentially destructive changes
+            Dim i As Long
+            For i = 0 To Me.GetNumOfLayers() - 1
+                Me.GetLayerByIndex(i).NotifyOfDestructiveChanges
+            Next i
         
         Case UNDO_IMAGEHEADER
             m_CompositeCacheClean = False
