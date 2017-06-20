@@ -1369,6 +1369,9 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'GDI+ draw functions always result in a premultiplied image
     dstDIB.SetInitialAlphaPremultiplicationState srcDIB.GetAlphaPremultiplication
     
+    'Free the destination DIB from its DC, as it may not be required again for some time
+    dstDIB.FreeFromDC
+    
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
     
@@ -3106,7 +3109,7 @@ End Function
 ' 3) control stretch mode directly inside the call
 Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As GP_InterpolationMode = GP_IM_HighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False, Optional ByVal isZoomedIn As Boolean = False, Optional ByVal dstCopyIsOkay As Boolean = False)
     
-    If ((dstDIB Is Nothing) And (useThisDestinationDCInstead = 0)) Then Exit Sub
+    If (dstDIB Is Nothing) And (useThisDestinationDCInstead = 0) Then Exit Sub
     
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -3177,6 +3180,9 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     'Release both the destination graphics object and the source bitmap object
     GdipDisposeImage hBitmap
     GdipDeleteGraphics hGraphics
+    
+    'To keep resources low, free the destination DIB from its DC
+    If (Not dstDIB Is Nothing) Then dstDIB.FreeFromDC
     
     'Uncomment the line below to receive timing reports
     'Debug.Print "GDI+ wrapper time: " & Format(CStr(VBHacks.GetTimerDifferenceNow(profileTime) * 1000), "0000.00") & " ms"

@@ -1792,12 +1792,12 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     'If passed, create a local copy of the passed DIB.
     Set layerDIB = New pdDIB
     If cloneSourceLayerLocally Then
-        If Not (srcDIB Is Nothing) Then
+        If (Not srcDIB Is Nothing) Then
             Set layerDIB = New pdDIB
             layerDIB.CreateFromExistingDIB srcDIB
         End If
     Else
-        If Not (srcDIB Is Nothing) Then Set layerDIB = srcDIB
+        If (Not srcDIB Is Nothing) Then Set layerDIB = srcDIB
     End If
     
     'Set default offsets

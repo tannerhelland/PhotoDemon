@@ -152,8 +152,20 @@ Private Sub cmdBar_OKClick()
             Exit For
         End If
     Next i
-        
-    Process "New image", False, BuildParams(ucResize.ResizeWidthInPixels, ucResize.ResizeHeightInPixels, ucResize.ResizeDPIAsPPI, backgroundType, colorPicker.Color), UNDO_NOTHING
+    
+    'As of v7.0, all parameter strings must be XML-based
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    
+    With cParams
+        .AddParam "WidthInPixels", ucResize.ResizeWidthInPixels
+        .AddParam "HeightInPixels", ucResize.ResizeHeightInPixels
+        .AddParam "DPI", ucResize.ResizeDPIAsPPI
+        .AddParam "BackgroundType", backgroundType
+        .AddParam "OptionalBackcolor", colorPicker.Color
+    End With
+    
+    Processor.Process "New image", False, cParams.GetParamString(), UNDO_NOTHING
     
 End Sub
 
@@ -177,7 +189,7 @@ Private Sub Form_Load()
     
     'Fill in the boxes with the default size
     CalculateDefaultSize
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -187,7 +199,7 @@ Private Sub CalculateDefaultSize()
     ucResize.UnitOfMeasurement = MU_PIXELS
     
     'Is another image loaded?
-    If g_OpenImageCount > 0 Then
+    If (g_OpenImageCount > 0) Then
         
         'Default to the dimensions of the currently active image
         ucResize.SetInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).GetDPI
@@ -199,7 +211,7 @@ Private Sub CalculateDefaultSize()
         Set pDisplay = g_Displays.PrimaryDisplay
                 
         Dim pDisplayRect As RECTL
-        If Not pDisplay Is Nothing Then
+        If (Not pDisplay Is Nothing) Then
             pDisplay.GetRect pDisplayRect
         Else
             With pDisplayRect

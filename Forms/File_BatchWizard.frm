@@ -1874,7 +1874,7 @@ Private Sub PrepareForBatchConversion()
                 Saving.PhotoDemon_BatchSaveImage pdImages(g_CurrentImage), tmpFilename, pdImages(g_CurrentImage).GetCurrentFileFormat, m_ExportSettingsFormat, m_ExportSettingsMetadata
                 
                 'Unload the finished image
-                FullPDImageUnload g_CurrentImage, (Not (curBatchFile < totalNumOfFiles - 1))
+                CanvasManager.FullPDImageUnload g_CurrentImage, (Not (curBatchFile < totalNumOfFiles - 1))
             
             End If
             

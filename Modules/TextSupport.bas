@@ -280,7 +280,7 @@ Public Function BuildParamList(ParamArray allParams() As Variant) As String
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
-    On Error GoTo buildParamListFailure
+    On Error GoTo BuildParamListFailure
     
     If UBound(allParams) >= LBound(allParams) Then
     
@@ -309,7 +309,7 @@ Public Function BuildParamList(ParamArray allParams() As Variant) As String
     
     Exit Function
     
-buildParamListFailure:
+BuildParamListFailure:
         
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  buildParamList failed to create a parameter string!"

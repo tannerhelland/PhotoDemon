@@ -131,7 +131,10 @@ Private Function GetStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
 End Function
 
 Private Sub cmdBar_OKClick()
-    Process "Undo history", , BuildParams(lstUndo.ListIndex + 1), UNDO_NOTHING
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.AddParam "UndoHistoryPoint", lstUndo.ListIndex + 1
+    Process "Undo history", , cParams.GetParamString(), UNDO_NOTHING
 End Sub
 
 Private Sub Form_Load()
