@@ -467,8 +467,8 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
             'If the cursor is over a thumbnail, update the tooltip to display that image's filename
             If (m_CurrentThumbHover <> -1) Then
                         
-                If (Len(pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0) Then
-                    Me.AssignTooltip pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("CurrentLocationOnDisk"), pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).imgStorage.GetEntry_String("OriginalFileName")
+                If (Len(pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String("CurrentLocationOnDisk")) <> 0) Then
+                    Me.AssignTooltip pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String("CurrentLocationOnDisk"), pdImages(m_Thumbs(m_CurrentThumbHover).indexInPDImages).ImgStorage.GetEntry_String("OriginalFileName")
                 Else
                     Me.AssignTooltip "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."
                 End If
@@ -595,7 +595,7 @@ Public Sub AddNewThumb(ByVal pdImageIndex As Long)
     ' we need to perform one redraw to calculate a new max scroll value, then a *second* redraw if the image still
     ' lies off-screen.
     RedrawBackBuffer
-    If (FitThumbnailOnscreen(m_CurrentThumb)) Then RedrawBackBuffer
+    If FitThumbnailOnscreen(m_CurrentThumb) Then RedrawBackBuffer
     
 End Sub
 
@@ -776,22 +776,31 @@ End Sub
 Public Sub NotifyUpdatedImage(ByVal pdImageIndex As Long)
     
     'Since we'll be interacting with the passed pdImages object, perform a quick failsafe check to make sure we don't crash
-    If Not (pdImages(pdImageIndex) Is Nothing) Then
+    Dim okayToUpdate As Boolean
+    If (Not pdImages(pdImageIndex) Is Nothing) Then
+        okayToUpdate = (g_OpenImageCount > 0) And pdImages(pdImageIndex).IsActive
+    End If
+    
+    If okayToUpdate Then
     
         Dim thumbIndex As Long
         thumbIndex = GetThumbIndexFromPDIndex(pdImageIndex)
         
-        If m_VerticalLayout Then
-            pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbHeight - (FixDPI(THUMB_BORDER_PADDING) * 2)
-        Else
-            pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
-        End If
+        If (thumbIndex >= 0) Then
         
-        'If display color management is active, apply a conversion now
-        ColorManagement.ApplyDisplayColorManagement m_Thumbs(thumbIndex).thumbDIB
-    
-        If (g_InterfacePerformance <> PD_PERF_FASTEST) Then UpdateShadowDIB thumbIndex
-        RedrawBackBuffer
+            If m_VerticalLayout Then
+                pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbHeight - (FixDPI(THUMB_BORDER_PADDING) * 2)
+            Else
+                pdImages(pdImageIndex).RequestThumbnail m_Thumbs(thumbIndex).thumbDIB, m_ThumbWidth - (FixDPI(THUMB_BORDER_PADDING) * 2)
+            End If
+            
+            'If display color management is active, apply a conversion now
+            ColorManagement.ApplyDisplayColorManagement m_Thumbs(thumbIndex).thumbDIB
+        
+            If (g_InterfacePerformance <> PD_PERF_FASTEST) Then UpdateShadowDIB thumbIndex
+            RedrawBackBuffer
+        
+        End If
         
     End If
         
