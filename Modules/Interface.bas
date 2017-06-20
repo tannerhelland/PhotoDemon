@@ -2115,10 +2115,10 @@ Public Sub NotifyImageChanged(Optional ByVal affectedImageIndex As Long = -1, Op
     'If an image is *not* specified, assume this is in reference to the currently active image
     If (affectedImageIndex < 0) Then affectedImageIndex = g_CurrentImage
     
-    If (Not pdImages(affectedImageIndex) Is Nothing) Then
+    If (Not pdImages(affectedImageIndex) Is Nothing) And (Macros.GetMacroStatus <> MacroBATCH) Then
     
         'Generate new taskbar and titlebar icons for the affected image
-        CreateCustomFormIcons pdImages(affectedImageIndex)
+        IconsAndCursors.CreateCustomFormIcons pdImages(affectedImageIndex)
         
         'Notify the image tabstrip of any changes
         FormMain.mainCanvas(0).NotifyTabstripUpdatedImage affectedImageIndex
