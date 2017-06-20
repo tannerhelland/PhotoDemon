@@ -364,7 +364,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     'Now we run a loop through the macro structure, calling the software processor with all the necessary information for each action
     Message "Processing macro data..."
     
-    Macros.SetMacroStatus MacroPLAYBACK
+    If (Macros.GetMacroStatus <> MacroBATCH) Then Macros.SetMacroStatus MacroPLAYBACK
     
     For i = 0 To m_ProcessCount - 1
         With m_Processes(i)
@@ -372,7 +372,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
         End With
     Next i
     
-    Macros.SetMacroStatus MacroSTOP
+    If (Macros.GetMacroStatus <> MacroBATCH) Then Macros.SetMacroStatus MacroSTOP
     
     'Some processor requests may not manually update the screen; as such, perform a manual update now
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
