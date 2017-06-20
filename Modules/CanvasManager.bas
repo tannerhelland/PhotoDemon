@@ -158,7 +158,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     Dim userCanceledUnload As Boolean: userCanceledUnload = False
     
     'Perform a query unload on the image.  This will raise required warnings (e.g. unsaved changes) per the user's preferences.
-    QueryUnloadPDImage userCanceledUnload, imageID
+    CanvasManager.QueryUnloadPDImage userCanceledUnload, imageID
     
     'If the "save unsaved changes" dialog was canceled by the user, abandon any further unloading
     If userCanceledUnload Then
@@ -167,7 +167,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     'The user is allowing the unload to proceed
     Else
     
-        UnloadPDImage imageID, redrawScreen
+        CanvasManager.UnloadPDImage imageID, redrawScreen
             
         'Redraw the screen to reflect any newly initialized images
         If redrawScreen Then
@@ -183,7 +183,7 @@ Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         FullPDImageUnload = True
         
         'If no images are open, take additional steps to free memory
-        If (g_OpenImageCount = 0) Then
+        If (g_OpenImageCount = 0) And (Macros.GetMacroStatus <> MacroBATCH) Then
             
             'Unload the backbuffer of the primary canvas
             ViewportEngine.EraseViewportBuffers
@@ -202,99 +202,105 @@ End Function
 ' this is no longer possible, so we must query unload images using this custom function.
 Public Function QueryUnloadPDImage(ByRef userCanceledUnload As Boolean, ByVal imageID As Long) As Boolean
     
-    'Failsafe to make sure the current image was properly initialized; if it wasn't, ignore this request entirely.
-    If (imageID >= 0) And (imageID <= UBound(pdImages)) Then
-        If (pdImages(imageID) Is Nothing) Then Exit Function
-    Else
-        Exit Function
-    End If
+    'Perform a few failsafe checks to make sure the current image was properly initialized
+    Dim okayToQueryUnload As Boolean: okayToQueryUnload = True
+    If (imageID < 0) Then okayToQueryUnload = False
+    If (imageID > UBound(pdImages)) Then okayToQueryUnload = False
+    If (pdImages(imageID) Is Nothing) Then okayToQueryUnload = False
     
-    'If the user wants to be prompted about unsaved images, do it now
-    If (g_ConfirmClosingUnsaved And pdImages(imageID).IsActive) Then
+    'Also, disable save prompts during batch processes
+    If (Macros.GetMacroStatus = MacroBATCH) Then okayToQueryUnload = False
     
-        'Check the .HasBeenSaved property of the image associated with this form
-        If (Not pdImages(imageID).GetSaveState(pdSE_AnySave)) Then
-            
-            'If we reach this line, the image in question has unsaved changes.
-            
-            'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
-            If (Not g_DealWithAllUnsavedImages) Then
-            
-                g_NumOfUnsavedImages = 0
-                                
-                'Loop through all open images to count how many unsaved images there are in total.
-                ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
-                ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
-                If (g_ProgramShuttingDown Or g_ClosingAllImages) Then
-                    
-                    Dim i As Long
-                    For i = LBound(pdImages) To UBound(pdImages)
-                        If (Not pdImages(i) Is Nothing) Then
-                            If pdImages(i).IsActive And (Not pdImages(i).GetSaveState(pdSE_AnySave)) Then
-                                g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
-                            End If
-                        End If
-                    Next i
-                    
-                End If
-                
-                'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
-                If (imageID <> g_CurrentImage) Then
-                    If FormMain.Enabled Then ActivatePDImage imageID, "unsaved changes dialog required", True
-                End If
-                
-                'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
-                ' displayed and the user will be given an option to apply their choice to all unsaved images.
-                Dim confirmReturn As VbMsgBoxResult
-                confirmReturn = ConfirmClose(imageID)
-                
-            Else
-                confirmReturn = g_HowToDealWithAllUnsavedImages
-            End If
-            
-            'There are now three possible courses of action:
-            ' 1) The user canceled the "unsaved changes" dialog.  Abandon all notion of closing this image (or the program).
-            ' 2) The user asked us to save before exiting. Pass control to MenuSave (which will in turn call SaveAs if necessary).
-            ' 3) The user doesn't care about saving changes.  Exit as-is.
-            
-            'Cancel the close operation
-            If (confirmReturn = vbCancel) Then
-                
-                userCanceledUnload = True
-                If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
-                If g_ClosingAllImages Then g_ClosingAllImages = False
-                g_DealWithAllUnsavedImages = False
-                
-            'Save all unsaved images
-            ElseIf (confirmReturn = vbYes) Then
-                
-                'If the form being saved is enabled, bring that image to the foreground. (If a "Save As" is required, this
-                ' helps show the user which image the Save As form is referencing.)
-                If FormMain.Enabled Then ActivatePDImage imageID, "image being saved during shutdown", True
-                
-                'Attempt to save. Note that the user can still cancel at this point, and we want to honor their cancellation
-                Dim saveSuccessful As Boolean
-                saveSuccessful = MenuSave(pdImages(imageID))
-                
-                'If something went wrong, or the user canceled the save dialog, stop the unload process
-                userCanceledUnload = (Not saveSuccessful)
- 
-                'If we make it here and the save was successful, force an immediate unload
-                If userCanceledUnload Then
-                    If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
-                    If g_ClosingAllImages Then g_ClosingAllImages = False
-                    g_DealWithAllUnsavedImages = False
-                End If
-            
-            'Do not save the image
-            ElseIf (confirmReturn = vbNo) Then
-                
-                'No action is required here, because subsequent functions will take care of the rest of the unload process!
-                
-            End If
-        
-        End If
+    If okayToQueryUnload Then
     
+        'If the user wants to be prompted about unsaved images, do it now
+        If (g_ConfirmClosingUnsaved And pdImages(imageID).IsActive) Then
+       
+           'Check the .HasBeenSaved property of the image associated with this form
+           If (Not pdImages(imageID).GetSaveState(pdSE_AnySave)) Then
+               
+               'If we reach this line, the image in question has unsaved changes.
+               
+               'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
+               If (Not g_DealWithAllUnsavedImages) Then
+               
+                   g_NumOfUnsavedImages = 0
+                                   
+                   'Loop through all open images to count how many unsaved images there are in total.
+                   ' NOTE: we only need to do this if the entire program is being shut down or if the user has selected "close all";
+                   ' otherwise, this close action only affects the current image, so we shouldn't present a "repeat for all images" option
+                   If (g_ProgramShuttingDown Or g_ClosingAllImages) Then
+                       
+                       Dim i As Long
+                       For i = LBound(pdImages) To UBound(pdImages)
+                           If (Not pdImages(i) Is Nothing) Then
+                               If pdImages(i).IsActive And (Not pdImages(i).GetSaveState(pdSE_AnySave)) Then
+                                   g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
+                               End If
+                           End If
+                       Next i
+                       
+                   End If
+                   
+                   'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
+                   If (imageID <> g_CurrentImage) Then
+                       If FormMain.Enabled Then ActivatePDImage imageID, "unsaved changes dialog required", True
+                   End If
+                   
+                   'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
+                   ' displayed and the user will be given an option to apply their choice to all unsaved images.
+                   Dim confirmReturn As VbMsgBoxResult
+                   confirmReturn = ConfirmClose(imageID)
+                   
+               Else
+                   confirmReturn = g_HowToDealWithAllUnsavedImages
+               End If
+               
+               'There are now three possible courses of action:
+               ' 1) The user canceled the "unsaved changes" dialog.  Abandon all notion of closing this image (or the program).
+               ' 2) The user asked us to save before exiting. Pass control to MenuSave (which will in turn call SaveAs if necessary).
+               ' 3) The user doesn't care about saving changes.  Exit as-is.
+               
+               'Cancel the close operation
+               If (confirmReturn = vbCancel) Then
+                   
+                   userCanceledUnload = True
+                   If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
+                   If g_ClosingAllImages Then g_ClosingAllImages = False
+                   g_DealWithAllUnsavedImages = False
+                   
+               'Save all unsaved images
+               ElseIf (confirmReturn = vbYes) Then
+                   
+                   'If the form being saved is enabled, bring that image to the foreground. (If a "Save As" is required, this
+                   ' helps show the user which image the Save As form is referencing.)
+                   If FormMain.Enabled Then ActivatePDImage imageID, "image being saved during shutdown", True
+                   
+                   'Attempt to save. Note that the user can still cancel at this point, and we want to honor their cancellation
+                   Dim saveSuccessful As Boolean
+                   saveSuccessful = MenuSave(pdImages(imageID))
+                   
+                   'If something went wrong, or the user canceled the save dialog, stop the unload process
+                   userCanceledUnload = (Not saveSuccessful)
+    
+                   'If we make it here and the save was successful, force an immediate unload
+                   If userCanceledUnload Then
+                       If g_ProgramShuttingDown Then g_ProgramShuttingDown = False
+                       If g_ClosingAllImages Then g_ClosingAllImages = False
+                       g_DealWithAllUnsavedImages = False
+                   End If
+               
+               'Do not save the image
+               ElseIf (confirmReturn = vbNo) Then
+                   
+                   'No action is required here, because subsequent functions will take care of the rest of the unload process!
+                   
+               End If
+           
+           End If
+       
+       End If
+       
     End If
 
 End Function
