@@ -731,7 +731,7 @@ Private Function HandleEditBoxMsgs(ByVal hWnd As Long, ByVal uiMsg As Long, ByVa
         If (Not msgEaten) Then
             
             'Some WM_CHAR messages may not originate from the keyboard; instead, PD may raise them manually from
-            ' windo messages that the default window proc may garble (e.g. WM_IME_CHAR, below).  If our character
+            ' window messages that the default window proc may garble (e.g. WM_IME_CHAR, below).  If our character
             ' cache is empty, it means this is one of those messages; grab the current wParam and use it instead
             ' of our (blank) cached value.
             If (m_CharCache = 0) Then m_CharCache = wParam

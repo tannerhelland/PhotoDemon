@@ -329,7 +329,7 @@ Friend Sub RevertToLastSavedState()
     'Failsafe check to make sure the specified index is valid
     If (targetUndoPoint < 1) Then targetUndoPoint = 1
     
-    MoveToSpecificUndoPoint targetUndoPoint
+    Me.MoveToSpecificUndoPoint targetUndoPoint
     
 End Sub
 
@@ -395,6 +395,14 @@ Friend Sub MoveToSpecificUndoPoint(ByVal undoIndex As Long)
     'Notify the program that undo/redo data is no longer being processed, so asynchronous functions can resume their behavior.
     g_UndoRedoActive = False
     
+End Sub
+
+'Safe XML-based wrapper for MoveToSpecificUndoPoint(), above.
+Friend Sub MoveToSpecificUndoPoint_XML(ByVal paramList As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString paramList
+    Me.MoveToSpecificUndoPoint cParams.GetLong("UndoHistoryPoint", 1)
 End Sub
 
 'Restore the last undo entry, e.g. "the user just clicked Undo".

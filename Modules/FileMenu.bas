@@ -185,16 +185,16 @@ Public Function MenuSave(ByRef srcImage As pdImage) As Boolean
             'File name incrementation requires help from an outside function.  We must pass it the folder, filename, and extension
             ' we want it to search against.
             Dim tmpFolder As String, tmpFilename As String, tmpExtension As String
-            tmpFolder = cFile.GetPathOnly(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
-            If Len(srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0 Then srcImage.imgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
-            tmpFilename = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
-            tmpExtension = srcImage.imgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
+            tmpFolder = cFile.GetPathOnly(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString))
+            If Len(srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)) = 0 Then srcImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
+            tmpFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
+            tmpExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension", vbNullString)
             
             'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety
             dstFilename = tmpFolder & FileSystem.IncrementFilename(tmpFolder, tmpFilename, tmpExtension) & "." & tmpExtension
         
         Else
-            dstFilename = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+            dstFilename = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
         End If
         
         'New to v7.0 is the way save option dialogs work.  PD's primary save function is now responsible for displaying save dialogs.
@@ -251,7 +251,7 @@ Public Function MenuSaveAs(ByRef srcImage As pdImage) As Boolean
     '   (like the clipboard), that function will have supplied a meaningful name at load-time.  Note that we have to supply a non-null
     '   string to the common dialog function for it to work, so some kind of name needs to be suggested.
     Dim suggestedFilename As String
-    suggestedFilename = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    suggestedFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     If (Len(suggestedFilename) = 0) Then suggestedFilename = g_Language.TranslateMessage("New image")
     
     '4) What filename + extension to suggest, based on the results of 2 and 3.  Most programs would just toss together the
@@ -318,7 +318,7 @@ Private Function GetSuggestedSaveFormatAndExtension(ByRef srcImage As pdImage, B
     'If the image already has a format, let's reuse its existing file extension instead of suggesting a new one.  This is relevant
     ' for formats with ill-defined extensions, like JPEG (e.g. JPE, JPG, JPEG)
     Else
-        dstSuggestedExtension = srcImage.imgStorage.GetEntry_String("OriginalFileExtension")
+        dstSuggestedExtension = srcImage.ImgStorage.GetEntry_String("OriginalFileExtension")
         If Len(dstSuggestedExtension) = 0 Then dstSuggestedExtension = g_ImageFormats.GetExtensionFromPDIF(GetSuggestedSaveFormatAndExtension)
     End If
             
@@ -337,7 +337,7 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
 
     'First things first: see if the image currently exists on-disk.  If it doesn't, we have no choice but to provide a save
     ' prompt.
-    If Len(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
+    If Len(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) = 0 Then
         
         'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
         '       for these types of dialogs, because they would be helpful in many places throughout PD.
@@ -355,13 +355,13 @@ Public Function MenuSaveLosslessCopy(ByRef srcImage As pdImage) As Boolean
     Dim dstFilename As String, tmpPathString As String
     
     'Determine the destination directory now
-    tmpPathString = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+    tmpPathString = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
     StripDirectory tmpPathString
     
     'Next, let's determine the target filename.  This is the current filename, auto-incremented to whatever number is
     ' available next.
     Dim tmpFilename As String
-    tmpFilename = srcImage.imgStorage.GetEntry_String("OriginalFileName", vbNullString)
+    tmpFilename = srcImage.ImgStorage.GetEntry_String("OriginalFileName", vbNullString)
     
     'Now, call the incrementFilename function to find a unique filename of the "filename (n+1)" variety, with the PDI
     ' file extension forcibly applied.
@@ -408,8 +408,7 @@ End Function
 'Close the active image
 Public Sub MenuClose()
     
-    'Make sure the correct flag is set so that the MDI Child QueryUnload behaves properly (e.g. note that we
-    ' are not closing ALL images - just this one.)
+    'Just in case, reset the "user is trying to close all images" flag
     g_ClosingAllImages = False
     FullPDImageUnload g_CurrentImage
     
@@ -474,14 +473,26 @@ Public Sub MenuCloseAll()
 
 End Sub
 
-'Create a new, blank image from scratch
-Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, ByVal newDPI As Long, ByVal defaultBackground As Long, ByVal newBackgroundColor As Long)
-
-    'Display a busy cursor
-    If (Screen.MousePointer <> vbHourglass) Then Screen.MousePointer = vbHourglass
+'Create a new, blank image from scratch.  Incoming parameters must be assembled as XML (via pdParamXML, typically)
+Public Function CreateNewImage(Optional ByVal newImageParameters As String)
     
-    'To prevent re-entry problems, forcibly disable the main form
-    FormMain.Enabled = False
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString newImageParameters
+    
+    Dim newWidth As Long, newHeight As Long, newDPI As Long
+    Dim newBackgroundType As Long, newBackgroundColor As Long
+    
+    With cParams
+        newWidth = .GetLong("WidthInPixels", g_Displays.GetDesktopWidth)
+        newHeight = .GetLong("HeightInPixels", g_Displays.GetDesktopHeight)
+        newDPI = .GetLong("DPI", 96&)
+        newBackgroundType = .GetLong("BackgroundType", 0)
+        newBackgroundColor = .GetLong("OptionalBackcolor", vbBlack)
+    End With
+    
+    'Display a busy cursor and disable user input
+    Processor.MarkProgramBusyState True, True
     
     'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
     Dim newImage As pdImage
@@ -494,7 +505,7 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
     'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
     ' initialize the new layer.
     Dim newBackColor As Long, newBackAlpha As Long
-    Select Case defaultBackground
+    Select Case newBackgroundType
     
         'Transparent (blank)
         Case 0
@@ -548,25 +559,25 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         
         'Because this image does not exist on the user's hard-drive, we will force use of a full Save As dialog in the future.
         ' (PD detects this state if a pdImage object does not supply a location on disk)
-        newImage.imgStorage.AddEntry "CurrentLocationOnDisk", ""
-        newImage.imgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
-        newImage.imgStorage.AddEntry "OriginalFileExtension", ""
+        newImage.ImgStorage.AddEntry "CurrentLocationOnDisk", ""
+        newImage.ImgStorage.AddEntry "OriginalFileName", g_Language.TranslateMessage("New image")
+        newImage.ImgStorage.AddEntry "OriginalFileExtension", ""
         newImage.SetSaveState False, pdSE_AnySave
         
         'Make any interface changes related to the presence of a new image
         Interface.NotifyImageAdded g_CurrentImage
         
         'Just to be safe, update the color management profile of the current monitor
-        CheckParentMonitor True
+        ColorManagement.CheckParentMonitor True
         
         'If the user wants us to resize the image to fit on-screen, do that now
-        If (g_AutozoomLargeImages = 0) Then FitImageToViewport True
+        If (g_AutozoomLargeImages = 0) Then CanvasManager.FitImageToViewport True
         
         'Viewport rendering may have been reset by this point (by the FitImageToViewport sub, among others), so disable it again, then
         ' update the zoom combo box to match the zoom assigned by the window-fit function.
         ViewportEngine.DisableRendering
         FormMain.mainCanvas(0).SetZoomDropDownIndex newImage.GetZoom
-    
+        
         'Now that the image's window has been fully sized and moved around, use ViewportEngine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
         ViewportEngine.EnableRendering
         ViewportEngine.Stage1_InitializeBuffer newImage, FormMain.mainCanvas(0), VSR_ResetToZero
@@ -577,7 +588,7 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
         'Force an immediate Undo/Redo write to file.  This serves multiple purposes: it is our baseline for calculating future
         ' Undo/Redo diffs, and it can be used to recover the original file if something goes wrong before the user performs a
         ' manual save (e.g. AutoSave).
-        newImage.undoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
+        newImage.UndoManager.CreateUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
         
         'Report success!
         CreateNewImage = True
@@ -588,15 +599,9 @@ Public Function CreateNewImage(ByVal newWidth As Long, ByVal newHeight As Long, 
     End If
     
     'Re-enable the main form
-    FormMain.Enabled = True
+    Processor.MarkProgramBusyState False
     
     'Synchronize all interface elements to match the newly created image
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
-    'TODO: activating a new image automatically redraws the tabstrip, so see if we can drop this line entirely as of 7.0
-    Interface.RequestTabstripRedraw
-    
-    'Restore the default cursor
-    Screen.MousePointer = vbNormal
-        
 End Function

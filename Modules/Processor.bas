@@ -3,8 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright 2001-2017 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 01/January/17
-'Last update: new functions for processing non-destructive changes
+'Last updated: 20/June/17
+'Last update: large overhaul to prep for 7.0 release
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:
@@ -24,6 +24,10 @@ Attribute VB_Name = "Processor"
 
 Option Explicit
 Option Compare Text
+
+'Some process operations pass special return values between child and parent process functions.  These are hard-coded to reduce
+' problems with versioning.
+Private Const PD_PROCESS_EXIT_NOW As String = "EXIT_NOW"
 
 'Full processor information of the previous request (used to provide the "Repeat Last Action" feature)
 Private m_LastProcess As PD_ProcessCall
@@ -193,7 +197,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         CheckForCanvasModifications createUndo
         
     End If
-        
     
     
     '******************************************************************************************************************
@@ -204,171 +207,45 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     ' list of every possible PhotoDemon action, filter, or other operation.  Depending on the processID, additional
     ' actions will be performed.
     '
-    'Note that prior to the 6.0 release, this function used numeric identifiers instead of strings.  This has since
-    ' been abandoned in favor of a string-based approach, and at present there are no plans to restore the old
-    ' numeric behavior.  Strings simplify the code, they make it much easier to add new functions, and they will
-    ' eventually allow for a "filter browser" that allows the user to preview any effect from a single dialog.
-    ' Numeric IDs were much harder to manage in that context, and over time their numbering grew so arbitrary that
-    ' it made maintenance very difficult.
-    '
     'For ease of reference, the various processIDs are divided into categories of similar functions.  These categories
     ' match the organization of PhotoDemon's menus.  Please note that such organization (in this function, anyway) is
-    ' simply to improve readability; there is no functional implication.
+    ' simply to improve readability; there are no functional implications.
     '
     '******************************************************************************************************************
     
-    Select Case processID
+    'File menu operations have been successfully migrated to XML strings
+    Dim processFound As Boolean, returnDetails As String
+    processFound = Process_FileMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
-        'FILE MENU FUNCTIONS
-        ' This includes actions like opening or saving images.  These actions are never recorded.
+    If processFound Then
         
-        Case "New image"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormNewImage
-            Else
-                FileMenu.CreateNewImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5)
-            End If
-                    
-        Case "Open"
-            FileMenu.MenuOpen
-            
-        Case "Close"
-            FileMenu.MenuClose
-            
-        Case "Close all"
-            FileMenu.MenuCloseAll
+        'The "exit program" menu item requires us to exit immediately; check the returnDetails string for this case
+        If Strings.StringsEqual(returnDetails, PD_PROCESS_EXIT_NOW, True) Then
         
-        Case "Save"
-            FileMenu.MenuSave pdImages(g_CurrentImage)
-            
-        Case "Save as"
-            FileMenu.MenuSaveAs pdImages(g_CurrentImage)
-            
-        Case "Save copy"
-            FileMenu.MenuSaveLosslessCopy pdImages(g_CurrentImage)
-            
-        Case "Revert"
-            If FormMain.MnuFile(9).Enabled Then
-                pdImages(g_CurrentImage).UndoManager.RevertToLastSavedState
-                
-                'Also, redraw the current child form icon and the image tab-bar
-                Interface.NotifyImageChanged g_CurrentImage
-                
-            End If
-            
-        Case "Batch wizard"
-            If raiseDialog Then
-                
-                'Because the Batch Wizard window provides a custom drag/drop implementation, we disable regular drag/drop while it's active
-                g_AllowDragAndDrop = False
-                ShowPDDialog vbModal, FormBatchWizard
-                g_AllowDragAndDrop = True
-                
-            End If
-            
-        Case "Print"
-            If raiseDialog Then
-                
-                'As a temporary workaround, Vista+ users are routed through the default Windows photo printing
-                ' dialog.  XP users get the old PD print dialog.
-                If g_IsVistaOrLater Then
-                    Printing.PrintViaWindowsPhotoPrinter
-                Else
-                    If Not FormPrint.Visible Then ShowPDDialog vbModal, FormPrint
-                End If
-                
-                'In the future, the print dialog should be replaced with a new version.  However, this is a monumental task
-                ' and there are any number of bigger priorities at present, so this has been put on hold indefinitely...
-                'If Not FormPrintNew.Visible Then showPDDialog vbModal, FormPrintNew
-                
-            End If
-            
-        Case "Exit program"
             Unload FormMain
             
-            'If the user does not cancel the exit, we must forcibly exit this sub (otherwise the program will not exit)
+            'If the user does not cancel the exit, we must forcibly exit this sub now.  (Otherwise, later operations will attempt
+            ' to access things like FormMain, which are in the midst of unloading!)
             If g_ProgramShuttingDown Then
                 m_NestedProcessingCount = m_NestedProcessingCount - 1
                 Exit Sub
             End If
         
-        Case "Select scanner or camera"
-            Plugin_EZTwain.Twain32SelectScanner
-            
-        Case "Scan image"
-            Plugin_EZTwain.Twain32Scan
-            
-        Case "Screen capture"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormScreenCapture
-            Else
-                ScreenCapture.CaptureScreen cXMLParams.GetParamString
-            End If
-            
-        Case "Internet import"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormInternetImport
-            End If
-            
+        End If
         
-        
-        'EDIT MENU FUNCTIONS
-        ' This includes things like copying or pasting an image.  These actions are never recorded.
-        
-        Case "Undo"
-            If FormMain.MnuEdit(0).Enabled Then
-                pdImages(g_CurrentImage).UndoManager.RestoreUndoData
-                Interface.NotifyImageChanged g_CurrentImage
-            End If
-            
-        Case "Redo"
-            If FormMain.MnuEdit(1).Enabled Then
-                pdImages(g_CurrentImage).UndoManager.RestoreRedoData
-                Interface.NotifyImageChanged g_CurrentImage
-            End If
-            
-        Case "Undo history"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormUndoHistory
-            Else
-                pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint cParams.GetLong(1)
-            End If
-        
-        Case "Cut"
-            g_Clipboard.ClipboardCut True
-        
-        Case "Cut from layer"
-            g_Clipboard.ClipboardCut False
-            
-        Case "Copy"
-            g_Clipboard.ClipboardCopy True
-            
-        Case "Copy from layer"
-            g_Clipboard.ClipboardCopy False
-            
-        Case "Paste as new image"
-            g_Clipboard.ClipboardPaste False
-        
-        Case "Paste as new layer"
-        
-            'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
-            g_Clipboard.ClipboardPaste (g_OpenImageCount > 0)
-                    
-        Case "Empty clipboard"
-            g_Clipboard.ClipboardEmpty
-        
-        
-        
-        'TOOL (AND TOOL MENU) FUNCTIONS
-        ' Macro recording actions.  Note that macro actions themselves are never recorded.
-        Case "Start macro recording"
-            Macros.StartMacro
-        
-        Case "Stop macro recording"
-            Macros.StopMacro
-            
-        Case "Play macro"
-            Macros.PlayMacro
+    End If
+    
+    'Edit menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
+    If (Not processFound) Then processFound = Process_EditMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
+    
+    'Tool menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
+    If (Not processFound) Then processFound = Process_ToolsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
+    
+    'If the process hasn't been found yet, resume with our legacy processID checks...
+    ' (Note that this block hasn't been indented to reduce git clutter.)
+    If (Not processFound) Then
+    
+    Select Case processID
         
         
         'Quick-fix tools
@@ -1642,6 +1519,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             
     End Select
     
+    'End of temporary "If (Not processFound) Then/Else..." check
+    End If
+    
     'If the user wants us to time this action, display the results now.  (Note that we only do this for actions that change the image
     ' in some way, as determined by whether meaningful Undo/Redo data is created.)
     If g_DisplayTimingReports And (createUndo <> UNDO_NOTHING) Then ReportProcessorTimeTaken m_ProcessingTime
@@ -2268,7 +2148,9 @@ Private Sub RemoveSelectionAsNecessary(ByVal processID As String, Optional raise
             '(Note that the initial "Crop" process (e.g. the one generated by the main menu) requests raiseDialog as TRUE, even though
             ' no dialog is shown.  It does this to trigger some diagnostic functions that determine whether a non-destructive crop can
             ' be applied; anyway, because of this, we only need to forcibly modify the previous Undo entry if raiseDialog is FALSE.)
-            If Strings.StringsEqual("Crop", processID, True) And (Not raiseDialog) Then pdImages(g_CurrentImage).UndoManager.ForceLastUndoDataToIncludeEverything
+            If (Strings.StringsEqual("Crop", processID, True) And (Not raiseDialog) And (Macros.GetMacroStatus <> MacroBATCH)) Then
+                pdImages(g_CurrentImage).UndoManager.ForceLastUndoDataToIncludeEverything
+            End If
             
         End If
         
@@ -2521,6 +2403,7 @@ Private Sub FileErrorReport(ByVal errNumber As Long)
 
     'If they have a GitHub account, let them submit the bug there.  Otherwise, send them to the photodemon.org contact form
     If (secondaryReturn = vbYes) Then
+    
         'Shell a browser window with the GitHub issue report form
         OpenURL "https://github.com/tannerhelland/PhotoDemon/issues/new"
         
@@ -2528,6 +2411,7 @@ Private Sub FileErrorReport(ByVal errNumber As Long)
         PDMsgBox "PhotoDemon has automatically opened a GitHub bug report webpage for you.  In the Title box, please enter the following error number with a short description of the problem: %1" & vbCrLf & vbCrLf & "Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible." & vbCrLf & vbCrLf & "When finished, click the Submit New Issue button.  Thank you!", vbInformation + vbApplicationModal + vbOKOnly, "GitHub bug report instructions", errNumber
         
     Else
+        
         'Shell a browser window with the photodemon.org contact form
         OpenURL "http://photodemon.org/about/contact/"
         
@@ -2537,3 +2421,169 @@ Private Sub FileErrorReport(ByVal errNumber As Long)
     End If
     
 End Sub
+
+'Helper wrapper for FILE MENU operations.  (Note that FILE MENU actions are never recorded as part of macros.)
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_FileMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+
+    If Strings.StringsEqual(processID, "New image", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormNewImage Else FileMenu.CreateNewImage processParameters
+        Process_FileMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Open", True) Then
+        FileMenu.MenuOpen
+        Process_FileMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Close", True) Then
+        FileMenu.MenuClose
+        Process_FileMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Close all", True) Then
+        FileMenu.MenuCloseAll
+        Process_FileMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Save", True) Then
+        FileMenu.MenuSave pdImages(g_CurrentImage)
+        Process_FileMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Save as", True) Then
+        FileMenu.MenuSaveAs pdImages(g_CurrentImage)
+        Process_FileMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Save copy", True) Then
+        FileMenu.MenuSaveLosslessCopy pdImages(g_CurrentImage)
+        Process_FileMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Revert", True) Then
+        If FormMain.MnuFile(9).Enabled Then
+            pdImages(g_CurrentImage).UndoManager.RevertToLastSavedState
+            Interface.NotifyImageChanged g_CurrentImage
+        End If
+        Process_FileMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Batch wizard", True) Then
+        Interface.ShowPDDialog vbModal, FormBatchWizard
+        Process_FileMenu = True
+             
+    ElseIf Strings.StringsEqual(processID, "Print", True) Then
+        If raiseDialog Then
+            
+            'As a temporary workaround, Vista+ users are routed through the default Windows photo printing
+            ' dialog.  XP users get the old PD print dialog.
+            If g_IsVistaOrLater Then
+                Printing.PrintViaWindowsPhotoPrinter
+            Else
+                If (Not FormPrint.Visible) Then Interface.ShowPDDialog vbModal, FormPrint
+            End If
+            
+            'In the future, the print dialog should be replaced with a new version.  However, this is a monumental task
+            ' and there are any number of bigger priorities at present, so this has been put on hold indefinitely...
+            'If Not FormPrintNew.Visible Then showPDDialog vbModal, FormPrintNew
+            
+        End If
+        Process_FileMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Exit program", True) Then
+        
+        'The main process function handles this step; we just need to notify it that an exit has been triggered
+        returnDetails = PD_PROCESS_EXIT_NOW
+        Process_FileMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Select scanner or camera", True) Then
+        Plugin_EZTwain.Twain32SelectScanner
+        Process_FileMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Scan image", True) Then
+        Plugin_EZTwain.Twain32Scan
+        Process_FileMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Screen capture", True) Then
+        If raiseDialog Then Interface.ShowPDDialog vbModal, FormScreenCapture Else ScreenCapture.CaptureScreen processParameters
+        Process_FileMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Internet import", True) Then
+        If raiseDialog Then Interface.ShowPDDialog vbModal, FormInternetImport
+        Process_FileMenu = True
+        
+    End If
+    
+End Function
+
+'Helper wrapper for EDIT MENU operations.  (Note that edit menu actions are generally not recorded as part of macros.)
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+
+    If Strings.StringsEqual(processID, "Undo", True) Then
+        If FormMain.MnuEdit(0).Enabled Then
+            pdImages(g_CurrentImage).UndoManager.RestoreUndoData
+            Interface.NotifyImageChanged g_CurrentImage
+        End If
+        Process_EditMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Redo", True) Then
+        If FormMain.MnuEdit(1).Enabled Then
+            pdImages(g_CurrentImage).UndoManager.RestoreRedoData
+            Interface.NotifyImageChanged g_CurrentImage
+        End If
+        Process_EditMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Undo history", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormUndoHistory Else pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint_XML processParameters
+        Process_EditMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Cut", True) Then
+        g_Clipboard.ClipboardCut True
+        Process_EditMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Cut from layer", True) Then
+        g_Clipboard.ClipboardCut False
+        Process_EditMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Copy", True) Then
+        g_Clipboard.ClipboardCopy True
+        Process_EditMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Copy from layer", True) Then
+        g_Clipboard.ClipboardCopy False
+        Process_EditMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Paste as new image", True) Then
+        g_Clipboard.ClipboardPaste False
+        Process_EditMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Paste as new layer", True) Then
+        'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
+        g_Clipboard.ClipboardPaste (g_OpenImageCount > 0)
+        Process_EditMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Empty clipboard", True) Then
+        g_Clipboard.ClipboardEmpty
+        Process_EditMenu = True
+        
+    End If
+    
+End Function
+
+'Helper wrapper for TOOLS MENU operations.  (Note that tool menu actions are generally not recorded as part of macros.)
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_ToolsMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+
+    If Strings.StringsEqual(processID, "Start macro recording", True) Then
+        Macros.StartMacro
+        Process_ToolsMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Stop macro recording", True) Then
+        Macros.StopMacro
+        Process_ToolsMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Play macro", True) Then
+        Macros.PlayMacro
+        Process_ToolsMenu = True
+        
+    End If
+        
+End Function
+

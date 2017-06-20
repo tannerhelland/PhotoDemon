@@ -564,11 +564,11 @@ Private Sub CanvasView_AppCommand(ByVal cmdID As AppCommandConstants, ByVal Shif
         
             'Back button: currently triggers Undo
             Case AC_BROWSER_BACKWARD, AC_UNDO
-                If pdImages(g_CurrentImage).undoManager.GetUndoState Then Process "Undo", , , UNDO_NOTHING
+                If pdImages(g_CurrentImage).UndoManager.GetUndoState Then Process "Undo", , , UNDO_NOTHING
                 
             'Forward button: currently triggers Redo
             Case AC_BROWSER_FORWARD, AC_REDO
-                If pdImages(g_CurrentImage).undoManager.GetRedoState Then Process "Redo", , , UNDO_NOTHING
+                If pdImages(g_CurrentImage).UndoManager.GetRedoState Then Process "Redo", , , UNDO_NOTHING
                 
         End Select
 
@@ -720,7 +720,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
     ' (NOTE: this should be fixed as of 6.6, as a dedicated picture box is now used for rendering)
     
     'Note whether a selection is active when mouse interactions began
-    m_SelectionActiveBeforeMouseEvents = (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).mainSelection.IsLockedIn)
+    m_SelectionActiveBeforeMouseEvents = (pdImages(g_CurrentImage).IsSelectionActive And pdImages(g_CurrentImage).MainSelection.IsLockedIn)
     
     'These variables will hold the corresponding (x,y) coordinates on the IMAGE - not the VIEWPORT.
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
@@ -1061,7 +1061,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         
                         'Update the layer's size.  At present, we simply make it fill the current viewport.
                         Dim curImageRectF As RECTF
-                        pdImages(g_CurrentImage).imgViewport.GetIntersectRectImage curImageRectF
+                        pdImages(g_CurrentImage).ImgViewport.GetIntersectRectImage curImageRectF
                         
                         With pdImages(g_CurrentImage)
                             .GetActiveLayer.SetLayerOffsetX curImageRectF.Left
@@ -1221,7 +1221,7 @@ Private Sub ImageStrip_Click(ByVal Button As PDMouseButtonConstants, ByVal Shift
         ' Use our own enablement heuristics for these.
         
         'Open in Explorer only works if the image is currently on-disk
-        mnuTabstripPopup(POP_OPEN_IN_EXPLORER).Enabled = (Len(pdImages(g_CurrentImage).imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) > 0)
+        mnuTabstripPopup(POP_OPEN_IN_EXPLORER).Enabled = (Len(pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)) > 0)
         
         'Close Other Images only works if more than one image is open.  We can determine this using the Next/Previous Image items
         ' in the Window menu
@@ -1269,7 +1269,7 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
         'Revert
         Case 3
             
-            pdImages(g_CurrentImage).undoManager.RevertToLastSavedState
+            pdImages(g_CurrentImage).UndoManager.RevertToLastSavedState
                         
             'Also, redraw the current child form icon
             CreateCustomFormIcons pdImages(g_CurrentImage)
@@ -1281,7 +1281,7 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
         'Open location in Explorer
         Case 5
             Dim filePath As String, shellCommand As String
-            filePath = pdImages(g_CurrentImage).imgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
+            filePath = pdImages(g_CurrentImage).ImgStorage.GetEntry_String("CurrentLocationOnDisk", vbNullString)
             shellCommand = "explorer.exe /select,""" & filePath & """"
             Shell shellCommand, vbNormalFocus
         
@@ -1349,7 +1349,7 @@ End Sub
 Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     
     'Regardless of viewport state, cache the current scroll bar value inside the current image
-    If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).imgViewport.SetHScrollValue hScroll.Value
+    If (Not pdImages(g_CurrentImage) Is Nothing) Then pdImages(g_CurrentImage).ImgViewport.SetHScrollValue hScroll.Value
     
     If (Not Me.GetRedrawSuspension) Then
         
@@ -1442,7 +1442,6 @@ Private Sub FillStatusBarRect(ByRef ucRect As RECTF, ByRef dstRect As RECTF)
     dstRect.Width = ucRect.Width
 End Sub
 
-'TODO: migrate these measurements to rely on ucSupport, so we get proper high-DPI handling
 Public Sub AlignCanvasView()
         
     'Prevent recursive redraws by putting the entire UC into "resize mode"; while in this mode, we ignore anything that
@@ -1450,7 +1449,7 @@ Public Sub AlignCanvasView()
     If m_InternalResize Then Exit Sub
     m_InternalResize = True
     
-    'TODO: retrieve DPI-aware control dimensions from the support class
+    'Measurements must come from ucSupport (to guarantee that they're DPI-aware)
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetControlWidth
     bHeight = ucSupport.GetControlHeight
@@ -1594,7 +1593,7 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
         
     'Regardless of viewport state, cache the current scroll bar value inside the current image
     If Not pdImages(g_CurrentImage) Is Nothing Then
-        pdImages(g_CurrentImage).imgViewport.SetVScrollValue vScroll.Value
+        pdImages(g_CurrentImage).ImgViewport.SetVScrollValue vScroll.Value
     End If
         
     If (Not Me.GetRedrawSuspension) Then
@@ -1773,7 +1772,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 
                 'numOfPolygonPoints: mouse is inside the polygon, but not over a polygon node
                 Case poi_Interior
-                    If pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+                    If pdImages(g_CurrentImage).MainSelection.IsLockedIn Then
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
                         CanvasView.RequestCursor_System IDC_ARROW
@@ -1795,7 +1794,7 @@ Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 'poi_Interior: mouse is inside the lasso selection area.  As a convenience to the user, we don't update the cursor
                 '   if they're still in "drawing" mode - we only update it if the selection is complete.
                 Case poi_Interior
-                    If pdImages(g_CurrentImage).mainSelection.IsLockedIn Then
+                    If pdImages(g_CurrentImage).MainSelection.IsLockedIn Then
                         CanvasView.RequestCursor_System IDC_SIZEALL
                     Else
                         CanvasView.RequestCursor_System IDC_ARROW
