@@ -279,38 +279,39 @@ End Function
 Private Function RetrieveModifiedXMLString() As String
     
     'If this image has no metadata, exit now
-    If m_NumOfTags <= 0 Then
-        RetrieveModifiedXMLString = ""
-        Exit Function
+    If (m_NumOfTags <= 0) Then
+        RetrieveModifiedXMLString = vbNullString
+    Else
+        
+        Dim newXMLString As String
+        newXMLString = m_OriginalXML
+        
+        Dim tagStart As Long, tagEnd As Long
+        
+        'Note that external functions are responsible for marking which entries they want removed.  This function presumes that all
+        ' modifications have already been marked, so all we need to do is fulfill the actual removal step.
+        Dim i As Long
+        For i = 0 To m_NumOfTags - 1
+        
+            If m_Tags(i).TagMarkedForRemoval Then
+            
+                'Find this tag's start position
+                tagStart = InStr(1, newXMLString, "<" & m_Tags(i).TagGroupAndName)
+                
+                'Next, find this tag's end position
+                tagEnd = InStr(tagStart, newXMLString, "</" & m_Tags(i).TagGroupAndName) + Len(m_Tags(i).TagGroupAndName) + 3
+                
+                'Use those positions to fully remove the tag from the master XML string
+                newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
+            
+            End If
+        
+        Next i
+            
+        RetrieveModifiedXMLString = newXMLString
+        
     End If
-    
-    Dim newXMLString As String
-    newXMLString = m_OriginalXML
-    
-    Dim tagStart As Long, tagEnd As Long
-    
-    'Note that external functions are responsible for marking which entries they want removed.  This function presumes that all
-    ' modifications have already been marked, so all we need to do is fulfill the actual removal step.
-    Dim i As Long
-    For i = 0 To m_NumOfTags - 1
-    
-        If m_Tags(i).TagMarkedForRemoval Then
         
-            'Find this tag's start position
-            tagStart = InStr(1, newXMLString, "<" & m_Tags(i).TagGroupAndName)
-            
-            'Next, find this tag's end position
-            tagEnd = InStr(tagStart, newXMLString, "</" & m_Tags(i).TagGroupAndName) + Len(m_Tags(i).TagGroupAndName) + 3
-            
-            'Use those positions to fully remove the tag from the master XML string
-            newXMLString = Left$(newXMLString, tagStart - 1) & Right$(newXMLString, Len(newXMLString) - tagEnd)
-        
-        End If
-    
-    Next i
-        
-    RetrieveModifiedXMLString = newXMLString
-    
 End Function
 
 'Given a valid XML-formatted metadata string from ExifTool, parse it into usable PD metadata format.
@@ -657,7 +658,7 @@ Private Function ApplyMetadataPostProcessing(ByVal parentImageID As Long) As Boo
         ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_PNG) And (Not pdImages(parentImageID).GetActiveDIB.ICCProfile.HasICCData)
         
         'Check for multipage TIFFs that were loaded using the "one layer per page" method
-        If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).imgStorage.GetEntry_Boolean("MultipageImportActive", False))
+        If (Not ppMayBeNeeded) Then ppMayBeNeeded = CBool(pdImages(parentImageID).GetOriginalFileFormat = PDIF_TIFF) And (pdImages(parentImageID).ImgStorage.GetEntry_Boolean("MultipageImportActive", False))
         
         'If this file contains an ICC profile, but FreeImage was unable to retrieve it (as is possible with some esoteric formats),
         ' we may be able to use ExifTool to manually retrieve the full profile data.
@@ -1406,7 +1407,7 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
     
     'Retrieve the XML setting, if any, from the target image object, and write metadata accordingly.
     Dim metadataParams As String
-    metadataParams = srcImage.imgStorage.GetEntry_String("MetadataSettings", vbNullString)
+    metadataParams = srcImage.ImgStorage.GetEntry_String("MetadataSettings", vbNullString)
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
@@ -1414,7 +1415,9 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
     
     'First, see if metadata export is even allowed
     If cParams.GetBool("MetadataExportAllowed", True) Then
-    
+        
+        Dim i As Long
+        
         'See if the caller wants their metadata anonymized prior to export
         Dim forciblyAnonymize As Boolean
         forciblyAnonymize = cParams.GetBool("MetadataAnonymize", True)
@@ -1425,17 +1428,23 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         
             'NOTE: GPS tags will be automatically removed by a special parameter we pass to ExifTool, but any other
             ' privacy-problematic tags must be manually flagged.
-            Dim i As Long
             For i = 0 To m_NumOfTags - 1
                 If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.DoesTagHavePrivacyConcerns(m_Tags(i))
             Next i
             
         End If
+        
+        'Next, manually remove certain metadata entries that are explicitly noted as "not writable"; these include things like
+        ' format or ExifTool version numbers, which ExifTool will raise warnings about (as those values need to be implicitly
+        ' handled by ExifTool itself, rather than being forcibly set to their previous values).
+        For i = 0 To m_NumOfTags - 1
+            If (Not m_Tags(i).TagMarkedForRemoval) Then m_Tags(i).TagMarkedForRemoval = ExifTool.ShouldTagNeverBeWritten(m_Tags(i))
+        Next i
             
         'Now that all problematic tags have been identified, we need to generate a modified XML string without those entries.
         ' (NOTE: removal of these tags will *still be requested* when we interact with ExifTool, but by preemptively removing
         '        said entries, we add an extra layer of protection against parsing errors and other glitches.)
-        newXMLString = RetrieveModifiedXMLString
+        newXMLString = RetrieveModifiedXMLString()
         
         Message "Embedding metadata..."
         
@@ -1461,7 +1470,7 @@ Public Function WriteAllMetadata(ByVal outputPath As String, ByRef srcImage As p
         End If
         
         'The next part is easy - supply the XML file to ExifTool, and request of copying of metadata from the XML to the image file.
-        WriteAllMetadata = WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
+        WriteAllMetadata = ExifTool.WriteMetadata(tmpXMLPath, outputPath, srcImage, forciblyAnonymize, metadataParams)
         
         If WriteAllMetadata Then
             Message "Metadata embedded successfully."

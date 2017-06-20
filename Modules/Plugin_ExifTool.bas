@@ -665,7 +665,7 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    If cFile.FileExist(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
+    If cFile.FileExist(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -680,8 +680,8 @@ Public Function CreateTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
         cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
                 
         'Add the source image to the list
-        m_technicalReportSrcImage = srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")
-        cmdParams = cmdParams & srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk") & vbCrLf
+        m_technicalReportSrcImage = srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")
+        cmdParams = cmdParams & srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk") & vbCrLf
         
         'Finally, add the special command "-execute" which tells ExifTool to start operations
         cmdParams = cmdParams & "-execute" & vbCrLf
@@ -711,7 +711,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
     ' ICC profile out to file.)
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    If cFile.FileExist(srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
+    If cFile.FileExist(srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk")) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -738,7 +738,7 @@ Public Function ExtractICCMetadataToFile(ByRef srcImage As pdImage, Optional ByV
         m_ICCExtractionSrcImage = tmpFilename
         
         'Finally, add the original filename
-        cmdParams = cmdParams & srcImage.imgStorage.GetEntry_String("CurrentLocationOnDisk") & vbCrLf
+        cmdParams = cmdParams & srcImage.ImgStorage.GetEntry_String("CurrentLocationOnDisk") & vbCrLf
         
         'Finally, add the special command "-execute" which tells ExifTool to start operations
         cmdParams = cmdParams & "-execute" & vbCrLf
@@ -769,11 +769,11 @@ Public Function ShowMetadataDialog(ByRef srcImage As pdImage, Optional ByRef par
 
     'Perform a failsafe check to make sure the metadata object exists.  (If ExifTool is missing, it may
     ' not be present!)
-    If Not (srcImage.imgMetadata Is Nothing) Then
+    If Not (srcImage.ImgMetadata Is Nothing) Then
         
         'In the future, we'll allow the user to add their own metadata to the current image.  At present,
         ' however, there's not much point in displaying a dialog if the image doesn't have metadata.
-        If srcImage.imgMetadata.HasMetadata Then
+        If srcImage.ImgMetadata.HasMetadata Then
             
             'Make sure the metadata database exists.  If it doesn't, create it.
             If (Not ExifTool.DoesTagDatabaseExist) Or ExifTool.IsDatabaseModeActive Then
@@ -896,7 +896,7 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     ' TIFF requires us to not mess with the IFD### blocks - in JPEGs, these represent thumbnail images, but in a TIFF
     ' image they might be entire useful pages!)
     Dim saveIsMultipage As Boolean, saveIsMultipageTIFF As Boolean
-    saveIsMultipage = srcPDImage.imgStorage.GetEntry_Boolean("MultipageExportActive", False)
+    saveIsMultipage = srcPDImage.ImgStorage.GetEntry_Boolean("MultipageExportActive", False)
     If saveIsMultipage Then saveIsMultipageTIFF = CBool(srcPDImage.GetCurrentFileFormat = PDIF_TIFF) Else saveIsMultipageTIFF = False
     
     'If an additional metadata parameter string was supplied, create a parser for it.  This may contain specialized
@@ -969,10 +969,10 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'Next, we need to manually request the update of any tags that the user has manually modified via the metadata editor.
     Dim i As Long, tmpMetadata As PDMetadataItem, tmpEscapedValue As String
-    If srcPDImage.imgMetadata.HasMetadata Then
+    If srcPDImage.ImgMetadata.HasMetadata Then
     
-        For i = 0 To srcPDImage.imgMetadata.GetMetadataCount - 1
-            tmpMetadata = srcPDImage.imgMetadata.GetMetadataEntry(i)
+        For i = 0 To srcPDImage.ImgMetadata.GetMetadataCount - 1
+            tmpMetadata = srcPDImage.ImgMetadata.GetMetadataEntry(i)
             
             If tmpMetadata.UserModifiedAllSessions Then
                 cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "="
@@ -995,9 +995,11 @@ Public Function WriteMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
             End If
                 
             'Also, if the user has manually requested removal of a tag, mirror that request to ExifTool.
-            If tmpMetadata.TagMarkedForRemoval Then
-                cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & vbCrLf
-            End If
+            'TODO 7.0: see if this block is even necessary.  At present, we forcibly strip problematic metadata entries
+            ' from the source XML string, as a maximal precaution (see pdMetadata.RetrieveModifiedXMLString() for details).
+            'If tmpMetadata.TagMarkedForRemoval Then
+            '    cmdParams = cmdParams & "-" & tmpMetadata.TagGroupAndName & "=" & vbCrLf
+            'End If
             
         Next i
         
@@ -1928,6 +1930,19 @@ Public Function DoesTagHavePrivacyConcerns(ByRef srcTag As PDMetadataItem) As Bo
     End If
     
     DoesTagHavePrivacyConcerns = potentialConcern
+                    
+End Function
+
+'Some tags should never be written.  ExifTool is smart about handling such tags, but it will throw warnings about them,
+' which clutters up our debug tracking.  Use this function to forcibly suppress some known metadata entries that should
+' never be manually written.
+Public Function ShouldTagNeverBeWritten(ByRef srcTag As PDMetadataItem) As Boolean
+
+    Dim potentialConcern As Boolean: potentialConcern = False
+    potentialConcern = Strings.StringsEqual(srcTag.tagName, "ExifToolVersion", True) Or potentialConcern
+    potentialConcern = Strings.StringsEqual(srcTag.tagName, "JFIFVersion", True) Or potentialConcern
+    
+    ShouldTagNeverBeWritten = potentialConcern
                     
 End Function
 
