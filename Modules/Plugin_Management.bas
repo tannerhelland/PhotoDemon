@@ -91,6 +91,20 @@ Private m_PluginExists() As Boolean
 Private m_PluginAllowed() As Boolean
 Private m_PluginInitialized() As Boolean
 
+'Path to plugin folder.  For security reasons, this is forcibly constructed as an absolute path
+' (generally "App.Path/App/PhotoDemon/Plugins"), because we pass it directly to LoadLibrary.
+Private m_PluginPath As String
+
+Public Function GetPluginPath() As String
+    If (Len(m_PluginPath) <> 0) Then
+        GetPluginPath = m_PluginPath
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  PluginManager.GetPluginPath() was called before the plugin manager was initialized!"
+        #End If
+    End If
+End Function
+
 Public Function GetNumOfPlugins() As Long
     GetNumOfPlugins = CORE_PLUGIN_COUNT
 End Function
@@ -104,12 +118,12 @@ Public Sub InitializePluginManager()
     ReDim m_PluginInitialized(0 To CORE_PLUGIN_COUNT - 1) As Boolean
     
     'Plugin files are located in the \Data\Plugins subdirectory
-    g_PluginPath = g_UserPreferences.GetAppPath & "Plugins\"
+    m_PluginPath = g_UserPreferences.GetAppPath & "Plugins\"
     
     'Make sure the plugin path exists
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    If (Not cFile.FolderExist(g_PluginPath)) Then cFile.CreateFolder g_PluginPath, True
+    If (Not cFile.FolderExist(PluginManager.GetPluginPath)) Then cFile.CreateFolder PluginManager.GetPluginPath, True
     
 End Sub
 
@@ -282,7 +296,7 @@ Public Function GetPluginVersion(ByVal pluginEnumID As CORE_PLUGINS) As String
         
         'All other plugins pull their version info directly from file metadata
         Case Else
-            GetPluginVersion = RetrieveGenericVersionString(g_PluginPath & PluginManager.GetPluginFilename(pluginEnumID))
+            GetPluginVersion = RetrieveGenericVersionString(PluginManager.GetPluginPath & PluginManager.GetPluginFilename(pluginEnumID))
             
     End Select
     
@@ -401,7 +415,7 @@ End Sub
 Public Function IsPluginCurrentlyInstalled(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-    IsPluginCurrentlyInstalled = cFile.FileExist(g_PluginPath & GetPluginFilename(pluginEnumID))
+    IsPluginCurrentlyInstalled = cFile.FileExist(PluginManager.GetPluginPath & GetPluginFilename(pluginEnumID))
 End Function
 
 'PD loads plugins in two waves.  Before the splash screen appears, "high-priority" plugins are loaded.  These include the
@@ -572,7 +586,7 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         'LZ4 maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_lz4
-            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_Lz4, g_PluginPath)
+            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_Lz4, PluginManager.GetPluginPath)
             
         'OptiPNG and PNGQuant are loaded on-demand, as they may not be used in every session
         Case CCP_OptiPNG
@@ -583,11 +597,11 @@ Private Function InitializePlugin(ByVal pluginEnumID As CORE_PLUGINS) As Boolean
         
         'zLib maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_zLib
-            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_ZLib, g_PluginPath)
+            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_ZLib, PluginManager.GetPluginPath)
         
         'zstd maintains a program-wide handle for the life of the program, which we attempt to generate now.
         Case CCP_zstd
-            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_Zstd, g_PluginPath)
+            initializationSuccessful = Compression.InitializeCompressionEngine(PD_CE_Zstd, PluginManager.GetPluginPath)
             
     End Select
 
@@ -681,7 +695,7 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     Set cFile = New pdFSO
     
     'See if the file exists.  If it does, great!  We can exit immediately.
-    If cFile.FileExist(g_PluginPath & pluginFilename) Then
+    If cFile.FileExist(PluginManager.GetPluginPath & pluginFilename) Then
         DoesPluginFileExist = True
     
     'The plugin file is missing.  Let's see if we can find it.
@@ -699,7 +713,7 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
             'Move the plugin file to the proper folder
-            If cFile.CopyFile(g_UserPreferences.GetProgramPath & pluginFilename, g_PluginPath & pluginFilename) Then
+            If cFile.CopyFile(g_UserPreferences.GetProgramPath & pluginFilename, PluginManager.GetPluginPath & pluginFilename) Then
                 
                 pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & GetPluginFilename(pluginEnumID) & ") was relocated successfully."
                 
@@ -712,7 +726,7 @@ Private Function DoesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
                     Dim tmpFilename As String
                     
                     Do While extraFiles.PopString(tmpFilename)
-                        If cFile.CopyFile(g_UserPreferences.GetProgramPath & tmpFilename, g_PluginPath & tmpFilename) Then
+                        If cFile.CopyFile(g_UserPreferences.GetProgramPath & tmpFilename, PluginManager.GetPluginPath & tmpFilename) Then
                             cFile.KillFile g_UserPreferences.GetProgramPath & tmpFilename
                         End If
                     Loop

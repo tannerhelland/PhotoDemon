@@ -53,7 +53,7 @@ Private m_ZstdCompressLevelMax As Long
 'Initialize zstd.  Do not call this until you have verified zstd's existence (typically via the PluginManager module)
 Public Function InitializeZStd(ByRef pathToDLLFolder As String) As Boolean
 
-    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim zstdPath As String
     zstdPath = pathToDLLFolder & "libzstd.dll"
     m_ZstdHandle = LoadLibrary(StrPtr(zstdPath))

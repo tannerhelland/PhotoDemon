@@ -519,7 +519,7 @@ Public Function GetExifToolVersion() As String
     If PluginManager.IsPluginCurrentlyInstalled(CCP_ExifTool) Then
         
         Dim exifPath As String
-        exifPath = g_PluginPath & "exiftool.exe"
+        exifPath = PluginManager.GetPluginPath & "exiftool.exe"
         
         Dim outputString As String
         If ShellExecuteCapture(exifPath, "exiftool.exe -ver", outputString) Then
@@ -1201,7 +1201,7 @@ Public Function StartExifTool() As Boolean
     
     'Grab the ExifTool path, which we will shell and pipe in a moment
     Dim appLocation As String
-    appLocation = g_PluginPath & "exiftool.exe"
+    appLocation = PluginManager.GetPluginPath & "exiftool.exe"
     
     'Next, build a string of command-line parameters.  These will modify ExifTool's behavior to make it compatible with our code.
     Dim cmdParams As String

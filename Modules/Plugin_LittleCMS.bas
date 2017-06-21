@@ -450,9 +450,9 @@ Private m_LCMSHandle As Long
 ' (typically via the PluginManager module)
 Public Function InitializeLCMS() As Boolean
     
-    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim lcmsPath As String
-    lcmsPath = g_PluginPath & "lcms2.dll"
+    lcmsPath = PluginManager.GetPluginPath & "lcms2.dll"
     m_LCMSHandle = LoadLibrary(StrPtr(lcmsPath))
     InitializeLCMS = CBool(m_LCMSHandle <> 0)
     
