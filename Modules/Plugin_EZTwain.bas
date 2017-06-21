@@ -41,9 +41,9 @@ Public Function InitializeEZTwain() As Boolean
     
     If (m_hLibScanner = 0) Then
     
-        'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+        'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
         Dim eztPath As String
-        eztPath = g_PluginPath & "eztw32.dll"
+        eztPath = PluginManager.GetPluginPath & "eztw32.dll"
         m_hLibScanner = LoadLibrary(StrPtr(eztPath))
         InitializeEZTwain = CBool(m_hLibScanner <> 0)
         m_ScanningAvailable = InitializeEZTwain

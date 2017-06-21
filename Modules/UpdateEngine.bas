@@ -174,7 +174,7 @@ Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
     
     'We will be testing a number of different languages to see if they qualify for an update.  This temporary object will
     ' be passed to the public translation class as necessary, to retrieve a copy of a given language file's data.
-    Dim tmpLanguage As pdLanguageFile
+    Dim tmpLanguage As PDLanguageFile
         
     'A pdXML object handles XML parsing for us.
     Dim xmlEngine As pdXML
@@ -760,7 +760,7 @@ Public Sub CleanPreviousUpdateFiles()
         
     '...And just to be safe, do the same thing for temp files in the plugin folder
     Set tmpFileList = Nothing
-    If cFile.RetrieveAllFiles(g_PluginPath, tmpFileList, False, False, "TMP|tmp") Then
+    If cFile.RetrieveAllFiles(PluginManager.GetPluginPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
         

@@ -52,9 +52,6 @@ Public g_Zoom As pdZoom
 'Whether or not to resize large images to fit on-screen (0 means "yes," 1 means "no")
 Public g_AutozoomLargeImages As Long
 
-'The path where DLLs and related support libraries are kept, currently "ProgramPath\App\PhotoDemon\Plugins\"
-Public g_PluginPath As String
-
 'Is compression via various libraries enabled?
 Public g_ZLibEnabled As Boolean
 Public g_ZstdEnabled As Boolean

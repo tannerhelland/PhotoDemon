@@ -36,7 +36,7 @@ Public Function GetOptiPNGVersion() As String
     If PluginManager.IsPluginCurrentlyInstalled(CCP_OptiPNG) Then
         
         Dim pluginPath As String
-        pluginPath = g_PluginPath & "optipng.exe"
+        pluginPath = PluginManager.GetPluginPath & "optipng.exe"
         
         Dim outputString As String
         If ShellExecuteCapture(pluginPath, "optipng.exe -version", outputString) Then
@@ -73,7 +73,7 @@ Public Function ApplyOptiPNGToFile_Synchronous(ByVal dstFilename As String, Opti
         
         'Build a full shell path for the pngquant operation
         Dim shellPath As String
-        shellPath = g_PluginPath & "optipng.exe "
+        shellPath = PluginManager.GetPluginPath & "optipng.exe "
         
         Dim optimizeFlags As String
         Select Case optimizeLevel

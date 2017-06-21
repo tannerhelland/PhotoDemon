@@ -38,7 +38,7 @@ Public Function GetPngQuantVersion() As String
     If PluginManager.IsPluginCurrentlyInstalled(CCP_PNGQuant) Then
         
         Dim pngqPath As String
-        pngqPath = g_PluginPath & "pngquant.exe"
+        pngqPath = PluginManager.GetPluginPath & "pngquant.exe"
         
         Dim outputString As String
         If ShellExecuteCapture(pngqPath, "pngquant.exe --version", outputString) Then
@@ -66,7 +66,7 @@ Public Function ApplyPNGQuantToFile_Synchronous(ByVal dstFilename As String, Opt
         
         'Build a full shell path for the pngquant operation
         Dim shellPath As String
-        shellPath = g_PluginPath & "pngquant.exe "
+        shellPath = PluginManager.GetPluginPath & "pngquant.exe "
         
         'Like JPEGs, quality here is a nebulous measurement.  pngquant wants both a minimum quality (the image will not
         ' be saved if the conversion is worse than this) and a maximum quality (which determines how aggressive it is

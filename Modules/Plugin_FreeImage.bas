@@ -55,9 +55,9 @@ Private m_ExportPreviewDIB As pdDIB
 'Initialize FreeImage.  Do not call this until you have verified FreeImage's existence (typically via the PluginManager module)
 Public Function InitializeFreeImage() As Boolean
     
-    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim fiPath As String
-    fiPath = g_PluginPath & "FreeImage.dll"
+    fiPath = PluginManager.GetPluginPath & "FreeImage.dll"
     g_FreeImageHandle = LoadLibrary(StrPtr(fiPath))
     InitializeFreeImage = CBool(g_FreeImageHandle <> 0)
     
@@ -409,7 +409,7 @@ Private Function FI_GetFIObjectIntoDIB(ByRef fi_hDIB As Long, ByRef fi_multi_hDI
             If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then
                 
                 'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
-                If (Not targetImage Is Nothing) Then targetImage.imgStorage.AddEntry "Tone-mapping", True
+                If (Not targetImage Is Nothing) Then targetImage.ImgStorage.AddEntry "Tone-mapping", True
                 
                 'Replace the primary FI_DIB handle with the new one, then carry on with loading
                 If (new_hDIB <> fi_hDIB) Then FI_Unload fi_hDIB, fi_multi_hDIB, True, multiDibIsDetached

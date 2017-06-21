@@ -36,9 +36,9 @@ Private m_ZLibHandle As Long
 'Initialize zLib.  Do not call this until you have verified zLib's existence (typically via the PluginManager module)
 Public Function InitializeZLib(ByRef pathToDLLFolder As String) As Boolean
     
-    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim zLibPath As String
-    zLibPath = pathToDLLFolder & "zlibwapi.dll"
+    zLibPath = PluginManager.GetPluginPath & "zlibwapi.dll"
     m_ZLibHandle = LoadLibrary(StrPtr(zLibPath))
     InitializeZLib = CBool(m_ZLibHandle <> 0)
     

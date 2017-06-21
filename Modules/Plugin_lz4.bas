@@ -60,7 +60,7 @@ Private m_Lz4Handle As Long
 'Initialize lz4.  Do not call this until you have verified its existence (typically via the PluginManager module)
 Public Function InitializeLz4(ByRef pathToDLLFolder As String) As Boolean
 
-    'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)
+    'Manually load the DLL from the plugin folder (should be App.Path\Data\Plugins)
     Dim lz4Path As String
     lz4Path = pathToDLLFolder & "liblz4.dll"
     m_Lz4Handle = LoadLibrary(StrPtr(lz4Path))
