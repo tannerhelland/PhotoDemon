@@ -318,7 +318,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 'If shearing is active on the current layer, we need to account for its effect on the current mouse location.
                 ' (Note that we could apply this matrix transformation regardless of current shear values, as values of zero
                 ' will simply return an identity matrix, but why do extra math if it's not required?)
-                If (srcLayer.GetLayerShearX <> 0) Or (srcLayer.GetLayerShearY <> 0) Then
+                If (srcLayer.GetLayerShearX <> 0#) Or (srcLayer.GetLayerShearY <> 0#) Then
                 
                     'Apply the current layer's shear effect to the mouse position.  This gives us its unadulterated equivalent,
                     ' e.g. its location in the same coordinate space as the two points we've already calculated.
@@ -352,7 +352,7 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 'Apply the angle to the layer, and our work here is done!
                 .SetLayerAngle newAngle
-                            
+                
             '5: interior of the layer (e.g. move the layer instead of resize it)
             Case poi_Interior
                 .SetLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
@@ -379,8 +379,9 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
             Dim adjustedWidth As Single, adjustedHeight As Single
             adjustedWidth = (newRight - newLeft)
             adjustedHeight = (newBottom - newTop)
-            srcLayer.SetLayerRotateCenterX (m_InitLayerRotateCenterX - newLeft) / adjustedWidth
-            srcLayer.SetLayerRotateCenterY (m_InitLayerRotateCenterY - newTop) / adjustedHeight
+            
+            If (adjustedWidth <> 0#) Then srcLayer.SetLayerRotateCenterX (m_InitLayerRotateCenterX - newLeft) / adjustedWidth
+            If (adjustedHeight <> 0#) Then srcLayer.SetLayerRotateCenterY (m_InitLayerRotateCenterY - newTop) / adjustedHeight
             
             'If the mouse has just been released, we want to reset the layer's rotational point to its default value
             ' (the center of the image).  This ensures that future move/size events behave as expected.

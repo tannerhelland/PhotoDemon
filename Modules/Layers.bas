@@ -158,8 +158,8 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
         
         'Set an initial width/height of 1x1
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerWidth 1
-            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerHeight 1
+            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerWidth 1#
+            pdImages(g_CurrentImage).GetLayerByID(newLayerID).SetLayerHeight 1#
         
     End Select
         
@@ -192,9 +192,9 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     
     'Make the newly created layer the active layer
     If dLayerAutoSelect Then
-        SetActiveLayerByID newLayerID, False, Not suspendRedraws
+        Layers.SetActiveLayerByID newLayerID, False, Not suspendRedraws
     Else
-        SetActiveLayerByID prevActiveLayerID, False, Not suspendRedraws
+        Layers.SetActiveLayerByID prevActiveLayerID, False, Not suspendRedraws
     End If
     
     'Notify the parent of the change

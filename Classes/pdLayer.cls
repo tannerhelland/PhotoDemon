@@ -479,16 +479,25 @@ Friend Sub SetOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLef
         .l_OffsetX = topLeftX
         .l_OffsetY = topLeftY
         
-        If (Me.GetLayerWidth(False) <> 0) Then
-            SetLayerCanvasXModifier (bottomRightX - topLeftX) / GetLayerWidth(False)
-        Else
-            SetLayerCanvasXModifier 1#
-        End If
+        'Image layers have their own base size, and a modifier is used to "stretch" that size accordingly
+        If (myLayerType = PDL_IMAGE) Then
+            
+            If (Me.GetLayerWidth(False) <> 0#) Then
+                Me.SetLayerCanvasXModifier (bottomRightX - topLeftX) / Me.GetLayerWidth(False)
+            Else
+                Me.SetLayerCanvasXModifier 1#
+            End If
+            
+            If (Me.GetLayerHeight(False) <> 0#) Then
+                Me.SetLayerCanvasYModifier (bottomRightY - topLeftY) / Me.GetLayerHeight(False)
+            Else
+                Me.SetLayerCanvasYModifier 1#
+            End If
         
-        If (Me.GetLayerHeight(False) <> 0) Then
-            SetLayerCanvasYModifier (bottomRightY - topLeftY) / GetLayerHeight(False)
-        Else
-            SetLayerCanvasYModifier 1#
+        'Text layers are simply resized, while their modifier is kept at 1.0
+        ElseIf (myLayerType = PDL_TEXT) Or (myLayerType = PDL_TYPOGRAPHY) Then
+            Me.SetLayerWidth bottomRightX - topLeftX
+            Me.SetLayerHeight bottomRightY - topLeftY
         End If
         
     End With
@@ -509,7 +518,7 @@ Public Function GetLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
         Case PDL_IMAGE
             
-            If Not (layerDIB Is Nothing) Then
+            If (Not layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
                     GetLayerWidth = layerDIB.GetDIBWidth * GetLayerCanvasXModifier
@@ -539,7 +548,7 @@ Public Function GetLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
         'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
         Case PDL_IMAGE
             
-            If (Not (layerDIB Is Nothing)) Then
+            If (Not layerDIB Is Nothing) Then
         
                 If applyCanvasModifier Then
                     GetLayerHeight = layerDIB.GetDIBHeight * GetLayerCanvasYModifier
@@ -564,7 +573,7 @@ End Function
 Public Sub SetLayerWidth(ByVal newSize As Single)
     
     'Force size in-bounds
-    If (newSize < 1) Then newSize = 1
+    If (newSize < 1#) Then newSize = 1#
     
     'Make sure the layer is a vector layer
     If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
@@ -574,7 +583,7 @@ Public Sub SetLayerWidth(ByVal newSize As Single)
         m_VectorDIBSynched = False
         
     Else
-        If myLayerType = PDL_IMAGE Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If (myLayerType = PDL_IMAGE) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
     End If
     
 End Sub
@@ -582,7 +591,7 @@ End Sub
 Public Sub SetLayerHeight(ByVal newSize As Single)
     
     'Force size in-bounds
-    If (newSize < 1) Then newSize = 1
+    If (newSize < 1#) Then newSize = 1#
     
     'Make sure the layer is a vector layer
     If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
@@ -592,7 +601,7 @@ Public Sub SetLayerHeight(ByVal newSize As Single)
         m_VectorDIBSynched = False
         
     Else
-        If myLayerType = PDL_IMAGE Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If (myLayerType = PDL_IMAGE) Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
     End If
     
 End Sub
@@ -619,8 +628,8 @@ Public Sub SetLayerCanvasXModifier(ByVal newXModifier As Double)
             myLayerData.l_CanvasXModifier = newXModifier
             
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            myLayerData.l_CanvasXModifier = 1
-            SetLayerWidth newXModifier * GetLayerWidth
+            myLayerData.l_CanvasXModifier = 1#
+            Me.SetLayerWidth newXModifier * Me.GetLayerWidth(False)
     
     End Select
     
@@ -638,8 +647,8 @@ Public Sub SetLayerCanvasYModifier(ByVal newYModifier As Double)
             myLayerData.l_CanvasYModifier = newYModifier
             
         Case PDL_TEXT, PDL_TYPOGRAPHY
-            myLayerData.l_CanvasYModifier = 1
-            SetLayerHeight newYModifier * GetLayerHeight
+            myLayerData.l_CanvasYModifier = 1#
+            Me.SetLayerHeight newYModifier * Me.GetLayerHeight(False)
     
     End Select
     
@@ -1050,20 +1059,13 @@ Public Function AffineTransformsActive(Optional ByVal includeScaling As Boolean 
     
     'Most PD operations handle scaling separate from other affine operations, so we can typically skip this check
     If includeScaling Then
-    
-        If (myLayerData.l_CanvasXModifier <> 1) Or (myLayerData.l_CanvasYModifier <> 1) Then
-            AffineTransformsActive = True
-            Exit Function
-        End If
-    
-    End If
-    
-    'Rotate and shear are the only other relevant affine transforms.  Note that we don't care about rotation center point here;
-    ' when the layer angle is 0, rotation center point is irrelevant.
-    If (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0) Then
-        AffineTransformsActive = True
+        AffineTransformsActive = (myLayerData.l_CanvasXModifier <> 1#) Or (myLayerData.l_CanvasYModifier <> 1#)
     Else
-        AffineTransformsActive = False
+    
+        'Rotate and shear are the only other relevant affine transforms.  Note that we don't care about rotation center
+        ' point here; when the layer angle is 0, rotation center point is irrelevant.
+        AffineTransformsActive = (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0)
+        
     End If
     
 End Function
@@ -1758,11 +1760,11 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
-        .l_Angle = 0
+        .l_Angle = 0#
         .l_RotateCenterX = 0.5
         .l_RotateCenterY = 0.5
-        .l_ShearX = 0
-        .l_ShearY = 0
+        .l_ShearX = 0#
+        .l_ShearY = 0#
         .l_AlphaMode = LA_NORMAL
     End With
     
@@ -1783,8 +1785,8 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     
     'Reset any vector-specific data
     With myVectorData
-        .vd_Width = 0
-        .vd_Height = 0
+        .vd_Width = 0#
+        .vd_Height = 0#
     End With
     
     m_VectorDIBSynched = False
@@ -2467,6 +2469,7 @@ Public Function GetViewportHash_Theoretical(ParamArray allParams() As Variant) A
         tmpHash = tmpHash Xor (.l_Opacity * 65535)
         tmpHash = tmpHash Xor (.l_ShearX * 524287) Xor (.l_ShearY * 1048575)
         tmpHash = tmpHash Xor ((.l_BlendMode + 1) * 63) Xor ((.l_AlphaMode + 1) * 511)
+        tmpHash = tmpHash Xor ((.l_RotateCenterX + 1#) * 3730) Xor ((.l_RotateCenterY + 1# * 5850))
     End With
     
     'Next, add any non-destructive FX parameters to the hash
