@@ -272,11 +272,11 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             'During normal usage, "New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer
             ' has already been created, and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
             '
-            'During macro playback, "New text layer" becomes more important, as we do actually need to create the layer!
+            'During macro playback, "New text layer" means something else entirely - it means to actually create a new layer!
             If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
                 
                 'Start by creating a new layer
-                If StrComp(processID, "New text layer", vbTextCompare) Then
+                If Strings.StringsEqual(processID, "New text layer", True) Then
                     Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", 0, 0, True
                 Else
                     Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", 0, 0, True

@@ -856,7 +856,7 @@ Private Sub CanvasView_MouseDownCustom(ByVal Button As PDMouseButtonConstants, B
             
         End Select
     
-    ElseIf Button = vbRightButton Then
+    ElseIf (Button = vbRightButton) Then
     
         m_RMBDown = True
         
@@ -914,12 +914,12 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                PanImageCanvas m_InitMouseX, m_InitMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Tools.PanImageCanvas m_InitMouseX, m_InitMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             'Move stuff around
             Case NAV_MOVE
                 Message "Shift key: preserve layer aspect ratio", "DONOTLOG"
-                TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
@@ -928,7 +928,7 @@ Private Sub CanvasView_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, B
             'Text layers are identical to the move tool
             Case VECTOR_TEXT, VECTOR_FANCYTEXT
                 Message "Shift key: preserve layer aspect ratio"
-                TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
             
             'Unlike other tools, the paintbrush engine controls when the main viewport gets redrawn.
             ' (Some tricks are used to improve performance, including coalescing render events if they occur
@@ -1035,7 +1035,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
             Case NAV_MOVE
             
                 'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
-                If (m_NumOfMouseMovements > 0) Then TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                 
                 'Reset the generic tool mouse tracking function
                 Tools.TerminateGenericToolTracking
@@ -1088,17 +1088,24 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                         Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
                     End If
                     
+                    'As a failsafe, ensure the layer has a proper rotational center point.  (If the user dragged the mouse so that
+                    ' the text box was 0x0 pixels at some size, the rotational center point math would have failed and become (0, 0)
+                    ' to match.)
+                    pdImages(g_CurrentImage).GetActiveLayer.SetLayerRotateCenterX 0.5
+                    pdImages(g_CurrentImage).GetActiveLayer.SetLayerRotateCenterY 0.5
+                    
                     'Release the tool engine
                     Tools.SetToolBusyState False
                     
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
+                    'TODO: migrate to XML params
                     With pdImages(g_CurrentImage).GetActiveLayer
                         Process "New text layer", , BuildParams(.GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth, .GetLayerHeight, .GetVectorDataAsXML), UNDO_IMAGE_VECTORSAFE
                     End With
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
-                    SyncInterfaceToCurrentImage
+                    Interface.SyncInterfaceToCurrentImage
                     
                     'Finally, set focus to the text layer text entry box
                     ' TODO: relay this request to the form itself, and have the form set focus *only* if the
@@ -1115,7 +1122,7 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                 Else
                     
                     'As a convenience to the user, ignore clicks that don't actually change layer settings
-                    If (m_NumOfMouseMovements > 0) Then TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                    If (m_NumOfMouseMovements > 0) Then Tools.TransformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).GetActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                     
                 End If
                 
