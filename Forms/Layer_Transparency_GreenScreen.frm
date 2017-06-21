@@ -111,7 +111,7 @@ Option Explicit
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Color to alpha", , BuildParams(colorPicker.Color, sltErase.Value, sltBlend.Value), UNDO_LAYER
+    Process "Color to alpha", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -146,12 +146,25 @@ Private Sub pdFxPreview_ColorSelected()
 End Sub
 
 'Convert a DIB from 24bpp to 32bpp, using a high-quality color-matching scheme in the L*a*b* color space.
-Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eraseThreshold As Double = 15, Optional ByVal blendThreshold As Double = 30, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
-
+Public Sub ColorToAlpha(ByVal processParameters As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As pdFxPreviewCtl)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    
+    Dim targetColor As Long
+    Dim eraseThreshold As Double, blendThreshold As Double
+    
+    With cParams
+        targetColor = .GetLong("color", vbBlack)
+        eraseThreshold = .GetLong("erase-threshold", 15#)
+        blendThreshold = .GetLong("edge-blending", 30#)
+    End With
+    
     If (Not toPreview) Then Message "Adding new alpha channel to image..."
     
     'Call prepImageData, which will prepare a temporary copy of the image
-    Dim ImageData() As Byte
+    Dim imageData() As Byte
     Dim tmpSA As SAFEARRAY2D
     PrepImageData tmpSA, toPreview, dstPic
     
@@ -160,7 +173,7 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     
     'Create a local array and point it at the pixel data we want to operate on
     PrepSafeArray tmpSA, workingDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    CopyMemory ByVal VarPtrArray(imageData()), VarPtr(tmpSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
@@ -184,9 +197,9 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     
     'R2/G2/B2 store the RGB values of the color we are attempting to remove
     Dim r2 As Long, g2 As Long, b2 As Long
-    r2 = Colors.ExtractRed(ConvertColor)
-    g2 = Colors.ExtractGreen(ConvertColor)
-    b2 = Colors.ExtractBlue(ConvertColor)
+    r2 = Colors.ExtractRed(targetColor)
+    g2 = Colors.ExtractGreen(targetColor)
+    b2 = Colors.ExtractBlue(targetColor)
     
     'For maximum quality, we will apply our color comparison in the L*a*b* color space; each scanline will be
     ' transformed to L*a*b* all at once, for performance reasons
@@ -246,12 +259,12 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     
         'Start by pre-calculating all L*a*b* values for this row
         If g_LCMSEnabled Then
-            labTransform.ApplyTransformToScanline VarPtr(ImageData(0, y)), VarPtr(labValues(0)), finalX + 1
+            labTransform.ApplyTransformToScanline VarPtr(imageData(0, y)), VarPtr(labValues(0)), finalX + 1
         Else
             For x = xStart To xStop Step pxWidth
-                b = ImageData(x, y)
-                g = ImageData(x + 1, y)
-                r = ImageData(x + 2, y)
+                b = imageData(x, y)
+                g = imageData(x + 1, y)
+                r = imageData(x + 2, y)
                 RGBtoLAB r, g, b, labL, labA, labB
                 labValues(x) = labL
                 labValues(x + 1) = labA
@@ -263,10 +276,10 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
         For x = xStart To xStop Step pxWidth
         
             'Get the source pixel color values
-            b = ImageData(x, y)
-            g = ImageData(x + 1, y)
-            r = ImageData(x + 2, y)
-            a = ImageData(x + 3, y)
+            b = imageData(x, y)
+            g = imageData(x + 1, y)
+            r = imageData(x + 2, y)
+            a = imageData(x + 3, y)
             
             'Perform a basic distance calculation (not ideal, but faster than a completely correct comparison;
             ' see http://en.wikipedia.org/wiki/Color_difference for a full report)
@@ -278,7 +291,7 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
             
             'If the distance is below the erasure threshold, remove it completely
             If (cDistance < eraseThreshold) Then
-                ImageData(x + 3, y) = 0
+                imageData(x + 3, y) = 0
                 
             'If the color is between the erasure and blend threshold, feather it against a partial alpha and
             ' color-correct it to remove any "color fringing" from the removed color.
@@ -309,10 +322,10 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
                 If (b < 0) Then b = 0
                 
                 'Assign the new color and alpha values
-                ImageData(x, y) = b
-                ImageData(x + 1, y) = g
-                ImageData(x + 2, y) = r
-                ImageData(x + 3, y) = newAlpha * (a / 255)
+                imageData(x, y) = b
+                imageData(x + 1, y) = g
+                imageData(x + 2, y) = r
+                imageData(x + 3, y) = newAlpha * (a / 255)
                     
             End If
             
@@ -328,8 +341,8 @@ Public Sub ColorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     Next y
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
+    CopyMemory ByVal VarPtrArray(imageData), 0&, 4
+    Erase imageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     FinalizeImageData toPreview, dstPic
@@ -346,7 +359,7 @@ End Sub
 
 'Render a new preview
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then ColorToAlpha colorPicker.Color, sltErase.Value, sltBlend.Value, True, pdFxPreview
+    If cmdBar.PreviewsAllowed Then ColorToAlpha GetLocalParamString(), True, pdFxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -360,7 +373,9 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "color", colorPicker.Color
+        .AddParam "erase-threshold", sltErase.Value
+        .AddParam "edge-blending", sltBlend.Value
     End With
     
     GetLocalParamString = cParams.GetParamString()

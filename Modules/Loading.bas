@@ -920,7 +920,7 @@ Public Sub DrawAccelerators()
     FormMain.MnuImportClipboard.Caption = FormMain.MnuImportClipboard.Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+V"
     
     'Similarly for the Layer -> New -> From Clipboard menu
-    FormMain.MnuLayerNew(3).Caption = FormMain.MnuLayerNew(3).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & g_Language.TranslateMessage("Shift") & "+V"
+    FormMain.MnuLayerNew(4).Caption = FormMain.MnuLayerNew(4).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & g_Language.TranslateMessage("Shift") & "+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
     

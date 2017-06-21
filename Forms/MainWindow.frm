@@ -410,24 +410,32 @@ Begin VB.Form FormMain
          Caption         =   "Add"
          Index           =   0
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "Blank layer"
+            Caption         =   "Basic layer..."
             Index           =   0
          End
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "Duplicate of current layer"
+            Caption         =   "Blank layer"
             Index           =   1
          End
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "-"
+            Caption         =   "Duplicate of current layer"
             Index           =   2
          End
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "From clipboard"
+            Caption         =   "-"
             Index           =   3
          End
          Begin VB.Menu MnuLayerNew 
-            Caption         =   "From file..."
+            Caption         =   "From clipboard"
             Index           =   4
+         End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "From file..."
+            Index           =   5
+         End
+         Begin VB.Menu MnuLayerNew 
+            Caption         =   "From visible layers"
+            Index           =   6
          End
       End
       Begin VB.Menu MnuLayer 
@@ -2167,25 +2175,33 @@ End Sub
 Private Sub MnuLayerNew_Click(Index As Integer)
 
     Select Case Index
-    
-        'Blank layer
+        
+        'Basic layer
         Case 0
-            Process "Add blank layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Add new layer", True
+        
+        'Blank layer
+        Case 1
+            Process "Add blank layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         'Duplicate of current layer
-        Case 1
-            Process "Duplicate Layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+        Case 2
+            Process "Duplicate Layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         '<separator>
-        Case 2
+        Case 3
         
         'Import from clipboard
-        Case 3
+        Case 4
             Process "Paste as new layer", False, , UNDO_IMAGE_VECTORSAFE, , False
         
         'Import from file
-        Case 4
+        Case 5
             Process "New layer from file", True
+            
+        'Import from visible layers in current image
+        Case 6
+            Process "New layer from visible layers", False, , UNDO_IMAGE_VECTORSAFE
     
     End Select
 
@@ -2925,82 +2941,33 @@ Private Sub Form_Unload(Cancel As Integer)
     'Now that toolpanels are loaded/unloaded on-demand, we don't need to manually unload them at shutdown.
     ' Instead, just unload the *active* one (which we can infer from the active tool).
     If (g_CurrentTool = NAV_MOVE) Then
-        
         g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
         Unload toolpanel_MoveSize
         Set toolpanel_MoveSize = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-            pdDebug.LogAction "(above memory report is post-unload toolpanel_Movesize)"
-        #End If
-        
     ElseIf (g_CurrentTool = QUICK_FIX_LIGHTING) Then
-    
         g_WindowManager.DeactivateToolPanel True, toolpanel_NDFX.hWnd
         Unload toolpanel_NDFX
         Set toolpanel_NDFX = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-            pdDebug.LogAction "(above memory report is post-unload toolpanel_NDFX)"
-        #End If
-        
     ElseIf (g_CurrentTool = SELECT_RECT) Or (g_CurrentTool = SELECT_CIRC) Or (g_CurrentTool = SELECT_LINE) Or (g_CurrentTool = SELECT_POLYGON) Or (g_CurrentTool = SELECT_LASSO) Or (g_CurrentTool = SELECT_WAND) Then
-    
         g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
         Unload toolpanel_Selections
         Set toolpanel_Selections = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-            pdDebug.LogAction "(above memory report is post-unload toolpanel_Selections)"
-        #End If
-        
     ElseIf (g_CurrentTool = VECTOR_TEXT) Then
-    
         g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
         Unload toolpanel_Text
         Set toolpanel_Text = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-            pdDebug.LogAction "(above memory report is post-unload toolpanel_Text)"
-        #End If
-        
     ElseIf (g_CurrentTool = VECTOR_FANCYTEXT) Then
-    
         g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
         Unload toolpanel_FancyText
         Set toolpanel_FancyText = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-            pdDebug.LogAction "(above memory report is post-unload toolpanel_FancyText)"
-        #End If
-        
     ElseIf (g_CurrentTool = PAINT_BASICBRUSH) Then
-    
         g_WindowManager.DeactivateToolPanel True, toolpanel_Pencil.hWnd
         Unload toolpanel_Pencil
         Set toolpanel_Pencil = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-            pdDebug.LogAction "(above memory report is post-unload toolpanel_Pencil)"
-        #End If
-        
     ElseIf (g_CurrentTool = PAINT_SOFTBRUSH) Then
-    
         g_WindowManager.DeactivateToolPanel True, toolpanel_Paintbrush.hWnd
         Unload toolpanel_Paintbrush
         Set toolpanel_Paintbrush = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-            pdDebug.LogAction "(above memory report is post-unload toolpanel_Paintbrush)"
-        #End If
-        
     End If
     
     'With all tool panels unloaded, unload all toolboxes as well
@@ -3011,25 +2978,14 @@ Private Sub Form_Unload(Cancel As Integer)
     Unload toolbar_Layers
     Set toolbar_Layers = Nothing
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolbar_Layers)"
-    #End If
-    
     Unload toolbar_Options
     Set toolbar_Options = Nothing
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolbar_Options)"
-    #End If
     
     Unload toolbar_Toolbox
     Set toolbar_Toolbox = Nothing
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction vbNullString, PDM_MEM_REPORT
-        pdDebug.LogAction "(above memory report is post-unload toolbar_Toolbox)"
     #End If
     
     'Release this form from the window manager, and write out all window data to file
@@ -3737,7 +3693,7 @@ Private Sub MnuImage_Click(Index As Integer)
             
         'Fit canvas to active layer
         Case 6
-            Process "Fit canvas to layer", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Fit canvas to layer", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Fit canvas around all layers
         Case 7

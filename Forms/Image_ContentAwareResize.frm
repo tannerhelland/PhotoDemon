@@ -106,16 +106,27 @@ End Property
 
 'OK button
 Private Sub cmdBar_OKClick()
-
-    Select Case m_ResizeTarget
     
-        Case PD_AT_WHOLEIMAGE
-            Process "Content-aware image resize", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_IMAGE
-        
-        Case PD_AT_SINGLELAYER
-            Process "Content-aware layer resize", , BuildParams(ucResize.ResizeWidth, ucResize.ResizeHeight, ucResize.UnitOfMeasurement, ucResize.ResizeDPIAsPPI, m_ResizeTarget), UNDO_LAYER
+    'Place all settings in an XML string
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    With cParams
+        .AddParam "width", ucResize.ResizeWidth
+        .AddParam "height", ucResize.ResizeHeight
+        .AddParam "unit", ucResize.UnitOfMeasurement
+        .AddParam "ppi", ucResize.ResizeDPIAsPPI
+        If (m_ResizeTarget = PD_AT_SINGLELAYER) Then
+            .AddParam "target", "layer"
+        Else
+            .AddParam "target", "image"
+        End If
+    End With
     
-    End Select
+    If (m_ResizeTarget = PD_AT_WHOLEIMAGE) Then
+        Process "Content-aware image resize", , cParams.GetParamString(), UNDO_IMAGE
+    ElseIf (m_ResizeTarget = PD_AT_SINGLELAYER) Then
+        Process "Content-aware layer resize", , cParams.GetParamString(), UNDO_LAYER
+    End If
 
 End Sub
 
@@ -225,15 +236,31 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Small wrapper for the seam carve function
-Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optional ByVal curUnit As MeasurementUnit = MU_PIXELS, Optional ByVal iDPI As Long, Optional ByVal thingToResize As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE)
-
+Public Sub SmartResizeImage(ByVal xmlParams As String)
+    
+    'Parse incoming parameters from the XML string
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString xmlParams
+    
+    Dim imgWidth As Long, imgHeight As Long, imgResizeUnit As MeasurementUnit, imgDPI As Long
+    Dim thingToResize As PD_ACTION_TARGET
+    
+    With cParams
+        imgWidth = .GetDouble("width")
+        imgHeight = .GetDouble("height")
+        imgResizeUnit = .GetLong("unit", MU_PIXELS)
+        imgDPI = .GetLong("ppi", 96)
+        thingToResize = .GetLong("target", PD_AT_WHOLEIMAGE)
+    End With
+    
     'If the entire image is being resized, some extra preparation is required
     If (thingToResize = PD_AT_WHOLEIMAGE) Then
         
         'If a selection is active, remove it now
         If pdImages(g_CurrentImage).IsSelectionActive Then
             pdImages(g_CurrentImage).SetSelectionActive False
-            pdImages(g_CurrentImage).mainSelection.LockRelease
+            pdImages(g_CurrentImage).MainSelection.LockRelease
         End If
                    
         'Flatten the image; note that we route this through the central processor, so that a proper Undo/Redo entry
@@ -251,14 +278,14 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = ConvertOtherUnitToPixels(curUnit, iWidth, iDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
-    iHeight = ConvertOtherUnitToPixels(curUnit, iHeight, iDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
+    imgWidth = ConvertOtherUnitToPixels(imgResizeUnit, imgWidth, imgDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerWidth(False))
+    imgHeight = ConvertOtherUnitToPixels(imgResizeUnit, imgHeight, imgDPI, pdImages(g_CurrentImage).GetActiveLayer.GetLayerHeight(False))
     
     'Pass the temporary DIB to the master seam carve function
-    If SeamCarveDIB(tmpDIB, iWidth, iHeight) Then
+    If Me.SeamCarveDIB(tmpDIB, imgWidth, imgHeight) Then
         
         'Premultiply alpha
-        If Not tmpDIB.GetAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication True
+        If (Not tmpDIB.GetAlphaPremultiplication) Then tmpDIB.SetAlphaPremultiplication True
         
         'Copy the newly resized DIB back into its parent image
         pdImages(g_CurrentImage).GetActiveLayer.layerDIB.CreateFromExistingDIB tmpDIB
@@ -269,19 +296,18 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         
         'Update the main image's size and DPI values as necessary
         If thingToResize = PD_AT_WHOLEIMAGE Then
-            pdImages(g_CurrentImage).UpdateSize False, iWidth, iHeight
-            pdImages(g_CurrentImage).SetDPI iDPI, iDPI
+            pdImages(g_CurrentImage).UpdateSize False, imgWidth, imgHeight
+            pdImages(g_CurrentImage).SetDPI imgDPI, imgDPI
             DisplaySize pdImages(g_CurrentImage)
         End If
         
         'Fit the new image on-screen and redraw its viewport
         ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
+    'Failsafe check for seam carving failure; this should never trigger
     Else
-    
-        pdImages(g_CurrentImage).undoManager.RestoreUndoData
+        pdImages(g_CurrentImage).UndoManager.RestoreUndoData
         Interface.NotifyImageChanged g_CurrentImage
-    
     End If
     
     Message "Finished."
@@ -289,7 +315,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
 End Sub
 
 'Resize a DIB via seam carving ("content-aware resize" in Photoshop, or "liquid rescale" in GIMP).
-Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal iHeight As Long) As Boolean
+Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal imgWidth As Long, ByVal imgHeight As Long) As Boolean
 
     'For more information on how seam-carving works, visit http://en.wikipedia.org/wiki/Seam_carving
     
@@ -318,13 +344,13 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     Message "Applying content-aware resize..."
     
     'This initial seam-carving algorithm is not particularly well-implemented, but that's okay.  It's a starting point!
-    seamCarver.StartSeamCarve iWidth, iHeight
+    seamCarver.StartSeamCarve imgWidth, imgHeight
     
     'Release the progress bar
     ReleaseProgressBar
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
-    If Not g_cancelCurrentAction Then
+    If (Not g_cancelCurrentAction) Then
         srcDIB.CreateFromExistingDIB seamCarver.GetCarvedImage()
         SeamCarveDIB = True
     Else
@@ -333,15 +359,3 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     
 End Function
 
-Private Function GetLocalParamString() As String
-    
-    Dim cParams As pdParamXML
-    Set cParams = New pdParamXML
-    
-    With cParams
-    
-    End With
-    
-    GetLocalParamString = cParams.GetParamString()
-    
-End Function

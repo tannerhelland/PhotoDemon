@@ -238,6 +238,9 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'Edit menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_EditMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
+    'Image menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
+    If (Not processFound) Then processFound = Process_ImageMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
+    
     'Tool menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_ToolsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
@@ -253,124 +256,17 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             Tools.MakeQuickFixesPermanent
         
         
-        'IMAGE MENU FUNCTIONS
-        ' This includes all actions that can only operate on a full image (never selections).  These actions are recorded.
-        
-        'Duplicate image
-        Case "Duplicate image"
-            
-            'It may seem odd, but the Duplicate function can be found in the "Loading" module; I do this because
-            ' we effectively LOAD a copy of the original image, so all loading operations (create a form, catalog
-            ' metadata, initialize properties) have to be repeated.
-            Loading.DuplicateCurrentImage
-            
-        'Resize operations; note that prior to 6.4, "Resize" was used in place of "Resize image".  To preserve functionality of old macros,
-        ' we add the old "Resize" operator here as well.
-        Case "Resize image", "Resize"
-            If raiseDialog Then
-                ShowResizeDialog PD_AT_WHOLEIMAGE
-            Else
-                FormResize.ResizeImage cXMLParams.GetParamString()
-            End If
-            
-        Case "Content-aware image resize"
-            If raiseDialog Then
-                ShowContentAwareResizeDialog PD_AT_WHOLEIMAGE
-            Else
-                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_WHOLEIMAGE
-            End If
-        
-        'Canvas size operations
-        Case "Canvas size"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormCanvasSize
-            Else
-                FormCanvasSize.ResizeCanvas cXMLParams.GetParamString
-            End If
-            
-        Case "Fit canvas to layer"
-            Filters_Transform.MenuFitCanvasToLayer cParams.GetLong(1)
-        
-        Case "Fit canvas to all layers"
-            Filters_Transform.MenuFitCanvasToAllLayers
-        
-        'Crop operations
-        Case "Crop"
-            
-            'The main form will submit "Crop" requests with showDialog set to TRUE.  This tells us to ask the crop handler if a
-            ' non-destructive crop is possible.  Depending on what it finds, it will submit a second "Crop" requests with showDialog
-            ' set to FALSE.  This tells us to actually apply the crop instead of just running diagnostics.
-            If raiseDialog Then
-                Filters_Transform.SeeIfCropCanBeAppliedNonDestructively
-            Else
-                CropToSelection , cParams.GetBool(1, False)
-            End If
-            
-        'Case "Autocrop"
-        '    AutocropImage
-        
-        Case "Trim empty borders"
-            Filters_Transform.TrimImage
-            
-        'Rotate operations
-        Case "Straighten image"
-            If raiseDialog Then
-                ShowStraightenDialog PD_AT_WHOLEIMAGE
-            Else
-                FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
-            End If
-        
-        Case "Rotate image 90 clockwise", "Rotate 90 clockwise"
-            Filters_Transform.MenuRotate90Clockwise
-            
-        Case "Rotate image 180", "Rotate 180"
-            Filters_Transform.MenuRotate180
-            
-        Case "Rotate image 90 counter-clockwise", "Rotate 90 counter-clockwise"
-            Filters_Transform.MenuRotate270Clockwise
-            
-        Case "Arbitrary image rotation", "Arbitrary rotation"
-            If raiseDialog Then
-                ShowRotateDialog PD_AT_WHOLEIMAGE
-            Else
-                FormRotate.RotateArbitrary cXMLParams.GetParamString
-            End If
-            
-        'Other coordinate transforms
-        Case "Flip image vertically", "Flip vertically"
-            Filters_Transform.MenuFlip
-            
-        Case "Flip image horizontally", "Flip horizontally"
-            Filters_Transform.MenuMirror
-        
-        'NOTE: isometric conversion was removed in v6.4
-        Case "Isometric conversion"
-            'FilterIsometric
-            
-        'NOTE: Image > Tile was removed in v7.0
-        Case "Tile"
-            
-        
-        'Other miscellaneous image-only items
-        Case "Count image colors"
-            MenuCountColors
-            
-        
         
         'LAYER FUNCTIONS
         ' Any action triggered from the Layer menu, or the Layer toolbox - creating layers, moving them, etc
         
         'Add layers to an image
         Case "Add blank layer"
-            Layers.AddBlankLayer cParams.GetLong(1)
+            Layers.AddBlankLayer_XML processParameters
         
         Case "Add new layer"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormNewLayer
-            Else
-                Layers.AddNewLayer cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetBool(6), cParams.GetString(7)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormNewLayer Else Layers.AddNewLayer_XML processParameters
+            
         'TODO: sort out new text layer vs new typography layer behavior
         Case "New text layer", "New typography layer"
             'During normal usage, "New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer
@@ -407,7 +303,10 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             Layers.LoadImageAsNewLayer raiseDialog, processParameters
         
         Case "Duplicate layer"
-            Layers.DuplicateLayerByIndex cParams.GetLong(1)
+            Layers.DuplicateLayerByIndex_XML processParameters
+            
+        Case "New layer from visible layers"
+            Layers.AddLayerFromVisibleLayers
             
         'Remove layers from an image
         Case "Delete layer"
@@ -456,67 +355,43 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             
         'Destructive layer orientation changes
         Case "Straighten layer"
-            If raiseDialog Then
-                ShowStraightenDialog PD_AT_SINGLELAYER
-            Else
-                FormStraighten.StraightenImage cParams.GetDouble(1), cParams.GetLong(2)
-            End If
+            If raiseDialog Then ShowStraightenDialog PD_AT_SINGLELAYER Else FormStraighten.StraightenImage processParameters
             
         Case "Rotate layer 90 clockwise"
-            MenuRotate90Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
+            Filters_Transform.MenuRotate90Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
             
         Case "Rotate layer 180"
-            MenuRotate180 pdImages(g_CurrentImage).GetActiveLayerIndex
+            Filters_Transform.MenuRotate180 pdImages(g_CurrentImage).GetActiveLayerIndex
             
         Case "Rotate layer 90 counter-clockwise"
-            MenuRotate270Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
+            Filters_Transform.MenuRotate270Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
             
         Case "Arbitrary layer rotation"
-            If raiseDialog Then
-                ShowRotateDialog PD_AT_SINGLELAYER
-            Else
-                FormRotate.RotateArbitrary cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowRotateDialog PD_AT_SINGLELAYER Else FormRotate.RotateArbitrary processParameters
             
         Case "Flip layer horizontally"
-            MenuMirror pdImages(g_CurrentImage).GetActiveLayerIndex
+            Filters_Transform.MenuMirror pdImages(g_CurrentImage).GetActiveLayerIndex
         
         Case "Flip layer vertically"
-            MenuFlip pdImages(g_CurrentImage).GetActiveLayerIndex
+            Filters_Transform.MenuFlip pdImages(g_CurrentImage).GetActiveLayerIndex
                 
         'Destructive layer size changes
         Case "Resize layer"
-            If raiseDialog Then
-                ShowResizeDialog PD_AT_SINGLELAYER
-            Else
-                FormResize.ResizeImage cXMLParams.GetParamString()
-            End If
-        
+            If raiseDialog Then ShowResizeDialog PD_AT_SINGLELAYER Else FormResize.ResizeImage processParameters
+            
         Case "Content-aware layer resize"
-            If raiseDialog Then
-                ShowContentAwareResizeDialog PD_AT_SINGLELAYER
-            Else
-                FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_SINGLELAYER
-            End If
+            If raiseDialog Then ShowContentAwareResizeDialog PD_AT_SINGLELAYER Else FormResizeContentAware.SmartResizeImage processParameters
             
         Case "Crop layer to selection"
             Filters_Transform.CropToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
             
         'Change layer alpha
         Case "Color to alpha"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormTransparency_FromColor
-            Else
-                FormTransparency_FromColor.ColorToAlpha cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3)
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormTransparency_FromColor Else FormTransparency_FromColor.ColorToAlpha processParameters
             
         Case "Remove alpha channel"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormConvert24bpp
-            Else
-                ConvertImageColorDepth 24, cParams.GetLong(1)
-            End If
-        
+            If raiseDialog Then ShowPDDialog vbModal, FormConvert24bpp Else FormConvert24bpp.RemoveLayerTransparency processParameters
+            
         'Rasterizing
         Case "Rasterize layer"
             Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
@@ -526,11 +401,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
         
         'Flatten image
         Case "Flatten image"
-            If raiseDialog Then
-                ShowPDDialog vbModal, FormLayerFlatten
-            Else
-                Layers.FlattenImage cXMLParams.GetParamString
-            End If
+            If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
             
         'Merge visible layers
         Case "Merge visible layers"
@@ -2586,4 +2457,101 @@ Private Function Process_ToolsMenu(ByVal processID As String, Optional raiseDial
     End If
         
 End Function
+
+'Helper wrapper for IMAGE MENU operations.
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+    
+    'It may seem odd, but the Duplicate function exists in the "Loading" module.  I do this because we effectively load a copy
+    ' of the original image, so all loading operations (create pdImage object, catalog metadata, initialize properties) have to
+    ' be repeated.
+    If Strings.StringsEqual(processID, "Duplicate image", True) Then
+        Loading.DuplicateCurrentImage
+        Process_ImageMenu = True
+    
+    'Resize operations; note that prior to 6.4, "Resize" was used in place of "Resize image".  To preserve functionality of old macros,
+    ' we add the old "Resize" operator here as well.
+    ElseIf Strings.StringsEqual(processID, "Resize image", True) Or Strings.StringsEqual(processID, "Resize", True) Then
+        If raiseDialog Then ShowResizeDialog PD_AT_WHOLEIMAGE Else FormResize.ResizeImage processParameters
+        Process_ImageMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Content-aware image resize", True) Then
+        If raiseDialog Then ShowContentAwareResizeDialog PD_AT_WHOLEIMAGE Else FormResizeContentAware.SmartResizeImage processParameters
+        Process_ImageMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Canvas size", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormCanvasSize Else FormCanvasSize.ResizeCanvas processParameters
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Fit canvas to layer", True) Then
+        Filters_Transform.FitCanvasToLayer_XML processParameters
+        Process_ImageMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Fit canvas to all layers", True) Then
+        Filters_Transform.MenuFitCanvasToAllLayers
+        Process_ImageMenu = True
+    
+    'Crop operations.  Note that the main form submits "Crop" requests with raiseDialog set to TRUE.  This tells us to ask the
+    ' crop handler if a non-destructive crop is possible.  It will then submit a second "Crop" requests with raiseDialog set to FALSE.
+    ElseIf Strings.StringsEqual(processID, "Crop", True) Then
+        If raiseDialog Then Filters_Transform.SeeIfCropCanBeAppliedNonDestructively Else Filters_Transform.CropToSelection_XML processParameters
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Trim empty borders", True) Then
+        Filters_Transform.TrimImage
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Straighten image", True) Then
+        If raiseDialog Then ShowStraightenDialog PD_AT_WHOLEIMAGE Else FormStraighten.StraightenImage processParameters
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Rotate image 90 clockwise", True) Or Strings.StringsEqual(processID, "Rotate 90 clockwise", True) Then
+        Filters_Transform.MenuRotate90Clockwise
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Rotate image 180", True) Or Strings.StringsEqual(processID, "Rotate 180", True) Then
+        Filters_Transform.MenuRotate180
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Rotate image 90 counter-clockwise", True) Or Strings.StringsEqual(processID, "Rotate 90 counter-clockwise", True) Then
+        Filters_Transform.MenuRotate270Clockwise
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Arbitrary image rotation", True) Or Strings.StringsEqual(processID, "Arbitrary rotation", True) Then
+        If raiseDialog Then ShowRotateDialog PD_AT_WHOLEIMAGE Else FormRotate.RotateArbitrary processParameters
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Flip image vertically", True) Or Strings.StringsEqual(processID, "Flip vertically", True) Then
+        Filters_Transform.MenuFlip
+        Process_ImageMenu = True
+            
+    ElseIf Strings.StringsEqual(processID, "Flip image horizontally", True) Or Strings.StringsEqual(processID, "Flip horizontally", True) Then
+        Filters_Transform.MenuMirror
+        Process_ImageMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Count image colors", True) Then
+        Filters_Miscellaneous.MenuCountColors
+        Process_ImageMenu = True
+        
+    'NOTE!  Some Image-menu actions have been removed in new versions of the programs.  If they exist inside macros, we don't want to
+    ' raise any errors, so I've included their keywords here even though they are basically NOPs.
+    
+    'TODO 7.0: reinstate auto-cropping
+    ElseIf Strings.StringsEqual(processID, "Autocrop", True) Then
+    '    AutocropImage
+        Process_ImageMenu = True
+    
+    'Isometric conversion was removed in v6.4.  There are not currently plans to reinstate it.
+    ElseIf Strings.StringsEqual(processID, "Isometric conversion", True) Then
+        Process_ImageMenu = True
+    
+    'Image > Tile was removed in v7.0.  There are not currently plans to reinstate it.
+    ElseIf Strings.StringsEqual(processID, "Tile", True) Then
+        Process_ImageMenu = True
+    
+    End If
+       
+End Function
+
 
