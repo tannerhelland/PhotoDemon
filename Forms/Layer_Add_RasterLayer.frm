@@ -183,20 +183,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-
-    'Retrieve the layer type from the active command button
-    Dim newLayerType As Long
-    
-    Dim i As Long
-    For i = 0 To optLayer.Count - 1
-        If optLayer(i).Value Then
-            newLayerType = i
-            Exit For
-        End If
-    Next i
-    
-    Process "Add new layer", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_IMAGE, newLayerType, colorPicker.Color, cboPosition.ListIndex, CBool(chkAutoSelectLayer), txtLayerName), UNDO_IMAGE_VECTORSAFE
-    
+    Process "Add new layer", False, GetLocalParamString(), UNDO_IMAGE_VECTORSAFE
 End Sub
 
 Private Sub cmdBar_RandomizeClick()
@@ -222,3 +209,32 @@ Private Sub Form_Load()
     ApplyThemeAndTranslations Me
 
 End Sub
+
+Private Function GetLocalParamString() As String
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    With cParams
+        .AddParam "targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex
+        .AddParam "layertype", PDL_IMAGE
+        
+        'Retrieve the layer type from the active radio button
+        Dim newLayerType As Long, i As Long
+        For i = 0 To optLayer.Count - 1
+            If optLayer(i).Value Then
+                newLayerType = i
+                Exit For
+            End If
+        Next i
+        
+        .AddParam "layersubtype", newLayerType
+        .AddParam "layercolor", colorPicker.Color
+        .AddParam "layerposition", cboPosition.ListIndex
+        .AddParam "activatelayer", CBool(chkAutoSelectLayer)
+        .AddParam "layername", txtLayerName
+    End With
+    
+    GetLocalParamString = cParams.GetParamString()
+    
+End Function
+

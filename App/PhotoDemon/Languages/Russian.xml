@@ -6,7 +6,7 @@
 
 <langid>ru-RU</langid>
 <langname>Russian</langname>
-<langversion>6.8.2547</langversion>
+<langversion>6.8.2548</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -755,7 +755,7 @@ You может использовать MenuTest () к югу в Filters_Miscell
 <translation>Обрезка изображения к новым размерам</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -1193,6 +1193,11 @@ To включить поддержку сжатых файлов PDI, выбер
 </phrase>
 
 <phrase>
+<original>Visible</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>Новый слой из файла</translation>
 </phrase>
@@ -1277,7 +1282,7 @@ To включить поддержку сжатых файлов PDI, выбер
 <translation>Страница 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -4852,6 +4857,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Basic layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Duplicate of current layer</original>
 <translation>Дубликат текущего слоя</translation>
 </phrase>
@@ -4859,6 +4869,11 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>From file</original>
 <translation>Из файла</translation>
+</phrase>
+
+<phrase>
+<original>From visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6045,6 +6060,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>New layer from visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Raise layer to top</original>
 <translation>Поднять слой наверх</translation>
 </phrase>
@@ -6438,7 +6458,7 @@ Do у вас есть аккаунт GitHub? (Если вы понятия не 
 <translation>Удалить альфа-канал</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14985,10 +15005,10 @@ If вы все еще отключить обновления, не забудь
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12313 total words. -->
 
 </pdData>

@@ -79,7 +79,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdBar_OKClick()
-    Process "Remove alpha channel", , BuildParams(colorPicker.Color), UNDO_LAYER
+    Process "Remove alpha channel", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -121,13 +121,20 @@ Private Sub pdFxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
+Public Sub RemoveLayerTransparency(ByVal processParameters As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    Filters_Miscellaneous.ConvertImageColorDepth 24, cParams.GetLong("backcolor", vbWhite)
+End Sub
+
 Private Function GetLocalParamString() As String
     
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "backcolor", colorPicker.Color
     End With
     
     GetLocalParamString = cParams.GetParamString()

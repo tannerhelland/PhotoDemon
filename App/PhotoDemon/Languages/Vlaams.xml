@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.259</langversion>
+<langversion>6.7.260</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -756,7 +756,7 @@ Je kan gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module om
 <translation>Trimmen afbeelding naar nieuwe dimensies</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -1194,6 +1194,11 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 </phrase>
 
 <phrase>
+<original>Visible</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>Nieuwe laag uit bestand</translation>
 </phrase>
@@ -1278,7 +1283,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 <translation></translation>
 </phrase>
 
-<!-- Layers.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -4843,6 +4848,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Basic layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Duplicate of current layer</original>
 <translation>Duplicaat van huidige laag</translation>
 </phrase>
@@ -4850,6 +4860,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <phrase>
 <original>From file</original>
 <translation>Uit bestand</translation>
+</phrase>
+
+<phrase>
+<original>From visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6036,6 +6051,11 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
+<original>New layer from visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Raise layer to top</original>
 <translation>Verhoog laag naar bovenkant</translation>
 </phrase>
@@ -6429,7 +6449,7 @@ Hebt U een GitHub account? (Als je geen idee hebt wat dit betekent, antwoord "Ne
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14974,10 +14994,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12313 total words. -->
 
 </pdData>

@@ -94,12 +94,23 @@ Public Property Let StraightenTarget(newTarget As PD_ACTION_TARGET)
     m_StraightenTarget = newTarget
 End Property
 
-Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingToRotate As PD_ACTION_TARGET = PD_AT_WHOLEIMAGE, Optional ByVal isPreview As Boolean = False)
-        
+Public Sub StraightenImage(ByVal processParameters As String, Optional ByVal isPreview As Boolean = False)
+    
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    
+    Dim rotationAngle As Double, thingToRotate As PD_ACTION_TARGET
+    
+    With cParams
+        rotationAngle = .GetDouble("angle", 0#)
+        thingToRotate = .GetLong("target", PD_AT_WHOLEIMAGE)
+    End With
+    
     'If the image contains an active selection, disable it before transforming the canvas
     If (thingToRotate = PD_AT_WHOLEIMAGE) And pdImages(g_CurrentImage).IsSelectionActive And (Not isPreview) Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     'Many 2D libraries use positive values to indicate counter-clockwise rotation.  While mathematically correct, I find this
@@ -306,9 +317,9 @@ Private Sub cmdBar_OKClick()
 
     Select Case m_StraightenTarget
         Case PD_AT_WHOLEIMAGE
-            Process "Straighten image", , BuildParams(sltAngle, m_StraightenTarget), UNDO_IMAGE
+            Process "Straighten image", , GetLocalParamString(), UNDO_IMAGE
         Case PD_AT_SINGLELAYER
-            Process "Straighten layer", , BuildParams(sltAngle, m_StraightenTarget), UNDO_LAYER
+            Process "Straighten layer", , GetLocalParamString(), UNDO_LAYER
     End Select
     
 End Sub
@@ -423,7 +434,7 @@ End Sub
 
 'Redraw the on-screen preview of the rotated image
 Private Sub UpdatePreview()
-    If cmdBar.PreviewsAllowed Then StraightenImage sltAngle, m_StraightenTarget, True
+    If cmdBar.PreviewsAllowed Then Me.StraightenImage GetLocalParamString(), True
 End Sub
 
 Private Sub sltAngle_Change()
@@ -441,7 +452,8 @@ Private Function GetLocalParamString() As String
     Set cParams = New pdParamXML
     
     With cParams
-    
+        .AddParam "angle", sltAngle.Value
+        .AddParam "target", m_StraightenTarget
     End With
     
     GetLocalParamString = cParams.GetParamString()

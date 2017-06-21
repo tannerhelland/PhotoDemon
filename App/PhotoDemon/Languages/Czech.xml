@@ -6,7 +6,7 @@
 
 <langid>cs-CZ</langid>
 <langname>Czech</langname>
-<langversion>6.8.2547</langversion>
+<langversion>6.8.2548</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -756,7 +756,7 @@ You lze použít MenuTest (sub) v Filters_Miscellaneous modulu otestovat své vl
 <translation>Ořezávání obrazu do nových dimenzí</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -1194,6 +1194,11 @@ To povolit podporu pro komprimované soubory PDI, klepněte na Nápověda> Zkont
 </phrase>
 
 <phrase>
+<original>Visible</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>Nová vrstva ze souboru</translation>
 </phrase>
@@ -1278,7 +1283,7 @@ To povolit podporu pro komprimované soubory PDI, klepněte na Nápověda> Zkont
 <translation>Strana 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -4840,6 +4845,11 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 </phrase>
 
 <phrase>
+<original>Basic layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Duplicate of current layer</original>
 <translation>Duplicitní aktuální vrstvy</translation>
 </phrase>
@@ -4847,6 +4857,11 @@ Můžete také použít tlačítko Otevřít obrázek vlevo, vbCrLf nebo Soubor>
 <phrase>
 <original>From file</original>
 <translation>ze souboru</translation>
+</phrase>
+
+<phrase>
+<original>From visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6030,6 +6045,11 @@ The update is automatically processing in the background.  You will receive a ne
 </phrase>
 
 <phrase>
+<original>New layer from visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Raise layer to top</original>
 <translation>Zvyšovat vrstvu na začátek</translation>
 </phrase>
@@ -6423,7 +6443,7 @@ Do máte účet GitHub? (Pokud máte tušení, co to znamená, odpověď "ne".)<
 <translation>Odstraňte alfa kanálu</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14963,10 +14983,10 @@ If se přesto rozhodnete zakázat aktualizace, nezapomeňte navštívit photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12313 total words. -->
 
 </pdData>

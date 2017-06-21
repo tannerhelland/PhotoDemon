@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (Helmut Kuerbiss)</langname>
-<langversion>6.7.259</langversion>
+<langversion>6.7.260</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -756,7 +756,7 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 <translation>Bild auf neue Maße zuschneiden</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -1194,6 +1194,11 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 </phrase>
 
 <phrase>
+<original>Visible</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>Neue Ebene aus Datei</translation>
 </phrase>
@@ -1278,7 +1283,7 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 <translation></translation>
 </phrase>
 
-<!-- Layers.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -4843,6 +4848,11 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
+<original>Basic layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Duplicate of current layer</original>
 <translation>Aktive Ebene verdoppeln</translation>
 </phrase>
@@ -4850,6 +4860,11 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <phrase>
 <original>From file</original>
 <translation>Aus einer Datei</translation>
+</phrase>
+
+<phrase>
+<original>From visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6036,6 +6051,11 @@ Das Update wird automatisch im Hintergrund durchgeführt. Sie werden benachricht
 </phrase>
 
 <phrase>
+<original>New layer from visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Raise layer to top</original>
 <translation>Ebene ganz nach oben bringen</translation>
 </phrase>
@@ -6429,7 +6449,7 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14974,10 +14994,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12313 total words. -->
 
 </pdData>

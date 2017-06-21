@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2547</langversion>
+<langversion>6.8.2548</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -755,7 +755,7 @@ You voivat käyttää MenuTest () osa on Filters_Miscellaneous moduuli testata o
 <translation>Viimeistely kuvaa uusia ulottuvuuksia</translation>
 </phrase>
 
-<!-- Filters_Transform.bas contains 35 phrases. 16 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Filters_Transform.bas contains 34 phrases. 15 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Filters_Transform.bas-->
 
@@ -1193,6 +1193,11 @@ To käyttöön tuen pakattu PDI tiedostoja valitsemalla Ohje> Tarkista päivityk
 </phrase>
 
 <phrase>
+<original>Visible</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer from file</original>
 <translation>Uusi kerros tiedostosta</translation>
 </phrase>
@@ -1277,7 +1282,7 @@ To käyttöön tuen pakattu PDI tiedostoja valitsemalla Ohje> Tarkista päivityk
 <translation>Sivu 1</translation>
 </phrase>
 
-<!-- Layers.bas contains 42 phrases. 22 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- Layers.bas contains 44 phrases. 23 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for Layers.bas-->
 
@@ -4846,6 +4851,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 </phrase>
 
 <phrase>
+<original>Basic layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Duplicate of current layer</original>
 <translation>Monista nykyisistä kerroksen</translation>
 </phrase>
@@ -4853,6 +4863,11 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 <phrase>
 <original>From file</original>
 <translation>tiedostosta</translation>
+</phrase>
+
+<phrase>
+<original>From visible layers</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6039,6 +6054,11 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 </phrase>
 
 <phrase>
+<original>New layer from visible layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Raise layer to top</original>
 <translation>Nosta kerros alkuun</translation>
 </phrase>
@@ -6432,7 +6452,7 @@ Do olet GitHub tili? (Jos et tiedä, mitä tämä tarkoittaa, vastaus "Ei".)</tr
 <translation>Poista alfa-kanava</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 556 phrases. 184 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
+<!-- MainWindow.frm contains 560 phrases. 185 were duplicates of existing phrases, so only 375 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14979,10 +14999,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2523</phrasecount>
+<phrasecount>2527</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4484 phrases. -->
-<!-- 1961 are duplicates, so only 2523 unique phrases have been written to file. -->
-<!-- These 2523 phrases contain approximately 12302 total words. -->
+<!-- As of this build, PhotoDemon contains 4489 phrases. -->
+<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
+<!-- These 2527 phrases contain approximately 12313 total words. -->
 
 </pdData>

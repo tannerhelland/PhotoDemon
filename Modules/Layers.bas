@@ -19,6 +19,14 @@ Option Explicit
 'Helper API for enlarging a given rect
 Private Declare Function InflateRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
+'XML-based wrapper for AddBlankLayer(), below
+Public Sub AddBlankLayer_XML(ByVal processParameters As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    Layers.AddBlankLayer cParams.GetLong("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), cParams.GetLong("layertype", PDL_IMAGE)
+End Sub
+
 'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
 Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As LAYER_TYPE = PDL_IMAGE)
 
@@ -53,6 +61,16 @@ Public Sub AddBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     'Synchronize the interface to the new image
     SyncInterfaceToCurrentImage
     
+End Sub
+
+'XML-based wrapper for AddNewLayer(), below
+Public Sub AddNewLayer_XML(ByVal processParameters As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    With cParams
+        Layers.AddNewLayer .GetLong("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), .GetLong("layertype", PDL_IMAGE), .GetLong("layersubtype", 0), .GetLong("layercolor", vbBlack), .GetLong("layerposition", 0), .GetBool("activatelayer", True), .GetString("layername")
+    End With
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
@@ -194,7 +212,40 @@ Public Sub AddNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     
 End Sub
 
-'Allow the user to load an image file as a layer
+'Create a new layer from the current composite image, and place it at the top of the layer stack
+Public Sub AddLayerFromVisibleLayers()
+
+    'Figure out where the top of the layer stack sits
+    Dim topLayerIndex As Long
+    topLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    
+    'Ask the parent pdImage to create a new layer object at the top of its stack
+    Dim newLayerID As Long
+    newLayerID = pdImages(g_CurrentImage).CreateBlankLayer(topLayerIndex)
+    
+    'Retrieve a composite of the current image
+    Dim tmpDIB As pdDIB
+    pdImages(g_CurrentImage).GetCompositedImage tmpDIB, True
+    pdImages(g_CurrentImage).GetLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Visible"), tmpDIB
+    
+    'Make the blank layer the new active layer
+    pdImages(g_CurrentImage).SetActiveLayerByID newLayerID
+    
+    'Notify the parent of the change
+    pdImages(g_CurrentImage).NotifyImageChanged UNDO_IMAGE_VECTORSAFE
+    
+    'Redraw the layer box, and note that thumbnails need to be re-cached
+    toolbar_Layers.NotifyLayerChange
+    
+    'Render the new image to screen (not technically necessary, but doesn't hurt)
+    ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            
+    'Synchronize the interface to the new image
+    Interface.SyncInterfaceToCurrentImage
+    
+End Sub
+
+'Load an image file, and add it to the current image as a new layer
 Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal imagePath As String = "", Optional ByVal customLayerName As String = "", Optional ByVal createUndo As Boolean = False)
 
     'This function handles two cases: retrieving the filename from a common dialog box, and actually
@@ -240,7 +291,7 @@ Public Sub LoadImageAsNewLayer(ByVal ShowDialog As Boolean, Optional ByVal image
             
             'If the user wants us to manually create an Undo point (as required when pasting, for example), do so now
             If createUndo Then
-                pdImages(g_CurrentImage).undoManager.CreateUndoData "Add layer", "", UNDO_IMAGE_VECTORSAFE, pdImages(g_CurrentImage).GetActiveLayerID, -1
+                pdImages(g_CurrentImage).UndoManager.CreateUndoData "Add layer", "", UNDO_IMAGE_VECTORSAFE, pdImages(g_CurrentImage).GetActiveLayerID, -1
             End If
             
             'Render the new image to screen
@@ -364,12 +415,20 @@ Public Sub SetLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     
 End Sub
 
+'XML-based wrapper for DuplicateLayerByIndex(), below
+Public Sub DuplicateLayerByIndex_XML(ByVal processParameters As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    Layers.DuplicateLayerByIndex cParams.GetLong("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex)
+End Sub
+
 'Duplicate a given layer (note: it doesn't have to be the active layer)
 Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
 
     'Validate the requested layer index
-    If dLayerIndex < 0 Then dLayerIndex = 0
-    If dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1 Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
+    If (dLayerIndex < 0) Then dLayerIndex = 0
+    If (dLayerIndex > pdImages(g_CurrentImage).GetNumOfLayers - 1) Then dLayerIndex = pdImages(g_CurrentImage).GetNumOfLayers - 1
     
     'Before doing anything else, make a copy of the current active layer ID.  We will use this to restore the same
     ' active layer after the creation is complete.
@@ -400,7 +459,7 @@ Public Sub DuplicateLayerByIndex(ByVal dLayerIndex As Long)
     ViewportEngine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
     'Synchronize the interface to the new image
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
 End Sub
 

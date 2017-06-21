@@ -27,7 +27,7 @@ Public Sub AutocropImage(Optional ByVal cThreshold As Long = 15)
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     'The image will be cropped in four steps.  Each edge will be cropped separately, starting with the top.
@@ -245,39 +245,42 @@ Public Sub SeeIfCropCanBeAppliedNonDestructively()
     'First, make sure there is an active selection
     If (Not pdImages(g_CurrentImage).IsSelectionActive) Then
         Message "No active selection found.  Crop abandoned."
-        Exit Sub
+        
+    Else
+        
+        'Query the active selection object; if it's a pure rectangular region, we can apply a non-destructive crop (which is not
+        ' only much faster, but it doesn't require rasterizing vector layers!)
+        With pdImages(g_CurrentImage).MainSelection
+            
+            'Start by seeing if we're even working with a rectangle.  If we are, we can check a few extra criteria as well; if we aren't,
+            ' only a destructive crop is possible.
+            Dim selectionIsPureRectangle As Boolean
+            selectionIsPureRectangle = (.GetSelectionShape = ss_Rectangle)
+            
+            If selectionIsPureRectangle Then
+                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_RoundedCornerRadius) = 0)
+                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Area) = sa_Interior)
+                selectionIsPureRectangle = selectionIsPureRectangle And (.GetSelectionProperty_Long(sp_Smoothing) = ss_None)
+            End If
+            
+            'If that huge list of above criteria are met, we can apply a non-destructive crop operation.
+            Dim cParams As pdParamXML
+            Set cParams = New pdParamXML
+            cParams.AddParam "nondestructive", selectionIsPureRectangle
+            Processor.Process "Crop", False, cParams.GetParamString(), UNDO_EVERYTHING
+            
+        End With
+    
     End If
     
-    'Query the active selection object; if it's a pure rectangular region, we can apply a non-destructive crop (which is not
-    ' only much faster, but it doesn't require rasterizing vector layers!)
-    With pdImages(g_CurrentImage).mainSelection
-        
-        'Start by seeing if we're even working with a rectangle.  If we are, we can check a few extra criteria as well; if we aren't,
-        ' only a destructive crop is possible.
-        Dim selectionIsPureRectangle As Boolean
-        selectionIsPureRectangle = CBool(.GetSelectionShape = ss_Rectangle)
-        
-        If selectionIsPureRectangle Then
-            selectionIsPureRectangle = selectionIsPureRectangle And CBool(.GetSelectionProperty_Long(sp_RoundedCornerRadius) = 0)
-            selectionIsPureRectangle = selectionIsPureRectangle And CBool(.GetSelectionProperty_Long(sp_Area) = sa_Interior)
-            selectionIsPureRectangle = selectionIsPureRectangle And CBool((.GetSelectionProperty_Long(sp_Smoothing) = ss_None) Or (.GetSelectionProperty_Long(sp_Smoothing) = ss_Antialiased) Or ((.GetSelectionProperty_Long(sp_Smoothing) = ss_FullyFeathered) And (.GetSelectionProperty_Long(sp_FeatheringRadius) = 0)))
-        End If
-        
-        'If that huge list of above criteria are met, we can apply a non-destructive crop operation.
-        If selectionIsPureRectangle Then
-        
-            'A pure rectangle is in use!  Request a non-destructive crop operation.
-            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_EVERYTHING 'UNDO_IMAGEHEADER
-            
-        Else
-        
-            'A complex shape is in use.  Request a destructive crop operation.
-            Process "Crop", False, BuildParams(selectionIsPureRectangle), UNDO_EVERYTHING 'UNDO_IMAGE
-        
-        End If
-        
-    End With
-    
+End Sub
+
+'XML-based wrapper for CropToSelection, below
+Public Sub CropToSelection_XML(ByVal processParameters As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    Filters_Transform.CropToSelection , cParams.GetBool("nondestructive", False)
 End Sub
 
 'Crop the image to the current selection.  To crop only a single layer, specify a target layer index.
@@ -298,7 +301,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     Dim i As Long
     
     Dim selectionWidth As Long, selectionHeight As Long, selBounds As RECTF
-    selBounds = pdImages(g_CurrentImage).mainSelection.GetBoundaryRect
+    selBounds = pdImages(g_CurrentImage).MainSelection.GetBoundaryRect
     selectionWidth = selBounds.Width
     selectionHeight = selBounds.Height
     
@@ -349,7 +352,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         'Point our selection array at the selection mask in advance; this only needs to be done once, as the same mask is used for all layers.
         Dim selData() As Byte
         Dim selSA As SAFEARRAY2D
-        pdImages(g_CurrentImage).mainSelection.GetMaskDIB.WrapArrayAroundDIB selData, selSA
+        pdImages(g_CurrentImage).MainSelection.GetMaskDIB.WrapArrayAroundDIB selData, selSA
         
         'Lots of helper variables for a function like this
         Dim leftOffset As Long, topOffset As Long
@@ -406,7 +409,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
             tmpLayerRef.layerDIB.WrapArrayAroundDIB srcImageData, srcSA
             
             Dim selMaskDepth As Long
-            selMaskDepth = (pdImages(g_CurrentImage).mainSelection.GetMaskDIB.GetDIBColorDepth \ 8)
+            selMaskDepth = (pdImages(g_CurrentImage).MainSelection.GetMaskDIB.GetDIBColorDepth \ 8)
             
             'Iterate through all relevant pixels in this layer (e.g. only those that actually lie within the interesting region
             ' of the selection), copying them to the destination as necessary.
@@ -481,7 +484,7 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
         Next i
         
         'Clear the selection mask array reference
-        pdImages(g_CurrentImage).mainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
+        pdImages(g_CurrentImage).MainSelection.GetMaskDIB.UnwrapArrayFromDIB selData
         
     End If
         
@@ -490,9 +493,9 @@ Public Sub CropToSelection(Optional ByVal targetLayerIndex As Long = -1, Optiona
     If (targetLayerIndex = -1) Then
     
         'The selection is now going to be out of sync with the image.  Forcibly clear it.
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.EraseCustomTrackers
+        pdImages(g_CurrentImage).MainSelection.EraseCustomTrackers
         SyncTextToCurrentSelection g_CurrentImage
         
     End If
@@ -525,7 +528,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
     
     Message "Flipping image..."
@@ -584,7 +587,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     Message "Mirroring image..."
@@ -643,7 +646,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     Message "Rotating image clockwise..."
@@ -733,7 +736,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     'Fun fact: rotating 180 degrees can be accomplished by flipping and then mirroring it.
@@ -792,7 +795,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
     'If the image contains an active selection, disable it before transforming the canvas
     If flipAllLayers And pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     Message "Rotating image counter-clockwise..."
@@ -950,6 +953,14 @@ Public Function GetInterpolatedValWrap(ByVal x1 As Double, ByVal y1 As Double, B
 
 End Function
 
+'XML-param wrapper for MenuFitCanvasToLayer, below
+Public Sub FitCanvasToLayer_XML(ByVal processParameters As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    MenuFitCanvasToLayer cParams.GetLong("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex)
+End Sub
+
 'Fit the image canvas around the current layer
 Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     
@@ -958,7 +969,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
     
     'Start by calculating a new offset, based on the current layer's offsets.
@@ -1005,7 +1016,7 @@ Public Sub MenuFitCanvasToAllLayers()
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
     
     'Start by finding two things:
@@ -1072,7 +1083,7 @@ Public Sub TrimImage()
     'If the image contains an active selection, disable it before transforming the canvas
     If pdImages(g_CurrentImage).IsSelectionActive Then
         pdImages(g_CurrentImage).SetSelectionActive False
-        pdImages(g_CurrentImage).mainSelection.LockRelease
+        pdImages(g_CurrentImage).MainSelection.LockRelease
     End If
 
     'The image will be trimmed in four steps.  Each edge will be trimmed separately, starting with the top.

@@ -118,10 +118,12 @@ Public Sub InitializeMenus()
     'Layer menu
     AddMenuItem "Layer", "layer_top", 4
     AddMenuItem "Add", "layer_add", 4, 0
-        AddMenuItem "Blank layer", "layer_addblank", 4, 0, 0
-        AddMenuItem "Duplicate of current layer", "layer_duplicate", 4, 0, 1, "edit_copy"
-        AddMenuItem "From clipboard", "layer_addfromclipboard", 4, 0, 3, "edit_paste"
-        AddMenuItem "From file...", "layer_addfromfile", 4, 0, 4, "file_open"
+        AddMenuItem "Basic layer...", "layer_addbasic", 4, 0, 0
+        AddMenuItem "Blank layer", "layer_addblank", 4, 0, 1
+        AddMenuItem "Duplicate of current layer", "layer_duplicate", 4, 0, 2, "edit_copy"
+        AddMenuItem "From clipboard", "layer_addfromclipboard", 4, 0, 4, "edit_paste"
+        AddMenuItem "From file...", "layer_addfromfile", 4, 0, 5, "file_open"
+        AddMenuItem "From visible layers", "layer_addfromvisiblelayers", 4, 0, 6
     AddMenuItem "Delete", "layer_delete", 4, 1
         AddMenuItem "Current layer", "layer_deletecurrent", 4, 1, 0, "generic_trash"
         AddMenuItem "Hidden layers", "layer_deletehidden", 4, 1, 1, "generic_invisible"
