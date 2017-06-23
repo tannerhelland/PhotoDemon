@@ -6,7 +6,7 @@
 
 <langid>mk-MK</langid>
 <langname>Macedonian</langname>
-<langversion>1.0.56</langversion>
+<langversion>1.0.57</langversion>
 <langstatus>incomplete</langstatus>
 
 <author>Бобан Ѓерасимоски</author>
@@ -1953,6 +1953,21 @@ Error број %
 </phrase>
 
 <phrase>
+<original>horizontal shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation>текст</translation>
 </phrase>
@@ -2015,6 +2030,106 @@ Error број %
 <phrase>
 <original>antialiasing clarity</original>
 <translation>анти јасност aliasing</translation>
+</phrase>
+
+<phrase>
+<original>text type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation>лов</translation>
+</phrase>
+
+<phrase>
+<original>word wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation>fillstyle</translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation>преглед стил</translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>позадина</translation>
+</phrase>
+
+<phrase>
+<original>background style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>позадина граница</translation>
+</phrase>
+
+<phrase>
+<original>background border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>проред</translation>
+</phrase>
+
+<phrase>
+<original>margin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character remapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation>инфлацијата</translation>
+</phrase>
+
+<phrase>
+<original>mirroring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2107,7 +2222,7 @@ When заврши, кликнете на копчето Submit. Ти благо�
 <translation>инструкциите за пријавување на бубачки</translation>
 </phrase>
 
-<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -8003,11 +8118,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
-<original>fill style</original>
-<translation>fillstyle</translation>
-</phrase>
-
-<phrase>
 <original>preview</original>
 <translation>преглед</translation>
 </phrase>
@@ -8077,7 +8187,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>дијамант</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8238,11 +8348,6 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 </phrase>
 
 <phrase>
-<original>outline style</original>
-<translation>преглед стил</translation>
-</phrase>
-
-<phrase>
 <original>outline width</original>
 <translation>ширина преглед</translation>
 </phrase>
@@ -8312,7 +8417,7 @@ Do имате сметка на GitHub? (Ако немате идеја што �
 <translation>откос</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -11589,12 +11694,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>сопствена боја</translation>
 </phrase>
 
-<phrase>
-<original>background</original>
-<translation>позадина</translation>
-</phrase>
-
-<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -13362,11 +13462,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>alpha mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>hardness</original>
 <translation></translation>
 </phrase>
@@ -13376,7 +13471,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13672,11 +13767,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation>лов</translation>
-</phrase>
-
-<phrase>
 <original>remap</original>
 <translation>remap</translation>
 </phrase>
@@ -13692,11 +13782,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 </phrase>
 
 <phrase>
-<original>inflation</original>
-<translation>инфлацијата</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>пополни позадина</translation>
 </phrase>
@@ -13704,11 +13789,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>border style</original>
 <translation>границата стил</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>позадина граница</translation>
 </phrase>
 
 <phrase>
@@ -13734,11 +13814,6 @@ I Искрено се извинуваме за оваа ситуација, н�
 <phrase>
 <original>v. padding</original>
 <translation>v. Соочи</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>проред</translation>
 </phrase>
 
 <phrase>
@@ -13831,7 +13906,7 @@ I Искрено се извинуваме за оваа ситуација, н�
 <translation>Кликни тука за да се претворат овој слој на типографија слој.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15005,10 +15080,10 @@ If сеуште изберете да го исклучите ажурирања
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2542</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12313 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
+<!-- These 2542 phrases contain approximately 12340 total words. -->
 
 </pdData>

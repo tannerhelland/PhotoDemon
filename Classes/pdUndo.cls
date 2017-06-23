@@ -180,7 +180,7 @@ Friend Sub CreateUndoData(ByVal processID As String, ByVal pParamString As Strin
     If (coalescenceAllowed And (m_UndoNum > 0)) Then
         
         'If this processID and layerID match the previous ones, we are okay to just overwrite that entry with this one.
-        If (StrComp(processID, m_UndoStack(m_UndoNum - 1).processID, vbBinaryCompare) = 0) And (targetLayerID = m_UndoStack(m_UndoNum - 1).undoLayerID) Then
+        If Strings.StringsEqual(processID, m_UndoStack(m_UndoNum - 1).processID) And (targetLayerID = m_UndoStack(m_UndoNum - 1).undoLayerID) Then
             
             'As an additional failsafe, make sure the Undo type is layer-safe, and vector-safe.  This guarantees that only
             ' non-destructive changes are allowed to coalesce.

@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>French</langname>
-<langversion>6.7.260</langversion>
+<langversion>6.7.261</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1944,6 +1944,21 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>horizontal shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation></translation>
 </phrase>
@@ -2005,6 +2020,106 @@ Description: %2
 
 <phrase>
 <original>antialiasing clarity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>text type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>word wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>fond</translation>
+</phrase>
+
+<phrase>
+<original>background style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>margin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character remapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mirroring</original>
 <translation></translation>
 </phrase>
 
@@ -2098,7 +2213,7 @@ Lors de terminé, cliquez sur le bouton Envoyer. Je vous remercie!</translation>
 <translation>Instructions de rapports de bogues</translation>
 </phrase>
 
-<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -7994,11 +8109,6 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 </phrase>
 
 <phrase>
-<original>fill style</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>preview</original>
 <translation></translation>
 </phrase>
@@ -8068,7 +8178,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation></translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8229,11 +8339,6 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 </phrase>
 
 <phrase>
-<original>outline style</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>outline width</original>
 <translation></translation>
 </phrase>
@@ -8303,7 +8408,7 @@ Avez-vous un compte GitHub ? (Si vous n'avez aucune idée de ce que cela signifi
 <translation></translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -11578,12 +11683,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation>couleur personnalisée</translation>
 </phrase>
 
-<phrase>
-<original>background</original>
-<translation>fond</translation>
-</phrase>
-
-<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -13351,11 +13451,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>alpha mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>hardness</original>
 <translation></translation>
 </phrase>
@@ -13365,7 +13460,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13661,11 +13756,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>remap</original>
 <translation></translation>
 </phrase>
@@ -13681,22 +13771,12 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>inflation</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>border style</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
 <translation></translation>
 </phrase>
 
@@ -13722,11 +13802,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 
 <phrase>
 <original>v. padding</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
 <translation></translation>
 </phrase>
 
@@ -13820,7 +13895,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation></translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14995,10 +15070,10 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2542</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12313 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
+<!-- These 2542 phrases contain approximately 12340 total words. -->
 
 </pdData>

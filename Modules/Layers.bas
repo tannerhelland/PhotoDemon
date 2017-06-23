@@ -928,16 +928,25 @@ End Sub
 Public Sub ResizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
     cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
-        .SetLayerOffsetX cParams.GetDouble(1)
-        .SetLayerOffsetY cParams.GetDouble(2)
-        .SetLayerCanvasXModifier cParams.GetDouble(3)
-        .SetLayerCanvasYModifier cParams.GetDouble(4)
+        .SetLayerOffsetX cParams.GetDouble("layer-offsetx")
+        .SetLayerOffsetY cParams.GetDouble("layer-offsety")
+        
+        'Raster and vector layers use different size descriptors.  (Vector layers use an absolute size; raster layers use the
+        ' underlying DIB size, plus a fractional modifier.)
+        If (.GetLayerType = PDL_IMAGE) Then
+            .SetLayerCanvasXModifier cParams.GetDouble("layer-modifierx")
+            .SetLayerCanvasYModifier cParams.GetDouble("layer-modifiery")
+        Else
+            .SetLayerWidth cParams.GetLong("layer-sizex")
+            .SetLayerHeight cParams.GetLong("layer-sizey")
+        End If
+        
     End With
     
     'Notify the parent image of the change
@@ -952,13 +961,13 @@ End Sub
 Public Sub RotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
     cParams.SetParamString resizeParams
     
     'Apply the passed parameter to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
-        .SetLayerAngle cParams.GetDouble(1, 0)
+        .SetLayerAngle cParams.GetDouble("layer-angle", 0#)
     End With
     
     'Notify the parent image of the change
@@ -973,14 +982,14 @@ End Sub
 Public Sub MoveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
 
     'Create a parameter parser to help us interpret the passed param string
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
     cParams.SetParamString resizeParams
     
     'Apply the passed parameters to the specified layer
     With pdImages(g_CurrentImage).GetLayerByIndex(srcLayerIndex)
-        .SetLayerOffsetX cParams.GetDouble(1)
-        .SetLayerOffsetY cParams.GetDouble(2)
+        .SetLayerOffsetX cParams.GetDouble("layer-offsetx")
+        .SetLayerOffsetY cParams.GetDouble("layer-offsety")
     End With
     
     'Notify the parent of the change

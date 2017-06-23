@@ -312,8 +312,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Basic Text Tool Panel
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 13/May/15
-'Last update: finish migrating all relevant controls to this dedicated form
+'Last updated: 22/June/17
+'Last update: large improvements to the way non-destructive actions interact with the Undo/Redo engine
 '
 'This form includes all user-editable settings for the Basic Text tool.
 '
@@ -402,19 +402,19 @@ Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
         'Bold
         Case 0
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
             
         'Italic
         Case 1
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
         
         'Underline
         Case 2
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
         
         'Strikeout
         Case 3
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
     
     End Select
     
@@ -440,12 +440,12 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsHAlignment_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
 End Sub
 
 Private Sub btsMain_Click(ByVal buttonIndex As Long)
@@ -472,12 +472,12 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsVAlignment_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
 Private Sub cboTextFontFace_Click()
@@ -500,19 +500,19 @@ Private Sub cboTextFontFace_Click()
 End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
         
     'We show/hide the AA clarity option depending on this tool's setting.  (AA clarity doesn't make much sense
     ' if AA is disabled.)
-    If cboTextRenderingHint.ListIndex = 0 Then
+    If (cboTextRenderingHint.ListIndex = 0) Then
         sltTextClarity.Visible = False
         lblText(6).Visible = False
     Else
@@ -538,12 +538,12 @@ Private Sub cboTextRenderingHint_Click()
 End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
 End Sub
 
 Private Sub csTextFontColor_ColorChanged()
@@ -566,12 +566,12 @@ Private Sub csTextFontColor_ColorChanged()
 End Sub
 
 Private Sub csTextFontColor_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FontColor, csTextFontColor.Color, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub csTextFontColor_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontColor, csTextFontColor.Color
+    Processor.FlagFinalNDFXState_Text ptp_FontColor, csTextFontColor.Color
 End Sub
 
 Private Sub Form_Load()
@@ -648,7 +648,7 @@ Private Sub lblConvertLayerConfirm_Click()
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.UpdateAgainstCurrentLayer
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
 End Sub
 
@@ -686,7 +686,7 @@ Private Sub sltTextClarity_GotFocusAPI()
 End Sub
 
 Private Sub sltTextClarity_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
+    Processor.FlagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
 End Sub
 
 Private Sub tudTextFontSize_Change()
@@ -709,12 +709,12 @@ Private Sub tudTextFontSize_Change()
 End Sub
 
 Private Sub tudTextFontSize_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudTextFontSize_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
+    Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
 End Sub
 
 Private Sub txtTextTool_Change()
@@ -737,12 +737,12 @@ Private Sub txtTextTool_Change()
 End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+    Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
 
 'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-basic-text text layer of
@@ -825,12 +825,10 @@ Private Function CurrentLayerIsText() As Boolean
 End Function
 
 Private Sub ChangeMainPanel()
-    
     Dim i As Long
     For i = pdcMain.lBound To pdcMain.UBound
         pdcMain(i).Visible = (i = btsMain.ListIndex)
     Next i
-    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -860,6 +858,6 @@ Public Sub UpdateAgainstCurrentTheme()
         
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
 
 End Sub

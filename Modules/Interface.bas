@@ -649,7 +649,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             End If
             
             'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-            If (Not suspendAssociatedRedraws) Then ResetMenuIcons
+            If (Not suspendAssociatedRedraws) Then IconsAndCursors.ResetMenuIcons
         
         End If
     

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2777</langversion>
+<langversion>6.8.2804</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1195,7 +1195,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Sichtbar</translation>
 </phrase>
 
 <phrase>
@@ -1954,6 +1954,21 @@ Beschreibung: %2
 </phrase>
 
 <phrase>
+<original>horizontal shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha mode</original>
+<translation>Alphamodus</translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation>Text</translation>
 </phrase>
@@ -2016,6 +2031,106 @@ Beschreibung: %2
 <phrase>
 <original>antialiasing clarity</original>
 <translation>Antialiasing-Klarheit</translation>
+</phrase>
+
+<phrase>
+<original>text type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation>Andeutend</translation>
+</phrase>
+
+<phrase>
+<original>word wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation>Füllungsstil</translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation>Umriss-Stil</translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>Hintergrund</translation>
+</phrase>
+
+<phrase>
+<original>background style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>Hintergrundgrenze</translation>
+</phrase>
+
+<phrase>
+<original>background border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>Linienabstand</translation>
+</phrase>
+
+<phrase>
+<original>margin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character remapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation>Inflation</translation>
+</phrase>
+
+<phrase>
+<original>mirroring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2108,7 +2223,7 @@ Nach Abschluss klicken Sie bitte auf den Button "Einreichen". Vielen Dank!</tran
 <translation>Instruktionen zum Fehlerbericht</translation>
 </phrase>
 
-<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -4859,7 +4974,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Grundlayer</translation>
 </phrase>
 
 <phrase>
@@ -4874,7 +4989,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Aus sichtbaren Layern</translation>
 </phrase>
 
 <phrase>
@@ -6062,7 +6177,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Neuer Layer aus sichtbaren Layern</translation>
 </phrase>
 
 <phrase>
@@ -7979,7 +8094,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>(enter name here)</original>
-<translation>(Name hier eingeben)</translation>
+<translation>(Hier Namen eingeben)</translation>
 </phrase>
 
 <phrase>
@@ -7989,7 +8104,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>Preset name required</original>
-<translation>Name für Preset erforderlich</translation>
+<translation>Preset-Name erforderlich</translation>
 </phrase>
 
 <!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -8001,11 +8116,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <phrase>
 <original>Fill settings</original>
 <translation>Fülleinstellungen</translation>
-</phrase>
-
-<phrase>
-<original>fill style</original>
-<translation>Füllungsstil</translation>
 </phrase>
 
 <phrase>
@@ -8078,7 +8188,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Diamant</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8239,11 +8349,6 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 </phrase>
 
 <phrase>
-<original>outline style</original>
-<translation>Umriss-Stil</translation>
-</phrase>
-
-<phrase>
 <original>outline width</original>
 <translation>Umrissbreite</translation>
 </phrase>
@@ -8313,7 +8418,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 <translation>Bevel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -11588,12 +11693,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Benutzerdefinierte Farbe</translation>
 </phrase>
 
-<phrase>
-<original>background</original>
-<translation>Hintergrund</translation>
-</phrase>
-
-<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -13361,11 +13461,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
-<original>alpha mode</original>
-<translation>Alphamodus</translation>
-</phrase>
-
-<phrase>
 <original>hardness</original>
 <translation>Härte</translation>
 </phrase>
@@ -13375,7 +13470,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Fluss</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13671,11 +13766,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation>Andeutend</translation>
-</phrase>
-
-<phrase>
 <original>remap</original>
 <translation>Neu abbilden</translation>
 </phrase>
@@ -13691,11 +13781,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 </phrase>
 
 <phrase>
-<original>inflation</original>
-<translation>Inflation</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>Hintergrund füllen</translation>
 </phrase>
@@ -13703,11 +13788,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <phrase>
 <original>border style</original>
 <translation>Grenzstil</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>Hintergrundgrenze</translation>
 </phrase>
 
 <phrase>
@@ -13733,11 +13813,6 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <phrase>
 <original>v. padding</original>
 <translation>Padding vert.</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>Linienabstand</translation>
 </phrase>
 
 <phrase>
@@ -13830,7 +13905,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 <translation>Klicken Sie hier, um diesen Layer zu einem Typografie-Layer zu konvertieren.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15004,10 +15079,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2542</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12313 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
+<!-- These 2542 phrases contain approximately 12340 total words. -->
 
 </pdData>
