@@ -96,6 +96,10 @@ Public Sub SetFocusManually()
     If (Not m_HasFocus) Then g_WindowManager.SetFocusAPI m_hWnd
 End Sub
 
+Public Sub ActivateManually()
+    g_WindowManager.ActivateWindowAPI m_hWnd
+End Sub
+
 Private Function GetHiWord(ByVal lParam As Long) As Integer
     If (lParam And &H80000000) Then
         GetHiWord = (lParam \ 65535) - 1
@@ -118,48 +122,48 @@ Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, By
     If (uiMsg = WM_ACTIVATE) Then
         
         'The low-order portion of wParam contains a notification of whether we are gaining or losing focus.
-        
+
         'Window is losing focus
         If (GetLoWord(wParam) = WA_INACTIVE) Then
-            
+
             If m_HasFocus Then
                 m_HasFocus = False
                 UserControl_Support.PDControlLostFocus m_hWnd
                 RaiseEvent LostFocusReliable
             End If
-        
+
         'Window is gaining focus
         Else
-            
+
             If (Not m_HasFocus) Then
                 m_HasFocus = True
                 UserControl_Support.PDControlReceivedFocus m_hWnd
                 RaiseEvent GotFocusReliable
             End If
-            
+
         End If
-        
+
         'Allow default focus handlers to still trigger
         ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
-    
+
     'This message doesn't really apply to most uses of this class, but we cover it for completeness' sake
     ElseIf (uiMsg = WM_NCACTIVATE) Then
-            
+
         If (Not m_HasFocus) And (wParam <> 0) Then
             m_HasFocus = True
             UserControl_Support.PDControlReceivedFocus m_hWnd
             RaiseEvent GotFocusReliable
         End If
-        
+
         'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms632633%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396)...
         ' "When the wParam parameter is FALSE, an application should return TRUE to indicate that the system
         '  should proceed with the default processing, or it should return FALSE to prevent the change.
         '  When wParam is TRUE, the return value is ignored."
-        
+
         'We *always* want to proceed with default handling, so we ignore this advice and forcibly allow
         ' DefSubclassProc to request the behavior it wants.
         ISubclass_WindowMsg = VBHacks.DefaultSubclassProc(hWnd, uiMsg, wParam, lParam)
-        
+
     'Window is losing focus
     ElseIf (uiMsg = WM_KILLFOCUS) Then
             

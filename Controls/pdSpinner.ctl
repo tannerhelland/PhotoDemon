@@ -195,6 +195,10 @@ Public Property Let FontSize(ByVal newSize As Single)
     End If
 End Property
 
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus() Or m_EditBox.HasFocus()
+End Property
+
 Public Property Get hWnd() As Long
 Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd

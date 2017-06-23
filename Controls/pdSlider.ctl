@@ -108,10 +108,10 @@ Private textBoxInitiated As Boolean
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
-'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
-' focus events.  Every time an individual component gains focus, we increment this counter by 1.  Every time an individual component
-' loses focus, we decrement the counter by 1.  When the counter hits 0, we report a control-wide Got/LostFocusAPI event.
-Private m_ControlFocusCount As Long
+'Tracks whether the control (any component) has focus.  This is helpful as this control contains a number of child controls,
+' and we want to raise focus events only if *none of our children* have focus (or alternatively, if *one of our children*
+' gains focus).
+Private m_LastFocusState As Boolean
 
 'Used to prevent recursive redraws
 Private m_InternalResizeActive As Boolean
@@ -207,6 +207,10 @@ End Property
 Public Property Let GradientMiddleValue(ByVal newValue As Double)
     pdssPrimary.GradientMiddleValue = newValue
     PropertyChanged "GradientMiddleValue"
+End Property
+
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus() Or pdssPrimary.HasFocus() Or tudPrimary.HasFocus()
 End Property
 
 Public Property Get hWnd() As Long
@@ -378,13 +382,11 @@ Private Sub pdssPrimary_Change()
 End Sub
 
 Private Sub pdssPrimary_GotFocusAPI()
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    EvaluateFocusCount True
+    EvaluateFocusCount
 End Sub
 
 Private Sub pdssPrimary_LostFocusAPI()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    EvaluateFocusCount False
+    EvaluateFocusCount
 End Sub
 
 Private Sub pdssPrimary_RenderTrackImage(dstDIB As pdDIB, ByVal leftBoundary As Single, ByVal rightBoundary As Single)
@@ -401,13 +403,11 @@ Private Sub tudPrimary_ResetClick()
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    EvaluateFocusCount True
+    EvaluateFocusCount
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    EvaluateFocusCount False
+    EvaluateFocusCount
 End Sub
 
 Private Sub tudPrimary_Change()
@@ -421,13 +421,11 @@ Private Sub tudPrimary_Change()
 End Sub
 
 Private Sub tudPrimary_GotFocusAPI()
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    EvaluateFocusCount True
+    EvaluateFocusCount
 End Sub
 
 Private Sub tudPrimary_LostFocusAPI()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    EvaluateFocusCount False
+    EvaluateFocusCount
 End Sub
 
 Private Sub tudPrimary_Resize()
@@ -633,18 +631,14 @@ End Function
 
 'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
 ' Got/LostFocusAPI events, which are important as an API text box is part of this control.
-Private Sub EvaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
+Private Sub EvaluateFocusCount()
 
-    If focusCountJustIncremented Then
-        
-        'If just incremented from 0 to 1, raise a GotFocusAPI event
-        If (m_ControlFocusCount = 1) Then RaiseEvent GotFocusAPI
-        
-    Else
-    
-        'If just decremented from 1 to 0, raise a LostFocusAPI event
-        If (m_ControlFocusCount = 0) Then RaiseEvent LostFocusAPI
-    
+    If (Not m_LastFocusState) And Me.HasFocus() Then
+        m_LastFocusState = True
+        RaiseEvent GotFocusAPI
+    ElseIf m_LastFocusState And (Not Me.HasFocus()) Then
+        m_LastFocusState = False
+        RaiseEvent LostFocusAPI
     End If
 
 End Sub

@@ -55,6 +55,7 @@ Private m_PanelHWnd As Long
 
 'To better support high-DPI OS settings, we use a system-based move/size handler
 Private WithEvents m_WindowSize As pdWindowSize
+Attribute m_WindowSize.VB_VarHelpID = -1
 
 Private Sub Form_Load()
     

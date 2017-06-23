@@ -168,8 +168,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Non-Destructive Effect (NDFX) Tool Panel
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 13/May/15
-'Last update: finish migrating all relevant controls to this dedicated form
+'Last updated: 22/June/17
+'Last update: large improvements to the way non-destructive actions interact with the Undo/Redo engine
 '
 'This form includes all user-editable settings for the "Quick Fix" canvas tools.
 '
@@ -351,5 +351,5 @@ Private Sub sltQuickFix_GotFocusAPI(Index As Integer)
 End Sub
 
 Private Sub sltQuickFix_LostFocusAPI(Index As Integer)
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
+    Processor.FlagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
 End Sub

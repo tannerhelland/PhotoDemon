@@ -737,17 +737,17 @@ Private Sub NewToolSelected()
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
                 If (g_CurrentTool = Selections.GetRelevantToolFromSelectShape()) Then
-                    SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).mainSelection.IsTransformable
+                    SetUIGroupState PDUI_SelectionTransforms, pdImages(g_CurrentImage).MainSelection.IsTransformable
 
                 'A selection is already active, and it doesn't match the current tool type!
                 Else
 
                     'Handle the special case of circle and rectangular selections, which can be swapped non-destructively.
-                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Rectangle) Then
-                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Circle
+                    If (g_CurrentTool = SELECT_CIRC) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape = ss_Rectangle) Then
+                        pdImages(g_CurrentImage).MainSelection.SetSelectionShape ss_Circle
 
-                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).mainSelection.GetSelectionShape = ss_Circle) Then
-                        pdImages(g_CurrentImage).mainSelection.SetSelectionShape ss_Rectangle
+                    ElseIf (g_CurrentTool = SELECT_RECT) And (pdImages(g_CurrentImage).MainSelection.GetSelectionShape = ss_Circle) Then
+                        pdImages(g_CurrentImage).MainSelection.SetSelectionShape ss_Rectangle
 
                     End If
                     
@@ -1006,7 +1006,7 @@ Private Sub cmdTools_Click(Index As Integer)
     End If
     
     'Update the tool options area to match the newly selected tool
-    If (Not m_InsideReflowCode) And (cmdTools(Index).Value) Then
+    If (Not m_InsideReflowCode) And cmdTools(Index).Value Then
         
         'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
         ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.

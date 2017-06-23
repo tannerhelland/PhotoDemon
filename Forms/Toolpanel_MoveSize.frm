@@ -297,8 +297,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Move/Size Tool Panel
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 13/May/15
-'Last update: finish migrating all relevant controls to this dedicated form
+'Last updated: 22/June/17
+'Last update: large improvements to the way non-destructive actions interact with the Undo/Redo engine
 '
 'This form includes all user-editable settings for the Move/Size canvas tool.
 '
@@ -347,7 +347,7 @@ Private Sub cboLayerResizeQuality_Click()
 End Sub
 
 Private Sub cboLayerResizeQuality_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ResizeQuality, cboLayerResizeQuality.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
@@ -357,7 +357,7 @@ End Sub
 
 Private Sub chkAutoActivateLayer_Click()
     If CBool(chkAutoActivateLayer) Then
-        If Not chkIgnoreTransparent.Enabled Then chkIgnoreTransparent.Enabled = True
+        If (Not chkIgnoreTransparent.Enabled) Then chkIgnoreTransparent.Enabled = True
     Else
         If chkIgnoreTransparent.Enabled Then chkIgnoreTransparent.Enabled = False
     End If
@@ -457,15 +457,15 @@ Private Sub sltLayerAngle_Change()
     
     'Redraw the viewport
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-        
+    
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerAngle_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_Angle, sltLayerAngle.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
@@ -477,7 +477,7 @@ Private Sub sltLayerShearX_Change()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
-    If Not Tools.CanvasToolsAllowed Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -492,13 +492,13 @@ Private Sub sltLayerShearX_Change()
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerShearX_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ShearX, sltLayerShearX.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
@@ -510,7 +510,7 @@ Private Sub sltLayerShearY_Change()
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
-    If Not Tools.CanvasToolsAllowed Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -525,13 +525,13 @@ Private Sub sltLayerShearY_Change()
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
     
 End Sub
 
 Private Sub sltLayerShearY_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Generic pgp_ShearY, sltLayerShearY.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
@@ -543,7 +543,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
-    If Not Tools.CanvasToolsAllowed Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     
     'Mark the tool engine as busy
     Tools.SetToolBusyState True
@@ -575,8 +575,8 @@ Private Sub tudLayerMove_Change(Index As Integer)
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Also, activate the "make transforms permanent" button(s) as necessary
-    If cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
-    If cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerAffinePermanent.Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
+    If (cmdLayerMove(0).Enabled <> pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)) Then cmdLayerMove(0).Enabled = pdImages(g_CurrentImage).GetActiveLayer.AffineTransformsActive(True)
 
 End Sub
 
@@ -586,12 +586,12 @@ Private Sub tudLayerMove_FinalChange(Index As Integer)
     
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tools.getToolBusyState
-    If Not Tools.CanvasToolsAllowed Then Exit Sub
+    If (Not Tools.CanvasToolsAllowed) Then Exit Sub
     
     Select Case Index
         
         Case 2, 3
-            SyncInterfaceToCurrentImage
+            Interface.SyncInterfaceToCurrentImage
         
         Case Else
         
@@ -638,6 +638,6 @@ Public Sub UpdateAgainstCurrentTheme()
     cmdLayerMove(0).AssignImage "generic_commit", , buttonSize, buttonSize
     cmdLayerAffinePermanent.AssignImage "generic_commit", , buttonSize, buttonSize
     
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
     
 End Sub
