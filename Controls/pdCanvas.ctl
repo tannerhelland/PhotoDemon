@@ -1099,24 +1099,15 @@ Private Sub CanvasView_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
-                    'TODO: migrate to XML params
                     With pdImages(g_CurrentImage).GetActiveLayer
-                        Process "New text layer", , BuildParams(.GetLayerOffsetX, .GetLayerOffsetY, .GetLayerWidth, .GetLayerHeight, .GetVectorDataAsXML), UNDO_IMAGE_VECTORSAFE
+                        Process "New text layer", , BuildParamList("layerheader", .GetLayerHeaderAsXML(), "layerdata", .GetVectorDataAsXML), UNDO_IMAGE_VECTORSAFE
                     End With
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
                     Interface.SyncInterfaceToCurrentImage
                     
                     'Finally, set focus to the text layer text entry box
-                    ' TODO: relay this request to the form itself, and have the form set focus *only* if the
-                    ' text panel is actually visible.  (Otherwise, the focus request will error.)
-                    If (g_CurrentTool = VECTOR_TEXT) Then
-                        'toolpanel_Text.txtTextTool.SetFocus
-                        toolpanel_Text.txtTextTool.SelectAll
-                    Else
-                        'toolpanel_FancyText.txtTextTool.SetFocus
-                        toolpanel_FancyText.txtTextTool.SelectAll
-                    End If
+                    If (g_CurrentTool = VECTOR_TEXT) Then toolpanel_Text.txtTextTool.SelectAll Else toolpanel_FancyText.txtTextTool.SelectAll
                     
                 'The user is simply editing an existing layer.
                 Else

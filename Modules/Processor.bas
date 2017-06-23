@@ -282,20 +282,13 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
                     Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", 0, 0, True
                 End If
                 
-                'Five parameters are passed during text layer creation:
-                ' 1, 2) X, Y offset
-                With pdImages(g_CurrentImage).GetActiveLayer
-                    .SetLayerOffsetX cParams.GetSingle(1)
-                    .SetLayerOffsetY cParams.GetSingle(2)
+                'Text layer parameters can be precisely recreated in two steps:
                 
-                ' 3, 4) Width, Height
-                    .SetLayerWidth cParams.GetSingle(3)
-                    .SetLayerHeight cParams.GetSingle(4)
-                    
-                ' 5) Vector XML data
-                    .CreateVectorDataFromXML cParams.GetString(5)
+                '1) Initialize the standard layer header
+                pdImages(g_CurrentImage).GetActiveLayer.CreateNewLayerFromXML cXMLParams.GetString("layerheader")
                 
-                End With
+                '2) Initialize the text-specific bits
+                pdImages(g_CurrentImage).GetActiveLayer.CreateVectorDataFromXML cXMLParams.GetString("layerdata")
                 
             End If
         
@@ -409,13 +402,13 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
             
         'On-canvas layer modifications (moving, non-destructive resizing, etc)
         Case "Resize layer (on-canvas)"
-            Layers.ResizeLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
+            Layers.ResizeLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
         
         Case "Rotate layer (on-canvas)"
-            Layers.RotateLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
+            Layers.RotateLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
         
         Case "Move layer"
-            Layers.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, cParams.GetParamString
+            Layers.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
             
         '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry
         ' after the user has performed a drag/drop rearrangement of the layer stack.
@@ -1364,7 +1357,7 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
                 ' ID, and the second is a layer setting value.
                 Case "Modify layer"
                     If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                        pdImages(g_CurrentImage).GetActiveLayer.SetGenericLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
+                        pdImages(g_CurrentImage).GetActiveLayer.SetGenericLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
                     End If
                 
                 'Text layer modifications are handled by their own specialized non-destructive processor (below).  The only way this case
@@ -1372,13 +1365,13 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
                 ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
                 Case "Modify text layer"
                     If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
+                        If pdImages(g_CurrentImage).GetActiveLayer.IsLayerText Then pdImages(g_CurrentImage).GetActiveLayer.SetTextLayerProperty cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
                     End If
                     
                 'Non-destructive "quick-fix" type effects follow the same logic as above.
                 Case "Non-destructive effect"
                     If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                        pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState cParams.GetLong(1), cParams.GetVariant(2)
+                        pdImages(g_CurrentImage).GetActiveLayer.SetLayerNonDestructiveFXState cXMLParams.GetLong("setting-id"), cXMLParams.GetVariant("setting-value")
                     End If
                 
                 'DEBUG FAILSAFE
@@ -1531,15 +1524,13 @@ Private Sub ReportProcessorTimeTaken(ByVal srcStartTime As Currency)
     
 End Sub
 
-
 'I'm now testing a better method for tracking non-destructive changes to image settings.
 
 'When a control tied to a non-destructive layer effect receives focus, it should call this function with its current value (translated
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
 Public Sub FlagInitialNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
     
-    'Debug messages can be helpful with this function
-    Debug.Print "ENTRANCE -- LayerSettingID: " & layerSettingID & ", LayerSettingValue: " & layerSettingValue & ", TargetLayerID: " & targetLayerID
+    Debug.Print "START tracking layer properties: " & GetNameOfGenericAction(layerSettingID) & ": " & layerSettingValue
     
     'This function is easy; just store the values we are passed
     prevGenericSetting(layerSettingID) = layerSettingValue
@@ -1557,72 +1548,34 @@ End Sub
 ' will be generated only if the two values match.
 Public Sub FlagFinalNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant, Optional ByVal verifyLayerID As Long = -1)
     
-    'Debug messages can be helpful with this function
-    Debug.Print "EXIT -- LayerSettingID: " & layerSettingID & ", LayerSettingValue: " & layerSettingValue & ", LayerIDVerify: " & verifyLayerID
+    Debug.Print "STOP tracking layer properties: " & GetNameOfGenericAction(layerSettingID) & ": " & layerSettingValue
     
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
     
-    Dim needToCreateUndo As Boolean: needToCreateUndo = True
-    
-    'Check layer ID, if requested.
-    ' NOTE: we don't use this capability at present, because the currently active layer (by design) may be different from the
-    ' previously selected one.  Whenever a layer is activated, the full set of non-destructive layer properties is cached locally,
-    ' to ensure that all layer settings begin in the correct state.
-    'If (verifyLayerID >= 0) Then
-    '    needToCreateUndo = CBool(verifyLayerID = prevGenericLayerID)
-    'End If
-    
-    If needToCreateUndo Then
-        needToCreateUndo = CBool(StrComp(CStr(layerSettingValue), CStr(prevGenericSetting(layerSettingID)), vbBinaryCompare) <> 0)
-    End If
-    
-    'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
-    ' (if they're currently being recorded, obviously)
-    If needToCreateUndo Then
+    'See if the new setting value differs.  If it does, we need to issue a Process.Processor request to ensure the Undo/Redo chain
+    ' is properly updated.  (As a side-effect, this also allows non-destructive actions to be tagged during macro recording.)
+    If Strings.StringsNotEqual(CStr(layerSettingValue), CStr(prevGenericSetting(layerSettingID))) Then
         
         'Raise a generic "layer setting change" processor request
-        MiniProcess_NDFXOnly "Modify layer", , BuildParams(layerSettingID, layerSettingValue), UNDO_LAYERHEADER, , , prevGenericLayerID
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        With cParams
+            .AddParam "id", layerSettingID
+            .AddParam "value", layerSettingValue
+        End With
+        
+        MiniProcess_NDFXOnly "Modify layer", , cParams.GetParamString(), UNDO_LAYERHEADER, , , prevGenericLayerID
         
     End If
     
-    'Reset the tracked layer ID
-    'If (verifyLayerID >= 0) Then prevGenericLayerID = -1
-    
-End Sub
-
-'Want to synchronize all generic properties for a given layer?  Use this function to do so.
-Public Sub SyncAllGenericLayerProperties(ByRef srcLayer As pdLayer)
-    prevGenericLayerID = srcLayer.GetLayerID
-    Dim i As Long
-    For i = 0 To NUM_OF_GENERIC_PROPERTY_ENUMS - 1
-        prevGenericSetting(i) = srcLayer.GetGenericLayerProperty(i)
-    Next i
-End Sub
-
-'Want to synchronize all generic properties for a given layer?  Use this function to do so.
-Public Sub SyncAllNDFXLayerProperties(ByRef srcLayer As pdLayer)
-    prevNDFXLayerID = srcLayer.GetLayerID
-    Dim i As Long
-    For i = 0 To NUM_OF_NDFX_PROPERTY_ENUMS - 1
-        prevNDFXSetting(i) = srcLayer.GetLayerNonDestructiveFXValue(i)
-    Next i
-End Sub
-
-'Want to synchronize all generic properties for a given layer?  Use this function to do so.
-Public Sub SyncAllTextLayerProperties(ByRef srcLayer As pdLayer)
-    If srcLayer.IsLayerText Then
-        prevTextLayerID = srcLayer.GetLayerID
-        Dim i As Long
-        For i = 0 To NUM_OF_TEXT_PROPERTY_ENUMS - 1
-            prevTextSetting(i) = srcLayer.GetTextLayerProperty(i)
-        Next i
-    End If
 End Sub
 
 'When a control tied to a non-destructive text effect receives focus, it should call this function with its current value (translated
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
 Public Sub FlagInitialNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
+    
+    Debug.Print "START tracking text properties: " & GetNameOfTextAction(textSettingID) & ": " & textSettingValue
     
     'This function is easy; just store the values we are passed
     prevTextSetting(textSettingID) = textSettingValue
@@ -1637,6 +1590,8 @@ End Sub
 ' function will add an Undo entry and notify the macro recorder (if active).
 Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
     
+    Debug.Print "STOP tracking text properties: " & GetNameOfTextAction(textSettingID) & ": " & textSettingValue
+    
     'Ignore all requests if no images are loaded
     If (g_OpenImageCount = 0) Then Exit Sub
     
@@ -1647,10 +1602,17 @@ Public Sub FlagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVa
     
                 'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
                 ' (if they're currently being recorded, obviously)
-                If StrComp(CStr(textSettingValue), CStr(prevTextSetting(textSettingID)), vbBinaryCompare) <> 0 Then
+                If Strings.StringsNotEqual(CStr(textSettingValue), CStr(prevTextSetting(textSettingID))) Then
                     
                     'Raise a generic "text setting change" processor request
-                    MiniProcess_NDFXOnly "Modify text layer", , BuildParams(textSettingID, textSettingValue), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
+                    Dim cParams As pdParamXML
+                    Set cParams = New pdParamXML
+                    With cParams
+                        .AddParam "id", textSettingID
+                        .AddParam "value", textSettingValue
+                    End With
+                    
+                    MiniProcess_NDFXOnly "Modify text layer", , cParams.GetParamString(), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
                     
                 End If
                 
@@ -1678,17 +1640,24 @@ Public Sub FlagFinalNDFXState_NDFX(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE_F
     
     'See if the new setting value differs.  If it does, we need to update the Undo/Redo chain and the Macro recorder list
     ' (if they're currently being recorded, obviously)
-    If StrComp(CStr(ndfxSettingValue), CStr(prevNDFXSetting(ndfxSettingID)), vbBinaryCompare) <> 0 Then
+    If Strings.StringsNotEqual(CStr(ndfxSettingValue), CStr(prevNDFXSetting(ndfxSettingID))) Then
         
         'Raise a generic "layer setting change" processor request
-        MiniProcess_NDFXOnly "Non-destructive effect", , BuildParams(ndfxSettingID, ndfxSettingValue), UNDO_LAYERHEADER, , , prevGenericLayerID
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        With cParams
+            .AddParam "id", ndfxSettingID
+            .AddParam "value", ndfxSettingValue
+        End With
+        
+        MiniProcess_NDFXOnly "Non-destructive effect", , cParams.GetParamString(), UNDO_LAYERHEADER, , , prevNDFXLayerID
         
     End If
     
 End Sub
 
 'Micro processor to be used ONLY for non-destructive FX.  I have deliberately declared it as private to avoid using it elsewhere.
-Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
+Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional ByVal processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByVal targetLayerID As Long = -1)
 
     'Mark the software processor as busy, but only if we're not showing a dialog.
     If (Not raiseDialog) Then m_Processing = True
@@ -1704,33 +1673,32 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     
     'Finally, create a parameter parser to handle the parameter string.  This class will parse out individual parameters
     ' as specific data types when it comes time to use them.
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If (Len(processParameters) <> 0) Then cParams.SetParamString processParameters
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
     
     'Perform the actual command processing.
     '
     'Note that in most cases, the command will have already been processed, so we don't actually need to do any further image processing.
     ' Instead, we typically just append some extra text to the operation name (e.g. "Modify layer" becomes "Modify layer name") so we can
     ' supply more helpful Undo/Redo text to the user.
-    Select Case processID
-    
-        Case "Modify layer"
-            processID = processID & " " & GetNameOfGenericAction(cParams.GetLong(1))
+    If Strings.StringsEqual(processID, "Modify layer", True) Then
+        processID = processID & " " & GetNameOfGenericAction(cParams.GetLong("id"))
         
-        Case "Modify text layer"
-            processID = processID & " " & GetNameOfTextAction(cParams.GetLong(1))
+    ElseIf Strings.StringsEqual(processID, "Modify text layer", True) Then
+            processID = processID & " " & GetNameOfTextAction(cParams.GetLong("id"))
             
-        Case "Non-destructive effect"
-            processID = processID & " (" & GetNameOfNDFXAction(cParams.GetLong(1)) & ")"
+    ElseIf Strings.StringsEqual(processID, "Non-destructive effect", True) Then
+            processID = processID & " (" & GetNameOfNDFXAction(cParams.GetLong("id")) & ")"
         
-        Case Else
-            Debug.Print "WARNING!  Unknown processID submitted to MiniProcess_NDFXOnly().  Fix it!"
+    Else
+        Debug.Print "WARNING!  Unknown processID submitted to MiniProcess_NDFXOnly().  Fix it!"
+    End If
     
-    End Select
-    
-    'TODO!  Mimic these requests inside the main processor, so Macro playback has a place to trigger the behavior
-    
+    'Debug mode tracks process calls (as it's a *huge* help when trying to track down unpredictable errors)
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction """" & processID & " (NDFX)"": " & Replace$(processParameters, vbCrLf, vbNullString), PDM_PROCESSOR
+    #End If
     
     'If the image has been modified and we are not performing a batch conversion (disabled to save speed!), redraw form and taskbar icons,
     ' as well as the image tab-bar.
@@ -1746,16 +1714,10 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     ' 3) If we are in the midst of playing back a recorded macro (Undo data takes extra time to process, so we ignore it
     '     during macro playback)
     If (createUndo <> UNDO_NOTHING) And (Macros.GetMacroStatus <> MacroBATCH) And (Not raiseDialog) And recordAction And (Not pdImages(g_CurrentImage) Is Nothing) Then
-    
-        'An Undo file should be created.  In most cases, the parameters used are automatic (e.g. the image's active layer is
-        ' assumed as the target, etc).  In some rare cases, however, we may need to supply custom parameters to the Undo engine.
-        ' Check for those now.
-        Dim affectedLayerID As Long
-        affectedLayerID = targetLayerID
         
         'Create the Undo data; note that this line uniquely notifies the undo manager that it is allowed to coalesce identical
         ' processID requests.
-        pdImages(g_CurrentImage).UndoManager.CreateUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool, True
+        pdImages(g_CurrentImage).UndoManager.CreateUndoData processID, processParameters, createUndo, targetLayerID, relevantTool ', True
         
     End If
     
@@ -1765,6 +1727,35 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional raiseDialog
     'Mark the processor as ready
     m_Processing = False
     
+End Sub
+
+'Want to synchronize all generic properties for a given layer?  Use this function to do so.
+Public Sub SyncAllGenericLayerProperties(ByRef srcLayer As pdLayer)
+    prevGenericLayerID = srcLayer.GetLayerID
+    Dim i As Long
+    For i = 0 To NUM_OF_GENERIC_PROPERTY_ENUMS - 1
+        prevGenericSetting(i) = srcLayer.GetGenericLayerProperty(i)
+    Next i
+End Sub
+
+'Want to synchronize all non-destructive effect properties for a given layer?  Use this function to do so.
+Public Sub SyncAllNDFXLayerProperties(ByRef srcLayer As pdLayer)
+    prevNDFXLayerID = srcLayer.GetLayerID
+    Dim i As Long
+    For i = 0 To NUM_OF_NDFX_PROPERTY_ENUMS - 1
+        prevNDFXSetting(i) = srcLayer.GetLayerNonDestructiveFXValue(i)
+    Next i
+End Sub
+
+'Want to synchronize all text/typography properties for a given layer?  Use this function to do so.
+Public Sub SyncAllTextLayerProperties(ByRef srcLayer As pdLayer)
+    If srcLayer.IsLayerText Then
+        prevTextLayerID = srcLayer.GetLayerID
+        Dim i As Long
+        For i = 0 To NUM_OF_TEXT_PROPERTY_ENUMS - 1
+            prevTextSetting(i) = srcLayer.GetTextLayerProperty(i)
+        Next i
+    End If
 End Sub
 
 Private Function GetNameOfGenericAction(ByVal genericSettingID As PDLAYER_GENERIC_PROPERTY) As String
@@ -1806,6 +1797,18 @@ Private Function GetNameOfGenericAction(ByVal genericSettingID As PDLAYER_GENERI
         
         Case pgp_ResizeQuality
             GetNameOfGenericAction = g_Language.TranslateMessage("resize quality")
+            
+        Case pgp_ShearX
+            GetNameOfGenericAction = g_Language.TranslateMessage("horizontal shear")
+        
+        Case pgp_ShearY
+            GetNameOfGenericAction = g_Language.TranslateMessage("vertical shear")
+        
+        Case pgp_AlphaMode
+            GetNameOfGenericAction = g_Language.TranslateMessage("alpha mode")
+        
+        Case Else
+            GetNameOfGenericAction = "WARNING!  Action name not found!"
         
     End Select
     
@@ -1853,6 +1856,78 @@ Private Function GetNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As
         
         Case ptp_TextContrast
             GetNameOfTextAction = g_Language.TranslateMessage("antialiasing clarity")
+            
+        Case ptp_RenderingEngine
+            GetNameOfTextAction = g_Language.TranslateMessage("text type")
+        
+        Case ptp_TextHinting
+            GetNameOfTextAction = g_Language.TranslateMessage("hinting")
+        
+        Case ptp_WordWrap
+            GetNameOfTextAction = g_Language.TranslateMessage("word wrap")
+        
+        Case ptp_FillActive
+            GetNameOfTextAction = g_Language.TranslateMessage("fill")
+        
+        Case ptp_FillBrush
+            GetNameOfTextAction = g_Language.TranslateMessage("fill style")
+        
+        Case ptp_OutlineActive
+            GetNameOfTextAction = g_Language.TranslateMessage("outline")
+        
+        Case ptp_OutlinePen
+            GetNameOfTextAction = g_Language.TranslateMessage("outline style")
+        
+        Case ptp_BackgroundActive
+            GetNameOfTextAction = g_Language.TranslateMessage("background")
+        
+        Case ptp_BackgroundBrush
+            GetNameOfTextAction = g_Language.TranslateMessage("background style")
+        
+        Case ptp_BackBorderActive
+            GetNameOfTextAction = g_Language.TranslateMessage("background border")
+        
+        Case ptp_BackBorderPen
+            GetNameOfTextAction = g_Language.TranslateMessage("background border style")
+        
+        Case ptp_LineSpacing
+            GetNameOfTextAction = g_Language.TranslateMessage("line spacing")
+        
+        Case ptp_MarginLeft
+            GetNameOfTextAction = g_Language.TranslateMessage("margin")
+        
+        Case ptp_MarginTop
+            GetNameOfTextAction = g_Language.TranslateMessage("margin")
+        
+        Case ptp_MarginRight
+            GetNameOfTextAction = g_Language.TranslateMessage("margin")
+        
+        Case ptp_MarginBottom
+            GetNameOfTextAction = g_Language.TranslateMessage("margin")
+        
+        Case ptp_CharRemap
+            GetNameOfTextAction = g_Language.TranslateMessage("character remapping")
+        
+        Case ptp_CharSpacing
+            GetNameOfTextAction = g_Language.TranslateMessage("character spacing")
+        
+        Case ptp_CharOrientation
+            GetNameOfTextAction = g_Language.TranslateMessage("character orientation")
+        
+        Case ptp_CharJitterX
+            GetNameOfTextAction = g_Language.TranslateMessage("horizontal jitter")
+        
+        Case ptp_CharJitterY
+            GetNameOfTextAction = g_Language.TranslateMessage("vertical jitter")
+        
+        Case ptp_CharInflation
+            GetNameOfTextAction = g_Language.TranslateMessage("inflation")
+        
+        Case ptp_CharMirror
+            GetNameOfTextAction = g_Language.TranslateMessage("mirroring")
+    
+        Case Else
+            GetNameOfTextAction = "WARNING!  Action name not found!"
     
     End Select
     
@@ -1879,6 +1954,9 @@ Private Function GetNameOfNDFXAction(ByVal ndfxSettingID As LAYER_NONDESTRUCTIVE
             
         Case NDFX_TINT
             GetNameOfNDFXAction = g_Language.TranslateMessage("tint")
+            
+        Case Else
+            GetNameOfNDFXAction = "WARNING!  Action name not found!"
         
     End Select
     
@@ -2386,10 +2464,15 @@ End Function
 ' additional return details may be supplied in the returnDetails string parameter.
 Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
 
+    'After an Undo or Redo call is invoked, we need to re-establish current non-destructive layer settings.  (This allows us
+    ' to detect changes to said settings, and create new Undo/Redo data accordingly.)
+    Dim undoOrRedoUsed As Boolean
+
     If Strings.StringsEqual(processID, "Undo", True) Then
         If FormMain.MnuEdit(0).Enabled Then
             pdImages(g_CurrentImage).UndoManager.RestoreUndoData
             Interface.NotifyImageChanged g_CurrentImage
+            undoOrRedoUsed = True
         End If
         Process_EditMenu = True
             
@@ -2397,11 +2480,17 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
         If FormMain.MnuEdit(1).Enabled Then
             pdImages(g_CurrentImage).UndoManager.RestoreRedoData
             Interface.NotifyImageChanged g_CurrentImage
+            undoOrRedoUsed = True
         End If
         Process_EditMenu = True
             
     ElseIf Strings.StringsEqual(processID, "Undo history", True) Then
-        If raiseDialog Then ShowPDDialog vbModal, FormUndoHistory Else pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint_XML processParameters
+        If raiseDialog Then
+            ShowPDDialog vbModal, FormUndoHistory
+        Else
+            pdImages(g_CurrentImage).UndoManager.MoveToSpecificUndoPoint_XML processParameters
+            undoOrRedoUsed = True
+        End If
         Process_EditMenu = True
         
     ElseIf Strings.StringsEqual(processID, "Cut", True) Then
@@ -2432,6 +2521,15 @@ Private Function Process_EditMenu(ByVal processID As String, Optional raiseDialo
     ElseIf Strings.StringsEqual(processID, "Empty clipboard", True) Then
         g_Clipboard.ClipboardEmpty
         Process_EditMenu = True
+        
+    End If
+    
+    If undoOrRedoUsed Then
+        
+        'Synchronize any non-destructive settings to the currently active layer
+        Processor.SyncAllGenericLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllNDFXLayerProperties pdImages(g_CurrentImage).GetActiveLayer
+        Processor.SyncAllTextLayerProperties pdImages(g_CurrentImage).GetActiveLayer
         
     End If
     
@@ -2553,5 +2651,4 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
     End If
        
 End Function
-
 

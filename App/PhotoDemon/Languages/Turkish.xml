@@ -6,7 +6,7 @@
 
 <langid>tr-TR</langid>
 <langname>Turkish</langname>
-<langversion>6.8.2548</langversion>
+<langversion>6.8.2549</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1949,6 +1949,21 @@ Açıklama: %2
 </phrase>
 
 <phrase>
+<original>horizontal shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha mode</original>
+<translation>alfa modu</translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation>Metin</translation>
 </phrase>
@@ -2011,6 +2026,106 @@ Açıklama: %2
 <phrase>
 <original>antialiasing clarity</original>
 <translation>Anti aliasing netlik</translation>
+</phrase>
+
+<phrase>
+<original>text type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation>avcılık</translation>
+</phrase>
+
+<phrase>
+<original>word wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation>fillStyle</translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation>anahat tarzı</translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>arka fon</translation>
+</phrase>
+
+<phrase>
+<original>background style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>arka plan</translation>
+</phrase>
+
+<phrase>
+<original>background border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>satır aralığı</translation>
+</phrase>
+
+<phrase>
+<original>margin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character remapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation>enflasyon</translation>
+</phrase>
+
+<phrase>
+<original>mirroring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2103,7 +2218,7 @@ When bitmiş %Gönder düğmesini tıklayın. Teşekkür ederim!</translation>
 <translation>Hata raporu talimatları</translation>
 </phrase>
 
-<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -7996,11 +8111,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>fill style</original>
-<translation>fillStyle</translation>
-</phrase>
-
-<phrase>
 <original>preview</original>
 <translation>önizleme</translation>
 </phrase>
@@ -8070,7 +8180,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>elmas</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8231,11 +8341,6 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 </phrase>
 
 <phrase>
-<original>outline style</original>
-<translation>anahat tarzı</translation>
-</phrase>
-
-<phrase>
 <original>outline width</original>
 <translation>anahat genişliği</translation>
 </phrase>
@@ -8305,7 +8410,7 @@ Do göndermek bilmelidir? (Eğer bu cevabı "Hayır" demek hiçbir fikrim var.)<
 <translation>konik</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -11581,12 +11686,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>özel renk</translation>
 </phrase>
 
-<phrase>
-<original>background</original>
-<translation>arka fon</translation>
-</phrase>
-
-<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -13354,11 +13454,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>alpha mode</original>
-<translation>alfa modu</translation>
-</phrase>
-
-<phrase>
 <original>hardness</original>
 <translation>sertlik</translation>
 </phrase>
@@ -13368,7 +13463,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>Akış</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13664,11 +13759,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation>avcılık</translation>
-</phrase>
-
-<phrase>
 <original>remap</original>
 <translation>remap</translation>
 </phrase>
@@ -13684,11 +13774,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 </phrase>
 
 <phrase>
-<original>inflation</original>
-<translation>enflasyon</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>arka plan doldurmak</translation>
 </phrase>
@@ -13696,11 +13781,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>border style</original>
 <translation>sınır tarzı</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>arka plan</translation>
 </phrase>
 
 <phrase>
@@ -13726,11 +13806,6 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <phrase>
 <original>v. padding</original>
 <translation>v. dolgusu</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>satır aralığı</translation>
 </phrase>
 
 <phrase>
@@ -13823,7 +13898,7 @@ I içine yüklemek gerekir cimri sunucu yapılandırmaları.:(</translation>
 <translation>tipografi Bu katman katman dönüştürmek için buraya tıklayın.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14991,10 +15066,10 @@ If yamalı vardır.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2542</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12313 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
+<!-- These 2542 phrases contain approximately 12340 total words. -->
 
 </pdData>

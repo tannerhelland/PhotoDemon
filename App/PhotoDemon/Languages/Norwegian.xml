@@ -6,7 +6,7 @@
 
 <langid>no-NO</langid>
 <langname>Norwegian</langname>
-<langversion>6.8.2548</langversion>
+<langversion>6.8.2549</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1953,6 +1953,21 @@ Error nummer %
 </phrase>
 
 <phrase>
+<original>horizontal shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha mode</original>
+<translation>alfamodus </translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation>tekst</translation>
 </phrase>
@@ -2015,6 +2030,106 @@ Error nummer %
 <phrase>
 <original>antialiasing clarity</original>
 <translation>anti aliasing klarhet</translation>
+</phrase>
+
+<phrase>
+<original>text type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation>jakt</translation>
+</phrase>
+
+<phrase>
+<original>word wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation>fyllstil </translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation>omriss stil</translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>bakgrunn</translation>
+</phrase>
+
+<phrase>
+<original>background style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>bakgrunn grensen</translation>
+</phrase>
+
+<phrase>
+<original>background border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>linjeavstand</translation>
+</phrase>
+
+<phrase>
+<original>margin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character remapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation>inflasjon</translation>
+</phrase>
+
+<phrase>
+<original>mirroring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2107,7 +2222,7 @@ When ferdig, klikker du på Send-knappen. Takk skal du ha!</translation>
 <translation>Bug rapport instruksjoner</translation>
 </phrase>
 
-<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -8003,11 +8118,6 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 </phrase>
 
 <phrase>
-<original>fill style</original>
-<translation>fyllstil </translation>
-</phrase>
-
-<phrase>
 <original>preview</original>
 <translation>forhåndsvisning</translation>
 </phrase>
@@ -8077,7 +8187,7 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <translation>diamant</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8238,11 +8348,6 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 </phrase>
 
 <phrase>
-<original>outline style</original>
-<translation>omriss stil</translation>
-</phrase>
-
-<phrase>
 <original>outline width</original>
 <translation>omriss bredde</translation>
 </phrase>
@@ -8312,7 +8417,7 @@ Do du har en GitHub-konto? (Hvis du ikke har noen anelse om hva dette betyr, sva
 <translation>bevel</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -11589,12 +11694,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>definert farge</translation>
 </phrase>
 
-<phrase>
-<original>background</original>
-<translation>bakgrunn</translation>
-</phrase>
-
-<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -13362,11 +13462,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>alpha mode</original>
-<translation>alfamodus </translation>
-</phrase>
-
-<phrase>
 <original>hardness</original>
 <translation>hardhet</translation>
 </phrase>
@@ -13376,7 +13471,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>strømme</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13672,11 +13767,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation>jakt</translation>
-</phrase>
-
-<phrase>
 <original>remap</original>
 <translation>omadresseringsbit</translation>
 </phrase>
@@ -13692,11 +13782,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 </phrase>
 
 <phrase>
-<original>inflation</original>
-<translation>inflasjon</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>fylle bakgrunn</translation>
 </phrase>
@@ -13704,11 +13789,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <phrase>
 <original>border style</original>
 <translation>border style</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>bakgrunn grensen</translation>
 </phrase>
 
 <phrase>
@@ -13734,11 +13814,6 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <phrase>
 <original>v. padding</original>
 <translation>v. padding</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>linjeavstand</translation>
 </phrase>
 
 <phrase>
@@ -13831,7 +13906,7 @@ I beklager det inntrufne, men dessverre  er det ikke noe %2 kan gjøre gjerrig s
 <translation>Klikk her for å omdanne dette lag til en typografi lag.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -15005,10 +15080,10 @@ If du likevel velger å deaktivere oppdateringer, ikke glem å besøke photodemo
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2542</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12313 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
+<!-- These 2542 phrases contain approximately 12340 total words. -->
 
 </pdData>

@@ -431,26 +431,51 @@ Public Sub TransformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     ' request to PD's central processor, so an Undo/Redo entry can be generated.
     If finalizeTransform Then
         
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        
         'As a convenience to the user, layer resize and move operations are listed separately.
         Select Case m_CurPOI
         
             'Move/resize transformations
             Case poi_CornerNW, poi_CornerNE, poi_CornerSW, poi_CornerSE
+                
+                With cParams
+                    .AddParam "layer-offsetx", srcImage.GetActiveLayer.GetLayerOffsetX
+                    .AddParam "layer-offsety", srcImage.GetActiveLayer.GetLayerOffsetY
+                    
+                    'Image layers need an x/y modifier pair, while vector layers need an absolute size; we store both
+                    ' and let the loader sort it out later.
+                    .AddParam "layer-modifierx", srcImage.GetActiveLayer.GetLayerCanvasXModifier
+                    .AddParam "layer-modifiery", srcImage.GetActiveLayer.GetLayerCanvasYModifier
+                    .AddParam "layer-sizex", srcImage.GetActiveLayer.GetLayerWidth
+                    .AddParam "layer-sizey", srcImage.GetActiveLayer.GetLayerHeight
+                    
+                End With
+                
                 With srcImage.GetActiveLayer
-                    Process "Resize layer (on-canvas)", False, BuildParams(.GetLayerOffsetX, .GetLayerOffsetY, .GetLayerCanvasXModifier, .GetLayerCanvasYModifier), UNDO_LAYERHEADER
+                    Process "Resize layer (on-canvas)", False, cParams.GetParamString(), UNDO_LAYERHEADER
                 End With
                 
             'Rotation
             Case poi_EdgeE, poi_EdgeS, poi_EdgeW, poi_EdgeN
+                
+                cParams.AddParam "layer-angle", srcImage.GetActiveLayer.GetLayerAngle
+                
                 With srcImage.GetActiveLayer
-                    Process "Rotate layer (on-canvas)", False, BuildParams(.GetLayerAngle), UNDO_LAYERHEADER
+                    Process "Rotate layer (on-canvas)", False, cParams.GetParamString(), UNDO_LAYERHEADER
                 End With
             
             'Move-only transformations
             Case poi_Interior
+            
+                With cParams
+                    .AddParam "layer-offsetx", srcImage.GetActiveLayer.GetLayerOffsetX
+                    .AddParam "layer-offsety", srcImage.GetActiveLayer.GetLayerOffsetY
+                End With
                 
                 With srcImage.GetActiveLayer
-                    Process "Move layer", False, BuildParams(.GetLayerOffsetX, .GetLayerOffsetY), UNDO_LAYERHEADER
+                    Process "Move layer", False, cParams.GetParamString(), UNDO_LAYERHEADER
                 End With
                 
             'The caller can specify other dummy values if they don't want us to redraw the screen

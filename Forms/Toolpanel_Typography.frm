@@ -786,8 +786,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Advanced Typography Tool Panel
 'Copyright 2013-2017 by Tanner Helland
 'Created: 02/Oct/13
-'Last updated: 13/May/15
-'Last update: finish migrating all relevant controls to this dedicated form
+'Last updated: 22/June/17
+'Last update: large improvements to the way non-destructive actions interact with the Undo/Redo engine
 '
 'This form includes all user-editable settings for PD's Advanced Typography text tool.
 '
@@ -822,12 +822,12 @@ Private Sub bsText_BrushChanged()
 End Sub
 
 Private Sub bsText_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FillBrush, bsText.Brush, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub bsText_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillBrush, bsText.Brush
+    Processor.FlagFinalNDFXState_Text ptp_FillBrush, bsText.Brush
 End Sub
 
 Private Sub bsTextBackground_BrushChanged()
@@ -850,12 +850,12 @@ Private Sub bsTextBackground_BrushChanged()
 End Sub
 
 Private Sub bsTextBackground_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub bsTextBackground_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
+    Processor.FlagFinalNDFXState_Text ptp_BackgroundBrush, bsTextBackground.Brush
 End Sub
 
 Private Sub btnFontStyles_Click(Index As Integer)
@@ -930,19 +930,19 @@ Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
         'Bold
         Case 0
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
             
         'Italic
         Case 1
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
         
         'Underline
         Case 2
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
         
         'Strikeout
         Case 3
-            If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
+            Processor.FlagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
     
     End Select
     
@@ -998,12 +998,12 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsHAlignment_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsHAlignment_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
 End Sub
 
 Private Sub btsMain_Click(ByVal buttonIndex As Long)
@@ -1030,12 +1030,12 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsVAlignment_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub btsVAlignment_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
 Private Sub cboCharCase_Click()
@@ -1058,12 +1058,12 @@ Private Sub cboCharCase_Click()
 End Sub
 
 Private Sub cboCharCase_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboCharCase_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
 End Sub
 
 Private Sub cboCharMirror_Click()
@@ -1086,12 +1086,12 @@ Private Sub cboCharMirror_Click()
 End Sub
 
 Private Sub cboCharMirror_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboCharMirror_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
 End Sub
 
 Private Sub cboTextFontFace_Click()
@@ -1114,12 +1114,12 @@ Private Sub cboTextFontFace_Click()
 End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextFontFace_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    Processor.FlagFinalNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
@@ -1142,12 +1142,12 @@ Private Sub cboTextRenderingHint_Click()
 End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
 End Sub
 
 Private Sub cboWordWrap_Click()
@@ -1170,12 +1170,12 @@ Private Sub cboWordWrap_Click()
 End Sub
 
 Private Sub cboWordWrap_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub cboWordWrap_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
+    Processor.FlagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
 End Sub
 
 Private Sub chkBackground_Click()
@@ -1198,12 +1198,12 @@ Private Sub chkBackground_Click()
 End Sub
 
 Private Sub chkBackground_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackground_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value)
+    Processor.FlagFinalNDFXState_Text ptp_BackgroundActive, CBool(chkBackground.Value)
 End Sub
 
 Private Sub chkBackgroundBorder_Click()
@@ -1226,12 +1226,12 @@ Private Sub chkBackgroundBorder_Click()
 End Sub
 
 Private Sub chkBackgroundBorder_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkBackgroundBorder_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
+    Processor.FlagFinalNDFXState_Text ptp_BackBorderActive, CBool(chkBackgroundBorder.Value)
 End Sub
 
 Private Sub chkFillText_Click()
@@ -1254,12 +1254,12 @@ Private Sub chkFillText_Click()
 End Sub
 
 Private Sub chkFillText_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_FillActive, chkFillText.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkFillText_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FillActive, chkFillText.Value
+    Processor.FlagFinalNDFXState_Text ptp_FillActive, chkFillText.Value
 End Sub
 
 Private Sub chkHinting_Click()
@@ -1282,12 +1282,12 @@ Private Sub chkHinting_Click()
 End Sub
 
 Private Sub chkHinting_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value), pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkHinting_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
+    Processor.FlagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
 End Sub
 
 Private Sub chkOutlineText_Click()
@@ -1310,12 +1310,12 @@ Private Sub chkOutlineText_Click()
 End Sub
 
 Private Sub chkOutlineText_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_OutlineActive, chkOutlineText.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub chkOutlineText_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlineActive, chkOutlineText.Value
+    Processor.FlagFinalNDFXState_Text ptp_OutlineActive, chkOutlineText.Value
 End Sub
 
 Private Sub Form_Load()
@@ -1417,7 +1417,7 @@ End Sub
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
     'Save all last-used settings to file
-    If Not (lastUsedSettings Is Nothing) Then
+    If (Not lastUsedSettings Is Nothing) Then
         lastUsedSettings.SaveAllControlValues
         lastUsedSettings.SetParentForm Nothing
     End If
@@ -1446,7 +1446,7 @@ Private Sub lblConvertLayerConfirm_Click()
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.UpdateAgainstCurrentLayer
     ViewportEngine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    SyncInterfaceToCurrentImage
+    Interface.SyncInterfaceToCurrentImage
     
 End Sub
 
@@ -1479,12 +1479,12 @@ Private Sub psText_PenChanged()
 End Sub
 
 Private Sub psText_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_OutlinePen, psText.Pen, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub psText_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_OutlinePen, psText.Pen
+    Processor.FlagFinalNDFXState_Text ptp_OutlinePen, psText.Pen
 End Sub
 
 Private Sub psTextBackground_PenChanged()
@@ -1507,12 +1507,12 @@ Private Sub psTextBackground_PenChanged()
 End Sub
 
 Private Sub psTextBackground_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub psTextBackground_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
+    Processor.FlagFinalNDFXState_Text ptp_BackBorderPen, psTextBackground.Pen
 End Sub
 
 Private Sub sltCharInflation_Change()
@@ -1535,12 +1535,12 @@ Private Sub sltCharInflation_Change()
 End Sub
 
 Private Sub sltCharInflation_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharInflation_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
+    Processor.FlagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
 End Sub
 
 Private Sub sltCharOrientation_Change()
@@ -1563,12 +1563,12 @@ Private Sub sltCharOrientation_Change()
 End Sub
 
 Private Sub sltCharOrientation_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharOrientation_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
+    Processor.FlagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
 End Sub
 
 Private Sub sltCharSpacing_Change()
@@ -1591,12 +1591,12 @@ Private Sub sltCharSpacing_Change()
 End Sub
 
 Private Sub sltCharSpacing_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub sltCharSpacing_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
+    Processor.FlagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
 End Sub
 
 Private Sub tudJitter_Change(Index As Integer)
@@ -1619,12 +1619,12 @@ Private Sub tudJitter_Change(Index As Integer)
 End Sub
 
 Private Sub tudJitter_GotFocusAPI(Index As Integer)
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudJitter_LostFocusAPI(Index As Integer)
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
+    Processor.FlagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
 End Sub
 
 Private Sub tudLineSpacing_Change()
@@ -1647,12 +1647,12 @@ Private Sub tudLineSpacing_Change()
 End Sub
 
 Private Sub tudLineSpacing_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub tudLineSpacing_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value
+    Processor.FlagFinalNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value
 End Sub
 
 Private Sub tudMargin_Change(Index As Integer)
@@ -1690,7 +1690,7 @@ End Sub
 
 Private Sub tudMargin_GotFocusAPI(Index As Integer)
 
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     
     Select Case Index
     
@@ -1712,26 +1712,22 @@ End Sub
 
 Private Sub tudMargin_LostFocusAPI(Index As Integer)
     
-    If Tools.CanvasToolsAllowed Then
-        
-        Select Case Index
-        
-            Case 0
-                Processor.FlagFinalNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value
-            
-            Case 1
-                Processor.FlagFinalNDFXState_Text ptp_MarginRight, tudMargin(Index).Value
-            
-            Case 2
-                Processor.FlagFinalNDFXState_Text ptp_MarginTop, tudMargin(Index).Value
-            
-            Case 3
-                Processor.FlagFinalNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value
-        
-        End Select
-        
-    End If
+    Select Case Index
     
+        Case 0
+            Processor.FlagFinalNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value
+        
+        Case 1
+            Processor.FlagFinalNDFXState_Text ptp_MarginRight, tudMargin(Index).Value
+        
+        Case 2
+            Processor.FlagFinalNDFXState_Text ptp_MarginTop, tudMargin(Index).Value
+        
+        Case 3
+            Processor.FlagFinalNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value
+    
+    End Select
+        
 End Sub
 
 Private Sub tudTextFontSize_Change()
@@ -1759,7 +1755,7 @@ Private Sub tudTextFontSize_GotFocusAPI()
 End Sub
 
 Private Sub tudTextFontSize_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
+    Processor.FlagFinalNDFXState_Text ptp_FontSize, tudTextFontSize.Value
 End Sub
 
 Private Sub txtTextTool_Change()
@@ -1782,12 +1778,12 @@ Private Sub txtTextTool_Change()
 End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
+    If (g_OpenImageCount = 0) Then Exit Sub
     Processor.FlagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).GetActiveLayerID
 End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
-    If Tools.CanvasToolsAllowed Then Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+    Processor.FlagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
 
 'Most objects on this form can avoid doing any work if the current layer is not a text layer.
@@ -1906,6 +1902,6 @@ Public Sub UpdateAgainstCurrentTheme()
         
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    ApplyThemeAndTranslations Me
+    Interface.ApplyThemeAndTranslations Me
 
 End Sub

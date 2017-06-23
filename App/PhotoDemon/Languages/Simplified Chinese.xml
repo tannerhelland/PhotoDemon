@@ -6,7 +6,7 @@
 
 <langid>zh-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.2772</langversion>
+<langversion>6.8.2773</langversion>
 <langstatus>完成</langstatus>
 
 <author>ChenLin(QQ:289778005)</author>
@@ -1946,6 +1946,21 @@ Description: %2
 </phrase>
 
 <phrase>
+<original>horizontal shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha mode</original>
+<translation>Alpha模式</translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation>文字</translation>
 </phrase>
@@ -2008,6 +2023,106 @@ Description: %2
 <phrase>
 <original>antialiasing clarity</original>
 <translation>抗锯齿清晰</translation>
+</phrase>
+
+<phrase>
+<original>text type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation>提示</translation>
+</phrase>
+
+<phrase>
+<original>word wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation>填充样式</translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation>外形风格</translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>背景：</translation>
+</phrase>
+
+<phrase>
+<original>background style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>背景边框</translation>
+</phrase>
+
+<phrase>
+<original>background border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>行间距</translation>
+</phrase>
+
+<phrase>
+<original>margin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character remapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation>膨胀</translation>
+</phrase>
+
+<phrase>
+<original>mirroring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2100,7 +2215,7 @@ When finished, click the Submit button.  Thank you!</original>
 <translation>错误报告的说明</translation>
 </phrase>
 
-<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -7992,11 +8107,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>fill style</original>
-<translation>填充样式</translation>
-</phrase>
-
-<phrase>
 <original>preview</original>
 <translation>预览</translation>
 </phrase>
@@ -8066,7 +8176,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>钻石</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8227,11 +8337,6 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 </phrase>
 
 <phrase>
-<original>outline style</original>
-<translation>外形风格</translation>
-</phrase>
-
-<phrase>
 <original>outline width</original>
 <translation>轮廓宽度</translation>
 </phrase>
@@ -8301,7 +8406,7 @@ Do you have a GitHub account? (If you have no idea what this means, answer "No".
 <translation>斜角</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -11575,12 +11680,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>自定义颜色</translation>
 </phrase>
 
-<phrase>
-<original>background</original>
-<translation>背景：</translation>
-</phrase>
-
-<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -13349,11 +13449,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>alpha mode</original>
-<translation>Alpha模式</translation>
-</phrase>
-
-<phrase>
 <original>hardness</original>
 <translation>硬度</translation>
 </phrase>
@@ -13363,7 +13458,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>连续性</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13659,11 +13754,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation>提示</translation>
-</phrase>
-
-<phrase>
 <original>remap</original>
 <translation>映射</translation>
 </phrase>
@@ -13679,11 +13769,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>inflation</original>
-<translation>膨胀</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>填充背景</translation>
 </phrase>
@@ -13691,11 +13776,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>border style</original>
 <translation>边框样式</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>背景边框</translation>
 </phrase>
 
 <phrase>
@@ -13721,11 +13801,6 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <phrase>
 <original>v. padding</original>
 <translation>垂直填充</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>行间距</translation>
 </phrase>
 
 <phrase>
@@ -13818,7 +13893,7 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 <translation>单击此处可将此图层转换为排版层。</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14989,10 +15064,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2542</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12313 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
+<!-- These 2542 phrases contain approximately 12340 total words. -->
 
 </pdData>

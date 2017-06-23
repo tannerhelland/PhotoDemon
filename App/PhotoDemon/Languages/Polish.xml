@@ -6,7 +6,7 @@
 
 <langid>pl-PL</langid>
 <langname>Polish</langname>
-<langversion>6.8.2548</langversion>
+<langversion>6.8.2549</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1941,6 +1941,21 @@ Error Numer %vbCrLf Opis: %vbCrLf vbCrLf %3</translation>
 </phrase>
 
 <phrase>
+<original>horizontal shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>alpha mode</original>
+<translation>tryb alfa</translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation>tekst</translation>
 </phrase>
@@ -2003,6 +2018,106 @@ Error Numer %vbCrLf Opis: %vbCrLf vbCrLf %3</translation>
 <phrase>
 <original>antialiasing clarity</original>
 <translation>anty aliasing jasność</translation>
+</phrase>
+
+<phrase>
+<original>text type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation>polowanie</translation>
+</phrase>
+
+<phrase>
+<original>word wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation>fillStyle</translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation>zarys stylu</translation>
+</phrase>
+
+<phrase>
+<original>background</original>
+<translation>tło</translation>
+</phrase>
+
+<phrase>
+<original>background style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background border</original>
+<translation>granicznym</translation>
+</phrase>
+
+<phrase>
+<original>background border style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation>odstęp między wierszami</translation>
+</phrase>
+
+<phrase>
+<original>margin</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character remapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character orientation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation>inflacja</translation>
+</phrase>
+
+<phrase>
+<original>mirroring</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2095,7 +2210,7 @@ When zakończeniu kliknij przycisk Wyślij. Dziękuję Ci!</translation>
 <translation>Instrukcje raport o błędzie</translation>
 </phrase>
 
-<!-- Processor.bas contains 87 phrases. 36 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- Processor.bas contains 139 phrases. 65 were duplicates of existing phrases, so only 74 new phrases were written to file. -->
 
 <!-- END text for Processor.bas-->
 
@@ -7988,11 +8103,6 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 </phrase>
 
 <phrase>
-<original>fill style</original>
-<translation>fillStyle</translation>
-</phrase>
-
-<phrase>
 <original>preview</original>
 <translation>zapowiedź</translation>
 </phrase>
@@ -8062,7 +8172,7 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 <translation>diament</translation>
 </phrase>
 
-<!-- Dialog_FillSettings.frm contains 22 phrases. 6 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- Dialog_FillSettings.frm contains 22 phrases. 7 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Dialog_FillSettings.frm-->
 
@@ -8223,11 +8333,6 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 </phrase>
 
 <phrase>
-<original>outline style</original>
-<translation>zarys stylu</translation>
-</phrase>
-
-<phrase>
 <original>outline width</original>
 <translation>szerokość konturu</translation>
 </phrase>
@@ -8297,7 +8402,7 @@ Do masz konto GitHub? (Jeśli nie masz pojęcia, co to oznacza, odpowiedź "nie"
 <translation>ukos</translation>
 </phrase>
 
-<!-- Dialog_OutlineSettings.frm contains 20 phrases. 3 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- Dialog_OutlineSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Dialog_OutlineSettings.frm-->
 
@@ -11573,12 +11678,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <translation>zwyczaj kolor</translation>
 </phrase>
 
-<phrase>
-<original>background</original>
-<translation>tło</translation>
-</phrase>
-
-<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -13346,11 +13446,6 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 </phrase>
 
 <phrase>
-<original>alpha mode</original>
-<translation>tryb alfa</translation>
-</phrase>
-
-<phrase>
 <original>hardness</original>
 <translation>twardość</translation>
 </phrase>
@@ -13360,7 +13455,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <translation>pływ</translation>
 </phrase>
 
-<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Toolpanel_Paintbrush.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Paintbrush.frm-->
 
@@ -13656,11 +13751,6 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <!-- BEGIN text for Toolpanel_Typography.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation>polowanie</translation>
-</phrase>
-
-<phrase>
 <original>remap</original>
 <translation>remap</translation>
 </phrase>
@@ -13676,11 +13766,6 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 </phrase>
 
 <phrase>
-<original>inflation</original>
-<translation>inflacja</translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
 <translation>wypełnienie tła</translation>
 </phrase>
@@ -13688,11 +13773,6 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <phrase>
 <original>border style</original>
 <translation>styl obramowania</translation>
-</phrase>
-
-<phrase>
-<original>background border</original>
-<translation>granicznym</translation>
 </phrase>
 
 <phrase>
@@ -13718,11 +13798,6 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <phrase>
 <original>v. padding</original>
 <translation>v. Wyściółka</translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation>odstęp między wierszami</translation>
 </phrase>
 
 <phrase>
@@ -13815,7 +13890,7 @@ I Bardzo przepraszamy za tę niedogodność, ale niestety nie ma nic %2 może zr
 <translation>Kliknij tutaj, aby przekształcić tej warstwy do warstwy typografii.</translation>
 </phrase>
 
-<!-- Toolpanel_Typography.frm contains 61 phrases. 29 were duplicates of existing phrases, so only 32 new phrases were written to file. -->
+<!-- Toolpanel_Typography.frm contains 61 phrases. 33 were duplicates of existing phrases, so only 28 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Typography.frm-->
 
@@ -14983,10 +15058,10 @@ If jeszcze zdecydować się na wyłączenie aktualizacji, nie zapomnij odwiedzi�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2527</phrasecount>
+<phrasecount>2542</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4489 phrases. -->
-<!-- 1962 are duplicates, so only 2527 unique phrases have been written to file. -->
-<!-- These 2527 phrases contain approximately 12313 total words. -->
+<!-- As of this build, PhotoDemon contains 4541 phrases. -->
+<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
+<!-- These 2542 phrases contain approximately 12340 total words. -->
 
 </pdData>

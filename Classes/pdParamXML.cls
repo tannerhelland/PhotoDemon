@@ -380,7 +380,7 @@ Friend Function GetXMLSafeName(ByRef srcString As String) As String
     Dim i As Long
     
     For i = 1 To Len(GetXMLSafeName)
-        If InStr(validChars, Mid$(GetXMLSafeName, i, 1)) = 0 Then
+        If (InStr(1, validChars, Mid$(GetXMLSafeName, i, 1)) = 0) Then
             GetXMLSafeName = Left$(GetXMLSafeName, i - 1) & "_" & Right$(GetXMLSafeName, Len(GetXMLSafeName) - i)
         End If
     Next i
