@@ -2105,11 +2105,11 @@ Private Sub MnuLayer_Click(Index As Integer)
         
         'Merge up
         Case 3
-            Process "Merge layer up", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer up", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
         
         'Merge down
         Case 4
-            Process "Merge layer down", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
+            Process "Merge layer down", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE
         
         'Order (top-level)
         Case 5
@@ -2161,7 +2161,7 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         'Delete all hidden layers
         Case 1
@@ -2214,22 +2214,22 @@ Private Sub MnuLayerOrder_Click(Index As Integer)
     
         'Raise layer
         Case 0
-            Process "Raise layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Lower layer
         Case 1
-            Process "Lower layer", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         '<separator>
         Case 2
         
         'Raise to top
         Case 3
-            Process "Raise layer to top", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Raise layer to top", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         'Lower to bottom
         Case 4
-            Process "Lower layer to bottom", False, Str(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
+            Process "Lower layer to bottom", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
     End Select
 
@@ -2299,7 +2299,7 @@ Private Sub MnuLayerSize_Click(Index As Integer)
     
         'Reset to actual size
         Case 0
-            Process "Reset layer size", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
+            Process "Reset layer size", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYERHEADER
         
         '<separator>
         Case 1
@@ -4090,7 +4090,7 @@ Private Sub MnuSelect_Click(Index As Integer)
         
         'Erase selected area
         Case 10
-            Process "Erase selected area", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+            Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
         
         '<separator>
         Case 11

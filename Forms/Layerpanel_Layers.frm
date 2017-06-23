@@ -344,13 +344,13 @@ Private Sub cmdLayerAction_Click(Index As Integer)
             Process "Add new layer", True
         
         Case LYR_BTN_DELETE
-            Process "Delete layer", False, pdImages(g_CurrentImage).GetActiveLayerIndex, UNDO_IMAGE_VECTORSAFE
+            Process "Delete layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         Case LYR_BTN_MOVE_UP
-            Process "Raise layer", False, pdImages(g_CurrentImage).GetActiveLayerIndex, UNDO_IMAGEHEADER
+            Process "Raise layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
         
         Case LYR_BTN_MOVE_DOWN
-            Process "Lower layer", False, pdImages(g_CurrentImage).GetActiveLayerIndex, UNDO_IMAGEHEADER
+            Process "Lower layer", False, BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_IMAGEHEADER
             
     End Select
     

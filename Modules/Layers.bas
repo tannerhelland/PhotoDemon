@@ -583,6 +583,14 @@ Public Function IsLayerAllowedToMergeAdjacent(ByVal srcLayerIndex As Long, ByVal
 
 End Function
 
+'XML-based wrapper to DeleteLayer(), below
+Public Sub DeleteLayer_XML(ByVal processParameters As String)
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    Layers.DeleteLayer cParams.GetLong("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex)
+End Sub
+
 'Delete a given layer
 Public Sub DeleteLayer(ByVal dLayerIndex As Long)
 

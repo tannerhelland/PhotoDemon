@@ -241,6 +241,12 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     'Image menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_ImageMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
+    'Layer menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
+    If (Not processFound) Then processFound = Process_LayerMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
+    
+    'Select menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
+    If (Not processFound) Then processFound = Process_SelectMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
+    
     'Tool menu operations have been successfully migrated to XML strings.  (None of their functions raise special return conditions, FYI.)
     If (Not processFound) Then processFound = Process_ToolsMenu(processID, raiseDialog, processParameters, createUndo, relevantTool, recordAction, returnDetails)
     
@@ -249,258 +255,6 @@ Public Sub Process(ByVal processID As String, Optional raiseDialog As Boolean = 
     If (Not processFound) Then
     
     Select Case processID
-        
-        
-        'Quick-fix tools
-        Case "Make quick-fixes permanent"
-            Tools.MakeQuickFixesPermanent
-        
-        
-        
-        'LAYER FUNCTIONS
-        ' Any action triggered from the Layer menu, or the Layer toolbox - creating layers, moving them, etc
-        
-        'Add layers to an image
-        Case "Add blank layer"
-            Layers.AddBlankLayer_XML processParameters
-        
-        Case "Add new layer"
-            If raiseDialog Then ShowPDDialog vbModal, FormNewLayer Else Layers.AddNewLayer_XML processParameters
-            
-        'TODO: sort out new text layer vs new typography layer behavior
-        Case "New text layer", "New typography layer"
-            'During normal usage, "New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer
-            ' has already been created, and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
-            '
-            'During macro playback, "New text layer" means something else entirely - it means to actually create a new layer!
-            If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
-                
-                'Start by creating a new layer
-                If Strings.StringsEqual(processID, "New text layer", True) Then
-                    Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", 0, 0, True
-                Else
-                    Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", 0, 0, True
-                End If
-                
-                'Text layer parameters can be precisely recreated in two steps:
-                
-                '1) Initialize the standard layer header
-                pdImages(g_CurrentImage).GetActiveLayer.CreateNewLayerFromXML cXMLParams.GetString("layerheader")
-                
-                '2) Initialize the text-specific bits
-                pdImages(g_CurrentImage).GetActiveLayer.CreateVectorDataFromXML cXMLParams.GetString("layerdata")
-                
-            End If
-        
-        Case "New layer from file"
-            Layers.LoadImageAsNewLayer raiseDialog, processParameters
-        
-        Case "Duplicate layer"
-            Layers.DuplicateLayerByIndex_XML processParameters
-            
-        Case "New layer from visible layers"
-            Layers.AddLayerFromVisibleLayers
-            
-        'Remove layers from an image
-        Case "Delete layer"
-            Layers.DeleteLayer cParams.GetLong(1)
-        
-        Case "Delete hidden layers"
-            Layers.DeleteHiddenLayers
-            
-        'Merge a layer up or down
-        Case "Merge layer down"
-            Layers.MergeLayerAdjacent cParams.GetLong(1), True
-            
-        Case "Merge layer up"
-            Layers.MergeLayerAdjacent cParams.GetLong(1), False
-            
-        'Raise a layer up or down
-        Case "Raise layer"
-            Layers.MoveLayerAdjacent cParams.GetLong(1), True
-        
-        Case "Lower layer"
-            Layers.MoveLayerAdjacent cParams.GetLong(1), False
-            
-        'Raise or lower to layer to end of stack
-        Case "Raise layer to top"
-            Layers.MoveLayerToEndOfStack cParams.GetLong(1), True
-        
-        Case "Lower layer to bottom"
-            Layers.MoveLayerToEndOfStack cParams.GetLong(1), False
-        
-        'Non-destructive layer size and orientation changes
-        Case "Reset layer angle"
-            Layers.ResetLayerAngle cParams.GetLong(1)
-        
-        Case "Reset layer size"
-            Layers.ResetLayerSize cParams.GetLong(1)
-            
-        Case "Reset horizontal layer shear"
-            Layers.ResetLayerShear cParams.GetLong(1), True
-        
-        Case "Reset vertical layer shear"
-            Layers.ResetLayerShear cParams.GetLong(1), False
-        
-        ' (Just kidding, this action is destructive, but it sits on the non-destructive panel so I've included it here)
-        Case "Make layer changes permanent"
-            Layers.MakeLayerAffineTransformsPermanent cParams.GetLong(1)
-            
-        'Destructive layer orientation changes
-        Case "Straighten layer"
-            If raiseDialog Then ShowStraightenDialog PD_AT_SINGLELAYER Else FormStraighten.StraightenImage processParameters
-            
-        Case "Rotate layer 90 clockwise"
-            Filters_Transform.MenuRotate90Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
-            
-        Case "Rotate layer 180"
-            Filters_Transform.MenuRotate180 pdImages(g_CurrentImage).GetActiveLayerIndex
-            
-        Case "Rotate layer 90 counter-clockwise"
-            Filters_Transform.MenuRotate270Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
-            
-        Case "Arbitrary layer rotation"
-            If raiseDialog Then ShowRotateDialog PD_AT_SINGLELAYER Else FormRotate.RotateArbitrary processParameters
-            
-        Case "Flip layer horizontally"
-            Filters_Transform.MenuMirror pdImages(g_CurrentImage).GetActiveLayerIndex
-        
-        Case "Flip layer vertically"
-            Filters_Transform.MenuFlip pdImages(g_CurrentImage).GetActiveLayerIndex
-                
-        'Destructive layer size changes
-        Case "Resize layer"
-            If raiseDialog Then ShowResizeDialog PD_AT_SINGLELAYER Else FormResize.ResizeImage processParameters
-            
-        Case "Content-aware layer resize"
-            If raiseDialog Then ShowContentAwareResizeDialog PD_AT_SINGLELAYER Else FormResizeContentAware.SmartResizeImage processParameters
-            
-        Case "Crop layer to selection"
-            Filters_Transform.CropToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
-            
-        'Change layer alpha
-        Case "Color to alpha"
-            If raiseDialog Then ShowPDDialog vbModal, FormTransparency_FromColor Else FormTransparency_FromColor.ColorToAlpha processParameters
-            
-        Case "Remove alpha channel"
-            If raiseDialog Then ShowPDDialog vbModal, FormConvert24bpp Else FormConvert24bpp.RemoveLayerTransparency processParameters
-            
-        'Rasterizing
-        Case "Rasterize layer"
-            Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
-        
-        Case "Rasterize all layers"
-            Layers.RasterizeLayer -1
-        
-        'Flatten image
-        Case "Flatten image"
-            If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
-            
-        'Merge visible layers
-        Case "Merge visible layers"
-            Layers.MergeVisibleLayers
-            
-        'On-canvas layer modifications (moving, non-destructive resizing, etc)
-        Case "Resize layer (on-canvas)"
-            Layers.ResizeLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
-        
-        Case "Rotate layer (on-canvas)"
-            Layers.RotateLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
-        
-        Case "Move layer"
-            Layers.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
-            
-        '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry
-        ' after the user has performed a drag/drop rearrangement of the layer stack.
-        Case "Rearrange layers"
-            
-        
-        'SELECTION FUNCTIONS
-        ' Any action that operates on selections - creating them, moving them, erasing them, etc
-        
-        
-        'Create/remove selections
-        Case "Create selection"
-            Selections.CreateNewSelection cParams.GetParamString
-        
-        Case "Remove selection"
-            Selections.RemoveCurrentSelection
-                    
-        
-        'Modify the existing selection in some way
-        Case "Invert selection"
-            Selections.InvertCurrentSelection
-            
-        Case "Grow selection"
-            If raiseDialog Then
-                Selections.GrowCurrentSelection True
-            Else
-                Selections.GrowCurrentSelection False, cParams.GetDouble(1)
-            End If
-            
-        Case "Shrink selection"
-            If raiseDialog Then
-                Selections.ShrinkCurrentSelection True
-            Else
-                Selections.ShrinkCurrentSelection False, cParams.GetDouble(1)
-            End If
-        
-        Case "Feather selection"
-            If raiseDialog Then
-                Selections.FeatherCurrentSelection True
-            Else
-                Selections.FeatherCurrentSelection False, cParams.GetDouble(1)
-            End If
-        
-        Case "Sharpen selection"
-            If raiseDialog Then
-                Selections.SharpenCurrentSelection True
-            Else
-                Selections.SharpenCurrentSelection False, cParams.GetDouble(1)
-            End If
-            
-        Case "Border selection"
-            If raiseDialog Then
-                Selections.BorderCurrentSelection True
-            Else
-                Selections.BorderCurrentSelection False, cParams.GetDouble(1)
-            End If
-        
-        'Erase selected area (from layer)
-        Case "Erase selected area"
-            Selections.EraseSelectedArea cParams.GetLong(1)
-        
-        'Load/save selection from/to file
-        Case "Load selection"
-            If raiseDialog Then
-                Selections.LoadSelectionFromFile True
-            Else
-                Selections.LoadSelectionFromFile False, cParams.GetParamString
-            End If
-            
-        Case "Save selection"
-            Selections.SaveSelectionToFile
-            
-        'Export selected area as image (defaults to PNG, but user can select the actual format)
-        Case "Export selected area as image"
-            Selections.ExportSelectedAreaAsImage
-        
-        'Export selection mask as image (defaults to PNG, but user can select the actual format)
-        Case "Export selection mask as image"
-            Selections.ExportSelectionMaskAsImage
-        
-        ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
-        Case "Move selection"
-            Selections.CreateNewSelection cParams.GetParamString
-            
-        ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is resized
-        Case "Resize selection"
-            Selections.CreateNewSelection cParams.GetParamString
-        
-        Case "Select all"
-            Selections.SelectWholeImage
-        
-        
         
         'ADJUSTMENT FUNCTIONS
         ' Any action that is used to fix or correct problems with an image, including basic color space transformations (e.g. grayscale/sepia)
@@ -2121,9 +1875,9 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
     CheckRasterizeRequirements = True
     
     'TODO!  Migrate all relevant actions to XML params
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If (Len(processParameters) <> 0) Then cParams.SetParamString processParameters
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
     
     'If the current layer is a vector layer, and the requested operation is *not* vector-safe, raise a rasterization warning.
     ' This gives the user a chance to back out before permanently ruining the layer.  (Note that the rasterization dialog
@@ -2163,12 +1917,12 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
             ' (These checks must be handled manually, as the layers potentially involved vary by action - e.g. "Merge layer down"
             '  affects different layers than "Merge visible layers".)
             If Strings.StringsEqual(processID, "Merge layer down", True) Then
-                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerRaster Then
+                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") - 1).IsLayerRaster Then
                     rasterizeImagePromptNeeded = False
                 End If
                 
             ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
-                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerRaster Then
+                If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerRaster And pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") + 1).IsLayerRaster Then
                     rasterizeImagePromptNeeded = False
                 End If
             
@@ -2198,12 +1952,12 @@ Private Function CheckRasterizeRequirements(ByVal processID As String, Optional 
                 'When merging layers, only the merged layers need to be rasterized.  (We want to perform as few rasterizations
                 ' as possible, so we manually handle each merge case specially.)
                 If Strings.StringsEqual(processID, "Merge layer down", True) Then
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) - 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) - 1
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex")
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") - 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex") - 1
                     
                 ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1)).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1)
-                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong(1) + 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong(1) + 1
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex")).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex")
+                    If pdImages(g_CurrentImage).GetLayerByIndex(cParams.GetLong("layerindex") + 1).IsLayerVector Then Layers.RasterizeLayer cParams.GetLong("layerindex") + 1
                     
                 ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
                     For i = 1 To pdImages(g_CurrentImage).GetNumOfLayers - 1
@@ -2652,3 +2406,289 @@ Private Function Process_ImageMenu(ByVal processID As String, Optional raiseDial
        
 End Function
 
+'Helper wrapper for LAYER MENU operations.
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_LayerMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+    
+    'A number of layer functions pass the relevant layer index in the parameter string (as future-proofing against selecting
+    ' multiple layers).  To simplify the parsing of these entries, we always create an XML parser.
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+    
+    'Add layers to an image
+    If Strings.StringsEqual(processID, "Add blank layer", True) Then
+        Layers.AddBlankLayer_XML processParameters
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Add new layer", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormNewLayer Else Layers.AddNewLayer_XML processParameters
+        Process_LayerMenu = True
+    
+    'During normal usage, "New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer
+    ' has already been created, and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
+    '
+    'During macro playback, "New text layer" actually means *create* a new text layer, using the settings specified in the parameter string.
+    ElseIf Strings.StringsEqual(processID, "New text layer", True) Or Strings.StringsEqual(processID, "New typography layer", True) Then
+        
+        If (Macros.GetMacroStatus = MacroPLAYBACK) Or (Macros.GetMacroStatus = MacroBATCH) Then
+            
+            'Start by creating a new layer
+            If Strings.StringsEqual(processID, "New text layer", True) Then
+                Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, vbNullString, 0#, 0#, True
+            Else
+                Layers.AddNewLayer pdImages(g_CurrentImage).GetActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, vbNullString, 0#, 0#, True
+            End If
+            
+            'Text layer parameters can be precisely recreated in two steps:
+            
+            '1) Initialize the standard layer header
+            pdImages(g_CurrentImage).GetActiveLayer.CreateNewLayerFromXML cParams.GetString("layerheader")
+            
+            '2) Initialize the text-layer-specific bits
+            pdImages(g_CurrentImage).GetActiveLayer.CreateVectorDataFromXML cParams.GetString("layerdata")
+            
+        End If
+        
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "New layer from file", True) Then
+        Layers.LoadImageAsNewLayer raiseDialog, processParameters
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Duplicate layer", True) Then
+        Layers.DuplicateLayerByIndex_XML processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "New layer from visible layers", True) Then
+        Layers.AddLayerFromVisibleLayers
+        Process_LayerMenu = True
+        
+    'Remove layers from an image
+    ElseIf Strings.StringsEqual(processID, "Delete layer", True) Then
+        Layers.DeleteLayer processParameters
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Delete hidden layers", True) Then
+        Layers.DeleteHiddenLayers
+        Process_LayerMenu = True
+        
+    'Merge a layer up or down
+    ElseIf Strings.StringsEqual(processID, "Merge layer down", True) Then
+        Layers.MergeLayerAdjacent cParams.GetLong("layerindex"), True
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Merge layer up", True) Then
+        Layers.MergeLayerAdjacent cParams.GetLong("layerindex"), False
+        Process_LayerMenu = True
+        
+    'Raise a layer up or down
+    ElseIf Strings.StringsEqual(processID, "Raise layer", True) Then
+        Layers.MoveLayerAdjacent cParams.GetLong("layerindex"), True
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Lower layer", True) Then
+        Layers.MoveLayerAdjacent cParams.GetLong("layerindex"), False
+        Process_LayerMenu = True
+        
+    'Raise or lower to layer to end of stack
+    ElseIf Strings.StringsEqual(processID, "Raise layer to top", True) Then
+        Layers.MoveLayerToEndOfStack cParams.GetLong("layerindex"), True
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Lower layer to bottom", True) Then
+        Layers.MoveLayerToEndOfStack cParams.GetLong("layerindex"), False
+        Process_LayerMenu = True
+    
+    'Non-destructive layer size and orientation changes
+    ElseIf Strings.StringsEqual(processID, "Reset layer size", True) Then
+        Layers.ResetLayerSize cParams.GetLong("layerindex")
+        Process_LayerMenu = True
+    
+    ' (Just kidding, this action is destructive, but it sits on the non-destructive panel so I've included it here)
+    ElseIf Strings.StringsEqual(processID, "Make layer changes permanent", True) Then
+        Layers.MakeLayerAffineTransformsPermanent cParams.GetLong("layerindex")
+        Process_LayerMenu = True
+        
+    'Destructive layer orientation changes
+    ElseIf Strings.StringsEqual(processID, "Straighten layer", True) Then
+        If raiseDialog Then ShowStraightenDialog PD_AT_SINGLELAYER Else FormStraighten.StraightenImage processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Rotate layer 90 clockwise", True) Then
+        Filters_Transform.MenuRotate90Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Rotate layer 180", True) Then
+        Filters_Transform.MenuRotate180 pdImages(g_CurrentImage).GetActiveLayerIndex
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Rotate layer 90 counter-clockwise", True) Then
+        Filters_Transform.MenuRotate270Clockwise pdImages(g_CurrentImage).GetActiveLayerIndex
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Arbitrary layer rotation", True) Then
+        If raiseDialog Then ShowRotateDialog PD_AT_SINGLELAYER Else FormRotate.RotateArbitrary processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Flip layer horizontally", True) Then
+        Filters_Transform.MenuMirror pdImages(g_CurrentImage).GetActiveLayerIndex
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Flip layer vertically", True) Then
+        Filters_Transform.MenuFlip pdImages(g_CurrentImage).GetActiveLayerIndex
+        Process_LayerMenu = True
+            
+    'Destructive layer size changes
+    ElseIf Strings.StringsEqual(processID, "Resize layer", True) Then
+        If raiseDialog Then ShowResizeDialog PD_AT_SINGLELAYER Else FormResize.ResizeImage processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Content-aware layer resize", True) Then
+        If raiseDialog Then ShowContentAwareResizeDialog PD_AT_SINGLELAYER Else FormResizeContentAware.SmartResizeImage processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Crop layer to selection", True) Then
+        Filters_Transform.CropToSelection pdImages(g_CurrentImage).GetActiveLayerIndex
+        Process_LayerMenu = True
+        
+    'Change layer alpha
+    ElseIf Strings.StringsEqual(processID, "Color to alpha", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormTransparency_FromColor Else FormTransparency_FromColor.ColorToAlpha processParameters
+        Process_LayerMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Remove alpha channel", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormConvert24bpp Else FormConvert24bpp.RemoveLayerTransparency processParameters
+        Process_LayerMenu = True
+        
+    'Rasterizing
+    ElseIf Strings.StringsEqual(processID, "Rasterize layer", True) Then
+        Layers.RasterizeLayer pdImages(g_CurrentImage).GetActiveLayerIndex
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Rasterize all layers", True) Then
+        Layers.RasterizeLayer -1
+        Process_LayerMenu = True
+    
+    'Flatten image
+    ElseIf Strings.StringsEqual(processID, "Flatten image", True) Then
+        If raiseDialog Then ShowPDDialog vbModal, FormLayerFlatten Else Layers.FlattenImage processParameters
+        Process_LayerMenu = True
+        
+    'Merge visible layers
+    ElseIf Strings.StringsEqual(processID, "Merge visible layers", True) Then
+        Layers.MergeVisibleLayers
+        Process_LayerMenu = True
+        
+    'On-canvas layer modifications (moving, non-destructive resizing, etc)
+    ElseIf Strings.StringsEqual(processID, "Resize layer (on-canvas)", True) Then
+        Layers.ResizeLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Rotate layer (on-canvas)", True) Then
+        Layers.RotateLayerNonDestructive pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Move layer", True) Then
+        Layers.MoveLayerOnCanvas pdImages(g_CurrentImage).GetActiveLayerIndex, processParameters
+        Process_LayerMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Make quick-fixes permanent", True) Then
+        Tools.MakeQuickFixesPermanent
+        Process_LayerMenu = True
+    
+    '"Rearrange layers" is a dummy entry.  It does not actually modify the image; its sole purpose is to create an Undo/Redo entry
+    ' after the user has performed a drag/drop rearrangement of the layer stack.
+    ElseIf Strings.StringsEqual(processID, "Rearrange layers", True) Then
+        Process_LayerMenu = True
+    End If
+    
+End Function
+
+'Helper wrapper for SELECT MENU operations.
+'RETURNS: TRUE if a matching process was found; FALSE otherwise.  Depending on the particular operation requested,
+' additional return details may be supplied in the returnDetails string parameter.
+Private Function Process_SelectMenu(ByVal processID As String, Optional raiseDialog As Boolean = False, Optional processParameters As String = vbNullString, Optional createUndo As PD_UNDO_TYPE = UNDO_NOTHING, Optional relevantTool As Long = -1, Optional recordAction As Boolean = True, Optional ByRef returnDetails As String = vbNullString) As Boolean
+    
+    'A number of selection functions pass the relevant layer index in the parameter string (as future-proofing against selecting
+    ' multiple layers).  To simplify the parsing of these entries, we always create an XML parser.
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.SetParamString processParameters
+        
+    'Create/remove selections
+    If Strings.StringsEqual(processID, "Create selection", True) Then
+        Selections.CreateNewSelection processParameters
+        Process_SelectMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Remove selection", True) Then
+        Selections.RemoveCurrentSelection
+        Process_SelectMenu = True
+        
+    'Modify the existing selection in some way
+    ElseIf Strings.StringsEqual(processID, "Invert selection", True) Then
+        Selections.InvertCurrentSelection
+        Process_SelectMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Grow selection", True) Then
+        If raiseDialog Then Selections.GrowCurrentSelection True Else Selections.GrowCurrentSelection False, cParams.GetDouble("filtervalue")
+        Process_SelectMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Shrink selection", True) Then
+        If raiseDialog Then Selections.ShrinkCurrentSelection True Else Selections.ShrinkCurrentSelection False, cParams.GetDouble("filtervalue")
+        Process_SelectMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Feather selection", True) Then
+        If raiseDialog Then Selections.FeatherCurrentSelection True Else Selections.FeatherCurrentSelection False, cParams.GetDouble("filtervalue")
+        Process_SelectMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Sharpen selection", True) Then
+        If raiseDialog Then Selections.SharpenCurrentSelection True Else Selections.SharpenCurrentSelection False, cParams.GetDouble("filtervalue")
+        Process_SelectMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Border selection", True) Then
+        If raiseDialog Then Selections.BorderCurrentSelection True Else Selections.BorderCurrentSelection False, cParams.GetDouble("filtervalue")
+        Process_SelectMenu = True
+    
+    'Erase selected area (from layer)
+    ElseIf Strings.StringsEqual(processID, "Erase selected area", True) Then
+        Selections.EraseSelectedArea cParams.GetLong("targetlayer")
+        Process_SelectMenu = True
+    
+    'Load/save selection from/to file
+    ElseIf Strings.StringsEqual(processID, "Load selection", True) Then
+        If raiseDialog Then Selections.LoadSelectionFromFile True Else Selections.LoadSelectionFromFile False, processParameters
+        Process_SelectMenu = True
+        
+    ElseIf Strings.StringsEqual(processID, "Save selection", True) Then
+        Selections.SaveSelectionToFile
+        Process_SelectMenu = True
+        
+    'Export selected area as image (defaults to PNG, but user can select the actual format)
+    ElseIf Strings.StringsEqual(processID, "Export selected area as image", True) Then
+        Selections.ExportSelectedAreaAsImage
+        Process_SelectMenu = True
+    
+    'Export selection mask as image (defaults to PNG, but user can select the actual format)
+    ElseIf Strings.StringsEqual(processID, "Export selection mask as image", True) Then
+        Selections.ExportSelectionMaskAsImage
+        Process_SelectMenu = True
+    
+    ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is moved
+    ElseIf Strings.StringsEqual(processID, "Move selection", True) Then
+        Selections.CreateNewSelection processParameters
+        Process_SelectMenu = True
+        
+    ' This is a dummy entry; it only exists so that Undo/Redo data is correctly generated when a selection is resized
+    ElseIf Strings.StringsEqual(processID, "Resize selection", True) Then
+        Selections.CreateNewSelection processParameters
+        Process_SelectMenu = True
+    
+    ElseIf Strings.StringsEqual(processID, "Select all", True) Then
+        Selections.SelectWholeImage
+        Process_SelectMenu = True
+        
+    End If
+
+End Function
