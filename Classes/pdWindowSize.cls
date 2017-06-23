@@ -210,7 +210,7 @@ Private Sub EndSubclassing()
 End Sub
 
 Private Function ISubclass_WindowMsg(ByVal hWnd As Long, ByVal uiMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
-
+    
     If (uiMsg = WM_SIZE) Then
         UpdateWinRect
         RaiseEvent WindowResize(m_WindowRect.x2 - m_WindowRect.x1, m_WindowRect.y2 - m_WindowRect.y1)

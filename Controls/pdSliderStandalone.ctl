@@ -279,6 +279,10 @@ Public Property Let GradientMiddleValue(ByVal newValue As Double)
     End If
 End Property
 
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus()
+End Property
+
 Public Property Get hWnd() As Long
 Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd

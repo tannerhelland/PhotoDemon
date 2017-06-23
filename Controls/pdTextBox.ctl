@@ -140,7 +140,7 @@ End Property
 
 'Font properties; only a subset are used, as PD handles most font settings automatically
 Public Property Get FontSize() As Single
-    If Not (m_EditBox Is Nothing) Then FontSize = m_EditBox.FontSize
+    If (Not m_EditBox Is Nothing) Then FontSize = m_EditBox.FontSize
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
@@ -150,6 +150,10 @@ Public Property Let FontSize(ByVal newSize As Single)
             PropertyChanged "FontSize"
         End If
     End If
+End Property
+
+Public Property Get HasFocus() As Boolean
+    HasFocus = ucSupport.DoIHaveFocus() Or m_EditBox.HasFocus()
 End Property
 
 Public Property Get hWnd() As Long
@@ -358,7 +362,7 @@ End Sub
 Private Sub ComponentGotFocus()
 
     'If a component already had focus, ignore this step, as focus is just changing internally within the control
-    If Not m_ControlHasFocus Then
+    If (Not m_ControlHasFocus) Then
         m_ControlHasFocus = True
         RelayUpdatedColorsToEditBox
         RedrawBackBuffer
@@ -366,8 +370,8 @@ Private Sub ComponentGotFocus()
     End If
     
     'The user control itself should never have focus.  Forward it to the API edit box as necessary.
-    If Not (m_EditBox Is Nothing) Then
-        If Not (m_EditBox.HasFocus) Then m_EditBox.SetFocusToEditBox
+    If (Not m_EditBox Is Nothing) Then
+        If (Not m_EditBox.HasFocus) Then m_EditBox.SetFocusToEditBox
     End If
     
 End Sub
@@ -378,8 +382,8 @@ Private Sub ComponentLostFocus()
     
     'If focus has simply moved to another component within the control, ignore this step
     If m_ControlHasFocus And Not ucSupport.DoIHaveFocus Then
-        If Not (m_EditBox Is Nothing) Then
-            If Not (m_EditBox.HasFocus) Then
+        If (Not m_EditBox Is Nothing) Then
+            If (Not m_EditBox.HasFocus) Then
                 m_ControlHasFocus = False
                 RelayUpdatedColorsToEditBox
                 RedrawBackBuffer

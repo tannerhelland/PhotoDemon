@@ -127,6 +127,7 @@ Private Declare Function GetFocus Lib "user32" () As Long
 Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
+Private Declare Function SetActiveWindow Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal targetHwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
@@ -287,6 +288,10 @@ Friend Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus
 End Sub
 
+Friend Sub ActivateWindowAPI(ByVal hWndToActivate As Long)
+    SetActiveWindow hWndToActivate
+End Sub
+
 Friend Function IsDWMCompositionEnabled() As Boolean
     If g_IsVistaOrLater Then
         If g_IsWin8OrLater Then
@@ -336,13 +341,17 @@ Friend Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindo
             'Cache the current window style settings.  We will restore these at exit time, to prevent issues with VB's unload process
             m_ToolPanelDictionary.AddEntry m_CurrentToolPanelHwnd, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE)
             
-            'Convert the window to a child window and assign it to the options panel
-            SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) Or CLng(WS_CHILD)
-            SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) And CLng(Not WS_POPUP)
+            'Convert the window to a child window and assign it to the options panel.
+            ' NOTE 23/June/17: Previously, PD was obeying MSDN instructions and setting matching window styles for the newly
+            '                  child-ified toolpanel.  However, this causes VB to intercept some messages (like focus events)
+            '                  which we definitely don't want.  For the time being, I have disabled the manual setting of
+            '                  window styles, to forcibly prevent VB message queues from eating our notifications.
+            'SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) Or CLng(WS_CHILD)
+            'SetWindowLong m_CurrentToolPanelHwnd, GWL_STYLE, GetWindowLong(m_CurrentToolPanelHwnd, GWL_STYLE) And CLng(Not WS_POPUP)
             SetParent m_CurrentToolPanelHwnd, optionWindowHwnd
             
         End If
-        
+            
         'Next, get the client dimensions of the options window
         Dim optionsPanelRect As winRect
         GetClientRect optionWindowHwnd, optionsPanelRect
@@ -352,7 +361,7 @@ Friend Sub ActivateToolPanel(ByVal formHWndToActivate As Long, ByVal optionWindo
         
         'Finally, set visibility according to the parent window
         Me.SetVisibilityByHWnd m_CurrentToolPanelHwnd, toolbar_Options.Visible, False
-        
+            
     End If
     
 End Sub
