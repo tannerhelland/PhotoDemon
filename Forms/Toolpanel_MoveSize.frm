@@ -379,7 +379,7 @@ End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
     If (g_OpenImageCount = 0) Then Exit Sub
-    Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+    Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdLayerMove_Click(Index As Integer)
@@ -390,7 +390,7 @@ Private Sub cmdLayerMove_Click(Index As Integer)
     
         'Make non-destructive resize permanent
         Case 0
-            Process "Make layer changes permanent", , BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+            Process "Make layer changes permanent", , BuildParamList("layerindex", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
     
     End Select
     

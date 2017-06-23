@@ -113,7 +113,7 @@ Public Sub SelectWholeImage()
 End Sub
 
 'Load a previously saved selection.  Note that this function also handles creation and display of the relevant common dialog.
-Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal SelectionPath As String = "")
+Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal loadSettings As String = vbNullString)
 
     If displayDialog Then
     
@@ -146,7 +146,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
                 g_UserPreferences.SetSelectionPath sFile
                 
                 'Call this function again, but with displayDialog set to FALSE and the path of the requested selection file
-                Process "Load selection", False, sFile, UNDO_SELECTION
+                Process "Load selection", False, BuildParamList("selectionpath", sFile), UNDO_SELECTION
                     
             Else
                 PDMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly + vbExclamation + vbApplicationModal, "Selection Error", sFile
@@ -162,9 +162,13 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Interface.EnableUserInput
         
     Else
-    
+        
+        Dim cParams As pdParamXML
+        Set cParams = New pdParamXML
+        cParams.SetParamString loadSettings
+        
         Message "Loading selection..."
-        pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile SelectionPath
+        pdImages(g_CurrentImage).MainSelection.ReadSelectionFromFile cParams.GetString("selectionpath")
         pdImages(g_CurrentImage).SetSelectionActive True
         
         'Synchronize all user-facing controls to match
@@ -231,9 +235,6 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     pdImages(g_CurrentImage).RetrieveProcessedSelection tmpDIB, True, True
-    
-    'If the selected area has a blank alpha channel, convert it to 24bpp
-    'If (Not DIBs.IsDIBAlphaBinary(tmpDIB, False)) Then tmpDIB.ConvertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
@@ -440,8 +441,8 @@ Public Sub SyncTextToCurrentSelection(ByVal formID As Long)
         
     Else
         
-        SetUIGroupState PDUI_Selections, False
-        SetUIGroupState PDUI_SelectionTransforms, False
+        Interface.SetUIGroupState PDUI_Selections, False
+        Interface.SetUIGroupState PDUI_SelectionTransforms, False
         
         If Tools.IsSelectionToolActive Then
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
@@ -746,7 +747,7 @@ Public Sub FeatherCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         Dim retRadius As Double
         If DisplaySelectionDialog(SEL_FEATHER, retRadius) = vbOK Then
-            Process "Feather selection", False, Str(retRadius), UNDO_SELECTION
+            Process "Feather selection", False, BuildParamList("filtervalue", retRadius), UNDO_SELECTION
         End If
         
     Else
@@ -800,7 +801,7 @@ Public Sub SharpenCurrentSelection(ByVal displayDialog As Boolean, Optional ByVa
         
         Dim retRadius As Double
         If (DisplaySelectionDialog(SEL_SHARPEN, retRadius) = vbOK) Then
-            Process "Sharpen selection", False, Str(retRadius), UNDO_SELECTION
+            Process "Sharpen selection", False, BuildParamList("filtervalue", retRadius), UNDO_SELECTION
         End If
         
     Else
@@ -905,7 +906,7 @@ Public Sub GrowCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal g
         
         Dim retSize As Double
         If DisplaySelectionDialog(SEL_GROW, retSize) = vbOK Then
-            Process "Grow selection", False, Str(retSize), UNDO_SELECTION
+            Process "Grow selection", False, BuildParamList("filtervalue", retSize), UNDO_SELECTION
         End If
         
     Else
@@ -960,7 +961,7 @@ Public Sub ShrinkCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         
         Dim retSize As Double
         If DisplaySelectionDialog(SEL_SHRINK, retSize) = vbOK Then
-            Process "Shrink selection", False, Str(retSize), UNDO_SELECTION
+            Process "Shrink selection", False, BuildParamList("filtervalue", retSize), UNDO_SELECTION
         End If
         
     Else
@@ -1015,7 +1016,7 @@ Public Sub BorderCurrentSelection(ByVal displayDialog As Boolean, Optional ByVal
         
         Dim retSize As Double
         If DisplaySelectionDialog(SEL_BORDER, retSize) = vbOK Then
-            Process "Border selection", False, Str(retSize), UNDO_SELECTION
+            Process "Border selection", False, BuildParamList("filtervalue", retSize), UNDO_SELECTION
         End If
         
     Else
@@ -1397,7 +1398,7 @@ Public Sub NotifySelectionKeyUp(ByRef srcCanvas As pdCanvas, ByVal Shift As Shif
     'Delete key: if a selection is active, erase the selected area
     If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).IsSelectionActive Then
         markEventHandled = True
-        Process "Erase selected area", False, BuildParams(pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
+        Process "Erase selected area", False, BuildParamList("targetlayer", pdImages(g_CurrentImage).GetActiveLayerIndex), UNDO_LAYER
     End If
     
     'Escape key: if a selection is active, clear it
