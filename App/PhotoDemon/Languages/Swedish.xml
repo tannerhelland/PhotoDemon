@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.8.2549</langversion>
+<langversion>6.8.2811</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1195,7 +1195,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Synlig</translation>
 </phrase>
 
 <phrase>
@@ -1950,12 +1950,12 @@ Description: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>Horisontell skjuvning</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>Vertikal skjuvning</translation>
 </phrase>
 
 <phrase>
@@ -2030,7 +2030,7 @@ Description: %2
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>Text typ</translation>
 </phrase>
 
 <phrase>
@@ -2040,12 +2040,12 @@ Description: %2
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>Ordlindning</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>fylla</translation>
 </phrase>
 
 <phrase>
@@ -2055,7 +2055,7 @@ Description: %2
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>översikt</translation>
 </phrase>
 
 <phrase>
@@ -2070,7 +2070,7 @@ Description: %2
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>Bakgrundsstil</translation>
 </phrase>
 
 <phrase>
@@ -2080,7 +2080,7 @@ Description: %2
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>Bakgrundsgränsstil</translation>
 </phrase>
 
 <phrase>
@@ -2090,32 +2090,32 @@ Description: %2
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>marginal</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>Karaktärsreformering</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>Karaktärsavstånd</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>Teckenorientering</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>Horisontell jitter</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>Vertikal jitter</translation>
 </phrase>
 
 <phrase>
@@ -2125,7 +2125,7 @@ Description: %2
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>spegling</translation>
 </phrase>
 
 <phrase>
@@ -4684,7 +4684,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation>PhotoDemon av Tanner Helland - www.photodemon.org</translation>
+<translation>PhotoDemon by Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4969,7 +4969,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Grundskikt</translation>
 </phrase>
 
 <phrase>
@@ -4984,7 +4984,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Från synliga lager</translation>
 </phrase>
 
 <phrase>
@@ -6172,7 +6172,7 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Nytt lager från synliga lager</translation>
 </phrase>
 
 <phrase>
@@ -13571,7 +13571,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <phrase>
 <original>Ants</original>
-<translation></translation>
+<translation>Myror</translation>
 </phrase>
 
 <phrase>
@@ -14325,6 +14325,16 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
+<original>recently used file shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>maximala antalet poster fil senare</translation>
 </phrase>
@@ -14952,7 +14962,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation>Detta nya läge temporär mapp kommer inte att träda i kraft förrän du startar programmet.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15075,10 +15085,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2542</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
-<!-- These 2542 phrases contain approximately 12340 total words. -->
+<!-- As of this build, PhotoDemon contains 4544 phrases. -->
+<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12349 total words. -->
 
 </pdData>

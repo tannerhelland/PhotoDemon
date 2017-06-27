@@ -6,7 +6,7 @@
 
 <langid>hu-HU</langid>
 <langname>Hungarian</langname>
-<langversion>6.8.2549</langversion>
+<langversion>6.8.2811</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1194,7 +1194,7 @@ To támogatásának engedélyezéséhez tömörített PDI fájlokat, kattintson 
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Látható</translation>
 </phrase>
 
 <phrase>
@@ -1942,12 +1942,12 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>Vízszintes nyírás</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>Függőleges nyírás</translation>
 </phrase>
 
 <phrase>
@@ -2022,7 +2022,7 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>Szövegtípus</translation>
 </phrase>
 
 <phrase>
@@ -2032,12 +2032,12 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>sortörés</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>tölt</translation>
 </phrase>
 
 <phrase>
@@ -2047,7 +2047,7 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>vázlat</translation>
 </phrase>
 
 <phrase>
@@ -2062,7 +2062,7 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>Háttérstílus</translation>
 </phrase>
 
 <phrase>
@@ -2072,7 +2072,7 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>Háttérkép határoló stílus</translation>
 </phrase>
 
 <phrase>
@@ -2082,32 +2082,32 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>margó</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>Karakter remapping</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>Karaktertávolság</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>Karakterorientáció</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>Vízszintes jitter</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>Függőleges jitter</translation>
 </phrase>
 
 <phrase>
@@ -2117,7 +2117,7 @@ Error szám %vbCrLf Leírás: %vbCrLf vbCrLf %3</translation>
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>tükrözés</translation>
 </phrase>
 
 <phrase>
@@ -4674,7 +4674,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation>PhotoDemon Tanner Helland - www.photodemon.org</translation>
+<translation>PhotoDemon by Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4959,7 +4959,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Alapréteg</translation>
 </phrase>
 
 <phrase>
@@ -4974,7 +4974,7 @@ Is használhatja az Open Image gombra a bal oldalon, vbCrLf vagy a Fájl> Megnyi
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>A látható rétegekből</translation>
 </phrase>
 
 <phrase>
@@ -6159,7 +6159,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Új réteg látható rétegekből</translation>
 </phrase>
 
 <phrase>
@@ -13558,7 +13558,7 @@ I őszintén elnézést kérünk a kellemetlenségért, de sajnos semmi %2 tehet
 
 <phrase>
 <original>Ants</original>
-<translation></translation>
+<translation>Hangyák</translation>
 </phrase>
 
 <phrase>
@@ -14307,6 +14307,16 @@ To continue, please download a fresh copy of PhotoDemon from photodemon.org.</or
 </phrase>
 
 <phrase>
+<original>recently used file shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>maximális száma az elmúlt fájlbejegyzésekhez</translation>
 </phrase>
@@ -14933,7 +14943,7 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 <translation>Ez az új ideiglenes mappa helyét nem lép érvénybe, amíg újra nem indítja a programot.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15056,10 +15066,10 @@ If Ön is úgy dönt, hogy letiltja a frissítéseket, ne felejtsük el, hogy l�
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2542</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
-<!-- These 2542 phrases contain approximately 12340 total words. -->
+<!-- As of this build, PhotoDemon contains 4544 phrases. -->
+<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12349 total words. -->
 
 </pdData>

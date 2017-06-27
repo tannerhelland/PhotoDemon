@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.8.2549</langversion>
+<langversion>6.8.2811</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1195,7 +1195,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Boleh Dilihat</translation>
 </phrase>
 
 <phrase>
@@ -1955,12 +1955,12 @@ Description: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>Ricih mendatar</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>Ricih menegak</translation>
 </phrase>
 
 <phrase>
@@ -2035,7 +2035,7 @@ Description: %2
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>Jenis teks</translation>
 </phrase>
 
 <phrase>
@@ -2045,12 +2045,12 @@ Description: %2
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>Balut perkataan</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>Mengisi</translation>
 </phrase>
 
 <phrase>
@@ -2060,7 +2060,7 @@ Description: %2
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>Garis besar</translation>
 </phrase>
 
 <phrase>
@@ -2075,7 +2075,7 @@ Description: %2
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>Gaya latar belakang</translation>
 </phrase>
 
 <phrase>
@@ -2085,7 +2085,7 @@ Description: %2
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>Gaya sempadan latar belakang</translation>
 </phrase>
 
 <phrase>
@@ -2095,32 +2095,32 @@ Description: %2
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>Margin</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>Pengulangan aksara</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>Jarak watak</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>Orientasi watak</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>Jitter mendatar</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>Jitter menegak</translation>
 </phrase>
 
 <phrase>
@@ -2130,7 +2130,7 @@ Description: %2
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>Mencerminkan</translation>
 </phrase>
 
 <phrase>
@@ -4689,7 +4689,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation>PhotoDemon oleh Tanner Helland - www.photodemon.org</translation>
+<translation>PhotoDemon by Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4974,7 +4974,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Lapisan asas</translation>
 </phrase>
 
 <phrase>
@@ -4989,7 +4989,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Daripada lapisan yang kelihatan</translation>
 </phrase>
 
 <phrase>
@@ -6177,7 +6177,7 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Lapisan baru dari lapisan yang kelihatan</translation>
 </phrase>
 
 <phrase>
@@ -13577,7 +13577,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <phrase>
 <original>Ants</original>
-<translation></translation>
+<translation>Semut</translation>
 </phrase>
 
 <phrase>
@@ -14331,6 +14331,16 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>recently used file shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Bilangan maksimum penyertaan fail baru-baru ini</translation>
 </phrase>
@@ -14958,7 +14968,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>lokasi folder sementara yang baru ini tidak akan berfungsi sehingga anda memulakan semula program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15081,10 +15091,10 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2542</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
-<!-- These 2542 phrases contain approximately 12340 total words. -->
+<!-- As of this build, PhotoDemon contains 4544 phrases. -->
+<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12349 total words. -->
 
 </pdData>

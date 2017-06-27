@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Portuguese (Brazil)</langname>
-<langversion>6.8.2549</langversion>
+<langversion>6.8.2811</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1195,7 +1195,7 @@ To ativar o suporte para arquivos compactados PDI, clique em Ajuda> Verificar at
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Visível</translation>
 </phrase>
 
 <phrase>
@@ -1955,12 +1955,12 @@ Description: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>Cisalhamento horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>Cisalhamento vertical</translation>
 </phrase>
 
 <phrase>
@@ -2035,7 +2035,7 @@ Description: %2
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>tipo de texto</translation>
 </phrase>
 
 <phrase>
@@ -2045,12 +2045,12 @@ Description: %2
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>quebra de linha</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>encher</translation>
 </phrase>
 
 <phrase>
@@ -2060,7 +2060,7 @@ Description: %2
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>esboço</translation>
 </phrase>
 
 <phrase>
@@ -2075,7 +2075,7 @@ Description: %2
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>Estilo de fundo</translation>
 </phrase>
 
 <phrase>
@@ -2085,7 +2085,7 @@ Description: %2
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>Estilo de borda de fundo</translation>
 </phrase>
 
 <phrase>
@@ -2095,32 +2095,32 @@ Description: %2
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>margem</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>Remapeamento de personagens</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>Espaçamento entre caracteres</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>Orientação do personagem</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>Jitter horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>Jitter vertical</translation>
 </phrase>
 
 <phrase>
@@ -2130,7 +2130,7 @@ Description: %2
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>Espelhamento</translation>
 </phrase>
 
 <phrase>
@@ -4689,7 +4689,7 @@ or os menus File> Open e File> Import.</translation>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation>PhotoDemon por Tanner Helland - www.photodemon.org</translation>
+<translation>PhotoDemon by Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4974,7 +4974,7 @@ or os menus File> Open e File> Import.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Camada básica</translation>
 </phrase>
 
 <phrase>
@@ -4989,7 +4989,7 @@ or os menus File> Open e File> Import.</translation>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Das camadas visíveis</translation>
 </phrase>
 
 <phrase>
@@ -6177,7 +6177,7 @@ The é automaticamente o processamento em segundo plano. Você receberá uma nov
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Nova camada de camadas visíveis</translation>
 </phrase>
 
 <phrase>
@@ -13576,7 +13576,7 @@ I sinceras desculpas por esse inconveniente, mas, infelizmente, não há nada de
 
 <phrase>
 <original>Ants</original>
-<translation></translation>
+<translation>Formigas</translation>
 </phrase>
 
 <phrase>
@@ -14330,6 +14330,16 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 </phrase>
 
 <phrase>
+<original>recently used file shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>número máximo de entradas de arquivos recentes</translation>
 </phrase>
@@ -14957,7 +14967,7 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 <translation>Esta nova localização da pasta temporária não terá efeito até que você reiniciar o programa.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15080,10 +15090,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2542</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
-<!-- These 2542 phrases contain approximately 12340 total words. -->
+<!-- As of this build, PhotoDemon contains 4544 phrases. -->
+<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12349 total words. -->
 
 </pdData>

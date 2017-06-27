@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>German (DE) - (rk)</langname>
-<langversion>6.8.2804</langversion>
+<langversion>6.8.2811</langversion>
 <langstatus>Fertiggestellt</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -2035,7 +2035,7 @@ Beschreibung: %2
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>Texttyp</translation>
 </phrase>
 
 <phrase>
@@ -2045,12 +2045,12 @@ Beschreibung: %2
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>Zeilenumbruch</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>Füllung</translation>
 </phrase>
 
 <phrase>
@@ -2060,7 +2060,7 @@ Beschreibung: %2
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>Umriss</translation>
 </phrase>
 
 <phrase>
@@ -2075,17 +2075,17 @@ Beschreibung: %2
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>Hintergrundstil</translation>
 </phrase>
 
 <phrase>
 <original>background border</original>
-<translation>Hintergrundgrenze</translation>
+<translation>Hintergrundrahmung</translation>
 </phrase>
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>Hintergrund-Rahmungsstil</translation>
 </phrase>
 
 <phrase>
@@ -2095,32 +2095,32 @@ Beschreibung: %2
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>Rand</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>Zeichen-Neuzuordnung</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>Zeichenabstand</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>Zeichenausrichtung</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>Jitter horizontal</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>Jitter vertikal</translation>
 </phrase>
 
 <phrase>
@@ -2130,7 +2130,7 @@ Beschreibung: %2
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>Spiegelung</translation>
 </phrase>
 
 <phrase>
@@ -4904,7 +4904,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Trim empty borders</original>
-<translation>Leere Begrenzungen trimmen</translation>
+<translation>Leere Rahmungen trimmen</translation>
 </phrase>
 
 <phrase>
@@ -4974,7 +4974,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation>Grundlayer</translation>
+<translation>Grundlegender Layer</translation>
 </phrase>
 
 <phrase>
@@ -5144,7 +5144,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Border</original>
-<translation>Rand</translation>
+<translation>Rahmung</translation>
 </phrase>
 
 <phrase>
@@ -6212,7 +6212,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Arbitrary layer rotation</original>
-<translation>Beliebige Layerrotation</translation>
+<translation>Beliebige Layer-Rotation</translation>
 </phrase>
 
 <phrase>
@@ -6237,7 +6237,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Reset layer size</original>
-<translation>Layergröße zurücksetzen</translation>
+<translation>Layer-Größe zurücksetzen</translation>
 </phrase>
 
 <phrase>
@@ -8522,7 +8522,7 @@ Haben Sie einen Account bei GitHub? (Falls Sie keine Idee davon haben, was dies 
 
 <phrase>
 <original>interface accent color</original>
-<translation>Farbe von Interface-Akzent</translation>
+<translation>Farbe der Interface-Akzente</translation>
 </phrase>
 
 <phrase>
@@ -11253,12 +11253,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>fit inclusively</original>
-<translation>Anpassen, notfalls mit Rändern</translation>
+<translation>Inklusive anpassen</translation>
 </phrase>
 
 <phrase>
 <original>fit exclusively</original>
-<translation>Anpassen, notfalls zuschneiden</translation>
+<translation>Exklusiv anpassen</translation>
 </phrase>
 
 <phrase>
@@ -12736,7 +12736,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
-<translation>Hier klicken, um die verwendete Farbe für leere Begrenzungen zu ändern</translation>
+<translation>Hier klicken, um die verwendete Farbe für leere Rahmungen zu ändern</translation>
 </phrase>
 
 <phrase>
@@ -12811,12 +12811,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>Einschließlich anpassen, falls erforderlich mit transparenten Begrenzungen</translation>
+<translation>Anpassung inklusive, falls erforderlich mit transparenten Rahmungen</translation>
 </phrase>
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>Einschließlich anpassen, falls erforderlich zuschneiden</translation>
+<translation>Anpassung exklusiv, falls erforderlich zuschneiden</translation>
 </phrase>
 
 <phrase>
@@ -12831,7 +12831,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem leere Begrenzungen oder Zuschneidung sattdessen verwendet werden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Dehnung auftreten. PhotoDemon kann dies vermeiden, indem leere Rahmungen oder Zuschneidung sattdessen verwendet werden.</translation>
 </phrase>
 
 <phrase>
@@ -12857,7 +12857,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>border regions</original>
-<translation>Grenzregionen</translation>
+<translation>Regionen umranden</translation>
 </phrase>
 
 <phrase>
@@ -13091,7 +13091,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>border radius</original>
-<translation>Grenzradius</translation>
+<translation>Rahmungsradius</translation>
 </phrase>
 
 <phrase>
@@ -13366,17 +13366,17 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>layer position (x, y)</original>
-<translation>Layerposition (x, y)</translation>
+<translation>Layer-Position (x, y)</translation>
 </phrase>
 
 <phrase>
 <original>layer size (w, h)</original>
-<translation>Layergröße (B, H)</translation>
+<translation>Layer-Größe (B, H)</translation>
 </phrase>
 
 <phrase>
 <original>layer angle</original>
-<translation>Layerwinkel</translation>
+<translation>Layer-Winkel</translation>
 </phrase>
 
 <phrase>
@@ -13401,7 +13401,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>show layer borders</original>
-<translation>Layerbegrenzungen zeigen</translation>
+<translation>Layer-Rahmungen zeigen</translation>
 </phrase>
 
 <phrase>
@@ -13767,7 +13767,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>remap</original>
-<translation>Neu abbilden</translation>
+<translation>Neu zuordnen</translation>
 </phrase>
 
 <phrase>
@@ -13787,7 +13787,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>border style</original>
-<translation>Grenzstil</translation>
+<translation>Rahmungsstil</translation>
 </phrase>
 
 <phrase>
@@ -14326,6 +14326,16 @@ Um fortzufahren, laden Sie bitte eine frische Kopie von PhotoDemon herunter unte
 <phrase>
 <original>PhotoDemon Options</original>
 <translation>PhotoDemon-Optionen</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window title bar text</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -14956,7 +14966,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Der neue Speicherort für den temporären Ordner wird erst wirksam, wenn Sie das Programm neu starten.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15079,10 +15089,10 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2542</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
-<!-- These 2542 phrases contain approximately 12340 total words. -->
+<!-- As of this build, PhotoDemon contains 4544 phrases. -->
+<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12349 total words. -->
 
 </pdData>
