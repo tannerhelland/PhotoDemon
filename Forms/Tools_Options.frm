@@ -53,7 +53,7 @@ Begin VB.Form FormPreferences
       Width           =   8295
       _ExtentX        =   0
       _ExtentY        =   0
-      Begin PhotoDemon.pdDropDown cboMRUCaption 
+      Begin PhotoDemon.pdDropDown cboMRUStyle 
          Height          =   810
          Left            =   180
          TabIndex        =   1
@@ -64,7 +64,7 @@ Begin VB.Form FormPreferences
          Caption         =   "recently used file shortcuts:"
          FontSizeCaption =   10
       End
-      Begin PhotoDemon.pdDropDown cboImageCaption 
+      Begin PhotoDemon.pdDropDown cboTitleText 
          Height          =   810
          Left            =   180
          TabIndex        =   2
@@ -72,7 +72,7 @@ Begin VB.Form FormPreferences
          Width           =   7800
          _ExtentX        =   13758
          _ExtentY        =   1429
-         Caption         =   "main window title bar text: "
+         Caption         =   "main window title bar text:"
          FontSizeCaption =   10
       End
       Begin PhotoDemon.pdSpinner tudRecentFiles 
@@ -1063,7 +1063,7 @@ Private Sub cmdBarMini_OKClick()
     'BEGIN Interface preferences
         
         'START/END image window caption length
-            g_UserPreferences.SetPref_Long "Interface", "Window Caption Length", cboImageCaption.ListIndex
+            g_UserPreferences.SetPref_Long "Interface", "Window Caption Length", cboTitleText.ListIndex
         
         Dim mruNeedsToBeRebuilt As Boolean
         mruNeedsToBeRebuilt = False
@@ -1071,8 +1071,8 @@ Private Sub cmdBarMini_OKClick()
         'START MRU caption length
         
             'Check to see if the new MRU caption setting matches the old one.  If it doesn't, reload the MRU.
-            If (cboMRUCaption.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)) Then mruNeedsToBeRebuilt = True
-            g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cboMRUCaption.ListIndex
+            If (cboMRUStyle.ListIndex <> g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)) Then mruNeedsToBeRebuilt = True
+            g_UserPreferences.SetPref_Long "Interface", "MRU Caption Length", cboMRUStyle.ListIndex
             
         'END MRU caption length
         
@@ -1384,11 +1384,11 @@ Private Sub LoadAllPreferences()
     'START Interface preferences
         
         'START image window caption length
-            cboImageCaption.Clear
-            cboImageCaption.AddItem " compact - image names only", 0
-            cboImageCaption.AddItem " descriptive - full image locations, including folder(s)", 1
-            cboImageCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0)
-            cboImageCaption.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
+            cboTitleText.Clear
+            cboTitleText.AddItem " compact - image names only", 0
+            cboTitleText.AddItem " descriptive - full image locations, including folder(s)", 1
+            cboTitleText.ListIndex = g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0)
+            cboTitleText.AssignTooltip "The title bar of the main PhotoDemon window displays information about the currently loaded image.  Use this preference to control how much information is displayed."
         'END image window caption length
                 
         'START Recent file max count
@@ -1398,11 +1398,11 @@ Private Sub LoadAllPreferences()
         'END
         
         'START MRU caption length
-            cboMRUCaption.Clear
-            cboMRUCaption.AddItem " compact - image names only", 0
-            cboMRUCaption.AddItem " descriptive - full image locations, including folder(s)", 1
-            cboMRUCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)
-            cboMRUCaption.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
+            cboMRUStyle.Clear
+            cboMRUStyle.AddItem " compact - image names only", 0
+            cboMRUStyle.AddItem " descriptive - full image locations, including folder(s)", 1
+            cboMRUStyle.ListIndex = g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)
+            cboMRUStyle.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
         'END MRU caption length
         
         'START alpha-channel checkerboard rendering

@@ -2237,6 +2237,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     
     If (GDIPlusReturn <> GP_OK) Then
         If (hImage <> 0) Then GdipDisposeImage hImage
+        InternalGDIPlusError , "GDIPlusLoadPictureFailure", GDIPlusReturn
         GDIPlusLoadPicture = False
         Exit Function
     End If

@@ -2392,7 +2392,7 @@ End Sub
 Private Sub mnuRecentMacros_Click(Index As Integer)
     'Load the MRU Macro path that correlates to this index.  (If one is not found, a null string is returned)
     Dim tmpString As String
-    tmpString = g_RecentMacros.getSpecificMRU(Index)
+    tmpString = g_RecentMacros.GetSpecificMRU(Index)
     
     'Check - just in case - to make sure the path isn't empty
     If tmpString <> "" Then
@@ -3821,7 +3821,7 @@ Private Sub MnuLoadAllMRU_Click()
     
     Dim i As Long
     For i = 0 To g_RecentFiles.MRU_ReturnCount() - 1
-        listOfFiles.AddString g_RecentFiles.getSpecificMRU(i)
+        listOfFiles.AddString g_RecentFiles.GetSpecificMRU(i)
     Next i
     
     Loading.LoadMultipleImageFiles listOfFiles, True
@@ -3994,12 +3994,12 @@ End Sub
 Public Sub mnuRecDocs_Click(Index As Integer)
     
     'Load the MRU path that correlates to this index.  (If one is not found, a null string is returned)
-    If (Len(g_RecentFiles.getSpecificMRU(Index)) <> 0) Then
-        LoadFileAsNewImage g_RecentFiles.getSpecificMRU(Index)
+    If (Len(g_RecentFiles.GetSpecificMRU(Index)) <> 0) Then
+        LoadFileAsNewImage g_RecentFiles.GetSpecificMRU(Index)
         
         'If the image loaded successfully, activate it and bring it to the foreground
         ' TODO 7.0: thanks to the new window manager, this should no longer be necessary - check it!
-        If (g_OpenImageCount > 0) Then ActivatePDImage g_CurrentImage, "MRU entry finished loading"
+        If (g_OpenImageCount > 0) Then CanvasManager.ActivatePDImage g_CurrentImage, "MRU entry finished loading"
         
     End If
     
