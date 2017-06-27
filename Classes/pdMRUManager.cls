@@ -55,8 +55,8 @@ Private m_XMLFilename As String
 Private m_MRUList As IMRUList
 
 'PD provides lots of helper classes to simplify various file and text interactions
-Private cFile As pdFSO
-Private cUnicode As pdUnicode
+Private m_FSO As pdFSO
+Private m_Unicode As pdUnicode
 
 'When creating a new MRU file, or overwriting a corrupt one, use this to initialize the XML header.
 Private Sub ResetXMLData()
@@ -68,40 +68,40 @@ End Sub
 
 'Truncates a path to a specified number of characters by replacing path components with ellipses.
 ' (Originally written by Randy Birch @ http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm)
-Private Function getShortMRU(ByVal sPath As String) As String
-    getShortMRU = cUnicode.ShrinkPathW(sPath, maxMRULength)
+Private Function GetShortMRU(ByVal sPath As String) As String
+    GetShortMRU = m_Unicode.ShrinkPathW(sPath, maxMRULength)
 End Function
 
 'Return the menu caption of the current recent file entry.  At present, menu caption length is controlled by a global preference
-Private Function getMRUCaption(ByRef newFile As String) As String
+Private Function GetMRUCaption(ByRef newFile As String) As String
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
-    If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
-        getMRUCaption = FileSystem.GetFilename(newFile)
+    If (g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0) Then
+        GetMRUCaption = FileSystem.GetFilename(newFile)
     Else
-        getMRUCaption = getShortMRU(newFile)
+        GetMRUCaption = GetShortMRU(newFile)
     End If
     
 End Function
 
 'Return the actual file path at a given index
-Public Function getSpecificMRU(ByVal mIndex As Long) As String
+Public Function GetSpecificMRU(ByVal mIndex As Long) As String
     
     If (mIndex <= m_NumEntries) And (mIndex >= 0) Then
-        getSpecificMRU = m_FileList(mIndex)
+        GetSpecificMRU = m_FileList(mIndex)
     Else
-        getSpecificMRU = ""
+        GetSpecificMRU = vbNullString
     End If
     
 End Function
 
 'Return a menu-friendly caption of a given index
-Public Function getSpecificMRUCaption(ByVal Index As Long) As String
+Public Function GetSpecificMRUCaption(ByVal Index As Long) As String
     
     If (Index <= m_NumEntries) And (Index >= 0) Then
-        getSpecificMRUCaption = getMRUCaption(m_FileList(Index))
+        GetSpecificMRUCaption = GetMRUCaption(m_FileList(Index))
     Else
-        getSpecificMRUCaption = ""
+        GetSpecificMRUCaption = vbNullString
     End If
     
 End Function
@@ -109,24 +109,16 @@ End Function
 'Return the path to an MRU thumbnail file.  (PD uses PNGs only, but any valid image format should technically work.)
 Public Function GetMRUThumbnailPath(ByVal Index As Long) As String
     
+    GetMRUThumbnailPath = vbNullString
+    
     'Query the child to see if it supports thumbnail images
     If m_MRUList.SupportsThumbnails Then
         
         'Ignore thumbnail requests if the current list is empty
         If (m_NumEntries > 0) Then
-        
-            If (Index >= 0) And (Index <= m_NumEntries) Then
-                GetMRUThumbnailPath = m_MRUList.GetThumbnailPath(Me, Index)
-            Else
-                GetMRUThumbnailPath = ""
-            End If
-            
-        Else
-            GetMRUThumbnailPath = ""
+            If (Index >= 0) And (Index <= m_NumEntries) Then GetMRUThumbnailPath = m_MRUList.GetThumbnailPath(Me, Index)
         End If
     
-    Else
-        GetMRUThumbnailPath = ""
     End If
     
 End Function
@@ -135,10 +127,10 @@ End Function
 Public Sub MRU_LoadFromFile()
 
     'Start by seeing if an XML file with previously saved MRU data exists
-    If cFile.FileExist(m_XMLFilename) Then
+    If m_FSO.FileExist(m_XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
-        If Not m_XMLEngine.LoadXMLFile(m_XMLFilename) Then
+        If (Not m_XMLEngine.LoadXMLFile(m_XMLFilename)) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "The Recent Files XML data at " & m_XMLFilename & " didn't validate.  Creating a new list now..."
@@ -172,7 +164,7 @@ Public Sub MRU_LoadFromFile()
         
         'Make sure the file does not contain more entries than are allowed (shouldn't theoretically be possible,
         ' but it doesn't hurt to check).
-        If m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
+        If (m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
             m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
         End If
         
@@ -185,7 +177,7 @@ Public Sub MRU_LoadFromFile()
     End If
     
     'If one or more recent file entries were found, load them now.
-    If m_NumEntries > 0 Then
+    If (m_NumEntries > 0) Then
     
         'Prepare our internal file list
         ReDim m_FileList(0 To m_NumEntries) As String
@@ -197,7 +189,7 @@ Public Sub MRU_LoadFromFile()
             m_FileList(i) = m_XMLEngine.GetUniqueTag_String("filePath", , , "mruEntry", "id", allRecentFiles(i))
             
             'Let the child do any UI preparation required on a per-item basis
-            m_MRUList.OnItemLoad Me, i, getMRUCaption(m_FileList(i))
+            m_MRUList.OnItemLoad Me, i, GetMRUCaption(m_FileList(i))
             
         Next i
         
@@ -225,13 +217,13 @@ Public Sub MRU_SaveToFile()
     ResetXMLData
     
     'Only write new entries if MRU data exists for them
-    If m_NumEntries > 0 Then
+    If (m_NumEntries > 0) Then
     
         Dim i As Long
         For i = 0 To m_NumEntries - 1
             m_XMLEngine.WriteTagWithAttribute "mruEntry", "id", CStr(i), "", True
             m_XMLEngine.WriteTag "filePath", m_FileList(i)
-            m_XMLEngine.closeTag "mruEntry"
+            m_XMLEngine.CloseTag "mruEntry"
             m_XMLEngine.WriteBlankLine
         Next i
         
@@ -256,7 +248,7 @@ End Sub
 Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pdImage = Nothing)
     
     'The filename is sometimes passed via dialogs, and as such may contain nulls
-    newFile = cUnicode.TrimNull(newFile)
+    newFile = m_Unicode.TrimNull(newFile)
     
     'Allow the child to perform any necessary UI prep work.  The child also has the option to cancel this operation.
     Dim Cancel As Boolean
@@ -278,7 +270,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
     For i = 0 To m_NumEntries - 1
     
         'This file already exists in the list!  Make a note of its location, then exit.
-        If StrComp(m_FileList(i), newFile, vbTextCompare) = 0 Then
+        If Strings.StringsEqual(m_FileList(i), newFile, True) Then
             alreadyThere = True
             curLocation = i
             Exit For
@@ -291,7 +283,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
         
         'If this file is already the most recent file (position 0), we don't need to do anything - but if it appears
         ' elsewhere in the list, shift everything after its position downward.
-        If curLocation > 0 Then
+        If (curLocation > 0) Then
             For i = curLocation To 1 Step -1
                 m_FileList(i) = m_FileList(i - 1)
             Next i
@@ -303,7 +295,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
         m_NumEntries = m_NumEntries + 1
         
         'Cap the number of MRU files at a certain value (specified by the user in the Preferences menu)
-        If m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
+        If (m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
             
             m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
             
@@ -316,7 +308,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
         ReDim Preserve m_FileList(0 To m_NumEntries) As String
     
         'Shift all existing entries downward
-        If m_NumEntries > 1 Then
+        If (m_NumEntries > 1) Then
             For i = m_NumEntries To 1 Step -1
                 m_FileList(i) = m_FileList(i - 1)
             Next i
@@ -332,7 +324,7 @@ Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pd
       
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length).
     ' Note that the child handles the actual UI work involved.
-    m_MRUList.AfterFileAdded Me, newFile, getMRUCaption(newFile)
+    m_MRUList.AfterFileAdded Me, newFile, GetMRUCaption(newFile)
     
 End Sub
 
@@ -341,12 +333,12 @@ End Sub
 Public Sub MRU_NotifyNewMaxLimit()
     
     'Erase any entries above the new limit
-    If m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10) Then
+    If (m_NumEntries > g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)) Then
     
         m_NumEntries = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
         
         ' Delete the old MRU file now, because we need to truncate it
-        cFile.KillFile m_XMLFilename
+        m_FSO.KillFile m_XMLFilename
         
     End If
     
@@ -372,7 +364,7 @@ Public Sub MRU_ClearList()
     ReDim m_FileList(0) As String
     
     'Erase any existing XML file, and reset the in-memory version
-    cFile.KillFile m_XMLFilename
+    m_FSO.KillFile m_XMLFilename
     ResetXMLData
     
     'Allow the child to perform any related UI clean-up
@@ -405,7 +397,7 @@ End Sub
 Private Sub Class_Initialize()
     
     'Initialize a file interface
-    Set cFile = New pdFSO
-    Set cUnicode = New pdUnicode
+    Set m_FSO = New pdFSO
+    Set m_Unicode = New pdUnicode
     
 End Sub
