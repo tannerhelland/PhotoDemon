@@ -793,11 +793,29 @@ Private Sub ReadData()
                 
                 'Edit by Tanner: same as above, rewrite pipe handling to operate on a byte array (to match our new function declaration),
                 ' but in this case we assume StdErr will always return ANSI data
-                ReDim byteBuffer(0 To availChars - 1) As Byte
-                If ReadFile(hChildErrPipeRd, VarPtr(byteBuffer(0)), availChars, charsRead, WIN32NULL) <> WIN32FALSE Then
-                
-                    Buffer = StrConv(byteBuffer, vbUnicode)
+                If m_AssumeUTF8Input Then
                     
+                    reqBounds = availChars + 4
+                    
+                    If (reqBounds > UBound(m_InputBuffer)) Then
+                        ReDim m_InputBuffer(0 To reqBounds) As Byte
+                    Else
+                        FillMemory VarPtr(m_InputBuffer(0)), reqBounds, 0
+                    End If
+                    
+                    rfReturn = ReadFile(hChildErrPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
+                    Buffer = m_Unicode.UTF8BytesToString(m_InputBuffer, charsRead)
+                    Buffer = m_Unicode.TrimNull(Buffer)
+                
+                'Original code follows:
+                Else
+                    ReDim m_InputBuffer(0 To availChars - 1) As Byte
+                    rfReturn = ReadFile(hChildErrPipeRd, VarPtr(m_InputBuffer(0)), availChars, charsRead, WIN32NULL)
+                    Buffer = StrConv(m_InputBuffer, vbUnicode)
+                End If
+                
+                If (rfReturn <> WIN32FALSE) Then
+                
                     If charsRead > 0 Then
                         If mErrAsOut Then
                             BufferOut.Append Left$(Buffer, charsRead)
