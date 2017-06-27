@@ -6,7 +6,7 @@
 
 <langid>hr-HR</langid>
 <langname>Croatian</langname>
-<langversion>6.8.2549</langversion>
+<langversion>6.8.2811</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1194,7 +1194,7 @@ To omogućiti podršku za komprimirani PDI datoteke, kliknite Pomoć> Provjeri a
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Vidljiv</translation>
 </phrase>
 
 <phrase>
@@ -1954,12 +1954,12 @@ Description: %2
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>Horizontalna smicanja</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>Vertikalna smicanja</translation>
 </phrase>
 
 <phrase>
@@ -2034,7 +2034,7 @@ Description: %2
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>Tip teksta</translation>
 </phrase>
 
 <phrase>
@@ -2044,12 +2044,12 @@ Description: %2
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>Riječ omotati</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>ispuniti</translation>
 </phrase>
 
 <phrase>
@@ -2059,7 +2059,7 @@ Description: %2
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>obris</translation>
 </phrase>
 
 <phrase>
@@ -2074,7 +2074,7 @@ Description: %2
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>Stil pozadine</translation>
 </phrase>
 
 <phrase>
@@ -2084,7 +2084,7 @@ Description: %2
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>Pozadinski granični stil</translation>
 </phrase>
 
 <phrase>
@@ -2094,32 +2094,32 @@ Description: %2
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>margina</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>Remapping karaktera</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>Razmak znakova</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>Orijentaciju znakova</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>Horizontalni podrhtavanje</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>Vertikalni podrhtavanje</translation>
 </phrase>
 
 <phrase>
@@ -2129,7 +2129,7 @@ Description: %2
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>zrcaljenje</translation>
 </phrase>
 
 <phrase>
@@ -4688,7 +4688,7 @@ or na File> Open i File> Import izbornika.</translation>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation>PhotoDemon po Tanner Helland - www.photodemon.org</translation>
+<translation>PhotoDemon by Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4973,7 +4973,7 @@ or na File> Open i File> Import izbornika.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Osnovni sloj</translation>
 </phrase>
 
 <phrase>
@@ -4988,7 +4988,7 @@ or na File> Open i File> Import izbornika.</translation>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Iz vidljivih slojeva</translation>
 </phrase>
 
 <phrase>
@@ -6176,7 +6176,7 @@ The ažuriranje automatski obrađuje u pozadini. Vi ćete primiti novu obavijest
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Novi sloj iz vidljivih slojeva</translation>
 </phrase>
 
 <phrase>
@@ -13576,7 +13576,7 @@ I Iskreno se ispričavamo zbog neugodnosti, ali nažalost ne postoji ništa %2 m
 
 <phrase>
 <original>Ants</original>
-<translation></translation>
+<translation>Mravi</translation>
 </phrase>
 
 <phrase>
@@ -14330,6 +14330,16 @@ To dalje, preuzmite novi primjerak PhotoDemon od photodemon.org.</translation>
 </phrase>
 
 <phrase>
+<original>recently used file shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>Maksimalni broj nedavnih datoteka unosa</translation>
 </phrase>
@@ -14957,7 +14967,7 @@ If još uvijek onemogućiti ažuriranja, ne zaboravite posjetiti photodemon.org 
 <translation>Ova nova lokacija privremenu mapu neće stupiti na snagu dok ponovno ne pokrenete program.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15080,10 +15090,10 @@ If još uvijek onemogućiti ažuriranja, ne zaboravite posjetiti photodemon.org 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2542</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
-<!-- These 2542 phrases contain approximately 12340 total words. -->
+<!-- As of this build, PhotoDemon contains 4544 phrases. -->
+<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12349 total words. -->
 
 </pdData>

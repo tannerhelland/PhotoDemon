@@ -6,7 +6,7 @@
 
 <langid>fi-FI</langid>
 <langname>Finnish</langname>
-<langversion>6.8.2549</langversion>
+<langversion>6.8.2811</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate - translate.google.com</author>
@@ -1194,7 +1194,7 @@ To käyttöön tuen pakattu PDI tiedostoja valitsemalla Ohje> Tarkista päivityk
 
 <phrase>
 <original>Visible</original>
-<translation></translation>
+<translation>Näkyvä</translation>
 </phrase>
 
 <phrase>
@@ -1948,12 +1948,12 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>horizontal shear</original>
-<translation></translation>
+<translation>Horisontaalinen leikkaus</translation>
 </phrase>
 
 <phrase>
 <original>vertical shear</original>
-<translation></translation>
+<translation>Pystysuora leikkaus</translation>
 </phrase>
 
 <phrase>
@@ -2028,7 +2028,7 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>text type</original>
-<translation></translation>
+<translation>Tekstityyppi</translation>
 </phrase>
 
 <phrase>
@@ -2038,12 +2038,12 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>word wrap</original>
-<translation></translation>
+<translation>rivitys</translation>
 </phrase>
 
 <phrase>
 <original>fill</original>
-<translation></translation>
+<translation>täyttää</translation>
 </phrase>
 
 <phrase>
@@ -2053,7 +2053,7 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>outline</original>
-<translation></translation>
+<translation>ääriviivat</translation>
 </phrase>
 
 <phrase>
@@ -2068,7 +2068,7 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>background style</original>
-<translation></translation>
+<translation>Tausta tyyli</translation>
 </phrase>
 
 <phrase>
@@ -2078,7 +2078,7 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>background border style</original>
-<translation></translation>
+<translation>Taustarajatyyli</translation>
 </phrase>
 
 <phrase>
@@ -2088,32 +2088,32 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>margin</original>
-<translation></translation>
+<translation>marginaali</translation>
 </phrase>
 
 <phrase>
 <original>character remapping</original>
-<translation></translation>
+<translation>Merkin remapping</translation>
 </phrase>
 
 <phrase>
 <original>character spacing</original>
-<translation></translation>
+<translation>Merkkien välinen etäisyys</translation>
 </phrase>
 
 <phrase>
 <original>character orientation</original>
-<translation></translation>
+<translation>Merkin suunta</translation>
 </phrase>
 
 <phrase>
 <original>horizontal jitter</original>
-<translation></translation>
+<translation>Horisontaalinen jitter</translation>
 </phrase>
 
 <phrase>
 <original>vertical jitter</original>
-<translation></translation>
+<translation>Pystysuora jitter</translation>
 </phrase>
 
 <phrase>
@@ -2123,7 +2123,7 @@ Kuvaus: %2</translation>
 
 <phrase>
 <original>mirroring</original>
-<translation></translation>
+<translation>peilaus</translation>
 </phrase>
 
 <phrase>
@@ -4682,7 +4682,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>PhotoDemon by Tanner Helland - www.photodemon.org</original>
-<translation>PhotoDemon Tanner Helland - www.photodemon.org</translation>
+<translation>PhotoDemon by Tanner Helland - www.photodemon.org</translation>
 </phrase>
 
 <phrase>
@@ -4967,7 +4967,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>Basic layer</original>
-<translation></translation>
+<translation>Peruskerros</translation>
 </phrase>
 
 <phrase>
@@ -4982,7 +4982,7 @@ tai Tiedosto> Avaa ja Tiedosto> Tuo valikot.</translation>
 
 <phrase>
 <original>From visible layers</original>
-<translation></translation>
+<translation>Näkyvistä kerroksista</translation>
 </phrase>
 
 <phrase>
@@ -6170,7 +6170,7 @@ Päivitys automaattisesti käsittely taustalla. Saat uuden ilmoituksen, kun se o
 
 <phrase>
 <original>New layer from visible layers</original>
-<translation></translation>
+<translation>Uusi kerros näkyvistä kerroksista</translation>
 </phrase>
 
 <phrase>
@@ -13570,7 +13570,7 @@ I Pahoittelen tästä aiheutuvaa haittaa, mutta valitettavasti mikään %2 voi t
 
 <phrase>
 <original>Ants</original>
-<translation></translation>
+<translation>Muurahaisia</translation>
 </phrase>
 
 <phrase>
@@ -14324,6 +14324,16 @@ Jatka, lataa uuden version PhotoDemon peräisin photodemon.org.</translation>
 </phrase>
 
 <phrase>
+<original>recently used file shortcuts</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>main window title bar text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>maximum number of recent file entries</original>
 <translation>enimmäismäärä viime tiedostomerkintää</translation>
 </phrase>
@@ -14951,7 +14961,7 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 <translation>Tämä uusi väliaikainen kansio sijainti ei tule voimaan ennen kuin käynnistät ohjelman.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 165 phrases. 40 were duplicates of existing phrases, so only 125 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 168 phrases. 41 were duplicates of existing phrases, so only 127 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -15074,10 +15084,10 @@ If silti halutessasi poistaa päivityksiä, älä unohda vierailla photodemon.or
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2542</phrasecount>
+<phrasecount>2544</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4541 phrases. -->
-<!-- 1999 are duplicates, so only 2542 unique phrases have been written to file. -->
-<!-- These 2542 phrases contain approximately 12340 total words. -->
+<!-- As of this build, PhotoDemon contains 4544 phrases. -->
+<!-- 2000 are duplicates, so only 2544 unique phrases have been written to file. -->
+<!-- These 2544 phrases contain approximately 12349 total words. -->
 
 </pdData>
