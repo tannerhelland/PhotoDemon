@@ -555,7 +555,7 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     'Erase any previous metadata caches.
     ' NOTE! Upon implementing PD's new asynchronous metadata retrieval mechanism, we don't want to erase the master metadata string,
     '        as its construction may lag behind the rest of the image load process.  When a full metadata string is retrieved,
-    '        the retrieveMetadataString() function will handle clearing for us.
+    '        the RetrieveMetadataString() function will handle clearing for us.
     'm_currentMetadataText = ""
     
     'Many ExifTool options are delimited by quotation marks (").  Because VB has the worst character escaping scheme ever conceived, I use
@@ -569,6 +569,9 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     
     'Ignore minor errors and warnings
     cmdParams = cmdParams & "-m" & vbCrLf
+    
+    'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
+    cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
     
     'Output long-format data
     cmdParams = cmdParams & "-l" & vbCrLf
@@ -614,9 +617,6 @@ Public Function StartMetadataProcessing(ByVal srcFile As String, ByRef dstImage 
     'Historically, we needed to explicitly set a charset; this shouldn't be necessary with current versions (as UTF-8 is
     ' automatically supported), but if desired, specific metadata types can be coerced into requested character sets like so:
     'cmdParams = cmdParams & "-charset" & vbCrLf & "UTF8" & vbCrLf
-    
-    'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
-    cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
     
     'Actually, we now forcibly request IPTC data as UTF-8.  IPTC supports charset markers, but in my experience, these are
     ' rarely used.  ExifTool will default to the current code page for conversion if we don't specify otherwise, so UTF-8
@@ -1208,7 +1208,7 @@ Public Function StartExifTool() As Boolean
     
     'Tell ExifTool to stay open (e.g. do not exit after completing its operation), and to accept input from stdIn.
     ' (Note that exiftool.exe must be included as param [0], per C convention)
-    cmdParams = cmdParams & "exiftool.exe -charset filename=UTF8 -stay_open true -@ -"
+    cmdParams = cmdParams & "exiftool.exe -stay_open true -@ -"
     
     'Attempt to open ExifTool
     Dim returnVal As SP_RESULTS

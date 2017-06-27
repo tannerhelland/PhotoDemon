@@ -165,18 +165,6 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
     
     'Files with a PD-specific format have now been specially marked, while generic files (JPEG, PNG, etc) have not.
     
-    '*************************************************************************************************************************************
-    ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction
-    '*************************************************************************************************************************************
-    If g_ExifToolEnabled And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Starting separate metadata extraction thread..."
-        #End If
-            
-        StartMetadataProcessing srcFile, targetImage
-        
-    End If
     
     '*************************************************************************************************************************************
     ' Split handling into two groups: internal PD formats vs generic external formats
@@ -190,6 +178,19 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
         ' If the function fails due to user cancellation, we will suppress subsequent error message boxes.
         loadSuccessful = ImageImporter.CascadeLoadGenericImage(srcFile, targetImage, targetDIB, freeImage_Return, decoderUsed, imageHasMultiplePages, numOfPages)
         
+        '*************************************************************************************************************************************
+        ' If the ExifTool plugin is available and this is a non-PD-specific file, initiate a separate thread for metadata extraction
+        '*************************************************************************************************************************************
+        If g_ExifToolEnabled And (internalFormatID <> PDIF_PDI) And (internalFormatID <> PDIF_RAWBUFFER) Then
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Starting separate metadata extraction thread..."
+            #End If
+                
+            ExifTool.StartMetadataProcessing srcFile, targetImage
+            
+        End If
+    
     'PD-specific files use their own load function, which bypasses a lot of tedious format-detection heuristics
     Else
     
@@ -284,7 +285,7 @@ Public Function LoadFileAsNewImage(ByRef srcFile As String, Optional ByVal sugge
                     pdDebug.LogAction vbTab & "Load engine: GDI+", , True
                 
                 Case PDIDE_VBLOADPICTURE
-                    pdDebug.LogAction vbTab & "Load engine: VB's LoadPicture() function", , True
+                    pdDebug.LogAction vbTab & "Load engine: OleLoadPicture", , True
                 
             End Select
             
