@@ -1082,10 +1082,12 @@ Private Function PARSE_LikelyTagLine(ByRef xmlLines() As String, ByRef linePoint
                         End If
                         
                         'If this is not a list tag or a binary tag, it must be an invalid tag of some kind - possibly one that uses
-                        ' a linebreak character.
+                        ' a linebreak character.  (Linebreak characters are specifically disallowed by most format specs, but because
+                        ' we're nice, we'll try and salvage them.)
                         ' TODO: handle this tag specially??
                         If (Not tagFinished) Then
-                            Debug.Print "WARNING: weird tag encountered: " & m_Tags(m_NumOfTags).TagGroupAndName
+                            tagFinished = PARSE_InvalidMultilineTag(xmlLines, sLine, eLine, m_Tags(m_NumOfTags))
+                            If (Not tagFinished) Then Debug.Print "WARNING: weird tag encountered: " & m_Tags(m_NumOfTags).TagGroupAndName
                         End If
                         
                     End If
@@ -1294,6 +1296,67 @@ Private Function PARSE_RDFBagCheck(ByRef xmlLines() As String, ByRef tagStartLin
     End If
     
     PARSE_RDFBagCheck = dstMetadata.IsTagList
+    
+End Function
+
+Private Function PARSE_InvalidMultilineTag(ByRef xmlLines() As String, ByRef tagStartLine As Long, ByRef tagEndLine As Long, ByRef dstMetadata As PDMetadataItem) As Boolean
+    
+    PARSE_InvalidMultilineTag = False
+    dstMetadata.IsTagBinary = False
+    dstMetadata.IsTagList = False
+    
+    'Here is the layout of an invalid, multiline XMP tag (this is taken from an actual, real-world image):
+    ' <XMP-dc:Description>
+    '  <rdf:Description et:id='description' et:table='XMP::dc'>
+    '   <et:desc>Description</et:desc>
+    '   <et:prt>???? ????
+    '
+    '??? ???? ? ????? ?????
+    '
+    '
+    '
+    '
+    '
+    ' *** Local Caption *** ??????</et:prt>
+    '  </rdf:Description>
+    ' </XMP-dc:Description>
+    
+    'Unlike other non-standard metadata checks, there is no easy way to check for tags like this, so they simply get a "failsafe"
+    ' check after checks for all valid types have failed.
+    If (InStr(1, xmlLines(tagStartLine + 3), "<et:prt>", vbBinaryCompare) <> 0) And (InStr(1, xmlLines(tagStartLine + 3), "</et:prt>", vbBinaryCompare) = 0) Then
+        
+        'This appears to be an invalid multiline tag.  Search subsequent lines for the trailing </et:prt> tag, and note that valid
+        ' tag content may appear on the same line where the closing tag is found.  (This is different from other multiline types.)
+        
+        'Looping backward from the closing tag line (which has already been discovered!), look for the closing </et:prt> tag.
+        Dim i As Long
+        For i = (tagEndLine - 1) To tagStartLine Step -1
+            If (InStr(1, xmlLines(i), "</et:prt>", vbBinaryCompare) <> 0) Then Exit For
+        Next i
+        
+        If (i > tagStartLine) Then
+            
+            'Assemble the full string into one contiguous length
+            Dim finalValueLine As Long:  finalValueLine = i
+            Dim fullTagValue As String
+            
+            For i = (tagStartLine + 3) To finalValueLine
+                fullTagValue = fullTagValue & xmlLines(i)
+            Next i
+            
+            'Strip any vbCrLfs in the data, then remove the opening/closing tags
+            If (InStr(1, fullTagValue, vbCrLf, vbBinaryCompare) <> 0) Then fullTagValue = Replace$(fullTagValue, vbCrLf, "", , , vbBinaryCompare)
+            fullTagValue = Replace$(fullTagValue, "<et:prt>", "", , , vbBinaryCompare)
+            fullTagValue = Replace$(fullTagValue, "</et:prt>", "", , , vbBinaryCompare)
+            
+            'Store the result as a normal tag.
+            dstMetadata.TagValueFriendly = ExifTool.PARSE_UnescapeXML(fullTagValue)
+            dstMetadata.TagValue = dstMetadata.TagValueFriendly
+            PARSE_InvalidMultilineTag = True
+            
+        End If
+        
+    End If
     
 End Function
 
