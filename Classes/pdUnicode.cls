@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Helper Class
 'Copyright 2015-2017 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 09/February/17
-'Last update: let the system parse command-line parameters for us, and return the result inside a pdStringStack
+'Last updated: 03/July/17
+'Last update: minor code clean-up and optimizations
 'Dependencies: pdSystemInfo (for determining OS version, among other things)
 '              Uniscribe module (Uniscribe is unavoidable for some advanced text processing)
 '
@@ -87,14 +87,14 @@ End Enum
 Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800&
 
 'Sometimes we need to retrieve system info, as a lot of Unicode APIs vary by OS version
-Private cSysInfo As pdSystemInfo
+Private m_SysInfo As pdSystemInfo
 
 'Given an arbitrary pointer (often to a VB array, but it doesn't matter) and a length IN BYTES, copy that chunk
 ' of bytes to a VB string.  The bytes must already be in Unicode format (UCS-2 or UTF-16).
 Friend Function ConvertUTF16PointerToVBString(ByVal srcPointer As Long, ByVal lengthInBytes As Long, Optional ByVal trimNullChars As Boolean = True) As String
     
     Dim tmpString As String
-    tmpString = String$(lengthInBytes / 2, 0)
+    tmpString = String$(lengthInBytes \ 2, 0)
     CopyMemoryStrict StrPtr(tmpString), srcPointer, lengthInBytes
     
     If trimNullChars Then
@@ -123,21 +123,22 @@ Friend Function ConvertCharPointerToVBString(ByVal srcPointer As Long, Optional 
     
     'Make sure the length/pointer isn't null
     If (strLength <= 0) Then
-        ConvertCharPointerToVBString = ""
-        Exit Function
-    End If
-    
-    'Make sure the string's length is valid.
-    Dim maxAllowedLength As Long
-    If (maxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
-    If (strLength > maxAllowedLength) Then strLength = maxAllowedLength
-    
-    'Create the target string and copy the bytes over
-    If stringIsUnicode Then
-        ConvertCharPointerToVBString = String$(strLength, 0)
-        CopyMemoryStrict StrPtr(ConvertCharPointerToVBString), srcPointer, strLength * 2
+        ConvertCharPointerToVBString = vbNullString
     Else
-        ConvertCharPointerToVBString = SysAllocStringByteLen(srcPointer, strLength)
+        
+        'Make sure the string's length is valid.
+        Dim maxAllowedLength As Long
+        If (maxLength = -1) Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
+        If (strLength > maxAllowedLength) Then strLength = maxAllowedLength
+        
+        'Create the target string and copy the bytes over
+        If stringIsUnicode Then
+            ConvertCharPointerToVBString = String$(strLength, 0)
+            CopyMemoryStrict StrPtr(ConvertCharPointerToVBString), srcPointer, strLength * 2
+        Else
+            ConvertCharPointerToVBString = SysAllocStringByteLen(srcPointer, strLength)
+        End If
+    
     End If
     
 End Function
@@ -151,16 +152,19 @@ Friend Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As 
     
     'If the returned length is 0, WideCharToMultiByte failed.  This typically only happens if totally invalid character combinations are found.
     If (lenUTF8 = 0) Then
-        
-        Debug.Print "StringToUTF8Bytes() failed because WideCharToMultiByte did not return a valid buffer length.)"
-        Err.Raise Err.LastDllError, "StringToUTF8Bytes", "WideCharToMultiByte"
+        InternalError "pdUnicode.StringToUTF8Bytes() failed because WideCharToMultiByte did not return a valid buffer length (#" & Err.LastDllError & ")."
         StringToUTF8Bytes = False
     
     'The returned length is non-zero.  Prep a buffer, then process the bytes.
     Else
         
-        'Prep a temporary byte buffer
-        ReDim dstUtf8(0 To lenUTF8 - 1) As Byte
+        'Prep a temporary byte buffer.  In some places in PD, we'll reuse the same buffer for multiple string copies,
+        ' so to improve performance, only resize the destination array as necessary.
+        If VBHacks.IsArrayInitialized(dstUtf8) Then
+            If ((UBound(dstUtf8) - LBound(dstUtf8) + 1) < lenUTF8) Then ReDim dstUtf8(0 To lenUTF8 - 1) As Byte
+        Else
+            ReDim dstUtf8(0 To lenUTF8 - 1) As Byte
+        End If
         
         'Use the API to perform the actual conversion
         lenUTF8 = WideCharToMultiByte(CP_UTF8, 0, StrPtr(srcString), Len(srcString), VarPtr(dstUtf8(0)), lenUTF8, 0, 0)
@@ -170,8 +174,7 @@ Friend Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As 
         If (lenUTF8 <> 0) Then
             StringToUTF8Bytes = True
         Else
-            Debug.Print "StringToUTF8Bytes() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length.)"
-            Err.Raise Err.LastDllError, "StringToUTF8Bytes", "WideCharToMultiByte"
+            InternalError "StringToUTF8Bytes() failed because WideCharToMultiByte could not perform the conversion, despite returning a valid buffer length (#" & Err.LastDllError & ")."
             StringToUTF8Bytes = False
         End If
         
@@ -190,10 +193,8 @@ Friend Function UTF8BytesToString(ByRef Utf8() As Byte, Optional ByVal customDat
     
     'If the returned length is 0, MultiByteToWideChar failed.  This typically only happens if totally invalid characters are found.
     If (lenWideString = 0) Then
-        
-        Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar did not return a valid buffer length.)"
-        Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
-        UTF8BytesToString = ""
+        InternalError "pdUnicode.UTF8BytesToString() failed because MultiByteToWideChar did not return a valid buffer length (#" & Err.LastDllError & ")."
+        UTF8BytesToString = vbNullString
         
     'The returned length is non-zero.  Prep a buffer, then retrieve the bytes.
     Else
@@ -207,9 +208,8 @@ Friend Function UTF8BytesToString(ByRef Utf8() As Byte, Optional ByVal customDat
         'Make sure the conversion was successful.  (There is generally no reason for it to succeed when calculating a buffer length, only to
         ' fail here, but better safe than sorry.)
         If (lenWideString = 0) Then
-            Debug.Print "UTF8BytesToString() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length.)"
-            Err.Raise Err.LastDllError, "UTF8BytesToString", "MultiByteToWideChar"
-            UTF8BytesToString = ""
+            InternalError "UTF8BytesToString() failed because MultiByteToWideChar could not perform the conversion, despite returning a valid buffer length (#" & Err.LastDllError & ")."
+            UTF8BytesToString = vbNullString
         End If
         
     End If
@@ -229,26 +229,26 @@ End Function
 '  http://www-archive.mozilla.org/projects/intl/UniversalCharsetDetection.html (very detailed)
 Friend Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLength As Long = 512) As Boolean
 
-    If verifyLength > 0 Then
+    If (verifyLength > 0) Then
     
         Dim pos As Long
         pos = 0
         
-        Dim Utf8Size As Long, lIsUtf8 As Long, i As Long
+        Dim utf8Size As Long, lIsUtf8 As Long, i As Long
         
         'If the requested verification length exceeds the size of the array, just search the entire array
-        If verifyLength > UBound(textBytes) Then verifyLength = UBound(textBytes)
+        If (verifyLength > UBound(textBytes)) Then verifyLength = UBound(textBytes)
         
         'Scan through the byte array, looking for patterns specific to UTF-8
-        Do While pos < verifyLength
+        Do While (pos < verifyLength)
         
             'If this is a standard ANSI value, it doesn't tell us anything useful - proceed to the next bytes
-            If textBytes(pos) <= &H7F Then
+            If (textBytes(pos) <= &H7F) Then
                 pos = pos + 1
             
             'If this value is a continuation byte (128-191), invalid byte (192-193), or Latin-1 identifier (194), we know
             ' the text is *not* UTF-8.  Exit now.
-            ElseIf textBytes(pos) < &HC0 Then
+            ElseIf (textBytes(pos) < &HC0) Then
                 AreBytesUTF8 = False
                 Exit Function
             
@@ -259,22 +259,22 @@ Friend Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLen
                 'These special-range UTF-8 markers are used to represent multi-byte encodings.  Detect how many bytes are included
                 ' in this character
                 If (textBytes(pos) And &HF0) = &HF0 Then
-                    Utf8Size = 3
+                    utf8Size = 3
                 ElseIf (textBytes(pos) And &HE0) = &HE0 Then
-                    Utf8Size = 2
+                    utf8Size = 2
                 ElseIf (textBytes(pos) And &HC0) = &HC0 Then
-                    Utf8Size = 1
+                    utf8Size = 1
                 End If
                 
                 'If the position exceeds the length we are supposed to verify, exit now and rely on previous detection
                 ' passes to return a yes/no result.
-                If (pos + Utf8Size) >= verifyLength Then Exit Do
+                If (pos + utf8Size) >= verifyLength Then Exit Do
                 
                 'Scan the intermediary bytes of this character to ensure that no invalid markers are contained.
-                For i = (pos + 1) To (pos + Utf8Size)
+                For i = (pos + 1) To (pos + utf8Size)
                     
                     'Valid UTF-8 continuation bytes must not exceed &H80
-                    If Not ((textBytes(i) And &HC0) = &H80) Then
+                    If ((textBytes(i) And &HC0) <> &H80) Then
                         
                         'This is an invalid marker; exit immediately
                         AreBytesUTF8 = False
@@ -287,7 +287,7 @@ Friend Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLen
                 'If we made it all the way here, all bytes in this multibyte set are valid.  Note that we've found at least one
                 ' valid UTF-8 multibyte encoding, and carry on with the next character
                 lIsUtf8 = lIsUtf8 + 1
-                pos = pos + Utf8Size + 1
+                pos = pos + utf8Size + 1
             
             'Byte values above 0xF4 are always invalid (http://en.wikipedia.org/wiki/UTF-8).  Exit immediately and report failure.
             Else
@@ -305,7 +305,6 @@ Friend Function AreBytesUTF8(ByRef textBytes() As Byte, Optional ByVal verifyLen
     'If no validation length is passed, any heuristics are pointless - exit now.
     Else
         AreBytesUTF8 = False
-        Exit Function
     End If
     
 End Function
@@ -341,8 +340,7 @@ Friend Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
         'Cast the byte array straight into a string, then remove the BOM.
         tmpString = srcBytes
         dstString = Right$(tmpString, Len(tmpString) - 2)
-        'Debug.Print "FYI: pdFSO.LoadTextFileAsString detected UTF-16 LE encoding for (" & srcFile & ")"
-    
+        
     'Next, check for big-endian UTF-16 (0xFEFF)
     ElseIf (srcBytes(0) = 254) And (srcBytes(1) = 255) Then
       
@@ -358,7 +356,6 @@ Friend Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
         'Cast the newly ordered byte array straight into a string, then remove the BOM
         tmpString = srcBytes
         dstString = Right$(tmpString, Len(tmpString) - 2)
-        'Debug.Print "FYI: pdUnicode.LoadTextFileAsString detected UTF-16 BE encoding for (" & srcFile & ")"
         
     'Next, check for UTF-8 BOM (0xEFBBBF).  This isn't common (UTF-8 doesn't require a BOM) but it's worth checking prior to diving into
     ' more complicated heuristics.
@@ -366,7 +363,6 @@ Friend Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
     
         'A helper function will convert the UTF-8 bytes for us; all we need to do is remove the BOM
         dstString = Mid$(UTF8BytesToString(srcBytes), 2)
-        'Debug.Print "FYI: pdUnicode.LoadTextFileAsString detected UTF-8 encoding, via BOM, for (" & srcFile & ")"
         
     'All BOM checks failed.  Time to start running more complicated heuristics.
     Else
@@ -374,20 +370,16 @@ Friend Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
         'Check for UTF-8 data without a BOM.  The heuristics I use are pretty much perfect for avoiding false-positives, but there is
         ' a low risk of false-negatives.  The default character search (currently 512 octets) can be extended to reduce false-negative risk.
         If AreBytesUTF8(srcBytes) Then
-            
             dstString = UTF8BytesToString(srcBytes)
-            'Debug.Print "FYI: pdUnicode.LoadTextFileAsString is assuming UTF-8 encoding for (" & srcFile & ")"
-        
+            
         'If the bytes do not appear to be UTF-8, we could theoretically run one final ANSI check.  US-ANSI data falls into the [0, 127] range,
         ' exclusively, so it's easy to identify.  If, however, the file contains bytes outside this range, we're SOL, because extended bytes
         ' will vary according to the original creation locale (which we do not know).  In that case, we can't really do anything but use the
         ' current user locale and hope for the best, so rather than differentiate between these cases, I just do a forcible conversion using
         ' the current codepage anyway.
         Else
-        
             dstString = StrConv(srcBytes, vbUnicode)
             'Debug.Print "FYI: pdUnicode.LoadTextFileAsString is unsure of this string's encoding.  Current user's codepage will be assumed."
-            
         End If
         
     End If
@@ -414,7 +406,7 @@ Friend Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
     
 StringConversionFailed:
 
-    Debug.Print "WARNING!  pdUnicode.convertUnknownBytesToString() failed with error " & Err.Number & ".  String conversion abandoned."
+    InternalError "pdUnicode.ConvertUnknownBytesToString() failed; string conversion abandoned.", Err.Number
     ConvertUnknownBytesToString = False
 
 End Function
@@ -537,76 +529,61 @@ Friend Function RemapString(ByRef srcString As String, ByVal remapType As PD_STR
     'If the remap type is 0, do nothing
     If (remapType = PDRS_NONE) Then
         RemapString = srcString
-        Exit Function
-    End If
-    
-    'If the remap type is "titlecase" and we're on Vista or earlier, do nothing
-    If (remapType = PDRS_TITLECASE_WIN7) And (Not cSysInfo.IsOSWin7OrLater) Then
-        RemapString = srcString
-        Exit Function
-    End If
-    
-    'Convert the incoming remap type to an API equivalent
-    Dim apiFlags As REMAP_STRING_API
-    
-    Select Case remapType
-    
-        Case PDRS_LOWERCASE
-            apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_LOWERCASE
-        
-        Case PDRS_UPPERCASE
-            apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_UPPERCASE
-            
-        Case PDRS_HIRAGANA
-            apiFlags = LCMAP_HIRAGANA
-            
-        Case PDRS_KATAKANA
-            apiFlags = LCMAP_KATAKANA
-            
-        Case PDRS_SIMPLE_CHINESE
-            apiFlags = LCMAP_SIMPLIFIED_CHINESE
-            
-        Case PDRS_TRADITIONAL_CHINESE
-            apiFlags = LCMAP_TRADITIONAL_CHINESE
-            
-        Case PDRS_TITLECASE_WIN7
-            apiFlags = LCMAP_TITLECASE
-    
-    End Select
-        
-    'For Latin languages, the length of the new string shouldn't change, but with CJK languages, there are no guarantees.  As a failsafe,
-    ' double the length of the temporary destination buffer.
-    Dim dstString As String
-    dstString = String$(Len(srcString) * 2, 0)
-    
-    'Use the Vista+ variant preferentially, as it has received additional updates versus the backward-compatible function.
-    Dim apiSuccess As Boolean
-    
-    If cSysInfo.IsOSVistaOrLater Then
-        
-        If LCMapStringEx(0&, apiFlags, StrPtr(srcString), Len(srcString), StrPtr(dstString), Len(dstString), 0&, 0&, 0&) = 0 Then
-            Debug.Print "WARNING!  LCMapStringEx() failed on /" & srcString & "/ and PD remap type " & remapType & "."
-            apiSuccess = False
-        Else
-            apiSuccess = True
-        End If
-        
     Else
     
-        If LCMapStringW(LOCALE_SYSTEM_DEFAULT, apiFlags, StrPtr(srcString), Len(srcString), StrPtr(dstString), Len(dstString)) = 0 Then
-            Debug.Print "WARNING!  LCMapStringW() failed on /" & srcString & "/ and PD remap type " & remapType & "."
-            apiSuccess = False
+        'Convert the incoming remap type to an API equivalent
+        Dim apiFlags As REMAP_STRING_API
+        
+        Select Case remapType
+        
+            Case PDRS_LOWERCASE
+                apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_LOWERCASE
+            
+            Case PDRS_UPPERCASE
+                apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_UPPERCASE
+                
+            Case PDRS_HIRAGANA
+                apiFlags = LCMAP_HIRAGANA
+                
+            Case PDRS_KATAKANA
+                apiFlags = LCMAP_KATAKANA
+                
+            Case PDRS_SIMPLE_CHINESE
+                apiFlags = LCMAP_SIMPLIFIED_CHINESE
+                
+            Case PDRS_TRADITIONAL_CHINESE
+                apiFlags = LCMAP_TRADITIONAL_CHINESE
+                
+            Case PDRS_TITLECASE_WIN7
+                apiFlags = LCMAP_TITLECASE
+                
+                'If the remap type is "titlecase" and we're on Vista or earlier, do nothing
+                If (Not m_SysInfo.IsOSWin7OrLater) Then
+                    RemapString = srcString
+                    Exit Function
+                End If
+        
+        End Select
+            
+        'For Latin languages, the length of the new string shouldn't change, but with CJK languages, there are no guarantees.  As a failsafe,
+        ' double the length of the temporary destination buffer.
+        Dim dstString As String
+        dstString = String$(Len(srcString) * 2, 0)
+        
+        'Use the Vista+ variant preferentially, as it has received additional updates versus the backward-compatible function.
+        Dim apiSuccess As Boolean
+        
+        If m_SysInfo.IsOSVistaOrLater Then
+            apiSuccess = (LCMapStringEx(0&, apiFlags, StrPtr(srcString), Len(srcString), StrPtr(dstString), Len(dstString), 0&, 0&, 0&) <> 0)
+            If (Not apiSuccess) Then InternalError "LCMapStringEx() failed on /" & srcString & "/ and PD remap type " & remapType & "."
         Else
-            apiSuccess = True
+            apiSuccess = (LCMapStringW(LOCALE_SYSTEM_DEFAULT, apiFlags, StrPtr(srcString), Len(srcString), StrPtr(dstString), Len(dstString)) <> 0)
+            If (Not apiSuccess) Then InternalError "LCMapStringW() failed on /" & srcString & "/ and PD remap type " & remapType & "."
         End If
-    
-    End If
-    
-    'Because we use a huge destination buffer (as a failsafe), trailing null chars are inevitable.  Trim them before returning.
-    If apiSuccess Then
-        RemapString = TrimNull(dstString)
-    Else
-        RemapString = srcString
+        
+        'Because we use a huge destination buffer (as a failsafe), trailing null chars are inevitable.  Trim them before returning.
+        If apiSuccess Then RemapString = Me.TrimNull(dstString) Else RemapString = srcString
+        
     End If
     
 End Function
@@ -621,19 +598,23 @@ Friend Function TrimNull(ByRef origString As String) As String
     
     'Remove null chars if present; otherwise, return a copy of the input string
     If (nullPosition <> 0) Then
-       
-        If nullPosition > 1 Then
-            TrimNull = Left$(origString, nullPosition - 1)
-        Else
-            TrimNull = ""
-        End If
-    
+        If (nullPosition > 1) Then TrimNull = Left$(origString, nullPosition - 1) Else TrimNull = vbNullString
     Else
-       TrimNull = origString
+        TrimNull = origString
     End If
     
 End Function
 
 Private Sub Class_Initialize()
-    Set cSysInfo = New pdSystemInfo
+    Set m_SysInfo = New pdSystemInfo
+End Sub
+
+Private Sub InternalError(ByVal errComment As String, Optional ByVal errNumber As Long = 0)
+    #If DEBUGMODE = 1 Then
+        If (errNumber <> 0) Then
+            pdDebug.LogAction "WARNING!  VB error in pdUnicode (#" & Err.Number & "): " & Err.Description & " || " & errComment
+        Else
+            pdDebug.LogAction "WARNING!  pdUnicode internal error: " & errComment
+        End If
+    #End If
 End Sub

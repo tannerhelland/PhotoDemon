@@ -3018,11 +3018,11 @@ Private Sub Form_Unload(Cancel As Integer)
         If Updates.PatchProgramFiles() Then
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Updates.patchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
+                pdDebug.LogAction "Updates.PatchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
             #End If
             
             'If the user wants a restart, create a restart batch file now
-            'If g_UserWantsRestart Then Updates.createRestartBatchFile
+            'If g_UserWantsRestart Then Updates.CreateRestartBatchFile
             
         Else
             #If DEBUGMODE = 1 Then
