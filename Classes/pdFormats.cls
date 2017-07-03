@@ -288,7 +288,7 @@ Public Sub GenerateInputFormats()
         AddInputFormat "WEBP - Google WebP", "*.webp", PDIF_WEBP
     End If
     
-    If GDIPlusEnabled Then AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_EMF
+    If GDIPlusEnabled Then AddInputFormat "WMF - Windows Metafile", "*.wmf", PDIF_WMF
     
     'Finish out the list with an obligatory "All files" option
     AddInputFormat g_Language.TranslateMessage("All files"), "*.*", -1
