@@ -112,7 +112,7 @@ End Enum
     Private Const GP_BT_SolidColor = 0, GP_BT_HatchFill = 1, GP_BT_TextureFill = 2, GP_BT_PathGradient = 3, GP_BT_LinearGradient = 4
 #End If
 
-'Coloar adjustments are handled internally, at present, so we don't need to expose them to other objects
+'Color adjustments are handled internally, at present, so we don't need to expose them to other objects
 Private Enum GP_ColorAdjustType
     GP_CAT_Default = 0
     GP_CAT_Bitmap = 1
@@ -1088,6 +1088,7 @@ Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal hGraphics As Lo
 Private Declare Function GdipGetClip Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstRegion As Long) As GP_Result
 Private Declare Function GdipGetCompositingQuality Lib "gdiplus" (ByVal hGraphics As Long, ByRef dstCompositingQuality As GP_CompositingQuality) As GP_Result
 Private Declare Function GdipGetImageBounds Lib "gdiplus" (ByVal hImage As Long, ByRef dstRectF As RECTF, ByRef dstUnit As GP_Unit) As GP_Result
+Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef dstWidth As Single, ByRef dstHeight As Single) As GP_Result
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numOfEncoders As Long, ByVal sizeOfEncoders As Long, ByVal ptrToDstEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (ByRef numOfEncoders As Long, ByRef sizeOfEncoders As Long) As GP_Result
 Private Declare Function GdipGetImageHeight Lib "gdiplus" (ByVal hImage As Long, ByRef dstHeight As Long) As GP_Result
@@ -1255,15 +1256,6 @@ Private Type ImageCodecInfo
 End Type
 
 'Load image from file, process said file, etc.
-Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
-Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpImage As Long, ByRef gpFlags As Long) As Long
-Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal gpBitmap As Long, hBmpReturn As Long, ByVal RGBABackground As Long) As GP_Result
-Private Declare Function GdipGetImageDimension Lib "gdiplus" (ByVal hImage As Long, ByRef imgWidth As Single, ByRef imgHeight As Single) As Long
-Private Declare Function GdipGetDC Lib "gdiplus" (ByVal mGraphics As Long, ByRef hDC As Long) As Long
-Private Declare Function GdipReleaseDC Lib "gdiplus" (ByVal mGraphics As Long, ByVal hDC As Long) As Long
-Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal hImage As Long, ByRef hGraphics As Long) As GP_Result
-Private Declare Function GdipCreateMetafileFromFile Lib "gdiplus" (ByVal srcFilePtr As Long, ByRef hMetafile As Long) As GP_Result
-Private Declare Function GdipGraphicsClear Lib "gdiplus" (ByVal hGraphics As Long, ByVal lColor As Long) As GP_Result
 Private Declare Function GdipSetMetafileDownLevelRasterizationLimit Lib "gdiplus" (ByVal hMetafile As Long, ByVal metafileRasterizationLimitDpi As Long) As GP_Result
 
 'Note: only supported in GDI+ v1.1!
@@ -2252,7 +2244,10 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
     'Convert the GUID into a string
     Dim imgStringPointer As Long, imgFormatGuidString As String
     StringFromCLSID VarPtr(imgClsID), imgStringPointer
-    imgFormatGuidString = GetBstrFromPtr(imgStringPointer)
+    
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    imgFormatGuidString = cUnicode.ConvertCharPointerToVBString(imgStringPointer, True)
     
     'And finally, convert the string into an FIF long
     Dim imgFormatFIF As Long
@@ -3481,7 +3476,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
 
 End Sub
 
-'Thanks to Carles P.V. for providing the following four functions, which are used as part of GDI+ image saving.
+'Thanks to Carles P.V. for providing the following three functions, which are used as part of GDI+ image saving.
 ' You can download Carles's full project from http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 Private Function GetEncoderFromMimeType(ByRef strMimeType As String, ByRef classID As clsID) As Long
 
@@ -3507,9 +3502,12 @@ Private Function GetEncoderFromMimeType(ByRef strMimeType As String, ByRef class
     Call CopyMemory(ICI(1), Buffer(1), (Len(ICI(1)) * Num))
     
     '-- Loop through all the codecs
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    
     For lIdx = 1 To Num
         '-- Must convert the pointer into a usable string
-        If (StrComp(GetBstrFromPtr(ICI(lIdx).MimeType), strMimeType, vbTextCompare) = 0) Then
+        If Strings.StringsEqual(cUnicode.ConvertCharPointerToVBString(ICI(lIdx).MimeType, True), strMimeType, True) Then
             classID = ICI(lIdx).classID ' Save the Class ID
             GetEncoderFromMimeType = lIdx      ' Return the index number for success
             Exit For
@@ -3529,24 +3527,9 @@ Private Sub CopyGUIDIntoByteArray(ByVal sGuid As String, ByVal ptrToArray As Lon
     CLSIDFromString StrPtr(sGuid), ptrToArray
 End Sub
 
-'"Convert" (technically, dereference) an ANSI or Unicode string to the BSTR used by VB
-Private Function GetBstrFromPtr(ByVal lpsz As Long) As String
-    
-  Dim sOut As String
-  Dim lLen As Long
-
-    lLen = lstrlenW(lpsz)
-
-    If (lLen > 0) Then
-        sOut = StrConv(String$(lLen, vbNullChar), vbUnicode)
-        Call CopyMemory(ByVal sOut, ByVal lpsz, lLen * 2)
-        GetBstrFromPtr = StrConv(sOut, vbFromUnicode)
-    End If
-End Function
-
 'Given a GUID string, return a Long-type image format identifier
 Private Function GetFIFFromGUID(ByRef srcGUID As String) As PD_IMAGE_FORMAT
-
+    
     Select Case srcGUID
     
         Case "{B96B3CAB-0728-11D3-9D7B-0000F81EF32E}"
@@ -3577,7 +3560,6 @@ Private Function GetFIFFromGUID(ByRef srcGUID As String) As PD_IMAGE_FORMAT
             GetFIFFromGUID = PDIF_UNKNOWN
             
     End Select
-    
 
 End Function
 

@@ -185,19 +185,19 @@ End Function
 Public Function GetWindowsDPI() As Double
     
     'Retrieve LogPixelsX via the API; this will be 96 at 100% DPI scaling
-    Dim screenDC As Long, LogPixelsX As Double
+    Dim screenDC As Long, logPixelsX As Double
     screenDC = GetDC(0)
-    LogPixelsX = CDbl(GetDeviceCaps(screenDC, GDC_LOGPIXELSX))
+    logPixelsX = CDbl(GetDeviceCaps(screenDC, GDC_LOGPIXELSX))
     ReleaseDC 0, screenDC
     
     'Convert that value into a fractional DPI modified (e.g. 1.0 for 100% scaling, 2.0 for 200% scaling)
-    If LogPixelsX = 0 Then
+    If logPixelsX = 0 Then
         GetWindowsDPI = 1#
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
         #End If
     Else
-        GetWindowsDPI = LogPixelsX / 96#
+        GetWindowsDPI = logPixelsX / 96#
     End If
     
 End Function
